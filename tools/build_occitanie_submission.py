@@ -395,7 +395,7 @@ def build_technical_dossier() -> Path:
         "Technical and user report · Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned V23 diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 32 numbered questions across eleven subject pages are less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
+        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned V24 diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 34 numbered questions across twelve subject pages are less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
@@ -535,7 +535,7 @@ def build_technical_dossier() -> Path:
     add_label_paragraph(
         doc,
         "Initial campaign · 0/10 accepted.",
-        "Gemma 4 12B passed 0/10 in the first campaign. A source-pinned V23 single-paper diagnostic passed automated checks first try with no repairs. We inspected its eleven-page subject and eighteen-page proposed correction. The graph exercise retains writable before/after route tables; E3 is a linked routing, process recovery and security case, but E2 remains compact and the final network page is sparse. Sustained depth and working-space flow remain insufficient. Fidelity remains on hold against the 2026 Métropole paper. This is neither multi-paper model qualification nor teacher approval.",
+        "Gemma 4 12B passed 0/10 in the first campaign. The pinned V24 single-paper diagnostic passed automation first try without repairs: twelve-page subject, nineteen-page proposed correction. Writable before/after route tables remain. E2 reconciliation spans four pages; E3 is a linked routing, process recovery and security case. E1 and the final E2/E3 pages remain sparse, so manual fidelity is on hold against the 2026 Métropole paper. This is not multi-paper model qualification or teacher approval.",
     )
     add_label_paragraph(
         doc,
