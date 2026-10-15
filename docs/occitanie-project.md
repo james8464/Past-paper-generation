@@ -220,6 +220,17 @@ final E3 page remain sparse, with insufficient sustained depth and candidate
 working-space flow. **Manual product fidelity remains on hold.** This is not
 model selection or external teacher, learner, rights or accessibility approval.
 
+Protected PR #69 added an original second outage to E1, requiring a linked
+route, weight and comparison trace while preserving the first-closure state.
+Its [pinned V25 live diagnostic](quality/french-nsi-v25-two-outage-live-diagnostic-2026-10-15.md)
+passed automated checks on the first attempt without repairs. Every page of
+the thirteen-page subject and twenty-page proposed correction was inspected
+against the sixteen-page official 2026 comparator. The subject has 34 numbered
+questions versus 36 officially. E1 pages 4–5, E2 page 10 and the final E3 page
+remain sparse, with insufficient sustained depth and candidate working-space
+flow. **Manual product fidelity remains on hold.** This is not model selection
+or external teacher, learner, rights or accessibility approval.
+
 ## Genuine Occitanie scenario — PLANNED
 
 A teacher generates and checks a paper on a Mac; students receive a PDF through
