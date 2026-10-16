@@ -939,7 +939,7 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v25_even_if_caller_requests_older_contract(
+def test_runtime_publishes_v26_even_if_caller_requests_older_contract(
     tmp_path, monkeypatch
 ):
     import json
@@ -972,7 +972,7 @@ def test_runtime_publishes_v25_even_if_caller_requests_older_contract(
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v25"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v26"
     assert len(package["exercises"][0]["questions"]) == 10
     assert len(package["exercises"][1]["questions"]) == 12
     assert len(package["exercises"][2]["questions"]) == 12

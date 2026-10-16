@@ -738,6 +738,44 @@ class ControlledTwoOutageFrenchClient(ControlledReconciliationFrenchClient):
         return super().generate_json(prompt)
 
 
+def test_v26_timeline_package_replays_without_downgrading_old_e3(tmp_path):
+    from copy import deepcopy
+
+    from Backend.Core.france.pipeline import generate_assessment, validate_package
+
+    index = tmp_path / "sources.sqlite"
+    make_index(index)
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledTwoOutageFrenchClient(),
+        seed=270100,
+        checkpoint=tmp_path / "v26-checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v26",
+    )
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v26"
+    assert [len(item["questions"]) for item in package["exercises"]] == [10, 12, 12]
+    assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
+    assert package["language_points"] == "2"
+    assert validate_package(package)["structural_checks"] == "passed"
+    assert "network_incident_timeline_contract_sha256" in package["identity"]
+    assert "network_incident_contract_sha256" not in package["identity"]
+    assert (
+        package["exercises"][2]["questions"][6]["verification"]["kind"]
+        == "network_incident_timeline_contract"
+    )
+    changed = deepcopy(package)
+    changed["identity"]["network_incident_timeline_contract_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(changed)
+    changed = deepcopy(package)
+    changed["evidence"][2]["network_incident_timeline_selection"][
+        "candidate_sha256"
+    ] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(changed)
+
+
 def test_v25_two_outage_package_replays_and_rejects_mixed_identity(tmp_path):
     from copy import deepcopy
 
@@ -774,7 +812,9 @@ def test_v25_two_outage_package_replays_and_rejects_mixed_identity(tmp_path):
     with pytest.raises(ValueError):
         validate_package(mixed)
     changed = deepcopy(package)
-    changed["evidence"][0]["graph_two_outage_selection"]["accepted"]["response"]["scene_id"] = "invented"
+    changed["evidence"][0]["graph_two_outage_selection"]["accepted"]["response"][
+        "scene_id"
+    ] = "invented"
     with pytest.raises(ValueError):
         validate_package(changed)
 

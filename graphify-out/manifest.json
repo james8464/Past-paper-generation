@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792075316.5185056,
-    "ast_hash": "06dcd8a0a0aa3c9f24ab5d46cb722290",
+    "mtime": 1792107912.0529711,
+    "ast_hash": "0236e12d88a94fd19cd2f5292e3177a2",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1792077102.4050531,
-    "ast_hash": "3175a854230300d7d9504994df3a44fe",
+    "mtime": 1792107573.668581,
+    "ast_hash": "8b6195189c67cca10bcd7e841ce851fd",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1792079093.687133,
-    "ast_hash": "a879d0eded47ae016d2d9cb20f654e1d",
+    "mtime": 1792107912.052831,
+    "ast_hash": "0d285764725ae27a22e3d1e3d26066e2",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792075230.8597088,
-    "ast_hash": "2f360b61ad62fedaf01633781809a423",
+    "mtime": 1792107293.5630999,
+    "ast_hash": "59b51b095f4f79dad7420eb4c9fd77ed",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792081654.4333403,
-    "ast_hash": "2707c1f5e2852762a39e348b7b32ac8b",
+    "mtime": 1792107322.2445781,
+    "ast_hash": "0caf4093154d3faa601a49346266b13e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1792076280.4062464,
-    "ast_hash": "118cb03a0d8951c6904accc4b0ceedcf",
+    "mtime": 1792107770.6113048,
+    "ast_hash": "d3bc9c4ede559aff6326d7c086b1c538",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1792075137.1891475,
-    "ast_hash": "820aa3232795b9d29717c7ce7b78a215",
+    "mtime": 1792107912.0529518,
+    "ast_hash": "ad99fcce1662d28cba0997a3949f19db",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1792076280.4051528,
-    "ast_hash": "0c9348cfbe1f23a193d6fa6187d0941f",
+    "mtime": 1792107893.8435245,
+    "ast_hash": "9b068ae36b832983a4509e83b79584d7",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1792076280.4054542,
-    "ast_hash": "0069a541076cfb15eab8714140093341",
+    "mtime": 1792107912.0494573,
+    "ast_hash": "e1133e3a81bf81f35a54a0626bde3b1f",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_pdf.py": {
-    "mtime": 1792076266.588942,
-    "ast_hash": "9392fab7f61f17d3a436c16dc0676115",
+    "mtime": 1792107688.2511292,
+    "ast_hash": "eba5fba467dea8365d25a3da93076cb5",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md": {
@@ -3262,6 +3262,41 @@
   "docs/quality/french-nsi-v25-two-outage-live-diagnostic-2026-10-15.md": {
     "mtime": 1792081561.472594,
     "ast_hash": "4aca2c01c0110355229680b7a4110dd0",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_timeline_contract.py": {
+    "mtime": 1792107219.5020726,
+    "ast_hash": "9ccde53db647c01f8a6c9a0992369c36",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_timeline_prose.py": {
+    "mtime": 1792108206.381903,
+    "ast_hash": "fd22dd25359d4964ff2f89bc6566d35a",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_contract.py": {
+    "mtime": 1792107284.8503575,
+    "ast_hash": "df4c7bde78a6c9ad5516c858fd3fdd86",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_prose.py": {
+    "mtime": 1792108206.381616,
+    "ast_hash": "2cb0cc9bff8dcd6a80311e217fd874af",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/network_incident_timeline_authoring.py": {
+    "mtime": 1792107912.0486777,
+    "ast_hash": "49bda8038e7bc58422068e198bed65aa",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_authoring.py": {
+    "mtime": 1792107912.0487175,
+    "ast_hash": "488e999753263e0c11a7a2e6d70375b9",
+    "semantic_hash": ""
+  },
+  "tests/test_french_network_incident_timeline_pdf.py": {
+    "mtime": 1792107912.0484805,
+    "ast_hash": "bde395fe0d42f2bdde025ab0ffcab734",
     "semantic_hash": ""
   }
 }
