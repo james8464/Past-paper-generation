@@ -15,6 +15,12 @@ The revised prose catalogue has a separate version and digest. New generation se
 3. Exercise V26/V27 package replay, tamper rejection, runtime publication and benchmark identity checks.
 4. Run full backend and protected macOS checks, then inspect a new pinned live run separately.
 
+## Rendering and packaging follow-up
+
+New V27 publication suppresses internal E1 material IDs in printed headings while retaining human-readable titles. Historical rendering remains the default for direct replay calls; the new renderer option and PDF validator must agree. Tests cover normal/large-print pages and mutated tables, missing questions and leaked answers in both modes.
+
+macOS CI on source commit `02a9e9d` failed before Swift test execution: unbounded transitive requirements installed PyMuPDF 2.0, whose layout import needed an omitted `pymupdf/layout/resources/onnx/layout_rf2.4.1+imf1.yaml`. Build and test requirements now pin the locally exercised PyMuPDF 1.28.2; generator requirements exclude the unqualified major version. The bundle also explicitly collects PyMuPDF data files. The packaged generator health check remains the integration gate; no test is bypassed.
+
 ## Limits
 
-This is a marking fix, not a claim of official equivalence or a new live evaluation. V26's recorded manual fidelity HOLD remains historical evidence. Candidate depth, question progression and layout still need assessment against real papers. Official papers also contain sparse pages; neither blank padding nor matching a page count establishes quality. Teacher calibration and document-specific rights clearance remain open.
+These are marking, presentation and packaging fixes, not a claim of official equivalence. V26's recorded manual fidelity HOLD remains historical evidence. Candidate depth, question progression and layout still need assessment against real papers. Official papers also contain sparse pages; neither blank padding nor matching a page count establishes quality. Teacher calibration and document-specific rights clearance remain open.

@@ -5,8 +5,9 @@ import pytest
 
 @pytest.mark.parametrize("seed", [270100, 270102])
 @pytest.mark.parametrize("large_print", [False, True])
+@pytest.mark.parametrize("human_readable_titles", [False, True])
 def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
-    tmp_path, monkeypatch, large_print, seed
+    tmp_path, monkeypatch, large_print, seed, human_readable_titles
 ):
     import pymupdf
 
@@ -50,10 +51,18 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
     for correction in (False, True):
         path = tmp_path / ("correction.pdf" if correction else "subject.pdf")
         render_assessment(
-            path, exercises, correction=correction, large_print=large_print
+            path,
+            exercises,
+            correction=correction,
+            large_print=large_print,
+            human_readable_graph_titles=human_readable_titles,
         )
         runtime.validate_graph_two_outage_pdf(
-            path, contract, correction=correction, exercise=exercises[0]
+            path,
+            contract,
+            correction=correction,
+            exercise=exercises[0],
+            human_readable_titles=human_readable_titles,
         )
         with pymupdf.open(path) as pdf:
             pages = [page.get_text() for page in pdf]
@@ -65,6 +74,7 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                 for word in page.get_text("words")
             )
         raw = "\n".join(pages)
+        assert (" — route_double_fermeture" in raw) == (not human_readable_titles)
         assert (
             raw.index("1e.")
             < raw.index("Trace de Dijkstra après fermeture")
@@ -102,7 +112,11 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                 )
                 with pytest.raises(ValueError):
                     runtime.validate_graph_two_outage_pdf(
-                        path, contract, correction=correction, exercise=exercises[0]
+                        path,
+                        contract,
+                        correction=correction,
+                        exercise=exercises[0],
+                        human_readable_titles=human_readable_titles,
                     )
         if not correction:
             winning_route = " → ".join(
@@ -125,7 +139,11 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                     )
                     with pytest.raises(ValueError):
                         runtime.validate_graph_two_outage_pdf(
-                            path, contract, correction=False, exercise=exercises[0]
+                            path,
+                            contract,
+                            correction=False,
+                            exercise=exercises[0],
+                            human_readable_titles=human_readable_titles,
                         )
             for leaked in (
                 "Trajet gagnant : " + winning_route,
@@ -143,7 +161,11 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                     )
                     with pytest.raises(ValueError):
                         runtime.validate_graph_two_outage_pdf(
-                            path, contract, correction=False, exercise=exercises[0]
+                            path,
+                            contract,
+                            correction=False,
+                            exercise=exercises[0],
+                            human_readable_titles=human_readable_titles,
                         )
             for task_id in ("1f", "1g"):
                 altered = []
@@ -161,5 +183,9 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
                     )
                     with pytest.raises(ValueError):
                         runtime.validate_graph_two_outage_pdf(
-                            path, contract, correction=False, exercise=exercises[0]
+                            path,
+                            contract,
+                            correction=False,
+                            exercise=exercises[0],
+                            human_readable_titles=human_readable_titles,
                         )

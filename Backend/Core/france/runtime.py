@@ -632,6 +632,7 @@ def validate_graph_two_outage_pdf(
     *,
     correction: bool,
     exercise: NSIExercise,
+    human_readable_titles: bool = False,
 ) -> None:
     """Bind V25's two ordered outages, working surfaces, answers and credit."""
     data = contract.to_dict()
@@ -677,6 +678,8 @@ def validate_graph_two_outage_pdf(
         + " — route_double_fermeture",
         "Arbre des identifiants — arbre",
     )
+    if human_readable_titles:
+        titles = tuple(title.split(" — ", 1)[0] for title in titles)
     if any(lines.count(title) != 1 for title in titles):
         raise ValueError("Two-outage working material missing or duplicated")
     graph_at, before_at, first_at, second_at, tree_at = (
@@ -2224,6 +2227,7 @@ def handle_generate_assessment(args) -> int:
             package["identity"]["prompt_version"]
         )
         network_timeline = network_pdf_version in {"v26", "v27"}
+        human_readable_graph_titles = network_pdf_version == "v27"
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
@@ -2251,6 +2255,7 @@ def handle_generate_assessment(args) -> int:
                     exercises,
                     correction=correction,
                     large_print=args.large_print,
+                    human_readable_graph_titles=human_readable_graph_titles,
                 ),
                 role=role,
                 language="fr-FR",
@@ -2272,6 +2277,11 @@ def handle_generate_assessment(args) -> int:
                 graph_tree_contract,
                 correction=correction,
                 exercise=exercises[0],
+                **(
+                    {"human_readable_titles": human_readable_graph_titles}
+                    if graph_two_outage
+                    else {}
+                ),
             )
             database_validator = (
                 validate_database_reconciliation_pdf
