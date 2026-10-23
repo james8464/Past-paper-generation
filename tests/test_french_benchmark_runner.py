@@ -1,4 +1,7 @@
 import json
+import os
+import subprocess
+import sys
 from argparse import Namespace
 from dataclasses import asdict
 from hashlib import sha256
@@ -83,6 +86,24 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
 )
+
+
+def test_benchmark_cli_starts_without_pythonpath(tmp_path):
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[1] / "tools/french_nsi_benchmark.py"
+    environment = dict(os.environ)
+    environment.pop("PYTHONPATH", None)
+    result = subprocess.run(
+        [sys.executable, str(script), "--help"],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "--reference-index" in result.stdout
 
 
 def _passed_result(

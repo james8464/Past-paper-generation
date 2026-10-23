@@ -23,10 +23,6 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
-from Backend.Core.france.database_construction_authoring import (
-    database_catalogue_identity,
-)
-
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -38,6 +34,9 @@ from Backend.Core.france.database_audit_contract import (  # noqa: E402
 from Backend.Core.france.database_audit_prose import (  # noqa: E402
     DATABASE_AUDIT_PROSE_VERSION,
     database_audit_catalogue_digest,
+)
+from Backend.Core.france.database_construction_authoring import (  # noqa: E402
+    database_catalogue_identity,
 )
 from Backend.Core.france.database_depth_contract import (  # noqa: E402
     build_database_depth_contract,

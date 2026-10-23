@@ -55,7 +55,8 @@ CONSTRUCTION_CRITERIA = (
 
 
 INVARIANT_PROMPT = (
-    "On note effectifs le dictionnaire résultat de votre fonction. "
+    "Reprenez votre fonction repartition_clos de la question 2h. "
+    "On note effectifs son dictionnaire résultat. "
     "Pour une catégorie demandée c, précisez ce que représente effectifs[c] après "
     "le traitement des k premiers incidents. Expliquez pourquoi cette propriété "
     "est vraie au départ et reste vraie après un incident supplémentaire. "

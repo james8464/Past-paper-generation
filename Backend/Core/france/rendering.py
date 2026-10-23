@@ -584,7 +584,7 @@ def render_assessment(
             *,
             show_id=exercise.id != "3"
             and not (human_readable_graph_titles and exercise.id == "1"),
-            flatten=coherent_material_flow and exercise.id == "1",
+            flatten=False,
         ):
             material_block = structured_material(
                 material,
@@ -592,7 +592,8 @@ def render_assessment(
                 bold_font=bold,
                 regular_font=regular,
                 available_width=doc.width,
-                show_id=show_id,
+                show_id=show_id
+                and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:
                 # Avoid nested KeepTogether blocks: the outer question group owns
@@ -614,7 +615,10 @@ def render_assessment(
                         material.id in question.material_ids
                         and material.id not in staged_material_ids
                     ):
-                        add_material(material)
+                        add_material(
+                            material,
+                            flatten=coherent_material_flow and question_index > 0,
+                        )
                         staged_material_ids.add(material.id)
             graph_depth_correction = (
                 correction
@@ -646,7 +650,7 @@ def render_assessment(
                 ]
             if (
                 coherent_material_flow
-                and exercise.id == "1"
+                and question_index > 0
                 and not correction
                 and material_start < question_start
             ):
@@ -668,10 +672,15 @@ def render_assessment(
                     else question_start
                 )
                 story[start:] = [KeepTogether(story[start:])]
-            if not correction and question.verification.get("kind") in {
-                "database_audit_contract",
-                "database_reconciliation_contract",
-            }:
+            if (
+                not correction
+                and (not coherent_material_flow or material_start == question_start)
+                and question.verification.get("kind")
+                in {
+                    "database_audit_contract",
+                    "database_reconciliation_contract",
+                }
+            ):
                 start = material_start if question.id == "2g" else question_start
                 story[start:] = [KeepTogether(story[start:])]
             if (
@@ -756,7 +765,7 @@ def render_assessment(
                 story.append(marking_table)
                 if (
                     coherent_material_flow
-                    and exercise.id == "1"
+                    and question_index > 0
                     and material_start < question_start
                 ):
                     story[material_start:] = [KeepTogether(story[material_start:])]

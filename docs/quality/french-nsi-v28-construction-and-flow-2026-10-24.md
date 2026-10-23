@@ -8,7 +8,9 @@ E2 retains the original app-owned incident data and SQL/state sequence. Question
 
 The V28 catalogue identity binds the new prompt, code, marking criteria and reasoning answer. Its selection reuses finite V24 scene identifiers but renders through a version-specific construction layer; package replay rejects changed answers or mixed catalogue identities. V13–V27 rendering and selection defaults remain unchanged. V28 preserves V27's corrected E3 security credit.
 
-The opt-in V28 graph layout flattens nested keep-together blocks before grouping each material with its question. Normal-print correction groups include the answer and rubric. Large-print content can split when a complete group exceeds a page rather than overflowing. Runtime validation rejects a normal-print graph material separated from its question. No extra blank pages or target page count are introduced.
+The opt-in V28 layout flattens nested keep-together blocks before grouping each staged working material with its question. Normal-print correction groups include the answer and rubric. Large-print content can split when a complete group exceeds a page rather than overflowing. Runtime validation rejects a normal-print graph material separated from its question; PDF regression tests cover E2 working tables and the E3 security cards as well. Internal reconciliation identifiers are hidden while SQL table names remain visible. No extra blank pages or target page count are introduced.
+
+The first live review exposed two follow-ups before publication: E2 correction tables still separated from their questions, and 2l ambiguously referred to "your function" after intervening questions about the earlier function. The follow-up extends the layout grouping and names `repartition_clos` and question 2h explicitly. A command-line smoke test also reproduced and fixed a benchmark import placed before its repository-path bootstrap. Both live iterations are retained under distinct directories and source identities.
 
 ## Verification gates
 
