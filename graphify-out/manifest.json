@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1792794350.8739638,
-    "ast_hash": "e6cc68adbc552900f25e226a4d8f9271",
+    "mtime": 1792795523.8982947,
+    "ast_hash": "3b00bb3e10cd8f7b22502085a77162c9",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792107293.5630999,
-    "ast_hash": "59b51b095f4f79dad7420eb4c9fd77ed",
+    "mtime": 1792795523.8969152,
+    "ast_hash": "78ce67e8b865974b05fc9934e3ea6497",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792794381.7116287,
-    "ast_hash": "c84f8bfd94611ac798b86c9dce87ded4",
+    "mtime": 1792795095.4565442,
+    "ast_hash": "eea795e9d7980f991ed4dfd69b47ed55",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3320,18 +3320,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_construction_authoring.py": {
-    "mtime": 1792794843.1687605,
-    "ast_hash": "2c4e389b9c109bc11cffbe2494e18b49",
+    "mtime": 1792795523.8969102,
+    "ast_hash": "001ff68ce184195371cb27c5fb0cb1a9",
     "semantic_hash": ""
   },
   "tests/test_french_database_construction.py": {
-    "mtime": 1792794843.2747743,
-    "ast_hash": "6a8da88ccdd5202810bf73fcd50daff9",
+    "mtime": 1792795540.9674563,
+    "ast_hash": "ef680959c16f0d3b60b3daaeaa03acc6",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v28-construction-and-flow-2026-10-24.md": {
-    "mtime": 1792794381.617457,
-    "ast_hash": "fdc75adb9484fd593ef2577f00ad7cde",
+    "mtime": 1792794878.732307,
+    "ast_hash": "4af8f684f330ce0cb5c438014c2c8fc1",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v28-live-comparison-2026-10-24.md": {
+    "mtime": 1792795095.1987767,
+    "ast_hash": "c1d0ffc4b2e2f78427e3231e807d0623",
     "semantic_hash": ""
   }
 }

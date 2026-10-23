@@ -53,6 +53,21 @@ def test_v28_package_has_construction_credit_and_replays(tmp_path, seed):
     assert Decimal(construction["points"]) == 1
     assert len(construction["marking"]) == 4
     assert construction["operation"] == "design"
+    from Backend.Core.france.verification import verify_contract
+
+    verification = construction["verification"]
+    assert verification["construction_version"] == "v28"
+    assert verification["expected"]["construction"]["s0_counts"] == [1, 0, 2, 1, 0]
+    assert verify_contract(verification)["passed"]
+    changed = deepcopy(verification)
+    changed["expected"]["construction"]["s0_counts"][0] = 99
+    assert not verify_contract(changed)["passed"]
+    changed = deepcopy(verification)
+    changed["construction_version"] = "v999"
+    assert not verify_contract(changed)["passed"]
+    changed = deepcopy(verification)
+    changed["expected"]["construction"]["prefix_counts"][0][0] = 1
+    assert not verify_contract(changed)["passed"]
     assert "k premiers incidents" in questions[11]["prompt"]
     assert "repartition_clos" in questions[11]["prompt"]
     assert Decimal(questions[11]["points"]) == Decimal("0.5")
@@ -64,6 +79,12 @@ def test_v28_package_has_construction_credit_and_replays(tmp_path, seed):
     validate_package(package)
     bad = deepcopy(package)
     bad["exercises"][1]["questions"][7]["answer"] = "return {}"
+    with pytest.raises(ValueError):
+        validate_package(bad)
+    bad = deepcopy(package)
+    stripped = bad["exercises"][1]["questions"][7]["verification"]
+    stripped.pop("construction_version")
+    stripped["expected"].pop("construction")
     with pytest.raises(ValueError):
         validate_package(bad)
 

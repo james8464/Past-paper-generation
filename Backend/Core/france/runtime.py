@@ -1140,11 +1140,22 @@ def validate_database_reconciliation_pdf(
         len(lines),
     )
     for index, question in enumerate(exercise.questions):
+        expected_verification = data["expected"]
+        if "construction_version" in question.verification:
+            from Backend.Core.france.database_construction_authoring import (
+                construction_expected,
+            )
+
+            if question.verification[
+                "construction_version"
+            ] != "v28" or question.id not in {"2h", "2l"}:
+                raise ValueError("Incident-reconciliation construction version changed")
+            expected_verification = construction_expected(data)
         if (
             question.verification.get("kind") != "database_reconciliation_contract"
             or question.verification.get("contract") != data
             or question.verification.get("task_id") != question.id
-            or question.verification.get("expected") != data["expected"]
+            or question.verification.get("expected") != expected_verification
         ):
             raise ValueError(
                 f"Incident-reconciliation verification {question.id} changed"

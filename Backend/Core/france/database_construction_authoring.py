@@ -105,6 +105,30 @@ def construction_blueprint(blueprint: list[dict]) -> list[dict]:
     return result
 
 
+def construction_expected(data: dict) -> dict:
+    """Count canonical source rows independently; never execute candidate code."""
+    rows = data["tables"]["incident"]["rows"]
+    categories = [1, 2, 3, 4, 5]
+    prefixes = [
+        [
+            sum(row[2] == category and row[3] == "clos" for row in rows[:k])
+            for category in categories
+        ]
+        for k in range(len(rows) + 1)
+    ]
+    return {
+        **deepcopy(data["expected"]),
+        "construction": {
+            "categories": categories,
+            "s0_counts": prefixes[-1],
+            "prefix_counts": prefixes,
+            "empty_categories": [2, 5],
+            "empty_counts": [0, 0],
+            "app_owned_code_sha256": sha256(CONSTRUCTION_CODE.encode()).hexdigest(),
+        },
+    }
+
+
 def render_database_construction_candidate(contract, selection, task_specs):
     from Backend.Core.france.pipeline import _tasks_for_seed_v24
 
@@ -145,4 +169,9 @@ def render_database_construction_candidate(contract, selection, task_specs):
             },
         ],
     )
+    for index in (7, 11):
+        raw["questions"][index]["verification"].update(
+            construction_version="v28",
+            expected=construction_expected(contract.to_dict()),
+        )
     return raw
