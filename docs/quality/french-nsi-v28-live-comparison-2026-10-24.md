@@ -4,7 +4,7 @@
 
 The targeted construction and response-flow repairs pass this engineering review. E2 now requires a complete function and a prefix-count justification, rather than only tracing and a one-condition repair. Working tables stay with the relevant questions in the normal-print subject and correction. **Overall examination fidelity remains HOLD**: one seed/model and a finite authored catalogue do not establish equivalent breadth, difficulty, timing or cross-paper novelty. No teacher or learner qualification is claimed.
 
-Two separate live runs were retained. Neither is a replay. Both used `gemma4:12b`, digest `4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`, seed `270100`, and French reference-index SHA-256 `ec2339e6dffeba485f94d33d8e6f868e24cd2c40ad32830621201496ca32d594`. Both passed first attempt with zero repairs. Source was clean and unchanged during each run. Dates below are UTC; completion was 24 October in Paris.
+Three separate live runs were retained. None is a replay. All used `gemma4:12b`, digest `4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`, seed `270100`, and French reference-index SHA-256 `ec2339e6dffeba485f94d33d8e6f868e24cd2c40ad32830621201496ca32d594`. All passed first attempt with zero repairs. Source was clean and unchanged during each run. Dates below are UTC; completion was 24 October in Paris. The third, verification-only follow-up is recorded at the end; the page log describes its identical printed content.
 
 | Run | Source | Implementation SHA-256 | Completion / elapsed |
 |---|---|---|---|
@@ -87,3 +87,18 @@ Independent arithmetic/code checks agree with the printed answers: closed S0 cou
 Final full local suite: **2,917 passed, 2 skipped**, five existing SWIG warnings. Ruff, diff checks and static release compliance passed. Graphify AST inventory was refreshed; 40 JSON sources still produce no graph nodes, so this is not a complete semantic-document refresh. Read-only self-review covered version dispatch, catalogue hashes, legacy defaults, reference-code behavior and layout tests; it is not an independent teacher or external code review. Protected Backend/macOS checks are required before merge.
 
 Remaining work includes broader task-family diversity and final supported-route/model qualification. Teacher review, learner timing/mark calibration, per-document rights and accessibility qualification remain external. The final expensive matrix is not run while the overall manual fidelity gate is HOLD. No full-app, Apple HIG, examiner, school, regional or model-independent-equivalence claim is made.
+
+## Verification-only follow-up on final code
+
+Read-only review identified that the new construction tasks retained only the older incident-verification facts. Their authored prose/code were catalogue-bound and unit-tested, but their saved deterministic evidence did not explicitly report the new counts. The repair adds versioned evidence for questions 2h/2l: independently recomputed S0 counts, all prefix counts, empty-category results and the app-owned code hash. Unknown versions, altered counts/prefixes and stripped package evidence are rejected by regressions. No model-supplied code is executed; prefix examples are not a formal proof of arbitrary programs.
+
+A third clean-source live run at `72483b3` completed `2026-10-23T22:48:19.817072+00:00` in 135.903 seconds, first attempt/zero repairs. Implementation SHA-256: `ff58586f046390180236e355b0a925bf139d489df2bfb6c501056cea1ac93a28`. Backend peak RSS: 135,938,048 bytes, excluding Ollama. Retained directory: `tmp/pdfs/french-v28-construction-evidence-20261024/`. All 35 rendered pages are byte-identical PNGs to the reviewed flow follow-up: 12-page subject/34 questions and 23-page correction. Thus the page findings above apply without a new visual-layout claim. The two earlier V28 iterations require their recorded source for replay; they are not silently upgraded.
+
+| Final artifact | SHA-256 |
+|---|---|
+| Subject | `961886ec145a75baa47513408cafa324bb0d948662f327162e335fea0aaeec2e` |
+| Correction | `0bb2c5af47ee5c848bff851e55d15b2e7e837d407fabd6912adc78a6f1c0729b` |
+| Assessment | `6aced2c29d3e7f08d90325f91e931ffb1040c39f329bccc5fa5ef605a0a6e6b8` |
+| Manifest | `c4a242b53a4fc146230c99421175c7030d1a48b49451a2bfd7f499b970662f2d` |
+
+The full suite was rerun after this repair: **2,917 passed, 2 skipped**, five SWIG warnings, 137.92 seconds. The earlier green CI head is not sufficient; protected checks must pass on the final PR head before merge. Overall qualification remains HOLD.
