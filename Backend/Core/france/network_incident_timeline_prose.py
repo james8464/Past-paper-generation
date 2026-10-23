@@ -22,6 +22,12 @@ from Backend.Core.france.network_incident_timeline_contract import (
 )
 
 NETWORK_INCIDENT_TIMELINE_PROSE_VERSION = "fr-nsi-network-incident-timeline-prose-v1"
+NETWORK_INCIDENT_TIMELINE_MARKING_VERSION = "fr-nsi-network-incident-timeline-prose-v2"
+_SECURITY_CREDIT = "le terminal compromis hors de la protection du transport"
+_ALIGNED_FINAL_QUESTIONS = (
+    "Comparez séparément l'échéance d'arrivée de M-27 et celle du compte rendu sécurisé ; expliquez ensuite pourquoi le chiffrement du transport ne protège pas les données sur un terminal compromis.",
+    "M-27 arrive-t-il à temps, et son compte rendu chiffré est-il livré à temps ? Justifiez ces deux réponses puis expliquez la limite du chiffrement si un terminal est compromis.",
+)
 _TIMED_QUESTIONS = {
     "3g": (
         "Complétez la chronologie après l'arrivée de M-27 : date de libération de B, fin du traitement et livraison du compte rendu sécurisé ; indiquez quand P2 redémarre.",
@@ -34,7 +40,27 @@ _TIMED_QUESTIONS = {
 }
 
 
-def network_incident_timeline_catalogue_digest() -> str:
+def network_incident_timeline_catalogue_digest(*, revision: int = 1) -> str:
+    if revision not in (1, 2):
+        raise ValueError("Unknown timeline prose revision")
+    if revision == 2:
+        return sha256(
+            json.dumps(
+                {
+                    "version": NETWORK_INCIDENT_TIMELINE_MARKING_VERSION,
+                    "base": network_incident_timeline_catalogue_digest(),
+                    "security_credit": _SECURITY_CREDIT,
+                    "final_questions": _ALIGNED_FINAL_QUESTIONS,
+                    "separate_deadline_credit": [
+                        "arrivée du paquet",
+                        "livraison du compte rendu",
+                    ],
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
     return sha256(
         json.dumps(
             {
@@ -83,7 +109,11 @@ def render_network_incident_timeline_candidate(
     contract: NetworkIncidentTimelineContract,
     selection: dict,
     task_specs: list[dict],
+    *,
+    revision: int = 1,
 ) -> dict:
+    if revision not in (1, 2):
+        raise ValueError("Unknown timeline prose revision")
     legacy = build_network_incident_contract(contract.to_dict()["seed"])
     validate_network_incident_selection(legacy, selection)
     raw = render_network_incident_candidate(
@@ -180,6 +210,31 @@ def render_network_incident_timeline_candidate(
                 ),
                 int(selection["rubric_forms"][task_id][-1]),
             )
+            if revision == 2:
+                question["prompt"] = _ALIGNED_FINAL_QUESTIONS[
+                    int(selection["question_forms"][task_id][-1]) - 1
+                ]
+                question["answer"] = question["answer"].replace(
+                    "adresses, horaires et tailles restent visibles et un terminal compromis peut lire les données.",
+                    "un terminal compromis peut lire les données avant leur chiffrement ou après leur déchiffrement.",
+                )
+                criteria = (
+                    (
+                        "les deux échéances distinctes, avec M-27 tardif et compte rendu à l'heure",
+                        _SECURITY_CREDIT,
+                    )
+                    if plan["points"] == "0.5"
+                    else (
+                        "l'arrivée du paquet comparée à sa propre échéance, avec le retard calculé",
+                        "la livraison du compte rendu comparée à sa propre échéance, avec la marge calculée",
+                        _SECURITY_CREDIT,
+                    )
+                )
+                question["marking"] = _rubric(
+                    plan["points"],
+                    criteria,
+                    int(selection["rubric_forms"][task_id][-1]),
+                )
         question["verification"] = {
             "kind": "network_incident_timeline_contract",
             "contract": facts,
@@ -190,7 +245,11 @@ def render_network_incident_timeline_candidate(
 
 
 def validate_network_incident_timeline_exercise(
-    contract: NetworkIncidentTimelineContract, exercise, task_specs: list[dict]
+    contract: NetworkIncidentTimelineContract,
+    exercise,
+    task_specs: list[dict],
+    *,
+    revision: int = 1,
 ) -> None:
     """Reject altered timeline premises, working tables, answers and credits."""
     raw = exercise.model_dump(mode="json")
@@ -206,7 +265,11 @@ def validate_network_incident_timeline_exercise(
         task_id = question.get("id")
         if task_id not in _IDS:
             raise ValueError("Network incident timeline question ID differs")
-        prompts = _TIMED_QUESTIONS.get(task_id, _QUESTIONS.get(task_id))
+        prompts = (
+            _ALIGNED_FINAL_QUESTIONS
+            if revision == 2 and task_id == "3l"
+            else _TIMED_QUESTIONS.get(task_id, _QUESTIONS.get(task_id))
+        )
         if question.get("prompt") not in prompts:
             raise ValueError("Network incident timeline wording differs")
         forms[task_id] = f"{task_id}-q{prompts.index(question['prompt']) + 1}"
@@ -221,6 +284,7 @@ def validate_network_incident_timeline_exercise(
         contract,
         {"scene_id": scene, "question_forms": forms, "rubric_forms": rubrics},
         task_specs,
+        revision=revision,
     )
     if raw != expected:
         raise ValueError("Network incident timeline candidate differs from catalogue")

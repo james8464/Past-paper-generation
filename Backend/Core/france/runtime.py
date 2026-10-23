@@ -93,6 +93,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_GRAPH_TREE_DEPTH_PROMPT_VERSION,
     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
     CONTROLLED_NETWORK_DEPTH_PROMPT_VERSION,
+    CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
@@ -631,6 +632,7 @@ def validate_graph_two_outage_pdf(
     *,
     correction: bool,
     exercise: NSIExercise,
+    human_readable_titles: bool = False,
 ) -> None:
     """Bind V25's two ordered outages, working surfaces, answers and credit."""
     data = contract.to_dict()
@@ -676,6 +678,8 @@ def validate_graph_two_outage_pdf(
         + " — route_double_fermeture",
         "Arbre des identifiants — arbre",
     )
+    if human_readable_titles:
+        titles = tuple(title.split(" — ", 1)[0] for title in titles)
     if any(lines.count(title) != 1 for title in titles):
         raise ValueError("Two-outage working material missing or duplicated")
     graph_at, before_at, first_at, second_at, tree_at = (
@@ -1899,13 +1903,17 @@ def validate_network_incident_timeline_pdf(
     *,
     correction: bool,
     exercise: NSIExercise,
+    revision: int = 1,
 ) -> None:
     """Bind V26's printed chronology, questions and correction credits."""
     from Backend.Core.france.pipeline import _tasks_for_seed_v26
 
     data = contract.to_dict()
     validate_network_incident_timeline_exercise(
-        contract, exercise, _tasks_for_seed_v26(data["seed"])[2]["question_blueprint"]
+        contract,
+        exercise,
+        _tasks_for_seed_v26(data["seed"])[2]["question_blueprint"],
+        revision=revision,
     )
     titles = tuple(material.title for material in exercise.materials)
     expected_ids = (
@@ -2067,6 +2075,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION:
+        return "v27"
     if prompt_version == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION:
         return "v26"
     if prompt_version in {
@@ -2098,6 +2108,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version in {
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+        CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2164,7 +2175,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v26",
+            contract_authoring_version="v27",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2176,6 +2187,7 @@ def handle_generate_assessment(args) -> int:
         }
         graph_two_outage = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
+            CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2214,7 +2226,8 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version == "v26"
+        network_timeline = network_pdf_version in {"v26", "v27"}
+        human_readable_graph_titles = network_pdf_version == "v27"
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
@@ -2242,6 +2255,7 @@ def handle_generate_assessment(args) -> int:
                     exercises,
                     correction=correction,
                     large_print=args.large_print,
+                    human_readable_graph_titles=human_readable_graph_titles,
                 ),
                 role=role,
                 language="fr-FR",
@@ -2263,6 +2277,11 @@ def handle_generate_assessment(args) -> int:
                 graph_tree_contract,
                 correction=correction,
                 exercise=exercises[0],
+                **(
+                    {"human_readable_titles": human_readable_graph_titles}
+                    if graph_two_outage
+                    else {}
+                ),
             )
             database_validator = (
                 validate_database_reconciliation_pdf
@@ -2297,6 +2316,11 @@ def handle_generate_assessment(args) -> int:
                 network_contract,
                 correction=correction,
                 exercise=exercises[2],
+                **(
+                    {"revision": 2 if network_pdf_version == "v27" else 1}
+                    if network_timeline
+                    else {}
+                ),
             )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)

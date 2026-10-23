@@ -139,3 +139,14 @@ def test_backend_bundle_includes_declarative_profile_resources() -> None:
     assert "empirical-calibration-policy.json" in script
     assert "reference-demand-profiles.json" in script
     assert "Resources/board-profiles:Resources/board-profiles" in script
+
+
+def test_backend_bundle_includes_pymupdf_runtime_data() -> None:
+    script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
+    # Layout-enabled PyMuPDF imports load YAML/model resources before bundle-check.
+    assert "--collect-data pymupdf" in script
+
+
+def test_build_and_test_use_the_same_qualified_pdf_engine() -> None:
+    for filename in ("requirements-build.txt", "requirements-test.txt"):
+        assert "pymupdf==1.28.2" in (REPO_ROOT / filename).read_text().splitlines()

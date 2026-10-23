@@ -103,6 +103,7 @@ PYINSTALLER_ARGS=(
   --specpath "$WORK_DIR"
   --paths "$ROOT_DIR"
   --hidden-import fitz
+  --collect-data pymupdf
   --collect-all mlx
   --collect-all mlx_lm
   --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources"

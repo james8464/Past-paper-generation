@@ -338,6 +338,7 @@ def render_assessment(
     *,
     correction: bool,
     large_print: bool = False,
+    human_readable_graph_titles: bool = False,
 ):
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
@@ -577,7 +578,12 @@ def render_assessment(
         )
         staged_material_ids: set[str] = set()
 
-        def add_material(material, *, show_id=exercise.id != "3"):
+        def add_material(
+            material,
+            *,
+            show_id=exercise.id != "3"
+            and not (human_readable_graph_titles and exercise.id == "1"),
+        ):
             story.append(
                 structured_material(
                     material,

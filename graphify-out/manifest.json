@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792107912.0529711,
-    "ast_hash": "0236e12d88a94fd19cd2f5292e3177a2",
+    "mtime": 1792791948.1703467,
+    "ast_hash": "eeacfd2b71a1d7c297e4f6bb4cd039de",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1792107573.668581,
-    "ast_hash": "8b6195189c67cca10bcd7e841ce851fd",
+    "mtime": 1792792723.3910835,
+    "ast_hash": "13d14ab33bfbb15e00563e9b87a70b89",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1792107912.052831,
-    "ast_hash": "0d285764725ae27a22e3d1e3d26066e2",
+    "mtime": 1792792618.9662058,
+    "ast_hash": "078e0f6c2cc42e104a0ed7c68c70a1e7",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -710,9 +710,9 @@
     "semantic_hash": "468f3f618b795b6ad7f65c66eed0e080"
   },
   "Resources/computer-science/aqa/generator/pyproject.toml": {
-    "mtime": 1791129181.5223804,
-    "ast_hash": "0407c60f847672f46239894dee528bbc",
-    "semantic_hash": "0407c60f847672f46239894dee528bbc"
+    "mtime": 1792792776.5113676,
+    "ast_hash": "e732ce4bf02a986cca324ab67490b82c",
+    "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_blueprint.py": {
     "mtime": 1791129181.5225582,
@@ -1025,9 +1025,9 @@
     "semantic_hash": "9f61796daf0215a61b393e8e272992c0"
   },
   "Resources/economics/edexcel-a/generator/pyproject.toml": {
-    "mtime": 1791129181.5370255,
-    "ast_hash": "ce16c78b64c7f9bd60e445be993c3bef",
-    "semantic_hash": "ce16c78b64c7f9bd60e445be993c3bef"
+    "mtime": 1792792776.5118353,
+    "ast_hash": "b5a322950dbab817ca2cc4eafb61b325",
+    "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/fixtures/task7f_solver_responses.json": {
     "mtime": 1791129181.5371788,
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792107322.2445781,
-    "ast_hash": "0caf4093154d3faa601a49346266b13e",
+    "mtime": 1792792534.443459,
+    "ast_hash": "e8181941f24b0dcdae06bc980a7bc71c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1460,9 +1460,9 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1791129181.589837,
-    "ast_hash": "828bb11fc17230788be43a8ed2302aa6",
-    "semantic_hash": "828bb11fc17230788be43a8ed2302aa6"
+    "mtime": 1792792696.3671741,
+    "ast_hash": "0d43038deeb6a9af71d570e55e849dc1",
+    "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
     "mtime": 1791129181.589897,
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1792107770.6113048,
-    "ast_hash": "d3bc9c4ede559aff6326d7c086b1c538",
+    "mtime": 1792791918.3463964,
+    "ast_hash": "0f7911af25ac7020ff33d4fb601c9ee8",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -1700,9 +1700,9 @@
     "semantic_hash": "b97261947c71219f6a29b0d220df62c5"
   },
   "tests/test_generator_registry.py": {
-    "mtime": 1791129181.6028366,
-    "ast_hash": "e201b19d8eda1c7aec7d87d8e64a1531",
-    "semantic_hash": "e201b19d8eda1c7aec7d87d8e64a1531"
+    "mtime": 1792792776.1374595,
+    "ast_hash": "1ac87a8992adc0cb0a45c5ade38a21f3",
+    "semantic_hash": ""
   },
   "tests/test_generator_render_transactions.py": {
     "mtime": 1791129181.6030087,
@@ -1780,8 +1780,8 @@
     "semantic_hash": ""
   },
   "tests/test_nsi_pipeline.py": {
-    "mtime": 1792107912.0529518,
-    "ast_hash": "ad99fcce1662d28cba0997a3949f19db",
+    "mtime": 1792791941.8589,
+    "ast_hash": "b9b379e5de6da5f1eee4cc5788bb1cb7",
     "semantic_hash": ""
   },
   "tests/test_ocr_computer_science_calibration.py": {
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1792107893.8435245,
-    "ast_hash": "9b068ae36b832983a4509e83b79584d7",
+    "mtime": 1792791941.8575912,
+    "ast_hash": "3ac5505255c64c7ece4cebb37b8c9220",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1792107912.0494573,
-    "ast_hash": "e1133e3a81bf81f35a54a0626bde3b1f",
+    "mtime": 1792791948.166965,
+    "ast_hash": "db5c0bc776a2f885d17cad2b856778c1",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -2460,13 +2460,13 @@
     "semantic_hash": ""
   },
   "requirements-build.txt": {
-    "mtime": 1791129181.5903692,
-    "ast_hash": "337226a34d62bac730764b5ecd92ee38",
+    "mtime": 1792792776.5111234,
+    "ast_hash": "fa598c0ac64c246739a2bb1b3951de6b",
     "semantic_hash": ""
   },
   "requirements-test.txt": {
-    "mtime": 1791129181.59044,
-    "ast_hash": "921d9c73da7d59b5791fd226d72303a6",
+    "mtime": 1792792776.5112438,
+    "ast_hash": "e1d71a7caf93a7a9077ec6f8b2ce3c81",
     "semantic_hash": ""
   },
   "Design/AppIcon/PaperCreator-AppIcon-Master.png": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_pdf.py": {
-    "mtime": 1792107688.2511292,
-    "ast_hash": "eba5fba467dea8365d25a3da93076cb5",
+    "mtime": 1792792090.7779074,
+    "ast_hash": "7f7c14f4192e7ebecf910ce7a76623e4",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v23-network-incident-live-diagnostic-2026-10-13.md": {
@@ -3255,8 +3255,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_two_outage_pdf.py": {
-    "mtime": 1792078940.283163,
-    "ast_hash": "a86aefa911f06173464e2a3cc0912bb9",
+    "mtime": 1792792618.9652185,
+    "ast_hash": "475976c5b4feeb3b773ecb1c3b91957c",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v25-two-outage-live-diagnostic-2026-10-15.md": {
@@ -3270,8 +3270,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_incident_timeline_prose.py": {
-    "mtime": 1792108206.381903,
-    "ast_hash": "fd22dd25359d4964ff2f89bc6566d35a",
+    "mtime": 1792792232.504052,
+    "ast_hash": "5eaeb1ebf952ae6863fd84802a913319",
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_timeline_contract.py": {
@@ -3285,8 +3285,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_incident_timeline_authoring.py": {
-    "mtime": 1792107912.0486777,
-    "ast_hash": "49bda8038e7bc58422068e198bed65aa",
+    "mtime": 1792791874.5894644,
+    "ast_hash": "da3698d363627f23ddb8809e219eaf2b",
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_timeline_authoring.py": {
@@ -3295,8 +3295,28 @@
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_timeline_pdf.py": {
-    "mtime": 1792107912.0484805,
-    "ast_hash": "bde395fe0d42f2bdde025ab0ffcab734",
+    "mtime": 1792792261.014408,
+    "ast_hash": "89d09c49448e7fbc03a46a446fc0a01f",
+    "semantic_hash": ""
+  },
+  "tests/test_french_timeline_marking_revision.py": {
+    "mtime": 1792792213.9510028,
+    "ast_hash": "cc36c38dd7eb9177b2c2a8a5fdbf8572",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v26-incident-timeline-live-diagnostic-2026-10-16.md": {
+    "mtime": 1792109542.1071928,
+    "ast_hash": "ba75714cbe6ffdfe6679616262fe3631",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v27-marking-alignment-2026-10-23.md": {
+    "mtime": 1792792776.5119836,
+    "ast_hash": "665238c668adb4548426c071eaeec758",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v27-live-comparison-2026-10-23.md": {
+    "mtime": 1792792534.2078898,
+    "ast_hash": "7620c644362b04e78037a7e903c95114",
     "semantic_hash": ""
   }
 }
