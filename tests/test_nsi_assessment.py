@@ -142,6 +142,41 @@ def test_sql_verification_checks_results_and_disallows_external_access(
         assert not verify_contract(bad)["passed"]
 
 
+@pytest.mark.parametrize("wrong", [[[True]], [[1.0]], [(1,)], [["1"]]])
+def test_sql_result_types_are_checked_inside_rows(wrong):
+    from Backend.Core.france.verification import verify_contract
+
+    contract = {
+        "kind": "sql",
+        "schema": "CREATE TABLE item(id INTEGER);",
+        "rows": {"item": [[1]]},
+        "query": "SELECT id FROM item",
+        "expected": [[1]],
+    }
+    assert verify_contract(contract)["passed"]
+    contract["expected"] = wrong
+    assert not verify_contract(contract)["passed"]
+
+
+@pytest.mark.parametrize(
+    ("actual", "expected", "passed"),
+    [
+        ({"a": [1, False, None]}, {"a": [1, False, None]}, True),
+        ({"a": [1, False]}, {"a": [1, 0]}, False),
+        ({1: "value"}, {True: "value"}, False),
+        ({1: "value"}, {1.0: "value"}, False),
+        ({"a": 1, "b": 2}, {"b": 2, "a": 1}, True),
+        ([1], [1, 2], False),
+        ((1,), (True,), False),
+        (1.5, 1.5, True),
+    ],
+)
+def test_nested_evidence_equality_preserves_types(actual, expected, passed):
+    from Backend.Core.france.verification import _same_typed_value
+
+    assert _same_typed_value(actual, expected) is passed
+
+
 def test_python_trace_has_no_imports_file_access_or_unbounded_loops():
     from Backend.Core.france.verification import verify_contract
 

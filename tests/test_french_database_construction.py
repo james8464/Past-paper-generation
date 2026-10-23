@@ -59,6 +59,16 @@ def test_v28_package_has_construction_credit_and_replays(tmp_path, seed):
     assert verification["construction_version"] == "v28"
     assert verification["expected"]["construction"]["s0_counts"] == [1, 0, 2, 1, 0]
     assert verify_contract(verification)["passed"]
+    # Python considers True == 1 and 0.0 == 0, even inside nested lists.
+    # Verification evidence must retain the exact integer counts.
+    for replacement in (True, 1.0):
+        changed = deepcopy(verification)
+        changed["expected"]["construction"]["s0_counts"][0] = replacement
+        assert not verify_contract(changed)["passed"]
+    for replacement in (False, 0.0):
+        changed = deepcopy(verification)
+        changed["expected"]["construction"]["prefix_counts"][0][0] = replacement
+        assert not verify_contract(changed)["passed"]
     changed = deepcopy(verification)
     changed["expected"]["construction"]["s0_counts"][0] = 99
     assert not verify_contract(changed)["passed"]
