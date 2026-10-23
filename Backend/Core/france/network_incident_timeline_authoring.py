@@ -86,7 +86,8 @@ def author_network_incident_timeline_selection(
         contract,
         base_evidence,
         revision=2
-        if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+        if run_identity.get("prompt_version")
+        in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
         else 1,
     )
 
@@ -106,7 +107,8 @@ def replay_network_incident_timeline_selection(
         or evidence["version"]
         != (
             "v27"
-            if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+            if run_identity.get("prompt_version")
+            in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
             else "v26"
         )
         or evidence["contract_sha256"] != contract.digest
@@ -125,7 +127,8 @@ def replay_network_incident_timeline_selection(
         contract,
         evidence["base_selection"],
         revision=2
-        if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+        if run_identity.get("prompt_version")
+        in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
         else 1,
     )
     if canonical != evidence:

@@ -6,6 +6,9 @@ import json
 from copy import deepcopy
 from pathlib import Path
 
+from Backend.Core.france.database_construction_authoring import (
+    database_catalogue_identity,
+)
 from Backend.Core.france.database_depth_authoring import (
     _hash,
     _save,
@@ -15,12 +18,20 @@ from Backend.Core.france.database_reconciliation_contract import (
     DatabaseReconciliationContract,
 )
 from Backend.Core.france.database_reconciliation_prose import (
-    DATABASE_RECONCILIATION_PROSE_VERSION,
-    database_reconciliation_catalogue_digest,
     database_reconciliation_selection_schema,
     render_database_reconciliation_candidate,
     validate_database_reconciliation_selection,
 )
+
+
+def _render(run_identity):
+    if run_identity.get("prompt_version") == "fr-nsi-written-2027-v28":
+        from Backend.Core.france.database_construction_authoring import (
+            render_database_construction_candidate,
+        )
+
+        return render_database_construction_candidate
+    return render_database_reconciliation_candidate
 
 
 def _identity(
@@ -39,8 +50,12 @@ def _identity(
         "task_sha256": _hash(task),
         "reference_sha256": _hash(references),
         "run_identity_sha256": _hash(run_identity),
-        "prose_contract_version": DATABASE_RECONCILIATION_PROSE_VERSION,
-        "prose_catalogue_sha256": database_reconciliation_catalogue_digest(),
+        "prose_contract_version": database_catalogue_identity(
+            run_identity.get("prompt_version")
+        )[0],
+        "prose_catalogue_sha256": database_catalogue_identity(
+            run_identity.get("prompt_version")
+        )[1],
     }
 
 
@@ -96,7 +111,7 @@ def replay_database_reconciliation_selection(
     ):
         raise ValueError("Incident-reconciliation accepted response hash mismatch")
     validate_database_reconciliation_selection(contract, accepted["response"])
-    raw = render_database_reconciliation_candidate(
+    raw = _render(run_identity)(
         contract, accepted["response"], task["question_blueprint"]
     )
     if accepted["candidate_sha256"] != _hash(raw):
@@ -132,7 +147,7 @@ def author_database_reconciliation_selection(
         try:
             response = client.generate_json(prompt)
             validate_database_reconciliation_selection(contract, response)
-            raw = render_database_reconciliation_candidate(
+            raw = _render(run_identity)(
                 contract, response, task["question_blueprint"]
             )
         except (KeyboardInterrupt, InterruptedError):

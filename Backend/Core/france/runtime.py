@@ -85,6 +85,7 @@ from Backend.Core.france.network_reasoning_contract import (
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.pipeline import (
     CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -633,6 +634,7 @@ def validate_graph_two_outage_pdf(
     correction: bool,
     exercise: NSIExercise,
     human_readable_titles: bool = False,
+    coherent_material_flow: bool = False,
 ) -> None:
     """Bind V25's two ordered outages, working surfaces, answers and credit."""
     data = contract.to_dict()
@@ -680,6 +682,10 @@ def validate_graph_two_outage_pdf(
     )
     if human_readable_titles:
         titles = tuple(title.split(" — ", 1)[0] for title in titles)
+    if coherent_material_flow:
+        for title, task_id in zip(titles[1:], ("1c", "1f", "1g", "1h"), strict=True):
+            if page_by_line[lines.index(title)] != page_by_line[positions[task_id]]:
+                raise ValueError("Two-outage material separated from its question")
     if any(lines.count(title) != 1 for title in titles):
         raise ValueError("Two-outage working material missing or duplicated")
     graph_at, before_at, first_at, second_at, tree_at = (
@@ -1134,11 +1140,22 @@ def validate_database_reconciliation_pdf(
         len(lines),
     )
     for index, question in enumerate(exercise.questions):
+        expected_verification = data["expected"]
+        if "construction_version" in question.verification:
+            from Backend.Core.france.database_construction_authoring import (
+                construction_expected,
+            )
+
+            if question.verification[
+                "construction_version"
+            ] != "v28" or question.id not in {"2h", "2l"}:
+                raise ValueError("Incident-reconciliation construction version changed")
+            expected_verification = construction_expected(data)
         if (
             question.verification.get("kind") != "database_reconciliation_contract"
             or question.verification.get("contract") != data
             or question.verification.get("task_id") != question.id
-            or question.verification.get("expected") != data["expected"]
+            or question.verification.get("expected") != expected_verification
         ):
             raise ValueError(
                 f"Incident-reconciliation verification {question.id} changed"
@@ -2075,6 +2092,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION:
+        return "v28"
     if prompt_version == CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION:
         return "v27"
     if prompt_version == CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION:
@@ -2109,6 +2128,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2175,7 +2195,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v27",
+            contract_authoring_version="v28",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2188,6 +2208,7 @@ def handle_generate_assessment(args) -> int:
         graph_two_outage = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+            CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2226,8 +2247,8 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version in {"v26", "v27"}
-        human_readable_graph_titles = network_pdf_version == "v27"
+        network_timeline = network_pdf_version in {"v26", "v27", "v28"}
+        human_readable_graph_titles = network_pdf_version in {"v27", "v28"}
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
@@ -2256,6 +2277,7 @@ def handle_generate_assessment(args) -> int:
                     correction=correction,
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
+                    coherent_material_flow=network_pdf_version == "v28",
                 ),
                 role=role,
                 language="fr-FR",
@@ -2278,7 +2300,11 @@ def handle_generate_assessment(args) -> int:
                 correction=correction,
                 exercise=exercises[0],
                 **(
-                    {"human_readable_titles": human_readable_graph_titles}
+                    {
+                        "human_readable_titles": human_readable_graph_titles,
+                        "coherent_material_flow": network_pdf_version == "v28"
+                        and not args.large_print,
+                    }
                     if graph_two_outage
                     else {}
                 ),
@@ -2317,7 +2343,7 @@ def handle_generate_assessment(args) -> int:
                 correction=correction,
                 exercise=exercises[2],
                 **(
-                    {"revision": 2 if network_pdf_version == "v27" else 1}
+                    {"revision": 2 if network_pdf_version in {"v27", "v28"} else 1}
                     if network_timeline
                     else {}
                 ),

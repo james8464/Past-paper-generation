@@ -56,6 +56,7 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
             correction=correction,
             large_print=large_print,
             human_readable_graph_titles=human_readable_titles,
+            coherent_material_flow=human_readable_titles,
         )
         runtime.validate_graph_two_outage_pdf(
             path,
@@ -63,6 +64,7 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
             correction=correction,
             exercise=exercises[0],
             human_readable_titles=human_readable_titles,
+            coherent_material_flow=human_readable_titles and not large_print,
         )
         with pymupdf.open(path) as pdf:
             pages = [page.get_text() for page in pdf]
@@ -85,7 +87,7 @@ def test_v25_two_outage_pdf_stages_work_and_rejects_mutations(
             < raw.index(f"Trajet après fermeture de {second}")
             < raw.index("1g.")
         )
-        if not correction:
+        if not correction or (human_readable_titles and not large_print):
             assert any(
                 "Trace de Dijkstra après fermeture" in page and "1f." in page
                 for page in pages

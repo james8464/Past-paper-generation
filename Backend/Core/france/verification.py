@@ -373,6 +373,16 @@ def verify_contract(contract: dict) -> dict:
             if contract["task_id"] not in data["task_ids"]:
                 raise ValueError("Tâche de réconciliation d'incidents absente")
             actual = data["expected"]
+            if "construction_version" in contract:
+                from Backend.Core.france.database_construction_authoring import (
+                    construction_expected,
+                )
+
+                if contract["construction_version"] != "v28" or contract[
+                    "task_id"
+                ] not in {"2h", "2l"}:
+                    raise ValueError("Contrat de construction inconnu")
+                actual = construction_expected(data)
         elif kind == "database_audit_contract":
             from Backend.Core.france.database_audit_contract import (
                 DatabaseAuditContract,
