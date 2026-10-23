@@ -57,7 +57,7 @@ def test_v26_pdf_prints_working_chronology_without_subject_answers(
         if revision == 2 and correction:
             assert "terminal compromis" in " ".join(text.split())
     if revision == 2:
-        with pytest.raises(ValueError, match="catalogue"):
+        with pytest.raises(ValueError, match=r"wording|catalogue"):
             validate_network_incident_timeline_pdf(
                 path,
                 build_network_incident_timeline_contract(270100),

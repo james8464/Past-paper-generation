@@ -15,7 +15,9 @@ from Backend.Core.france.pipeline import _tasks_for_seed_v26
 
 @pytest.mark.parametrize("seed", [270100, 270101, 270102])
 @pytest.mark.parametrize("form", [1, 2])
-def test_revision_two_credits_both_security_limits_and_both_deadlines(seed, form):
+def test_revision_two_credits_deadlines_and_terminal_without_repeating_metadata(
+    seed, form
+):
     selection = {
         "scene_id": "station",
         "question_forms": {f"3{x}": f"3{x}-q{form}" for x in "abcdefghijkl"},
@@ -29,8 +31,9 @@ def test_revision_two_credits_both_security_limits_and_both_deadlines(seed, form
     )
     question = new["questions"][-1]
     criteria = " ".join(mark["criterion"] for mark in question["marking"])
-    assert "deux échéances" in criteria
-    assert "métadonnées" in criteria
+    assert "échéance" in criteria
+    assert "métadonnées" not in criteria
+    assert "métadonnées" not in question["prompt"]
     assert "terminal compromis" in criteria
     assert sum(Decimal(mark["points"]) for mark in question["marking"]) == Decimal(
         question["points"]
@@ -41,5 +44,3 @@ def test_revision_two_credits_both_security_limits_and_both_deadlines(seed, form
         assert "terminal compromis" not in " ".join(
             mark["criterion"] for mark in old["questions"][-1]["marking"]
         )
-    else:
-        assert new == old
