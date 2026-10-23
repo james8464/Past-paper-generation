@@ -41,3 +41,20 @@ The same official comparator is retained locally: `Reference Corpus/france/nsi/n
 Final local suite: 2901 passed, 2 skipped. Ruff, repository hygiene, release-compliance metadata and diff checks passed. Retained V26 live assessment replay passed under the revised code. Protected Backend/macOS checks remain mandatory for PR #74.
 
 Next engineering work should address human-facing table labels and overly fragmented candidate flow, then substantive construction depth. Do not increase page count with blank space. Keep the expensive final model matrix gated until source is frozen and the manual comparison passes. Teacher review, learner timing/mark calibration, accessibility and document-specific rights clearance remain external; no practical-component, examiner, Apple, school, regional or prize approval is claimed.
+
+## Follow-up live run — 24 October local time
+
+After removing implementation identifiers from E1 headings and fixing the packaged PDF dependency, a separate pinned live run used clean source commit `116fe59b780c67f575d49e554eec2562365cea36`. It passed first attempt, zero repairs, in 135.021 seconds, completed `2026-10-23T22:04:46.870404+00:00` (24 October in Paris). The model, model digest, seed and reference-index hash above are unchanged. Implementation SHA-256 is `47b7ccbec4e4d574cff5829bc50d4219081524ad79857f0a4d83e6d0cc44cc60`.
+
+All attempts and artifacts are retained separately under ignored `tmp/pdfs/french-v27-clean-headings-20261024/`; the first run above remains historical evidence, not overwritten or relabelled.
+
+| Artifact | SHA-256 |
+|---|---|
+| Subject, 13 A4 pages / 34 questions | `8d02663e65f82aa0715274e20cfcca15762c08994cd8fbad8f1c5f5819d7eef8` |
+| Correction, 20 A4 pages | `d88d98a1c07e45199546d702cbda515920f7fafbb1fa70f7bb082b9ca0a0c2dd` |
+| Assessment | `807f6c253391b28c2eede9ac6bb06749be6abca226e972781872a02b5b25450d` |
+| Manifest | `a77db6075871d7c6e02fff614bbdc05d1fe57bac21ef65405f3bf62d7ef6cd09` |
+
+Every page was rendered at the same 80 dpi. Binary PNG comparison with the first V27 run identifies exactly eight changed pages: subject 3–6 and correction 4–7. Each changed page was visually inspected: human-readable titles replace implementation identifiers, tables and associated questions remain readable, and there is no clipping or overlap. All other 25 pages are pixel-identical to the reviewed first run. The correction's first-closure table ends page 5 with its question on page 6; this existing split remains a candidate for response-flow work, not a newly fixed issue. Sparse subject pages 4–5 and substantive depth limitations also remain. **Manual fidelity stays HOLD.**
+
+Final local suite on this source: **2907 passed, 2 skipped**, with five SWIG deprecation warnings. The 15 registry/release tests, Ruff and diff checks pass. CI previously installed unqualified PyMuPDF 2.0 and failed before Swift tests because its layout YAML was absent from the frozen bundle. Build/test now pin 1.28.2 and package PyMuPDF data explicitly; protected macOS and Backend checks must still pass on the final PR head. No full HIG, cross-model equivalence or educational qualification is established by these results.
