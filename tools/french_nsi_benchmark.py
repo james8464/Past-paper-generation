@@ -23,6 +23,10 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.france.database_construction_authoring import (
+    database_catalogue_identity,
+)
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -48,10 +52,6 @@ from Backend.Core.france.database_reasoning_prose import (  # noqa: E402
 )
 from Backend.Core.france.database_reconciliation_contract import (  # noqa: E402
     build_database_reconciliation_contract,
-)
-from Backend.Core.france.database_reconciliation_prose import (  # noqa: E402
-    DATABASE_RECONCILIATION_PROSE_VERSION,
-    database_reconciliation_catalogue_digest,
 )
 from Backend.Core.france.graph_resilience_contract import (  # noqa: E402
     build_graph_resilience_contract,
@@ -116,6 +116,7 @@ from Backend.Core.france.network_reasoning_prose import (  # noqa: E402
 )
 from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_DATABASE_AUDIT_PROMPT_VERSION,
+    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
     CONTROLLED_DATABASE_DEPTH_PROMPT_VERSION,
     CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -298,6 +299,7 @@ def _accepted_payload(
         or manifest_identity.get("prompt_version")
         not in {
             CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+            CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -316,6 +318,7 @@ def _accepted_payload(
             if manifest_identity.get("prompt_version")
             in {
                 CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
                 CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -336,6 +339,7 @@ def _accepted_payload(
         return False
     if manifest_identity["prompt_version"] in {
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -351,6 +355,7 @@ def _accepted_payload(
                 in {
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
                 }
                 else _V25_IDENTITY_KEYS
                 if manifest_identity["prompt_version"]
@@ -359,6 +364,7 @@ def _accepted_payload(
                 if manifest_identity["prompt_version"]
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -373,14 +379,15 @@ def _accepted_payload(
             )
             or (
                 manifest_identity.get("database_reconciliation_prose_contract_version")
-                != DATABASE_RECONCILIATION_PROSE_VERSION
+                != database_catalogue_identity(manifest_identity["prompt_version"])[0]
                 or manifest_identity.get(
                     "database_reconciliation_prose_catalogue_sha256"
                 )
-                != database_reconciliation_catalogue_digest()
+                != database_catalogue_identity(manifest_identity["prompt_version"])[1]
                 if manifest_identity["prompt_version"]
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -430,6 +437,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("network_incident_timeline_contract_sha256")
@@ -438,14 +446,20 @@ def _accepted_payload(
             != (
                 NETWORK_INCIDENT_TIMELINE_MARKING_VERSION
                 if manifest_identity["prompt_version"]
-                == CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION
+                in {
+                    CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                }
                 else NETWORK_INCIDENT_TIMELINE_PROSE_VERSION
             )
             or manifest_identity.get("network_incident_timeline_prose_catalogue_sha256")
             != network_incident_timeline_catalogue_digest(
                 revision=2
                 if manifest_identity["prompt_version"]
-                == CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION
+                in {
+                    CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+                    CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                }
                 else 1
             )
             or any(
@@ -519,6 +533,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+        CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         if (
@@ -857,7 +872,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -930,7 +945,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"

@@ -339,6 +339,7 @@ def render_assessment(
     correction: bool,
     large_print: bool = False,
     human_readable_graph_titles: bool = False,
+    coherent_material_flow: bool = False,
 ):
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
@@ -583,17 +584,22 @@ def render_assessment(
             *,
             show_id=exercise.id != "3"
             and not (human_readable_graph_titles and exercise.id == "1"),
+            flatten=coherent_material_flow and exercise.id == "1",
         ):
-            story.append(
-                structured_material(
-                    material,
-                    body=body,
-                    bold_font=bold,
-                    regular_font=regular,
-                    available_width=doc.width,
-                    show_id=show_id,
-                )
+            material_block = structured_material(
+                material,
+                body=body,
+                bold_font=bold,
+                regular_font=regular,
+                available_width=doc.width,
+                show_id=show_id,
             )
+            if flatten:
+                # Avoid nested KeepTogether blocks: the outer question group owns
+                # pagination, so its measured height must include real children.
+                story.extend(material_block._content)
+            else:
+                story.append(material_block)
 
         if not staged_network_materials:
             for material in exercise.materials:
@@ -639,6 +645,13 @@ def render_assessment(
                     KeepTogether(story[security_case_start:])
                 ]
             if (
+                coherent_material_flow
+                and exercise.id == "1"
+                and not correction
+                and material_start < question_start
+            ):
+                story[material_start:] = [KeepTogether(story[material_start:])]
+            elif (
                 not correction
                 and question.verification.get("kind")
                 in {"graph_route_trace_contract", "graph_two_outage_contract"}
@@ -742,6 +755,12 @@ def render_assessment(
                 )
                 story.append(marking_table)
                 if (
+                    coherent_material_flow
+                    and exercise.id == "1"
+                    and material_start < question_start
+                ):
+                    story[material_start:] = [KeepTogether(story[material_start:])]
+                elif (
                     v18_paper
                     or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"
