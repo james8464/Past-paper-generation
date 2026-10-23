@@ -251,6 +251,26 @@ def _shortest_path(contract):
     raise ValueError("Aucun chemin")
 
 
+def _same_typed_value(actual, expected) -> bool:
+    """Compare evidence recursively without Python's bool/int/float coercion."""
+    if type(actual) is not type(expected):
+        return False
+    if isinstance(actual, dict):
+        if {(type(key), key) for key in actual} != {
+            (type(key), key) for key in expected
+        }:
+            return False
+        return all(
+            _same_typed_value(value, expected[key]) for key, value in actual.items()
+        )
+    if isinstance(actual, (list, tuple)):
+        return len(actual) == len(expected) and all(
+            _same_typed_value(left, right)
+            for left, right in zip(actual, expected, strict=True)
+        )
+    return actual == expected
+
+
 def verify_contract(contract: dict) -> dict:
     kind = contract.get("kind")
     if kind not in {
@@ -427,9 +447,7 @@ def verify_contract(contract: dict) -> dict:
             actual = _trace(contract["code"], contract["variable"])
         else:
             actual = _shortest_path(contract)
-        passed = actual == contract["expected"] and type(actual) is type(
-            contract["expected"]
-        )
+        passed = _same_typed_value(actual, contract["expected"])
         return {
             "state": "passed" if passed else "failed",
             "passed": passed,
