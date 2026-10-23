@@ -45,13 +45,18 @@ def _wrap(
     task: dict,
     contract: NetworkIncidentTimelineContract,
     base_evidence: dict,
+    *,
+    revision: int = 1,
 ) -> tuple[dict, dict]:
     response = base_evidence["accepted"]["response"]
     raw = render_network_incident_timeline_candidate(
-        contract, response, task["question_blueprint"]
+        contract,
+        response,
+        task["question_blueprint"],
+        revision=revision,
     )
     return raw, {
-        "version": "v26",
+        "version": "v27" if revision == 2 else "v26",
         "contract_sha256": contract.digest,
         "candidate_sha256": _digest(raw),
         "base_selection": base_evidence,
@@ -76,7 +81,14 @@ def author_network_incident_timeline_selection(
         path,
         run_identity=run_identity,
     )
-    return _wrap(task, contract, base_evidence)
+    return _wrap(
+        task,
+        contract,
+        base_evidence,
+        revision=2
+        if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+        else 1,
+    )
 
 
 def replay_network_incident_timeline_selection(
@@ -91,7 +103,12 @@ def replay_network_incident_timeline_selection(
         not isinstance(evidence, dict)
         or set(evidence)
         != {"version", "contract_sha256", "candidate_sha256", "base_selection"}
-        or evidence["version"] != "v26"
+        or evidence["version"]
+        != (
+            "v27"
+            if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+            else "v26"
+        )
         or evidence["contract_sha256"] != contract.digest
     ):
         raise ValueError("Network incident timeline selection identity mismatch")
@@ -103,7 +120,14 @@ def replay_network_incident_timeline_selection(
         evidence["base_selection"],
         run_identity=run_identity,
     )
-    raw, canonical = _wrap(task, contract, evidence["base_selection"])
+    raw, canonical = _wrap(
+        task,
+        contract,
+        evidence["base_selection"],
+        revision=2
+        if run_identity.get("prompt_version") == "fr-nsi-written-2027-v27"
+        else 1,
+    )
     if canonical != evidence:
         raise ValueError("Network incident timeline candidate hash mismatch")
     return raw

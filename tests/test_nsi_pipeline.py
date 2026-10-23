@@ -738,7 +738,8 @@ class ControlledTwoOutageFrenchClient(ControlledReconciliationFrenchClient):
         return super().generate_json(prompt)
 
 
-def test_v26_timeline_package_replays_without_downgrading_old_e3(tmp_path):
+@pytest.mark.parametrize("version", ["v26", "v27"])
+def test_timeline_package_replays_without_downgrading_old_e3(tmp_path, version):
     from copy import deepcopy
 
     from Backend.Core.france.pipeline import generate_assessment, validate_package
@@ -751,9 +752,14 @@ def test_v26_timeline_package_replays_without_downgrading_old_e3(tmp_path):
         seed=270100,
         checkpoint=tmp_path / "v26-checkpoint.json",
         contract_graph_tree=True,
-        contract_authoring_version="v26",
+        contract_authoring_version=version,
     )
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v26"
+    assert package["identity"]["prompt_version"] == f"fr-nsi-written-2027-{version}"
+    credits = " ".join(
+        item["criterion"]
+        for item in package["exercises"][2]["questions"][-1]["marking"]
+    )
+    assert ("terminal compromis" in credits) == (version == "v27")
     assert [len(item["questions"]) for item in package["exercises"]] == [10, 12, 12]
     assert sum(Decimal(item["target_points"]) for item in package["exercises"]) == 18
     assert package["language_points"] == "2"

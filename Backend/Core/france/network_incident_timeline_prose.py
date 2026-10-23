@@ -22,6 +22,8 @@ from Backend.Core.france.network_incident_timeline_contract import (
 )
 
 NETWORK_INCIDENT_TIMELINE_PROSE_VERSION = "fr-nsi-network-incident-timeline-prose-v1"
+NETWORK_INCIDENT_TIMELINE_MARKING_VERSION = "fr-nsi-network-incident-timeline-prose-v2"
+_SECURITY_CREDIT = "les métadonnées visibles et le terminal compromis hors de la protection du transport"
 _TIMED_QUESTIONS = {
     "3g": (
         "Complétez la chronologie après l'arrivée de M-27 : date de libération de B, fin du traitement et livraison du compte rendu sécurisé ; indiquez quand P2 redémarre.",
@@ -34,7 +36,22 @@ _TIMED_QUESTIONS = {
 }
 
 
-def network_incident_timeline_catalogue_digest() -> str:
+def network_incident_timeline_catalogue_digest(*, revision: int = 1) -> str:
+    if revision not in (1, 2):
+        raise ValueError("Unknown timeline prose revision")
+    if revision == 2:
+        return sha256(
+            json.dumps(
+                {
+                    "version": NETWORK_INCIDENT_TIMELINE_MARKING_VERSION,
+                    "base": network_incident_timeline_catalogue_digest(),
+                    "security_credit": _SECURITY_CREDIT,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
     return sha256(
         json.dumps(
             {
@@ -83,7 +100,11 @@ def render_network_incident_timeline_candidate(
     contract: NetworkIncidentTimelineContract,
     selection: dict,
     task_specs: list[dict],
+    *,
+    revision: int = 1,
 ) -> dict:
+    if revision not in (1, 2):
+        raise ValueError("Unknown timeline prose revision")
     legacy = build_network_incident_contract(contract.to_dict()["seed"])
     validate_network_incident_selection(legacy, selection)
     raw = render_network_incident_candidate(
@@ -175,7 +196,9 @@ def render_network_incident_timeline_candidate(
                 plan["points"],
                 (
                     "les deux échéances distinctes, avec M-27 tardif et compte rendu à l'heure",
-                    "les métadonnées visibles malgré le chiffrement",
+                    _SECURITY_CREDIT
+                    if revision == 2 and plan["points"] == "0.5"
+                    else "les métadonnées visibles malgré le chiffrement",
                     "le terminal compromis hors de la protection du transport",
                 ),
                 int(selection["rubric_forms"][task_id][-1]),
@@ -190,7 +213,11 @@ def render_network_incident_timeline_candidate(
 
 
 def validate_network_incident_timeline_exercise(
-    contract: NetworkIncidentTimelineContract, exercise, task_specs: list[dict]
+    contract: NetworkIncidentTimelineContract,
+    exercise,
+    task_specs: list[dict],
+    *,
+    revision: int = 1,
 ) -> None:
     """Reject altered timeline premises, working tables, answers and credits."""
     raw = exercise.model_dump(mode="json")
@@ -221,6 +248,7 @@ def validate_network_incident_timeline_exercise(
         contract,
         {"scene_id": scene, "question_forms": forms, "rubric_forms": rubrics},
         task_specs,
+        revision=revision,
     )
     if raw != expected:
         raise ValueError("Network incident timeline candidate differs from catalogue")

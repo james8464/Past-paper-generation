@@ -43,8 +43,10 @@ def test_v23_runtime_dispatch_is_explicit_and_old_versions_stay_pinned():
     assert network_pdf_contract_version("fr-nsi-written-2027-v22") == "v18"
     assert network_pdf_contract_version("fr-nsi-written-2027-v25") == "v23"
     assert network_pdf_contract_version("fr-nsi-written-2027-v26") == "v26"
+    assert network_pdf_contract_version("fr-nsi-written-2027-v27") == "v27"
+    assert database_pdf_contract_version("fr-nsi-written-2027-v27") == "v24"
     with pytest.raises(ValueError):
-        network_pdf_contract_version("fr-nsi-written-2027-v27")
+        network_pdf_contract_version("fr-nsi-written-2027-v999")
 
 
 @pytest.mark.parametrize("large_print", [False, True])
