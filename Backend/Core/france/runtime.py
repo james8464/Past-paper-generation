@@ -99,6 +99,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
     atomic_json,
     digest,
     exercise_candidate_text,
@@ -640,6 +641,14 @@ def validate_graph_two_outage_pdf(
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
+    tree_construction = (
+        exercise.questions[-1].verification.get("kind") == "tree_construction_contract"
+    )
+    if tree_construction:
+        from Backend.Core.france.verification import verify_contract
+
+        if not verify_contract(exercise.questions[-1].verification)["passed"]:
+            raise ValueError("Tree construction evidence differs from canonical facts")
     with pymupdf.open(path) as pdf:
         page_lines = [
             [
@@ -685,7 +694,7 @@ def validate_graph_two_outage_pdf(
     if coherent_material_flow:
         for title, task_id in zip(titles[1:], ("1c", "1f", "1g", "1h"), strict=True):
             if page_by_line[lines.index(title)] != page_by_line[positions[task_id]]:
-                raise ValueError("Two-outage material separated from its question")
+                raise ValueError(f"Two-outage material separated from question {task_id}")
     if any(lines.count(title) != 1 for title in titles):
         raise ValueError("Two-outage working material missing or duplicated")
     graph_at, before_at, first_at, second_at, tree_at = (
@@ -754,13 +763,19 @@ def validate_graph_two_outage_pdf(
             data["debug_case"]["faulty_code"],
             " ".join(lines[positions["1e"] : positions["1f"]]),
         ),
-        (data["search_code"], " ".join(lines[positions["1j"] : after_1j])),
+        *(
+            []
+            if tree_construction
+            else [(data["search_code"], " ".join(lines[positions["1j"] : after_1j]))]
+        ),
     ):
         normalised = " ".join(source.split())
         if section.count(normalised) != 1 or flat.count(normalised) != 1:
             raise ValueError("Two-outage source code or graph facts outside phase")
     if not correction and "if voisin not in visites:" in flat:
         raise ValueError("Two-outage corrected code revealed to candidate")
+    if tree_construction and not correction and "def compter_intervalle" in flat:
+        raise ValueError("Tree construction solution revealed to candidate")
     if not correction:
         candidate_answers = flat
         for question in exercise.questions:
@@ -803,7 +818,7 @@ def validate_graph_two_outage_pdf(
             else after_1j
         )
         section = " ".join(lines[positions[question.id] : next_position])
-        answer = " ".join(question.answer.split())
+        answer = " ".join(re.sub(r"```(?:sql|python)?", " ", question.answer).split())
         if correction and answer not in section:
             raise ValueError(f"Two-outage answer {question.id} missing")
         if not correction and answer in flat:
@@ -2092,6 +2107,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION:
+        return "v29"
     if prompt_version == CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION:
         return "v28"
     if prompt_version == CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION:
@@ -2129,6 +2146,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+        CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2195,7 +2213,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v28",
+            contract_authoring_version="v29",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2209,6 +2227,7 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
             CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+            CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2247,8 +2266,8 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version in {"v26", "v27", "v28"}
-        human_readable_graph_titles = network_pdf_version in {"v27", "v28"}
+        network_timeline = network_pdf_version in {"v26", "v27", "v28", "v29"}
+        human_readable_graph_titles = network_pdf_version in {"v27", "v28", "v29"}
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
@@ -2277,7 +2296,7 @@ def handle_generate_assessment(args) -> int:
                     correction=correction,
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
-                    coherent_material_flow=network_pdf_version == "v28",
+                    coherent_material_flow=network_pdf_version in {"v28", "v29"},
                 ),
                 role=role,
                 language="fr-FR",
@@ -2302,7 +2321,7 @@ def handle_generate_assessment(args) -> int:
                 **(
                     {
                         "human_readable_titles": human_readable_graph_titles,
-                        "coherent_material_flow": network_pdf_version == "v28"
+                        "coherent_material_flow": network_pdf_version in {"v28", "v29"}
                         and not args.large_print,
                     }
                     if graph_two_outage
@@ -2343,7 +2362,11 @@ def handle_generate_assessment(args) -> int:
                 correction=correction,
                 exercise=exercises[2],
                 **(
-                    {"revision": 2 if network_pdf_version in {"v27", "v28"} else 1}
+                    {
+                        "revision": 2
+                        if network_pdf_version in {"v27", "v28", "v29"}
+                        else 1
+                    }
                     if network_timeline
                     else {}
                 ),

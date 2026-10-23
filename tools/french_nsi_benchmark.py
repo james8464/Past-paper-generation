@@ -80,10 +80,6 @@ from Backend.Core.france.graph_tree_prose import (  # noqa: E402
 from Backend.Core.france.graph_two_outage_contract import (  # noqa: E402
     build_graph_two_outage_contract,
 )
-from Backend.Core.france.graph_two_outage_prose import (  # noqa: E402
-    GRAPH_TWO_OUTAGE_PROSE_VERSION,
-    graph_two_outage_catalogue_digest,
-)
 from Backend.Core.france.network_depth_contract import (  # noqa: E402
     build_network_depth_contract,
 )
@@ -127,9 +123,13 @@ from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
 )
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
+from Backend.Core.france.tree_construction_authoring import (  # noqa: E402
+    graph_catalogue_identity,
+)
 from Backend.Core.paths import REPO_ROOT  # noqa: E402
 from tools.live_process import BackendRun, run_backend  # noqa: E402
 
@@ -299,6 +299,7 @@ def _accepted_payload(
         not in {
             CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
             CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+            CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
             CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
             CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -318,6 +319,7 @@ def _accepted_payload(
             in {
                 CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                 CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                 CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                 CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                 CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -339,6 +341,7 @@ def _accepted_payload(
     if manifest_identity["prompt_version"] in {
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+        CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
@@ -355,6 +358,7 @@ def _accepted_payload(
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                     CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                 }
                 else _V25_IDENTITY_KEYS
                 if manifest_identity["prompt_version"]
@@ -364,6 +368,7 @@ def _accepted_payload(
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                     CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -387,6 +392,7 @@ def _accepted_payload(
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                     CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
                     CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
                     CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -437,6 +443,7 @@ def _accepted_payload(
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+        CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("network_incident_timeline_contract_sha256")
@@ -448,6 +455,7 @@ def _accepted_payload(
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                     CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                 }
                 else NETWORK_INCIDENT_TIMELINE_PROSE_VERSION
             )
@@ -458,6 +466,7 @@ def _accepted_payload(
                 in {
                     CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
                     CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+                    CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
                 }
                 else 1
             )
@@ -533,15 +542,16 @@ def _accepted_payload(
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+        CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         if (
             manifest_identity.get("graph_two_outage_contract_sha256")
             != build_graph_two_outage_contract(identity["seed"]).digest
             or manifest_identity.get("graph_two_outage_prose_contract_version")
-            != GRAPH_TWO_OUTAGE_PROSE_VERSION
+            != graph_catalogue_identity(manifest_identity["prompt_version"])[0]
             or manifest_identity.get("graph_two_outage_prose_catalogue_sha256")
-            != graph_two_outage_catalogue_digest()
+            != graph_catalogue_identity(manifest_identity["prompt_version"])[1]
             or any(
                 key in manifest_identity
                 for key in (
@@ -871,7 +881,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -944,7 +954,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"

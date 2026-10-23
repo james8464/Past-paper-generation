@@ -572,6 +572,7 @@ def render_assessment(
                 "graph_resilience_contract",
                 "graph_route_trace_contract",
                 "graph_two_outage_contract",
+                "tree_construction_contract",
                 "database_audit_contract",
                 "database_reconciliation_contract",
             }

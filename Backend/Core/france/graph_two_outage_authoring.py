@@ -13,11 +13,12 @@ from Backend.Core.france.database_depth_authoring import (
 )
 from Backend.Core.france.graph_two_outage_contract import GraphTwoOutageContract
 from Backend.Core.france.graph_two_outage_prose import (
-    GRAPH_TWO_OUTAGE_PROSE_VERSION,
-    graph_two_outage_catalogue_digest,
     graph_two_outage_selection_schema,
-    render_graph_two_outage_candidate,
     validate_graph_two_outage_selection,
+)
+from Backend.Core.france.tree_construction_authoring import (
+    graph_catalogue_identity,
+    render_graph_candidate,
 )
 
 
@@ -37,8 +38,12 @@ def _identity(
         "task_sha256": _hash(task),
         "reference_sha256": _hash(references),
         "run_identity_sha256": _hash(run_identity),
-        "prose_contract_version": GRAPH_TWO_OUTAGE_PROSE_VERSION,
-        "prose_catalogue_sha256": graph_two_outage_catalogue_digest(),
+        "prose_contract_version": graph_catalogue_identity(
+            run_identity.get("prompt_version")
+        )[0],
+        "prose_catalogue_sha256": graph_catalogue_identity(
+            run_identity.get("prompt_version")
+        )[1],
     }
 
 
@@ -92,8 +97,11 @@ def replay_graph_two_outage_selection(
     ):
         raise ValueError("Graph two-outage accepted response hash mismatch")
     validate_graph_two_outage_selection(contract, accepted["response"])
-    raw = render_graph_two_outage_candidate(
-        contract, accepted["response"], task["question_blueprint"]
+    raw = render_graph_candidate(
+        contract,
+        accepted["response"],
+        task["question_blueprint"],
+        run_identity.get("prompt_version"),
     )
     if accepted["candidate_sha256"] != _hash(raw):
         raise ValueError("Graph two-outage candidate hash mismatch")
@@ -130,8 +138,11 @@ def author_graph_two_outage_selection(
         try:
             response = client.generate_json(prompt)
             validate_graph_two_outage_selection(contract, response)
-            raw = render_graph_two_outage_candidate(
-                contract, response, task["question_blueprint"]
+            raw = render_graph_candidate(
+                contract,
+                response,
+                task["question_blueprint"],
+                run_identity.get("prompt_version"),
             )
         except (KeyboardInterrupt, InterruptedError):
             _save(path, state)
