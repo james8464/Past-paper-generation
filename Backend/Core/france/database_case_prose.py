@@ -399,7 +399,23 @@ def _stock(case):
     ]
 
 
-def render_case(seed):
+def _marking(criteria, index, total):
+    # Lower allocations combine adjacent warm-up criteria, never discard them.
+    # Higher allocations add credit to construction and causal-state reasoning.
+    if total == "5.5" and index in (1, 3):
+        return [dict(points="0.25", criterion=" ".join(criteria))]
+    return [
+        dict(
+            points="0.5" if total == "6.5" and index in (7, 8) and pos == 0 else "0.25",
+            criterion=criterion,
+        )
+        for pos, criterion in enumerate(criteria)
+    ]
+
+
+def render_case(seed, *, total="6"):
+    if type(total) is not str or total not in {"5.5", "6", "6.5"}:
+        raise ValueError("Unsupported whole-case allocation")
     case = build_case(seed)
     public = case["public"]
     items = {"sensors": _sensors, "bookings": _bookings, "stock": _stock}[
@@ -433,16 +449,16 @@ def render_case(seed):
     questions = []
     for index, item in enumerate(items):
         identifier = "2" + "abcdefghijkl"[index]
+        marking = _marking(item["criteria"], index, total)
         questions.append(
             dict(
                 id=identifier,
                 prompt=item["prompt"],
                 answer=item["answer"],
-                points=str((Decimal("0.25") * len(item["criteria"])).normalize()),
-                marking=[
-                    dict(points="0.25", criterion=criterion)
-                    for criterion in item["criteria"]
-                ],
+                points=str(
+                    sum((Decimal(c["points"]) for c in marking), Decimal(0)).normalize()
+                ),
+                marking=marking,
                 material_ids=source_ids + (["case_states"] if index == 8 else []),
                 curriculum_codes=[item["code"]],
                 operation=item["operation"],
@@ -454,6 +470,7 @@ def render_case(seed):
                     seed=seed,
                     case_sha256=case["sha256"],
                     task_id=identifier,
+                    expected=case["expected"],
                 ),
             )
         )
@@ -463,7 +480,7 @@ def render_case(seed):
         context=public["context"] + "\n\n" + public["schema"],
         topics=["bases-donnees", "langages-programmation"],
         minutes=70,
-        target_points="6",
+        target_points=total,
         materials=materials,
         questions=questions,
     )
@@ -471,11 +488,54 @@ def render_case(seed):
     return candidate
 
 
-def verify_candidate(candidate, seed):
+def case_blueprint(seed, total="6"):
+    exercise = render_case(seed, total=total)
+    return [
+        dict(
+            id=q["id"],
+            points=q["points"],
+            estimated_minutes=q["estimated_minutes"],
+            operation=q["operation"],
+            difficulty=q["difficulty"],
+            required_curriculum_code=q["curriculum_codes"][0],
+            part_id="A" if index < 4 else "B" if index < 6 else "C",
+        )
+        for index, q in enumerate(exercise["questions"])
+    ]
+
+
+def case_task(seed, total="6"):
+    exercise = render_case(seed, total=total)
+    return dict(
+        topics=exercise["topics"],
+        query="bases de données relations SQL contraintes tests débogage "
+        + exercise["title"],
+        minutes=exercise["minutes"],
+        technical_points=total,
+        required_material_kind="table",
+        required_curriculum_codes=sorted(
+            {
+                code
+                for question in exercise["questions"]
+                for code in question["curriculum_codes"]
+            }
+        ),
+        archetype_id="database-and-debugging",
+        scenario_brief=exercise["context"],
+        part_briefs=[
+            "A : interpréter les relations et diagnostiquer les données.",
+            "B : construire et expliquer un bilan relationnel complet.",
+            "C : programmer, tracer des états liés et réfuter une erreur.",
+        ],
+        question_blueprint=case_blueprint(seed, total),
+    )
+
+
+def verify_candidate(candidate, seed, *, total="6"):
     """Closed app-owned content binding; never accept altered marking or sources."""
     try:
         return json.dumps(candidate, ensure_ascii=False, sort_keys=True) == json.dumps(
-            render_case(seed), ensure_ascii=False, sort_keys=True
+            render_case(seed, total=total), ensure_ascii=False, sort_keys=True
         )
     except (ValueError, TypeError, KeyError):
         return False

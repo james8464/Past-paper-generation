@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792802461.1126442,
-    "ast_hash": "8bd954673c6e3e76d11f0337efd93b1f",
+    "mtime": 1792804522.9308753,
+    "ast_hash": "497f80c633f25d64b5e6ec9eddefd77c",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -3410,13 +3410,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_case_prose.py": {
-    "mtime": 1792804308.9421618,
-    "ast_hash": "037906d5d0ffa36d49b67a2f61ee7f45",
+    "mtime": 1792804680.5554705,
+    "ast_hash": "a705812d9e2eb94253f9305aa3d36312",
     "semantic_hash": ""
   },
   "tests/test_french_database_case_prose.py": {
-    "mtime": 1792804366.4930289,
-    "ast_hash": "e0da59e6274863524a342ba99ab06b7a",
+    "mtime": 1792804614.0224144,
+    "ast_hash": "460e3e7a78abdea8c2242d13a9dab8df",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_case_authoring.py": {
+    "mtime": 1792804680.4635377,
+    "ast_hash": "f104a1d7ff31d84c7f03abaf2842f711",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_case_authoring.py": {
+    "mtime": 1792804884.4763167,
+    "ast_hash": "20ba2ae393405aa006a843fde87d3515",
     "semantic_hash": ""
   }
 }

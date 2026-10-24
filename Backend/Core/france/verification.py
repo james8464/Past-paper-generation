@@ -290,6 +290,7 @@ def verify_contract(contract: dict) -> dict:
         "database_depth_contract",
         "database_audit_contract",
         "database_reconciliation_contract",
+        "database_case_contract",
         "network_contract",
         "network_depth_contract",
         "network_reasoning_contract",
@@ -302,7 +303,29 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "network_incident_timeline_contract":
+        if kind == "database_case_contract":
+            from Backend.Core.france.database_case_families import build_case
+            from Backend.Core.france.database_case_prose import VERSION
+
+            if set(contract) != {
+                "kind",
+                "version",
+                "seed",
+                "case_sha256",
+                "task_id",
+                "expected",
+            }:
+                raise ValueError("Whole database case contract fields changed")
+            data = build_case(contract["seed"])
+            if (
+                contract["version"] != VERSION
+                or contract["case_sha256"] != data["sha256"]
+                or contract["task_id"]
+                not in {f"2{letter}" for letter in "abcdefghijkl"}
+            ):
+                raise ValueError("Whole database case identity mismatch")
+            actual = data["expected"]
+        elif kind == "network_incident_timeline_contract":
             from Backend.Core.france.network_incident_timeline_contract import (
                 NetworkIncidentTimelineContract,
             )

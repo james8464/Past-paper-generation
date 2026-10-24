@@ -59,6 +59,64 @@ def test_whole_cases_pass_unchanged_pairwise_originality_screen():
 
 
 @pytest.mark.parametrize("seed", range(270100, 270103))
+@pytest.mark.parametrize("total", ("5.5", "6", "6.5"))
+def test_case_supports_pipeline_allocations_without_dropping_criteria(seed, total):
+    from Backend.Core.france.database_case_prose import (
+        case_blueprint,
+        render_case,
+        verify_candidate,
+    )
+    from Backend.Core.france.nsi import NSIExercise
+
+    raw = render_case(seed, total=total)
+    exercise = NSIExercise.model_validate(raw)
+    base = NSIExercise.model_validate(render_case(seed))
+    assert exercise.credit == Decimal(total)
+    assert exercise.minutes == 70
+    assert verify_candidate(raw, seed, total=total)
+    for question, original, plan in zip(
+        exercise.questions, base.questions, case_blueprint(seed, total), strict=True
+    ):
+        assert plan["id"] == question.id
+        assert plan["points"] == question.points
+        assert plan["estimated_minutes"] == question.estimated_minutes
+        assert plan["required_curriculum_code"] == question.curriculum_codes[0]
+        assert all(
+            credit.criterion in " ".join(c.criterion for c in question.marking)
+            for credit in original.marking
+        )
+        assert question.answer == original.answer
+    for invalid in ("0", "6.25", True, 6, None):
+        with pytest.raises(ValueError):
+            render_case(seed, total=invalid)
+
+
+@pytest.mark.parametrize("seed", range(270100, 270103))
+def test_pipeline_verification_recomputes_and_rejects_mutated_case(seed):
+    from copy import deepcopy
+
+    from Backend.Core.france.database_case_prose import render_case
+    from Backend.Core.france.verification import verify_contract
+
+    for question in render_case(seed)["questions"]:
+        contract = question["verification"]
+        assert verify_contract(contract)["state"] == "passed"
+        for key, value in (
+            ("seed", True),
+            ("version", "v0"),
+            ("case_sha256", "0" * 64),
+            ("task_id", "1a"),
+            ("expected", {}),
+        ):
+            changed = deepcopy(contract)
+            changed[key] = value
+            assert verify_contract(changed)["state"] == "failed"
+        changed = deepcopy(contract)
+        changed["unexpected"] = "ignored?"
+        assert verify_contract(changed)["state"] == "failed"
+
+
+@pytest.mark.parametrize("seed", range(270100, 270103))
 def test_case_verifier_rejects_prompt_credit_answer_and_source_changes(seed):
     from copy import deepcopy
 
@@ -153,8 +211,9 @@ def test_printed_sql_queries_and_state_transitions_execute_as_described(seed):
 
 @pytest.mark.parametrize("seed", range(270100, 270103))
 @pytest.mark.parametrize("large_print", (False, True))
+@pytest.mark.parametrize("total", ("5.5", "6", "6.5"))
 def test_complete_case_pdf_keeps_all_questions_and_no_clipped_words(
-    tmp_path, seed, large_print
+    tmp_path, seed, large_print, total
 ):
     import pymupdf
 
@@ -162,7 +221,7 @@ def test_complete_case_pdf_keeps_all_questions_and_no_clipped_words(
     from Backend.Core.france.nsi import NSIExercise
     from Backend.Core.france.rendering import render_assessment
 
-    exercise = NSIExercise.model_validate(render_case(seed))
+    exercise = NSIExercise.model_validate(render_case(seed, total=total))
     for correction in (False, True):
         path = tmp_path / f"e2-{seed}-{large_print}-{correction}.pdf"
         render_assessment(
