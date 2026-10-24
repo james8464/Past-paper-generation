@@ -6,7 +6,7 @@ from itertools import pairwise, permutations
 import pytest
 
 
-def checked_package(tmp_path, seed):
+def checked_package(tmp_path, seed, version="v31"):
     from decimal import Decimal
 
     from Backend.Core.france.pipeline import generate_assessment, validate_package
@@ -20,10 +20,10 @@ def checked_package(tmp_path, seed):
         seed=seed,
         checkpoint=tmp_path / "checkpoint.json",
         contract_graph_tree=True,
-        contract_authoring_version="v31",
+        contract_authoring_version=version,
     )
     validate_package(package)
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v31"
+    assert package["identity"]["prompt_version"] == f"fr-nsi-written-2027-{version}"
     questions = package["exercises"][0]["questions"]
     assert questions[6]["verification"]["kind"] == "route_family_contract"
     assert sum(q["estimated_minutes"] for q in questions) == 70
@@ -45,6 +45,24 @@ def test_v31_package_binds_selected_family_and_rejects_mutation(tmp_path, seed):
     checked_package(tmp_path, seed)
 
 
+def test_v31_retained_e2_failure_is_not_relabelled_as_v32_success(tmp_path):
+    """Historical replay remains readable, not retrospectively qualified."""
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.originality import screen_originality
+    from Backend.Core.france.pipeline import exercise_candidate_text
+
+    first_path, next_path = tmp_path / "first", tmp_path / "next"
+    first_path.mkdir()
+    next_path.mkdir()
+    packages = [checked_package(first_path, 270100), checked_package(next_path, 270101)]
+    texts = [
+        exercise_candidate_text(NSIExercise.model_validate(p["exercises"][1]))
+        for p in packages
+    ]
+    with pytest.raises(ValueError, match="originalité"):
+        screen_originality(texts[1], [], previous_texts=texts[:1])
+
+
 @pytest.mark.parametrize("seed", (270101, 270102))
 @pytest.mark.parametrize("exercise_index", (0, 1, 2))
 def test_successive_families_are_substantively_distinct(tmp_path, seed, exercise_index):
@@ -56,8 +74,8 @@ def test_successive_families_are_substantively_distinct(tmp_path, seed, exercise
     first_path, next_path = tmp_path / "first", tmp_path / "next"
     first_path.mkdir()
     next_path.mkdir()
-    first = checked_package(first_path, 270100)
-    following = checked_package(next_path, seed)
+    first = checked_package(first_path, 270100, version="v32")
+    following = checked_package(next_path, seed, version="v32")
     previous = exercise_candidate_text(
         NSIExercise.model_validate(first["exercises"][exercise_index])
     )
@@ -90,7 +108,7 @@ def test_three_successive_packages_pass_with_preserved_history(tmp_path):
             checkpoint=tmp_path / f"checkpoint-{seed}.json",
             previous_texts=history,
             contract_graph_tree=True,
-            contract_authoring_version="v31",
+            contract_authoring_version="v32",
         )
         validate_package(package)
         assert package["originality_history"] == history

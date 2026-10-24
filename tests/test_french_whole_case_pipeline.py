@@ -1,0 +1,94 @@
+"""V32 integration: whole E2 cases, honest provenance and strict replay."""
+
+from copy import deepcopy
+from decimal import Decimal
+
+import pytest
+
+
+@pytest.mark.parametrize("seed", range(270100, 270103))
+def test_v32_package_replays_whole_case_and_rejects_mutations(
+    tmp_path, seed, monkeypatch
+):
+    from Backend.Core.france import pipeline
+    from Backend.Core.france.pipeline import (
+        digest,
+        generate_assessment,
+        validate_package,
+    )
+    from tests.test_nsi_pipeline import ControlledTwoOutageFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+
+    def forbidden_model_authoring(*args, **kwargs):
+        pytest.fail("V32 E2 must not invoke legacy model-selection authoring")
+
+    monkeypatch.setattr(
+        pipeline, "author_database_reconciliation_selection", forbidden_model_authoring
+    )
+    package = generate_assessment(
+        index_path=index,
+        client=ControlledTwoOutageFrenchClient(),
+        seed=seed,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v32",
+    )
+    validate_package(package)
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v32"
+    assert "database_reconciliation_contract_sha256" not in package["identity"]
+    exercise = package["exercises"][1]
+    evidence = package["evidence"][1]["database_case_evidence"]
+    assert evidence["origin"] == "application_owned"
+    assert evidence["model_used"] is False
+    assert "accepted" not in evidence and "failed_attempts" not in evidence
+    assert "database_reconciliation_selection" not in package["evidence"][1]
+    assert all(
+        q["verification"]["kind"] == "database_case_contract"
+        for q in exercise["questions"]
+    )
+    assert (
+        sum(Decimal(q["points"]) for e in package["exercises"] for q in e["questions"])
+        == 18
+    )
+    for field in ("prompt", "answer", "points"):
+        altered = deepcopy(package)
+        altered["exercises"][1]["questions"][7][field] = "altered"
+        # Re-signing the outer data must not bypass closed-content replay.
+        altered["evidence"][1]["exercise_sha256"] = digest(altered["exercises"][1])
+        altered["evidence"][1]["candidate_sha256"] = digest(altered["exercises"][1])
+        with pytest.raises(ValueError):
+            validate_package(altered)
+    altered = deepcopy(package)
+    altered["identity"]["database_case_catalogue_sha256"] = "0" * 64
+    with pytest.raises(ValueError):
+        validate_package(altered)
+    for key, value in (
+        ("model_used", True),
+        ("case_sha256", "0" * 64),
+        ("extra", True),
+    ):
+        altered = deepcopy(package)
+        altered["evidence"][1]["database_case_evidence"][key] = value
+        with pytest.raises(ValueError):
+            validate_package(altered)
+
+    # A saved checkpoint resumes exactly, without another model call.
+    class NoCalls:
+        provider = ControlledTwoOutageFrenchClient.provider
+        model = ControlledTwoOutageFrenchClient.model
+        model_digest = ControlledTwoOutageFrenchClient.model_digest
+
+        def generate_json(self, *args, **kwargs):
+            pytest.fail("Completed checkpoint unexpectedly called model")
+
+    resumed = generate_assessment(
+        index_path=index,
+        client=NoCalls(),
+        seed=seed,
+        checkpoint=tmp_path / "checkpoint.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v32",
+    )
+    assert resumed == package

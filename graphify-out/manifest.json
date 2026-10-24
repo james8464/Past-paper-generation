@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792802523.5522993,
-    "ast_hash": "3d250129b74cb74590411972cb139344",
+    "mtime": 1792805111.0665586,
+    "ast_hash": "e096b508fafb2358866c5c28d31fb89e",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792804085.1248639,
-    "ast_hash": "823578083fb6662f0819e3df77c245ac",
+    "mtime": 1792805137.3327835,
+    "ast_hash": "8c8facdf95acb8865a3338b2a58385e5",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3285,8 +3285,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_incident_timeline_authoring.py": {
-    "mtime": 1792802461.0724447,
-    "ast_hash": "2dfbe0026da46f746ea598057ad347a2",
+    "mtime": 1792805009.071213,
+    "ast_hash": "b43f57d5186b98b6f91d7a6ea41f85ae",
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_timeline_authoring.py": {
@@ -3340,8 +3340,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_construction_authoring.py": {
-    "mtime": 1792802461.1123877,
-    "ast_hash": "1d714a3d2c16ab15bca91d1be667bc3c",
+    "mtime": 1792805009.0022519,
+    "ast_hash": "4672b96aa36f768bd106d79b8a9eec0e",
     "semantic_hash": ""
   },
   "tests/test_french_tree_construction.py": {
@@ -3380,8 +3380,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_route_task_families.py": {
-    "mtime": 1792803206.8030972,
-    "ast_hash": "55c06e6cfdb58f3671a74a1d0031f632",
+    "mtime": 1792805125.034796,
+    "ast_hash": "1cb8a8dbdef521877ac8df17d864efc3",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3427,6 +3427,11 @@
   "tests/test_french_database_case_authoring.py": {
     "mtime": 1792804884.4763167,
     "ast_hash": "20ba2ae393405aa006a843fde87d3515",
+    "semantic_hash": ""
+  },
+  "tests/test_french_whole_case_pipeline.py": {
+    "mtime": 1792805053.4138274,
+    "ast_hash": "f3aa9d37d16ad201033d2ce3632a479b",
     "semantic_hash": ""
   }
 }
