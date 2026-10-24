@@ -27,14 +27,17 @@ def sensor_extrema(sensor_ids, observations):
     Inputs are not mutated; observations may be a one-shot iterator.
     """
     result = dict.fromkeys(sensor_ids)
-    for sensor, temperature, valid in observations:
+    for sensor, value, valid in observations:
         if valid:
             bounds = result[sensor]
             if bounds is None:
-                result[sensor] = (temperature, temperature)
+                result[sensor] = (value, value)
             else:
                 low, high = bounds
-                result[sensor] = (min(low, temperature), max(high, temperature))
+                result[sensor] = (
+                    min(low, value),
+                    max(high, value),
+                )
     return result
 
 
@@ -44,8 +47,8 @@ def remaining_places(capacities, reservations):
     Reservations are (session, positive seats, confirmed), with known session IDs.
     """
     result = capacities.copy()
-    for session, seats, confirmed in reservations:
-        if confirmed:
+    for session, seats, valid in reservations:
+        if valid:
             result[session] -= seats
     return result
 
