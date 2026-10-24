@@ -28,6 +28,7 @@ def _render(run_identity):
     if run_identity.get("prompt_version") in {
         "fr-nsi-written-2027-v28",
         "fr-nsi-written-2027-v29",
+        "fr-nsi-written-2027-v30",
     }:
         from Backend.Core.france.database_construction_authoring import (
             render_database_construction_candidate,

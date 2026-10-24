@@ -573,6 +573,7 @@ def render_assessment(
                 "graph_route_trace_contract",
                 "graph_two_outage_contract",
                 "tree_construction_contract",
+                "route_selection_contract",
                 "database_audit_contract",
                 "database_reconciliation_contract",
             }
@@ -703,7 +704,8 @@ def render_assessment(
                 answer_start = len(story)
                 paragraph(
                     f"Réponse attendue — question {question.id}"
-                    if question.verification.get("kind") == "tree_construction_contract"
+                    if question.verification.get("kind")
+                    in {"tree_construction_contract", "route_selection_contract"}
                     else "Réponse attendue",
                     credit,
                 )
@@ -770,7 +772,10 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                if question.verification.get("kind") == "tree_construction_contract":
+                if question.verification.get("kind") in {
+                    "tree_construction_contract",
+                    "route_selection_contract",
+                }:
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
@@ -786,7 +791,10 @@ def render_assessment(
                     (
                         v18_paper
                         and question.verification.get("kind")
-                        != "tree_construction_contract"
+                        not in {
+                            "tree_construction_contract",
+                            "route_selection_contract",
+                        }
                     )
                     or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"

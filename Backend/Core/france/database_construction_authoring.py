@@ -13,7 +13,11 @@ from Backend.Core.france.database_reconciliation_prose import (
 
 
 def database_catalogue_identity(prompt_version):
-    if prompt_version in {"fr-nsi-written-2027-v28", "fr-nsi-written-2027-v29"}:
+    if prompt_version in {
+        "fr-nsi-written-2027-v28",
+        "fr-nsi-written-2027-v29",
+        "fr-nsi-written-2027-v30",
+    }:
         return (
             DATABASE_CONSTRUCTION_PROSE_VERSION,
             database_construction_catalogue_digest(),
