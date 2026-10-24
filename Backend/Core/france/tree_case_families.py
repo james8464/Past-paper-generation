@@ -16,6 +16,8 @@ def _canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+# Keep printed solution lines legible in the enlarged-print correction.
+# fmt: off
 def count_below(nodes, root, limit):
     """Strict BST, unique integer keys; count keys strictly below limit."""
     if root is None:
@@ -23,7 +25,9 @@ def count_below(nodes, root, limit):
     key, left, right = nodes[root]
     if key >= limit:
         return count_below(nodes, left, limit)
-    return 1 + count_below(nodes, left, limit) + count_below(nodes, right, limit)
+    a = count_below(nodes, left, limit)
+    b = count_below(nodes, right, limit)
+    return 1 + a + b
 
 
 def expression_value(nodes, root):
@@ -40,9 +44,14 @@ def expression_value(nodes, root):
     return a * b
 
 
-def count_interval(nodes, root, low, high):
+def count_interval(
+    nodes, root, low, high
+):
     """Reuse strict ranks for inclusive integer bounds low <= high."""
-    return count_below(nodes, root, high + 1) - count_below(nodes, root, low)
+    end = high + 1
+    a = count_below(nodes, root, end)
+    b = count_below(nodes, root, low)
+    return a - b
 
 
 def decode_message(nodes, root, bits):
@@ -55,7 +64,7 @@ def decode_message(nodes, root, bits):
     current = root
     for bit in bits:
         if bit not in ("0", "1"):
-            raise ValueError("Non-binary symbol")
+            raise ValueError("Invalid bit")
         _, left, right = nodes[current]
         current = left if bit == "0" else right
         value, left, right = nodes[current]
@@ -63,21 +72,26 @@ def decode_message(nodes, root, bits):
             output += value
             current = root
     if current != root:
-        raise ValueError("Incomplete code word")
+        raise ValueError("Incomplete word")
     return output
 
 
-def transcode(nodes, root, bits, new_codes):
+def transcode(
+    nodes, root, bits, new_codes
+):
     """Decode old bits, then encode the same letters with the supplied new code.
 
     Precondition: new_codes contains a valid nonempty prefix code for every
     letter in the old alphabet. No optimal-code construction is required.
     """
-    message = decode_message(nodes, root, bits)
+    message = decode_message(
+        nodes, root, bits
+    )
     output = ""
     for letter in message:
         output += new_codes[letter]
     return output
+# fmt: on
 
 
 def _shape(rows, root, family):

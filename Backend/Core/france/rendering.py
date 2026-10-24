@@ -578,6 +578,7 @@ def render_assessment(
                 "database_audit_contract",
                 "database_reconciliation_contract",
                 "database_case_contract",
+                "tree_case_contract",
             }
             for question in exercise.questions
         )
@@ -597,7 +598,7 @@ def render_assessment(
                 regular_font=regular,
                 available_width=doc.width,
                 show_id=show_id
-                and material.id != "case_states"
+                and material.id not in {"case_states", "tree_nodes", "tree_states"}
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:
@@ -685,6 +686,7 @@ def render_assessment(
                     "database_audit_contract",
                     "database_reconciliation_contract",
                     "database_case_contract",
+                    "tree_case_contract",
                 }
             ):
                 start = material_start if question.id == "2g" else question_start
@@ -714,6 +716,7 @@ def render_assessment(
                         "route_selection_contract",
                         "route_family_contract",
                         "database_case_contract",
+                        "tree_case_contract",
                     }
                     else "Réponse attendue",
                     credit,
@@ -786,6 +789,7 @@ def render_assessment(
                     "route_selection_contract",
                     "route_family_contract",
                     "database_case_contract",
+                    "tree_case_contract",
                 }:
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
@@ -807,6 +811,7 @@ def render_assessment(
                             "route_selection_contract",
                             "route_family_contract",
                             "database_case_contract",
+                            "tree_case_contract",
                         }
                     )
                     or question.verification.get("kind") == "graph_resilience_contract"
