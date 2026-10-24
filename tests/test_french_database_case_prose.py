@@ -16,7 +16,17 @@ def test_complete_case_has_balanced_credit_time_and_bound_sources(seed):
     assert [q.id for q in exercise.questions] == [
         f"2{letter}" for letter in "abcdefghijkl"
     ]
-    assert len(exercise.materials) == 2
+    assert len(exercise.materials) == 3
+    assert exercise.materials[-1].id == "case_states"
+    assert "case_states" in exercise.questions[8].material_ids
+    assert all("case_states" not in q.material_ids for q in exercise.questions[:8])
+    assert [row[0] for row in exercise.materials[-1].rows] == (
+        ["S0", "S1", "S2"]
+        if seed == 270100
+        else ["S0", "S1", "S2", "S3"]
+        if seed == 270101
+        else ["S1", "S2", "S3"]
+    )
     assert all(q.material_ids for q in exercise.questions)
     assert exercise.questions[7].operation == "design"
     assert exercise.questions[7].difficulty == 4
@@ -131,12 +141,12 @@ def test_printed_sql_queries_and_state_transitions_execute_as_described(seed):
         connection.executescript(sql(9))
         updated = list(connection.execute(query))
         if case["family"] == "sensors":
-            assert updated[0] == (1, 18 + seed % 5, 99)
+            assert updated[0] == (1, 18 + seed % 5, 21 + seed % 5)
         elif case["family"] == "bookings":
-            assert updated == [(1, -1), (2, 1), (3, 5)]
+            assert updated == [(1, 2), (2, 1), (3, 2)]
         else:
             assert next(iter(connection.execute(sql(2)))) == (12, 4)
-            assert updated == [(1, 2), (2, 4), (3, 6)]
+            assert updated == [(1, 4), (2, 4), (3, 6)]
     finally:
         connection.close()
 
@@ -164,6 +174,12 @@ def test_complete_case_pdf_keeps_all_questions_and_no_clipped_words(
         )
         with pymupdf.open(path) as pdf:
             text = "\n".join(page.get_text() for page in pdf)
+            assert "case_states" not in text
+            assert any(
+                "Tableau de travail pour la question 2i" in page.get_text()
+                and "2i." in page.get_text()
+                for page in pdf
+            )
             for question in exercise.questions:
                 assert question.id in text
             for page in pdf:

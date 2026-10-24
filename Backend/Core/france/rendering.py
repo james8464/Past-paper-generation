@@ -597,6 +597,7 @@ def render_assessment(
                 regular_font=regular,
                 available_width=doc.width,
                 show_id=show_id
+                and material.id != "case_states"
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:

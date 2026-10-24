@@ -6,6 +6,7 @@ Only fixed application SQL executes. Model-provided SQL/code is never executed.
 
 import json
 import sqlite3
+from copy import deepcopy
 from hashlib import sha256
 
 VERSION = "fr-nsi-database-cases-v1"
@@ -245,6 +246,90 @@ _BAD_INSERTS = {
 }
 
 
+def linked_sql(family, public):
+    """Fixed application-owned actions, used in the correction and SQL oracle."""
+    if family == "sensors":
+        corrected = public["tables"][1]["rows"][0][3] + 3
+        return [
+            "UPDATE releve SET valide=0\nWHERE id=12;",
+            f"UPDATE releve\nSET temperature={corrected}, valide=1\nWHERE id=13;",
+        ]
+    if family == "bookings":
+        return [
+            "UPDATE reservation SET seance=3\nWHERE code=12;",
+            "UPDATE reservation SET confirmee=1\nWHERE code=13;",
+            "UPDATE reservation SET confirmee=0\nWHERE code=14;",
+        ]
+    if family == "stock":
+        return [
+            "UPDATE mouvement SET instant=0\nWHERE numero=12;",
+            "INSERT INTO mouvement\nVALUES (16,1,3,-3);",
+            "INSERT INTO mouvement\nVALUES (17,1,4,5);",
+        ]
+    raise ValueError("Unknown database case family")
+
+
+def _independent_states(family, public):
+    """Transform lists directly, independently of SQL statement interpretation."""
+    current = deepcopy(public)
+    states = [deepcopy(current)]
+    rows = current["tables"][1]["rows"]
+    if family == "sensors":
+        next(row for row in rows if row[0] == 12)[4] = 0
+        states.append(deepcopy(current))
+        corrected = next(row for row in rows if row[0] == 11)[3] + 3
+        row = next(row for row in rows if row[0] == 13)
+        row[3], row[4] = corrected, 1
+        states.append(deepcopy(current))
+    elif family == "bookings":
+        for identifier, column, value in ((12, 1, 3), (13, 3, 1), (14, 3, 0)):
+            next(row for row in rows if row[0] == identifier)[column] = value
+            states.append(deepcopy(current))
+    elif family == "stock":
+        next(row for row in rows if row[0] == 12)[2] = 0
+        states.append(deepcopy(current))
+        for movement in ([16, 1, 3, -3], [17, 1, 4, 5]):
+            rows.append(movement)
+            states.append(deepcopy(current))
+    else:
+        raise ValueError("Unknown database case family")
+    return states
+
+
+def _state_evidence(connection, family, public):
+    states = _independent_states(family, public)
+    statements = linked_sql(family, public)
+    evidence = []
+    connection.execute("SAVEPOINT linked_states")
+    try:
+        for index, state in enumerate(states):
+            if index:
+                cursor = connection.execute(statements[index - 1])
+                if cursor.rowcount != 1:
+                    raise ValueError("Linked action must affect exactly one row")
+            expected = _independent(family, state)
+            _check_algorithm(family, state, expected)
+            rows = [list(row) for row in connection.execute(_QUERIES[family])]
+            if rows != expected["result"]:
+                raise ValueError("Linked SQL and independent state disagree")
+            # Check the entire source, not only aggregate totals that could hide
+            # a wrong row mutation or a chronology error.
+            for table in state["tables"]:
+                actual = [
+                    list(row)
+                    for row in connection.execute(
+                        f"SELECT * FROM {table['name']} ORDER BY 1"
+                    )
+                ]
+                if actual != sorted(table["rows"], key=lambda row: row[0]):
+                    raise ValueError("Linked SQL changed the wrong source rows")
+            evidence.append({"name": f"S{index}", **expected})
+    finally:
+        connection.execute("ROLLBACK TO linked_states")
+        connection.execute("RELEASE linked_states")
+    return evidence
+
+
 def _independent(family, public):
     parents, events = (table["rows"] for table in public["tables"])
     if family == "sensors":
@@ -327,6 +412,9 @@ def _evidence(family, public):
             "foreign_key_rejected": rejected,
             "sql_matches_independent": True,
             "algorithm_matches_independent": True,
+            "states": _state_evidence(connection, family, public),
+            "states_sql_matches_independent": True,
+            "states_algorithm_matches_independent": True,
         }
     finally:
         connection.close()

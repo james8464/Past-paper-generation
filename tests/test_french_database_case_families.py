@@ -158,3 +158,67 @@ def test_algorithm_mismatch_blocks_case_publication(monkeypatch, seed, function,
     monkeypatch.setattr(cases, function, lambda *args: wrong)
     with pytest.raises(ValueError, match="Algorithm and independent"):
         cases.build_case(seed)
+
+
+def test_linked_states_have_distinct_causal_effects():
+    from Backend.Core.france.database_case_families import build_case
+
+    sensor, booking, stock = [build_case(seed) for seed in range(270100, 270103)]
+    assert [state["result"][0] for state in sensor["expected"]["states"]] == [
+        [1, 18, 24],
+        [1, 18, 18],
+        [1, 18, 21],
+    ]
+    assert [state["result"] for state in booking["expected"]["states"]] == [
+        [[1, -1], [2, 2], [3, 5]],
+        [[1, 2], [2, 2], [3, 2]],
+        [[1, 2], [2, 0], [3, 2]],
+        [[1, 2], [2, 1], [3, 2]],
+    ]
+    assert [state["first_invalid"] for state in stock["expected"]["states"]] == [
+        11,
+        None,
+        16,
+        16,
+    ]
+    assert [state["result"][0][1] for state in stock["expected"]["states"]] == [
+        2,
+        2,
+        -1,
+        4,
+    ]
+
+
+@pytest.mark.parametrize("seed", range(270100, 270112))
+def test_each_linked_state_is_verified_by_sql_and_algorithm(seed):
+    from Backend.Core.france.database_case_families import build_case
+
+    case = build_case(seed)
+    assert case["expected"]["states_sql_matches_independent"] is True
+    assert case["expected"]["states_algorithm_matches_independent"] is True
+    assert [state["name"] for state in case["expected"]["states"]] == [
+        f"S{index}" for index in range(len(case["expected"]["states"]))
+    ]
+
+
+def test_chronology_corruption_cannot_hide_behind_unchanged_totals(monkeypatch):
+    from Backend.Core.france import database_case_families as cases
+
+    original = cases.linked_sql
+
+    def corrupt(family, public):
+        statements = original(family, public)
+        statements[0] = "UPDATE mouvement SET instant=5 WHERE numero=12;"
+        return statements
+
+    monkeypatch.setattr(cases, "linked_sql", corrupt)
+    with pytest.raises(ValueError, match="wrong source rows"):
+        cases.build_case(270102)
+
+
+def test_case_rejects_tampered_linked_evidence():
+    from Backend.Core.france.database_case_families import build_case, verify_case
+
+    case = build_case(270102)
+    case["expected"]["states"][-1]["first_invalid"] = None
+    assert not verify_case(case)

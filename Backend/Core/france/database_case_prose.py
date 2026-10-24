@@ -12,6 +12,7 @@ from decimal import Decimal
 from Backend.Core.france.database_case_families import (
     build_case,
     first_stock_deficit,
+    linked_sql,
     remaining_places,
     sensor_extrema,
 )
@@ -121,26 +122,31 @@ def _sensors(case):
             "LP-MODULARITE",
         ),
         _item(
-            "Tracez votre dictionnaire après les relevés 11, 12 et 13, dans cet ordre, en ne montrant que l'entrée du capteur 1. Expliquez l'absence de changement au dernier relevé.",
-            f"Après 11 : ({low}, {low}) ; après 12 : ({low}, {high}) ; après 13 : ({low}, {high}). Le relevé 13 est invalide.",
+            f"Une révision part des tables S0. En S1, le relevé 12 devient invalide. En S2, le relevé 13 est corrigé à {low + 3} degrés puis validé ; 12 reste invalide. Recalculez l'entrée du capteur 1 dans chacun des trois états. Expliquez les deux variations du maximum.",
+            f"S0 : ({low}, {high}) ; S1 : ({low}, {low}) ; S2 : ({low}, {low + 3}). Le maximum baisse lorsque 12 est exclu, puis augmente avec la valeur corrigée de 13 ; 99 n'est jamais admis.",
             [
                 "Les trois états sont exacts.",
-                "L'absence de changement est reliée à valide=0.",
+                "La baisse après exclusion et la hausse après correction sont expliquées.",
             ],
             "apply",
             "LP-DEBUG",
         ),
         _item(
-            "Une correction ultérieure valide le relevé 13. Écrivez l'UPDATE limité à cette mesure, puis donnez les nouvelles bornes du capteur 1. Cette hypothèse ne change pas les réponses précédentes.",
-            f"```sql\nUPDATE releve SET valide=1 WHERE id=13;\n```\nLe minimum reste {low} ; le maximum devient 99.",
-            ["L'UPDATE ne cible que 13.", "Les deux nouvelles bornes sont exactes."],
+            "Écrivez les instructions SQL produisant S1 puis S2. La correction de temperature et le changement de valide de 13 doivent appartenir au même UPDATE, afin de ne jamais publier 99 comme valeur valide.",
+            "```sql\n" + "\n".join(linked_sql("sensors", case["public"])) + "\n```",
+            [
+                "Le premier UPDATE invalide seulement 12.",
+                "Le second corrige la température et valide seulement 13 dans une instruction.",
+            ],
             "apply",
             "BDD-SQL-MUTATION",
         ),
         _item(
-            "Quel invariant relie l'entrée d'un capteur aux observations déjà parcourues ? Formulez-le aussi lorsqu'aucune de ces observations n'est valide.",
-            "Après chaque préfixe traité, l'entrée vaut les extrema des températures valides de ce capteur dans ce préfixe, ou None s'il n'en existe aucune.",
-            ["Les extrema du préfixe et le cas sans valeur sont explicités."],
+            "Pour passer de S0 à S1, peut-on garder les anciennes bornes puis appliquer seulement min et max aux nouvelles valeurs ? Utilisez le maximum de S1 pour justifier la nécessité de recalculer ou de conserver davantage d'informations.",
+            f"Non : max ne peut pas faire descendre l'ancien maximum {high} à {low}. Il faut recalculer sur les mesures encore valides, ou maintenir une structure permettant de retirer une ancienne valeur.",
+            [
+                "Le maximum retiré constitue un contre-exemple à une actualisation seulement par max."
+            ],
             "justify",
             "LP-MODULARITE",
         ),
@@ -237,21 +243,21 @@ def _bookings(case):
             "LP-MODULARITE",
         ),
         _item(
-            "La demande 13 devient confirmée, puis le groupe 14 annule sa confirmation. À chaque étape, recalculez les places libres de Boreal. Les deux actions s'appliquent successivement à la situation initiale.",
-            "Initialement 2 places libres. Après confirmation de 13 : 0. Après annulation de 14 : 1. Le groupe 13 occupe deux places ; le groupe 14 en libère une.",
+            "Le festival applique trois décisions successives à S0. S1 : le groupe 12 passe d'Atlas à Cirrus, en restant confirmé. S2 : 13 est confirmé. S3 : 14 annule sa confirmation. Construisez un tableau des places libres des trois séances dans S0, S1, S2 et S3. Expliquez pourquoi le transfert change deux séances alors qu'une confirmation n'en change qu'une.",
+            "Dans l'ordre Atlas, Boreal, Cirrus : S0=(-1,2,5), S1=(2,2,2), S2=(2,0,2), S3=(2,1,2). Le transfert libère trois places à Atlas et en occupe trois à Cirrus ; les changements de statut agissent seulement sur Boreal.",
             [
-                "Après confirmation, la disponibilité vaut 0.",
-                "Après annulation, elle vaut 1 avec une place libérée.",
+                "Les quatre états des trois séances sont exacts.",
+                "Les effets du transfert sur deux séances et des statuts sur Boreal sont expliqués.",
             ],
             "apply",
             "LP-DEBUG",
         ),
         _item(
-            "Écrivez les deux UPDATE réalisant ces actions, sans supprimer les demandes. Expliquez pourquoi une annulation ne doit pas changer places ni le numéro de séance.",
-            "```sql\nUPDATE reservation SET confirmee=1\nWHERE code=13;\nUPDATE reservation SET confirmee=0\nWHERE code=14;\n```\nSeul le statut change ; taille et séance restent disponibles pour l'historique de la demande.",
+            "Traduisez les trois décisions en UPDATE ciblés, dans leur ordre. Le transfert ne change pas la taille du groupe ni sa confirmation ; l'annulation conserve la demande dans le registre.",
+            "```sql\n" + "\n".join(linked_sql("bookings", case["public"])) + "\n```",
             [
-                "Les deux statuts sont modifiés sur leurs seuls codes.",
-                "Les autres attributs sont conservés pour l'historique.",
+                "Le transfert modifie seulement la séance du code 12.",
+                "Les deux statuts des codes 13 puis 14 changent sans suppression ni modification des tailles.",
             ],
             "apply",
             "BDD-SQL-MUTATION",
@@ -357,21 +363,21 @@ def _stock(case):
             "LP-MODULARITE",
         ),
         _item(
-            "Avec un stock initial de 2 et les mouvements (41,−2), (57,+3), (63,−4), tracez les soldes examinés et donnez le retour. Pourquoi ne faut-il retourner ni 2 ni 3 ?",
-            "Soldes 0,3,−1 ; retour 63. 2 serait un indice dans la liste, 3 un rang ; le contrat exige l'identifiant du mouvement.",
+            "On simule successivement trois changements pour Lentille. S1 : le réapprovisionnement 12 est avancé à l'instant 0. S2 : on ajoute le mouvement 16 à l'instant 3, de variation -3. S3 : on ajoute 17 à l'instant 4, de variation +5. Pour chaque état, tracez les stocks dans l'ordre des instants et donnez le premier identifiant déficitaire, ou None. Le dernier réapprovisionnement répare-t-il la faisabilité passée ?",
+            f"S1 : {initial + 4}, 2 ; retour None. S2 : {initial + 4}, 2, -1 ; retour 16. S3 : {initial + 4}, 2, -1, 4 ; retour 16. Le stock final de 4 ne supprime pas le déficit survenu au mouvement 16.",
             [
-                "Les soldes et le retour 63 sont exacts.",
-                "L'identifiant est distingué de l'indice et du rang.",
+                "Les trois traces et les retours None, 16, 16 sont exacts.",
+                "Le solde final positif ne répare pas la faisabilité passée.",
             ],
             "apply",
             "LP-DEBUG",
         ),
         _item(
-            "Dans une simulation indépendante, le réapprovisionnement 12 est avancé à l'instant 0. Écrivez l'UPDATE, puis donnez le verdict d'audit de Lentille. Ne modifiez aucune variation.",
-            f"```sql\nUPDATE mouvement SET instant=0 WHERE numero=12;\n```\nLes stocks deviennent {initial + 4} puis 2 : aucun déficit, donc None.",
+            "Écrivez l'UPDATE puis les deux INSERT produisant S1, S2 et S3. Respectez les identifiants, l'article concerné et l'ordre des attributs de mouvement : numero, article, instant, delta.",
+            "```sql\n" + "\n".join(linked_sql("stock", case["public"])) + "\n```",
             [
                 "Seul l'instant du mouvement 12 est remplacé par 0.",
-                "Le nouvel ordre, ses soldes et le retour None sont cohérents.",
+                "Les insertions 16 et 17 lient article 1, instants 3 et 4 et variations -3 et +5.",
             ],
             "apply",
             "BDD-SQL-MUTATION",
@@ -409,6 +415,21 @@ def render_case(seed):
         )
         for table in public["tables"]
     ]
+    source_ids = [material["id"] for material in materials]
+    columns, states = {
+        "sensors": (["État", "Minimum", "Maximum"], ["S0", "S1", "S2"]),
+        "bookings": (["État", "Atlas", "Boreal", "Cirrus"], ["S0", "S1", "S2", "S3"]),
+        "stock": (["État", "Stocks successifs", "Retour"], ["S1", "S2", "S3"]),
+    }[case["family"]]
+    materials.append(
+        dict(
+            kind="table",
+            id="case_states",
+            title="Tableau de travail pour la question 2i",
+            columns=columns,
+            rows=[[state, *["..."] * (len(columns) - 1)] for state in states],
+        )
+    )
     questions = []
     for index, item in enumerate(items):
         identifier = "2" + "abcdefghijkl"[index]
@@ -422,7 +443,7 @@ def render_case(seed):
                     dict(points="0.25", criterion=criterion)
                     for criterion in item["criteria"]
                 ],
-                material_ids=[m["id"] for m in materials],
+                material_ids=source_ids + (["case_states"] if index == 8 else []),
                 curriculum_codes=[item["code"]],
                 operation=item["operation"],
                 difficulty=4 if index == 7 else 2 if index < 3 else 3,
