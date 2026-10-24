@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792805923.5453885,
-    "ast_hash": "d192678049c01bfb2b6c94273decb12d",
+    "mtime": 1792806264.4444299,
+    "ast_hash": "23e925fd0389ca77340d809302b5753c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3462,6 +3462,16 @@
   "tests/test_french_tree_case_authoring.py": {
     "mtime": 1792806237.8101022,
     "ast_hash": "62f39e456876b9f65adc4ac9d95e40bc",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/system_case_families.py": {
+    "mtime": 1792806523.79189,
+    "ast_hash": "2a0f3f9804f99bf252f29c24888705f5",
+    "semantic_hash": ""
+  },
+  "tests/test_french_system_case_families.py": {
+    "mtime": 1792806510.326209,
+    "ast_hash": "3398790ee5d798fe6bfefeaedca1abb8",
     "semantic_hash": ""
   }
 }
