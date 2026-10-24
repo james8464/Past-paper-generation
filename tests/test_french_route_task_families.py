@@ -25,7 +25,9 @@ def checked_package(tmp_path, seed, version="v31"):
     validate_package(package)
     assert package["identity"]["prompt_version"] == f"fr-nsi-written-2027-{version}"
     questions = package["exercises"][0]["questions"]
-    assert questions[6]["verification"]["kind"] == "route_family_contract"
+    assert questions[6]["verification"]["kind"] == (
+        "tree_case_contract" if version == "v32" else "route_family_contract"
+    )
     assert sum(q["estimated_minutes"] for q in questions) == 70
     assert (
         sum(Decimal(q["points"]) for e in package["exercises"] for q in e["questions"])

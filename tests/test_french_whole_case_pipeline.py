@@ -1,4 +1,4 @@
-"""V32 integration: whole E2 cases, honest provenance and strict replay."""
+"""V32 integration: whole E1/E2 cases, honest provenance and strict replay."""
 
 from copy import deepcopy
 from decimal import Decimal
@@ -22,10 +22,13 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
     make_index(index)
 
     def forbidden_model_authoring(*args, **kwargs):
-        pytest.fail("V32 E2 must not invoke legacy model-selection authoring")
+        pytest.fail("V32 whole cases must not invoke legacy model-selection authoring")
 
     monkeypatch.setattr(
         pipeline, "author_database_reconciliation_selection", forbidden_model_authoring
+    )
+    monkeypatch.setattr(
+        pipeline, "author_graph_two_outage_selection", forbidden_model_authoring
     )
     package = generate_assessment(
         index_path=index,
@@ -38,6 +41,36 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
     validate_package(package)
     assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v32"
     assert "database_reconciliation_contract_sha256" not in package["identity"]
+    assert "graph_two_outage_contract_sha256" not in package["identity"]
+    assert all(
+        q["verification"]["kind"] == "tree_case_contract"
+        for q in package["exercises"][0]["questions"]
+    )
+    tree_evidence = package["evidence"][0]["tree_case_evidence"]
+    assert tree_evidence["origin"] == "application_owned"
+    assert tree_evidence["model_used"] is False
+    assert "accepted" not in tree_evidence
+    for field in (
+        "tree_case_sha256",
+        "tree_case_version",
+        "tree_case_catalogue_sha256",
+    ):
+        altered = deepcopy(package)
+        altered["identity"][field] = "invalid"
+        with pytest.raises(ValueError):
+            validate_package(altered)
+    for key, value in (("model_used", 0), ("case_sha256", "0" * 64), ("extra", True)):
+        altered = deepcopy(package)
+        altered["evidence"][0]["tree_case_evidence"][key] = value
+        with pytest.raises(ValueError):
+            validate_package(altered)
+    for field in ("prompt", "answer", "points"):
+        altered = deepcopy(package)
+        altered["exercises"][0]["questions"][6][field] = "altered"
+        altered["evidence"][0]["exercise_sha256"] = digest(altered["exercises"][0])
+        altered["evidence"][0]["candidate_sha256"] = digest(altered["exercises"][0])
+        with pytest.raises(ValueError):
+            validate_package(altered)
     exercise = package["exercises"][1]
     evidence = package["evidence"][1]["database_case_evidence"]
     assert evidence["origin"] == "application_owned"

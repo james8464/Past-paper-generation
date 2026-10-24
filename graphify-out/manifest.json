@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792805111.0665586,
-    "ast_hash": "e096b508fafb2358866c5c28d31fb89e",
+    "mtime": 1792806216.8878958,
+    "ast_hash": "e349813d69fbfe5db3b5ec8b485ecbfe",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792804522.9308753,
-    "ast_hash": "497f80c633f25d64b5e6ec9eddefd77c",
+    "mtime": 1792806174.8302057,
+    "ast_hash": "7eaaf4eaf9f3141ae74080fc952cfb11",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -3380,8 +3380,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_route_task_families.py": {
-    "mtime": 1792805125.034796,
-    "ast_hash": "1cb8a8dbdef521877ac8df17d864efc3",
+    "mtime": 1792806169.1285465,
+    "ast_hash": "54f5c6feed2487128681df09c43fb9b0",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_pipeline.py": {
-    "mtime": 1792805053.4138274,
-    "ast_hash": "f3aa9d37d16ad201033d2ce3632a479b",
+    "mtime": 1792806216.9992807,
+    "ast_hash": "eee9bc0016c2644cc71aab78e9d7b64e",
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_case_families.py": {
@@ -3445,13 +3445,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_case_prose.py": {
-    "mtime": 1792805861.287858,
-    "ast_hash": "eefbe3df15d096ce28c1358564467949",
+    "mtime": 1792806174.8297176,
+    "ast_hash": "ab430b9505b4e13bdfad187143bef725",
     "semantic_hash": ""
   },
   "tests/test_french_tree_case_prose.py": {
     "mtime": 1792805861.287861,
     "ast_hash": "616b8ad916ae6bb6302661ba6c8f930c",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/tree_case_authoring.py": {
+    "mtime": 1792806174.8295975,
+    "ast_hash": "86c09957793312abcc99c3f55d65f0b5",
+    "semantic_hash": ""
+  },
+  "tests/test_french_tree_case_authoring.py": {
+    "mtime": 1792806237.8101022,
+    "ast_hash": "62f39e456876b9f65adc4ac9d95e40bc",
     "semantic_hash": ""
   }
 }

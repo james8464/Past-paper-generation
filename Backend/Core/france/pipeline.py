@@ -205,6 +205,14 @@ from Backend.Core.france.question_review import (
     repair_question_prompt,
 )
 from Backend.Core.france.source_identity import implementation_identity
+from Backend.Core.france.tree_case_authoring import author_case as author_tree_case
+from Backend.Core.france.tree_case_authoring import (
+    catalogue_digest as tree_case_catalogue_digest,
+)
+from Backend.Core.france.tree_case_authoring import replay_case as replay_tree_case
+from Backend.Core.france.tree_case_families import build_case as build_tree_case
+from Backend.Core.france.tree_case_prose import VERSION as TREE_CASE_VERSION
+from Backend.Core.france.tree_case_prose import case_task as tree_case_task
 from Backend.Core.france.tree_construction_authoring import graph_catalogue_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.scoped_references import ReferenceIndex
@@ -740,8 +748,9 @@ def _tasks_for_seed_v24(seed: int) -> list[dict]:
 
 
 def _tasks_for_seed_v32(seed: int) -> list[dict]:
-    """Draft whole E2 cases; E1/E3 still require sequential release qualification."""
+    """Draft whole E1/E2 cases; E3 still requires sequential qualification."""
     tasks = _tasks_for_seed_v31(seed)
+    tasks[0] = tree_case_task(seed, tasks[0]["technical_points"])
     tasks[1] = case_task(seed, tasks[1]["technical_points"])
     return tasks
 
@@ -2070,7 +2079,11 @@ def generate_assessment(
         "originality_history_digest": digest(originality_history),
     }
     if contract_graph_tree:
-        if contract_authoring_version in {
+        if contract_authoring_version == "v32":
+            identity["tree_case_sha256"] = build_tree_case(seed)["sha256"]
+            identity["tree_case_version"] = TREE_CASE_VERSION
+            identity["tree_case_catalogue_sha256"] = tree_case_catalogue_digest()
+        elif contract_authoring_version in {
             "v25",
             "v26",
             "v27",
@@ -2078,7 +2091,6 @@ def generate_assessment(
             "v29",
             "v30",
             "v31",
-            "v32",
         }:
             identity["graph_two_outage_contract_sha256"] = (
                 build_graph_two_outage_contract(seed).digest
@@ -2272,19 +2284,28 @@ def generate_assessment(
                         in {"v25", "v26", "v27", "v28", "v29", "v30", "v31", "v32"}
                         and key == "1"
                     ):
-                        contract = build_graph_two_outage_contract(seed)
                         selection_path = checkpoint.with_name(
                             f"{checkpoint.name}.exercise-1.attempt-{attempt}.selection.json"
                         )
-                        raw, selection_evidence = author_graph_two_outage_selection(
-                            client,
-                            task,
-                            contract,
-                            references[position],
-                            selection_path,
-                            run_identity=identity,
-                        )
-                        record["graph_two_outage_selection"] = selection_evidence
+                        evidence_key = "graph_two_outage_selection"
+                        if contract_authoring_version == "v32":
+                            evidence_key = "tree_case_evidence"
+                            raw, selection_evidence = author_tree_case(
+                                task,
+                                references[position],
+                                selection_path,
+                                run_identity=identity,
+                            )
+                        else:
+                            raw, selection_evidence = author_graph_two_outage_selection(
+                                client,
+                                task,
+                                build_graph_two_outage_contract(seed),
+                                references[position],
+                                selection_path,
+                                run_identity=identity,
+                            )
+                        record[evidence_key] = selection_evidence
                         record["candidate"] = raw
                         exercise = NSIExercise.model_validate(raw)
                         _check_exercise_plan(exercise, task, key)
@@ -2306,7 +2327,7 @@ def generate_assessment(
                                     exercise.model_dump(mode="json")
                                 ),
                                 "candidate_sha256": digest(raw),
-                                "graph_two_outage_selection": selection_evidence,
+                                evidence_key: selection_evidence,
                                 "references": references[position],
                                 "deterministic": checks,
                                 "originality": originality,
@@ -3277,11 +3298,17 @@ def validate_package(package: dict):
         }
         if identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
             v26_fields -= {
+                "graph_two_outage_contract_sha256",
+                "graph_two_outage_prose_contract_version",
+                "graph_two_outage_prose_catalogue_sha256",
                 "database_reconciliation_contract_sha256",
                 "database_reconciliation_prose_contract_version",
                 "database_reconciliation_prose_catalogue_sha256",
             }
             v26_fields |= {
+                "tree_case_sha256",
+                "tree_case_version",
+                "tree_case_catalogue_sha256",
                 "database_case_sha256",
                 "database_case_version",
                 "database_case_catalogue_sha256",
@@ -3343,6 +3370,12 @@ def validate_package(package: dict):
         != graph_route_trace_catalogue_digest()
     ):
         raise ValueError("Identité de trace des trajets incompatible")
+    if identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION and (
+        identity.get("tree_case_sha256") != build_tree_case(seed)["sha256"]
+        or identity.get("tree_case_version") != TREE_CASE_VERSION
+        or identity.get("tree_case_catalogue_sha256") != tree_case_catalogue_digest()
+    ):
+        raise ValueError("Whole tree case identity mismatch")
     if identity["prompt_version"] in {
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
@@ -3350,7 +3383,6 @@ def validate_package(package: dict):
         CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
-        CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     } and (
         type(seed) is not int
@@ -3668,13 +3700,21 @@ def validate_package(package: dict):
             }
             and exercise.id == "1"
         ):
-            raw = replay_graph_two_outage_selection(
-                expected_blueprint[0],
-                build_graph_two_outage_contract(seed),
-                evidence.get("references"),
-                evidence.get("graph_two_outage_selection"),
-                run_identity=identity,
-            )
+            if identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+                raw = replay_tree_case(
+                    expected_blueprint[0],
+                    evidence.get("references"),
+                    evidence.get("tree_case_evidence"),
+                    run_identity=identity,
+                )
+            else:
+                raw = replay_graph_two_outage_selection(
+                    expected_blueprint[0],
+                    build_graph_two_outage_contract(seed),
+                    evidence.get("references"),
+                    evidence.get("graph_two_outage_selection"),
+                    run_identity=identity,
+                )
             rebuilt = NSIExercise.model_validate(raw)
             checks = [
                 verify_contract(question.verification) for question in rebuilt.questions
