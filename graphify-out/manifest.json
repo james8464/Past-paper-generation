@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792806216.8878958,
-    "ast_hash": "e349813d69fbfe5db3b5ec8b485ecbfe",
+    "mtime": 1792807071.655744,
+    "ast_hash": "279755cda8971b6cc09f4e59c2ea08f6",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792806174.8302057,
-    "ast_hash": "7eaaf4eaf9f3141ae74080fc952cfb11",
+    "mtime": 1792807071.6533797,
+    "ast_hash": "a1bb19a020a7e2a607b91683d3ae63ef",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792806548.2049909,
-    "ast_hash": "e53d109dd3648da2d2c6221a1a6f821c",
+    "mtime": 1792806986.262539,
+    "ast_hash": "2af3d1b4c2172bafe85c4cb43bcd19af",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3430,8 +3430,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_pipeline.py": {
-    "mtime": 1792806216.9992807,
-    "ast_hash": "eee9bc0016c2644cc71aab78e9d7b64e",
+    "mtime": 1792807116.2091308,
+    "ast_hash": "add651bcea3a00ef472a28b3d8c27b4e",
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_case_families.py": {
@@ -3475,13 +3475,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/system_case_prose.py": {
-    "mtime": 1792806914.0043912,
-    "ast_hash": "d82a6238722657c75f405de8d17e5829",
+    "mtime": 1792807162.42612,
+    "ast_hash": "8cf87610d7a2170338918c3ee46da6ee",
     "semantic_hash": ""
   },
   "tests/test_french_system_case_prose.py": {
     "mtime": 1792806954.3819401,
     "ast_hash": "65ad2d03cf7a28d26d1bbf15180ef529",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/system_case_authoring.py": {
+    "mtime": 1792807071.653101,
+    "ast_hash": "c42058eb226c5470226e37727b4e088c",
+    "semantic_hash": ""
+  },
+  "tests/test_french_system_case_authoring.py": {
+    "mtime": 1792807162.4264667,
+    "ast_hash": "8527430e152e1c075c6cb1799f52389e",
     "semantic_hash": ""
   }
 }

@@ -205,6 +205,14 @@ from Backend.Core.france.question_review import (
     repair_question_prompt,
 )
 from Backend.Core.france.source_identity import implementation_identity
+from Backend.Core.france.system_case_authoring import author_case as author_system_case
+from Backend.Core.france.system_case_authoring import (
+    catalogue_digest as system_case_catalogue_digest,
+)
+from Backend.Core.france.system_case_authoring import replay_case as replay_system_case
+from Backend.Core.france.system_case_families import build_case as build_system_case
+from Backend.Core.france.system_case_prose import VERSION as SYSTEM_CASE_VERSION
+from Backend.Core.france.system_case_prose import case_task as system_case_task
 from Backend.Core.france.tree_case_authoring import author_case as author_tree_case
 from Backend.Core.france.tree_case_authoring import (
     catalogue_digest as tree_case_catalogue_digest,
@@ -748,10 +756,11 @@ def _tasks_for_seed_v24(seed: int) -> list[dict]:
 
 
 def _tasks_for_seed_v32(seed: int) -> list[dict]:
-    """Draft whole E1/E2 cases; E3 still requires sequential qualification."""
+    """Whole app-owned cases; release qualification remains a separate gate."""
     tasks = _tasks_for_seed_v31(seed)
     tasks[0] = tree_case_task(seed, tasks[0]["technical_points"])
     tasks[1] = case_task(seed, tasks[1]["technical_points"])
+    tasks[2] = system_case_task(seed, tasks[2]["technical_points"])
     return tasks
 
 
@@ -2236,7 +2245,11 @@ def generate_assessment(
             identity["network_incident_prose_catalogue_sha256"] = (
                 network_incident_catalogue_digest()
             )
-        if contract_authoring_version in {
+        if contract_authoring_version == "v32":
+            identity["system_case_sha256"] = build_system_case(seed)["sha256"]
+            identity["system_case_version"] = SYSTEM_CASE_VERSION
+            identity["system_case_catalogue_sha256"] = system_case_catalogue_digest()
+        elif contract_authoring_version in {
             "v26",
             "v27",
             "v28",
@@ -2278,6 +2291,59 @@ def generate_assessment(
                 record = {"exercise_id": key, "attempt": attempt}
                 try:
                     emit(f"Rédaction et vérification de l'exercice {key}/3")
+                    if (
+                        contract_graph_tree
+                        and contract_authoring_version == "v32"
+                        and key == "3"
+                    ):
+                        selection_path = checkpoint.with_name(
+                            f"{checkpoint.name}.exercise-3.attempt-{attempt}.selection.json"
+                        )
+                        raw, selection_evidence = author_system_case(
+                            task,
+                            references[position],
+                            selection_path,
+                            run_identity=identity,
+                        )
+                        record["system_case_evidence"] = selection_evidence
+                        record["candidate"] = raw
+                        exercise = NSIExercise.model_validate(raw)
+                        _check_exercise_plan(exercise, task, key)
+                        checks = [
+                            verify_contract(q.verification) for q in exercise.questions
+                        ]
+                        if any(check["state"] != "passed" for check in checks):
+                            raise ValueError(
+                                "Whole system deterministic contract rejected"
+                            )
+                        within_paper_history = [
+                            exercise_candidate_text(
+                                NSIExercise.model_validate(
+                                    state["accepted"][previous_key]["exercise"]
+                                )
+                            )
+                            for previous_key in sorted(state["accepted"])
+                        ]
+                        originality = _originality(
+                            exercise,
+                            references[position],
+                            originality_history + within_paper_history,
+                        )
+                        state["accepted"][key] = {
+                            "exercise": exercise.model_dump(mode="json"),
+                            "evidence": {
+                                "exercise_sha256": digest(
+                                    exercise.model_dump(mode="json")
+                                ),
+                                "candidate_sha256": digest(raw),
+                                "system_case_evidence": selection_evidence,
+                                "references": references[position],
+                                "deterministic": checks,
+                                "originality": originality,
+                            },
+                        }
+                        atomic_json(checkpoint, state)
+                        break
                     if (
                         contract_graph_tree
                         and contract_authoring_version
@@ -3298,6 +3364,9 @@ def validate_package(package: dict):
         }
         if identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
             v26_fields -= {
+                "network_incident_timeline_contract_sha256",
+                "network_incident_timeline_prose_contract_version",
+                "network_incident_timeline_prose_catalogue_sha256",
                 "graph_two_outage_contract_sha256",
                 "graph_two_outage_prose_contract_version",
                 "graph_two_outage_prose_catalogue_sha256",
@@ -3306,6 +3375,9 @@ def validate_package(package: dict):
                 "database_reconciliation_prose_catalogue_sha256",
             }
             v26_fields |= {
+                "system_case_sha256",
+                "system_case_version",
+                "system_case_catalogue_sha256",
                 "tree_case_sha256",
                 "tree_case_version",
                 "tree_case_catalogue_sha256",
@@ -3535,6 +3607,13 @@ def validate_package(package: dict):
         != network_incident_catalogue_digest()
     ):
         raise ValueError("Identité du contrat d'incident réseau incompatible")
+    if identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION and (
+        identity.get("system_case_sha256") != build_system_case(seed)["sha256"]
+        or identity.get("system_case_version") != SYSTEM_CASE_VERSION
+        or identity.get("system_case_catalogue_sha256")
+        != system_case_catalogue_digest()
+    ):
+        raise ValueError("Whole system case identity mismatch")
     if identity["prompt_version"] in {
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
@@ -3542,7 +3621,6 @@ def validate_package(package: dict):
         CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
-        CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     } and (
         type(seed) is not int
         or identity.get("network_incident_timeline_contract_sha256")
@@ -3686,6 +3764,29 @@ def validate_package(package: dict):
     for exercise, evidence in zip(exercises, package["evidence"], strict=True):
         if evidence.get("exercise_sha256") != digest(exercise.model_dump(mode="json")):
             raise ValueError("Exercise evidence hash mismatch")
+        if (
+            identity["prompt_version"] == CONTROLLED_WHOLE_CASE_PROMPT_VERSION
+            and exercise.id == "3"
+        ):
+            raw = replay_system_case(
+                expected_blueprint[2],
+                evidence.get("references"),
+                evidence.get("system_case_evidence"),
+                run_identity=identity,
+            )
+            rebuilt = NSIExercise.model_validate(raw)
+            checks = [verify_contract(q.verification) for q in rebuilt.questions]
+            if (
+                rebuilt.model_dump(mode="json") != exercise.model_dump(mode="json")
+                or evidence.get("candidate_sha256") != digest(raw)
+                or evidence.get("deterministic") != checks
+                or any(check["state"] != "passed" for check in checks)
+                or evidence.get("originality")
+                != _originality(exercise, evidence["references"], previous_texts)
+            ):
+                raise ValueError("Whole system case evidence does not replay exactly")
+            previous_texts.append(exercise_candidate_text(exercise))
+            continue
         if (
             identity["prompt_version"]
             in {

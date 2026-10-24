@@ -586,6 +586,38 @@ def render_case(seed, *, total="6"):
     return raw
 
 
+def case_task(seed, total="6"):
+    exercise = render_case(seed, total=total)
+    return dict(
+        topics=exercise["topics"],
+        query="réseaux processus routage interblocage chiffrement " + exercise["title"],
+        minutes=exercise["minutes"],
+        technical_points=total,
+        required_material_kind="table",
+        required_curriculum_codes=sorted(
+            {c for q in exercise["questions"] for c in q["curriculum_codes"]}
+        ),
+        archetype_id="network-operation-and-security",
+        scenario_brief=exercise["context"],
+        part_briefs=[
+            "A : interpréter, construire et vérifier le mécanisme fourni.",
+            "B : analyser la reprise et distinguer les garanties de sécurité.",
+        ],
+        question_blueprint=[
+            dict(
+                id=q["id"],
+                points=q["points"],
+                estimated_minutes=q["estimated_minutes"],
+                operation=q["operation"],
+                difficulty=q["difficulty"],
+                required_curriculum_code=q["curriculum_codes"][0],
+                part_id="A" if i < 6 else "B",
+            )
+            for i, q in enumerate(exercise["questions"])
+        ],
+    )
+
+
 def verify_candidate(candidate, seed, *, total="6"):
     try:
         return json.dumps(candidate, ensure_ascii=False, sort_keys=True) == json.dumps(

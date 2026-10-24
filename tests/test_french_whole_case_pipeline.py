@@ -30,6 +30,11 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
     monkeypatch.setattr(
         pipeline, "author_graph_two_outage_selection", forbidden_model_authoring
     )
+    monkeypatch.setattr(
+        pipeline,
+        "author_network_incident_timeline_selection",
+        forbidden_model_authoring,
+    )
     package = generate_assessment(
         index_path=index,
         client=ControlledTwoOutageFrenchClient(),
@@ -42,6 +47,35 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
     assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v32"
     assert "database_reconciliation_contract_sha256" not in package["identity"]
     assert "graph_two_outage_contract_sha256" not in package["identity"]
+    assert "network_incident_timeline_contract_sha256" not in package["identity"]
+    system_evidence = package["evidence"][2]["system_case_evidence"]
+    assert system_evidence["origin"] == "application_owned"
+    assert system_evidence["model_used"] is False
+    for key, value in (("model_used", 0), ("case_sha256", "0" * 64), ("extra", True)):
+        altered = deepcopy(package)
+        altered["evidence"][2]["system_case_evidence"][key] = value
+        with pytest.raises(ValueError):
+            validate_package(altered)
+    for key in (
+        "system_case_sha256",
+        "system_case_version",
+        "system_case_catalogue_sha256",
+    ):
+        altered = deepcopy(package)
+        altered["identity"][key] = "invalid"
+        with pytest.raises(ValueError):
+            validate_package(altered)
+    assert all(
+        q["verification"]["kind"] == "system_case_contract"
+        for q in package["exercises"][2]["questions"]
+    )
+    for field in ("prompt", "answer", "points"):
+        altered = deepcopy(package)
+        altered["exercises"][2]["questions"][3][field] = "altered"
+        altered["evidence"][2]["exercise_sha256"] = digest(altered["exercises"][2])
+        altered["evidence"][2]["candidate_sha256"] = digest(altered["exercises"][2])
+        with pytest.raises(ValueError):
+            validate_package(altered)
     assert all(
         q["verification"]["kind"] == "tree_case_contract"
         for q in package["exercises"][0]["questions"]
@@ -125,3 +159,13 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
         contract_authoring_version="v32",
     )
     assert resumed == package
+    # The fresh V32 path is deterministic app authoring too, not a live model run.
+    fresh = generate_assessment(
+        index_path=index,
+        client=NoCalls(),
+        seed=seed,
+        checkpoint=tmp_path / "fresh.json",
+        contract_graph_tree=True,
+        contract_authoring_version="v32",
+    )
+    assert fresh == package

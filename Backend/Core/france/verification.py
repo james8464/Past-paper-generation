@@ -292,6 +292,7 @@ def verify_contract(contract: dict) -> dict:
         "database_reconciliation_contract",
         "database_case_contract",
         "tree_case_contract",
+        "system_case_contract",
         "network_contract",
         "network_depth_contract",
         "network_reasoning_contract",
@@ -304,7 +305,29 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "tree_case_contract":
+        if kind == "system_case_contract":
+            from Backend.Core.france.system_case_families import build_case
+            from Backend.Core.france.system_case_prose import VERSION
+
+            if set(contract) != {
+                "kind",
+                "version",
+                "seed",
+                "case_sha256",
+                "task_id",
+                "expected",
+            }:
+                raise ValueError("Whole system case contract fields changed")
+            data = build_case(contract["seed"])
+            if (
+                contract["version"] != VERSION
+                or contract["case_sha256"] != data["sha256"]
+                or contract["task_id"]
+                not in {f"3{letter}" for letter in "abcdefghijkl"}
+            ):
+                raise ValueError("Whole system case identity mismatch")
+            actual = data["expected"]
+        elif kind == "tree_case_contract":
             from Backend.Core.france.tree_case_families import build_case
             from Backend.Core.france.tree_case_prose import VERSION
 
