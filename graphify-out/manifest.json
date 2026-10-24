@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792803183.0040154,
-    "ast_hash": "406bf16c810c00575ed777240c24f06a",
+    "mtime": 1792803635.3260448,
+    "ast_hash": "98c5438e03d7ae547bae56ff1bdf2135",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3395,8 +3395,18 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v31-sequential-originality-failure-2026-10-24.md": {
-    "mtime": 1792803228.2919288,
-    "ast_hash": "37e59d9499db67bc9f055161e2925308",
+    "mtime": 1792803270.1316798,
+    "ast_hash": "32aa4757f2187a81ed03f6a59f5281f6",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_case_families.py": {
+    "mtime": 1792803604.1181257,
+    "ast_hash": "c569d09947928cc2fe3b994dd53442c8",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_case_families.py": {
+    "mtime": 1792803621.7315848,
+    "ast_hash": "eb88ae17e89f6b8c67c559a4921afece",
     "semantic_hash": ""
   }
 }
