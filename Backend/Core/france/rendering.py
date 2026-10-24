@@ -579,6 +579,7 @@ def render_assessment(
                 "database_reconciliation_contract",
                 "database_case_contract",
                 "tree_case_contract",
+                "system_case_contract",
             }
             for question in exercise.questions
         )
@@ -687,6 +688,7 @@ def render_assessment(
                     "database_reconciliation_contract",
                     "database_case_contract",
                     "tree_case_contract",
+                    "system_case_contract",
                 }
             ):
                 start = material_start if question.id == "2g" else question_start
@@ -717,6 +719,7 @@ def render_assessment(
                         "route_family_contract",
                         "database_case_contract",
                         "tree_case_contract",
+                        "system_case_contract",
                     }
                     else "Réponse attendue",
                     credit,
@@ -790,6 +793,7 @@ def render_assessment(
                     "route_family_contract",
                     "database_case_contract",
                     "tree_case_contract",
+                    "system_case_contract",
                 }:
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
@@ -812,6 +816,7 @@ def render_assessment(
                             "route_family_contract",
                             "database_case_contract",
                             "tree_case_contract",
+                            "system_case_contract",
                         }
                     )
                     or question.verification.get("kind") == "graph_resilience_contract"
