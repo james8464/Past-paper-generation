@@ -284,6 +284,7 @@ def verify_contract(contract: dict) -> dict:
         "graph_route_trace_contract",
         "graph_two_outage_contract",
         "tree_construction_contract",
+        "route_selection_contract",
         "database_contract",
         "database_depth_contract",
         "database_audit_contract",
@@ -320,7 +321,11 @@ def verify_contract(contract: dict) -> dict:
             if contract["task_id"] not in data["task_ids"]:
                 raise ValueError("Tâche d'incident réseau absente")
             actual = data["expected"]
-        elif kind in {"graph_two_outage_contract", "tree_construction_contract"}:
+        elif kind in {
+            "graph_two_outage_contract",
+            "tree_construction_contract",
+            "route_selection_contract",
+        }:
             from Backend.Core.france.graph_two_outage_contract import (
                 GraphTwoOutageContract,
             )
@@ -338,6 +343,14 @@ def verify_contract(contract: dict) -> dict:
                 if task_id != "1j":
                     raise ValueError("Tâche de construction d'arbre inconnue")
                 actual = tree_construction_expected(data)
+            elif kind == "route_selection_contract":
+                from Backend.Core.france.route_selection_authoring import (
+                    route_selection_expected,
+                )
+
+                if task_id not in {"1f", "1g"}:
+                    raise ValueError("Tâche de sélection de trajet inconnue")
+                actual = route_selection_expected(data)
         elif kind == "graph_route_trace_contract":
             from Backend.Core.france.graph_route_trace_contract import (
                 GraphRouteTraceContract,

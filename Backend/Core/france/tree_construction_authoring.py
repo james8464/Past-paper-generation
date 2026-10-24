@@ -75,6 +75,12 @@ def tree_construction_expected(data: dict) -> dict:
 
 
 def graph_catalogue_identity(prompt_version: str) -> tuple[str, str]:
+    if prompt_version == "fr-nsi-written-2027-v30":
+        from Backend.Core.france.route_selection_authoring import (
+            route_catalogue_identity,
+        )
+
+        return route_catalogue_identity()
     if prompt_version != "fr-nsi-written-2027-v29":
         return GRAPH_TWO_OUTAGE_PROSE_VERSION, graph_two_outage_catalogue_digest()
     payload = {
@@ -90,6 +96,10 @@ def graph_catalogue_identity(prompt_version: str) -> tuple[str, str]:
 
 
 def render_graph_candidate(contract, selection, task_specs, prompt_version):
+    if prompt_version == "fr-nsi-written-2027-v30":
+        from Backend.Core.france.route_selection_authoring import render_route_candidate
+
+        return render_route_candidate(contract, selection, task_specs)
     if prompt_version != "fr-nsi-written-2027-v29":
         return render_graph_two_outage_candidate(contract, selection, task_specs)
     from Backend.Core.france.pipeline import _tasks_for_seed_v25

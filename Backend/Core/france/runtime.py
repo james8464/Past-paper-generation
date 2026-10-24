@@ -99,6 +99,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
     CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
     atomic_json,
     digest,
@@ -628,6 +629,165 @@ def validate_graph_route_trace_pdf(
                 raise ValueError(f"Route trace rubric {question.id} leaked")
 
 
+def _validate_route_selection_pdf(
+    path, data, exercise, *, correction, coherent_material_flow
+):
+    """Bind V30's public catalogue/helper and all answer/credit phases."""
+    from Backend.Core.france.route_selection_authoring import (
+        HELPER_CODE,
+        route_material,
+    )
+    from Backend.Core.france.verification import verify_contract
+
+    for question in exercise.questions[5:7]:
+        if (
+            question.verification.get("kind") != "route_selection_contract"
+            or question.verification.get("task_id") != question.id
+            or question.verification.get("contract") != data
+            or not verify_contract(question.verification)["passed"]
+        ):
+            raise ValueError("Route selection evidence differs from canonical facts")
+    if not verify_contract(exercise.questions[-1].verification)["passed"]:
+        raise ValueError("Tree construction evidence differs from canonical facts")
+    with pymupdf.open(path) as pdf:
+        pages = [
+            [
+                line.strip()
+                for line in page.get_text().splitlines()
+                if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+            ]
+            for page in pdf
+        ]
+    lines = [line for page in pages for line in page]
+    page_by_line = [i for i, page in enumerate(pages) for _ in page]
+
+    def normal(text):
+        return " ".join(re.sub(r"```(?:sql|python)?", " ", text).split())
+
+    flat = normal(" ".join(lines))
+    positions = {}
+    for question in exercise.questions:
+        matches = [
+            i
+            for i, line in enumerate(lines)
+            if re.match(rf"^{re.escape(question.id)}\.(?:\s|$)", line)
+        ]
+        if len(matches) != 1:
+            raise ValueError("Route selection question missing or repeated")
+        positions[question.id] = matches[0]
+    if list(positions.values()) != sorted(positions.values()):
+        raise ValueError("Route selection questions out of order")
+    expected_ids = {"reseau", "trace_initial", "catalogue_trajets", "arbre"}
+    if {material.id for material in exercise.materials} != expected_ids:
+        raise ValueError("Route selection material set differs")
+    catalogue = route_material(data)
+    table = next(m for m in exercise.materials if m.id == "catalogue_trajets")
+    if table.model_dump(mode="json") != catalogue:
+        raise ValueError("Route catalogue differs from canonical facts")
+    titles = [
+        "Réseau pondéré des postes",
+        "Trace de Dijkstra avant fermeture",
+        catalogue["title"],
+        "Arbre des identifiants",
+    ]
+    for title, task_id in zip(titles, ("1a", "1c", "1f", "1h"), strict=True):
+        if lines.count(title) != 1:
+            raise ValueError("Route selection material missing or duplicated")
+        start, end = lines.index(title), positions[task_id]
+        previous = {"1a": None, "1c": "1b", "1f": "1e", "1h": "1g"}[task_id]
+        if not start < end or (previous and start <= positions[previous]):
+            raise ValueError("Route selection material outside question phase")
+        if (
+            coherent_material_flow
+            and previous
+            and page_by_line[start] != page_by_line[end]
+        ):
+            raise ValueError("Route selection material separated from question")
+        if task_id == "1a":
+            expected = [str(edge[2]) for edge in data["graph"]["edges"]] + data[
+                "graph"
+            ]["nodes"]
+        elif task_id == "1c":
+            expected = [
+                "Fixation / donnée",
+                *"ABCDEF",
+                "1re distance (fixé : ___)",
+                *(["_____"] * 6),
+                "1re préd.",
+                *(["_____"] * 6),
+                "2e distance (fixé : ___)",
+                *(["_____"] * 6),
+                "2e préd.",
+                *(["_____"] * 6),
+            ]
+        elif task_id == "1f":
+            expected = catalogue["columns"] + [
+                cell for row in catalogue["rows"] for cell in row
+            ]
+        else:
+            expected = data["tree"]["columns"] + [
+                str(value) if value is not None else "—"
+                for row in data["tree"]["rows"]
+                for value in row
+            ]
+        if normal(" ".join(lines[start + 1 : end])) != normal(" ".join(expected)):
+            raise ValueError("Route selection printed material altered or filled")
+    heading = f"Exercice 1 ({exercise.target_points.replace('.', ',')} points)"
+    if (
+        lines.count(heading) != 1
+        or flat.count(normal(graph_edge_manifest(data["graph"]))) != 1
+    ):
+        raise ValueError("Route selection heading or graph source missing")
+    if normal(graph_edge_manifest(data["graph"])) not in normal(
+        " ".join(lines[lines.index(heading) : positions["1a"]])
+    ):
+        raise ValueError("Route selection graph source outside its phase")
+    if normal(data["debug_case"]["faulty_code"]) not in normal(
+        " ".join(lines[positions["1e"] : positions["1f"]])
+    ):
+        raise ValueError("Route selection BFS source missing")
+    if flat.count(normal(HELPER_CODE)) != 1:
+        raise ValueError("Route selection helper missing or repeated")
+    end_exercise = next(
+        (
+            i
+            for i in range(positions["1j"] + 1, len(lines))
+            if lines[i].startswith("Exercice 2 (")
+        ),
+        len(lines),
+    )
+    for index, question in enumerate(exercise.questions):
+        end = (
+            positions[exercise.questions[index + 1].id]
+            if index + 1 < len(exercise.questions)
+            else end_exercise
+        )
+        section = normal(" ".join(lines[positions[question.id] : end]))
+        if section.count(normal(question.prompt)) != 1:
+            raise ValueError(f"Route selection prompt {question.id} missing or altered")
+        if correction and normal(question.answer) not in section:
+            raise ValueError(f"Route selection answer {question.id} missing")
+        if not correction and normal(question.answer) in flat:
+            raise ValueError("Route selection answer leaked")
+        for credit in question.marking:
+            criterion = normal(credit.criterion)
+            unit = "point" if Decimal(credit.points) <= 1 else "points"
+            label = credit.points.replace(".", ",")
+            if correction and f"{label} {unit} {criterion}" not in section:
+                raise ValueError(f"Route selection credit {question.id} missing")
+            if not correction and criterion in flat:
+                raise ValueError("Route selection credit leaked")
+    if not correction and any(
+        token in flat
+        for token in (
+            "def meilleur_trajet",
+            "def compter_intervalle",
+            "if voisin not in visites:",
+        )
+    ):
+        raise ValueError("Route selection solution code leaked")
+
+
 def validate_graph_two_outage_pdf(
     path: Path,
     contract: GraphTwoOutageContract,
@@ -641,6 +801,14 @@ def validate_graph_two_outage_pdf(
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
+    if exercise.questions[5].verification.get("kind") == "route_selection_contract":
+        return _validate_route_selection_pdf(
+            path,
+            data,
+            exercise,
+            correction=correction,
+            coherent_material_flow=coherent_material_flow,
+        )
     tree_construction = (
         exercise.questions[-1].verification.get("kind") == "tree_construction_contract"
     )
@@ -694,7 +862,9 @@ def validate_graph_two_outage_pdf(
     if coherent_material_flow:
         for title, task_id in zip(titles[1:], ("1c", "1f", "1g", "1h"), strict=True):
             if page_by_line[lines.index(title)] != page_by_line[positions[task_id]]:
-                raise ValueError(f"Two-outage material separated from question {task_id}")
+                raise ValueError(
+                    f"Two-outage material separated from question {task_id}"
+                )
     if any(lines.count(title) != 1 for title in titles):
         raise ValueError("Two-outage working material missing or duplicated")
     graph_at, before_at, first_at, second_at, tree_at = (
@@ -2107,6 +2277,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION:
+        return "v30"
     if prompt_version == CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION:
         return "v29"
     if prompt_version == CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION:
@@ -2147,6 +2319,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
         CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
+        CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2213,7 +2386,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v29",
+            contract_authoring_version="v30",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2228,6 +2401,7 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_NETWORK_INCIDENT_MARKING_PROMPT_VERSION,
             CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
+            CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2266,8 +2440,13 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version in {"v26", "v27", "v28", "v29"}
-        human_readable_graph_titles = network_pdf_version in {"v27", "v28", "v29"}
+        network_timeline = network_pdf_version in {"v26", "v27", "v28", "v29", "v30"}
+        human_readable_graph_titles = network_pdf_version in {
+            "v27",
+            "v28",
+            "v29",
+            "v30",
+        }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
@@ -2296,7 +2475,7 @@ def handle_generate_assessment(args) -> int:
                     correction=correction,
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
-                    coherent_material_flow=network_pdf_version in {"v28", "v29"},
+                    coherent_material_flow=network_pdf_version in {"v28", "v29", "v30"},
                 ),
                 role=role,
                 language="fr-FR",
@@ -2321,7 +2500,8 @@ def handle_generate_assessment(args) -> int:
                 **(
                     {
                         "human_readable_titles": human_readable_graph_titles,
-                        "coherent_material_flow": network_pdf_version in {"v28", "v29"}
+                        "coherent_material_flow": network_pdf_version
+                        in {"v28", "v29", "v30"}
                         and not args.large_print,
                     }
                     if graph_two_outage
@@ -2364,7 +2544,7 @@ def handle_generate_assessment(args) -> int:
                 **(
                     {
                         "revision": 2
-                        if network_pdf_version in {"v27", "v28", "v29"}
+                        if network_pdf_version in {"v27", "v28", "v29", "v30"}
                         else 1
                     }
                     if network_timeline

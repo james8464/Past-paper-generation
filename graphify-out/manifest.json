@@ -170,7 +170,7 @@
     "semantic_hash": "d934c263e4b13bd92091fd86c2644929"
   },
   "Backend/Core/france/corpus.py": {
-    "mtime": 1791129181.5007071,
+    "mtime": 1792801205.4429903,
     "ast_hash": "4a6b9727d03a2eb49b51124291622248",
     "semantic_hash": ""
   },
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792799370.8275156,
-    "ast_hash": "376ac8d0c5d8d02b718f468d09345dd8",
+    "mtime": 1792801185.954014,
+    "ast_hash": "75a6e0f8d2a587df5000f7bf3c6925a4",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1792800053.9838705,
-    "ast_hash": "3691041bf44ec72db55f3aa35ee8a34a",
+    "mtime": 1792801185.9511564,
+    "ast_hash": "0a9f874b8cff87a97030dbf322ee6c68",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1792799540.2436256,
-    "ast_hash": "9772f1f1eaf6a48303249e0a1bc5b01f",
+    "mtime": 1792801359.8859766,
+    "ast_hash": "3e002dc9b433d00855d7fa04c79a6889",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -210,13 +210,13 @@
     "semantic_hash": "072aeabd2b5b4fc0a0d6263ff4b9fd50"
   },
   "Backend/Core/france/teacher_review.py": {
-    "mtime": 1791129181.5026352,
+    "mtime": 1792801205.4453707,
     "ast_hash": "0c8d500edc6d6674b3532ee45ce85d30",
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1792799345.2750263,
-    "ast_hash": "45ed71a72d4b1163c78916e858abb265",
+    "mtime": 1792801185.9512217,
+    "ast_hash": "641de1328b91d63ba8f8354dc61a6ebd",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792799515.5664575,
-    "ast_hash": "c9502088f083febf0f3b6f8b6cd2188b",
+    "mtime": 1792801323.81065,
+    "ast_hash": "ad5f75dc5f8f0eccecfab564a68ad950",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1792799345.2583537,
-    "ast_hash": "43ee90d1daa124bd2db41b5c5e850d12",
+    "mtime": 1792801229.217149,
+    "ast_hash": "f19a328579407a09a20e07f4199da0a0",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -2035,7 +2035,7 @@
     "semantic_hash": "71b32dde8a229be05e1753161e8b201b"
   },
   "Backend/Core/france/originality.py": {
-    "mtime": 1791129181.5015192,
+    "mtime": 1792801205.4452655,
     "ast_hash": "9985894e09a9203eee8350a2deb14e18",
     "semantic_hash": ""
   },
@@ -2045,8 +2045,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_benchmark_runner.py": {
-    "mtime": 1792799446.9772048,
-    "ast_hash": "4d5cf8b1eb7dded7427bb09733d72661",
+    "mtime": 1792801229.2465909,
+    "ast_hash": "07bc42c35c43005312341630b776b5a6",
     "semantic_hash": ""
   },
   "tests/test_french_originality.py": {
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1792799410.7196326,
-    "ast_hash": "40067cdce5776220fd232eccdece4abf",
+    "mtime": 1792801205.46406,
+    "ast_hash": "35a3d6d152d878790c5c02a027cdf9ed",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -2595,7 +2595,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_tree_contract.py": {
-    "mtime": 1791199863.1562636,
+    "mtime": 1792801205.4442859,
     "ast_hash": "dbf992c4465b44307377e5d0ff3921ef",
     "semantic_hash": ""
   },
@@ -2720,7 +2720,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_contract.py": {
-    "mtime": 1791363640.8386748,
+    "mtime": 1792801205.4447234,
     "ast_hash": "e01a5ff56fb1b8b7c9d268bdb8cdac84",
     "semantic_hash": ""
   },
@@ -2745,7 +2745,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_prose.py": {
-    "mtime": 1791365265.3851092,
+    "mtime": 1792801205.4450085,
     "ast_hash": "0aad348806b1e6d3be9ad06146ec0cb8",
     "semantic_hash": ""
   },
@@ -2755,7 +2755,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_authoring.py": {
-    "mtime": 1791365275.5984008,
+    "mtime": 1792801205.4445705,
     "ast_hash": "1588b3575d0086fcec5c56eca3f56160",
     "semantic_hash": ""
   },
@@ -2775,7 +2775,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_depth_contract.py": {
-    "mtime": 1791438238.2955716,
+    "mtime": 1792801205.444862,
     "ast_hash": "48cc2e26b2c262c0dce5e6e3a16b24ff",
     "semantic_hash": ""
   },
@@ -2970,7 +2970,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_resilience_prose.py": {
-    "mtime": 1791634253.6939254,
+    "mtime": 1792801205.4433143,
     "ast_hash": "a6b2a24f8f7c365580b137f5e61ba037",
     "semantic_hash": ""
   },
@@ -3065,12 +3065,12 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_route_trace_contract.py": {
-    "mtime": 1791667428.9556308,
+    "mtime": 1792801205.4434721,
     "ast_hash": "3b414b640ee4126d690b247d4d9987dc",
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_route_trace_prose.py": {
-    "mtime": 1791667428.9558623,
+    "mtime": 1792801205.4438164,
     "ast_hash": "e2542cefe753ccea60a2a754bf98d00e",
     "semantic_hash": ""
   },
@@ -3195,8 +3195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_reconciliation_authoring.py": {
-    "mtime": 1792799345.274633,
-    "ast_hash": "605c924df78601c0ed189e14758898a1",
+    "mtime": 1792801114.5558176,
+    "ast_hash": "f49d84c63e0f16e08e76b324bb131743",
     "semantic_hash": ""
   },
   "tests/test_french_database_reconciliation_authoring.py": {
@@ -3285,8 +3285,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/network_incident_timeline_authoring.py": {
-    "mtime": 1792799345.2743807,
-    "ast_hash": "092e7607c77b7c676d55b30d8a1bbc4a",
+    "mtime": 1792801114.5562937,
+    "ast_hash": "62c19aa79d8edab22918fa37990d9acf",
     "semantic_hash": ""
   },
   "tests/test_french_network_incident_timeline_authoring.py": {
@@ -3320,8 +3320,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/database_construction_authoring.py": {
-    "mtime": 1792799273.189738,
-    "ast_hash": "cae6f0b862383349a540527b039091b3",
+    "mtime": 1792801185.949918,
+    "ast_hash": "1f2f7e1bb7abbe4d73e7de4902de8a10",
     "semantic_hash": ""
   },
   "tests/test_french_database_construction.py": {
@@ -3340,8 +3340,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_construction_authoring.py": {
-    "mtime": 1792799434.6393492,
-    "ast_hash": "b0e161815931456d650000b69c57cc40",
+    "mtime": 1792801185.950904,
+    "ast_hash": "4dbb53def4d113884ca96f27cc22ff0c",
     "semantic_hash": ""
   },
   "tests/test_french_tree_construction.py": {
@@ -3352,6 +3352,26 @@
   "docs/quality/french-nsi-v29-tree-construction-2026-10-24.md": {
     "mtime": 1792799515.4476793,
     "ast_hash": "7f531db17c1165a84b312af6f33ca1a3",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/route_selection_authoring.py": {
+    "mtime": 1792801323.6945841,
+    "ast_hash": "f0aeaff12480358b01b3ac4aeca2c1d9",
+    "semantic_hash": ""
+  },
+  "tests/test_french_route_selection.py": {
+    "mtime": 1792801376.5876174,
+    "ast_hash": "9ac3512612fa261043a995a134db6d2b",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v29-live-comparison-2026-10-24.md": {
+    "mtime": 1792800375.2922645,
+    "ast_hash": "85a4c5d51fa05051de42153697a9ccb5",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v30-route-selection-design-2026-10-24.md": {
+    "mtime": 1792800979.618277,
+    "ast_hash": "dc4ac3bcc8b7eb340a0993e3dd371441",
     "semantic_hash": ""
   }
 }
