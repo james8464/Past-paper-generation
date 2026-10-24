@@ -17,6 +17,7 @@ def database_catalogue_identity(prompt_version):
         "fr-nsi-written-2027-v28",
         "fr-nsi-written-2027-v29",
         "fr-nsi-written-2027-v30",
+        "fr-nsi-written-2027-v31",
     }:
         return (
             DATABASE_CONSTRUCTION_PROSE_VERSION,

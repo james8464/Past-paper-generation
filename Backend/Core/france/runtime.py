@@ -99,6 +99,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
     CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
     CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
     atomic_json,
@@ -641,7 +642,8 @@ def _validate_route_selection_pdf(
 
     for question in exercise.questions[5:7]:
         if (
-            question.verification.get("kind") != "route_selection_contract"
+            question.verification.get("kind")
+            not in {"route_selection_contract", "route_family_contract"}
             or question.verification.get("task_id") != question.id
             or question.verification.get("contract") != data
             or not verify_contract(question.verification)["passed"]
@@ -781,6 +783,8 @@ def _validate_route_selection_pdf(
         token in flat
         for token in (
             "def meilleur_trajet",
+            "def trajets_admissibles",
+            "def premiere_coupure",
             "def compter_intervalle",
             "if voisin not in visites:",
         )
@@ -801,7 +805,10 @@ def validate_graph_two_outage_pdf(
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
-    if exercise.questions[5].verification.get("kind") == "route_selection_contract":
+    if exercise.questions[5].verification.get("kind") in {
+        "route_selection_contract",
+        "route_family_contract",
+    }:
         return _validate_route_selection_pdf(
             path,
             data,
@@ -2277,6 +2284,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION:
+        return "v31"
     if prompt_version == CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION:
         return "v30"
     if prompt_version == CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION:
@@ -2320,6 +2329,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
+        CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2386,7 +2396,7 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v30",
+            contract_authoring_version="v31",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
@@ -2402,6 +2412,7 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
+            CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2440,12 +2451,20 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version in {"v26", "v27", "v28", "v29", "v30"}
+        network_timeline = network_pdf_version in {
+            "v26",
+            "v27",
+            "v28",
+            "v29",
+            "v30",
+            "v31",
+        }
         human_readable_graph_titles = network_pdf_version in {
             "v27",
             "v28",
             "v29",
             "v30",
+            "v31",
         }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
@@ -2475,7 +2494,8 @@ def handle_generate_assessment(args) -> int:
                     correction=correction,
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
-                    coherent_material_flow=network_pdf_version in {"v28", "v29", "v30"},
+                    coherent_material_flow=network_pdf_version
+                    in {"v28", "v29", "v30", "v31"},
                 ),
                 role=role,
                 language="fr-FR",
@@ -2501,7 +2521,7 @@ def handle_generate_assessment(args) -> int:
                     {
                         "human_readable_titles": human_readable_graph_titles,
                         "coherent_material_flow": network_pdf_version
-                        in {"v28", "v29", "v30"}
+                        in {"v28", "v29", "v30", "v31"}
                         and not args.large_print,
                     }
                     if graph_two_outage
@@ -2544,7 +2564,7 @@ def handle_generate_assessment(args) -> int:
                 **(
                     {
                         "revision": 2
-                        if network_pdf_version in {"v27", "v28", "v29", "v30"}
+                        if network_pdf_version in {"v27", "v28", "v29", "v30", "v31"}
                         else 1
                     }
                     if network_timeline
