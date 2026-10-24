@@ -700,7 +700,13 @@ def render_assessment(
                 ]
             if correction:
                 story[-1].keepWithNext = True
-                paragraph("Réponse attendue", credit)
+                answer_start = len(story)
+                paragraph(
+                    f"Réponse attendue — question {question.id}"
+                    if question.verification.get("kind") == "tree_construction_contract"
+                    else "Réponse attendue",
+                    credit,
+                )
                 if (
                     question.id == "3b"
                     and question.verification.get("kind") == "network_depth_contract"
@@ -764,6 +770,10 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
+                if question.verification.get("kind") == "tree_construction_contract":
+                    # Keep the complete construction, justification and credit
+                    # together when they fit, without dragging the prompt along.
+                    story[answer_start:] = [KeepTogether(story[answer_start:])]
                 if (
                     coherent_material_flow
                     and question_index > 0
@@ -771,7 +781,13 @@ def render_assessment(
                 ):
                     story[material_start:] = [KeepTogether(story[material_start:])]
                 elif (
-                    v18_paper
+                    # The recursive construction owns an answer group above;
+                    # grouping its prompt too would leave the prior page sparse.
+                    (
+                        v18_paper
+                        and question.verification.get("kind")
+                        != "tree_construction_contract"
+                    )
                     or question.verification.get("kind") == "graph_resilience_contract"
                     or question.verification.get("kind") == "network_reasoning_contract"
                     or question.verification.get("kind") == "network_incident_contract"

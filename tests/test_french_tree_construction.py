@@ -145,6 +145,22 @@ def test_v29_pdf_preserves_tree_task_and_solution(tmp_path, large_print):
             coherent_material_flow=not large_print,
         )
         with pymupdf.open(path) as pdf:
+            if correction and not large_print:
+                pages = [page.get_text() for page in pdf]
+                preceding = next(
+                    i
+                    for i, text in enumerate(pages)
+                    if "Barème indicatif — question 1i" in text
+                )
+                construction = next(i for i, text in enumerate(pages) if "1j." in text)
+                assert construction == preceding, (
+                    "Long solution must not push its whole question onto a new page"
+                )
+                solution = next(
+                    text for text in pages if "def compter_intervalle" in text
+                )
+                assert "Réponse attendue — question 1j" in solution
+                assert "Barème indicatif — question 1j" in solution
             for page in pdf:
                 for x0, y0, x1, y1, *_ in page.get_text("words"):
                     assert 0 <= x0 < x1 <= page.rect.width

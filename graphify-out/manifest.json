@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1792799410.718492,
-    "ast_hash": "74ee16c2b9b6bc29aea23e2b296155a0",
+    "mtime": 1792800053.9838705,
+    "ast_hash": "3691041bf44ec72db55f3aa35ee8a34a",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -3345,8 +3345,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_tree_construction.py": {
-    "mtime": 1792799488.7319787,
-    "ast_hash": "9e0c284531ef05801de90524a959cc74",
+    "mtime": 1792800054.1271517,
+    "ast_hash": "a2f029ccaa1efc7ca2a67d7e117e6d2d",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v29-tree-construction-2026-10-24.md": {

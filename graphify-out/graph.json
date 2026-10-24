@@ -5213,8 +5213,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_py_model_validator",
-      "community": 347,
-      "community_name": "QuestionRule",
+      "community": 135,
+      "community_name": "PaperRule",
       "norm_label": "model_validator"
     },
     {
@@ -5224,8 +5224,8 @@
       "source_location": "L50",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_sectionrule_valid_question_overrides",
-      "community": 347,
-      "community_name": "QuestionRule",
+      "community": 135,
+      "community_name": "PaperRule",
       "norm_label": ".valid_question_overrides()"
     },
     {
@@ -5301,8 +5301,8 @@
       "source_location": "L145",
       "_origin": "ast",
       "id": "backend_core_exam_blueprints_generatedsection_bind_selection_context",
-      "community": 347,
-      "community_name": "QuestionRule",
+      "community": 135,
+      "community_name": "PaperRule",
       "norm_label": ".bind_selection_context()"
     },
     {
@@ -14596,8 +14596,8 @@
       "source_location": "L30",
       "_origin": "ast",
       "id": "backend_core_generator_registry_generatorcapability",
-      "community": 134,
-      "community_name": "generation.py",
+      "community": 279,
+      "community_name": "generator_registry.py",
       "norm_label": "generatorcapability"
     },
     {
@@ -14607,8 +14607,8 @@
       "source_location": "L52",
       "_origin": "ast",
       "id": "backend_core_generator_registry_generatorcapability_uses_ai",
-      "community": 134,
-      "community_name": "generation.py",
+      "community": 279,
+      "community_name": "generator_registry.py",
       "norm_label": ".uses_ai()"
     },
     {
@@ -14618,8 +14618,8 @@
       "source_location": "L55",
       "_origin": "ast",
       "id": "backend_core_generator_registry_generatorcapability_outputs_for",
-      "community": 134,
-      "community_name": "generation.py",
+      "community": 279,
+      "community_name": "generator_registry.py",
       "norm_label": ".outputs_for()"
     },
     {
@@ -14640,8 +14640,8 @@
       "source_location": "L86",
       "_origin": "ast",
       "id": "backend_core_generator_registry_generator_capability",
-      "community": 134,
-      "community_name": "generation.py",
+      "community": 279,
+      "community_name": "generator_registry.py",
       "norm_label": "generator_capability()"
     },
     {
@@ -45090,8 +45090,8 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "resources_economics_ocr_generator_tests_test_ocr_economics_test_all_rules_have_exact_candidate_marks",
-      "community": 176,
-      "community_name": "exam_blueprints.py",
+      "community": 157,
+      "community_name": "test_ocr_economics.py",
       "norm_label": "test_all_rules_have_exact_candidate_marks()"
     },
     {
@@ -46333,8 +46333,8 @@
       "source_location": "L76",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_properties_policy",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "policy"
     },
     {
@@ -46344,8 +46344,8 @@
       "source_location": "L77",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_type",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -46355,8 +46355,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_required",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "required"
     },
     {
@@ -46366,8 +46366,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_policy_id",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "policy_id"
     },
     {
@@ -46377,8 +46377,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_json_ref_status",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "status"
     },
     {
@@ -46388,8 +46388,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approved_by_identity_class",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "approved_by_identity_class"
     },
     {
@@ -46399,8 +46399,8 @@
       "source_location": "L78",
       "_origin": "ast",
       "id": "ref_approval_evidence",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "approval_evidence"
     },
     {
@@ -46575,8 +46575,8 @@
       "source_location": "L92",
       "_origin": "ast",
       "id": "resources_empirical_calibration_schema_policy_additionalproperties",
-      "community": 350,
-      "community_name": "required",
+      "community": 178,
+      "community_name": "properties",
       "norm_label": "additionalproperties"
     },
     {
@@ -50249,8 +50249,8 @@
       "source_location": "L88",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_evidence_gaps",
-      "community": 51,
-      "community_name": "items",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "evidence_gaps"
     },
     {
@@ -50260,8 +50260,8 @@
       "source_location": "L89",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_evidence_gaps_type",
-      "community": 51,
-      "community_name": "items",
+      "community": 73,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -51514,7 +51514,7 @@
       "source_location": "L371",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathoption",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "pathoption"
     },
@@ -51525,7 +51525,7 @@
       "source_location": "L372",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_additionalproperties",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "additionalproperties"
     },
@@ -51536,7 +51536,7 @@
       "source_location": "L373",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_properties",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "properties"
     },
@@ -51547,7 +51547,7 @@
       "source_location": "L374",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_id",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "id"
     },
@@ -51558,7 +51558,7 @@
       "source_location": "L375",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_minlength",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "minlength"
     },
@@ -51569,7 +51569,7 @@
       "source_location": "L376",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_title",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -51580,7 +51580,7 @@
       "source_location": "L377",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_id_type",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -51591,8 +51591,8 @@
       "source_location": "L379",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_item_ids",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "item_ids"
     },
     {
@@ -51602,8 +51602,8 @@
       "source_location": "L380",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_items",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "items"
     },
     {
@@ -51613,8 +51613,8 @@
       "source_location": "L383",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_minitems",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "minitems"
     },
     {
@@ -51624,8 +51624,8 @@
       "source_location": "L384",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_title",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "title"
     },
     {
@@ -51635,8 +51635,8 @@
       "source_location": "L385",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_item_ids_type",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "type"
     },
     {
@@ -51679,7 +51679,7 @@
       "source_location": "L392",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_title",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "title"
     },
@@ -51690,7 +51690,7 @@
       "source_location": "L393",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathoption_type",
-      "community": 319,
+      "community": 129,
       "community_name": "id",
       "norm_label": "type"
     },
@@ -51702,7 +51702,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_pathsection",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "pathsection"
     },
     {
@@ -51713,7 +51713,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_additionalproperties",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "additionalproperties"
     },
     {
@@ -51724,7 +51724,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_properties",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "properties"
     },
     {
@@ -51735,7 +51735,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_answer_options",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "answer_options"
     },
     {
@@ -51746,7 +51746,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_exclusiveminimum",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -51757,7 +51757,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_title",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51768,7 +51768,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_answer_options_type",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -51779,7 +51779,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_candidate_marks",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "candidate_marks"
     },
     {
@@ -51790,7 +51790,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_exclusiveminimum",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "exclusiveminimum"
     },
     {
@@ -51801,7 +51801,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_title",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51812,7 +51812,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_candidate_marks_type",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -51823,7 +51823,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_options",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "options"
     },
     {
@@ -51845,7 +51845,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_minitems",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "minitems"
     },
     {
@@ -51856,7 +51856,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_title",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51867,7 +51867,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_options_type",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -51878,7 +51878,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_required",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "required"
     },
     {
@@ -51889,7 +51889,7 @@
       "_origin": "ast",
       "id": "ref_answer_options",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "answer_options"
     },
     {
@@ -51900,7 +51900,7 @@
       "_origin": "ast",
       "id": "ref_candidate_marks",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "candidate_marks"
     },
     {
@@ -51911,7 +51911,7 @@
       "_origin": "ast",
       "id": "ref_options",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "options"
     },
     {
@@ -51922,7 +51922,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_title",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "title"
     },
     {
@@ -51933,7 +51933,7 @@
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_pathsection_type",
       "community": 129,
-      "community_name": "PathSection",
+      "community_name": "id",
       "norm_label": "type"
     },
     {
@@ -51976,7 +51976,7 @@
       "source_location": "L439",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_year",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "year"
     },
@@ -51987,7 +51987,7 @@
       "source_location": "L440",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_maximum",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "maximum"
     },
@@ -51998,7 +51998,7 @@
       "source_location": "L441",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_minimum",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "minimum"
     },
@@ -52009,7 +52009,7 @@
       "source_location": "L442",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_title",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "title"
     },
@@ -52020,7 +52020,7 @@
       "source_location": "L443",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_year_type",
-      "community": 25,
+      "community": 40,
       "community_name": "properties",
       "norm_label": "type"
     },
@@ -52218,8 +52218,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_objective_basis_enum",
-      "community": 345,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "enum"
     },
     {
@@ -52229,8 +52229,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "ref_unknown",
-      "community": 345,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "unknown"
     },
     {
@@ -52240,8 +52240,8 @@
       "source_location": "L481",
       "_origin": "ast",
       "id": "ref_printed_conflicting",
-      "community": 345,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "printed-conflicting"
     },
     {
@@ -52537,8 +52537,8 @@
       "source_location": "L543",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_sourceform",
-      "community": 106,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "sourceform"
     },
     {
@@ -52548,8 +52548,8 @@
       "source_location": "L544",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourceform_additionalproperties",
-      "community": 106,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "additionalproperties"
     },
     {
@@ -52658,8 +52658,8 @@
       "source_location": "L603",
       "_origin": "ast",
       "id": "ref_reconciled_published_aggregate",
-      "community": 345,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "reconciled-published-aggregate"
     },
     {
@@ -52713,8 +52713,8 @@
       "source_location": "L615",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_properties_comparable_metrics",
-      "community": 25,
-      "community_name": "properties",
+      "community": 109,
+      "community_name": "required",
       "norm_label": "comparable_metrics"
     },
     {
@@ -53120,8 +53120,8 @@
       "source_location": "L696",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourceform_title",
-      "community": 106,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "title"
     },
     {
@@ -53131,8 +53131,8 @@
       "source_location": "L697",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourceform_type",
-      "community": 106,
-      "community_name": "required",
+      "community": 101,
+      "community_name": "$defs",
       "norm_label": "type"
     },
     {
@@ -53351,8 +53351,8 @@
       "source_location": "L748",
       "_origin": "ast",
       "id": "ref_published_item_allocation",
-      "community": 345,
-      "community_name": "enum",
+      "community": 25,
+      "community_name": "properties",
       "norm_label": "published-item-allocation"
     },
     {
@@ -54198,8 +54198,8 @@
       "source_location": "L874",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_defs_sourcepath",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "sourcepath"
     },
     {
@@ -54209,8 +54209,8 @@
       "source_location": "L875",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_additionalproperties",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "additionalproperties"
     },
     {
@@ -54231,8 +54231,8 @@
       "source_location": "L896",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_items_minlength",
-      "community": 319,
-      "community_name": "id",
+      "community": 51,
+      "community_name": "items",
       "norm_label": "minlength"
     },
     {
@@ -54352,8 +54352,8 @@
       "source_location": "L953",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_title",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "title"
     },
     {
@@ -54363,8 +54363,8 @@
       "source_location": "L954",
       "_origin": "ast",
       "id": "resources_reference_demand_profile_schema_sourcepath_type",
-      "community": 101,
-      "community_name": "$defs",
+      "community": 60,
+      "community_name": "properties",
       "norm_label": "type"
     },
     {
@@ -67032,8 +67032,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "tests_test_app_backend_test_checkpoint_namespace_changes_when_editorial_rules_change",
-      "community": 89,
-      "community_name": "test_app_backend.py",
+      "community": 134,
+      "community_name": "generation.py",
       "norm_label": "test_checkpoint_namespace_changes_when_editorial_rules_change()"
     },
     {
@@ -184352,7 +184352,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L717",
+      "source_location": "L723",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -184863,7 +184863,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.8,
       "source_file": "Backend/Core/france/rendering.py",
-      "source_location": "L714",
+      "source_location": "L720",
       "weight": 1.0,
       "_origin": "ast",
       "source": "backend_core_france_rendering_render_assessment",
@@ -396270,5 +396270,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "67b107573c7b8ae8ef0c2263002c5e28d40ca7aa"
+  "built_at_commit": "f56e93d087aa30d4bad896faf88bacc986a261d3"
 }
