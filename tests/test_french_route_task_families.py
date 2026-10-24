@@ -45,6 +45,62 @@ def test_v31_package_binds_selected_family_and_rejects_mutation(tmp_path, seed):
     checked_package(tmp_path, seed)
 
 
+@pytest.mark.parametrize("seed", (270101, 270102))
+@pytest.mark.parametrize("exercise_index", (0, 1, 2))
+def test_successive_families_are_substantively_distinct(tmp_path, seed, exercise_index):
+    """Release acceptance: all exercises, not only the new construction item."""
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.originality import screen_originality
+    from Backend.Core.france.pipeline import exercise_candidate_text
+
+    first_path, next_path = tmp_path / "first", tmp_path / "next"
+    first_path.mkdir()
+    next_path.mkdir()
+    first = checked_package(first_path, 270100)
+    following = checked_package(next_path, seed)
+    previous = exercise_candidate_text(
+        NSIExercise.model_validate(first["exercises"][exercise_index])
+    )
+    candidate = exercise_candidate_text(
+        NSIExercise.model_validate(following["exercises"][exercise_index])
+    )
+    assert (
+        screen_originality(candidate, [], previous_texts=[previous])["state"]
+        == "passed_calibrated_screen"
+    )
+
+
+def test_three_successive_packages_pass_with_preserved_history(tmp_path):
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import (
+        exercise_candidate_text,
+        generate_assessment,
+        validate_package,
+    )
+    from tests.test_nsi_pipeline import ControlledTwoOutageFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    history = []
+    for seed in range(270100, 270103):
+        package = generate_assessment(
+            index_path=index,
+            client=ControlledTwoOutageFrenchClient(),
+            seed=seed,
+            checkpoint=tmp_path / f"checkpoint-{seed}.json",
+            previous_texts=history,
+            contract_graph_tree=True,
+            contract_authoring_version="v31",
+        )
+        validate_package(package)
+        assert package["originality_history"] == history
+        history.extend(
+            exercise_candidate_text(NSIExercise.model_validate(e))
+            for e in package["exercises"]
+        )
+    assert len(history) == 9
+
+
 @pytest.mark.parametrize("seed", range(270100, 270103))
 @pytest.mark.parametrize("large_print", [False, True])
 def test_family_pdf_preserves_source_answer_and_credit(tmp_path, seed, large_print):

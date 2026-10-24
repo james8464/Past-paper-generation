@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1792801750.173669,
-    "ast_hash": "66652b5cef7e9ea746541b1ee87385e8",
+    "mtime": 1792803183.0040154,
+    "ast_hash": "406bf16c810c00575ed777240c24f06a",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3380,8 +3380,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_route_task_families.py": {
-    "mtime": 1792802523.549124,
-    "ast_hash": "a23fdbc6efe2147572b872727e035409",
+    "mtime": 1792803206.8030972,
+    "ast_hash": "55c06e6cfdb58f3671a74a1d0031f632",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3392,6 +3392,11 @@
   "docs/quality/french-nsi-v31-task-families-design-2026-10-24.md": {
     "mtime": 1792802569.2653995,
     "ast_hash": "aeeaaee914703a38d5c8b42b2f66a443",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v31-sequential-originality-failure-2026-10-24.md": {
+    "mtime": 1792803228.2919288,
+    "ast_hash": "37e59d9499db67bc9f055161e2925308",
     "semantic_hash": ""
   }
 }
