@@ -121,6 +121,7 @@ def _passed_result(
     v26=False,
     v27=False,
     v28=False,
+    v29=False,
 ):
     identity = {
         "implementation": "implementation-sha",
@@ -135,7 +136,7 @@ def _passed_result(
         "assessment": asdict(NSI_2027),
         "prompt_version": (
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION
-            if v26 or v27 or v28
+            if v26 or v27 or v28 or v29
             else CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION
             if v25
             else CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION
@@ -167,7 +168,7 @@ def _passed_result(
         "blueprint": [],
         "originality_history_digest": "history-sha",
     }
-    if v24 or v25 or v26 or v27 or v28:
+    if v24 or v25 or v26 or v27 or v28 or v29:
         manifest_identity.update(
             database_reconciliation_contract_sha256=build_database_reconciliation_contract(
                 270100
@@ -185,15 +186,15 @@ def _passed_result(
         manifest_identity["database_depth_contract_sha256"] = (
             build_database_depth_contract(270100).digest
         )
-    if v19 or v20 or v21 or v22 or v23 or v24 or v25 or v26 or v27 or v28:
+    if v19 or v20 or v21 or v22 or v23 or v24 or v25 or v26 or v27 or v28 or v29:
         del manifest_identity["database_depth_prose_contract_version"]
         del manifest_identity["database_depth_prose_catalogue_sha256"]
-        if not (v21 or v22 or v23 or v24 or v25 or v26 or v27 or v28):
+        if not (v21 or v22 or v23 or v24 or v25 or v26 or v27 or v28 or v29):
             manifest_identity.update(
                 database_reasoning_prose_contract_version=DATABASE_REASONING_PROSE_VERSION,
                 database_reasoning_prose_catalogue_sha256=database_reasoning_catalogue_digest(),
             )
-    if v26 or v27 or v28:
+    if v26 or v27 or v28 or v29:
         manifest_identity.update(
             network_incident_timeline_contract_sha256=build_network_incident_timeline_contract(
                 270100
@@ -223,7 +224,7 @@ def _passed_result(
             network_depth_prose_contract_version=NETWORK_DEPTH_PROSE_VERSION,
             network_depth_prose_catalogue_sha256=network_depth_catalogue_digest(),
         )
-    if v27 or v28:
+    if v27 or v28 or v29:
         from Backend.Core.france.network_incident_timeline_prose import (
             NETWORK_INCIDENT_TIMELINE_MARKING_VERSION,
         )
@@ -235,7 +236,7 @@ def _passed_result(
                 revision=2
             ),
         )
-    if v28:
+    if v28 or v29:
         from Backend.Core.france.database_construction_authoring import (
             database_catalogue_identity,
         )
@@ -248,7 +249,7 @@ def _passed_result(
             database_reconciliation_prose_contract_version=prose_version,
             database_reconciliation_prose_catalogue_sha256=prose_digest,
         )
-    if v25 or v26 or v27 or v28:
+    if v25 or v26 or v27 or v28 or v29:
         from Backend.Core.france.graph_two_outage_contract import (
             build_graph_two_outage_contract,
         )
@@ -264,6 +265,17 @@ def _passed_result(
             graph_two_outage_prose_contract_version=GRAPH_TWO_OUTAGE_PROSE_VERSION,
             graph_two_outage_prose_catalogue_sha256=graph_two_outage_catalogue_digest(),
         )
+        if v29:
+            from Backend.Core.france.tree_construction_authoring import (
+                graph_catalogue_identity,
+            )
+
+            version, catalogue = graph_catalogue_identity("fr-nsi-written-2027-v29")
+            manifest_identity.update(
+                prompt_version="fr-nsi-written-2027-v29",
+                graph_two_outage_prose_contract_version=version,
+                graph_two_outage_prose_catalogue_sha256=catalogue,
+            )
     elif v22 or v23 or v24:
         from Backend.Core.france.graph_route_trace_contract import (
             build_graph_route_trace_contract,
@@ -682,7 +694,7 @@ def test_french_benchmark_v25_rejects_mixed_or_wrong_graph_identity(
         "network_incident_timeline_prose_catalogue_sha256",
     ),
 )
-@pytest.mark.parametrize("version", ["v26", "v27", "v28"])
+@pytest.mark.parametrize("version", ["v26", "v27", "v28", "v29"])
 def test_french_benchmark_timeline_rejects_wrong_identity(
     tmp_path, wrong_field, version
 ):

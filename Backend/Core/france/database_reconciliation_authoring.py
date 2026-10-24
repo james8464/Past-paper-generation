@@ -25,7 +25,10 @@ from Backend.Core.france.database_reconciliation_prose import (
 
 
 def _render(run_identity):
-    if run_identity.get("prompt_version") == "fr-nsi-written-2027-v28":
+    if run_identity.get("prompt_version") in {
+        "fr-nsi-written-2027-v28",
+        "fr-nsi-written-2027-v29",
+    }:
         from Backend.Core.france.database_construction_authoring import (
             render_database_construction_candidate,
         )
@@ -147,9 +150,7 @@ def author_database_reconciliation_selection(
         try:
             response = client.generate_json(prompt)
             validate_database_reconciliation_selection(contract, response)
-            raw = _render(run_identity)(
-                contract, response, task["question_blueprint"]
-            )
+            raw = _render(run_identity)(contract, response, task["question_blueprint"])
         except (KeyboardInterrupt, InterruptedError):
             _save(path, state)
             raise

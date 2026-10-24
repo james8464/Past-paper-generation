@@ -87,7 +87,11 @@ def author_network_incident_timeline_selection(
         base_evidence,
         revision=2
         if run_identity.get("prompt_version")
-        in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
+        in {
+            "fr-nsi-written-2027-v27",
+            "fr-nsi-written-2027-v28",
+            "fr-nsi-written-2027-v29",
+        }
         else 1,
     )
 
@@ -108,7 +112,11 @@ def replay_network_incident_timeline_selection(
         != (
             "v27"
             if run_identity.get("prompt_version")
-            in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
+            in {
+                "fr-nsi-written-2027-v27",
+                "fr-nsi-written-2027-v28",
+                "fr-nsi-written-2027-v29",
+            }
             else "v26"
         )
         or evidence["contract_sha256"] != contract.digest
@@ -128,7 +136,11 @@ def replay_network_incident_timeline_selection(
         evidence["base_selection"],
         revision=2
         if run_identity.get("prompt_version")
-        in {"fr-nsi-written-2027-v27", "fr-nsi-written-2027-v28"}
+        in {
+            "fr-nsi-written-2027-v27",
+            "fr-nsi-written-2027-v28",
+            "fr-nsi-written-2027-v29",
+        }
         else 1,
     )
     if canonical != evidence:
