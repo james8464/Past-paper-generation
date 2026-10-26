@@ -44,6 +44,32 @@ def render(path, package, correction, large_print=False):
     )
 
 
+def test_whole_case_correction_keeps_prompt_with_answer(tmp_path, whole_package):
+    path = tmp_path / "correction-flow.pdf"
+    render(path, whole_package, True)
+    with pymupdf.open(path) as pdf:
+        for exercise in whole_package["exercises"]:
+            for question in exercise["questions"]:
+                identifier = question["id"]
+                prompt_pages = [
+                    page.number for page in pdf if page.search_for(f"{identifier}.")
+                ]
+                answer_pages = [
+                    page.number
+                    for page in pdf
+                    if page.search_for(f"Réponse attendue — question {identifier}")
+                ]
+                assert len(prompt_pages) == len(answer_pages) == 1
+                assert prompt_pages == answer_pages, identifier
+                if identifier.endswith("a"):
+                    heading_pages = [
+                        page.number
+                        for page in pdf
+                        if page.search_for(f"Exercice {exercise['id']} (")
+                    ]
+                    assert heading_pages == prompt_pages, identifier
+
+
 @pytest.mark.parametrize("correction", [False, True])
 @pytest.mark.parametrize("large_print", [False, True])
 def test_full_whole_case_pdf_matches_verified_package(

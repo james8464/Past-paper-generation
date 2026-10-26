@@ -332,9 +332,7 @@ def draw_cover_page(
     )
     if not correction:
         centred("Rédigez vos réponses sur votre copie.", 715, 11, regular_font)
-        centred(
-            "Recopiez et complétez les tableaux demandés.", 735, 11, regular_font
-        )
+        centred("Recopiez et complétez les tableaux demandés.", 735, 11, regular_font)
 
     canvas.setTitle(
         "NSI - corrigé proposé et barème indicatif"
@@ -636,7 +634,19 @@ def render_assessment(
                     ):
                         add_material(
                             material,
-                            flatten=coherent_material_flow and question_index > 0,
+                            flatten=coherent_material_flow
+                            and (
+                                question_index > 0
+                                or (
+                                    correction
+                                    and question.verification.get("kind")
+                                    in {
+                                        "database_case_contract",
+                                        "tree_case_contract",
+                                        "system_case_contract",
+                                    }
+                                )
+                            ),
                         )
                         staged_material_ids.add(material.id)
             graph_depth_correction = (
@@ -799,18 +809,33 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                if question.verification.get("kind") in {
-                    "tree_construction_contract",
-                    "route_selection_contract",
-                    "route_family_contract",
+                whole_case_question = question.verification.get("kind") in {
                     "database_case_contract",
                     "tree_case_contract",
                     "system_case_contract",
-                }:
+                }
+                if (
+                    question.verification.get("kind")
+                    in {
+                        "tree_construction_contract",
+                        "route_selection_contract",
+                        "route_family_contract",
+                        "database_case_contract",
+                        "tree_case_contract",
+                        "system_case_contract",
+                    }
+                    and not whole_case_question
+                ):
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
-                if (
+                if whole_case_question:
+                    # A single flat group keeps a prompt, its answer and credits
+                    # together when they fit. Nested KeepTogether groups can
+                    # falsely consume a full page and strand the prompt.
+                    start = material_start if coherent_material_flow else question_start
+                    story[start:] = [KeepTogether(story[start:])]
+                elif (
                     coherent_material_flow
                     and question_index > 0
                     and material_start < question_start
