@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793016283.2098765,
+    "mtime": 1793016356.368534,
     "ast_hash": "f382a71a428283177933b60fc059ef6a",
     "semantic_hash": ""
   },
@@ -2060,8 +2060,8 @@
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
-    "mtime": 1792802523.5320604,
-    "ast_hash": "4b5d251ed8125d59427b68c760a7b50b",
+    "mtime": 1793016866.9767575,
+    "ast_hash": "6d923cec4015cfe50b614185279a2ac7",
     "semantic_hash": ""
   },
   "tools/reconcile_french_nsi_archive.py": {
@@ -3502,6 +3502,11 @@
   "tests/test_french_whole_case_pdf.py": {
     "mtime": 1793016309.3372562,
     "ast_hash": "e2096ed7a378a8ec4292b55641d4498e",
+    "semantic_hash": ""
+  },
+  "tests/test_french_whole_case_benchmark.py": {
+    "mtime": 1793016891.0677369,
+    "ast_hash": "68084f77d0719c293e964fe05832326f",
     "semantic_hash": ""
   }
 }

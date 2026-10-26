@@ -1,8 +1,9 @@
-"""Resumable live qualification runner for the French NSI written assessment.
+"""Resumable integrity runner for the French NSI written assessment.
 
 The runner launches the public backend command in a separate process, preserves
 every log and checkpoint, and refuses to continue if the implementation changes.
-It does not convert automated success into teacher or learner approval.
+V32 uses application-owned cases, not live model generation. Automated success
+does not imply teacher or learner approval or qualification of the selected model.
 """
 
 from __future__ import annotations
@@ -126,6 +127,7 @@ from Backend.Core.france.pipeline import (  # noqa: E402
     CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
     CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
     CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
+    CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
 )
 from Backend.Core.france.runtime import model_identity  # noqa: E402
 from Backend.Core.france.source_identity import implementation_identity  # noqa: E402
@@ -291,6 +293,10 @@ def _accepted_payload(
         )
     ):
         return False
+    if manifest_identity.get("prompt_version") == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+        if expected_prompt_version not in (None, CONTROLLED_WHOLE_CASE_PROMPT_VERSION):
+            return False
+        return _accepted_whole_case(value, manifest, manifest_path)
     if (
         manifest_identity.get("assessment") != asdict(NSI_2027)
         or (
@@ -713,6 +719,50 @@ def _accepted_payload(
     )
 
 
+def _accepted_whole_case(result, manifest, manifest_path):
+    """Replay app-authored evidence and both PDFs, never award a model pass."""
+    from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+
+    if (
+        manifest.get("generation_origin") != "application_owned"
+        or manifest.get("model_used") is not False
+        or result.get("model_used") is not False
+        or result.get("qualification_kind") != "application_owned_integrity"
+        or result.get("first_pass") is not False
+        or manifest_path.is_symlink()
+    ):
+        return False
+    artifacts = manifest.get("artifacts")
+    required = {"question_paper", "mark_scheme", "assessment_package"}
+    if not isinstance(artifacts, dict) or set(artifacts) != required:
+        return False
+    paths = {}
+    try:
+        for role, artifact in artifacts.items():
+            if not isinstance(artifact, dict):
+                return False
+            name, expected = artifact.get("file"), artifact.get("sha256")
+            if (
+                not isinstance(name, str)
+                or Path(name).name != name
+                or not isinstance(expected, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", expected)
+            ):
+                return False
+            path = manifest_path.parent / name
+            if path.is_symlink() or not path.is_file() or _sha256(path) != expected:
+                return False
+            paths[role] = path
+        package = _load_json(paths["assessment_package"])
+        if not package or package.get("identity") != manifest["identity"]:
+            return False
+        for role, correction in (("question_paper", False), ("mark_scheme", True)):
+            validate_whole_case_pdf(paths[role], package, correction=correction)
+    except (OSError, ValueError, TypeError, KeyError, RuntimeError):
+        return False
+    return True
+
+
 def _events(stdout: str) -> list[dict[str, Any]]:
     result = []
     for line in stdout.splitlines():
@@ -742,6 +792,17 @@ def summarize_run(
     )
     if run.timed_out:
         status = "timed_out"
+    manifest = _load_json(artifact_manifest) if artifact_manifest is not None else None
+    manifest_identity = (manifest or {}).get("identity")
+    prompt = (
+        manifest_identity.get("prompt_version")
+        if isinstance(manifest_identity, dict)
+        else None
+    )
+    whole_case = prompt == CONTROLLED_WHOLE_CASE_PROMPT_VERSION
+    known_model_run = isinstance(prompt, str) and prompt in {
+        f"fr-nsi-written-2027-v{version}" for version in range(13, 32)
+    }
     return {
         "status": status,
         "return_code": run.return_code,
@@ -749,7 +810,14 @@ def summarize_run(
         "elapsed_seconds": round(elapsed_seconds, 3),
         "peak_backend_rss_bytes": run.peak_backend_rss_bytes,
         "repair_attempts": len(failures),
-        "first_pass": status == "passed" and not failures,
+        "first_pass": status == "passed" and not failures and known_model_run,
+        "execution_first_pass": status == "passed" and not failures,
+        "model_used": False if whole_case else True if known_model_run else None,
+        "qualification_kind": "application_owned_integrity"
+        if whole_case
+        else "live_model_generation"
+        if known_model_run
+        else "unverified",
         "error": errors[-1] if errors else (run.stderr.strip()[-2000:] or None),
     }
 
@@ -866,6 +934,8 @@ def run_plan(args: argparse.Namespace) -> int:
                 "hardware": hardware_record(),
                 "created_at": datetime.now(UTC).isoformat(),
                 "qualification_limits": [
+                    "V32 utilise des cas applicatifs finis, sans génération par le modèle sélectionné.",
+                    "Ces résultats ne qualifient ni la diversité illimitée ni les performances du modèle.",
                     "Les contrôles automatisés ne constituent pas un avis d'enseignant.",
                     "La mémoire mesurée du processus backend exclut le serveur Ollama.",
                 ],
@@ -903,7 +973,7 @@ def run_plan(args: argparse.Namespace) -> int:
         if accepted_result(
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
         ):
             results.append(previous)
             continue
@@ -976,7 +1046,7 @@ def run_plan(args: argparse.Namespace) -> int:
             result,
             result_path,
             identity,
-            expected_prompt_version=CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
+            expected_prompt_version=CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
         ):
             result["status"] = "failed"
             result["error"] = "L'intégrité des artefacts publiés est invalide"
@@ -1005,6 +1075,15 @@ def run_plan(args: argparse.Namespace) -> int:
         "complete": complete,
         "results": results,
         "educational_qualification": "not_run",
+        "model_first_passes": sum(
+            result.get("model_used") is True and result.get("first_pass") is True
+            for result in results
+        ),
+        "application_owned_integrity_passes": sum(
+            result.get("qualification_kind") == "application_owned_integrity"
+            and result.get("status") == "passed"
+            for result in results
+        ),
     }
     _atomic_json(output / "benchmark-summary.json", report)
     return 0 if complete and report["failed"] == 0 else 1
@@ -1012,7 +1091,7 @@ def run_plan(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Run and resume French NSI local-model qualification."
+        description="Run and resume French NSI integrity checks; V32 app-authored papers are not live-model qualification."
     )
     parser.add_argument("--reference-index", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
