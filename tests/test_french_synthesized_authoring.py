@@ -9,6 +9,66 @@ from Backend.Core.france.synthesized_authoring import author, replay
 
 @pytest.mark.parametrize("family", ["recursive", "postfix"])
 @pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
+def test_full_question_verification_not_metadata_alone(family, total):
+    from Backend.Core.france.synthesized_authoring import verify_question
+
+    raw, _ = author(family, 713, references=[], total=total)
+    for question in raw["questions"]:
+        result = verify_question(question, family, 713, total=total)
+        assert result["state"] == "passed"
+        assert result["scope"] == "canonical_question_replay"
+        for field in (
+            "id",
+            "prompt",
+            "answer",
+            "marking",
+            "points",
+            "material_ids",
+            "verification",
+            "curriculum_codes",
+            "estimated_minutes",
+        ):
+            changed = deepcopy(question)
+            changed[field] = "tampered"
+            assert (
+                verify_question(changed, family, 713, total=total)["state"] == "failed"
+            )
+
+
+@pytest.mark.parametrize("question", [None, [], {}, {"id": "missing"}])
+def test_malformed_question_never_passes(question):
+    from Backend.Core.france.synthesized_authoring import verify_question
+
+    assert not verify_question(question, "postfix", 713)["passed"]
+
+
+def test_metadata_alone_cannot_qualify_new_questions():
+    from Backend.Core.france.verification import verify_contract
+
+    for family in ("recursive", "postfix"):
+        raw, _ = author(family, 713, references=[])
+        for question in raw["questions"]:
+            assert verify_contract(question["verification"])["state"] == "unresolved"
+
+
+def test_question_verification_rejects_wrong_identity_and_extra_fields():
+    from Backend.Core.france.synthesized_authoring import verify_question
+
+    raw, _ = author("postfix", 713, references=[])
+    question = raw["questions"][0]
+    for family, seed, total in (
+        ("recursive", 713, "6"),
+        ("postfix", 714, "6"),
+        ("postfix", True, "6"),
+        ("postfix", 713, "5.5"),
+        ("unknown", 713, "6"),
+    ):
+        assert not verify_question(question, family, seed, total=total)["passed"]
+    assert not verify_question({**question, "approved": True}, "postfix", 713)["passed"]
+
+
+@pytest.mark.parametrize("family", ["recursive", "postfix"])
+@pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
 def test_blueprint_and_replay_bind_allocated_marks(family, total):
     from Backend.Core.france.nsi import NSIExercise
     from Backend.Core.france.pipeline import _check_exercise_plan

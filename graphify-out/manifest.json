@@ -3555,13 +3555,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/synthesized_authoring.py": {
-    "mtime": 1793021846.327118,
-    "ast_hash": "f10dced64eb5f8c7288e95dea2ab93c0",
+    "mtime": 1793022060.6811728,
+    "ast_hash": "dcc857332daffd88d9d1fd3c5d0f1780",
     "semantic_hash": ""
   },
   "tests/test_french_synthesized_authoring.py": {
-    "mtime": 1793021897.5781498,
-    "ast_hash": "f6f7783b5ec574e499489210fc3099cb",
+    "mtime": 1793022093.4388726,
+    "ast_hash": "66164601a40d9a38d692407fe05bbac7",
     "semantic_hash": ""
   }
 }

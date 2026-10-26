@@ -122,3 +122,31 @@ def replay(family, seed, references, candidate, evidence, *, total="6", task=Non
     if not matches:
         raise ValueError("Synthesized candidate or provenance does not replay")
     return raw
+
+
+def verify_question(question, family, seed, *, total="6"):
+    """Check the entire question against reconstructed, checked case content.
+
+    This is not an educational judgement or a material/reference check. The
+    containing exercise must still pass full replay, originality and PDF gates.
+    Do not substitute metadata-only verify_contract for this full-content check.
+    """
+    scope = "canonical_question_replay"
+    try:
+        if (
+            type(question) is not dict
+            or type(family) is not str
+            or family not in FAMILIES
+        ):
+            raise ValueError("Malformed synthesized question identity")
+        raw = FAMILIES[family].render_case(seed, total=total)
+        expected = next(
+            (q for q in raw["questions"] if q["id"] == question.get("id")), None
+        )
+        if expected is None or _hash(question) != _hash(expected):
+            raise ValueError("Synthesized question content does not replay")
+        return dict(
+            state="passed", passed=True, scope=scope, question_id=expected["id"]
+        )
+    except (TypeError, ValueError, KeyError, RecursionError) as error:
+        return dict(state="failed", passed=False, scope=scope, reason=str(error))
