@@ -105,16 +105,36 @@ def test_invalid_seed_rejected(tmp_path, seed):
 
 @pytest.mark.parametrize("seed", [270100, 270101])
 @pytest.mark.parametrize("correction", [False, True])
-def test_v33_complete_printed_content_gate(tmp_path, seed, correction):
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v33_complete_printed_content_gate(tmp_path, seed, correction, large_print):
     from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
     from tests.test_french_whole_case_pdf import render
 
     package = generate(tmp_path, seed)
     path = tmp_path / "paper.pdf"
-    render(path, package, correction)
+    render(path, package, correction, large_print=large_print)
     validate_whole_case_pdf(path, package, correction=correction)
     with pytest.raises(ValueError):
         validate_whole_case_pdf(path, package, correction=not correction)
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_recursive_correction_does_not_strand_introduction(tmp_path, large_print):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path)
+    path = tmp_path / "correction.pdf"
+    render(path, package, True, large_print=large_print)
+    with pymupdf.open(path) as pdf:
+        introduction = next(
+            page.get_text()
+            for page in pdf
+            if "Un atelier représente" in page.get_text()
+        )
+    assert "Arbre initial S0" in introduction
+    assert "n10" in introduction
 
 
 @pytest.mark.parametrize(

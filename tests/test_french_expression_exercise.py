@@ -155,3 +155,33 @@ def test_synthesized_correction_keeps_prompt_answer_and_state_table(tmp_path, se
         ]
         question_pages = [p.number for p in pdf if p.search_for("1e.")]
         assert table_pages == question_pages
+
+
+def test_correction_draws_every_tree_branch_with_left_right_orientation():
+    import re
+
+    from Backend.Core.france.expression_exercise import render_case
+    from Backend.Core.france.expression_synthesis import build_case
+
+    for seed in range(100):
+        rows = {row[0]: row[1:] for row in build_case(seed)["public"]["rows"]}
+        answer = render_case(seed)["questions"][0]["answer"]
+        drawing = answer.split("```\n")[1].split("```")[0]
+        lines = drawing.rstrip().splitlines()
+        assert lines[0] == f"n0 ({rows['n0'][0]})"
+        stack = ["n0"]
+        seen = {"n0"}
+        for line in lines[1:]:
+            match = re.fullmatch(
+                r"((?:\|   |    )*)\+-- ([GD]): (n\d+) \((-?\d+|[+*-])\)", line
+            )
+            assert match, line
+            depth = len(match[1]) // 4 + 1
+            branch, node, value = match[2], match[3], match[4]
+            parent = stack[depth - 1]
+            assert rows[parent][1 if branch == "G" else 2] == node
+            assert str(rows[node][0]) == value
+            assert node not in seen
+            seen.add(node)
+            stack[depth:] = [node]
+        assert seen == set(rows)

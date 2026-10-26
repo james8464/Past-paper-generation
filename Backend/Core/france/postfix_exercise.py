@@ -7,7 +7,7 @@ from Backend.Core.france.expression_stack import compile_tree, execute
 from Backend.Core.france.expression_synthesis import build_case
 from Backend.Core.france.nsi import NSIExercise
 
-VERSION = "fr-nsi-postfix-exercise-v1"
+VERSION = "fr-nsi-postfix-exercise-v2"
 
 
 def compiler(nodes, racine):
@@ -42,7 +42,9 @@ def valide(instructions):
     for mot in instructions:
         if type(mot) is int:
             profondeur += 1
-        elif type(mot) is str and mot in operateurs:
+        elif type(mot) is str:
+            if mot not in operateurs:
+                return False
             if profondeur < 2:
                 return False
             profondeur -= 1

@@ -12,7 +12,7 @@ from Backend.Core.france.expression_synthesis import build_case
 from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.tree_case_families import expression_value
 
-VERSION = "fr-nsi-expression-exercise-v1"
+VERSION = "fr-nsi-expression-exercise-v2"
 MINUTES = (4, 5, 6, 6, 6, 7, 12, 8, 9, 7)
 
 
@@ -56,10 +56,29 @@ def render_case(seed, *, total="6"):
             else f"({expression(left)} {value} {expression(right)})"
         )
 
+    # A monospaced outline gives an explicit solution to the drawing task.
+    # G/D labels preserve child orientation even for asymmetric tree shapes.
+    outline = [f"n0 ({rows['n0'][0]})"]
+
+    def branches(node, prefix=""):
+        _, left, right = rows[node]
+        if left is None:
+            return
+        for direction, child, continuation in (
+            ("G", left, "|   "),
+            ("D", right, "    "),
+        ):
+            outline.append(f"{prefix}+-- {direction}: {child} ({rows[child][0]})")
+            branches(child, prefix + continuation)
+
+    branches("n0")
+
     items = [
         (
             "Dessiner l'arbre initial en distinguant les fils gauches et droits. Donner sa taille et sa hauteur, comptée en arêtes, puis identifier ses feuilles.",
-            f"Taille {initial['shape']['size']}, hauteur {initial['shape']['height']}. Feuilles : {', '.join(initial['shape']['leaves'])}. Les branches sont celles du tableau, avec n0 comme racine.",
+            "Arbre initial : G désigne le fils gauche, D le fils droit ; la valeur du nœud est entre parenthèses.\n```\n"
+            + "\n".join(outline)
+            + f"\n```\nTaille {initial['shape']['size']}, hauteur {initial['shape']['height']}. Feuilles : {', '.join(initial['shape']['leaves'])}.",
             [
                 "Le dessin respecte tous les liens et leur orientation gauche/droite.",
                 "Taille, hauteur en arêtes et feuilles sont correctes.",

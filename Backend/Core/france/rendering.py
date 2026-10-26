@@ -617,9 +617,7 @@ def render_assessment(
                 available_width=doc.width,
                 show_id=show_id
                 and material.id not in {"case_states", "tree_nodes", "tree_states"}
-                and not (
-                    deduplicate_title and material.title == material.id
-                )
+                and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:
@@ -645,6 +643,14 @@ def render_assessment(
                         add_material(
                             material,
                             flatten=coherent_material_flow
+                            and not (
+                                correction
+                                and question.verification.get("kind")
+                                in {
+                                    "expression_synthesis_contract",
+                                    "postfix_synthesis_contract",
+                                }
+                            )
                             and (
                                 question_index > 0
                                 or (
@@ -854,6 +860,14 @@ def render_assessment(
                     # together when they fit. Nested KeepTogether groups can
                     # falsely consume a full page and strand the prompt.
                     start = material_start if coherent_material_flow else question_start
+                    if question.verification.get("kind") in {
+                        "expression_synthesis_contract",
+                        "postfix_synthesis_contract",
+                    }:
+                        # A complete source table plus a worked tree can fill a
+                        # page. Let the table remain with the case introduction;
+                        # keep only the prompt, answer and credit together.
+                        start = question_start
                     story[start:] = [KeepTogether(story[start:])]
                 elif (
                     coherent_material_flow
