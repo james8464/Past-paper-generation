@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793027899.3450713,
-    "ast_hash": "cd92dce89b167951cdfe2bbbdfa4a222",
+    "mtime": 1793040191.3493037,
+    "ast_hash": "1cd5ffe22c054318d8df3ba715e732d4",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1265,9 +1265,9 @@
     "semantic_hash": "0468f7ebe38f92198b3a5b0b1a0afe79"
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
-    "mtime": 1791129181.5760212,
-    "ast_hash": "0cc75d54e8e020a93238f286ffd434e9",
-    "semantic_hash": "0cc75d54e8e020a93238f286ffd434e9"
+    "mtime": 1793038362.5818295,
+    "ast_hash": "6d4e700d119f7387aef7f532052490fe",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
     "mtime": 1791129181.576106,
@@ -1275,14 +1275,14 @@
     "semantic_hash": "a90eb4af1fa3a6da6723f833618ff6b2"
   },
   "macOS/PaperCreator/Application/PaperCreatorApp.swift": {
-    "mtime": 1791129181.5761662,
-    "ast_hash": "c7d92e1fdd1780567ae6419d0c955bda",
+    "mtime": 1793038362.581462,
+    "ast_hash": "dd99b340fe556536e2834ae2a020bc9d",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/AccentColor.colorset/Contents.json": {
-    "mtime": 1791129181.5763032,
-    "ast_hash": "a296db59ce534226d82f5710ddbd0f14",
-    "semantic_hash": "a296db59ce534226d82f5710ddbd0f14"
+    "mtime": 1793039320.5849087,
+    "ast_hash": "3e3253f24cfa17a1c636ae3018232a9b",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/AppIcon.appiconset/Contents.json": {
     "mtime": 1791129181.5808167,
@@ -1370,14 +1370,14 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1793017709.665814,
-    "ast_hash": "42cfb53117c817a0b694cd93541b75fc",
+    "mtime": 1793039932.9905832,
+    "ast_hash": "0a3cc0f37526430eda587401d654644f",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1791129181.586996,
-    "ast_hash": "6caec8dbb5cb006926aa763c7013ff97",
-    "semantic_hash": "6caec8dbb5cb006926aa763c7013ff97"
+    "mtime": 1793038362.5822825,
+    "ast_hash": "fcae49b896f0ea12e75ae67f173a5525",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
     "mtime": 1791129181.5873032,
@@ -1385,14 +1385,14 @@
     "semantic_hash": "372035cd44ff5ea3cdfd23409396ef42"
   },
   "macOS/PaperCreator/Navigation/SidebarView.swift": {
-    "mtime": 1791895377.2321818,
-    "ast_hash": "90bc4e64b21a217bbb93d88883715a8b",
+    "mtime": 1793038362.581665,
+    "ast_hash": "5da6543dc2f46ad00afc4ba660df6d03",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
-    "mtime": 1791129181.5877767,
-    "ast_hash": "cc8e7ac8018b57b8f243b6c3c3be863a",
-    "semantic_hash": "cc8e7ac8018b57b8f243b6c3c3be863a"
+    "mtime": 1793038362.5820217,
+    "ast_hash": "838792f7e90cbcb90bccf6711b6bf445",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/SecretStore.swift": {
     "mtime": 1791129181.5878563,
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793017793.3358116,
-    "ast_hash": "08036118e1069ec9fa632c8f9788befb",
+    "mtime": 1793039761.4450157,
+    "ast_hash": "d7952b5867178e19a3c8dcb2c07812f9",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1440,18 +1440,18 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1793017728.289915,
-    "ast_hash": "1f70647091eef52ae491db9636206e54",
+    "mtime": 1793039772.0784068,
+    "ast_hash": "5c14a96e9333cf911a226c8aa446c1d6",
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793017728.290417,
-    "ast_hash": "7818c1fbc408010154f16ed5e383edb1",
+    "mtime": 1793039772.1133053,
+    "ast_hash": "c5b0ecb6bf13c050a147ba3d1cb0c91f",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793017793.3362303,
-    "ast_hash": "8b9caa76db720d327b18d63b667a7106",
+    "mtime": 1793039877.3708217,
+    "ast_hash": "37d37e510cbdede951bdb71f0e3117d6",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3572,6 +3572,61 @@
   "tests/test_french_synthesized_pipeline.py": {
     "mtime": 1793028886.5234842,
     "ast_hash": "5889309c134d9ac3e003782b2c084990",
+    "semantic_hash": ""
+  },
+  "macOS/Branding/icon-design.json": {
+    "mtime": 1793039229.3774385,
+    "ast_hash": "579bb9422624f70d2d479c3e6c8d196f",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/icon.json": {
+    "mtime": 1793039318.167561,
+    "ast_hash": "47cfcfb548ea90e4e355e1c8cc706e21",
+    "semantic_hash": ""
+  },
+  "tests/test_app_branding.py": {
+    "mtime": 1793039342.8146746,
+    "ast_hash": "f30919749449236ca52b5c37baa5ec76",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/01-RearLeft.svg": {
+    "mtime": 1793039318.167591,
+    "ast_hash": "a5e85fc0fceebfcd436ee23f287d2c4a",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/02-RearRight.svg": {
+    "mtime": 1793039318.167566,
+    "ast_hash": "b4e33d5e6d9c13471405efe45b5a1a1c",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/03-MiddleLeft.svg": {
+    "mtime": 1793039318.167571,
+    "ast_hash": "103327214098e4d515f805fb85a47072",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/04-MiddleRight.svg": {
+    "mtime": 1793039318.167578,
+    "ast_hash": "8b243848db632239dfefef7171d7f918",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/05-FrontLeft.svg": {
+    "mtime": 1793039318.16758,
+    "ast_hash": "38cc076f986759150b95dbf27126a443",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/06-FrontRight.svg": {
+    "mtime": 1793039318.167588,
+    "ast_hash": "acb1d122848462066ed6c1890a78458c",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/AppIcon.icon/Assets/07-Binding.svg": {
+    "mtime": 1793039318.167593,
+    "ast_hash": "dcf7c98616a47d0fe4a221a9633c3a98",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/IsolatedApplication.swift": {
+    "mtime": 1793039800.973896,
+    "ast_hash": "a9cec1d0e9720272ab481094dd2c1403",
     "semantic_hash": ""
   }
 }
