@@ -990,6 +990,46 @@ def test_runtime_publishes_v32_even_if_caller_requests_older_contract(
     assert (bundle / "corrige.pdf").is_file()
 
 
+def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatch):
+    import json
+
+    from Backend.Core.cli import build_parser
+    from Backend.Core.france import runtime
+    from tests.test_nsi_pipeline import make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail(
+            "App-owned French publication must not discover or construct a model client"
+        )
+
+    monkeypatch.setattr(runtime, "model_identity", forbidden)
+    monkeypatch.setattr(runtime, "FrenchOllamaClient", forbidden)
+    monkeypatch.setattr(runtime, "validate_endpoint", forbidden)
+    args = build_parser().parse_args(
+        [
+            "generate-assessment",
+            "--assessment",
+            "fr-bac-general-nsi-written-2027",
+            "--reference-index",
+            str(index),
+            "--output",
+            str(tmp_path / "output"),
+            "--seed",
+            "270100",
+        ]
+    )
+    assert args.provider == "application-owned"
+    assert args.handler(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    manifest = json.loads((bundle / "manifest.json").read_text())
+    assert manifest["model_used"] is False
+    assert manifest["identity"]["provider"] == "application-owned"
+    assert manifest["identity"]["model"] == "app-owned-v32"
+
+
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])
 @pytest.mark.parametrize("large_print", [False, True])
 def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large_print):

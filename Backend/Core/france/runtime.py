@@ -109,7 +109,10 @@ from Backend.Core.france.pipeline import (
     generate_assessment,
     validate_package,
 )
-from Backend.Core.france.provider import FrenchOllamaClient
+from Backend.Core.france.provider import (
+    ApplicationOwnedFrenchClient,
+    FrenchOllamaClient,
+)
 from Backend.Core.france.rendering import (
     printable_database_criterion,
     render_assessment,
@@ -2379,19 +2382,26 @@ def handle_generate_assessment(args) -> int:
                 "Le catalogue de références manque. Préparez les sources françaises avant de créer un sujet."
             )
         reference_index_sha256 = sha256(args.reference_index.read_bytes()).hexdigest()
-        validate_endpoint(
-            args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
-        )
-        identity = model_identity(args.ollama_url, args.model)
+        # Explicit Ollama mode remains available for historical diagnostic labels.
+        # The public CLI defaults to app-owned authoring with no model dependency.
+        application_owned = getattr(args, "provider", "ollama") == "application-owned"
+        if application_owned:
+            client = ApplicationOwnedFrenchClient()
+            identity = client.model_digest
+        else:
+            validate_endpoint(
+                args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
+            )
+            identity = model_identity(args.ollama_url, args.model)
+            client = FrenchOllamaClient(
+                model=args.model, base_url=args.ollama_url, seed=args.seed
+            )
+            client.model_digest = identity
         output = Path(args.output).expanduser().absolute()
         output.mkdir(parents=True, exist_ok=True)
         checkpoint = (
             output / ".papercreator-checkpoints" / f"{definition.id}-{args.seed}.json"
         )
-        client = FrenchOllamaClient(
-            model=args.model, base_url=args.ollama_url, seed=args.seed
-        )
-        client.model_digest = identity
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(
             index_path=args.reference_index,
@@ -2620,7 +2630,10 @@ def handle_generate_assessment(args) -> int:
             },
         )
         paths["package_manifest"] = staging / "manifest.json"
-        if model_identity(args.ollama_url, args.model) != identity:
+        if (
+            not application_owned
+            and model_identity(args.ollama_url, args.model) != identity
+        ):
             raise ValueError(
                 "Le modèle a changé pendant la génération; publication refusée"
             )

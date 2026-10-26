@@ -19,30 +19,12 @@ struct FrenchWorkspacePresentation {
     var blocker: String? {
         guard !isRunning else { return nil }
         if !hasReferences { return "Prepare French references first." }
-        let selectedModel = model.trimmingCharacters(in: .whitespacesAndNewlines)
-        if selectedModel.isEmpty {
-            return "Choose a local Ollama model first."
-        }
-        if ollamaState.message == "Not checked" { return "Check Ollama before creating a draft." }
-        if !ollamaState.installed { return "Install Ollama before creating a draft." }
-        if !ollamaState.running { return "Start Ollama before creating a draft." }
-        if hasLoadedModels && !availableModels.contains(selectedModel) {
-            return "Install the selected Ollama model before creating a draft."
-        }
         return nil
     }
 
     var canGenerate: Bool { !isRunning && blocker == nil }
 
-    var showsOllamaRecheck: Bool {
-        guard let blocker else { return false }
-        return [
-            "Check Ollama before creating a draft.",
-            "Install Ollama before creating a draft.",
-            "Start Ollama before creating a draft.",
-            "Install the selected Ollama model before creating a draft."
-        ].contains(blocker)
-    }
+    var showsOllamaRecheck: Bool { false }
 }
 
 struct FrenchAssessmentWorkspace: View {
@@ -127,9 +109,7 @@ struct FrenchAssessmentWorkspace: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
-                TextField("Local Ollama model", text: $application.selectedModel)
-                    .disabled(application.isRunning)
-                Text("Ollama is currently checked for the run record, but the selected model does not write V32 papers. This does not qualify the model.")
+                Text("No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Toggle("Enlarged print", isOn: $largePrint)
@@ -144,25 +124,6 @@ struct FrenchAssessmentWorkspace: View {
                     LabeledContent("Save to", value: application.outputFolder.lastPathComponent)
                     Button("Choose output folder", action: application.chooseOutputFolder)
                         .disabled(application.isRunning)
-                }
-                if let blocker = presentation.blocker,
-                   !presentation.showsPrepareReferences {
-                    Text(localizedValue(blocker))
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                    if blocker == "Install Ollama before creating a draft." {
-                        Button("Get Ollama", action: application.openOllamaDownload)
-                    } else if blocker == "Install the selected Ollama model before creating a draft.",
-                              application.distributionMode.canManageOllama {
-                        Button("Download selected model", action: application.pullSelectedModel)
-                    } else if blocker == "Install the selected Ollama model before creating a draft." {
-                        Text("Install this model in Ollama, then check again.")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    if presentation.showsOllamaRecheck {
-                        Button("Check Ollama", action: application.refreshOllama)
-                    }
                 }
             }
             Section("Review and guidance") {

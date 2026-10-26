@@ -81,7 +81,7 @@ def build_parser() -> argparse.ArgumentParser:
     assessment.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     assessment.add_argument("--seed", type=int, required=True)
     assessment.add_argument("--model", default=DEFAULT_MODEL)
-    assessment.add_argument("--provider", choices=["ollama"], default="ollama")
+    assessment.add_argument("--provider", choices=["application-owned", "ollama"], default="application-owned")
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")
     assessment.add_argument("--allow-remote", action="store_true")

@@ -1011,6 +1011,8 @@ def run_plan(args: argparse.Namespace) -> int:
             str(item.seed),
             "--model",
             item.model,
+            "--provider",
+            "ollama",
             "--ollama-url",
             args.ollama_url,
         ]

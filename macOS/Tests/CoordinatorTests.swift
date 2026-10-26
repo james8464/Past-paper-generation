@@ -403,6 +403,26 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testAppOwnedFrenchHistoryRestoresSeedWithoutChangingUKModel() {
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned",
+                model: "app-owned-v32", seed: 270101, dryRun: false, educationSystem: "fr-national",
+                assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR"
+            ),
+            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v32"),
+            state: .completed, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        let model = ApplicationCoordinator()
+        model.selectedModel = "uk-model"
+        model.duplicateConfiguration(record)
+        XCTAssertEqual(model.sidebarSelection, .frenchBaccalaureat)
+        XCTAssertEqual(model.pendingGenerationSeed, 270101)
+        XCTAssertEqual(model.selectedModel, "uk-model")
+    }
+
+    @MainActor
     func testInvalidConfigurationDoesNotClearSavedReportOrChangeTarget() throws {
         let model = ApplicationCoordinator()
         let report = try qualityReport()

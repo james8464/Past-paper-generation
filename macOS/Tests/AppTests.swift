@@ -41,6 +41,9 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertTrue(arguments.contains("--large-print"))
         XCTAssertFalse(arguments.contains("--subject"))
         XCTAssertFalse(arguments.contains("--allow-remote"))
+        XCTAssertTrue(arguments.contains("application-owned"))
+        XCTAssertFalse(arguments.contains("--model"))
+        XCTAssertFalse(arguments.contains("--ollama-url"))
     }
 
     func testFrenchTeacherReviewRequestCarriesTheCompleteRubric() throws {

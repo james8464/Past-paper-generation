@@ -894,22 +894,22 @@
         }
       }
     },
-    "V32 uses finite app-authored cases, not model-generated questions. Ollama is currently checked only for the run record; papers are built locally without cloud generation." : {
+    "V32 uses finite app-authored cases, not model-generated questions. No AI model or Ollama installation is needed; papers are built locally without cloud generation." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V32 utilise un ensemble limité de cas rédigés dans l’application, et non des questions générées par un modèle. Ollama est actuellement vérifié uniquement pour le registre d’exécution ; les sujets sont construits localement, sans génération dans le cloud."
+            "value" : "V32 utilise un ensemble limité de cas rédigés dans l’application, et non des questions générées par un modèle. Aucun modèle d’IA ni installation d’Ollama n’est nécessaire ; les sujets sont construits localement, sans génération dans le cloud."
           }
         }
       }
     },
-    "Ollama is currently checked for the run record, but the selected model does not write V32 papers. This does not qualify the model." : {
+    "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ollama est actuellement vérifié pour le registre d’exécution, mais le modèle sélectionné ne rédige pas les sujets V32. Cela ne qualifie pas le modèle."
+            "value" : "Aucun modèle d’IA ni installation d’Ollama n’est nécessaire pour V32. Ces sujets ne qualifient pas un modèle d’IA."
           }
         }
       }

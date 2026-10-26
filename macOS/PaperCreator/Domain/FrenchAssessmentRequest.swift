@@ -12,8 +12,7 @@ struct FrenchAssessmentRequest {
         var result = [
             "generate-assessment", "--assessment", Self.assessmentID,
             "--reference-index", referenceIndex.path, "--output", output.path,
-            "--model", model, "--provider", "ollama", "--seed", String(seed),
-            "--ollama-url", "http://127.0.0.1:11434",
+            "--provider", "application-owned", "--seed", String(seed),
         ]
         if largePrint { result.append("--large-print") }
         return result

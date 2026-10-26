@@ -76,7 +76,7 @@ final class AccessibilityTests: XCTestCase {
         XCTAssertNil(ready.blocker)
     }
 
-    func testFrenchDraftExplainsMissingModelAndRunningState() {
+    func testFrenchDraftNeedsNoModelButStillBlocksConcurrentRuns() {
         let noModel = FrenchWorkspacePresentation(
             hasReferences: true,
             model: "  ",
@@ -85,8 +85,8 @@ final class AccessibilityTests: XCTestCase {
             availableModels: ["gemma4:12b"],
             hasLoadedModels: true
         )
-        XCTAssertFalse(noModel.canGenerate)
-        XCTAssertEqual(noModel.blocker, "Choose a local Ollama model first.")
+        XCTAssertTrue(noModel.canGenerate)
+        XCTAssertNil(noModel.blocker)
 
         let running = FrenchWorkspacePresentation(
             hasReferences: true,
@@ -100,7 +100,7 @@ final class AccessibilityTests: XCTestCase {
         XCTAssertNil(running.blocker)
     }
 
-    func testFrenchDraftExplainsUnavailableLocalModelBeforeStarting() {
+    func testFrenchDraftDoesNotRequireOllamaInstallationOrModels() {
         let stopped = FrenchWorkspacePresentation(
             hasReferences: true,
             model: "gemma4:12b",
@@ -109,8 +109,9 @@ final class AccessibilityTests: XCTestCase {
             availableModels: ["gemma4:12b"],
             hasLoadedModels: true
         )
-        XCTAssertEqual(stopped.blocker, "Start Ollama before creating a draft.")
-        XCTAssertTrue(stopped.showsOllamaRecheck)
+        XCTAssertNil(stopped.blocker)
+        XCTAssertTrue(stopped.canGenerate)
+        XCTAssertFalse(stopped.showsOllamaRecheck)
 
         let missingModel = FrenchWorkspacePresentation(
             hasReferences: true,
@@ -120,9 +121,9 @@ final class AccessibilityTests: XCTestCase {
             availableModels: ["gemma4:12b"],
             hasLoadedModels: true
         )
-        XCTAssertEqual(missingModel.blocker, "Install the selected Ollama model before creating a draft.")
-        XCTAssertFalse(missingModel.canGenerate)
-        XCTAssertTrue(missingModel.showsOllamaRecheck)
+        XCTAssertNil(missingModel.blocker)
+        XCTAssertTrue(missingModel.canGenerate)
+        XCTAssertFalse(missingModel.showsOllamaRecheck)
 
         let absent = FrenchWorkspacePresentation(
             hasReferences: true,
@@ -132,7 +133,8 @@ final class AccessibilityTests: XCTestCase {
             availableModels: [],
             hasLoadedModels: false
         )
-        XCTAssertTrue(absent.showsOllamaRecheck)
+        XCTAssertFalse(absent.showsOllamaRecheck)
+        XCTAssertTrue(absent.canGenerate)
 
         let paddedModel = FrenchWorkspacePresentation(
             hasReferences: true,

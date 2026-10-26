@@ -13,7 +13,7 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
         "V32 uses three app-authored case families, not model-generated questions. New drafts may repeat a family.",
-        "Ollama is currently checked for the run record, but the selected model does not write V32 papers. This does not qualify the model.",
+        "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.",
         "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.",
     ):
         assert f'Text("{key}")' in workspace
@@ -36,7 +36,7 @@ def test_french_help_does_not_claim_ollama_authors_current_papers():
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     key = (
         "V32 uses finite app-authored cases, not model-generated questions. "
-        "Ollama is currently checked only for the run record; papers are built locally without cloud generation."
+        "No AI model or Ollama installation is needed; papers are built locally without cloud generation."
     )
     assert key in french
     unit = catalog[key]["localizations"]["fr"]["stringUnit"]
