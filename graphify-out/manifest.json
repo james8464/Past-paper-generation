@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793020251.4145124,
-    "ast_hash": "f73feff19a67f488fcb2a6df82332d29",
+    "mtime": 1793020750.0176902,
+    "ast_hash": "d843f9838d3834b6cd8b81ec8187c2c8",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3532,6 +3532,16 @@
   "tests/test_french_expression_exercise.py": {
     "mtime": 1793020554.373933,
     "ast_hash": "e525e8e9d62fdef15ca62b41d95507df",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/expression_stack.py": {
+    "mtime": 1793020716.1807513,
+    "ast_hash": "9f34a1207b7f776c06245a057f291b57",
+    "semantic_hash": ""
+  },
+  "tests/test_french_expression_stack.py": {
+    "mtime": 1793020748.8567364,
+    "ast_hash": "c9e6d38ac9541adeb4e84c85cc79c3cf",
     "semantic_hash": ""
   }
 }
