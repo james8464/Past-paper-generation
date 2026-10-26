@@ -42,6 +42,16 @@ def test_whole_e3_sequences_pass_originality_without_relaxing_history():
         history.append(exercise_candidate_text(exercise))
 
 
+def test_lock_deadline_explicitly_accepts_arrival_at_the_boundary():
+    from Backend.Core.france.system_case_prose import render_case
+
+    question = render_case(270101)["questions"][7]
+    assert question["id"] == "3h"
+    assert "t=11 inclus" in question["prompt"]
+    assert "une arrivée à 11" in question["answer"]
+    assert "réduction minimale : une minute" in question["answer"]
+
+
 @pytest.mark.parametrize("seed", range(270100, 270103))
 def test_printed_system_algorithm_runs_and_preserves_inputs(seed):
     import re

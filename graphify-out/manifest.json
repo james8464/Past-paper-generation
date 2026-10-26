@@ -3475,13 +3475,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/system_case_prose.py": {
-    "mtime": 1792807162.42612,
-    "ast_hash": "8cf87610d7a2170338918c3ee46da6ee",
+    "mtime": 1793019190.5138075,
+    "ast_hash": "07b56b9afa9eeffabf3c87c8cc2aed73",
     "semantic_hash": ""
   },
   "tests/test_french_system_case_prose.py": {
-    "mtime": 1792806954.3819401,
-    "ast_hash": "65ad2d03cf7a28d26d1bbf15180ef529",
+    "mtime": 1793019180.7721946,
+    "ast_hash": "d9b95e4af93901f577b0adb1388b6b02",
     "semantic_hash": ""
   },
   "Backend/Core/france/system_case_authoring.py": {

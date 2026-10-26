@@ -320,7 +320,7 @@ def _locks(case):
             "apply",
         ),
         _q(
-            "Le résultat de S met ensuite 2 minutes à revenir au client, qui abandonne à t=11. Calculer l'arrivée et déterminer la plus petite réduction entière de la durée de P permettant une réponse à temps.",
+            "Le résultat de S met ensuite 2 minutes à revenir au client. Le client accepte une réponse jusqu'à t=11 inclus ; au-delà, il abandonne. Calculer l'arrivée et déterminer la plus petite réduction entière de la durée de P permettant une réponse à temps.",
             "Arrivée 10+2=12, une minute après l'échéance. Réduire P de 3 à 2 minutes donne les fins 6,8,9 puis une arrivée à 11 ; réduction minimale : une minute.",
             (
                 "L'arrivée à 12 et le retard sont calculés.",
