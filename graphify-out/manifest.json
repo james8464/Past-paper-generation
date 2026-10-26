@@ -60,8 +60,8 @@
     "semantic_hash": "5434275d9eaa4d69452aa6176fdbca4f"
   },
   "Backend/Core/cli.py": {
-    "mtime": 1793017669.6995745,
-    "ast_hash": "a3bcddfa1c304ec6ffd1a4a2fbd4bf28",
+    "mtime": 1793043861.374968,
+    "ast_hash": "30fcac4da63660df78abbaefb624e229",
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_audit.py": {
@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1793027729.0802624,
-    "ast_hash": "a82a23141bc8f9eb51e674649398276d",
+    "mtime": 1793042159.2698772,
+    "ast_hash": "0012d7bed671a40f0c8e7f632e33f6d8",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793029080.0974908,
-    "ast_hash": "e8c6c5fa1fa3aa40c83323a08ac14188",
+    "mtime": 1793043453.9326532,
+    "ast_hash": "1194a38ddeaf1a47b499d0589f8447d7",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1275,8 +1275,8 @@
     "semantic_hash": "a90eb4af1fa3a6da6723f833618ff6b2"
   },
   "macOS/PaperCreator/Application/PaperCreatorApp.swift": {
-    "mtime": 1793038362.581462,
-    "ast_hash": "dd99b340fe556536e2834ae2a020bc9d",
+    "mtime": 1793042706.6401026,
+    "ast_hash": "9ade335cee92b022bdc544569722a444",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/AccentColor.colorset/Contents.json": {
@@ -1325,8 +1325,8 @@
     "semantic_hash": "541013ecd6198a450de9fe129a6889af"
   },
   "macOS/PaperCreator/Domain/FrenchAssessmentRequest.swift": {
-    "mtime": 1793017709.6654663,
-    "ast_hash": "95a361c3859a135f0afdf07233721bf9",
+    "mtime": 1793041508.41906,
+    "ast_hash": "1af9c61a866f8d01dd3e9bc2688dc855",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1793017745.820959,
-    "ast_hash": "c16835b406ba586fa3fe75ad5d2d06d8",
+    "mtime": 1793042001.4933953,
+    "ast_hash": "301530b676cfeaa35fb0265b007b74db",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793039761.4450157,
-    "ast_hash": "d7952b5867178e19a3c8dcb2c07812f9",
+    "mtime": 1793041508.4195342,
+    "ast_hash": "4fd30e0d1c5fa7c3eed0f1344d2e7485",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1440,13 +1440,13 @@
     "semantic_hash": "5bf232a55ba6ea284e0c08a72096456f"
   },
   "macOS/Tests/AccessibilityTests.swift": {
-    "mtime": 1793039772.0784068,
-    "ast_hash": "5c14a96e9333cf911a226c8aa446c1d6",
+    "mtime": 1793041524.2355895,
+    "ast_hash": "e32533e1ebedb2f963f66efceb77d607",
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793039772.1133053,
-    "ast_hash": "c5b0ecb6bf13c050a147ba3d1cb0c91f",
+    "mtime": 1793042650.3139732,
+    "ast_hash": "cab4973b7704a6916fcbcd6ab41b0b19",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -1460,8 +1460,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1792792696.3671741,
-    "ast_hash": "0d43038deeb6a9af71d570e55e849dc1",
+    "mtime": 1793043861.2581518,
+    "ast_hash": "d4f6bc1934d8313a7bb78aaaf775eae9",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -1520,9 +1520,9 @@
     "semantic_hash": "1d45eb14968dd1095aa2f0f07a983b4a"
   },
   "tests/test_app_backend.py": {
-    "mtime": 1791129181.5912902,
-    "ast_hash": "5f0058942c0aa39b03c531c9557fc188",
-    "semantic_hash": "5f0058942c0aa39b03c531c9557fc188"
+    "mtime": 1793043183.12958,
+    "ast_hash": "cff2c65edb775239b3e27ebeb7ed42ce",
+    "semantic_hash": ""
   },
   "tests/test_aqa_accounting_calibration.py": {
     "mtime": 1791129181.5915048,
@@ -1700,8 +1700,8 @@
     "semantic_hash": "b97261947c71219f6a29b0d220df62c5"
   },
   "tests/test_generator_registry.py": {
-    "mtime": 1792792776.1374595,
-    "ast_hash": "1ac87a8992adc0cb0a45c5ade38a21f3",
+    "mtime": 1793043861.2584672,
+    "ast_hash": "b25f49e796fc519a2cdf95a6c1ebd5f3",
     "semantic_hash": ""
   },
   "tests/test_generator_render_transactions.py": {
@@ -2130,8 +2130,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793040897.476352,
-    "ast_hash": "100cc99d321d6dda29ba954d67aba0bc",
+    "mtime": 1793044111.8483293,
+    "ast_hash": "9e32cc3d29c2b3709b8e5060caebebcc",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt": {
@@ -3480,8 +3480,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/synthesized_pipeline.py": {
-    "mtime": 1793027783.0486631,
-    "ast_hash": "2cd776eb3167275150e38cb9255932de",
+    "mtime": 1793041316.9745572,
+    "ast_hash": "03b6cfbfc2578344b9b752c792f22c1c",
     "semantic_hash": ""
   },
   "Backend/Core/france/system_case_authoring.py": {
@@ -3495,8 +3495,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/system_case_prose.py": {
-    "mtime": 1793019190.5138075,
-    "ast_hash": "07b56b9afa9eeffabf3c87c8cc2aed73",
+    "mtime": 1793042420.3402374,
+    "ast_hash": "c54adef422cf2133de7d9bdf9249f66f",
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_case_authoring.py": {
@@ -3515,8 +3515,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/whole_case_pdf.py": {
-    "mtime": 1793027783.3004735,
-    "ast_hash": "c7ad2fb98c81e12971245fe70614ceb8",
+    "mtime": 1793042001.5793386,
+    "ast_hash": "0f2a71828d94b38239a393bac3962f00",
     "semantic_hash": ""
   },
   "tests/test_french_database_case_authoring.py": {
@@ -3565,8 +3565,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_synthesized_pipeline.py": {
-    "mtime": 1793028886.5234842,
-    "ast_hash": "5889309c134d9ac3e003782b2c084990",
+    "mtime": 1793041317.0647938,
+    "ast_hash": "e24474bbadbec68715b886734ee5863c",
     "semantic_hash": ""
   },
   "tests/test_french_system_case_authoring.py": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_system_case_prose.py": {
-    "mtime": 1793019180.7721946,
-    "ast_hash": "d9b95e4af93901f577b0adb1388b6b02",
+    "mtime": 1793042330.2804322,
+    "ast_hash": "7208874ccaf4516542835ff969ed6aab",
     "semantic_hash": ""
   },
   "tests/test_french_tree_case_authoring.py": {
@@ -3600,8 +3600,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_ui_provenance.py": {
-    "mtime": 1793017709.6666303,
-    "ast_hash": "808693749e7bf2310d94a12eb5a2dd85",
+    "mtime": 1793041524.2411873,
+    "ast_hash": "993ae5acf8ff39f493f17dd738f15047",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_benchmark.py": {
@@ -3610,13 +3610,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_pdf.py": {
-    "mtime": 1793018323.4037097,
-    "ast_hash": "b34ffcade5495318fbf04c2612b32251",
+    "mtime": 1793043373.0462775,
+    "ast_hash": "20551d36996e551220cead52b36b26e6",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_pipeline.py": {
-    "mtime": 1792807116.2091308,
-    "ast_hash": "add651bcea3a00ef472a28b3d8c27b4e",
+    "mtime": 1793042769.827002,
+    "ast_hash": "5204cf8c5eb3d999cf91b53a4b1c6b32",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v31-sequential-originality-failure-2026-10-24.md": {
@@ -3627,6 +3627,11 @@
   "docs/quality/french-nsi-v31-task-families-design-2026-10-24.md": {
     "mtime": 1792802569.2653995,
     "ast_hash": "aeeaaee914703a38d5c8b42b2f66a443",
+    "semantic_hash": ""
+  },
+  "docs/quality/keldin-engineering-and-french-audit-2026-10-26.md": {
+    "mtime": 1793044111.8477042,
+    "ast_hash": "8c52f60b9bad510198836a9247bd0315",
     "semantic_hash": ""
   }
 }
