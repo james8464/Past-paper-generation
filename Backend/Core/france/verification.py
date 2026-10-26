@@ -285,10 +285,14 @@ def verify_contract(contract: dict) -> dict:
         "graph_two_outage_contract",
         "tree_construction_contract",
         "route_selection_contract",
+        "route_family_contract",
         "database_contract",
         "database_depth_contract",
         "database_audit_contract",
         "database_reconciliation_contract",
+        "database_case_contract",
+        "tree_case_contract",
+        "system_case_contract",
         "network_contract",
         "network_depth_contract",
         "network_reasoning_contract",
@@ -301,7 +305,72 @@ def verify_contract(contract: dict) -> dict:
             "reason": "Vérification humaine nécessaire",
         }
     try:
-        if kind == "network_incident_timeline_contract":
+        if kind == "system_case_contract":
+            from Backend.Core.france.system_case_families import build_case
+            from Backend.Core.france.system_case_prose import VERSION
+
+            if set(contract) != {
+                "kind",
+                "version",
+                "seed",
+                "case_sha256",
+                "task_id",
+                "expected",
+            }:
+                raise ValueError("Whole system case contract fields changed")
+            data = build_case(contract["seed"])
+            if (
+                contract["version"] != VERSION
+                or contract["case_sha256"] != data["sha256"]
+                or contract["task_id"]
+                not in {f"3{letter}" for letter in "abcdefghijkl"}
+            ):
+                raise ValueError("Whole system case identity mismatch")
+            actual = data["expected"]
+        elif kind == "tree_case_contract":
+            from Backend.Core.france.tree_case_families import build_case
+            from Backend.Core.france.tree_case_prose import VERSION
+
+            if set(contract) != {
+                "kind",
+                "version",
+                "seed",
+                "case_sha256",
+                "task_id",
+                "expected",
+            }:
+                raise ValueError("Whole tree case contract fields changed")
+            data = build_case(contract["seed"])
+            if (
+                contract["version"] != VERSION
+                or contract["case_sha256"] != data["sha256"]
+                or contract["task_id"] not in {f"1{letter}" for letter in "abcdefghij"}
+            ):
+                raise ValueError("Whole tree case identity mismatch")
+            actual = data["expected"]
+        elif kind == "database_case_contract":
+            from Backend.Core.france.database_case_families import build_case
+            from Backend.Core.france.database_case_prose import VERSION
+
+            if set(contract) != {
+                "kind",
+                "version",
+                "seed",
+                "case_sha256",
+                "task_id",
+                "expected",
+            }:
+                raise ValueError("Whole database case contract fields changed")
+            data = build_case(contract["seed"])
+            if (
+                contract["version"] != VERSION
+                or contract["case_sha256"] != data["sha256"]
+                or contract["task_id"]
+                not in {f"2{letter}" for letter in "abcdefghijkl"}
+            ):
+                raise ValueError("Whole database case identity mismatch")
+            actual = data["expected"]
+        elif kind == "network_incident_timeline_contract":
             from Backend.Core.france.network_incident_timeline_contract import (
                 NetworkIncidentTimelineContract,
             )
@@ -325,6 +394,7 @@ def verify_contract(contract: dict) -> dict:
             "graph_two_outage_contract",
             "tree_construction_contract",
             "route_selection_contract",
+            "route_family_contract",
         }:
             from Backend.Core.france.graph_two_outage_contract import (
                 GraphTwoOutageContract,
@@ -343,6 +413,12 @@ def verify_contract(contract: dict) -> dict:
                 if task_id != "1j":
                     raise ValueError("Tâche de construction d'arbre inconnue")
                 actual = tree_construction_expected(data)
+            elif kind == "route_family_contract":
+                from Backend.Core.france.route_task_families import family_expected
+
+                if task_id not in {"1f", "1g"}:
+                    raise ValueError("Tâche de famille de trajet inconnue")
+                actual = family_expected(data)
             elif kind == "route_selection_contract":
                 from Backend.Core.france.route_selection_authoring import (
                     route_selection_expected,

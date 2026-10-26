@@ -58,6 +58,19 @@ from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.providers import HostedLLMClient
 
 
+class ApplicationOwnedFrenchClient:
+    """Explicit no-transport identity for the verified V32 case authoring path."""
+
+    provider = "application-owned"
+    model = "app-owned-v32"
+    model_digest = sha256(
+        b"Paper Creator application-owned French cases v32"
+    ).hexdigest()
+
+    def generate_json(self, *args, **kwargs):
+        raise RuntimeError("Application-owned authoring cannot call a language model")
+
+
 class FrenchOllamaClient(HostedLLMClient):
     def __init__(self, *, model: str, base_url: str, seed: int):
         super().__init__(provider="ollama", model=model, api_key="", base_url=base_url)

@@ -147,6 +147,15 @@ def test_backend_bundle_includes_pymupdf_runtime_data() -> None:
     assert "--collect-data pymupdf" in script
 
 
+def test_backend_bundle_keeps_source_used_in_french_corrections() -> None:
+    script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
+    assert (
+        '--add-data "$french_source:Backend/Core/france"'
+        in script
+    )
+    assert 'find "$ROOT_DIR/Backend/Core/france" -maxdepth 1 -type f' in script
+
+
 def test_build_and_test_use_the_same_qualified_pdf_engine() -> None:
     for filename in ("requirements-build.txt", "requirements-test.txt"):
         assert "pymupdf==1.28.2" in (REPO_ROOT / filename).read_text().splitlines()

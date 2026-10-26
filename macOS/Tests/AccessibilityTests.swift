@@ -51,102 +51,24 @@ final class AccessibilityTests: XCTestCase {
     }
 
     func testFrenchDraftPresentsReferenceRecoveryOnlyWhenNeeded() {
-        let missing = FrenchWorkspacePresentation(
-            hasReferences: false,
-            model: "gemma4:12b",
-            isRunning: false,
-            ollamaState: readyOllama,
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
+        let missing = FrenchWorkspacePresentation(hasReferences: false, isRunning: false)
         XCTAssertFalse(missing.canGenerate)
         XCTAssertTrue(missing.showsPrepareReferences)
         XCTAssertEqual(missing.blocker, "Prepare French references first.")
 
-        let ready = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "gemma4:12b",
-            isRunning: false,
-            ollamaState: readyOllama,
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
+        let ready = FrenchWorkspacePresentation(hasReferences: true, isRunning: false)
         XCTAssertTrue(ready.canGenerate)
         XCTAssertFalse(ready.showsPrepareReferences)
         XCTAssertNil(ready.blocker)
     }
 
-    func testFrenchDraftExplainsMissingModelAndRunningState() {
-        let noModel = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "  ",
-            isRunning: false,
-            ollamaState: readyOllama,
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
-        XCTAssertFalse(noModel.canGenerate)
-        XCTAssertEqual(noModel.blocker, "Choose a local Ollama model first.")
-
-        let running = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "gemma4:12b",
-            isRunning: true,
-            ollamaState: readyOllama,
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
+    func testFrenchDraftBlocksConcurrentRunsWithoutModelState() {
+        let running = FrenchWorkspacePresentation(hasReferences: true, isRunning: true)
         XCTAssertFalse(running.canGenerate)
         XCTAssertNil(running.blocker)
-    }
 
-    func testFrenchDraftExplainsUnavailableLocalModelBeforeStarting() {
-        let stopped = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "gemma4:12b",
-            isRunning: false,
-            ollamaState: OllamaState(installed: true, running: false, command: "ollama", message: "Stopped"),
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
-        XCTAssertEqual(stopped.blocker, "Start Ollama before creating a draft.")
-        XCTAssertTrue(stopped.showsOllamaRecheck)
-
-        let missingModel = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "unavailable:latest",
-            isRunning: false,
-            ollamaState: OllamaState(installed: true, running: true, command: "ollama", message: "Ready"),
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
-        XCTAssertEqual(missingModel.blocker, "Install the selected Ollama model before creating a draft.")
-        XCTAssertFalse(missingModel.canGenerate)
-        XCTAssertTrue(missingModel.showsOllamaRecheck)
-
-        let absent = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: "gemma4:12b",
-            isRunning: false,
-            ollamaState: OllamaState(installed: false, running: false, command: nil, message: "Not installed"),
-            availableModels: [],
-            hasLoadedModels: false
-        )
-        XCTAssertTrue(absent.showsOllamaRecheck)
-
-        let paddedModel = FrenchWorkspacePresentation(
-            hasReferences: true,
-            model: " gemma4:12b ",
-            isRunning: false,
-            ollamaState: readyOllama,
-            availableModels: ["gemma4:12b"],
-            hasLoadedModels: true
-        )
-        XCTAssertTrue(paddedModel.canGenerate)
-    }
-
-    private var readyOllama: OllamaState {
-        OllamaState(installed: true, running: true, command: "ollama", message: "Ready")
+        let missing = FrenchWorkspacePresentation(hasReferences: false, isRunning: true)
+        XCTAssertFalse(missing.canGenerate)
     }
 
     func testEveryProviderAndHelpTopicHasSpokenTextAndSymbol() {

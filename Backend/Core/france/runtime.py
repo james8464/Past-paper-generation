@@ -99,15 +99,20 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     CONTROLLED_NETWORK_PROMPT_VERSION,
     CONTROLLED_NETWORK_REASONING_PROMPT_VERSION,
+    CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
     CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
     CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
+    CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     atomic_json,
     digest,
     exercise_candidate_text,
     generate_assessment,
     validate_package,
 )
-from Backend.Core.france.provider import FrenchOllamaClient
+from Backend.Core.france.provider import (
+    ApplicationOwnedFrenchClient,
+    FrenchOllamaClient,
+)
 from Backend.Core.france.rendering import (
     printable_database_criterion,
     render_assessment,
@@ -641,7 +646,8 @@ def _validate_route_selection_pdf(
 
     for question in exercise.questions[5:7]:
         if (
-            question.verification.get("kind") != "route_selection_contract"
+            question.verification.get("kind")
+            not in {"route_selection_contract", "route_family_contract"}
             or question.verification.get("task_id") != question.id
             or question.verification.get("contract") != data
             or not verify_contract(question.verification)["passed"]
@@ -781,6 +787,8 @@ def _validate_route_selection_pdf(
         token in flat
         for token in (
             "def meilleur_trajet",
+            "def trajets_admissibles",
+            "def premiere_coupure",
             "def compter_intervalle",
             "if voisin not in visites:",
         )
@@ -801,7 +809,10 @@ def validate_graph_two_outage_pdf(
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
-    if exercise.questions[5].verification.get("kind") == "route_selection_contract":
+    if exercise.questions[5].verification.get("kind") in {
+        "route_selection_contract",
+        "route_family_contract",
+    }:
         return _validate_route_selection_pdf(
             path,
             data,
@@ -2244,11 +2255,12 @@ def validate_network_incident_timeline_pdf(
 
 
 def load_originality_history(output: Path) -> list[str]:
-    """Read a bounded set of candidate-only text from earlier local bundles."""
+    """Read recent, valid local candidate text, independently of seed ordering."""
     history: list[str] = []
     if not output.is_dir():
         return history
-    for bundle in sorted(output.glob("nsi-2027-*"), reverse=True):
+    candidates: list[tuple[int, str, Path]] = []
+    for bundle in output.glob("nsi-2027-*"):
         assessment = bundle / "assessment.json"
         try:
             if (
@@ -2259,17 +2271,31 @@ def load_originality_history(output: Path) -> list[str]:
                 or assessment.stat().st_size > 5 * 1024 * 1024
             ):
                 continue
+            candidates.append((assessment.stat().st_mtime_ns, bundle.name, assessment))
+        except OSError:
+            continue
+    for _, _, assessment in sorted(candidates, reverse=True):
+        try:
+            # Recheck links in case a bundle changed while the list was built.
+            if assessment.is_symlink() or assessment.parent.is_symlink():
+                continue
             package = json.loads(assessment.read_text(encoding="utf-8"))
             if (
-                package.get("schema_version") != 2
+                not isinstance(package, dict)
+                or package.get("schema_version") != 2
                 or package.get("assessment_policy") != "fr-bac-general-nsi-written-2027"
                 or not isinstance(package.get("exercises"), list)
             ):
                 continue
-            for raw in package["exercises"]:
-                history.append(exercise_candidate_text(NSIExercise.model_validate(raw)))
-                if len(history) == 20:
-                    return history
+            # Validate the entire bundle before taking any text from it. A bad
+            # later exercise must not leave partial history behind.
+            texts = [
+                exercise_candidate_text(NSIExercise.model_validate(raw))
+                for raw in package["exercises"]
+            ]
+            history.extend(texts[: 20 - len(history)])
+            if len(history) == 20:
+                return history
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
             continue
     return history
@@ -2277,6 +2303,10 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+        return "v32"
+    if prompt_version == CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION:
+        return "v31"
     if prompt_version == CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION:
         return "v30"
     if prompt_version == CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION:
@@ -2313,6 +2343,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+        return "v32"
     if prompt_version in {
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -2320,6 +2352,7 @@ def database_pdf_contract_version(prompt_version: str) -> str:
         CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
         CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
+        CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
         CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
     }:
         return "v24"
@@ -2364,19 +2397,26 @@ def handle_generate_assessment(args) -> int:
                 "Le catalogue de références manque. Préparez les sources françaises avant de créer un sujet."
             )
         reference_index_sha256 = sha256(args.reference_index.read_bytes()).hexdigest()
-        validate_endpoint(
-            args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
-        )
-        identity = model_identity(args.ollama_url, args.model)
+        # Explicit Ollama mode remains available for historical diagnostic labels.
+        # The public CLI defaults to app-owned authoring with no model dependency.
+        application_owned = getattr(args, "provider", "ollama") == "application-owned"
+        if application_owned:
+            client = ApplicationOwnedFrenchClient()
+            identity = client.model_digest
+        else:
+            validate_endpoint(
+                args.ollama_url, allow_remote=getattr(args, "allow_remote", False)
+            )
+            identity = model_identity(args.ollama_url, args.model)
+            client = FrenchOllamaClient(
+                model=args.model, base_url=args.ollama_url, seed=args.seed
+            )
+            client.model_digest = identity
         output = Path(args.output).expanduser().absolute()
         output.mkdir(parents=True, exist_ok=True)
         checkpoint = (
             output / ".papercreator-checkpoints" / f"{definition.id}-{args.seed}.json"
         )
-        client = FrenchOllamaClient(
-            model=args.model, base_url=args.ollama_url, seed=args.seed
-        )
-        client.model_digest = identity
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(
             index_path=args.reference_index,
@@ -2386,11 +2426,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v30",
+            contract_authoring_version="v32",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        whole_case = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_WHOLE_CASE_PROMPT_VERSION
+        )
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -2402,6 +2446,7 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
             CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
+            CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_TIMELINE_PROMPT_VERSION,
         }
         graph_resilience = package["identity"]["prompt_version"] in {
@@ -2414,7 +2459,9 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
-            build_graph_two_outage_contract(args.seed)
+            None
+            if whole_case
+            else build_graph_two_outage_contract(args.seed)
             if graph_two_outage
             else build_graph_route_trace_contract(args.seed)
             if graph_route_trace
@@ -2429,7 +2476,9 @@ def handle_generate_assessment(args) -> int:
         )
         database_depth = database_pdf_version in {"v2", "v19"}
         database_contract = (
-            build_database_reconciliation_contract(args.seed)
+            None
+            if whole_case
+            else build_database_reconciliation_contract(args.seed)
             if database_pdf_version == "v24"
             else build_database_audit_contract(args.seed)
             if database_pdf_version == "v21"
@@ -2440,18 +2489,29 @@ def handle_generate_assessment(args) -> int:
         network_pdf_version = network_pdf_contract_version(
             package["identity"]["prompt_version"]
         )
-        network_timeline = network_pdf_version in {"v26", "v27", "v28", "v29", "v30"}
+        network_timeline = network_pdf_version in {
+            "v26",
+            "v27",
+            "v28",
+            "v29",
+            "v30",
+            "v31",
+        }
         human_readable_graph_titles = network_pdf_version in {
             "v27",
             "v28",
             "v29",
             "v30",
+            "v31",
+            "v32",
         }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
         network_contract = (
-            build_network_incident_timeline_contract(args.seed)
+            None
+            if whole_case
+            else build_network_incident_timeline_contract(args.seed)
             if network_timeline
             else build_network_incident_contract(args.seed)
             if network_incident
@@ -2475,12 +2535,19 @@ def handle_generate_assessment(args) -> int:
                     correction=correction,
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
-                    coherent_material_flow=network_pdf_version in {"v28", "v29", "v30"},
+                    coherent_material_flow=network_pdf_version
+                    in {"v28", "v29", "v30", "v31", "v32"},
                 ),
                 role=role,
                 language="fr-FR",
             )
             validate_pdf(path)
+            if whole_case:
+                from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+
+                validate_whole_case_pdf(path, package, correction=correction)
+                paths[role] = path
+                continue
             graph_tree_validator = (
                 validate_graph_two_outage_pdf
                 if graph_two_outage
@@ -2501,7 +2568,7 @@ def handle_generate_assessment(args) -> int:
                     {
                         "human_readable_titles": human_readable_graph_titles,
                         "coherent_material_flow": network_pdf_version
-                        in {"v28", "v29", "v30"}
+                        in {"v28", "v29", "v30", "v31"}
                         and not args.large_print,
                     }
                     if graph_two_outage
@@ -2544,7 +2611,7 @@ def handle_generate_assessment(args) -> int:
                 **(
                     {
                         "revision": 2
-                        if network_pdf_version in {"v27", "v28", "v29", "v30"}
+                        if network_pdf_version in {"v27", "v28", "v29", "v30", "v31"}
                         else 1
                     }
                     if network_timeline
@@ -2571,10 +2638,17 @@ def handle_generate_assessment(args) -> int:
                 "teacher_review": "not_run",
                 "empirical_calibration": "not_run",
                 "visual_calibration": "not_run",
+                "generation_origin": "application_owned"
+                if whole_case
+                else "model_assisted",
+                "model_used": not whole_case,
             },
         )
         paths["package_manifest"] = staging / "manifest.json"
-        if model_identity(args.ollama_url, args.model) != identity:
+        if (
+            not application_owned
+            and model_identity(args.ollama_url, args.model) != identity
+        ):
             raise ValueError(
                 "Le modèle a changé pendant la génération; publication refusée"
             )

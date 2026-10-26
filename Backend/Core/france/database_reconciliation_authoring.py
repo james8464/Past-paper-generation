@@ -29,6 +29,7 @@ def _render(run_identity):
         "fr-nsi-written-2027-v28",
         "fr-nsi-written-2027-v29",
         "fr-nsi-written-2027-v30",
+        "fr-nsi-written-2027-v31",
     }:
         from Backend.Core.france.database_construction_authoring import (
             render_database_construction_candidate,

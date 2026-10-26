@@ -8,41 +8,17 @@ enum FrenchWorkspaceLayoutPolicy {
 
 struct FrenchWorkspacePresentation {
     let hasReferences: Bool
-    let model: String
     let isRunning: Bool
-    let ollamaState: OllamaState
-    let availableModels: [String]
-    let hasLoadedModels: Bool
 
     var showsPrepareReferences: Bool { !hasReferences }
 
     var blocker: String? {
         guard !isRunning else { return nil }
         if !hasReferences { return "Prepare French references first." }
-        let selectedModel = model.trimmingCharacters(in: .whitespacesAndNewlines)
-        if selectedModel.isEmpty {
-            return "Choose a local Ollama model first."
-        }
-        if ollamaState.message == "Not checked" { return "Check Ollama before creating a draft." }
-        if !ollamaState.installed { return "Install Ollama before creating a draft." }
-        if !ollamaState.running { return "Start Ollama before creating a draft." }
-        if hasLoadedModels && !availableModels.contains(selectedModel) {
-            return "Install the selected Ollama model before creating a draft."
-        }
         return nil
     }
 
     var canGenerate: Bool { !isRunning && blocker == nil }
-
-    var showsOllamaRecheck: Bool {
-        guard let blocker else { return false }
-        return [
-            "Check Ollama before creating a draft.",
-            "Install Ollama before creating a draft.",
-            "Start Ollama before creating a draft.",
-            "Install the selected Ollama model before creating a draft."
-        ].contains(blocker)
-    }
 }
 
 struct FrenchAssessmentWorkspace: View {
@@ -106,6 +82,9 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official drafts for teachers to review before classroom use.")
                     .foregroundStyle(.secondary)
+                Text("French NSI has three app-authored case families. The originality check refuses repeated families.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
                     Text(localizedValue("2027 · 3 h 30 · 3 independent exercises"))
                 }
@@ -124,9 +103,7 @@ struct FrenchAssessmentWorkspace: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
-                TextField("Local Ollama model", text: $application.selectedModel)
-                    .disabled(application.isRunning)
-                Text("Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review.")
+                Text("No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Toggle("Enlarged print", isOn: $largePrint)
@@ -142,32 +119,13 @@ struct FrenchAssessmentWorkspace: View {
                     Button("Choose output folder", action: application.chooseOutputFolder)
                         .disabled(application.isRunning)
                 }
-                if let blocker = presentation.blocker,
-                   !presentation.showsPrepareReferences {
-                    Text(localizedValue(blocker))
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                    if blocker == "Install Ollama before creating a draft." {
-                        Button("Get Ollama", action: application.openOllamaDownload)
-                    } else if blocker == "Install the selected Ollama model before creating a draft.",
-                              application.distributionMode.canManageOllama {
-                        Button("Download selected model", action: application.pullSelectedModel)
-                    } else if blocker == "Install the selected Ollama model before creating a draft." {
-                        Text("Install this model in Ollama, then check again.")
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                    }
-                    if presentation.showsOllamaRecheck {
-                        Button("Check Ollama", action: application.refreshOllama)
-                    }
-                }
             }
             Section("Review and guidance") {
                 Text("Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher.")
                 Button("Record a teacher review") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
-                    Text("Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback.")
+                    Text("Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.")
                     if application.hasFrenchReferences {
                         Button("Delete downloaded French references", role: .destructive) {
                             showDeleteReferences = true
@@ -200,11 +158,7 @@ struct FrenchAssessmentWorkspace: View {
     private var presentation: FrenchWorkspacePresentation {
         FrenchWorkspacePresentation(
             hasReferences: application.hasFrenchReferences,
-            model: application.selectedModel,
-            isRunning: application.isRunning,
-            ollamaState: application.ollamaState,
-            availableModels: application.availableModels,
-            hasLoadedModels: application.hasLoadedOllamaModels
+            isRunning: application.isRunning
         )
     }
 

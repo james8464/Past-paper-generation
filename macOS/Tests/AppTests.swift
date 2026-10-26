@@ -33,7 +33,7 @@ final class PaperCreatorTests: XCTestCase {
     func testFrenchRequestKeepsCurriculumSeparateFromUILanguage() {
         let arguments = FrenchAssessmentRequest(
             referenceIndex: URL(fileURLWithPath: "/tmp/references.sqlite"),
-            output: URL(fileURLWithPath: "/tmp/papers"), model: "gemma4:12b",
+            output: URL(fileURLWithPath: "/tmp/papers"),
             seed: 42, largePrint: true
         ).arguments
         XCTAssertEqual(arguments.first, "generate-assessment")
@@ -41,6 +41,24 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertTrue(arguments.contains("--large-print"))
         XCTAssertFalse(arguments.contains("--subject"))
         XCTAssertFalse(arguments.contains("--allow-remote"))
+        XCTAssertTrue(arguments.contains("application-owned"))
+        XCTAssertFalse(arguments.contains("--model"))
+        XCTAssertFalse(arguments.contains("--ollama-url"))
+    }
+
+    @MainActor
+    func testTestHostStartupUsesPrivatePreferencesAndSecrets() {
+        let environment = ["XCTestConfigurationFilePath": "fixture.xctestconfiguration"]
+        let first = AppLaunchPolicy.makeApplication(environment: environment)
+        let second = AppLaunchPolicy.makeApplication(environment: environment)
+        first.setDryRun(true)
+        first.settingsStore.openAIAPIKey = "test-host-only"
+        first.settingsStore.save()
+        XCTAssertTrue(first.dryRun)
+        XCTAssertFalse(second.dryRun)
+        XCTAssertTrue(second.settingsStore.openAIAPIKey.isEmpty)
+        XCTAssertTrue(first.generatedFiles.isEmpty)
+        XCTAssertTrue(second.generatedFiles.isEmpty)
     }
 
     func testFrenchTeacherReviewRequestCarriesTheCompleteRubric() throws {

@@ -275,7 +275,6 @@ final class ApplicationCoordinator: ObservableObject {
         let request = FrenchAssessmentRequest(
             referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
             output: distributionMode == .appStore ? AppDefaults.appStoreWorkingFolder() : outputFolder,
-            model: selectedModel.trimmingCharacters(in: .whitespacesAndNewlines),
             seed: seed, largePrint: largePrint
         )
         startFrenchOperation(arguments: request.arguments, seed: seed)
@@ -337,14 +336,14 @@ final class ApplicationCoordinator: ObservableObject {
             if let seed {
                 try generationCoordinator.begin(GenerationJobRecord(
                     configuration: GenerationConfiguration(
-                        boardID: "fr-national-nsi", paperID: "written-2027", provider: "ollama",
-                        model: selectedModel, seed: seed, dryRun: false,
+                        boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned",
+                        model: "app-owned-v32", seed: seed, dryRun: false,
                         educationSystem: "fr-national", assessmentID: FrenchAssessmentRequest.assessmentID,
                         documentLanguage: "fr-FR"
                     ),
                     provenance: GenerationProvenance(
                         appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
-                        provider: "ollama", model: selectedModel
+                        provider: "application-owned", model: "app-owned-v32"
                     ), state: .pending, artifacts: [],
                     qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
                 ))
@@ -479,8 +478,10 @@ final class ApplicationCoordinator: ObservableObject {
         if record.configuration.assessmentID == FrenchAssessmentRequest.assessmentID {
             guard !isRunning, record.configuration.educationSystem == "fr-national",
                   record.configuration.documentLanguage == "fr-FR",
-                  record.configuration.provider == "ollama" else { return }
-            selectedModel = record.configuration.model
+                  ["ollama", "application-owned"].contains(record.configuration.provider) else { return }
+            if record.configuration.provider == "ollama" {
+                selectedModel = record.configuration.model
+            }
             pendingGenerationSeed = seed
             lastQualityReport = nil
             sidebarSelection = .frenchBaccalaureat

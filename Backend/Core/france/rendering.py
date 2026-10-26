@@ -2,6 +2,7 @@
 
 import re
 from decimal import Decimal
+from functools import partial
 from math import atan2, cos, pi, sin
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -31,10 +32,27 @@ from Backend.Core.france.nsi import (
     NSIWeightedGraphMaterial,
 )
 
+WHOLE_CASE_KINDS = frozenset(
+    {
+        "database_case_contract",
+        "tree_case_contract",
+        "system_case_contract",
+        "expression_synthesis_contract",
+        "postfix_synthesis_contract",
+    }
+)
+
 
 def printable_database_criterion(criterion: str) -> str:
     """Remove source Markdown delimiters without mutating replayable rubric data."""
     return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
+
+
+def french_prose_markup(text: str) -> str:
+    """Escape prose and bind French punctuation, never executable listings."""
+    text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
+    text = re.sub(r"«[ \t]+", "«\u00a0", text)
+    return escape(text).replace("\n", "<br/>")
 
 
 def exercise_scope_text(title: str) -> str:
@@ -52,6 +70,7 @@ def structured_material(
     regular_font: str,
     available_width: float,
     show_id: bool = True,
+    balance_columns: bool = False,
 ):
     heading = (
         f"{material.title} — {material.id}"
@@ -74,6 +93,20 @@ def structured_material(
             if route_trace_table
             else [available_width / len(material.columns)] * len(material.columns)
         )
+        if balance_columns:
+            # Preserve identifiers at the requested font size. Equal columns
+            # otherwise split "temperature" despite ample room in ID columns.
+            minimums = [
+                max(
+                    stringWidth(word, body.fontName, body.fontSize)
+                    for value in (column, *(row[index] for row in material.rows))
+                    for word in value.split()
+                ) + 10
+                for index, column in enumerate(material.columns)
+            ]
+            spare = available_width - sum(minimums)
+            if spare >= 0:
+                column_widths = [width + spare / len(minimums) for width in minimums]
         table = Table(
             rows,
             colWidths=column_widths,
@@ -222,8 +255,9 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
 
 
 class NumberedCanvas(Canvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, brand_name="Paper Creator", **kwargs):
         super().__init__(*args, **kwargs)
+        self._brand_name = brand_name
         self._pages = []
 
     def showPage(self):
@@ -236,7 +270,7 @@ class NumberedCanvas(Canvas):
             self.__dict__.update(state)
             self.setFont("ExamSans", 9)
             self.drawString(
-                70, 43, "Paper Creator — entraînement non officiel — non relu"
+                70, 43, f"{self._brand_name} — entraînement non officiel — non relu"
             )
             self.setFont("ExamSans", 10)
             self.drawRightString(A4[0] - 54, 43, f"Page : {self._pageNumber} / {total}")
@@ -253,6 +287,7 @@ def draw_cover_page(
     regular_font: str,
     bold_font: str,
     italic_font: str,
+    brand_name: str = "Paper Creator",
 ) -> None:
     """Draw the cover from measured 2026 coordinates, with independent branding."""
 
@@ -323,13 +358,16 @@ def draw_cover_page(
         15,
         bold_font,
     )
+    if not correction:
+        centred("Rédigez vos réponses sur votre copie.", 715, 11, regular_font)
+        centred("Recopiez et complétez les tableaux demandés.", 735, 11, regular_font)
 
     canvas.setTitle(
         "NSI - corrigé proposé et barème indicatif"
         if correction
         else "NSI - sujet d'entraînement non officiel"
     )
-    canvas.setAuthor("Paper Creator")
+    canvas.setAuthor(brand_name)
 
 
 def render_assessment(
@@ -341,6 +379,17 @@ def render_assessment(
     human_readable_graph_titles: bool = False,
     coherent_material_flow: bool = False,
 ):
+    # Historical contracts keep their recorded identity; current whole cases use
+    # the public app name without changing their questions or indicative credit.
+    brand_name = (
+        "Keldin"
+        if any(
+            question.verification.get("kind") in WHOLE_CASE_KINDS
+            for exercise in exercises
+            for question in exercise.questions
+        )
+        else "Paper Creator"
+    )
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
     bold = faces["ExamSans-Bold"]
@@ -423,14 +472,14 @@ def render_assessment(
             if correction
             else "NSI - sujet d'entraînement non officiel"
         ),
-        author="Paper Creator",
+        author=brand_name,
         pageCompression=1,
     )
     # Platypus frames reserve six points of padding on each side.
     story = [Spacer(1, doc.height - 14), PageBreak()]
 
     def paragraph(text, style=body):
-        story.append(Paragraph(escape(text).replace("\n", "<br/>"), style))
+        story.append(Paragraph(french_prose_markup(text), style))
 
     def content(text, *, paragraph_style=body):
         first_paragraph = True
@@ -482,7 +531,7 @@ def render_assessment(
                     else listing
                 )
             else:
-                value = escape(part.strip()).replace("\n", "<br/>")
+                value = french_prose_markup(part.strip())
                 story.append(
                     Paragraph(
                         value,
@@ -574,18 +623,30 @@ def render_assessment(
                 "graph_two_outage_contract",
                 "tree_construction_contract",
                 "route_selection_contract",
+                "route_family_contract",
                 "database_audit_contract",
                 "database_reconciliation_contract",
+                "database_case_contract",
+                "tree_case_contract",
+                "expression_synthesis_contract",
+                "postfix_synthesis_contract",
+                "system_case_contract",
             }
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()
+        database_case = any(
+            question.verification.get("kind") == "database_case_contract"
+            for question in exercise.questions
+        )
 
         def add_material(
             material,
             *,
             show_id=exercise.id != "3"
             and not (human_readable_graph_titles and exercise.id == "1"),
+            deduplicate_title=database_case,
+            balance_columns=database_case,
             flatten=False,
         ):
             material_block = structured_material(
@@ -594,7 +655,10 @@ def render_assessment(
                 bold_font=bold,
                 regular_font=regular,
                 available_width=doc.width,
+                balance_columns=balance_columns,
                 show_id=show_id
+                and material.id not in {"case_states", "tree_nodes", "tree_states"}
+                and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:
@@ -619,7 +683,29 @@ def render_assessment(
                     ):
                         add_material(
                             material,
-                            flatten=coherent_material_flow and question_index > 0,
+                            flatten=coherent_material_flow
+                            and not (
+                                correction
+                                and question.verification.get("kind")
+                                in {
+                                    "expression_synthesis_contract",
+                                    "postfix_synthesis_contract",
+                                }
+                            )
+                            and (
+                                question_index > 0
+                                or (
+                                    correction
+                                    and question.verification.get("kind")
+                                    in {
+                                        "database_case_contract",
+                                        "tree_case_contract",
+                                        "expression_synthesis_contract",
+                                        "postfix_synthesis_contract",
+                                        "system_case_contract",
+                                    }
+                                )
+                            ),
                         )
                         staged_material_ids.add(material.id)
             graph_depth_correction = (
@@ -676,11 +762,20 @@ def render_assessment(
                 story[start:] = [KeepTogether(story[start:])]
             if (
                 not correction
-                and (not coherent_material_flow or material_start == question_start)
+                and (
+                    not coherent_material_flow
+                    or material_start == question_start
+                    or question_index == 0
+                )
                 and question.verification.get("kind")
                 in {
                     "database_audit_contract",
                     "database_reconciliation_contract",
+                    "database_case_contract",
+                    "tree_case_contract",
+                    "expression_synthesis_contract",
+                    "postfix_synthesis_contract",
+                    "system_case_contract",
                 }
             ):
                 start = material_start if question.id == "2g" else question_start
@@ -705,7 +800,16 @@ def render_assessment(
                 paragraph(
                     f"Réponse attendue — question {question.id}"
                     if question.verification.get("kind")
-                    in {"tree_construction_contract", "route_selection_contract"}
+                    in {
+                        "tree_construction_contract",
+                        "route_selection_contract",
+                        "route_family_contract",
+                        "database_case_contract",
+                        "tree_case_contract",
+                        "expression_synthesis_contract",
+                        "postfix_synthesis_contract",
+                        "system_case_contract",
+                    }
                     else "Réponse attendue",
                     credit,
                 )
@@ -772,14 +876,41 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                if question.verification.get("kind") in {
-                    "tree_construction_contract",
-                    "route_selection_contract",
-                }:
+                whole_case_question = (
+                    question.verification.get("kind") in WHOLE_CASE_KINDS
+                )
+                if (
+                    question.verification.get("kind")
+                    in {
+                        "tree_construction_contract",
+                        "route_selection_contract",
+                        "route_family_contract",
+                        "database_case_contract",
+                        "tree_case_contract",
+                        "expression_synthesis_contract",
+                        "postfix_synthesis_contract",
+                        "system_case_contract",
+                    }
+                    and not whole_case_question
+                ):
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
-                if (
+                if whole_case_question:
+                    # A single flat group keeps a prompt, its answer and credits
+                    # together when they fit. Nested KeepTogether groups can
+                    # falsely consume a full page and strand the prompt.
+                    start = material_start if coherent_material_flow else question_start
+                    if question.verification.get("kind") in {
+                        "expression_synthesis_contract",
+                        "postfix_synthesis_contract",
+                    }:
+                        # A complete source table plus a worked tree can fill a
+                        # page. Let the table remain with the case introduction;
+                        # keep only the prompt, answer and credit together.
+                        start = question_start
+                    story[start:] = [KeepTogether(story[start:])]
+                elif (
                     coherent_material_flow
                     and question_index > 0
                     and material_start < question_start
@@ -794,6 +925,12 @@ def render_assessment(
                         not in {
                             "tree_construction_contract",
                             "route_selection_contract",
+                            "route_family_contract",
+                            "database_case_contract",
+                            "tree_case_contract",
+                            "expression_synthesis_contract",
+                            "postfix_synthesis_contract",
+                            "system_case_contract",
                         }
                     )
                     or question.verification.get("kind") == "graph_resilience_contract"
@@ -829,6 +966,11 @@ def render_assessment(
             regular_font=regular,
             bold_font=bold,
             italic_font=italic,
+            brand_name=brand_name,
         )
 
-    doc.build(story, canvasmaker=NumberedCanvas, onFirstPage=cover_page)
+    doc.build(
+        story,
+        canvasmaker=partial(NumberedCanvas, brand_name=brand_name),
+        onFirstPage=cover_page,
+    )

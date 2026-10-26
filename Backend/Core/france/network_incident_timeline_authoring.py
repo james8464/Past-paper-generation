@@ -92,6 +92,8 @@ def author_network_incident_timeline_selection(
             "fr-nsi-written-2027-v28",
             "fr-nsi-written-2027-v29",
             "fr-nsi-written-2027-v30",
+            "fr-nsi-written-2027-v31",
+            "fr-nsi-written-2027-v32",
         }
         else 1,
     )
@@ -118,6 +120,8 @@ def replay_network_incident_timeline_selection(
                 "fr-nsi-written-2027-v28",
                 "fr-nsi-written-2027-v29",
                 "fr-nsi-written-2027-v30",
+                "fr-nsi-written-2027-v31",
+                "fr-nsi-written-2027-v32",
             }
             else "v26"
         )
@@ -143,6 +147,8 @@ def replay_network_incident_timeline_selection(
             "fr-nsi-written-2027-v28",
             "fr-nsi-written-2027-v29",
             "fr-nsi-written-2027-v30",
+            "fr-nsi-written-2027-v31",
+            "fr-nsi-written-2027-v32",
         }
         else 1,
     )

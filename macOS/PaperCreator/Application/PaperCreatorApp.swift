@@ -5,11 +5,29 @@ enum AppLaunchPolicy {
     static func presentsMainWindow(environment: [String: String] = ProcessInfo.processInfo.environment) -> Bool {
         environment["XCTestConfigurationFilePath"] == nil
     }
+
+    @MainActor
+    static func makeApplication(environment: [String: String] = ProcessInfo.processInfo.environment) -> ApplicationCoordinator {
+        guard !presentsMainWindow(environment: environment) else { return ApplicationCoordinator() }
+        // XCTest launches the app before individual test fixtures are created.
+        let suite = "Keldin.TestHost.\(UUID().uuidString)"
+        return ApplicationCoordinator(
+            defaults: UserDefaults(suiteName: suite)!,
+            secrets: TestHostSecrets(),
+            historyDirectory: FileManager.default.temporaryDirectory.appendingPathComponent(suite, isDirectory: true)
+        )
+    }
+}
+
+private final class TestHostSecrets: SecretStoring {
+    private var values: [String: String] = [:]
+    func read(_ account: String) -> String { values[account] ?? "" }
+    func save(_ value: String, account: String) { values[account] = value }
 }
 
 @main
 struct PaperCreator: App {
-    @StateObject private var application = ApplicationCoordinator()
+    @StateObject private var application = AppLaunchPolicy.makeApplication()
 
     init() {
         try? Tips.configure()

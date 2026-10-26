@@ -159,6 +159,23 @@ def test_bundle_check_loads_every_advertised_generator() -> None:
     assert status["healthy"] is True
     assert status["errors"] == []
     assert len(status["generators"]) == 7
+    assert status["french_case_families"] == 3
+
+
+def test_bundle_check_rejects_unrenderable_french_corrections(monkeypatch, capsys):
+    from argparse import Namespace
+
+    from Backend.Core.cli import handle_bundle_check
+    from Backend.Core.france import database_case_prose
+
+    def missing_source(*args, **kwargs):
+        raise OSError("could not get source code")
+
+    monkeypatch.setattr(database_case_prose, "render_case", missing_source)
+    assert handle_bundle_check(Namespace()) == 1
+    status = json.loads(capsys.readouterr().out.splitlines()[-1])
+    assert status["healthy"] is False
+    assert any("French NSI" in error for error in status["errors"])
 
 
 def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:

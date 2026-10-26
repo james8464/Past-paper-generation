@@ -81,7 +81,7 @@ def build_parser() -> argparse.ArgumentParser:
     assessment.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     assessment.add_argument("--seed", type=int, required=True)
     assessment.add_argument("--model", default=DEFAULT_MODEL)
-    assessment.add_argument("--provider", choices=["ollama"], default="ollama")
+    assessment.add_argument("--provider", choices=["application-owned", "ollama"], default="application-owned")
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")
     assessment.add_argument("--allow-remote", action="store_true")
@@ -131,7 +131,7 @@ def handle_french_review(args: argparse.Namespace) -> int:
 
 
 def handle_bundle_check(_args: argparse.Namespace) -> int:
-    """Fail fast when a packaged backend is missing a dynamic generator."""
+    """Check dynamic UK imports and render every public French case family."""
     loaded: list[str] = []
     errors: list[str] = []
     for capability in generator_capabilities().values():
@@ -150,10 +150,37 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
             loaded.append(capability.backend_subject)
         except Exception as error:
             errors.append(f"{capability.backend_subject}: {error}")
+    french_families = 0
+    try:
+        from Backend.Core.france.database_case_authoring import (
+            catalogue_digest as database_digest,
+        )
+        from Backend.Core.france.database_case_prose import render_case
+        from Backend.Core.france.system_case_authoring import (
+            catalogue_digest as system_digest,
+        )
+        from Backend.Core.france.system_case_prose import render_case as render_system
+        from Backend.Core.france.tree_case_authoring import (
+            catalogue_digest as tree_digest,
+        )
+        from Backend.Core.france.tree_case_prose import render_case as render_tree
+
+        # Import success alone cannot detect missing correction source in a
+        # frozen helper. Render all three families without touching user data.
+        for seed in range(270100, 270103):
+            render_tree(seed)
+            render_case(seed)
+            render_system(seed)
+            french_families += 1
+        for catalogue in (tree_digest, database_digest, system_digest):
+            catalogue()
+    except Exception as error:
+        errors.append(f"French NSI: {error}")
     emit(
         "bundle_status",
         healthy=not errors,
         generators=loaded,
+        french_case_families=french_families,
         errors=errors,
         message=(
             f"Loaded {len(loaded)} generator families."

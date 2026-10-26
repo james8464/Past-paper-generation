@@ -939,8 +939,10 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v30_even_if_caller_requests_older_contract(
-    tmp_path, monkeypatch
+@pytest.mark.parametrize("seed", range(270100, 270103))
+@pytest.mark.parametrize("large_print", [False, True])
+def test_runtime_publishes_v32_even_if_caller_requests_older_contract(
+    tmp_path, monkeypatch, seed, large_print
 ):
     import json
 
@@ -952,32 +954,80 @@ def test_runtime_publishes_v30_even_if_caller_requests_older_contract(
 
     index = tmp_path / "references.sqlite"
     make_index(index)
+
+    class NoModelCalls(ControlledTwoOutageFrenchClient):
+        def generate_json(self, *args, **kwargs):
+            pytest.fail("Whole-case publication must not claim model authoring")
+
     monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledTwoOutageFrenchClient(),
+        lambda **_: NoModelCalls(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
         reference_index=index,
         output=str(tmp_path / "output"),
-        seed=270100,
+        seed=seed,
         model="fixture",
         ollama_url="http://localhost:11434",
         allow_remote=False,
-        large_print=False,
+        large_print=large_print,
     )
     args.contract_authoring_version = "v17"  # Caller cannot downgrade new publication.
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v30"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v32"
+    manifest = json.loads((bundle / "manifest.json").read_text())
+    assert manifest["generation_origin"] == "application_owned"
+    assert manifest["model_used"] is False
     assert len(package["exercises"][0]["questions"]) == 10
     assert len(package["exercises"][1]["questions"]) == 12
     assert len(package["exercises"][2]["questions"]) == 12
     assert (bundle / "sujet.pdf").is_file()
     assert (bundle / "corrige.pdf").is_file()
+
+
+def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatch):
+    import json
+
+    from Backend.Core.cli import build_parser
+    from Backend.Core.france import runtime
+    from tests.test_nsi_pipeline import make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail(
+            "App-owned French publication must not discover or construct a model client"
+        )
+
+    monkeypatch.setattr(runtime, "model_identity", forbidden)
+    monkeypatch.setattr(runtime, "FrenchOllamaClient", forbidden)
+    monkeypatch.setattr(runtime, "validate_endpoint", forbidden)
+    args = build_parser().parse_args(
+        [
+            "generate-assessment",
+            "--assessment",
+            "fr-bac-general-nsi-written-2027",
+            "--reference-index",
+            str(index),
+            "--output",
+            str(tmp_path / "output"),
+            "--seed",
+            "270100",
+        ]
+    )
+    assert args.provider == "application-owned"
+    assert args.handler(args) == 0
+    (bundle,) = (tmp_path / "output").glob("nsi-*")
+    manifest = json.loads((bundle / "manifest.json").read_text())
+    assert manifest["model_used"] is False
+    assert manifest["identity"]["provider"] == "application-owned"
+    assert manifest["identity"]["model"] == "app-owned-v32"
 
 
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])
@@ -1951,3 +2001,78 @@ def test_originality_history_reads_only_bounded_valid_local_bundles(tmp_path):
     assert len(history) == 1
     assert "Données d'un réseau" in history[0]
     assert "Valeur 1 justifiée" not in history[0]
+
+
+def test_originality_history_prefers_recent_files_over_seed_order(tmp_path):
+    import json
+    import os
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    for seed, modified in [(999999, 100), (1, 200)]:
+        bundle = tmp_path / f"nsi-2027-{seed}-test"
+        bundle.mkdir()
+        raw = exercise()
+        raw["context"] = f"Contexte de génération {seed}. " + raw["context"]
+        path = bundle / "assessment.json"
+        path.write_text(json.dumps({
+            "schema_version": 2,
+            "assessment_policy": "fr-bac-general-nsi-written-2027",
+            "exercises": [raw] * 20,
+        }), encoding="utf-8")
+        os.utime(path, (modified, modified))
+    history = load_originality_history(tmp_path)
+    assert len(history) == 20
+    assert all("Contexte de génération 1." in text for text in history)
+
+
+@pytest.mark.parametrize("payload", [[], None, "invalid", {"exercises": []}])
+def test_originality_history_ignores_non_package_json(tmp_path, payload):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+
+    bundle = tmp_path / "nsi-2027-malformed"
+    bundle.mkdir()
+    (bundle / "assessment.json").write_text(json.dumps(payload), encoding="utf-8")
+    assert load_originality_history(tmp_path) == []
+
+
+def test_originality_history_does_not_keep_partial_malformed_bundle(tmp_path):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    bundle = tmp_path / "nsi-2027-partial"
+    bundle.mkdir()
+    (bundle / "assessment.json").write_text(json.dumps({
+        "schema_version": 2,
+        "assessment_policy": "fr-bac-general-nsi-written-2027",
+        "exercises": [exercise(), {}],
+    }), encoding="utf-8")
+    assert load_originality_history(tmp_path) == []
+
+
+def test_originality_history_does_not_follow_bundle_or_file_links(tmp_path):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    source = outside / "assessment.json"
+    source.write_text(json.dumps({
+        "schema_version": 2,
+        "assessment_policy": "fr-bac-general-nsi-written-2027",
+        "exercises": [exercise()],
+    }), encoding="utf-8")
+    output = tmp_path / "output"
+    output.mkdir()
+    (output / "nsi-2027-linked-directory").symlink_to(outside, target_is_directory=True)
+    bundle = output / "nsi-2027-linked-file"
+    bundle.mkdir()
+    (bundle / "assessment.json").symlink_to(source)
+    assert load_originality_history(output) == []

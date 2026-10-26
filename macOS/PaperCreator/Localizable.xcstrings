@@ -884,12 +884,32 @@
         }
       }
     },
-    "Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review." : {
+    "French NSI has three app-authored case families. The originality check refuses repeated families." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gemma 4 12B sert de référence de comparaison, sans validation pédagogique française. Les résultats de tous les modèles nécessitent une relecture."
+            "value" : "La NSI française propose trois familles de cas rédigées dans l’application. Le contrôle d’originalité refuse les familles déjà utilisées."
+          }
+        }
+      }
+    },
+    "V32 uses finite app-authored cases, not model-generated questions. No AI model or Ollama installation is needed; papers are built locally without cloud generation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V32 utilise un ensemble limité de cas rédigés dans l’application, et non des questions générées par un modèle. Aucun modèle d’IA ni installation d’Ollama n’est nécessaire ; les sujets sont construits localement, sans génération dans le cloud."
+          }
+        }
+      }
+    },
+    "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun modèle d’IA ni installation d’Ollama n’est nécessaire pour V32. Ces sujets ne qualifient pas un modèle d’IA."
           }
         }
       }
@@ -1714,12 +1734,12 @@
         }
       }
     },
-    "Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback." : {
+    "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les sources officielles sont téléchargées avec votre accord. La génération française utilise Ollama sur ce Mac, sans bascule vers le cloud."
+            "value" : "Les sources officielles sont téléchargées avec votre accord. V32 construit les sujets sur ce Mac, sans requête à un modèle ni génération dans le cloud."
           }
         }
       }
