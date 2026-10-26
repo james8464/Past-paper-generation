@@ -16,7 +16,7 @@ struct PaperCreator: App {
     }
 
     var body: some Scene {
-        WindowGroup("Paper creator", id: "main") {
+        WindowGroup("Keldin", id: "main") {
             ContentView()
                 .environmentObject(application)
                 .environment(application.catalogStore)

@@ -67,7 +67,7 @@ struct AppCommands: Commands {
         }
 
         CommandGroup(replacing: .help) {
-            Button("Paper creator Help") {
+            Button("Keldin Help") {
                 application.showHelpGuide()
             }
             .keyboardShortcut("h", modifiers: [.command, .shift])

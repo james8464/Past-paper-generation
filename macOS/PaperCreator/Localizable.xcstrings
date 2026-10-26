@@ -404,22 +404,22 @@
     "Paper %@" : {
 
     },
-    "Paper creator" : {
+    "Keldin" : {
 
     },
-    "Paper creator Help" : {
+    "Keldin Help" : {
 
     },
-    "Paper creator builds a new unofficial question paper and mark scheme from a board-specific blueprint. Normal generation asks your selected AI model to write original questions; preview mode checks layout without calling AI." : {
+    "Keldin creates unofficial practice papers and mark schemes. Check the selected subject's generation details before starting. Preview mode checks layout without calling AI. Every paper needs human review." : {
 
     },
-    "Paper creator context" : {
+    "Keldin context" : {
 
     },
-    "Paper creator makes unofficial practice material and is not affiliated with any exam board." : {
+    "Keldin makes unofficial practice material and is not affiliated with any exam board." : {
 
     },
-    "Paper creator only sends notifications about work you start." : {
+    "Keldin only sends notifications about work you start." : {
 
     },
     "Preview" : {
@@ -653,7 +653,7 @@
     "Use Recommended Model" : {
 
     },
-    "Use a Hugging Face model ID or the path to a model already on this Mac. Paper Creator offers guided setup before the first live generation with each model." : {
+    "Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model." : {
 
     },
     "Use the recommended local model" : {
