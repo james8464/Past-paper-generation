@@ -158,12 +158,28 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
             for page in pdf
         ):
             raise ValueError("Toutes les pages du sujet V32 doivent être au format A4")
+        for number, page in enumerate(pdf, 1):
+            page_lines = [line.strip() for line in page.get_text().splitlines()]
+            footers = {
+                "Paper Creator — entraînement non officiel — non relu",
+                "Keldin — entraînement non officiel — non relu",
+            }
+            if sum(line in footers for line in page_lines) != 1:
+                raise ValueError("Pied de page non officiel absent ou dupliqué")
+            counters = [
+                _compact(line)
+                for line in page_lines
+                if re.fullmatch(r"Page\s*:\s*\d+\s*/\s*\d+", line)
+            ]
+            if counters != [f"Page:{number}/{len(pdf)}"]:
+                raise ValueError("Pagination du PDF incompatible avec ses pages")
         lines = [
             line.strip()
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
             and line.strip() != "Paper Creator — entraînement non officiel — non relu"
+            and line.strip() != "Keldin — entraînement non officiel — non relu"
             and not re.fullmatch(r"Page\s*:\s*\d+\s*/\s*\d+", line.strip())
         ]
     text = _compact("\n".join(lines))

@@ -71,6 +71,70 @@ def test_whole_case_correction_keeps_prompt_with_answer(tmp_path, whole_package)
 
 
 @pytest.mark.parametrize("correction", [False, True])
+def test_current_whole_case_pdfs_use_keldin_identity(
+    tmp_path, whole_package, correction
+):
+    path = tmp_path / "branded.pdf"
+    render(path, whole_package, correction)
+    with pymupdf.open(path) as pdf:
+        assert pdf.metadata["author"] == "Keldin"
+        for page in pdf:
+            text = page.get_text()
+            assert "Keldin — entraînement non officiel — non relu" in text
+            assert "Paper Creator" not in text
+
+
+@pytest.mark.parametrize(
+    "mutation", ["wrong_page_count", "missing_footer", "duplicate_footer"]
+)
+def test_whole_case_gate_checks_page_furniture(tmp_path, whole_package, mutation):
+    from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+
+    source, target = tmp_path / "source.pdf", tmp_path / "changed.pdf"
+    render(source, whole_package, False)
+    with pymupdf.open(source) as pdf:
+        page = pdf[0]
+        if mutation == "wrong_page_count":
+            rect = page.search_for(f"Page : 1 / {len(pdf)}")[0]
+            page.add_redact_annot(rect)
+            page.apply_redactions()
+            page.insert_text((rect.x0, rect.y1 - 2), "Page : 99 / 999", fontsize=10)
+        elif mutation == "missing_footer":
+            page.add_redact_annot(
+                page.search_for("Keldin — entraînement non officiel — non relu")[0]
+            )
+            page.apply_redactions()
+        else:
+            page.insert_text(
+                (70, 775),
+                "Keldin — entraînement non officiel — non relu",
+                fontname="helv",
+                fontsize=9,
+            )
+        pdf.save(target)
+    with pytest.raises(ValueError):
+        validate_whole_case_pdf(target, whole_package, correction=False)
+
+
+def test_legacy_whole_case_footer_remains_readable(
+    tmp_path, whole_package, monkeypatch
+):
+    from Backend.Core.france import rendering
+    from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+
+    original = rendering.NumberedCanvas
+
+    def legacy_canvas(*args, **kwargs):
+        kwargs["brand_name"] = "Paper Creator"
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(rendering, "NumberedCanvas", legacy_canvas)
+    path = tmp_path / "legacy-footer.pdf"
+    render(path, whole_package, False)
+    validate_whole_case_pdf(path, whole_package, correction=False)
+
+
+@pytest.mark.parametrize("correction", [False, True])
 def test_whole_case_table_heading_does_not_repeat_identifier(
     tmp_path, whole_package, correction
 ):

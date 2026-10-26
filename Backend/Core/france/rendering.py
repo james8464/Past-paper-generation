@@ -2,6 +2,7 @@
 
 import re
 from decimal import Decimal
+from functools import partial
 from math import atan2, cos, pi, sin
 from pathlib import Path
 from xml.sax.saxutils import escape
@@ -29,6 +30,16 @@ from Backend.Core.france.nsi import (
     NSIExercise,
     NSITableMaterial,
     NSIWeightedGraphMaterial,
+)
+
+WHOLE_CASE_KINDS = frozenset(
+    {
+        "database_case_contract",
+        "tree_case_contract",
+        "system_case_contract",
+        "expression_synthesis_contract",
+        "postfix_synthesis_contract",
+    }
 )
 
 
@@ -229,8 +240,9 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
 
 
 class NumberedCanvas(Canvas):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, brand_name="Paper Creator", **kwargs):
         super().__init__(*args, **kwargs)
+        self._brand_name = brand_name
         self._pages = []
 
     def showPage(self):
@@ -243,7 +255,7 @@ class NumberedCanvas(Canvas):
             self.__dict__.update(state)
             self.setFont("ExamSans", 9)
             self.drawString(
-                70, 43, "Paper Creator — entraînement non officiel — non relu"
+                70, 43, f"{self._brand_name} — entraînement non officiel — non relu"
             )
             self.setFont("ExamSans", 10)
             self.drawRightString(A4[0] - 54, 43, f"Page : {self._pageNumber} / {total}")
@@ -260,6 +272,7 @@ def draw_cover_page(
     regular_font: str,
     bold_font: str,
     italic_font: str,
+    brand_name: str = "Paper Creator",
 ) -> None:
     """Draw the cover from measured 2026 coordinates, with independent branding."""
 
@@ -339,7 +352,7 @@ def draw_cover_page(
         if correction
         else "NSI - sujet d'entraînement non officiel"
     )
-    canvas.setAuthor("Paper Creator")
+    canvas.setAuthor(brand_name)
 
 
 def render_assessment(
@@ -351,6 +364,17 @@ def render_assessment(
     human_readable_graph_titles: bool = False,
     coherent_material_flow: bool = False,
 ):
+    # Historical contracts keep their recorded identity; current whole cases use
+    # the public app name without changing their questions or indicative credit.
+    brand_name = (
+        "Keldin"
+        if any(
+            question.verification.get("kind") in WHOLE_CASE_KINDS
+            for exercise in exercises
+            for question in exercise.questions
+        )
+        else "Paper Creator"
+    )
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
     bold = faces["ExamSans-Bold"]
@@ -433,7 +457,7 @@ def render_assessment(
             if correction
             else "NSI - sujet d'entraînement non officiel"
         ),
-        author="Paper Creator",
+        author=brand_name,
         pageCompression=1,
     )
     # Platypus frames reserve six points of padding on each side.
@@ -831,13 +855,9 @@ def render_assessment(
                     )
                 )
                 story.append(marking_table)
-                whole_case_question = question.verification.get("kind") in {
-                    "database_case_contract",
-                    "tree_case_contract",
-                    "expression_synthesis_contract",
-                    "postfix_synthesis_contract",
-                    "system_case_contract",
-                }
+                whole_case_question = (
+                    question.verification.get("kind") in WHOLE_CASE_KINDS
+                )
                 if (
                     question.verification.get("kind")
                     in {
@@ -925,6 +945,11 @@ def render_assessment(
             regular_font=regular,
             bold_font=bold,
             italic_font=italic,
+            brand_name=brand_name,
         )
 
-    doc.build(story, canvasmaker=NumberedCanvas, onFirstPage=cover_page)
+    doc.build(
+        story,
+        canvasmaker=partial(NumberedCanvas, brand_name=brand_name),
+        onFirstPage=cover_page,
+    )
