@@ -4,7 +4,6 @@ struct FrenchAssessmentRequest {
     static let assessmentID = "fr-bac-general-nsi-written-2027"
     let referenceIndex: URL
     let output: URL
-    let model: String
     let seed: Int
     let largePrint: Bool
 

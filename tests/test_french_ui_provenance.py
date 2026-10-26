@@ -12,7 +12,7 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "V32 uses three app-authored case families, not model-generated questions. New drafts may repeat a family.",
+        "French NSI has three app-authored case families. The originality check refuses repeated families.",
         "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.",
         "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.",
     ):

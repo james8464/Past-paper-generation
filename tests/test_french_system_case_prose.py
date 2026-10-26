@@ -6,6 +6,17 @@ from decimal import Decimal
 import pytest
 
 
+def test_routing_debug_prompt_does_not_claim_a_numerical_difference():
+    from Backend.Core.france.system_case_prose import render_case
+
+    question = render_case(270100)["questions"][4]
+    assert question["id"] == "3e"
+    assert "l'égalité de ces deux nombres" in question["prompt"]
+    assert "valeur de A effectivement lue" in question["prompt"]
+    assert "B reste 3" in question["answer"]
+    assert "A=2" in question["answer"] and "A=4" in question["answer"]
+
+
 @pytest.mark.parametrize("seed", range(270100, 270103))
 @pytest.mark.parametrize("total", ("5.5", "6", "6.5"))
 def test_e3_whole_case_balances_credit_and_requires_construction(seed, total):

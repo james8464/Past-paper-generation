@@ -8,11 +8,7 @@ enum FrenchWorkspaceLayoutPolicy {
 
 struct FrenchWorkspacePresentation {
     let hasReferences: Bool
-    let model: String
     let isRunning: Bool
-    let ollamaState: OllamaState
-    let availableModels: [String]
-    let hasLoadedModels: Bool
 
     var showsPrepareReferences: Bool { !hasReferences }
 
@@ -23,8 +19,6 @@ struct FrenchWorkspacePresentation {
     }
 
     var canGenerate: Bool { !isRunning && blocker == nil }
-
-    var showsOllamaRecheck: Bool { false }
 }
 
 struct FrenchAssessmentWorkspace: View {
@@ -88,7 +82,7 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official drafts for teachers to review before classroom use.")
                     .foregroundStyle(.secondary)
-                Text("V32 uses three app-authored case families, not model-generated questions. New drafts may repeat a family.")
+                Text("French NSI has three app-authored case families. The originality check refuses repeated families.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
@@ -164,11 +158,7 @@ struct FrenchAssessmentWorkspace: View {
     private var presentation: FrenchWorkspacePresentation {
         FrenchWorkspacePresentation(
             hasReferences: application.hasFrenchReferences,
-            model: application.selectedModel,
-            isRunning: application.isRunning,
-            ollamaState: application.ollamaState,
-            availableModels: application.availableModels,
-            hasLoadedModels: application.hasLoadedOllamaModels
+            isRunning: application.isRunning
         )
     }
 

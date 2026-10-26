@@ -275,7 +275,6 @@ final class ApplicationCoordinator: ObservableObject {
         let request = FrenchAssessmentRequest(
             referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
             output: distributionMode == .appStore ? AppDefaults.appStoreWorkingFolder() : outputFolder,
-            model: selectedModel.trimmingCharacters(in: .whitespacesAndNewlines),
             seed: seed, largePrint: largePrint
         )
         startFrenchOperation(arguments: request.arguments, seed: seed)

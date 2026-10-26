@@ -33,7 +33,7 @@ final class PaperCreatorTests: XCTestCase {
     func testFrenchRequestKeepsCurriculumSeparateFromUILanguage() {
         let arguments = FrenchAssessmentRequest(
             referenceIndex: URL(fileURLWithPath: "/tmp/references.sqlite"),
-            output: URL(fileURLWithPath: "/tmp/papers"), model: "gemma4:12b",
+            output: URL(fileURLWithPath: "/tmp/papers"),
             seed: 42, largePrint: true
         ).arguments
         XCTAssertEqual(arguments.first, "generate-assessment")

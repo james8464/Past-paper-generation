@@ -884,12 +884,12 @@
         }
       }
     },
-    "V32 uses three app-authored case families, not model-generated questions. New drafts may repeat a family." : {
+    "French NSI has three app-authored case families. The originality check refuses repeated families." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V32 utilise trois familles de cas rédigées dans l’application, et non des questions générées par un modèle. Les nouveaux sujets peuvent reprendre une famille."
+            "value" : "La NSI française propose trois familles de cas rédigées dans l’application. Le contrôle d’originalité refuse les familles déjà utilisées."
           }
         }
       }

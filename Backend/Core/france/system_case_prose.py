@@ -7,7 +7,7 @@ from Backend.Core.france.database_case_prose import _solution
 from Backend.Core.france.nsi import CURRICULUM_OBJECTIVES, NSIExercise
 from Backend.Core.france.system_case_families import build_case
 
-VERSION = "fr-nsi-system-case-prose-v1"
+VERSION = "fr-nsi-system-case-prose-v2"
 MINUTES = (4, 5, 6, 8, 7, 6, 7, 6, 5, 5, 5, 6)
 
 
@@ -140,7 +140,7 @@ def _routing(case):
             "ALG-GRAPHES",
         ),
         _q(
-            "Un programme écrit chaque nouvelle valeur directement dans ancien, dans l'ordre A, B, C, D. Au deuxième tour, calculer la valeur qu'il donne à B et expliquer pourquoi son résultat ne suit plus le modèle.",
+            "Un programme remplace directement les valeurs dans ancien, dans l'ordre A, B, C, D. Au deuxième tour, calculer B et comparer au modèle simultané : l'égalité de ces deux nombres prouve-t-elle la correction du programme ? Justifier avec la valeur de A effectivement lue par B.",
             "Après A=4, B lit cette nouvelle valeur : min(1+4,1+2)=3, donc B reste 3. Ici la valeur de B coïncide malgré une lecture interdite : le modèle impose de lire A=2, valeur du tour précédent, et non A=4 calculée pendant ce tour.",
             (
                 "B=3 est calculé sans affirmer à tort qu'il change dans cet exemple.",
