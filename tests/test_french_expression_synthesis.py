@@ -28,6 +28,10 @@ def test_synthesis_changes_structure_not_only_leaf_numbers():
             for state in states
             for value in state["values"].values()
         )
+        bug = case["expected"]["reversed_subtraction"]
+        assert bug["answer"] != states[0]["answer"]
+        assert bug["divergent_nodes"]
+        assert "n0" in bug["divergent_nodes"]
 
 
 def test_linked_changes_preserve_shape_and_accumulate():
@@ -82,3 +86,21 @@ def test_synthesis_preserves_v32_cases():
     for seed in range(-1000, 1000):
         build_case(seed)
     assert before == [legacy_case(seed) for seed in range(270100, 270103)]
+
+
+def test_debug_trace_really_reverses_only_subtraction_operands():
+    from Backend.Core.france.tree_case_families import expression_value
+
+    case = build_case(713)
+    rows = deepcopy(case["public"]["rows"])
+    for row in rows:
+        if row[1] == "-":
+            row[2], row[3] = row[3], row[2]
+    nodes = {row[0]: tuple(row[1:]) for row in rows}
+    bug = case["expected"]["reversed_subtraction"]
+    assert bug["answer"] == expression_value(nodes, "n0")
+    assert bug["values"] == {node: expression_value(nodes, node) for node in nodes}
+    normal = case["expected"]["states"][0]["values"]
+    assert bug["divergent_nodes"] == sorted(
+        node for node in nodes if normal[node] != bug["values"][node]
+    )

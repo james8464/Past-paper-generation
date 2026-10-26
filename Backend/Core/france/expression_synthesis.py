@@ -13,7 +13,7 @@ from random import Random
 
 from Backend.Core.france.tree_case_families import _evaluate
 
-VERSION = "fr-nsi-expression-synthesis-v1"
+VERSION = "fr-nsi-expression-synthesis-v2"
 
 
 def _canonical(value):
@@ -95,6 +95,22 @@ def build_case(seed):
             continue
         if any(a["answer"] == b["answer"] for a, b in pairwise(states)):
             continue
+        faulty = deepcopy(public)
+        for row in faulty["rows"]:
+            if row[1] == "-":
+                row[2], row[3] = row[3], row[2]
+        reversed_subtraction = _evaluate(faulty, "expression")
+        if reversed_subtraction["answer"] == states[0]["answer"]:
+            # A masked or absent fault is not a useful debugging task. Do not
+            # claim this case demonstrates an error that it cannot reveal.
+            continue
+        if any(abs(value) > 10000 for value in reversed_subtraction["values"].values()):
+            continue
+        reversed_subtraction["divergent_nodes"] = sorted(
+            node
+            for node, value in reversed_subtraction["values"].items()
+            if value != states[0]["values"][node]
+        )
         case = {
             "version": VERSION,
             "seed": seed,
@@ -102,6 +118,7 @@ def build_case(seed):
             "expected": {
                 "states": states,
                 "invalidated": _invalidated(rows, leaf[0]),
+                "reversed_subtraction": reversed_subtraction,
                 "variations": [
                     state["answer"] - states[0]["answer"] for state in states[1:]
                 ],
