@@ -1,7 +1,12 @@
-# Paper creator
+# Keldin
 
 Native macOS app and Python backend for generating unofficial A-level practice papers,
 with a French NSI extension in development.
+
+The Xcode target, bundle identifier and existing storage paths retain their
+original names so updates can still find saved papers, preferences and API keys.
+The editable app icon is `macOS/PaperCreator/AppIcon.icon`, an Icon Composer
+document with seven separate page shapes.
 
 ## French NSI / Occitanie prototype
 
@@ -9,8 +14,10 @@ An isolated French Terminale NSI written-practice workflow is under development.
 See [architecture and usage](docs/french-baccalaureat.md),
 [current evidence and limitations](docs/quality/french-nsi-prototype-verification-2026-09-28.md)
 and the [Occitanie pilot](docs/occitanie-project.md).
-It is not educationally qualified: corpus reconciliation, richer exercise forms,
-live model evaluation and independent French teacher review remain unfinished.
+It is not educationally qualified. Richer exercise forms, live model evaluation
+and independent French teacher review remain unfinished. The
+[corpus audit](docs/quality/french-nsi-corpus-rights-audit-2026-10-11.md)
+reconciles the registered sources but does not establish permission to redistribute them.
 The model recommendations and live qualification matrix below concern UK routes,
 not a validated recommendation for French NSI.
 
@@ -36,7 +43,7 @@ If Xcode command-line tools are selected instead of Xcode:
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
-## Build Checks
+## Build checks
 
 ```bash
 cd macOS
@@ -57,7 +64,7 @@ The recommendation, download sizes, explanation, warning, and source links are
 owned by `Resources/ollama-model-recommendations.json`; the macOS app, backend
 CLI, standalone generator CLIs, tests, and packaged helper consume that record.
 
-## Development Reference Corpus
+## Development reference corpus
 
 Official A-level PDFs are development references only. They are stored under
 `Reference Corpus/`, ignored by Git, and excluded from the app bundle. The profiler
