@@ -24,7 +24,7 @@ struct Sidebar: View {
             expandedSubjectIDs: $expandedSubjectIDs
         )
         .disabled(application.isRunning)
-        .navigationTitle("Paper creator")
+        .navigationTitle("Keldin")
         .frame(minWidth: 220)
         .onAppear(perform: expandSelectedSubject)
         .onChange(of: selection) { _, _ in expandSelectedSubject() }

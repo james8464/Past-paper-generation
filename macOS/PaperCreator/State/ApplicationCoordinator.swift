@@ -51,7 +51,7 @@ final class ApplicationCoordinator: ObservableObject {
     let distributionMode = DistributionMode.current
 
     private let backend = BackendClient()
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
     private let notificationCenter = UNUserNotificationCenter.current()
     private var runningProcess: Process?
     private var didReceiveBackendError = false
@@ -162,21 +162,26 @@ final class ApplicationCoordinator: ObservableObject {
     var mlxSetupExplanation: String {
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
         let runtimeDetail = distributionMode == .appStore
-            ? "Apple MLX support is included with Paper Creator."
-            : "Paper Creator will install Apple MLX into its managed environment if needed."
+            ? "Apple MLX support is included with Keldin."
+            : "Keldin will install Apple MLX into its managed environment if needed."
         return "\(runtimeDetail) It will then download and prepare \(model). "
             + "Models can use several gigabytes of storage. Generation remains on this Mac, "
             + "and setup does not require Terminal or an administrator password."
     }
 
-    init() {
-        let settings = SettingsStore()
+    init(
+        defaults: UserDefaults = .standard,
+        secrets: SecretStoring = KeychainSecretStore(),
+        historyDirectory: URL? = nil
+    ) {
+        self.defaults = defaults
+        let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
-            directory: AppDefaults.jobHistoryFolder(),
+            directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
             retentionLimit: settings.historyRetentionLimit
         )
         settingsStore = settings
-        catalogStore = CatalogStore(subjects: ExamCatalog.subjects)
+        catalogStore = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
         modelCoordinator = ModelCoordinator()
         benchmarkCoordinator = BenchmarkCoordinator()
         recentDocumentStore = recents
@@ -826,7 +831,7 @@ final class ApplicationCoordinator: ObservableObject {
             ? "\(selectedBoard.contentMode.title), \(aiProvider.title), \(activeModelName)"
             : selectedBoard.contentMode.title
         let summary = ([
-            "Paper creator Diagnostics",
+            "Keldin Diagnostics",
             "Distribution: \(distributionMode.title)",
             "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
             "Selected paper: \(selectedPaper.title) - \(selectedPaper.detail)",
@@ -1240,7 +1245,7 @@ final class ApplicationCoordinator: ObservableObject {
         case .modelPull:
             sendNotification(title: "Downloading model", body: "Ollama is downloading \(modelToPull).")
         case .mlxSetup:
-            sendNotification(title: "Setting up Apple MLX", body: "Paper Creator is preparing the selected local model.")
+            sendNotification(title: "Setting up Apple MLX", body: "Keldin is preparing the selected local model.")
         case .none:
             break
         }

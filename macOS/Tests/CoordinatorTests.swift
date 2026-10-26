@@ -285,8 +285,28 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testApplicationPreferencesStayWithinTheirInjectedSuite() {
+        let firstDefaults = isolatedDefaults()
+        let secondDefaults = isolatedDefaults()
+        firstDefaults.set(true, forKey: AppStorageKey.dryRun)
+        let first = isolatedApplication(defaults: firstDefaults)
+        let second = isolatedApplication(defaults: secondDefaults)
+
+        XCTAssertTrue(first.dryRun)
+        XCTAssertFalse(second.dryRun)
+        second.setDryRun(true)
+        first.setDryRun(false)
+        XCTAssertFalse(firstDefaults.bool(forKey: AppStorageKey.dryRun))
+        XCTAssertTrue(secondDefaults.bool(forKey: AppStorageKey.dryRun))
+        first.openAIAPIKey = "isolated-test-key"
+        first.settingsStore.openAIAPIKey = first.openAIAPIKey
+        first.settingsStore.save()
+        XCTAssertTrue(second.settingsStore.openAIAPIKey.isEmpty)
+    }
+
+    @MainActor
     func testApplicationCoordinatorOwnsFocusedCoordinators() {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
 
         XCTAssertEqual(model.settingsStore.provider, model.aiProvider)
         XCTAssertEqual(model.catalogStore.subjects, ExamCatalog.subjects)
@@ -298,7 +318,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testSavedReportClearsOnlyForAcceptedTargetChanges() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let board = try XCTUnwrap(
             ExamCatalog.readyBoards.first { $0.papers.count > 1 }
         )
@@ -322,7 +342,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testModeToggleAndArtifactOnlyRelaunchDoNotInventOrChangeSavedFacts() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let report = try qualityReport()
         model.lastQualityReport = report
 
@@ -334,12 +354,12 @@ final class CoordinatorTests: XCTestCase {
             model.qualityDiagnosticLines,
             GenerationQualityPolicy.presentation(for: report).diagnosticLines
         )
-        XCTAssertNil(ApplicationCoordinator().lastQualityReport)
+        XCTAssertNil(isolatedApplication().lastQualityReport)
     }
 
     @MainActor
     func testAssessmentKindChangeClearsSavedReportOnAcceptedNewTarget() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let board = try XCTUnwrap(
             ExamCatalog.readyBoards.first {
                 !$0.fullPapers.isEmpty && !$0.questionBanks.isEmpty
@@ -356,7 +376,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testDuplicateConfigurationRestoresSelectionsAndSeed() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let record = GenerationJobRecord.fixture(state: .completed)
 
         model.duplicateConfiguration(record)
@@ -370,7 +390,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testReportedBackendFailureFinalizesHistoryAndReleasesSeed() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let record = GenerationJobRecord.fixture(state: .pending)
         model.duplicateConfiguration(record)
         try model.generationCoordinator.begin(record)
@@ -395,7 +415,7 @@ final class CoordinatorTests: XCTestCase {
         )
         let store = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 2)
         XCTAssertEqual(store.duplicateConfiguration(of: record).configuration, record.configuration)
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         model.duplicateConfiguration(record)
         XCTAssertEqual(model.sidebarSelection, .frenchBaccalaureat)
         XCTAssertEqual(model.pendingGenerationSeed, 55)
@@ -404,7 +424,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testInvalidConfigurationDoesNotClearSavedReportOrChangeTarget() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let report = try qualityReport()
         model.lastQualityReport = report
         let originalBoard = model.selectedBoardID
@@ -437,7 +457,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testApplyingHistoryConfigurationUsesAcceptedTargetChangePolicy() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let fixture = GenerationJobRecord.fixture(state: .completed)
         let board = try XCTUnwrap(ExamCatalog.board(id: fixture.configuration.boardID))
         model.selectBoard(board)
@@ -473,7 +493,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCreateAgainUsesDifferentSeedAndPreviewOpensDocuments() throws {
-        let model = ApplicationCoordinator()
+        let model = isolatedApplication()
         let record = GenerationJobRecord.fixture(state: .completed)
         let file = GeneratedFile(
             role: "question_paper",

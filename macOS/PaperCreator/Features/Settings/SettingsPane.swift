@@ -206,7 +206,7 @@ private struct AISettingsTab: View {
         case .apple:
             Section("Apple MLX") {
                 TextField("Model ID or path", text: $application.appleModel)
-                Text("Use a Hugging Face model ID or the path to a model already on this Mac. Paper Creator offers guided setup before the first live generation with each model.")
+                Text("Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model.")
                     .foregroundStyle(.secondary)
             }
         }
@@ -253,7 +253,7 @@ private struct OutputSettingsTab: View {
                         set: { application.setNotificationsEnabled($0) }
                     )
                 )
-                Text("Paper creator only sends notifications about work you start.")
+                Text("Keldin only sends notifications about work you start.")
                     .foregroundStyle(.secondary)
             }
 
