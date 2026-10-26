@@ -62,6 +62,13 @@ def render_case(seed):
         f"Après {i + 1} ({token}) : {stack}"
         for i, (token, stack) in enumerate(zip(program, result["trace"], strict=True))
     )
+    evaluation_scaffold = (
+        _solution(calculer)
+        .replace("pile.append(instruction)", "pile.append(__A__)")
+        .replace("droite = pile.pop()", "droite = __B__")
+        .replace("pile.append(gauche - droite)", "pile.append(__C__)")
+        .replace("return pile[0]", "return __D__")
+    )
     items = [
         (
             "Exécuter la séquence [2, 5, '-', -3, '*']. Représenter la pile après chaque instruction ; distinguer l'ordre de dépilement de l'ordre de la soustraction.",
@@ -138,12 +145,14 @@ def render_case(seed):
             "ALG-ARBRES",
         ),
         (
-            "Écrire calculer(instructions) pour une séquence valide. Utiliser uniquement une liste pile, append et pop pour le stockage intermédiaire. Traiter les trois opérateurs et renvoyer le résultat, sans modifier instructions ni utiliser eval.",
-            _solution(calculer),
+            "Compléter les quatre expressions __A__, __B__, __C__ et __D__ dans calculer pour une séquence valide, sans modifier le reste du programme. Expliquer pourquoi le premier élément dépilé est l'opérande droit.\n"
+            + evaluation_scaffold,
+            _solution(calculer)
+            + "\nA : instruction ; B : pile.pop() ; C : gauche - droite ; D : pile[0]. Le sous-arbre droit est compilé après le gauche : son résultat est donc au sommet lorsque l'opérateur est exécuté.",
             [
-                "Les entiers sont empilés et chaque opérateur dépile deux valeurs.",
-                "Les trois opérations respectent gauche puis droite, notamment pour '-'.",
-                "Le résultat unique est renvoyé sans mutation de l'entrée ni eval.",
+                "A et B empilent l'entier puis dépilent l'opérande droit.",
+                "C conserve gauche moins droite et D renvoie le résultat unique.",
+                "L'ordre de compilation explique pourquoi le résultat droit est dépilé en premier.",
             ],
             "design",
             "SD-LINEAIRE",
