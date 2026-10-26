@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793021051.7304127,
-    "ast_hash": "35cb1a2025ad046190cf8f88b85830dc",
+    "mtime": 1793021598.6855092,
+    "ast_hash": "2bb7005c435328debcf32b41979d0df8",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3552,6 +3552,16 @@
   "tests/test_french_postfix_exercise.py": {
     "mtime": 1793021216.9216619,
     "ast_hash": "d5abc98a4e5865ecc90f1b83a0c7cd9b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/synthesized_authoring.py": {
+    "mtime": 1793021575.1520848,
+    "ast_hash": "b234ba036c1d774185c2ecc521326f16",
+    "semantic_hash": ""
+  },
+  "tests/test_french_synthesized_authoring.py": {
+    "mtime": 1793021575.2171686,
+    "ast_hash": "7ee929c9a3993da469b6ccd35a1f1df0",
     "semantic_hash": ""
   }
 }
