@@ -3545,23 +3545,23 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/postfix_exercise.py": {
-    "mtime": 1793021202.8669014,
-    "ast_hash": "1c895f47b977752ebf99d2d18ca4b839",
+    "mtime": 1793021779.4899707,
+    "ast_hash": "caefddf7da04430955abf34a31ec2d3d",
     "semantic_hash": ""
   },
   "tests/test_french_postfix_exercise.py": {
-    "mtime": 1793021216.9216619,
-    "ast_hash": "d5abc98a4e5865ecc90f1b83a0c7cd9b",
+    "mtime": 1793021779.4899821,
+    "ast_hash": "3dc7b6f0b30321f990b14c1e05925621",
     "semantic_hash": ""
   },
   "Backend/Core/france/synthesized_authoring.py": {
-    "mtime": 1793021575.1520848,
-    "ast_hash": "b234ba036c1d774185c2ecc521326f16",
+    "mtime": 1793021846.327118,
+    "ast_hash": "f10dced64eb5f8c7288e95dea2ab93c0",
     "semantic_hash": ""
   },
   "tests/test_french_synthesized_authoring.py": {
-    "mtime": 1793021575.2171686,
-    "ast_hash": "7ee929c9a3993da469b6ccd35a1f1df0",
+    "mtime": 1793021897.5781498,
+    "ast_hash": "f6f7783b5ec574e499489210fc3099cb",
     "semantic_hash": ""
   }
 }

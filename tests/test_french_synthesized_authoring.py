@@ -8,6 +8,26 @@ from Backend.Core.france.synthesized_authoring import author, replay
 
 
 @pytest.mark.parametrize("family", ["recursive", "postfix"])
+@pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
+def test_blueprint_and_replay_bind_allocated_marks(family, total):
+    from Backend.Core.france.nsi import NSIExercise
+    from Backend.Core.france.pipeline import _check_exercise_plan
+    from Backend.Core.france.synthesized_authoring import blueprint
+
+    task = blueprint(family, 713, total=total)
+    raw, evidence = author(family, 713, references=[], total=total, task=task)
+    _check_exercise_plan(NSIExercise.model_validate(raw), task, "1")
+    assert replay(family, 713, [], raw, evidence, total=total, task=task) == raw
+    changed = deepcopy(task)
+    changed["question_blueprint"][0]["points"] = "9"
+    with pytest.raises(ValueError):
+        author(family, 713, references=[], total=total, task=changed)
+    wrong = "5.5" if total == "6" else "6"
+    with pytest.raises(ValueError):
+        replay(family, 713, [], raw, evidence, total=wrong)
+
+
+@pytest.mark.parametrize("family", ["recursive", "postfix"])
 def test_replay_preserves_complete_candidate_and_provenance(family):
     raw, evidence = author(family, 713, references=[{"id": "fr-reference"}])
     assert evidence["origin"] == "application_owned"
@@ -80,3 +100,27 @@ def test_seed_family_reference_and_source_are_bound(monkeypatch):
 def test_invalid_authoring_inputs_fail_closed(family, seed, references):
     with pytest.raises(ValueError):
         author(family, seed, references=references)
+
+
+@pytest.mark.parametrize("family", ["recursive", "postfix"])
+def test_synthesized_e1_preserves_actual_pipeline_allocations(family):
+    from decimal import Decimal
+
+    from Backend.Core.france.database_case_prose import render_case as database
+    from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027, NSIExercise
+    from Backend.Core.france.pipeline import _tasks_for_seed_v32
+    from Backend.Core.france.system_case_prose import render_case as system
+
+    for seed in range(270100, 270130):
+        tasks = _tasks_for_seed_v32(seed)
+        first, _ = author(
+            family, seed, references=[], total=tasks[0]["technical_points"]
+        )
+        exercises = [NSIExercise.model_validate(first)] + [
+            NSIExercise.model_validate(renderer(seed, total=task["technical_points"]))
+            for renderer, task in zip((database, system), tasks[1:], strict=True)
+        ]
+        assert [e.id for e in exercises] == ["1", "2", "3"]
+        assert sum(e.credit for e in exercises) == Decimal("18")
+        assert sum(e.minutes for e in exercises) == 210
+        assert LANGUAGE_RUBRIC_2027["points"] == "2"

@@ -9,6 +9,23 @@ from Backend.Core.france.nsi import NSIExercise
 from Backend.Core.france.postfix_exercise import render_case
 
 
+@pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
+def test_allocated_marks_match_every_printed_criterion(total):
+    exercise = NSIExercise.model_validate(render_case(713, total=total))
+    assert exercise.credit == Decimal(total)
+    assert exercise.target_points == total
+    for question in exercise.questions:
+        assert sum(Decimal(item.points) for item in question.marking) == Decimal(
+            question.points
+        )
+
+
+@pytest.mark.parametrize("total", [6, "7", None, "6.0"])
+def test_unsupported_mark_allocations_are_rejected(total):
+    with pytest.raises(ValueError):
+        render_case(713, total=total)
+
+
 @pytest.mark.parametrize("seed", [0, 1, 27, 713, 270103])
 def test_complete_postfix_exercise_and_printed_algorithms(seed):
     raw = render_case(seed)

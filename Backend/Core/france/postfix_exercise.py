@@ -51,7 +51,9 @@ def valide(instructions):
     return profondeur == 1
 
 
-def render_case(seed):
+def render_case(seed, *, total="6"):
+    if type(total) is not str or total not in {"5.5", "6", "6.5"}:
+        raise ValueError("Unsupported postfix mark allocation")
     case = build_case(seed)
     rows = case["public"]["rows"]
     program = compile_tree(rows, "n0")
@@ -182,13 +184,24 @@ def render_case(seed):
     minutes = (4, 5, 7, 5, 6, 6, 12, 10, 10, 5)
     questions = []
     for i, (prompt, answer, criteria, operation, code) in enumerate(items):
+        if total == "5.5" and i in (0, 1):
+            criteria = [" ".join(criteria)]
+        marking = [
+            dict(
+                points="0.5" if total == "6.5" and i in (6, 8) and j == 0 else "0.25",
+                criterion=c,
+            )
+            for j, c in enumerate(criteria)
+        ]
         questions.append(
             dict(
                 id="1" + "abcdefghij"[i],
                 prompt=prompt,
                 answer=answer,
-                points=str(Decimal(len(criteria)) / 4),
-                marking=[dict(points="0.25", criterion=c) for c in criteria],
+                points=str(
+                    sum(Decimal(item["points"]) for item in marking).normalize()
+                ),
+                marking=marking,
                 material_ids=["tree_nodes"] if i in (1, 2, 6, 9) else [],
                 curriculum_codes=[code],
                 operation=operation,
@@ -208,7 +221,7 @@ def render_case(seed):
         context="Une calculatrice reçoit des instructions en notation postfixée : un entier est empilé ; un opérateur retire d'abord l'opérande droit, puis le gauche, et empile le résultat gauche opérateur droit. La pile est initialement vide ; son sommet est à droite dans nos représentations. Seuls les entiers Python et les chaînes '+', '-' et '*' sont autorisés. Un programme valide ne manque jamais d'opérandes et laisse exactement un résultat. Le tableau décrit un arbre source : nodes associe un identifiant à (valeur, gauche, droite), None désigne un fils absent et n0 est la racine. Les calculs sont sur des entiers de taille supposée bornée. Rédiger sur votre copie.",
         topics=["structures-donnees", "algorithmique"],
         minutes=70,
-        target_points="6",
+        target_points=total,
         materials=[
             dict(
                 kind="table",
