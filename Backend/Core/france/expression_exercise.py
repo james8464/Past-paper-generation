@@ -121,7 +121,7 @@ def render_case(seed, *, total="6"):
             "analyse",
         ),
         (
-            "Écrire une fonction correcte expression_value(nodes, root) pour tout arbre non vide conforme à cette représentation. Traiter les trois opérateurs sans eval, sans résultat mémorisé et sans modifier nodes. Justifier la terminaison.",
+            "Écrire une fonction récursive correcte expression_value(nodes, root) pour tout arbre non vide conforme à cette représentation. Traiter les trois opérateurs sans eval, sans résultat mémorisé et sans modifier nodes. Justifier la terminaison.",
             _solution(expression_value)
             + "\nChaque appel descend vers un fils d'un arbre fini ; les feuilles renvoient leur entier. La hauteur restante diminue strictement.",
             [

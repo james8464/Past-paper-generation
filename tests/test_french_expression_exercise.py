@@ -16,6 +16,25 @@ def test_trace_rubric_accepts_either_child_evaluation_order():
     assert "fonction proposée" in question["marking"][0]["criterion"]
 
 
+def test_construction_explicitly_requires_the_assessed_recursion():
+    question = render_case(713)["questions"][6]
+    assert "fonction récursive" in question["prompt"]
+
+
+@pytest.mark.parametrize("seed", [0, 1, 27, 270103])
+def test_new_tree_data_does_not_claim_original_question_variety(seed):
+    from Backend.Core.france.originality import screen_originality
+    from Backend.Core.france.pipeline import exercise_candidate_text
+
+    previous = exercise_candidate_text(NSIExercise.model_validate(render_case(713)))
+    candidate = exercise_candidate_text(NSIExercise.model_validate(render_case(seed)))
+    assert build_case(seed)["sha256"] != build_case(713)["sha256"]
+    # Different checked data is not evidence of a different reasoning task.
+    # Keep this experimental exercise behind the production originality gate.
+    with pytest.raises(ValueError, match="génération précédente"):
+        screen_originality(candidate, [], previous_texts=[previous])
+
+
 @pytest.mark.parametrize("seed", [0, 1, 27, 713, -42, 270103])
 @pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
 def test_complete_exercise_is_bound_to_synthesized_case(seed, total):
