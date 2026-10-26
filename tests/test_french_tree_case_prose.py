@@ -156,6 +156,9 @@ def test_tree_case_pdf_keeps_prompts_and_marking_legible(tmp_path, seed, large_p
         )
         with pymupdf.open(path) as pdf:
             text = "\n".join(page.get_text() for page in pdf)
+            if not correction:
+                assert "Rédigez vos réponses sur votre copie." in pdf[0].get_text()
+                assert "Recopiez et complétez les tableaux demandés." in pdf[0].get_text()
             assert "tree_nodes" not in text and "tree_states" not in text
             assert ("def " in text) is (correction or seed == 270100)
             assert "```" not in text

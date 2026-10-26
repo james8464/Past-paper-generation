@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793015358.5085664,
-    "ast_hash": "87e0162a34b4bb328bbd69d8d7c70477",
+    "mtime": 1793015630.8915794,
+    "ast_hash": "af980e53b3e0ebffd71223f956516f10",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793015195.9216309,
+    "mtime": 1793015443.1194358,
     "ast_hash": "b49539074061de1670ac782cdf9e9312",
     "semantic_hash": ""
   },
@@ -3450,8 +3450,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_tree_case_prose.py": {
-    "mtime": 1793015398.9772894,
-    "ast_hash": "21bcaabfcf46c7d4c50ad51d451e88a8",
+    "mtime": 1793015614.984925,
+    "ast_hash": "33bac25857be7e4fc7914031032043ce",
     "semantic_hash": ""
   },
   "Backend/Core/france/tree_case_authoring.py": {

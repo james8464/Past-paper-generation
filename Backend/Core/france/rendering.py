@@ -330,6 +330,11 @@ def draw_cover_page(
         15,
         bold_font,
     )
+    if not correction:
+        centred("Rédigez vos réponses sur votre copie.", 715, 11, regular_font)
+        centred(
+            "Recopiez et complétez les tableaux demandés.", 735, 11, regular_font
+        )
 
     canvas.setTitle(
         "NSI - corrigé proposé et barème indicatif"
