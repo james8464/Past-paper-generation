@@ -10,6 +10,7 @@ def test_deterministic_case_rejection_keeps_one_attempt_without_model_retries(
     tmp_path, monkeypatch
 ):
     import json
+
     from Backend.Core.france import pipeline
     from tests.test_nsi_pipeline import ControlledTwoOutageFrenchClient, make_index
 

@@ -46,6 +46,21 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertFalse(arguments.contains("--ollama-url"))
     }
 
+    @MainActor
+    func testTestHostStartupUsesPrivatePreferencesAndSecrets() {
+        let environment = ["XCTestConfigurationFilePath": "fixture.xctestconfiguration"]
+        let first = AppLaunchPolicy.makeApplication(environment: environment)
+        let second = AppLaunchPolicy.makeApplication(environment: environment)
+        first.setDryRun(true)
+        first.settingsStore.openAIAPIKey = "test-host-only"
+        first.settingsStore.save()
+        XCTAssertTrue(first.dryRun)
+        XCTAssertFalse(second.dryRun)
+        XCTAssertTrue(second.settingsStore.openAIAPIKey.isEmpty)
+        XCTAssertTrue(first.generatedFiles.isEmpty)
+        XCTAssertTrue(second.generatedFiles.isEmpty)
+    }
+
     func testFrenchTeacherReviewRequestCarriesTheCompleteRubric() throws {
         let scores = Dictionary(
             uniqueKeysWithValues: FrenchReviewRequest.rubricKeys.map { ($0, 3) }
