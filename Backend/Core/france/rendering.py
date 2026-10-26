@@ -37,6 +37,13 @@ def printable_database_criterion(criterion: str) -> str:
     return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
 
 
+def french_prose_markup(text: str) -> str:
+    """Escape prose and bind French punctuation, never executable listings."""
+    text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
+    text = re.sub(r"«[ \t]+", "«\u00a0", text)
+    return escape(text).replace("\n", "<br/>")
+
+
 def exercise_scope_text(title: str) -> str:
     scope = title.strip().rstrip(".")
     if scope.lower().startswith("cet exercice"):
@@ -430,7 +437,7 @@ def render_assessment(
     story = [Spacer(1, doc.height - 14), PageBreak()]
 
     def paragraph(text, style=body):
-        story.append(Paragraph(escape(text).replace("\n", "<br/>"), style))
+        story.append(Paragraph(french_prose_markup(text), style))
 
     def content(text, *, paragraph_style=body):
         first_paragraph = True
@@ -482,7 +489,7 @@ def render_assessment(
                     else listing
                 )
             else:
-                value = escape(part.strip()).replace("\n", "<br/>")
+                value = french_prose_markup(part.strip())
                 story.append(
                     Paragraph(
                         value,
