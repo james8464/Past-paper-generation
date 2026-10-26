@@ -939,8 +939,10 @@ def test_v18_network_reasoning_pdf_requires_exact_printed_facts_and_roles(
                     )
 
 
-def test_runtime_publishes_v31_even_if_caller_requests_older_contract(
-    tmp_path, monkeypatch
+@pytest.mark.parametrize("seed", range(270100, 270103))
+@pytest.mark.parametrize("large_print", [False, True])
+def test_runtime_publishes_v32_even_if_caller_requests_older_contract(
+    tmp_path, monkeypatch, seed, large_print
 ):
     import json
 
@@ -952,27 +954,35 @@ def test_runtime_publishes_v31_even_if_caller_requests_older_contract(
 
     index = tmp_path / "references.sqlite"
     make_index(index)
+
+    class NoModelCalls(ControlledTwoOutageFrenchClient):
+        def generate_json(self, *args, **kwargs):
+            pytest.fail("Whole-case publication must not claim model authoring")
+
     monkeypatch.setattr(runtime, "model_identity", lambda *_: "fixture-digest")
     monkeypatch.setattr(
         runtime,
         "FrenchOllamaClient",
-        lambda **_: ControlledTwoOutageFrenchClient(),
+        lambda **_: NoModelCalls(),
     )
     args = Namespace(
         assessment="fr-bac-general-nsi-written-2027",
         reference_index=index,
         output=str(tmp_path / "output"),
-        seed=270100,
+        seed=seed,
         model="fixture",
         ollama_url="http://localhost:11434",
         allow_remote=False,
-        large_print=False,
+        large_print=large_print,
     )
     args.contract_authoring_version = "v17"  # Caller cannot downgrade new publication.
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
-    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v31"
+    assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v32"
+    manifest = json.loads((bundle / "manifest.json").read_text())
+    assert manifest["generation_origin"] == "application_owned"
+    assert manifest["model_used"] is False
     assert len(package["exercises"][0]["questions"]) == 10
     assert len(package["exercises"][1]["questions"]) == 12
     assert len(package["exercises"][2]["questions"]) == 12

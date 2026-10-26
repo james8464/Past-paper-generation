@@ -102,6 +102,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION,
     CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION,
     CONTROLLED_TREE_CONSTRUCTION_PROMPT_VERSION,
+    CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     atomic_json,
     digest,
     exercise_candidate_text,
@@ -2284,6 +2285,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+        return "v32"
     if prompt_version == CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION:
         return "v31"
     if prompt_version == CONTROLLED_ROUTE_SELECTION_PROMPT_VERSION:
@@ -2322,6 +2325,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
+        return "v32"
     if prompt_version in {
         CONTROLLED_DATABASE_RECONCILIATION_PROMPT_VERSION,
         CONTROLLED_GRAPH_TWO_OUTAGE_PROMPT_VERSION,
@@ -2396,11 +2401,15 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=load_originality_history(output),
             contract_graph_tree=True,
-            contract_authoring_version="v31",
+            contract_authoring_version="v32",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
+        whole_case = (
+            package["identity"]["prompt_version"]
+            == CONTROLLED_WHOLE_CASE_PROMPT_VERSION
+        )
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -2425,7 +2434,9 @@ def handle_generate_assessment(args) -> int:
             CONTROLLED_DATABASE_REASONING_PROMPT_VERSION,
         }
         graph_tree_contract = (
-            build_graph_two_outage_contract(args.seed)
+            None
+            if whole_case
+            else build_graph_two_outage_contract(args.seed)
             if graph_two_outage
             else build_graph_route_trace_contract(args.seed)
             if graph_route_trace
@@ -2440,7 +2451,9 @@ def handle_generate_assessment(args) -> int:
         )
         database_depth = database_pdf_version in {"v2", "v19"}
         database_contract = (
-            build_database_reconciliation_contract(args.seed)
+            None
+            if whole_case
+            else build_database_reconciliation_contract(args.seed)
             if database_pdf_version == "v24"
             else build_database_audit_contract(args.seed)
             if database_pdf_version == "v21"
@@ -2465,12 +2478,15 @@ def handle_generate_assessment(args) -> int:
             "v29",
             "v30",
             "v31",
+            "v32",
         }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
         network_depth = network_pdf_version == "v15"
         network_contract = (
-            build_network_incident_timeline_contract(args.seed)
+            None
+            if whole_case
+            else build_network_incident_timeline_contract(args.seed)
             if network_timeline
             else build_network_incident_contract(args.seed)
             if network_incident
@@ -2495,12 +2511,18 @@ def handle_generate_assessment(args) -> int:
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
                     coherent_material_flow=network_pdf_version
-                    in {"v28", "v29", "v30", "v31"},
+                    in {"v28", "v29", "v30", "v31", "v32"},
                 ),
                 role=role,
                 language="fr-FR",
             )
             validate_pdf(path)
+            if whole_case:
+                from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+
+                validate_whole_case_pdf(path, package, correction=correction)
+                paths[role] = path
+                continue
             graph_tree_validator = (
                 validate_graph_two_outage_pdf
                 if graph_two_outage
@@ -2591,6 +2613,10 @@ def handle_generate_assessment(args) -> int:
                 "teacher_review": "not_run",
                 "empirical_calibration": "not_run",
                 "visual_calibration": "not_run",
+                "generation_origin": "application_owned"
+                if whole_case
+                else "model_assisted",
+                "model_used": not whole_case,
             },
         )
         paths["package_manifest"] = staging / "manifest.json"
