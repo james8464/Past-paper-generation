@@ -70,6 +70,29 @@ def test_whole_case_correction_keeps_prompt_with_answer(tmp_path, whole_package)
                     assert heading_pages == prompt_pages, identifier
 
 
+def test_enlarged_first_database_question_does_not_split_across_pages(tmp_path):
+    from Backend.Core.france.database_case_prose import render_case
+
+    exercise = render_case(270101)
+    path = tmp_path / "first-question.pdf"
+    render(path, {"exercises": [exercise]}, False, large_print=True)
+    with pymupdf.open(path) as pdf:
+        pages = [page for page in pdf if page.search_for("2a.")]
+        assert len(pages) == 1
+        assert "pas remplacer code comme clé de reservation" in " ".join(
+            pages[0].get_text().split()
+        )
+
+
+def test_enlarged_database_header_does_not_break_inside_identifier(tmp_path):
+    from Backend.Core.france.database_case_prose import render_case
+
+    path = tmp_path / "headers.pdf"
+    render(path, {"exercises": [render_case(270100)]}, False, large_print=True)
+    with pymupdf.open(path) as pdf:
+        assert any("temperature" in page.get_text().splitlines() for page in pdf)
+
+
 @pytest.mark.parametrize("correction", [False, True])
 def test_current_whole_case_pdfs_use_keldin_identity(
     tmp_path, whole_package, correction

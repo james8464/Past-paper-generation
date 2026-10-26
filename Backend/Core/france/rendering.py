@@ -70,6 +70,7 @@ def structured_material(
     regular_font: str,
     available_width: float,
     show_id: bool = True,
+    balance_columns: bool = False,
 ):
     heading = (
         f"{material.title} — {material.id}"
@@ -92,6 +93,20 @@ def structured_material(
             if route_trace_table
             else [available_width / len(material.columns)] * len(material.columns)
         )
+        if balance_columns:
+            # Preserve identifiers at the requested font size. Equal columns
+            # otherwise split "temperature" despite ample room in ID columns.
+            minimums = [
+                max(
+                    stringWidth(word, body.fontName, body.fontSize)
+                    for value in (column, *(row[index] for row in material.rows))
+                    for word in value.split()
+                ) + 10
+                for index, column in enumerate(material.columns)
+            ]
+            spare = available_width - sum(minimums)
+            if spare >= 0:
+                column_widths = [width + spare / len(minimums) for width in minimums]
         table = Table(
             rows,
             colWidths=column_widths,
@@ -631,6 +646,7 @@ def render_assessment(
             show_id=exercise.id != "3"
             and not (human_readable_graph_titles and exercise.id == "1"),
             deduplicate_title=database_case,
+            balance_columns=database_case,
             flatten=False,
         ):
             material_block = structured_material(
@@ -639,6 +655,7 @@ def render_assessment(
                 bold_font=bold,
                 regular_font=regular,
                 available_width=doc.width,
+                balance_columns=balance_columns,
                 show_id=show_id
                 and material.id not in {"case_states", "tree_nodes", "tree_states"}
                 and not (deduplicate_title and material.title == material.id)
@@ -745,7 +762,11 @@ def render_assessment(
                 story[start:] = [KeepTogether(story[start:])]
             if (
                 not correction
-                and (not coherent_material_flow or material_start == question_start)
+                and (
+                    not coherent_material_flow
+                    or material_start == question_start
+                    or question_index == 0
+                )
                 and question.verification.get("kind")
                 in {
                     "database_audit_contract",

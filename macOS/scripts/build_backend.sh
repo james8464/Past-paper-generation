@@ -118,6 +118,8 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
   --add-data "$ROOT_DIR/Resources/france:Resources/france"
   --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"
+  # inspect.getsource keeps printed E2 solutions identical to the tested code.
+  --add-data "$ROOT_DIR/Backend/Core/france/database_case_families.py:Backend/Core/france"
 )
 
 while IFS= read -r python_path; do
