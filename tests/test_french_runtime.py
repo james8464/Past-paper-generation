@@ -2001,3 +2001,78 @@ def test_originality_history_reads_only_bounded_valid_local_bundles(tmp_path):
     assert len(history) == 1
     assert "Données d'un réseau" in history[0]
     assert "Valeur 1 justifiée" not in history[0]
+
+
+def test_originality_history_prefers_recent_files_over_seed_order(tmp_path):
+    import json
+    import os
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    for seed, modified in [(999999, 100), (1, 200)]:
+        bundle = tmp_path / f"nsi-2027-{seed}-test"
+        bundle.mkdir()
+        raw = exercise()
+        raw["context"] = f"Contexte de génération {seed}. " + raw["context"]
+        path = bundle / "assessment.json"
+        path.write_text(json.dumps({
+            "schema_version": 2,
+            "assessment_policy": "fr-bac-general-nsi-written-2027",
+            "exercises": [raw] * 20,
+        }), encoding="utf-8")
+        os.utime(path, (modified, modified))
+    history = load_originality_history(tmp_path)
+    assert len(history) == 20
+    assert all("Contexte de génération 1." in text for text in history)
+
+
+@pytest.mark.parametrize("payload", [[], None, "invalid", {"exercises": []}])
+def test_originality_history_ignores_non_package_json(tmp_path, payload):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+
+    bundle = tmp_path / "nsi-2027-malformed"
+    bundle.mkdir()
+    (bundle / "assessment.json").write_text(json.dumps(payload), encoding="utf-8")
+    assert load_originality_history(tmp_path) == []
+
+
+def test_originality_history_does_not_keep_partial_malformed_bundle(tmp_path):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    bundle = tmp_path / "nsi-2027-partial"
+    bundle.mkdir()
+    (bundle / "assessment.json").write_text(json.dumps({
+        "schema_version": 2,
+        "assessment_policy": "fr-bac-general-nsi-written-2027",
+        "exercises": [exercise(), {}],
+    }), encoding="utf-8")
+    assert load_originality_history(tmp_path) == []
+
+
+def test_originality_history_does_not_follow_bundle_or_file_links(tmp_path):
+    import json
+
+    from Backend.Core.france.runtime import load_originality_history
+    from tests.test_nsi_assessment import exercise
+
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    source = outside / "assessment.json"
+    source.write_text(json.dumps({
+        "schema_version": 2,
+        "assessment_policy": "fr-bac-general-nsi-written-2027",
+        "exercises": [exercise()],
+    }), encoding="utf-8")
+    output = tmp_path / "output"
+    output.mkdir()
+    (output / "nsi-2027-linked-directory").symlink_to(outside, target_is_directory=True)
+    bundle = output / "nsi-2027-linked-file"
+    bundle.mkdir()
+    (bundle / "assessment.json").symlink_to(source)
+    assert load_originality_history(output) == []

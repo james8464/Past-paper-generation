@@ -2255,11 +2255,12 @@ def validate_network_incident_timeline_pdf(
 
 
 def load_originality_history(output: Path) -> list[str]:
-    """Read a bounded set of candidate-only text from earlier local bundles."""
+    """Read recent, valid local candidate text, independently of seed ordering."""
     history: list[str] = []
     if not output.is_dir():
         return history
-    for bundle in sorted(output.glob("nsi-2027-*"), reverse=True):
+    candidates: list[tuple[int, str, Path]] = []
+    for bundle in output.glob("nsi-2027-*"):
         assessment = bundle / "assessment.json"
         try:
             if (
@@ -2270,17 +2271,31 @@ def load_originality_history(output: Path) -> list[str]:
                 or assessment.stat().st_size > 5 * 1024 * 1024
             ):
                 continue
+            candidates.append((assessment.stat().st_mtime_ns, bundle.name, assessment))
+        except OSError:
+            continue
+    for _, _, assessment in sorted(candidates, reverse=True):
+        try:
+            # Recheck links in case a bundle changed while the list was built.
+            if assessment.is_symlink() or assessment.parent.is_symlink():
+                continue
             package = json.loads(assessment.read_text(encoding="utf-8"))
             if (
-                package.get("schema_version") != 2
+                not isinstance(package, dict)
+                or package.get("schema_version") != 2
                 or package.get("assessment_policy") != "fr-bac-general-nsi-written-2027"
                 or not isinstance(package.get("exercises"), list)
             ):
                 continue
-            for raw in package["exercises"]:
-                history.append(exercise_candidate_text(NSIExercise.model_validate(raw)))
-                if len(history) == 20:
-                    return history
+            # Validate the entire bundle before taking any text from it. A bad
+            # later exercise must not leave partial history behind.
+            texts = [
+                exercise_candidate_text(NSIExercise.model_validate(raw))
+                for raw in package["exercises"]
+            ]
+            history.extend(texts[: 20 - len(history)])
+            if len(history) == 20:
+                return history
         except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError):
             continue
     return history
