@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793016925.939278,
-    "ast_hash": "469e537b8d16cdfea3ad0248d8a232d1",
+    "mtime": 1793017413.3132842,
+    "ast_hash": "cbb2b3cf0c49388936748db128877ebc",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": "c1ad220248a752267979a93dd5206942"
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1791896154.8714273,
-    "ast_hash": "f82639ef6891ee512f25f583d88ebb81",
+    "mtime": 1793017345.1358888,
+    "ast_hash": "a2de32bde061daf79ae3f3bfe45782dc",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
@@ -1370,8 +1370,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1791129181.5868695,
-    "ast_hash": "02df419ca8db5cb0357d4c0f0dc103f0",
+    "mtime": 1793017345.1362903,
+    "ast_hash": "ac2ffa2b7508cfea09b4ebf362d54a5a",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
@@ -3507,6 +3507,11 @@
   "tests/test_french_whole_case_benchmark.py": {
     "mtime": 1793016891.0677369,
     "ast_hash": "68084f77d0719c293e964fe05832326f",
+    "semantic_hash": ""
+  },
+  "tests/test_french_ui_provenance.py": {
+    "mtime": 1793017412.9492354,
+    "ast_hash": "a627e0be4a149646994b757301e89f4a",
     "semantic_hash": ""
   }
 }

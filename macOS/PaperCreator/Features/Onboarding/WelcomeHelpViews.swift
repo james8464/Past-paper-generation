@@ -317,7 +317,7 @@ private struct HelpTopicPage: View {
                 title: "Local data and deletion",
                 rows: [
                     "French source PDFs and their search index stay in Application Support until you delete them from the French workspace.",
-                    "Ollama generation uses the loopback address and never silently falls back to a hosted provider.",
+                    "V32 uses finite app-authored cases, not model-generated questions. Ollama is currently checked only for the run record; papers are built locally without cloud generation.",
                     "Generated bundles contain questions, corrections, provenance and validation evidence, but no student accounts or submitted answers.",
                 ]
             )

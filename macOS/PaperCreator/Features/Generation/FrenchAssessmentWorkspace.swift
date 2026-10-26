@@ -106,6 +106,9 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official drafts for teachers to review before classroom use.")
                     .foregroundStyle(.secondary)
+                Text("V32 uses three app-authored case families, not model-generated questions. New drafts may repeat a family.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
                     Text(localizedValue("2027 · 3 h 30 · 3 independent exercises"))
                 }
@@ -126,7 +129,7 @@ struct FrenchAssessmentWorkspace: View {
                 }
                 TextField("Local Ollama model", text: $application.selectedModel)
                     .disabled(application.isRunning)
-                Text("Gemma 4 12B is the comparison baseline, not a validated French recommendation. Results with all models require review.")
+                Text("Ollama is currently checked for the run record, but the selected model does not write V32 papers. This does not qualify the model.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Toggle("Enlarged print", isOn: $largePrint)
@@ -167,7 +170,7 @@ struct FrenchAssessmentWorkspace: View {
                 Button("Record a teacher review") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
-                    Text("Official sources are downloaded with your permission. French generation uses Ollama on this Mac, with no cloud fallback.")
+                    Text("Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.")
                     if application.hasFrenchReferences {
                         Button("Delete downloaded French references", role: .destructive) {
                             showDeleteReferences = true
