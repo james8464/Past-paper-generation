@@ -23,13 +23,13 @@ struct WelcomeSheet: View {
             }
 
             VStack(alignment: .leading, spacing: 18) {
-                WelcomeRow(systemImage: "text.book.closed", title: "Choose a subject", message: "Each paper follows its exam board’s specification and structure.")
-                WelcomeRow(systemImage: "cpu", title: "Use the recommended model", message: "Paper creator recommends \(application.ollamaRecommendation.model) for this Mac; other models can produce different results.")
+                WelcomeRow(systemImage: "text.book.closed", title: "Choose a subject", message: "Choose the subject and assessment you want to practise.")
+                WelcomeRow(systemImage: "cpu", title: "Use the recommended model", message: "Keldin recommends \(application.ollamaRecommendation.model) for this Mac; other models can produce different results.")
                 WelcomeRow(systemImage: "doc.badge.arrow.up", title: "Create both documents", message: "The question paper and mark scheme are saved together.")
                 WelcomeRow(systemImage: "doc.richtext", title: "Preview and review", message: "Inspect every generated PDF in Documents and return to any configuration from History.")
             }
 
-            Text("Paper creator makes unofficial practice material and is not affiliated with any exam board.")
+            Text("Keldin makes unofficial practice material and is not affiliated with any exam board.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
 
@@ -148,7 +148,7 @@ private struct HelpTopicPage: View {
 
     private var gettingStarted: some View {
         Group {
-            Text("Paper creator builds a new unofficial question paper and mark scheme from a board-specific blueprint. Normal generation asks your selected AI model to write original questions; preview mode checks layout without calling AI.")
+            Text("Keldin creates unofficial practice papers and mark schemes. Check the selected subject's generation details before starting. Preview mode checks layout without calling AI. Every paper needs human review.")
                 .foregroundStyle(.secondary)
 
             HelpSteps(
@@ -179,7 +179,7 @@ private struct HelpTopicPage: View {
                     LabeledContent("Download", value: application.ollamaRecommendation.downloadDescription)
                     LabeledContent("Unified memory", value: currentMemoryDescription)
                     LabeledContent("Model maximum context", value: application.ollamaRecommendation.contextWindow)
-                    LabeledContent("Paper creator context", value: application.ollamaRecommendation.appContextWindow)
+                    LabeledContent("Keldin context", value: application.ollamaRecommendation.appContextWindow)
                     Text(application.ollamaRecommendation.detail)
                         .foregroundStyle(.secondary)
                     Text(application.ollamaRecommendation.qualityNote)
@@ -380,7 +380,7 @@ private struct HelpTopicPage: View {
                 "Shift-Command-B — Show Benchmark",
                 "Shift-Command-D — Show Documents",
                 "Shift-Command-Y — Show History",
-                "Shift-Command-H — Paper creator Help",
+                "Shift-Command-H — Keldin Help",
                 "Command-Comma — Settings",
             ]
         )

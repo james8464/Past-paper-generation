@@ -6,7 +6,7 @@ import XCTest
 final class AccessibilityTests: XCTestCase {
     @MainActor
     func testReadyWorkspaceLaysOutInAnExpandedWindow() {
-        let application = ApplicationCoordinator()
+        let application = isolatedApplication()
         let board = ExamCatalog.board(id: "economics-aqa")!
         application.selectBoard(board)
         let window = NSWindow(

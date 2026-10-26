@@ -8,7 +8,7 @@ enum BackendClientError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .backendMissing:
-            "Paper creator’s generation service is missing. Reinstall the app."
+            "Keldin’s generation service is missing. Reinstall the app."
         case .pythonMissing:
             "Could not find a Python interpreter."
         case let .pythonVenvUnreadable(path):

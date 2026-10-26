@@ -492,7 +492,7 @@ final class PaperCreatorTests: XCTestCase {
 
     @MainActor
     func testPreviewModePreferencePersists() {
-        let defaults = UserDefaults.standard
+        let defaults = isolatedDefaults()
         let previous = defaults.object(forKey: AppStorageKey.dryRun)
         defer {
             if let previous {
@@ -503,7 +503,7 @@ final class PaperCreatorTests: XCTestCase {
         }
 
         defaults.set(true, forKey: AppStorageKey.dryRun)
-        let application = ApplicationCoordinator()
+        let application = isolatedApplication(defaults: defaults)
         XCTAssertTrue(application.dryRun)
 
         application.setDryRun(false)
@@ -661,7 +661,7 @@ final class PaperCreatorTests: XCTestCase {
 
     @MainActor
     func testAIGeneratorRequiresOllamaCheck() throws {
-        let defaults = UserDefaults.standard
+        let defaults = isolatedDefaults()
         let previousWelcome = defaults.object(forKey: AppStorageKey.hasSeenWelcome)
         defer {
             if let previousWelcome {
@@ -671,7 +671,7 @@ final class PaperCreatorTests: XCTestCase {
             }
         }
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
-        let application = ApplicationCoordinator()
+        let application = isolatedApplication(defaults: defaults)
         let board = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
         application.selectBoard(board)
         application.aiProvider = .ollama
