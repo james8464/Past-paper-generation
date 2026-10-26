@@ -89,11 +89,22 @@ def _rank(case):
             "apply",
         ),
         _q(
-            f"Un comptage erroné renvoie 0 sur un arbre vide ; si la clé est inférieure à L, il renvoie 1 plus le compte du seul fils gauche ; sinon il explore le fils gauche. Sur S0 et L = {limit}, donner son résultat et expliquer précisément ce qu'il oublie.",
-            f"Il renvoie 4 : r et les trois nœuds de son sous-arbre gauche. Il oublie e ({rows['e'][0]}) dans le sous-arbre droit de r, qui respecte aussi la limite. La bonne réponse est 5.",
+            "On propose le programme incorrect suivant :\n"
+            "```python\n"
+            "def compte_errone(nodes, root, limit):\n"
+            "    if root is None:\n"
+            "        return 0\n"
+            "    key, left, right = nodes[root]\n"
+            "    n = compte_errone(nodes, left, limit)\n"
+            "    if key < limit:\n"
+            "        return 1 + n\n"
+            "    return n\n"
+            "```\n"
+            f"Sur S0 et limit = {limit}, tracer les appels sur les nœuds non vides, donner le résultat et identifier toutes les clés admissibles oubliées.",
+            f"Il renvoie 3 : les seuls nœuds visités sont r, a et c. Il oublie d ({rows['d'][0]}) dans le sous-arbre droit de a et e ({rows['e'][0]}) dans le sous-arbre droit de r. Ces deux clés respectent la limite. La bonne réponse est 5.",
             (
-                "Le résultat erroné 4 est tracé sur les nœuds réellement visités.",
-                "Le nœud e oublié prouve que le sous-arbre droit ne peut pas toujours être ignoré.",
+                "Le résultat erroné 3 est justifié par les appels sur r, a et c.",
+                "Les deux nœuds d et e oubliés sont identifiés avec leurs clés admissibles.",
             ),
             "debug",
         ),

@@ -6,6 +6,37 @@ from decimal import Decimal
 import pytest
 
 
+def test_rank_debugging_source_and_marking_agree_on_actual_trace():
+    import re
+
+    from Backend.Core.france.tree_case_families import build_case, count_below
+    from Backend.Core.france.tree_case_prose import render_case
+
+    case = build_case(270100)
+    nodes = {row[0]: tuple(row[1:]) for row in case["public"]["rows"]}
+    question = render_case(270100)["questions"][5]
+    source = re.search(r"```python\n(.*?)\n```", question["prompt"], re.S)
+    assert source, "The candidate must inspect the actual faulty program"
+    namespace = {}
+    # Fixed app-owned teaching code only, never model output.
+    exec(compile(source[1], "<app-owned-faulty-count>", "exec"), namespace)
+    visited = []
+
+    class TracedNodes(dict):
+        def __getitem__(self, key):
+            visited.append(key)
+            return super().__getitem__(key)
+
+    before = deepcopy(nodes)
+    assert namespace["compte_errone"](TracedNodes(nodes), "r", 70) == 3
+    assert visited == ["r", "a", "c"]
+    assert namespace["compte_errone"]({}, None, 70) == 0
+    assert count_below(nodes, "r", 70) == 5
+    assert "renvoie 3" in question["answer"]
+    assert "d (35)" in question["answer"] and "e (55)" in question["answer"]
+    assert nodes == before
+
+
 @pytest.mark.parametrize("seed", range(270100, 270103))
 @pytest.mark.parametrize("total", ("5.5", "6", "6.5"))
 def test_case_balances_credit_time_and_has_constructed_reasoning(seed, total):
@@ -117,7 +148,8 @@ def test_tree_case_pdf_keeps_prompts_and_marking_legible(tmp_path, seed, large_p
         with pymupdf.open(path) as pdf:
             text = "\n".join(page.get_text() for page in pdf)
             assert "tree_nodes" not in text and "tree_states" not in text
-            assert ("def " in text) is correction
+            assert ("def " in text) is (correction or seed == 270100)
+            assert "```" not in text
             for page in pdf:
                 for x0, y0, x1, y1, *_ in page.get_text("words"):
                     assert 0 <= x0 < x1 <= page.rect.width
@@ -131,7 +163,8 @@ def test_tree_case_pdf_keeps_prompts_and_marking_legible(tmp_path, seed, large_p
                             for p in pdf
                         )
                     else:
-                        compact = re.sub(r"\s+", "", q.prompt)
+                        visible = re.sub(r"```(?:python|sql)?", "", q.prompt)
+                        compact = re.sub(r"\s+", "", visible)
                         assert any(
                             compact in re.sub(r"\s+", "", p.get_text()) for p in pdf
                         )
