@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1792807071.655744,
-    "ast_hash": "279755cda8971b6cc09f4e59c2ea08f6",
+    "mtime": 1793027729.0802624,
+    "ast_hash": "a82a23141bc8f9eb51e674649398276d",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -3495,8 +3495,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/whole_case_pdf.py": {
-    "mtime": 1793018337.9509037,
-    "ast_hash": "d8f5716d8d22511f12afb7eff5ffe160",
+    "mtime": 1793027783.3004735,
+    "ast_hash": "c7ad2fb98c81e12971245fe70614ceb8",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_pdf.py": {
@@ -3562,6 +3562,16 @@
   "tests/test_french_synthesized_authoring.py": {
     "mtime": 1793022093.4388726,
     "ast_hash": "66164601a40d9a38d692407fe05bbac7",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/synthesized_pipeline.py": {
+    "mtime": 1793027783.0486631,
+    "ast_hash": "2cd776eb3167275150e38cb9255932de",
+    "semantic_hash": ""
+  },
+  "tests/test_french_synthesized_pipeline.py": {
+    "mtime": 1793027840.5012589,
+    "ast_hash": "b1b60c5ca2667c449a2df7b6b4643e36",
     "semantic_hash": ""
   }
 }

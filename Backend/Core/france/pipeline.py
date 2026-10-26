@@ -1936,6 +1936,16 @@ def generate_assessment(
     contract_graph_tree: bool = False,
     contract_authoring_version: str = "v12",
 ) -> dict:
+    if contract_graph_tree and contract_authoring_version == "v33":
+        from Backend.Core.france.synthesized_pipeline import generate
+
+        return generate(
+            index_path=index_path,
+            seed=seed,
+            checkpoint=checkpoint,
+            progress=progress,
+            previous_texts=previous_texts,
+        )
     if type(seed) is not int:
         raise ValueError("Une graine entière est obligatoire")
     if contract_authoring_version not in {
@@ -3083,6 +3093,10 @@ def generate_assessment(
 
 
 def validate_package(package: dict):
+    if package.get("identity", {}).get("prompt_version") == "fr-nsi-written-2027-v33":
+        from Backend.Core.france.synthesized_pipeline import validate
+
+        return validate(package)
     if (
         package.get("schema_version") != 2
         or package.get("assessment_policy") != NSI_2027.id

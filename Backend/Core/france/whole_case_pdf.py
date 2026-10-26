@@ -17,6 +17,7 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     validate_package,
 )
+from Backend.Core.france.synthesized_pipeline import VERSION as SYNTHESIZED_VERSION
 
 
 def _compact(text: str) -> str:
@@ -141,8 +142,11 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
     if type(correction) is not bool:
         raise ValueError("Rôle du PDF invalide")
     validate_package(package)
-    if package["identity"]["prompt_version"] != CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
-        raise ValueError("Ce contrôle exige un sujet V32")
+    if package["identity"]["prompt_version"] not in {
+        CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
+        SYNTHESIZED_VERSION,
+    }:
+        raise ValueError("Ce contrôle exige un sujet complet V32 ou V33")
     # Late import permits runtime to select this validator without a cycle.
     from Backend.Core.france.runtime import validate_pdf
 
@@ -150,8 +154,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
     exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
     with pymupdf.open(path) as pdf:
         if any(
-            abs(page.rect.width - 595.276) > 0.5
-            or abs(page.rect.height - 841.89) > 0.5
+            abs(page.rect.width - 595.276) > 0.5 or abs(page.rect.height - 841.89) > 0.5
             for page in pdf
         ):
             raise ValueError("Toutes les pages du sujet V32 doivent être au format A4")
