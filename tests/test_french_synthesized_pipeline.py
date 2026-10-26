@@ -97,6 +97,34 @@ def test_checkpoint_cannot_substitute_another_valid_package(tmp_path):
         generate(tmp_path, 270100)
 
 
+@pytest.mark.parametrize(
+    "failures",
+    [
+        None,
+        {},
+        "failed",
+        [None],
+        [{}],
+        [{"error": 1, "cancelled": False}],
+        [{"error": "cancelled", "cancelled": 1}],
+    ],
+)
+def test_malformed_checkpoint_failure_history_is_rejected_without_overwrite(
+    tmp_path, failures
+):
+    import json
+
+    generate(tmp_path)
+    path = tmp_path / "checkpoint-270100.json"
+    state = json.loads(path.read_text())
+    state["failures"] = failures
+    original = json.dumps(state)
+    path.write_text(original)
+    with pytest.raises(ValueError, match="checkpoint"):
+        generate(tmp_path)
+    assert path.read_text() == original
+
+
 @pytest.mark.parametrize("seed", [True, 1.2, 2**63, -(2**63) - 1])
 def test_invalid_seed_rejected(tmp_path, seed):
     with pytest.raises(ValueError):

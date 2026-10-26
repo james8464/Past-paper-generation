@@ -2293,11 +2293,15 @@ def generate_assessment(
                 "L'identité du point de reprise a changé; conserver les anciennes preuves et créer une nouvelle exécution"
             )
     exercises, evidence = [], []
+    # App-owned cases replay exactly; an identical retry cannot repair a refusal.
+    attempt_limit = (
+        1 if contract_graph_tree and contract_authoring_version == "v32" else 3
+    )
     for position, task in enumerate(tasks):
         key = str(position + 1)
         if key not in state["accepted"]:
             failure = ""
-            for attempt in range(1, 4):
+            for attempt in range(1, attempt_limit + 1):
                 record = {"exercise_id": key, "attempt": attempt}
                 try:
                     emit(f"Rédaction et vérification de l'exercice {key}/3")
@@ -3067,7 +3071,9 @@ def generate_assessment(
                     atomic_json(checkpoint, state)
             else:
                 raise ValueError(
-                    f"Exercice {key} refusé après trois tentatives : {failure}"
+                    f"Exercice {key} refusé : {failure}"
+                    if attempt_limit == 1
+                    else f"Exercice {key} refusé après trois tentatives : {failure}"
                 )
         accepted = state["accepted"][key]
         exercises.append(accepted["exercise"])

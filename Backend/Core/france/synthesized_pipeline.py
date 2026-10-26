@@ -235,6 +235,14 @@ def generate(*, index_path, seed, checkpoint, progress=None, previous_texts=None
             type(state) is not dict
             or set(state) != {"request", "package", "failures"}
             or digest(state["request"]) != digest(request)
+            or type(state["failures"]) is not list
+            or any(
+                type(failure) is not dict
+                or set(failure) != {"error", "cancelled"}
+                or type(failure["error"]) is not str
+                or type(failure["cancelled"]) is not bool
+                for failure in state["failures"]
+            )
         ):
             raise ValueError("V33 checkpoint identity mismatch")
         if state["package"] is not None:

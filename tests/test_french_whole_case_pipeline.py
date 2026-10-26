@@ -6,6 +6,39 @@ from decimal import Decimal
 import pytest
 
 
+def test_deterministic_case_rejection_keeps_one_attempt_without_model_retries(
+    tmp_path, monkeypatch
+):
+    import json
+    from Backend.Core.france import pipeline
+    from tests.test_nsi_pipeline import ControlledTwoOutageFrenchClient, make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    calls = []
+
+    def refused(*args, **kwargs):
+        calls.append(True)
+        raise ValueError("originality fixture rejection")
+
+    monkeypatch.setattr(pipeline, "_originality", refused)
+    checkpoint = tmp_path / "checkpoint.json"
+    with pytest.raises(ValueError, match="originality fixture rejection"):
+        pipeline.generate_assessment(
+            index_path=index,
+            client=ControlledTwoOutageFrenchClient(),
+            seed=270100,
+            checkpoint=checkpoint,
+            contract_graph_tree=True,
+            contract_authoring_version="v32",
+        )
+    state = json.loads(checkpoint.read_text())
+    assert len(calls) == 1
+    assert len(state["failed_attempts"]) == 1
+    assert state["failed_attempts"][0]["attempt"] == 1
+    assert state["accepted"] == {}
+
+
 @pytest.mark.parametrize("seed", range(270100, 270103))
 def test_v32_package_replays_whole_case_and_rejects_mutations(
     tmp_path, seed, monkeypatch
