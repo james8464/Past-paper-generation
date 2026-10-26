@@ -594,12 +594,17 @@ def render_assessment(
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()
+        database_case = any(
+            question.verification.get("kind") == "database_case_contract"
+            for question in exercise.questions
+        )
 
         def add_material(
             material,
             *,
             show_id=exercise.id != "3"
             and not (human_readable_graph_titles and exercise.id == "1"),
+            deduplicate_title=database_case,
             flatten=False,
         ):
             material_block = structured_material(
@@ -610,6 +615,9 @@ def render_assessment(
                 available_width=doc.width,
                 show_id=show_id
                 and material.id not in {"case_states", "tree_nodes", "tree_states"}
+                and not (
+                    deduplicate_title and material.title == material.id
+                )
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:

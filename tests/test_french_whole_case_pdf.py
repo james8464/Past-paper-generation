@@ -71,6 +71,20 @@ def test_whole_case_correction_keeps_prompt_with_answer(tmp_path, whole_package)
 
 
 @pytest.mark.parametrize("correction", [False, True])
+def test_whole_case_table_heading_does_not_repeat_identifier(
+    tmp_path, whole_package, correction
+):
+    path = tmp_path / "table-headings.pdf"
+    render(path, whole_package, correction)
+    with pymupdf.open(path) as pdf:
+        text = "\n".join(page.get_text() for page in pdf)
+    for exercise in whole_package["exercises"]:
+        for material in exercise["materials"]:
+            if material["title"] == material["id"]:
+                assert f"{material['title']} — {material['id']}" not in text
+
+
+@pytest.mark.parametrize("correction", [False, True])
 @pytest.mark.parametrize("large_print", [False, True])
 def test_full_whole_case_pdf_matches_verified_package(
     tmp_path, whole_package, correction, large_print

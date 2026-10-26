@@ -107,7 +107,11 @@ def _expected(exercise: NSIExercise, correction: bool) -> str:
                 raise ValueError("Type de document V32 non pris en charge")
             # The V32 publication layout suppresses internal E1/E3 identifiers.
             label = material.title
-            if exercise.id == "2" and material.id != "case_states":
+            if (
+                exercise.id == "2"
+                and material.id != "case_states"
+                and material.title != material.id
+            ):
                 label += f" — {material.id}"
             parts.extend([label, *material.columns])
             for row in material.rows:
