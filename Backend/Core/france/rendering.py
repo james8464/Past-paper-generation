@@ -589,6 +589,7 @@ def render_assessment(
                 "database_reconciliation_contract",
                 "database_case_contract",
                 "tree_case_contract",
+                "expression_synthesis_contract",
                 "system_case_contract",
             }
             for question in exercise.questions
@@ -651,6 +652,7 @@ def render_assessment(
                                     in {
                                         "database_case_contract",
                                         "tree_case_contract",
+                                        "expression_synthesis_contract",
                                         "system_case_contract",
                                     }
                                 )
@@ -718,6 +720,7 @@ def render_assessment(
                     "database_reconciliation_contract",
                     "database_case_contract",
                     "tree_case_contract",
+                    "expression_synthesis_contract",
                     "system_case_contract",
                 }
             ):
@@ -749,6 +752,7 @@ def render_assessment(
                         "route_family_contract",
                         "database_case_contract",
                         "tree_case_contract",
+                        "expression_synthesis_contract",
                         "system_case_contract",
                     }
                     else "Réponse attendue",
@@ -820,6 +824,7 @@ def render_assessment(
                 whole_case_question = question.verification.get("kind") in {
                     "database_case_contract",
                     "tree_case_contract",
+                    "expression_synthesis_contract",
                     "system_case_contract",
                 }
                 if (
@@ -830,6 +835,7 @@ def render_assessment(
                         "route_family_contract",
                         "database_case_contract",
                         "tree_case_contract",
+                        "expression_synthesis_contract",
                         "system_case_contract",
                     }
                     and not whole_case_question
@@ -861,6 +867,7 @@ def render_assessment(
                             "route_family_contract",
                             "database_case_contract",
                             "tree_case_contract",
+                            "expression_synthesis_contract",
                             "system_case_contract",
                         }
                     )
