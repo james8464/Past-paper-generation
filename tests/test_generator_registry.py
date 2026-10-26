@@ -150,9 +150,10 @@ def test_backend_bundle_includes_pymupdf_runtime_data() -> None:
 def test_backend_bundle_keeps_source_used_in_french_corrections() -> None:
     script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
     assert (
-        '--add-data "$ROOT_DIR/Backend/Core/france/database_case_families.py:Backend/Core/france"'
+        '--add-data "$french_source:Backend/Core/france"'
         in script
     )
+    assert 'find "$ROOT_DIR/Backend/Core/france" -maxdepth 1 -type f' in script
 
 
 def test_build_and_test_use_the_same_qualified_pdf_engine() -> None:

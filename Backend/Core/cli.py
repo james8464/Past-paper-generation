@@ -152,13 +152,28 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
             errors.append(f"{capability.backend_subject}: {error}")
     french_families = 0
     try:
+        from Backend.Core.france.database_case_authoring import (
+            catalogue_digest as database_digest,
+        )
         from Backend.Core.france.database_case_prose import render_case
+        from Backend.Core.france.system_case_authoring import (
+            catalogue_digest as system_digest,
+        )
+        from Backend.Core.france.system_case_prose import render_case as render_system
+        from Backend.Core.france.tree_case_authoring import (
+            catalogue_digest as tree_digest,
+        )
+        from Backend.Core.france.tree_case_prose import render_case as render_tree
 
         # Import success alone cannot detect missing correction source in a
         # frozen helper. Render all three families without touching user data.
         for seed in range(270100, 270103):
+            render_tree(seed)
             render_case(seed)
+            render_system(seed)
             french_families += 1
+        for catalogue in (tree_digest, database_digest, system_digest):
+            catalogue()
     except Exception as error:
         errors.append(f"French NSI: {error}")
     emit(

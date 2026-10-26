@@ -118,9 +118,13 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
   --add-data "$ROOT_DIR/Resources/france:Resources/france"
   --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"
-  # inspect.getsource keeps printed E2 solutions identical to the tested code.
-  --add-data "$ROOT_DIR/Backend/Core/france/database_case_families.py:Backend/Core/france"
 )
+
+# Printed solutions inspect the tested algorithms; catalogue identities hash
+# their source modules. Keep those sources, without caches or local evidence.
+while IFS= read -r -d '' french_source; do
+  PYINSTALLER_ARGS+=(--add-data "$french_source:Backend/Core/france")
+done < <(find "$ROOT_DIR/Backend/Core/france" -maxdepth 1 -type f -name '*.py' -print0 | sort -z)
 
 while IFS= read -r python_path; do
   PYINSTALLER_ARGS+=(--paths "$ROOT_DIR/Resources/$python_path")
