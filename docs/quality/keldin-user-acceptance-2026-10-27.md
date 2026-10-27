@@ -12,6 +12,7 @@ The installed direct build is `/Users/james/Applications/Keldin.app`. Test outpu
 - MLX instruct models received raw prompts. The provider now applies the tokenizer's chat template when available; base-model behavior is unchanged.
 - The packaged UK preview failed because `level-of-response-policies.json` was absent. It is now included in the helper and build fingerprint. The bundled health check parses it and fails on missing or invalid policies.
 - Successful generation selected the oldest question paper. It now selects the newest. A replaced filename receives a fresh document identity, the PDF view reloads that revision, and externally requested selections propagate into the preview. Restoring the document library removes duplicate paths without deleting job records.
+- Separate current-generation artifacts from the document library. Completion records and sandbox exports now use only files emitted by that operation; older library PDFs cannot be attached to a new job's provenance. The final native Accounting preview stored exactly its four artifacts. Ambiguous historical artifact identities and reused paths no longer enable Copy Provenance; the original records remain unchanged. Teacher review records already written beside a selected manifest are not exported as new paper bundles.
 - Printing used a zero-sized PDFView and offered one page for a multi-page document. PDFKit now creates the whole-document print operation. The corrected native dialog showed page 1 of 18 for the French correction. No physical print job was sent.
 - Export removed an existing destination before reading the source. Selecting the source itself could therefore delete it. Same-path export is now a no-op; other exports read first and write atomically. Tests also verify that a missing source leaves an existing export intact.
 
@@ -34,10 +35,14 @@ Each regression was observed failing before its fix. Native regression tests cov
 | Navigation | Subject search, OCR selection, unavailable Chemistry state and return to the full list exercised; unavailable subject exposed no Create action |
 | Settings | AI, Output and Privacy panes opened; temporary output folder selected through the native chooser |
 | Benchmark | Built-in 30-second test completed and displayed results; this is hardware evidence, not paper-quality qualification |
-| Automated suite | 3,517 backend tests passed, two skipped; 83 native tests passed |
-| Distribution build | App Store-mode Release preflight passed, including local signing and sandbox checks; not an uploaded or Apple-approved release |
+| Automated suite | 3,517 backend tests passed, two skipped; 85 native tests passed |
+| Distribution build | Static App Store-mode Release preflight passed. Actual ad-hoc sandbox launch failed library validation; a locally development-signed copy stalled in OS sandbox initialization. Runtime acceptance and distribution upload remain blocked |
 
 The tests did not send physical print jobs, create teacher attestations, delete the user's reference corpus, change API keys or purchase model/API credits. Fresh live OpenAI/Anthropic generation, every Ollama model, independent VoiceOver testing and distribution-signed App Store upload were not performed. The acceptance inventory is not a claim that every possible state or button combination has been tested.
+
+### Sandboxed launch failure
+
+An actual App Store-mode launch exposed a limitation that static signature checks do not detect. The ad-hoc hardened helper could not load its nested Python dylib because library validation requires a matching signing team. No library-validation exception or sandbox bypass was added. A copy signed locally with an existing personal Apple development identity passed strict signature verification, but then stalled in `_libsecinit_appsandbox` before app initialization; its one-second process sample is retained in `/tmp/keldin-store-startup-sample.txt`. Xcode's separate attempt to use that identity also failed certificate/team selection. Neither result qualifies a distribution build. The stalled test process was stopped, existing containers were not removed or reassigned, and the working direct build was restored. A correctly provisioned distribution-signing configuration and a fresh sandboxed runtime test remain required.
 
 ## French output retained
 

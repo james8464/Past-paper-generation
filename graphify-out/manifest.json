@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793109604.3742492,
+    "mtime": 1793109778.598837,
     "ast_hash": "1145f2b5fae44c3c2852ca0f07e68a5d",
     "semantic_hash": ""
   },
@@ -1345,8 +1345,8 @@
     "semantic_hash": "b28ef05dabe56b2cab279e7886a2e9d8"
   },
   "macOS/PaperCreator/Features/Documents/DocumentPreviewView.swift": {
-    "mtime": 1793109338.1853094,
-    "ast_hash": "017265f0c655c7dd2ba8eba1bce8e61d",
+    "mtime": 1793110890.8223898,
+    "ast_hash": "c6714221996ca8466a68b13faaac1757",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/JobHistoryView.swift": {
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793109180.6032484,
-    "ast_hash": "2527306d0b446473e8c1c1248119b1b5",
+    "mtime": 1793110177.2802827,
+    "ast_hash": "f86d7ceffaac4cef2c82ad90195d63d3",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793109146.271202,
-    "ast_hash": "fd8d344b7181dbc366c038df5bbfc58a",
+    "mtime": 1793110835.8788612,
+    "ast_hash": "57695b2ae695a33ddc1d5d012b99fccf",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793109604.2725492,
-    "ast_hash": "2ac2763a5f36a08b6a1f3bc841e1e756",
+    "mtime": 1793110890.8229837,
+    "ast_hash": "b3a3d8ba5e6f38851d3989918c5e82d5",
     "semantic_hash": ""
   }
 }

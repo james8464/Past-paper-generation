@@ -100,9 +100,7 @@ struct DocumentPreviewView: View {
 
     private var provenanceRecord: GenerationJobRecord? {
         guard let file = selectedFile else { return nil }
-        return application.recentDocumentStore.records.first { record in
-            record.artifacts.contains { $0.id == file.id || $0.url == file.url }
-        }
+        return PDFDocumentActions.provenanceRecord(for: file, records: application.recentDocumentStore.records)
     }
 
     private var exportAlertBinding: Binding<Bool> {
@@ -141,6 +139,15 @@ struct DocumentPreviewView: View {
 }
 
 enum PDFDocumentActions {
+    static func provenanceRecord(for file: GeneratedFile, records: [GenerationJobRecord]) -> GenerationJobRecord? {
+        let matches = records.filter { record in
+            record.artifacts.contains { $0.id == file.id }
+        }
+        // Old history may have copied a library artifact into several jobs.
+        // A reused filename is not proof of provenance for this revision.
+        return matches.count == 1 ? matches.first : nil
+    }
+
     @MainActor
     static func printOperation(for url: URL) -> NSPrintOperation? {
         guard let document = PDFDocument(url: url) else { return nil }

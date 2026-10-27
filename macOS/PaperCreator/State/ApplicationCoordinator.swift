@@ -63,6 +63,15 @@ final class ApplicationCoordinator: ObservableObject {
     private var preparedMLXModels: Set<String> = []
     private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
+    private var currentGenerationFileIDs = Set<UUID>()
+
+    var currentGenerationFiles: [GeneratedFile] {
+        generatedFiles.filter { currentGenerationFileIDs.contains($0.id) }
+    }
+
+    func beginDocumentCollection() {
+        currentGenerationFileIDs.removeAll()
+    }
 
     var selectedBoard: ExamBoardOption {
         catalogStore.selectedBoard
@@ -326,7 +335,7 @@ final class ApplicationCoordinator: ObservableObject {
         didReceiveBackendError = false
         didCancelRun = false
         progressEntries.removeAll()
-        generatedFiles.removeAll()
+        beginDocumentCollection()
         lastQualityReport = nil
         isRunning = true
         activeOperation = .generation
@@ -542,6 +551,7 @@ final class ApplicationCoordinator: ObservableObject {
         didReceiveBackendError = false
         didCancelRun = false
         mlxRecoveryState.beginGeneration()
+        beginDocumentCollection()
         isRunning = true
         status = "Starting"
         generationProgress = 0.02
@@ -982,6 +992,7 @@ final class ApplicationCoordinator: ObservableObject {
             generatedFiles.removeAll { $0.url == file.url }
             generatedFiles.insert(file, at: 0)
             generatedFiles = Array(generatedFiles.prefix(60))
+            currentGenerationFileIDs.insert(file.id)
             if role == "package_manifest" {
                 lastQualityReport = GenerationQualityReport.load(from: file.url)
             }
@@ -1060,8 +1071,8 @@ final class ApplicationCoordinator: ObservableObject {
                 generationProgress = 1.0
                 generationEstimate = nil
                 persistRecentDocuments()
-                try? generationCoordinator.complete(artifacts: generatedFiles)
-                if let questionPaper = generatedFile(role: "question_paper") {
+                try? generationCoordinator.complete(artifacts: currentGenerationFiles)
+                if let questionPaper = currentGenerationFiles.first(where: { $0.role == "question_paper" }) {
                     previewedFileID = questionPaper.id
                     sidebarSelection = .documents
                 }
@@ -1121,20 +1132,24 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func moveGeneratedFilesToOutputFolderIfNeeded() throws {
         guard distributionMode == .appStore else { return }
+        // Review records are written beside the user-selected manifest, not
+        // generated into the sandbox working folder for subsequent export.
+        guard currentGenerationFiles.contains(where: { $0.role != "teacher_review" }) else { return }
         let workingFolder = AppDefaults.appStoreWorkingFolder().standardizedFileURL
         let destinationFolder = outputFolder.standardizedFileURL
         guard workingFolder != destinationFolder else { return }
 
         if activeFrameworkID == FrenchAssessmentRequest.assessmentID,
-           let first = generatedFiles.first {
+           let first = currentGenerationFiles.first {
             let source = first.url.deletingLastPathComponent().standardizedFileURL
             guard source.deletingLastPathComponent() == workingFolder,
-                  generatedFiles.allSatisfy({ $0.url.deletingLastPathComponent().standardizedFileURL == source }) else {
+                  currentGenerationFiles.allSatisfy({ $0.url.deletingLastPathComponent().standardizedFileURL == source }) else {
                 throw CocoaError(.fileReadInvalidFileName)
             }
             let destination = try AssessmentBundleExporter.export(source: source, to: destinationFolder)
             generatedFiles = generatedFiles.map { file in
-                GeneratedFile(
+                guard currentGenerationFileIDs.contains(file.id) else { return file }
+                return GeneratedFile(
                     id: file.id, role: file.role,
                     url: destination.appendingPathComponent(file.url.lastPathComponent),
                     createdAt: file.createdAt, subject: file.subject, paper: file.paper
@@ -1148,14 +1163,13 @@ final class ApplicationCoordinator: ObservableObject {
             withIntermediateDirectories: true
         )
         generatedFiles = try generatedFiles.map { file in
-            guard file.url.deletingLastPathComponent().standardizedFileURL == workingFolder else {
+            guard currentGenerationFileIDs.contains(file.id),
+                  file.url.deletingLastPathComponent().standardizedFileURL == workingFolder else {
                 return file
             }
             let destination = destinationFolder.appendingPathComponent(file.url.lastPathComponent)
-            if FileManager.default.fileExists(atPath: destination.path) {
-                try FileManager.default.removeItem(at: destination)
-            }
-            try FileManager.default.copyItem(at: file.url, to: destination)
+            try Data(contentsOf: file.url, options: .mappedIfSafe)
+                .write(to: destination, options: .atomic)
             return GeneratedFile(
                 id: file.id,
                 role: file.role,
