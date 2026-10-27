@@ -213,7 +213,7 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
             Spacer(1, 14 * mm),
             Paragraph("Independent practice material", STYLES["small"]),
             Paragraph(
-                "Created by Paper Creator for private revision. This mark scheme is not "
+                "Created by Keldin for private revision. This mark scheme is not "
                 "produced, endorsed or approved by AQA or any examination board.",
                 STYLES["small"],
             ),
@@ -1387,7 +1387,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         topMargin=top_margin,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
-        author="Paper creator",
+        author="Keldin",
         subject="Independent A-level Business practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")

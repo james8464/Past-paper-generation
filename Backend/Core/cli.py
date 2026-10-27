@@ -27,7 +27,7 @@ DEFAULT_BENCHMARK_DURATION_SECONDS = 30.0
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="JSON-lines bridge for Paper creator.")
+    parser = argparse.ArgumentParser(description="JSON-lines bridge for Keldin.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     status = subparsers.add_parser("ollama-status")

@@ -260,7 +260,7 @@ def _draw_independent_notice(
     pdf.drawString(50, height - 674, "Independent practice material")
     pdf.setFont(font, 6.8)
     notice = (
-        "Created independently by Paper Creator for private revision. "
+        "Created independently by Keldin for private revision. "
         "Not produced, endorsed or approved by an examination board."
     )
     pdf.drawString(50, height - 690, notice)
@@ -378,7 +378,7 @@ def _draw_ocr_notice(
     pdf.drawString(
         49.6,
         height - 714,
-        "Created independently by Paper Creator for private revision; not produced or endorsed by OCR.",
+        "Created independently by Keldin for private revision; not produced or endorsed by OCR.",
     )
 
 

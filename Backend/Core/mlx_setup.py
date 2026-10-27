@@ -161,7 +161,7 @@ def install_mlx_runtime(
     process_factory: Callable[..., Any] = subprocess.Popen,
 ) -> bool:
     emit_progress(
-        "Installing Apple MLX support in Paper Creator’s managed environment…",
+        "Installing Apple MLX support in Keldin’s managed environment…",
         stage="mlx-runtime",
         progress=0.15,
     )
@@ -277,12 +277,12 @@ def ensure_mlx_ready(
     if not runtime_available():
         if frozen:
             raise MLXSetupError(
-                "Apple MLX support is missing from this copy of Paper Creator. "
+                "Apple MLX support is missing from this copy of Keldin. "
                 "Please reinstall or update the app, then try again."
             )
         if not managed_environment():
             raise MLXSetupError(
-                "Paper Creator’s managed development environment is incomplete. "
+                "Keldin’s managed development environment is incomplete. "
                 "Recreate the project environment, then try Setup Again."
             )
         if not install_runtime():

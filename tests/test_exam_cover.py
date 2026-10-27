@@ -42,13 +42,35 @@ def _bbox(page: fitz.Page, text: str) -> fitz.Rect:
     return page.search_for(text)[0]
 
 
+@pytest.mark.parametrize("board", ["aqa", "ocr"])
+def test_current_cover_uses_public_brand_without_official_approval_claim(tmp_path, board):
+    with _render(tmp_path, board) as document:
+        text = document[0].get_text()
+        assert "KELDIN" in text
+        assert "PRACTICE" in text
+        assert "Paper Creator" not in text and "CREATOR" not in text
+        assert "unofficial" in text.casefold()
+
+
+@pytest.mark.parametrize("rows", [
+    (("A", 1), ("B", 50)),
+    (("A", True), ("B", 79)),
+    (("A", -1), ("B", 81)),
+    (("A", 40), ("A", 40)),
+])
+def test_cover_rejects_inconsistent_or_invalid_section_totals(rows):
+    with pytest.raises(ValueError, match="Cover section marks"):
+        CoverProfile("aqa", "Economics", "7136/3", "Paper 3", "2 hours", 80,
+                     mark_rows=rows)
+
+
 def test_aqa_mark_scheme_cover_matches_measured_title_grid(tmp_path: Path) -> None:
     document = _render(tmp_path, "aqa")
     try:
         page = document[0]
-        assert _bbox(page, "PAPER").x0 == pytest.approx(46.8, abs=2)
-        assert _bbox(page, "PAPER").y0 == pytest.approx(86, abs=4)
-        assert _bbox(page, "CREATOR").y1 == pytest.approx(134, abs=4)
+        assert _bbox(page, "KELDIN").x0 == pytest.approx(46.8, abs=2)
+        assert _bbox(page, "KELDIN").y0 == pytest.approx(86, abs=4)
+        assert _bbox(page, "PRACTICE").y1 == pytest.approx(134, abs=4)
         assert _bbox(page, "A-level").x0 == pytest.approx(46.8, abs=2)
         spans = [
             s
@@ -98,9 +120,9 @@ def test_ocr_mark_scheme_cover_matches_measured_title_grid(tmp_path: Path) -> No
     document = _render(tmp_path, "ocr")
     try:
         page = document[0]
-        assert _bbox(page, "PAPER").x0 == pytest.approx(59.5, abs=2)
-        assert _bbox(page, "PAPER").y0 == pytest.approx(35, abs=4)
-        assert _bbox(page, "CREATOR").y1 == pytest.approx(82, abs=4)
+        assert _bbox(page, "KELDIN").x0 == pytest.approx(59.5, abs=2)
+        assert _bbox(page, "KELDIN").y0 == pytest.approx(35, abs=4)
+        assert _bbox(page, "PRACTICE").y1 == pytest.approx(82, abs=4)
         assert _bbox(page, "GCE").x0 == pytest.approx(59.5, abs=2)
         assert _bbox(page, "GCE").y0 == pytest.approx(146.7, abs=3)
         assert _bbox(page, "Economics").y0 == pytest.approx(200.1, abs=3)

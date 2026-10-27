@@ -2690,7 +2690,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         topMargin=19 * mm,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
-        author="Paper creator",
+        author="Keldin",
         subject="Independent A-level Accounting practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")

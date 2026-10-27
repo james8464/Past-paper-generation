@@ -41,6 +41,16 @@ def test_rebrand_preserves_existing_storage_and_keychain_names():
     )
 
 
+def test_current_uk_renderers_do_not_publish_the_previous_name():
+    from Backend.Core.branding import APP_NAME, PDF_WORDMARK
+
+    assert APP_NAME == "Keldin" and PDF_WORDMARK == "KELDIN"
+    sources = [ROOT / "Backend/Core/exam_cover.py", ROOT / "Backend/Core/exam_pages.py"]
+    sources.extend((ROOT / "Resources").glob("*/*/generator/*/render_pdf.py"))
+    for path in sources:
+        assert "paper creator" not in path.read_text().casefold(), path
+
+
 def test_native_icon_has_seven_editable_glass_layers():
     root = APP / "AppIcon.icon"
     icon = json.loads((root / "icon.json").read_text())

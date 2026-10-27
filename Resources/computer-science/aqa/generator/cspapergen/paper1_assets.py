@@ -207,8 +207,8 @@ def _set_metadata(
     role: str,
 ) -> None:
     pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
-    pdf.setAuthor("Paper creator")
-    pdf.setCreator("Paper creator")
+    pdf.setAuthor("Keldin")
+    pdf.setCreator("Keldin")
     pdf.setSubject(
         "Independent A-level Computer Science practice material"
     )

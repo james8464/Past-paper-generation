@@ -262,7 +262,7 @@ def test_runtime_installer_keeps_package_manager_output_out_of_the_ui(capsys) ->
     assert install_mlx_runtime(process_factory=process_factory) is False
     events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     assert [event["message"] for event in events] == [
-        "Installing Apple MLX support in Paper Creator’s managed environment…"
+        "Installing Apple MLX support in Keldin’s managed environment…"
     ]
 
 

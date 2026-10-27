@@ -6,6 +6,7 @@ from typing import Protocol
 
 from reportlab.pdfbase import pdfmetrics
 
+from Backend.Core.branding import PDF_WORDMARK
 from Backend.Core.document_dsl.model import BoardProfile, Length, Size
 
 
@@ -58,7 +59,7 @@ class Cover(BaseComponent):
     title: str
     subtitle: str
     code: str
-    board_label: str = "PAPER CREATOR"
+    board_label: str = PDF_WORDMARK
     keep_together: bool = True
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:

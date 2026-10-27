@@ -350,7 +350,7 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_REGULAR, 15)
     pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
-    pdf.drawString(58, 31, f"Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
+    pdf.drawString(58, 31, f"Keldin. Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
     _draw_fake_barcode(pdf, width / 2 - 105, 32, barcode_text)
 
 
@@ -2537,7 +2537,7 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_REGULAR, 15)
     pdf.drawString(58, 43, barcode_text)
     pdf.setFont(FONT_REGULAR, 5.5)
-    pdf.drawString(58, 31, f"Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
+    pdf.drawString(58, 31, f"Keldin. Unofficial practice material, {economics_exam_schedule(blueprint.paper_id).date.year}.")
     _draw_fake_barcode(pdf, width / 2 - 80, 32, barcode_text)
 
 
@@ -2576,7 +2576,7 @@ def render_mark_scheme(
     title_blue = colors.HexColor(MARK_SCHEME_TITLE_COLOR)
     pdf.setFillColor(colors.black)
     pdf.setFont(SERIF_FONT, 30)
-    pdf.drawString(cover_margin, height - 200, "Unofficial Practice")
+    pdf.drawString(cover_margin, height - 200, "Keldin")
     pdf.setFillColor(title_blue)
     pdf.setFont(SERIF_FONT, 28)
     pdf.drawString(
@@ -2676,11 +2676,11 @@ def _set_pdf_metadata(
 ) -> None:
     """Attach stable, searchable metadata to every released PDF role."""
     pdf.setTitle(f"{blueprint.title} — {document_role}")
-    pdf.setAuthor("Paper Creator")
+    pdf.setAuthor("Keldin")
     pdf.setSubject(
         f"Unofficial Edexcel A Level Economics A practice {document_role.casefold()}"
     )
-    pdf.setCreator("Paper Creator")
+    pdf.setCreator("Keldin")
 
 
 def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:
@@ -2693,7 +2693,7 @@ def _pad_mark_scheme_pages(pdf: canvas.Canvas, target_pages: int) -> None:
 def _draw_mark_scheme_end_page(pdf: canvas.Canvas) -> None:
     pdf.setFont(MS_FONT, 8)
     pdf.setFillColor(colors.HexColor("#555555"))
-    pdf.drawString(49, 44, "Paper Creator. Independent practice material.")
+    pdf.drawString(49, 44, "Keldin. Independent practice material.")
     pdf.drawString(49, 31, "Not produced, endorsed or approved by any examination board.")
     pdf.setFillColor(colors.black)
 

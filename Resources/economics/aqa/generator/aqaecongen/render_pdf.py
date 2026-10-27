@@ -740,7 +740,7 @@ def _document(path: Path, paper: GeneratedPaper, document_type: str) -> BaseDocT
         topMargin=(25 * mm if is_answer_booklet else 18 * mm),
         bottomMargin=(26 * mm if is_answer_booklet else 15 * mm),
         title=f"{paper.paper_code} {paper.title} — {document_type}",
-        author="Paper creator",
+        author="Keldin",
         subject="Independent A-level Economics practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
@@ -795,7 +795,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
             tuple(
                 (
                     section.id,
-                    sum(question.marks for question in section.options[0].questions),
+                    section.candidate_marks,
                 )
                 for section in paper.sections
             )
@@ -1043,7 +1043,7 @@ def _no_questions_page() -> list[Flowable]:
         Spacer(1, 2 * mm),
         Paragraph(
             "Every organisation, economy, statistic and quotation in this paper is "
-            "independently created for private revision. Paper Creator does not "
+            "independently created for private revision. Keldin does not "
             "reproduce protected question text or third-party source material. This "
             "unofficial paper is not produced, endorsed or approved by AQA or any "
             "other examination board. Use the relevant official specification and "

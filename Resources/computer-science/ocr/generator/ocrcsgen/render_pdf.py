@@ -284,7 +284,7 @@ def render_mark_scheme(paper: GeneratedPaper, path: Path) -> None:
             Paragraph("Independent practice material", STYLES["heading"]),
             Spacer(1, 5 * mm),
             Paragraph(
-                "This mark scheme was created by Paper Creator for private revision. "
+                "This mark scheme was created by Keldin for private revision. "
                 "It is not produced, endorsed or approved by OCR or any examination board.",
                 STYLES["body"],
             ),
@@ -1012,7 +1012,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         topMargin=19 * mm,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
-        author="Paper creator",
+        author="Keldin",
         subject="Independent A-level Computer Science practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")

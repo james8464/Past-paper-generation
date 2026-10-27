@@ -39,7 +39,7 @@ def render_question_paper(
                     title=paper.title,
                     subtitle=_duration(paper.duration_minutes),
                     code=paper.paper_code,
-                    board_label="PAPER CREATOR • CAMBRIDGE-STYLE PRACTICE",
+                    board_label="KELDIN • CAMBRIDGE-STYLE PRACTICE",
                 ),
                 InstructionBlock(
                     heading="Instructions",
@@ -116,7 +116,7 @@ def render_mark_scheme(
             title=f"{paper.title} mark scheme",
             subtitle="Original practice material",
             code=paper.paper_code,
-            board_label="PAPER CREATOR",
+            board_label="KELDIN",
         )
     ]
     for section in paper.sections:
@@ -166,7 +166,7 @@ def _metadata(
 ) -> DocumentMetadata:
     return DocumentMetadata(
         title=f"{paper.title} – original practice",
-        author="Paper Creator",
+        author="Keldin",
         subject=syllabus.subject_label,
         keywords=(
             "unofficial practice",
