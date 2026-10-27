@@ -954,7 +954,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     private func generatedFile(role: String) -> GeneratedFile? {
-        generatedFiles.reversed().first { $0.role == role }
+        generatedFiles.first { $0.role == role }
     }
 
     func apply(_ event: BackendEvent) {
@@ -977,10 +977,11 @@ final class ApplicationCoordinator: ObservableObject {
                 subject: activeFrameworkID == nil ? "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)" : "Baccalauréat général · NSI",
                 paper: activeFrameworkID == nil ? selectedPaper.title : "Partie écrite · 2027"
             )
-            if !generatedFiles.contains(where: { $0.url == file.url }) {
-                generatedFiles.insert(file, at: 0)
-                generatedFiles = Array(generatedFiles.prefix(60))
-            }
+            // UK exports can replace an existing filename. Give each new
+            // revision a fresh identity so previews reload the actual output.
+            generatedFiles.removeAll { $0.url == file.url }
+            generatedFiles.insert(file, at: 0)
+            generatedFiles = Array(generatedFiles.prefix(60))
             if role == "package_manifest" {
                 lastQualityReport = GenerationQualityReport.load(from: file.url)
             }
@@ -1170,7 +1171,7 @@ final class ApplicationCoordinator: ObservableObject {
         try? recentDocumentStore.load()
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
         if !jobArtifacts.isEmpty {
-            generatedFiles = Array(jobArtifacts.prefix(60))
+            generatedFiles = latestDocumentVersions(jobArtifacts)
             return
         }
         guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
@@ -1180,7 +1181,14 @@ final class ApplicationCoordinator: ObservableObject {
               ) else {
             return
         }
-        generatedFiles = Array(documents.prefix(60))
+        generatedFiles = latestDocumentVersions(documents)
+    }
+
+    private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
+        var seen = Set<URL>()
+        return Array(documents.filter {
+            seen.insert($0.url.standardizedFileURL).inserted
+        }.prefix(60))
     }
 
     private func persistRecentDocuments() {

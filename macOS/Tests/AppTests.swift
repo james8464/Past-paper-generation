@@ -1,8 +1,40 @@
 import AppKit
+import PDFKit
 import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testPDFExportToItsOwnPathPreservesTheSource() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("paper.pdf")
+        let original = Data("original PDF bytes".utf8)
+        try original.write(to: source)
+        try PDFDocumentActions.export(from: source, to: source)
+        XCTAssertEqual(try Data(contentsOf: source), original)
+
+        let destination = root.appendingPathComponent("export.pdf")
+        try Data("previous export".utf8).write(to: destination)
+        try PDFDocumentActions.export(from: source, to: destination)
+        XCTAssertEqual(try Data(contentsOf: destination), original)
+        XCTAssertThrowsError(try PDFDocumentActions.export(from: root.appendingPathComponent("missing.pdf"), to: destination))
+        XCTAssertEqual(try Data(contentsOf: destination), original)
+    }
+
+    @MainActor
+    func testPDFPrintOperationIncludesEveryPage() throws {
+        let source = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).pdf")
+        defer { try? FileManager.default.removeItem(at: source) }
+        let document = PDFDocument()
+        for index in 0..<3 { document.insert(PDFPage(), at: index) }
+        XCTAssertTrue(document.write(to: source))
+        let operation = try XCTUnwrap(PDFDocumentActions.printOperation(for: source))
+        var range = NSRange()
+        XCTAssertTrue(try XCTUnwrap(operation.view).knowsPageRange(&range))
+        XCTAssertEqual(range.length, 3)
+    }
+
     func testAppLaunchPolicySuppressesWindowsOnlyDuringUnitTests() {
         XCTAssertFalse(
             AppLaunchPolicy.presentsMainWindow(

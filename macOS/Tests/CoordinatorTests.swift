@@ -528,6 +528,36 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.sidebarSelection, .documents)
     }
 
+    @MainActor
+    func testRolePreviewUsesNewestDocumentAndRefreshesReplacedFiles() throws {
+        let model = isolatedApplication()
+        let oldURL = temporaryDirectory.appendingPathComponent("old.pdf")
+        let newURL = temporaryDirectory.appendingPathComponent("new.pdf")
+        model.apply(.file(role: "question_paper", path: oldURL.path))
+        model.apply(.file(role: "question_paper", path: newURL.path))
+        let firstVersion = try XCTUnwrap(model.generatedFiles.first)
+        model.previewGeneratedFile(role: "question_paper")
+        XCTAssertEqual(model.previewedFileID, firstVersion.id)
+
+        model.apply(.file(role: "question_paper", path: newURL.path))
+        let replacement = try XCTUnwrap(model.generatedFiles.first)
+        XCTAssertNotEqual(replacement.id, firstVersion.id)
+        XCTAssertEqual(model.generatedFiles.filter { $0.url == newURL }.count, 1)
+        model.previewGeneratedFile(role: "question_paper")
+        XCTAssertEqual(model.previewedFileID, replacement.id)
+    }
+
+    @MainActor
+    func testRestoredDocumentLibraryDeduplicatesReplacedPaths() throws {
+        let defaults = isolatedDefaults()
+        let url = temporaryDirectory.appendingPathComponent("paper.pdf")
+        let newest = GeneratedFile(role: "question_paper", url: url)
+        let older = GeneratedFile(role: "question_paper", url: url)
+        defaults.set(try JSONEncoder().encode([newest, older]), forKey: AppStorageKey.recentDocuments)
+        let model = isolatedApplication(defaults: defaults)
+        XCTAssertEqual(model.generatedFiles.map(\.id), [newest.id])
+    }
+
     func testCopiedProvenanceIdentifiesConfigurationAndQualification() {
         let record = GenerationJobRecord.fixture(state: .completed)
 
