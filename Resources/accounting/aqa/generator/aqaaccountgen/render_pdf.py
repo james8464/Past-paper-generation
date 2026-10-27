@@ -469,17 +469,17 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             "a mark for every part and reconcile the question and paper totals.",
         ),
     ]
-    for page in pages:
-        page.append(Spacer(1, 7 * mm))
-        for heading, text in narrative:
-            page.extend(
-                [
-                    Paragraph(heading, STYLES["heading"]),
-                    Spacer(1, 2 * mm),
-                    Paragraph(text, STYLES["small"]),
-                    Spacer(1, 4 * mm),
-                ]
-            )
+    # General instructions belong once, before the specialised guidance.
+    pages[0].append(Spacer(1, 7 * mm))
+    for heading, text in narrative:
+        pages[0].extend(
+            [
+                Paragraph(heading, STYLES["heading"]),
+                Spacer(1, 2 * mm),
+                Paragraph(text, STYLES["small"]),
+                Spacer(1, 4 * mm),
+            ]
+        )
     return pages
 
 
@@ -1045,6 +1045,7 @@ def _extended_indicative_content_page(
                 if _indicative_objective(point) != "—"
             ][:7],
         ]
+    points = list(dict.fromkeys(points))
     rows = [
         [
             Paragraph(point, STYLES["scheme_small"]),
@@ -2591,6 +2592,7 @@ def _mcq_block(question: GeneratedQuestion) -> list[Flowable]:
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
                 ("LEFTPADDING", (0, 0), (-1, -1), 0),
                 ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+                ("RIGHTPADDING", (1, 0), (1, -1), 4 * mm),
                 ("TOPPADDING", (0, 0), (-1, -1), 2),
                 ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
             ]

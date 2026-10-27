@@ -515,8 +515,8 @@
     "semantic_hash": "d8091400101c5c08f8a582ecf1867c7e"
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
-    "mtime": 1793132932.8450937,
-    "ast_hash": "3875c5ac72d9736f4adaef8e0d106373",
+    "mtime": 1793141606.8938668,
+    "ast_hash": "1161c605f39ba756fade190a30f501a4",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py": {
@@ -540,9 +540,9 @@
     "semantic_hash": "92165e8cc71f4c8d9883cb5b4d2ac7c1"
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1791129181.516803,
-    "ast_hash": "654683177fafdaf72048bcb37c38e08b",
-    "semantic_hash": "654683177fafdaf72048bcb37c38e08b"
+    "mtime": 1793141557.872414,
+    "ast_hash": "98e522923bd8b938d1291761c9b51f4e",
+    "semantic_hash": ""
   },
   "Resources/backend-protocol.schema.json": {
     "mtime": 1791129181.5168886,
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793141386.69114,
-    "ast_hash": "a3fb474d13e6b21431e1a509d536ef11",
+    "mtime": 1793141982.514265,
+    "ast_hash": "d5ac39fb78e6828bb43383c5306e5ca5",
     "semantic_hash": ""
   },
   "Backend/Core/branding.py": {
