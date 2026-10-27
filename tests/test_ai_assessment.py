@@ -7,6 +7,8 @@ from Backend.Core.ai_assessment import (
     _batches_for_client,
     _candidate_question,
     _clean_generated_prompt,
+    _demand_item,
+    _difficulty_candidate,
     _effective_batch_size,
     _generate_batch,
     _generate_item_transaction,
@@ -655,7 +657,15 @@ def test_generation_prompt_skips_model_scheme_for_verified_guidance() -> None:
     assert "must not exceed `maximum_prompt_words`" in prompt
 
 
-def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus() -> None:
+@pytest.mark.parametrize("prompt", [
+    "Glenmore Trading has revenue of £185000 and cost of sales of £35000. What is gross profit?",
+    "Which source of finance normally increases gearing?",
+    "Which of the following data structures uses last-in first-out ordering?",
+    "Which source document records a credit purchase?",
+    "Which statement about the sources of finance is correct?",
+    "What is the purpose of the source code?",
+])
+def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus(prompt) -> None:
     question = GeneratedQuestion(
         rule_id="q07",
         number="07",
@@ -663,10 +673,7 @@ def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus() -> None
         kind="multiple_choice",
         command_word="select",
         topic_id="topic",
-        prompt=(
-            "Glenmore Trading has revenue of £185000 and cost of sales of £35000. "
-            "What is gross profit?"
-        ),
+        prompt=prompt,
         mark_scheme=["£150000"],
     )
     task = _Task(
@@ -689,17 +696,27 @@ def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus() -> None
     assert source["scope"] == "self_contained_question"
     assert "stimulus" not in source
     assert "£1060000" not in str(source)
+    assert _demand_item(task)["context"] == []
+    projection = _difficulty_candidate(task, question)
+    assert "£1060000" not in str(projection.review_content)
+    assert "£1060000" in str(projection.identity_content)
 
 
-def test_explicit_source_question_retains_option_material() -> None:
+@pytest.mark.parametrize("kind,prompt", [
+    ("extended_response", "Use the information in the case to advise Glenmore Trading."),
+    ("multiple_choice", "According to Extract 1, which statement is correct?"),
+    ("multiple_choice", "What does the data above show?"),
+    ("multiple_choice", "Which statement is supported by the source?"),
+])
+def test_explicit_source_question_retains_option_material(kind, prompt) -> None:
     question = GeneratedQuestion(
         rule_id="q16",
         number="16",
-        marks=25,
-        kind="extended_response",
+        marks=25 if kind == "extended_response" else 1,
+        kind=kind,
         command_word="advise",
         topic_id="topic",
-        prompt="Use the information in the case to advise Glenmore Trading.",
+        prompt=prompt,
         mark_scheme=["Credit a justified recommendation."],
     )
     task = _Task(
@@ -717,6 +734,7 @@ def test_explicit_source_question_retains_option_material() -> None:
     source = _task_source(task)
 
     assert source["stimulus"] == ["Extract 1. Revenue was £1060000."]
+    assert _demand_item(task)["context"] == [source]
 
 
 def test_generated_question_must_preserve_visual_contract_terms() -> None:

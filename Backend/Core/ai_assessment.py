@@ -51,7 +51,7 @@ from Backend.Core.reference_demand import (
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v3-source-scope"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v4-specific-source-cues"
 
 
 class AssessmentLLMClient(Protocol):
@@ -1890,10 +1890,14 @@ def _task_source(task: _Task) -> dict[str, object]:
 
 def _demand_item(task: _Task) -> dict[str, object]:
     value = task.question.model_dump(mode="json")
-    value["context"] = [
-        *task.option.stimulus,
-        *([task.option.chart_title] if task.option.chart_title else []),
-    ]
+    source = _task_source(task)
+    # Target the material actually supplied to review, not an unrelated option's
+    # planning case. Explicit evidence remains contextual even in a short stem.
+    value["context"] = (
+        [source]
+        if source.get("evidence") or source.get("scope") != "self_contained_question"
+        else []
+    )
     value["evidence_ids"] = list(task.question.source_references)
     return value
 
@@ -1930,7 +1934,14 @@ def _difficulty_specification(task: _Task) -> dict[str, object]:
 
 
 _OPTION_SOURCE_CUE = re.compile(
-    r"\b(?:appendix|appendices|cases?|charts?|data|evidence|extracts?|figures?|information|sources?|tables?)\b",
+    r"\b(?:appendix|appendices|cases?|charts?|extracts?|figures?|sources?|tables?)"
+    r"\s+(?:\d+[a-z]?|(?-i:[A-Z]))\b"
+    r"|\b(?:(?:the|this|that|these|following|provided|supplied)\s+"
+    r"|(?:use|using|from|according to|based on)\s+(?:(?:the|this|that)\s+)?)"
+    r"(?:appendix|appendices|cases?|charts?|data|evidence|extracts?|figures?|information|sources?|tables?)\b"
+    r"(?!\s+(?:structures?|types?|protection|security|codes?|documents?|technology|of\s+(?:finance|funding|income))\b)"
+    r"|\b(?:charts?|data|evidence|extracts?|figures?|information|sources?|tables?)"
+    r"\s+(?:above|below|provided|supplied|shown)\b",
     flags=re.IGNORECASE,
 )
 
@@ -1941,8 +1952,9 @@ def _question_uses_option_source(task: _Task) -> bool:
     A section can contain independent short questions alongside a later case study.
     Passing that case study to every item lets an assessment reviewer mistake an
     unrelated figure for a contradiction in a self-contained stem. Explicit source
-    references and source language take priority; otherwise only written questions
-    that name the option inherit its material.
+    references and specific material cues take priority; topic nouns such as
+    'source of finance' and 'data structure' do not refer to an extract. Otherwise
+    only written questions that name the option inherit its material.
     """
 
     question = task.question
