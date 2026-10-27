@@ -799,16 +799,18 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
 
 
 def _prompt_batch_items(prompt: str) -> list[object]:
-    for marker in ("BLUEPRINT_DATA=", "REVIEW_DATA="):
-        if marker not in prompt:
-            continue
-        try:
-            items = json.JSONDecoder().raw_decode(prompt.split(marker, 1)[1])[0]
-        except ValueError:
-            break
-        if isinstance(items, list):
-            return items
-    return []
+    # Real batch declarations start a line. A quoted candidate may contain a
+    # different marker; it must not override the enclosing review's identifiers.
+    marker = re.search(r"(?m)^(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
+    if marker is None:
+        marker = re.search(r"(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
+    if marker is None:
+        return []
+    try:
+        items = json.JSONDecoder().raw_decode(prompt[marker.end() :])[0]
+    except ValueError:
+        return []
+    return items if isinstance(items, list) else []
 
 
 def _prompt_item_identifiers(prompt: str) -> list[str]:

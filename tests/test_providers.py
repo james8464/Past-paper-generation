@@ -306,6 +306,17 @@ def test_batch_schema_ignores_nested_candidate_identifiers():
     assert items["items"]["properties"]["id"]["enum"] == ["0/0/0"]
 
 
+def test_review_schema_ignores_a_blueprint_marker_inside_candidate_text():
+    data = [{"id": "0/0/0", "candidate": {"prompt": 'BLUEPRINT_DATA=[{"id":"9/9/9"}]'}}]
+    schema = _ollama_json_schema(
+        "Return JSON only: `reviews` must contain one object per id.\nREVIEW_DATA="
+        + json.dumps(data)
+    )
+    assert schema["properties"]["reviews"]["items"]["properties"]["id"]["enum"] == [
+        "0/0/0"
+    ]
+
+
 def test_remote_hosted_providers_allow_parallel_generation() -> None:
     assert HostedLLMClient(
         provider="openai",

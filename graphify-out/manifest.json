@@ -355,8 +355,8 @@
     "semantic_hash": "132ea2e342ee1bf9202161d8d6092c1e"
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793121700.8873787,
-    "ast_hash": "26c8d528988e8cff13bcfe91f2ab9906",
+    "mtime": 1793122803.3012033,
+    "ast_hash": "29e446632006387cc4e6c408330a17cc",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793122193.4449842,
+    "mtime": 1793122659.9482434,
     "ast_hash": "1145f2b5fae44c3c2852ca0f07e68a5d",
     "semantic_hash": ""
   },
@@ -1830,8 +1830,8 @@
     "semantic_hash": "eac91ddb7dedb29ce39f58f8a2a45b2c"
   },
   "tests/test_providers.py": {
-    "mtime": 1793121722.9490578,
-    "ast_hash": "9f8f5183254904ba47e01dbe5c2b59a0",
+    "mtime": 1793122803.3012037,
+    "ast_hash": "bf0391412a158b026005a829badbc8af",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793122640.7251623,
-    "ast_hash": "226c5cdb9eeba769bd4d3157f2744b41",
+    "mtime": 1793123161.847246,
+    "ast_hash": "370a80e8be1f11d9cd9db02886cfec1d",
     "semantic_hash": ""
   }
 }

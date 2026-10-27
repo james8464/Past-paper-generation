@@ -116,6 +116,8 @@ root records, ignoring nested candidate and repair-data identifiers. MLX rejects
 missing, extra, duplicated, malformed or mismatched question/review identifiers
 and requests a repair that names the batch problem. It does not remap identifiers
 or repair answers. Generic requests and model chat-template behavior are retained.
+An additional regression verifies that a fake blueprint marker inside quoted
+candidate text cannot override the enclosing review declaration.
 
 A separate computer-control run in the signed sandbox completed guided 3B model
 setup and continued into real drafting. The bounded generation was rejected for
@@ -141,7 +143,7 @@ published and the default model was not changed. Two first-response traces were
 deliberately stopped diagnostics, not complete live runs. Settings now explain,
 in English and French, that model setup does not qualify paper quality.
 
-Final local checks: **3,532 backend tests passed, two skipped; 87 native tests
+Final local checks: **3,533 backend tests passed, two skipped; 87 native tests
 passed**. Ruff, repository hygiene, plist lint, shell syntax, direct Release build
 and development-signed App Store preflight passed. Read-only source review found
 no additional defect in this patch. These results do not replace the open live
