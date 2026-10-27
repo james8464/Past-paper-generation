@@ -1,5 +1,25 @@
 # Keldin user acceptance — 27 October 2026
 
+## Teacher-review score controls
+
+The installed form's score steppers were visible, but its accessibility tree
+exposed the eight criterion labels without editable score controls or values.
+The four-value inputs now use native menu pickers with stable accessibility
+identifiers. They retain the same independent bindings and 1–4 range.
+
+Computer-control testing found all eight named controls and exercised all four
+choices in each: **32 score selections**. Every change updated only its own
+criterion. Recording stayed disabled with no reviewer or notes. Cancel dismissed
+the form; reopening restored all default scores, so the unsaved choices were
+not retained. No teacher review or attestation was recorded. The form was also
+visually checked; the native values and labels fit without new clipping.
+All **90 native tests** and the direct Release build passed. This is an
+accessibility-API and interaction check, not independent VoiceOver approval.
+
+The short native menus follow the platform guidance for a small, ordered set of
+choices: [Apple picker guidance](https://developer.apple.com/design/human-interface-guidelines/pickers).
+French paper content, teacher/learner calibration and rights status are unchanged.
+
 ## Fit-flag semantics: retained-case comparison
 
 The one-item Qwen2.5 trace independently solved the purchases-journal MCQ and
