@@ -1,5 +1,41 @@
 # Keldin user acceptance — 27 October 2026
 
+## JSON framing, context demand and language follow-up
+
+The cached Qwen3 tokenizer reproduced a protocol mismatch: its default chat
+template leaves thinking enabled, while this workflow constrains the response
+to JSON. The model's documented non-thinking template closes that channel before
+the answer. MLX JSON requests now explicitly select that template once. The
+pinned Outlines adapter's automatic template is disabled to prevent a second
+wrapper; the underlying tokenizer is not modified. Base models without a chat
+template still receive their original prompt. Five regressions failed before
+the change; all 51 provider tests passed after it.
+
+The first native trial with corrected framing still failed question 01's context
+demand check and published no paper. Framing correctness alone does not qualify
+the model. Difficulty review now states the immutable target's actual context
+requirement outside the untrusted candidate payload. A self-contained knowledge
+task need not invent an external extract; an application target must still use
+its context. Two prompt regressions failed before this clarification. Separate
+tests confirm that a rejected context check still fails for either target: no
+review flag is overridden. Review version V5 prevents silent reuse of older
+reviews. The combined targeted suite passed **243 tests** and the frozen-source
+full suite passed **3,568 tests with two skipped**.
+
+Native testing found that translated status strings did not honor the app's
+explicit French language choice. The corrected resource lookup passed the new
+red/green regression; all **90 native tests** passed. History now displays
+“Baccalauréat · NSI / Épreuve écrite” instead of internal French identifiers.
+The quality inspector no longer substitutes route readiness for missing package
+engineering evidence: without a saved package it says “At creation”. These two
+presentation fixes were checked through the signed sandbox app. Direct Release,
+development-signed App Store preflight and strict signatures passed.
+
+All previous failures and checkpoints remain. MLX full-paper qualification,
+French manual fidelity and external release gates remain open. Sources:
+[Qwen3's chat-mode contract](https://huggingface.co/Qwen/Qwen3-8B),
+[Apple localized string resources](https://developer.apple.com/documentation/Foundation/LocalizedStringResource).
+
 ## Generation feedback and preview history
 
 History now labels layout-only jobs “Layout preview” instead of displaying the
