@@ -355,8 +355,8 @@
     "semantic_hash": "132ea2e342ee1bf9202161d8d6092c1e"
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793107953.8532853,
-    "ast_hash": "4605f09fb1d1b437ebc7ce2e881af686",
+    "mtime": 1793121700.8873787,
+    "ast_hash": "26c8d528988e8cff13bcfe91f2ab9906",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793110950.86783,
+    "mtime": 1793122008.290889,
     "ast_hash": "1145f2b5fae44c3c2852ca0f07e68a5d",
     "semantic_hash": ""
   },
@@ -1375,8 +1375,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793038362.5822825,
-    "ast_hash": "fcae49b896f0ea12e75ae67f173a5525",
+    "mtime": 1793121651.9101923,
+    "ast_hash": "e9a152652379625978bb2cf54eedbfbe",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
@@ -1830,8 +1830,8 @@
     "semantic_hash": "eac91ddb7dedb29ce39f58f8a2a45b2c"
   },
   "tests/test_providers.py": {
-    "mtime": 1793107953.9548461,
-    "ast_hash": "f7581d0fd008ba96500163c05a803eb1",
+    "mtime": 1793121722.9490578,
+    "ast_hash": "9f8f5183254904ba47e01dbe5c2b59a0",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
@@ -1860,9 +1860,9 @@
     "semantic_hash": "87eb2c7ce3169b8cb4736aac0289aee8"
   },
   "tests/test_release_compliance.py": {
-    "mtime": 1791129181.6073937,
-    "ast_hash": "72bc7204446de675a4e711b287e5cd6e",
-    "semantic_hash": "72bc7204446de675a4e711b287e5cd6e"
+    "mtime": 1793120744.5069718,
+    "ast_hash": "f08dabc29f0eac68e2c53a3529770a41",
+    "semantic_hash": ""
   },
   "tests/test_render_transaction.py": {
     "mtime": 1791129181.6074631,
@@ -2010,9 +2010,9 @@
     "semantic_hash": "76d6429d22180f7098284091f73b6397"
   },
   "tools/release_compliance.py": {
-    "mtime": 1791129181.6110861,
-    "ast_hash": "34a883bf1e597c1286ef307bbf64c89f",
-    "semantic_hash": "34a883bf1e597c1286ef307bbf64c89f"
+    "mtime": 1793120542.7220833,
+    "ast_hash": "65f6e63875a2bc39a31293c18ede2131",
+    "semantic_hash": ""
   },
   "tools/repository_hygiene.py": {
     "mtime": 1791129181.6111693,
@@ -2130,8 +2130,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793044111.8483293,
-    "ast_hash": "9e32cc3d29c2b3709b8e5060caebebcc",
+    "mtime": 1793120817.7107232,
+    "ast_hash": "0bbe8061fa1abf8335e2c33c069b2c64",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793112383.9861696,
-    "ast_hash": "24be96d50054a18bed050b2e4212ece8",
+    "mtime": 1793122151.2562406,
+    "ast_hash": "be288a95bea08740059ae69fc100946c",
     "semantic_hash": ""
   }
 }
