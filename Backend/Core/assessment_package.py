@@ -40,6 +40,7 @@ from Backend.Core.reference_demand import (
     verified_reference_profile,
 )
 from Backend.Core.response_simulation import ResponseSimulator
+from Backend.Core.shared_source_scope import shared_source_requires_context
 from Backend.Core.subjects.sql_contracts import (
     SQLSourceContract,
     render_sql_schema,
@@ -149,6 +150,7 @@ def write_assessment_package(
     )
     document = {
         "schema_version": 1,
+        "source_scope_version": 1,
         "form_id": form_id,
         "subject": subject,
         "paper": paper_number,
@@ -202,10 +204,14 @@ def validate_assessment_package(
     items = document.get("items")
     if not isinstance(items, list) or not items:
         raise ValueError("assessment package has no items")
+    source_scope_version = document.get("source_scope_version", 0)
+    if type(source_scope_version) is not int or source_scope_version not in {0, 1}:
+        raise AssessmentPackageCompatibilityError("Unsupported assessment source-scope version")
     expected_items = _extract_items(
         document["blueprint"],
         subject=subject,
         paper_number=paper_number,
+        scoped_shared_sources=source_scope_version == 1,
     )
     if items != expected_items:
         raise ValueError("assessment package exported items differ from the blueprint")
@@ -455,6 +461,7 @@ def _extract_items(
     *,
     subject: str,
     paper_number: str,
+    scoped_shared_sources: bool = True,
 ) -> list[dict[str, Any]]:
     discovered: list[
         tuple[str, dict[str, Any], list[str], str, dict[str, Any] | None]
@@ -648,6 +655,15 @@ def _extract_items(
         }
         if raw.get("_candidate_source_contract"):
             item["candidate_source_contract"] = raw["_candidate_source_contract"]
+        # Unrelated option extracts must not add context demand at export.
+        # Keep the complete parent in the immutable candidate identity.
+        if (
+            scoped_shared_sources
+            and isinstance(candidate_parent, dict)
+            and isinstance(candidate_parent.get("questions"), list)
+            and not shared_source_requires_context(raw, candidate_parent)
+        ):
+            item["context"] = []
         if raw.get("_answer_intent"):
             item["answer_intent"] = raw["_answer_intent"]
             item["source_intent_sha256"] = raw["_source_intent_sha256"]

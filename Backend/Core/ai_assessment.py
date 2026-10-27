@@ -48,6 +48,11 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
 )
+from Backend.Core.shared_source_scope import (
+    owns_shared_source,
+    shared_source_requires_context,
+    uses_shared_option_source,
+)
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 LOGGER = logging.getLogger(__name__)
@@ -1785,22 +1790,7 @@ def _task_source(task: _Task) -> dict[str, object]:
     # These adapters publish question-owned source contracts instead of the
     # generic option extracts. Mere authoring metadata (word budgets, AO labels)
     # must not hide a case that the question actually asks the candidate to use.
-    owns_source = any(
-        key in context
-        for key in (
-            "candidate_source",
-            "referenced_question_data",
-            "source_data",
-            "numeric_input_contract",
-            "selected_response_contract",
-            "cs_input_contract",
-            "sql_answer_contract",
-            "calculation_variables",
-            "opening_balances",
-            "transactions_at_start_of_year",
-            "adjustment_source_data",
-        )
-    )
+    owns_source = owns_shared_source(task.question.model_dump(mode="json"))
     if context:
         source: dict[str, object] = {
             "title": task.option.title,
@@ -1895,7 +1885,7 @@ def _demand_item(task: _Task) -> dict[str, object]:
     # planning case. Explicit evidence remains contextual even in a short stem.
     value["context"] = (
         [source]
-        if source.get("evidence") or source.get("scope") != "self_contained_question"
+        if shared_source_requires_context(value, task.option.model_dump(mode="json"))
         else []
     )
     value["evidence_ids"] = list(task.question.source_references)
@@ -1933,19 +1923,6 @@ def _difficulty_specification(task: _Task) -> dict[str, object]:
     }
 
 
-_OPTION_SOURCE_CUE = re.compile(
-    r"\b(?:appendix|appendices|cases?|charts?|extracts?|figures?|sources?|tables?)"
-    r"\s+(?:\d+[a-z]?|(?-i:[A-Z]))\b"
-    r"|\b(?:(?:the|this|that|these|following|provided|supplied)\s+"
-    r"|(?:use|using|from|according to|based on)\s+(?:(?:the|this|that)\s+)?)"
-    r"(?:appendix|appendices|cases?|charts?|data|evidence|extracts?|figures?|information|sources?|tables?)\b"
-    r"(?!\s+(?:structures?|types?|protection|security|codes?|documents?|technology|of\s+(?:finance|funding|income))\b)"
-    r"|\b(?:charts?|data|evidence|extracts?|figures?|information|sources?|tables?)"
-    r"\s+(?:above|below|provided|supplied|shown)\b",
-    flags=re.IGNORECASE,
-)
-
-
 def _question_uses_option_source(task: _Task) -> bool:
     """Return whether the shared option material is evidence for this item.
 
@@ -1957,15 +1934,8 @@ def _question_uses_option_source(task: _Task) -> bool:
     only written questions that name the option inherit its material.
     """
 
-    question = task.question
-    if question.source_references:
-        return True
-    if _OPTION_SOURCE_CUE.search(question.prompt):
-        return True
-    return (
-        question.kind != "multiple_choice"
-        and not numeric_tokens(question.prompt)
-        and task.option.title.casefold() in question.prompt.casefold()
+    return uses_shared_option_source(
+        task.question.model_dump(mode="json"), task.option.model_dump(mode="json")
     )
 
 

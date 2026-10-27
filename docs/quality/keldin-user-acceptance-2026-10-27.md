@@ -1,5 +1,28 @@
 # Keldin user acceptance — 27 October 2026
 
+## Full native MLX attempt and export source scope
+
+The sandboxed, development-signed app completed all 13 item batches using
+`mlx-community/Qwen3-8B-4bit` with previews disabled. It then rejected the whole
+Accounting Paper 1 at `item_difficulty_review`; no new paper was published.
+The activity log included item refinement, so this is not a zero-repair success.
+
+A deterministic reproduction found that review and export constructed different
+demand targets for the first ten self-contained Accounting MCQs: review required
+retrieval, while export added contextualisation from unrelated option material.
+Both Accounting components reproduced the mismatch before the fix. Source-scope
+predicates are now shared by generation and export. Full parent content remains
+identity-bearing, and no review flags, fingerprints or difficulty thresholds
+are overridden. Existing source-conflict and independent-solver tests still pass.
+
+New packages record source-scope version 1. Packages without that marker retain
+their original extraction rules, without rewriting stored files or granting new
+qualification. Unknown versions are rejected. The focused suite passed **123
+tests**, including complete item target/evidence round trips for both Accounting
+components, shared-route target comparisons and read-only legacy replay.
+This engineering fix does not itself qualify an MLX paper or change the French
+fidelity HOLD.
+
 ## Teacher-review score controls
 
 The installed form's score steppers were visible, but its accessibility tree
