@@ -1,5 +1,71 @@
 # Keldin user acceptance — 27 October 2026
 
+## Fit-flag semantics: retained-case comparison
+
+The one-item Qwen2.5 trace independently solved the purchases-journal MCQ and
+approved its factual review. Its demand response nevertheless said `approved=true`
+with `context_fit=false`, `scaffolding_fit=false` and no stated issues. The target
+required no context and allowed up to explicit scaffolding. The application
+correctly rejected the conflicting flags; it did not publish a paper.
+
+Review instructions now define fit as appropriateness, not feature presence, and
+make clear that maximum scaffolding is a ceiling rather than a required minimum.
+All Boolean gates remain enforced. Regressions verify that either a false context
+or false scaffolding result still fails, even when context is not required.
+Review version V6 invalidates earlier review reuse.
+
+The exact retained review payload has SHA-256
+`45d3bf39d023c8508eff81a2cb55812bbabf29fa331b2dcd3f4160ed92eec5e1`.
+Using the same cached Qwen3 8B snapshot, the original prompt returned
+`approved=true` but `context_fit=false`; the clarified prompt returned approval
+with every fit check true. Qwen2.5 still rejected context after clarification.
+These bounded observations show a model-dependent interface improvement, not a
+complete paper or general model qualification. No task, answer, target or result
+was edited to obtain acceptance. Logs remain in the ignored
+`tmp/final-validation-20261027/fit-semantics-*` files.
+
+The final frozen-source backend suite passed **3,571 tests with two skipped**;
+the combined targeted suite passed **246 tests**. Development-signed sandbox
+preflight and strict signature verification passed. A separate complete native
+attempt is not counted as qualified by this retained-case comparison. French
+content and its fidelity HOLD are unchanged.
+
+## JSON framing, context demand and language follow-up
+
+The cached Qwen3 tokenizer reproduced a protocol mismatch: its default chat
+template leaves thinking enabled, while this workflow constrains the response
+to JSON. The model's documented non-thinking template closes that channel before
+the answer. MLX JSON requests now explicitly select that template once. The
+pinned Outlines adapter's automatic template is disabled to prevent a second
+wrapper; the underlying tokenizer is not modified. Base models without a chat
+template still receive their original prompt. Five regressions failed before
+the change; all 51 provider tests passed after it.
+
+The first native trial with corrected framing still failed question 01's context
+demand check and published no paper. Framing correctness alone does not qualify
+the model. Difficulty review now states the immutable target's actual context
+requirement outside the untrusted candidate payload. A self-contained knowledge
+task need not invent an external extract; an application target must still use
+its context. Two prompt regressions failed before this clarification. Separate
+tests confirm that a rejected context check still fails for either target: no
+review flag is overridden. Review version V5 prevents silent reuse of older
+reviews. The combined targeted suite passed **243 tests** and the frozen-source
+full suite passed **3,568 tests with two skipped**.
+
+Native testing found that translated status strings did not honor the app's
+explicit French language choice. The corrected resource lookup passed the new
+red/green regression; all **90 native tests** passed. History now displays
+“Baccalauréat · NSI / Épreuve écrite” instead of internal French identifiers.
+The quality inspector no longer substitutes route readiness for missing package
+engineering evidence: without a saved package it says “At creation”. These two
+presentation fixes were checked through the signed sandbox app. Direct Release,
+development-signed App Store preflight and strict signatures passed.
+
+All previous failures and checkpoints remain. MLX full-paper qualification,
+French manual fidelity and external release gates remain open. Sources:
+[Qwen3's chat-mode contract](https://huggingface.co/Qwen/Qwen3-8B),
+[Apple localized string resources](https://developer.apple.com/documentation/Foundation/LocalizedStringResource).
+
 ## Generation feedback and preview history
 
 History now labels layout-only jobs “Layout preview” instead of displaying the

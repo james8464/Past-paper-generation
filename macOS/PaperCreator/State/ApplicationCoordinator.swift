@@ -65,6 +65,10 @@ final class ApplicationCoordinator: ObservableObject {
     private var securityScopedOutputFolder: URL?
     private var currentGenerationFileIDs = Set<UUID>()
 
+    private var presentationLanguage: String {
+        defaults.string(forKey: "interfaceLanguage") ?? "system"
+    }
+
     var currentGenerationFiles: [GeneratedFile] {
         generatedFiles.filter { currentGenerationFileIDs.contains($0.id) }
     }
@@ -980,7 +984,7 @@ final class ApplicationCoordinator: ObservableObject {
                 setError("The generation service uses an unsupported protocol version.")
             }
         case let .progress(stage, message, progress):
-            status = GenerationPresentation.progress(message)
+            status = GenerationPresentation.progress(message, language: presentationLanguage)
             generationProgress = progress ?? generationProgress
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
@@ -1215,7 +1219,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     private func setError(_ message: String) {
-        errorMessage = GenerationPresentation.error(message)
+        errorMessage = GenerationPresentation.error(message, language: presentationLanguage)
         showError = true
         status = "Error"
         generationProgress = nil
@@ -1281,7 +1285,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func notifyFailure(for operation: RunningOperation, message: String) {
         switch operation {
         case .generation:
-            sendNotification(title: "Couldn’t create the paper", body: GenerationPresentation.error(message))
+            sendNotification(title: "Couldn’t create the paper", body: GenerationPresentation.error(message, language: presentationLanguage))
         case .modelPull:
             sendNotification(title: "Couldn’t download the model", body: message)
         case .mlxSetup:

@@ -5,7 +5,7 @@ import io
 import json
 import sys
 import urllib.error
-from types import ModuleType
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -230,7 +230,7 @@ def test_apple_provider_applies_the_models_chat_template(monkeypatch) -> None:
     assert calls == [
         (
             [{"role": "user", "content": "Return JSON."}],
-            {"tokenize": False, "add_generation_prompt": True},
+            {"tokenize": False, "add_generation_prompt": True, "enable_thinking": False},
         )
     ]
 
@@ -330,9 +330,22 @@ def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, p
 
 
 @pytest.mark.parametrize("duplicate", [False, True])
-def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatch, duplicate):
+@pytest.mark.parametrize("chat", [False, True])
+def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatch, duplicate, chat):
     calls = []
     adapters = []
+    templates = []
+
+    class Tokenizer:
+        has_chat_template = chat
+
+        def apply_chat_template(self, messages, **kwargs):
+            templates.append((messages, kwargs))
+            assert kwargs == {
+                "tokenize": False, "add_generation_prompt": True, "enable_thinking": False,
+            }
+            return "formatted conversation"
+
     outlines = ModuleType("outlines")
     types = ModuleType("outlines.types")
     types.JsonSchema = lambda schema: {"schema": schema}
@@ -341,9 +354,11 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
         adapters.append((model, tokenizer))
 
         def generate(prompt, output_type, **kwargs):
+            assert generate.type_adapter.has_chat_template is False
             calls.append((prompt, output_type, kwargs))
             return '{"answer":["ready","ready"]}' if duplicate else '{"answer":"ready"}'
 
+        generate.type_adapter = SimpleNamespace(has_chat_template=True)
         return generate
 
     outlines.from_mlxlm = adapter
@@ -359,6 +374,7 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
     llguidance.LLMatcher = Matcher
     monkeypatch.setitem(sys.modules, "llguidance", llguidance)
     client = HostedLLMClient(provider="apple", model="test", api_key="")
+    client._apple_tokenizer = Tokenizer()
     schema = {"type": "object", "required": ["answer"]}
     if duplicate:
         schema["properties"] = {"answer": {"type": "array", "uniqueItems": True}}
@@ -369,8 +385,9 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
         assert client._mlx_structured_response("unformatted prompt", schema) == '{"answer":"ready"}'
     assert len(adapters) == 1
     assert len(calls) == 2
+    assert len(templates) == (2 if chat else 0)
     assert calls[0] == (
-        "unformatted prompt", {"schema": schema},
+        "formatted conversation" if chat else "unformatted prompt", {"schema": schema},
         {"backend": "llguidance", "max_tokens": 4096, "verbose": False},
     )
 

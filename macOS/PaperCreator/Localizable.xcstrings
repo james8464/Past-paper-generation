@@ -288,6 +288,16 @@
         }
       }
     },
+    "Written assessment" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Épreuve écrite"
+          }
+        }
+      }
+    },
     "Rechecking question %@" : {
       "localizations" : {
         "fr" : {
