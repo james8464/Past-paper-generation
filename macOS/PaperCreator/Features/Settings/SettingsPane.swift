@@ -208,6 +208,8 @@ private struct AISettingsTab: View {
                 TextField("Model ID or path", text: $application.appleModel)
                 Text("Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model.")
                     .foregroundStyle(.secondary)
+                Text("Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks.")
+                    .foregroundStyle(.secondary)
             }
         }
     }

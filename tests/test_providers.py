@@ -231,6 +231,81 @@ def test_apple_provider_missing_runtime_uses_human_recovery_message(
     assert "pip" not in message.lower()
 
 
+def test_apple_batch_format_and_identifier_repair(monkeypatch):
+    module = ModuleType("mlx_lm")
+    prompts = []
+    replies = iter(
+        [
+            '{"questions":[{"id":"1/0/0"}]}',
+            '{"questions":[{"id":"0/0/0"}]}',
+        ]
+    )
+    module.load = lambda _: (object(), object())
+
+    def generate(_model, _tokenizer, *, prompt, **kwargs):
+        prompts.append(prompt)
+        return next(replies)
+
+    module.generate = generate
+    monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
+    )
+    client = HostedLLMClient(provider="apple", model="test", api_key="")
+    prompt = (
+        "Return one JSON object with a `questions` array. BLUEPRINT_DATA="
+        '[{"id":"0/0/0","prompt_numeric_contract":{"required_exact_tokens":[]}}]'
+    )
+    assert client.generate_json(prompt)["questions"] == [{"id": "0/0/0"}]
+    assert len(prompts) == 2
+    assert "OUTPUT_SCHEMA=" in prompts[0]
+    assert '"enum":["0/0/0"]' in prompts[0]
+    assert "question identifiers or count did not match" in prompts[1]
+
+
+@pytest.mark.parametrize(
+    "items",
+    [[], [{"id": "0/0/0"}, {"id": "0/0/0"}], [{"id": []}], [{}], "not an array"],
+)
+@pytest.mark.parametrize(
+    "field,prompt",
+    [
+        (
+            "questions",
+            "Return one JSON object with a `questions` array. BLUEPRINT_DATA=",
+        ),
+        (
+            "reviews",
+            "Return JSON only: `reviews` must contain one object per id. REVIEW_DATA=",
+        ),
+    ],
+)
+def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, prompt):
+    module = ModuleType("mlx_lm")
+    module.load = lambda _: (object(), object())
+    module.generate = lambda *args, **kwargs: json.dumps({field: items})
+    monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
+    )
+    client = HostedLLMClient(provider="apple", model="test", api_key="")
+    with pytest.raises(ValueError, match="identifiers or count did not match"):
+        client.generate_json(
+            prompt + '[{"id":"0/0/0"}]',
+            retries=1,
+        )
+
+
+def test_batch_schema_ignores_nested_candidate_identifiers():
+    schema = _ollama_json_schema(
+        'Return one JSON object with a `questions` array. BLUEPRINT_DATA=[{"id":"0/0/0",'
+        '"candidate":{"id":"9/9/9"}}] REPAIR_DATA={"id":"8/8/8"}'
+    )
+    items = schema["properties"]["questions"]
+    assert items["minItems"] == items["maxItems"] == 1
+    assert items["items"]["properties"]["id"]["enum"] == ["0/0/0"]
+
+
 def test_remote_hosted_providers_allow_parallel_generation() -> None:
     assert HostedLLMClient(
         provider="openai",
@@ -295,9 +370,16 @@ def test_ollama_schema_constrains_shared_generation_and_review() -> None:
     assert generation["properties"]["questions"]["type"] == "array"
     assert generation["properties"]["questions"]["minItems"] == 2
     assert generation["properties"]["questions"]["maxItems"] == 2
+    assert generation["properties"]["questions"]["items"]["properties"]["id"][
+        "enum"
+    ] == ["0/0/0", "0/0/1"]
     assert review["required"] == ["reviews"]
     assert review["properties"]["reviews"]["minItems"] == 2
     assert review["properties"]["reviews"]["maxItems"] == 2
+    assert review["properties"]["reviews"]["items"]["properties"]["id"]["enum"] == [
+        "0/0/0",
+        "0/0/1",
+    ]
     review_fields = review["properties"]["reviews"]["items"]["required"]
     assert "difficulty_issues" in review_fields
     assert "ambiguity_issues" in review_fields
