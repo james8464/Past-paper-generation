@@ -30,9 +30,13 @@ struct JobHistoryView: View {
                         Text(record.createdAt, format: .dateTime.day().month().hour().minute())
                     }
                     TableColumn("Model") { record in
-                        Text(record.configuration.model)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
+                        if record.configuration.dryRun {
+                            Text("Layout preview")
+                        } else {
+                            Text(record.configuration.model)
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                        }
                     }
                 }
                 .contextMenu(forSelectionType: GenerationJobRecord.ID.self) { selected in

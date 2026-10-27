@@ -278,6 +278,36 @@
     "Latest package" : {
 
     },
+    "Layout preview" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aperçu de mise en page"
+          }
+        }
+      }
+    },
+    "Rechecking question %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouvelle vérification de la question %@"
+          }
+        }
+      }
+    },
+    "This model couldn't create a paper that passed the quality checks. No new paper was published. Try another model. You can copy diagnostics from Tools." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce modèle n'a pas pu créer une épreuve conforme aux contrôles de qualité. Aucune nouvelle épreuve n'a été publiée. Essayez un autre modèle. Vous pouvez copier le diagnostic depuis Outils."
+          }
+        }
+      }
+    },
     "Layout preview checks pagination without using AI. Its placeholder questions are not finished papers." : {
 
     },

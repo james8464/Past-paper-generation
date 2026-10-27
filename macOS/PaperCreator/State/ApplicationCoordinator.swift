@@ -838,10 +838,17 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func copyDiagnosticSummary() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(diagnosticSummary, forType: .string)
+        status = "Diagnostics copied"
+    }
+
+    var diagnosticSummary: String {
         let generationMode = selectedBoard.usesAI
             ? "\(selectedBoard.contentMode.title), \(aiProvider.title), \(activeModelName)"
             : selectedBoard.contentMode.title
-        let summary = ([
+        return ([
             "Keldin Diagnostics",
             "Distribution: \(distributionMode.title)",
             "Selected board: \(selectedBoard.subjectTitle) \(selectedBoard.title)",
@@ -856,12 +863,9 @@ final class ApplicationCoordinator: ObservableObject {
             "Latest ETA: \(generationEstimate?.remainingText ?? "None")",
             "Benchmark: \(benchmarkCoordinator.verdict.map { "\($0.verdict) (\(Int($0.score * 100))%)" } ?? "Not run")",
             "Generated files: \(generatedFiles.map { $0.url.lastPathComponent }.joined(separator: ", "))",
-        ] + qualityDiagnosticLines).joined(separator: "\n")
-
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        pasteboard.setString(summary, forType: .string)
-        status = "Diagnostics copied"
+        ] + qualityDiagnosticLines + progressEntries.suffix(6).map {
+            "\($0.stage ?? "activity"): \($0.message)"
+        }).joined(separator: "\n")
     }
 
     var qualityDiagnosticLines: [String] {
@@ -976,7 +980,7 @@ final class ApplicationCoordinator: ObservableObject {
                 setError("The generation service uses an unsupported protocol version.")
             }
         case let .progress(stage, message, progress):
-            status = message
+            status = GenerationPresentation.progress(message)
             generationProgress = progress ?? generationProgress
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
@@ -1211,7 +1215,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     private func setError(_ message: String) {
-        errorMessage = message
+        errorMessage = GenerationPresentation.error(message)
         showError = true
         status = "Error"
         generationProgress = nil
@@ -1277,7 +1281,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func notifyFailure(for operation: RunningOperation, message: String) {
         switch operation {
         case .generation:
-            sendNotification(title: "Couldn’t create the paper", body: message)
+            sendNotification(title: "Couldn’t create the paper", body: GenerationPresentation.error(message))
         case .modelPull:
             sendNotification(title: "Couldn’t download the model", body: message)
         case .mlxSetup:

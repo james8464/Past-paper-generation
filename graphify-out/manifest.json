@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793133890.087992,
-    "ast_hash": "ea7389294c7b3e288633d72711296c9f",
+    "mtime": 1793135299.6988578,
+    "ast_hash": "2c8373ec6996dd9ac1a58ad3ff7a29ea",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1350,9 +1350,9 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/JobHistoryView.swift": {
-    "mtime": 1791129181.5849557,
-    "ast_hash": "c1ad220248a752267979a93dd5206942",
-    "semantic_hash": "c1ad220248a752267979a93dd5206942"
+    "mtime": 1793135235.5278387,
+    "ast_hash": "124a547af783c98dd83ed1b9c5d548d4",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
     "mtime": 1793042001.4933953,
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793110177.2802827,
-    "ast_hash": "f86d7ceffaac4cef2c82ad90195d63d3",
+    "mtime": 1793135275.12687,
+    "ast_hash": "cb660fc81e796e3d69e34f94661c8ce2",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793110835.8788612,
-    "ast_hash": "57695b2ae695a33ddc1d5d012b99fccf",
+    "mtime": 1793135235.5282366,
+    "ast_hash": "9a3e42edab86ca19050018d0ac815194",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3635,13 +3635,18 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793133889.9689884,
-    "ast_hash": "5b428223e58421e243b629358383d521",
+    "mtime": 1793135016.0220351,
+    "ast_hash": "26b27eee9d9bd472436e3b1b7c268e59",
     "semantic_hash": ""
   },
   "Backend/Core/branding.py": {
     "mtime": 1793132589.9638765,
     "ast_hash": "8319543cc9661649ebb18467f51948cc",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Domain/GenerationPresentation.swift": {
+    "mtime": 1793135235.5267494,
+    "ast_hash": "b43390e417b29e299985d0b851051216",
     "semantic_hash": ""
   }
 }
