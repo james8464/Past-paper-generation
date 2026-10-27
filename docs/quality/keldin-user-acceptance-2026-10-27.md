@@ -1,5 +1,29 @@
 # Keldin user acceptance — 27 October 2026
 
+## Review source scope
+
+A real sandboxed Qwen3 8B attempt accepted four Accounting items, then rejected
+question 05 using facts from an unrelated extract. The original question asked
+about a “source of finance”; the source selector treated that domain phrase as
+an instruction to use the option's case study. This was an application defect,
+not evidence that the paper passed or that the model alone caused the failure.
+
+Source selection now distinguishes material references such as “Extract 1” and
+“the data above” from topic terms such as “source of finance”, “source document”,
+“source code” and “data structures”. Demand-target construction uses the same
+scoped material as the reviewers. Explicit evidence and owned question contexts
+are retained. Full parent content remains part of the saved-review identity, and
+the review version changed so earlier reviews cannot be reused silently.
+
+Ten regression cases failed before the fix. The 106-test targeted assessment and
+reference-demand suite then passed; the full suite passed **3,562 tests with two
+skipped**. The real Accounting blueprint's ten standalone MCQs no longer inherit
+the later case, while question 11 and the owned cases retain their evidence.
+Development-signed App Store preflight and strict signature verification passed.
+A fresh native Qwen3 attempt is separate from these engineering checks; no full
+MLX paper is qualified by them. Logs remain under
+`tmp/final-validation-20261027/source-scope-*`.
+
 ## Current PDF branding and cover totals
 
 Current UK covers, notices and PDF author metadata use Keldin. Shared wordmark
