@@ -13,8 +13,17 @@ criterion. Recording stayed disabled with no reviewer or notes. Cancel dismissed
 the form; reopening restored all default scores, so the unsaved choices were
 not retained. No teacher review or attestation was recorded. The form was also
 visually checked; the native values and labels fit without new clipping.
-All **90 native tests** and the direct Release build passed. This is an
+All **91 native tests** and the direct Release build passed. This is an
 accessibility-API and interaction check, not independent VoiceOver approval.
+
+The same interaction test exposed a second bug: cancelling the manifest chooser
+also dismissed the review form and lost its unsaved input. The coordinator now
+returns an explicit submission outcome; cancellation keeps the form open, while
+submission and validation errors preserve the existing dismissal/alert path.
+A new regression failed before the fix. In the rebuilt app, cancelling the
+chooser retained the synthetic reviewer name, notes and a changed score. Explicitly
+cancelling the form then cleared the draft; reopening restored eight default
+scores and disabled recording. No bundle was selected and no review was written.
 
 The short native menus follow the platform guidance for a small, ordered set of
 choices: [Apple picker guidance](https://developer.apple.com/design/human-interface-guidelines/pickers).

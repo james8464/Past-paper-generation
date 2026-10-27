@@ -4,6 +4,12 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testCancelledReviewSelectionKeepsItsFormOpen() {
+        XCTAssertFalse(FrenchReviewSubmissionOutcome.cancelled.closesReviewForm)
+        XCTAssertTrue(FrenchReviewSubmissionOutcome.submitted.closesReviewForm)
+        XCTAssertTrue(FrenchReviewSubmissionOutcome.rejected.closesReviewForm)
+    }
+
     func testPDFExportToItsOwnPathPreservesTheSource() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)

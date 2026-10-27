@@ -226,13 +226,13 @@ private struct FrenchTeacherReviewSheet: View {
                     .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button("Choose Reviewed Bundle and Record") {
-                    application.recordFrenchReview(
+                    let outcome = application.recordFrenchReview(
                         reviewer: reviewer,
                         decision: decision,
                         scores: scores,
                         notes: notes
                     )
-                    dismiss()
+                    if outcome.closesReviewForm { dismiss() }
                 }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.borderedProminent)
