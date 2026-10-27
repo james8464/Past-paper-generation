@@ -92,6 +92,55 @@ def model_sources(task):
     )
 
 
+@pytest.mark.parametrize("paper_id", ["paper_1", "paper_2"])
+def test_accounting_export_preserves_each_reviewed_source_demand(paper_id):
+    from Backend.Core.ai_assessment import _demand_item
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.candidate_identity import candidate_content_identity
+    from Backend.Core.model_review import (
+        DifficultyReviewResult,
+        require_difficulty_review,
+        validate_saved_difficulty_evidence,
+    )
+    from Backend.Core.reference_demand import build_item_demand_target, profile_for
+
+    syllabus = load_syllabus(Path("Resources/accounting/aqa/generator/data/syllabus.json"))
+    paper = build_paper(RULES[paper_id], syllabus, 26092840)
+    tasks = _tasks(paper, {topic.id: topic for topic in syllabus.topics})
+    number = paper_id.removeprefix("paper_")
+    exported = _extract_items(paper.model_dump(mode="json"), subject="aqa/accounting", paper_number=number)
+    profile = profile_for("aqa/accounting", number)
+    for task, item in zip(tasks, exported, strict=True):
+        reviewed = build_item_demand_target(_demand_item(task), profile)
+        assert build_item_demand_target(item, profile) == reviewed, task.question.number
+        assert candidate_content_identity(item["difficulty_candidate_projection"]) == candidate_content_identity(
+            _difficulty_candidate(task, task.question)
+        )
+
+        class Reviewer:
+            def generate_json(self, prompt, target=reviewed):
+                return DifficultyReviewResult(
+                    approved=True,
+                    estimated_demand=target.demand_band,
+                    reasoning_steps=target.minimum_reasoning_steps,
+                    tariff_fit=True,
+                    command_word_fit=True,
+                    context_fit=True,
+                    profile_fit=True,
+                    observed_cognitive_operations=target.required_cognitive_operations,
+                    estimated_minutes=float(target.expected_minutes_min),
+                ).model_dump(mode="json", exclude={"candidate_content_identity", "public_task_operation_evidence"})
+
+        evidence = require_difficulty_review(
+            Reviewer(), item_id=task.question.number, subject="Accounting",
+            target=reviewed, candidate=_difficulty_candidate(task, task.question), specification={},
+        ).model_dump(mode="json")
+        validate_saved_difficulty_evidence(
+            evidence, build_item_demand_target(item, profile),
+            item_id=item["id"], candidate=item["difficulty_candidate_projection"],
+        )
+
+
 def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_extracts():
     syllabus = load_syllabus(
         Path("Resources/accounting/aqa/generator/data/syllabus.json")

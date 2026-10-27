@@ -136,6 +136,15 @@ def test_real_shared_rules_survive_generation(
     paper = generator.build_paper(rule, syllabus, seed=26090831)
     raw = paper.model_dump(mode="json")
     exported = _extract_items(raw, subject=family, paper_number=paper_id[-1])
+    from Backend.Core.ai_assessment import _demand_item, _tasks
+    from Backend.Core.reference_demand import build_item_demand_target, profile_for
+
+    profile = profile_for(family, paper_id[-1])
+    tasks = _tasks(paper, {topic.id: topic for topic in syllabus.topics})
+    for task, item in zip(tasks, exported, strict=True):
+        assert build_item_demand_target(item, profile) == build_item_demand_target(
+            _demand_item(task), profile
+        ), task.question.number
     topology = paths_module().topology_from_blueprint(raw, exported, family)
     paths = paths_module().enumerate_candidate_paths(topology, exported)
     assert len(paths) == count

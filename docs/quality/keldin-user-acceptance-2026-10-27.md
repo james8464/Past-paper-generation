@@ -1,5 +1,68 @@
 # Keldin user acceptance — 27 October 2026
 
+## Full native MLX attempt and export source scope
+
+The sandboxed, development-signed app completed all 13 item batches using
+`mlx-community/Qwen3-8B-4bit` with previews disabled. It then rejected the whole
+Accounting Paper 1 at `item_difficulty_review`; no new paper was published.
+The activity log included item refinement, so this is not a zero-repair success.
+
+A deterministic reproduction found that review and export constructed different
+demand targets for the first ten self-contained Accounting MCQs: review required
+retrieval, while export added contextualisation from unrelated option material.
+Both Accounting components reproduced the mismatch before the fix. Source-scope
+predicates are now shared by generation and export. Full parent content remains
+identity-bearing, and no review flags, fingerprints or difficulty thresholds
+are overridden. Existing source-conflict and independent-solver tests still pass.
+
+New packages record source-scope version 1. Packages without that marker retain
+their original extraction rules, without rewriting stored files or granting new
+qualification. Unknown versions are rejected. The focused suite passed **123
+tests**, including complete item target/evidence round trips for both Accounting
+components, shared-route target comparisons and read-only legacy replay.
+This engineering fix does not itself qualify an MLX paper or change the French
+fidelity HOLD.
+
+The frozen-source suite subsequently passed **3,579 tests with two skipped**.
+The rebuilt sandboxed app resumed the failed configuration through History →
+Duplicate Configuration, with previews off, model `mlx-community/Qwen3-8B-4bit`
+and seed **1288688945**. It published and opened both documents. This is a
+retained-checkpoint recovery, not a new first-attempt/zero-repair trial. The
+published provenance records 11 AI-authored items, three reviewed seeded
+fallbacks and seven verified-contract-reviewed items. All 21 exported items
+passed the package checks. The native print dialog showed all 36 question-paper
+pages; it was cancelled without submitting a print job.
+
+All pages of both generated PDFs and both official June 2025 comparators were
+rendered with Poppler and visually inspected. Both pairs have 36 question-paper
+pages and 26 mark-scheme pages, but equal page counts do not establish equal
+demand or quality. The independent-practice labels are present. Key calculations
+were recomputed from the printed source: non-current assets £135,300; receivables
+£74,600; income-statement profit £1,169,955; partnership residual profits £57,954
+and £29,445. These agree with the printed scheme. The manual verdict is **HOLD**:
+
+| Generated pages | Findings against the official role/flow |
+| --- | --- |
+| QP 1–5 | Readable cover and MCQ sequence; question 5 option A touches its selection box. Question 2 omits the percentage multiplier and adds an unnecessary parenthetical. Questions 7 and 9 repeat a simple gross-profit operation, unlike the comparator's distinct multistep roles. |
+| QP 6–11 | Response lines and ledger grids fit. Question 11 does not separate the two reasons. Source tables on pages 8 and 10 are noticeably more compact. |
+| QP 12–21 | Source/question/working-space sequence is intact; adjustment arithmetic reconciles. The generated tax charge and interest-on-drawings information are supplied directly, reducing derivation compared with the comparator. |
+| QP 22–32 | Both extended cases and their working space fit. The shareholder case is materially different; its personal investment and bonus-issue reasoning is less developed than the comparator. |
+| QP 33–36 | Blank/additional pages and independent publisher label are visible; no new clipping found. |
+| MS 1–8 | Readable, but pages 2–7 repeat the same general paragraphs. |
+| MS 9–20 | Tables fit; numerical checks above reconcile. The sales-account presentation nets returns, unlike the comparator's separate gross-sales transfer; classroom treatment still needs review. |
+| MS 21–26 | Question 16 repeats five indicative points and contains generic filler; the final guidance page is sparse. Level descriptors are shorter than the comparator's and are not independently calibrated. |
+
+Retained outputs and all page renders are under the ignored
+`tmp/final-validation-20261027/store-ui` and `mlx-accounting-review` directories.
+SHA-256:
+
+- Question paper: `2ce6f494defdb2f7d2e5e4a747eab990066eec6e4e15a7a4050e7783c0dd47d7`
+- Mark scheme: `5728096ffbc5097d4e601a8a1b2b82c1c833479952b83169e5e171cd4a617d1d`
+- Assessment: `e2baa12d68b3c030b480e2342bf4823f9dd60cfb4eaf8f07bc356c06e6b83131`
+- Manifest: `d55d647ae513f88ee959938d88be396664b541a9fd9fe9f4cf6192681d647865`
+- Official QP: `7482ff23f5406f37e54d49bf76f8d2a1cd5bdd823a4face1f55ee7ece2c1cfa6`
+- Official MS: `75bb31088224c2e3e305e3dbd3d6c6efd9891e4f262314d855a4fd1aa1907dd3`
+
 ## Teacher-review score controls
 
 The installed form's score steppers were visible, but its accessibility tree
