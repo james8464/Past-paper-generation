@@ -5,8 +5,8 @@
     "semantic_hash": "3d1ab5a4264585250405f620062dca5b"
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1793136307.118469,
-    "ast_hash": "eb8858dd5ed73ba637acf4cda5e42d8c",
+    "mtime": 1793137232.9373667,
+    "ast_hash": "b407d8bf23eff89205785ff745e9d2a1",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
@@ -285,8 +285,8 @@
     "semantic_hash": "a6f92642213ab736ac6c21fffba9a8ca"
   },
   "Backend/Core/model_review.py": {
-    "mtime": 1793136307.117746,
-    "ast_hash": "7d4cbb32d63975a400de9fd599a2f6e2",
+    "mtime": 1793137232.9366992,
+    "ast_hash": "fe1c034688b6d6aaa5d8dd6cc3d9115a",
     "semantic_hash": ""
   },
   "Backend/Core/numeric_integrity.py": {
@@ -1770,8 +1770,8 @@
     "semantic_hash": "17972135e48499197d98e2e1824ff772"
   },
   "tests/test_model_review.py": {
-    "mtime": 1793136307.1188455,
-    "ast_hash": "dc78281756067f7b1cd4fff6552df302",
+    "mtime": 1793137232.9377332,
+    "ast_hash": "d3c35e49ca0afbd538ea958e9f93146f",
     "semantic_hash": ""
   },
   "tests/test_nsi_assessment.py": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793135574.6899242,
-    "ast_hash": "761bb866e5a62e455c519962b8f597cc",
+    "mtime": 1793136664.01983,
+    "ast_hash": "67ec37b3ffe91167e738094d62790e18",
     "semantic_hash": ""
   },
   "Backend/Core/branding.py": {

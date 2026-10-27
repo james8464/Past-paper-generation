@@ -1,5 +1,35 @@
 # Keldin user acceptance — 27 October 2026
 
+## Fit-flag semantics: retained-case comparison
+
+The one-item Qwen2.5 trace independently solved the purchases-journal MCQ and
+approved its factual review. Its demand response nevertheless said `approved=true`
+with `context_fit=false`, `scaffolding_fit=false` and no stated issues. The target
+required no context and allowed up to explicit scaffolding. The application
+correctly rejected the conflicting flags; it did not publish a paper.
+
+Review instructions now define fit as appropriateness, not feature presence, and
+make clear that maximum scaffolding is a ceiling rather than a required minimum.
+All Boolean gates remain enforced. Regressions verify that either a false context
+or false scaffolding result still fails, even when context is not required.
+Review version V6 invalidates earlier review reuse.
+
+The exact retained review payload has SHA-256
+`45d3bf39d023c8508eff81a2cb55812bbabf29fa331b2dcd3f4160ed92eec5e1`.
+Using the same cached Qwen3 8B snapshot, the original prompt returned
+`approved=true` but `context_fit=false`; the clarified prompt returned approval
+with every fit check true. Qwen2.5 still rejected context after clarification.
+These bounded observations show a model-dependent interface improvement, not a
+complete paper or general model qualification. No task, answer, target or result
+was edited to obtain acceptance. Logs remain in the ignored
+`tmp/final-validation-20261027/fit-semantics-*` files.
+
+The final frozen-source backend suite passed **3,571 tests with two skipped**;
+the combined targeted suite passed **246 tests**. Development-signed sandbox
+preflight and strict signature verification passed. A separate complete native
+attempt is not counted as qualified by this retained-case comparison. French
+content and its fidelity HOLD are unchanged.
+
 ## JSON framing, context demand and language follow-up
 
 The cached Qwen3 tokenizer reproduced a protocol mismatch: its default chat
