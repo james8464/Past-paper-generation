@@ -266,7 +266,11 @@ def _edexcel_printed_credit(
         # The first three pages are the existing cover and general guidance.
         colophon = (
             normalise(text)
-            == "Paper Creator. Independent practice material. Not produced, endorsed or approved by any examination board."
+            in {
+                "Keldin. Independent practice material. Not produced, endorsed or approved by any examination board.",
+                # Retained packages keep their original publisher label.
+                "Paper Creator. Independent practice material. Not produced, endorsed or approved by any examination board.",
+            }
         )
         if (
             page_number > 3

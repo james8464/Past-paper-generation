@@ -1,5 +1,36 @@
 # Keldin user acceptance — 27 October 2026
 
+## Current PDF branding and cover totals
+
+Current UK covers, notices and PDF author metadata use Keldin. Shared wordmark
+constants keep the cover variants consistent. Storage paths, signing identifiers,
+the notes cache and historical French identities are unchanged. The Edexcel
+colophon reader still accepts retained papers carrying the earlier publisher name.
+
+Visual inspection found a separate AQA Economics Paper 3 defect: its cover counted
+only the first compulsory MCQ, printing A = 1 and B = 50 beside a total of 80.
+The cover now uses the declared candidate marks: A = 30, B = 50, total = 80.
+Shared cover validation rejects non-positive or non-integer marks, duplicate
+section labels and subtotals that do not sum to the paper total. Regression tests
+failed on the original error before the fix, then passed against both the profile
+and printed PDF.
+
+All 21 advertised UK layout previews passed on the corrected source, producing
+49 PDFs including inserts. Every PDF was checked for the old publisher text and
+all authors are Keldin. All 49 covers were rendered and their contact sheets
+inspected; the changed AQA, OCR and Edexcel cover styles and corrected Economics
+subtotal were also inspected at full size. No new clipping or overlap was found
+in those changed elements. These are layout previews, not live model or content
+qualification. Earlier incorrect covers and renders were retained.
+
+The final local suite passed **3,554 tests with two skipped**. Ruff, repository
+hygiene and the direct Release build passed. Evidence remains under
+`tmp/final-validation-20261027/keldin-branding-final-corrected` and
+`branding-review-corrected`. The corrected Economics Paper 3 question paper has
+SHA-256 `df866d97bc2a271fd20eebe0e920f0983a844b51068eef4bf78b3ae64b19a2aa`.
+French question content, its manual fidelity HOLD and the external release
+reviews remain unchanged.
+
 ## Structured MLX follow-up
 
 MLX now uses pinned Outlines 1.3.3 and llguidance 1.9.1 to constrain structured
@@ -110,7 +141,7 @@ There were no French authoring or layout changes in this update. The [26 October
 
 The default MLX 3B model has not passed full-paper validation. A successful setup or small JSON request must not be presented as evidence that it can author a valid complete assessment. Do not weaken identifier, answer, marking or second-pass review checks to make it pass.
 
-Older UK layouts still display Paper Creator branding; this update does not rewrite their calibrated cover masters. Per-document reference rights, independent accessibility review, teacher/learner evidence, distribution signing and store review also remain open. No Apple, examiner, school, regional or prize approval is claimed.
+Current UK outputs use Keldin. Existing PDFs and historical French render contracts keep their recorded identities. Per-document reference rights, independent accessibility review, teacher/learner evidence, distribution signing and store review remain open. No Apple, examiner, school, regional or prize approval is claimed.
 
 ## Same-day follow-up: signed runtime and MLX contracts
 

@@ -8,6 +8,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Flowable
 
+from Backend.Core.branding import APP_NAME, PDF_WORDMARK, PDF_WORDMARK_DETAIL
 from Backend.Core.document_dsl import Cover
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import (
@@ -31,6 +32,14 @@ class CoverProfile:
     mark_rows: tuple[tuple[str, int], ...] = ()
     subject_label: str | None = None
     title_font_size: float = 27.0
+
+    def __post_init__(self) -> None:
+        if self.mark_rows and (
+            any(type(marks) is not int or marks <= 0 for _label, marks in self.mark_rows)
+            or len({label for label, _marks in self.mark_rows}) != len(self.mark_rows)
+            or sum(marks for _label, marks in self.mark_rows) != self.total_marks
+        ):
+            raise ValueError("Cover section marks must be positive and sum to the paper total without duplicate sections.")
 
 
 class QuestionPaperCover(Flowable):
@@ -90,7 +99,7 @@ class QuestionPaperCover(Flowable):
         )
         pdf.saveState()
         pdf.setFillColor(colors.HexColor("#141414"))
-        self._wordmark(0, top - 1 * mm, "PAPER", "CREATOR")
+        self._wordmark(0, top - 1 * mm, PDF_WORDMARK, PDF_WORDMARK_DETAIL)
         if booklet:
             # The 2025 Economics booklet has no candidate form or barcode.
             # Keep its separator rails independent of the branding artwork.
@@ -155,7 +164,7 @@ class QuestionPaperCover(Flowable):
         pdf.saveState()
         pdf.setFillColor(colors.black)
         pdf.setFont(self.bold_font, 26)
-        pdf.drawString(left, top - 80, "PAPER CREATOR")
+        pdf.drawString(left, top - 80, PDF_WORDMARK)
         pdf.setFont(self.font, 8)
         pdf.drawString(left, top - 95, "Independent unofficial practice")
         pdf.setFont(self.bold_font, 20)
@@ -227,7 +236,7 @@ class QuestionPaperCover(Flowable):
                     y -= 13
             y -= 13
         pdf.setFont(self.font, 8)
-        pdf.drawString(left, top - 779.5, "Paper Creator • Independent practice")
+        pdf.drawString(left, top - 779.5, f"{APP_NAME} • Independent practice")
         pdf.setFont(self.bold_font, 10)
         pdf.drawRightString(right, top - 779.5, "Turn over")
         pdf.restoreState()
@@ -423,9 +432,9 @@ def _draw_aqa_mark_scheme_cover(
     register_fonts("ExamCover-Medium", "ExamCover-SemiBold")
     left = 46.8
     pdf.setFont(bold_font, 28)
-    pdf.drawString(left, height - 109.1, "PAPER")
+    pdf.drawString(left, height - 109.1, PDF_WORDMARK)
     pdf.setFont(bold_font, 11)
-    pdf.drawString(left, height - 131.5, "CREATOR")
+    pdf.drawString(left, height - 131.5, PDF_WORDMARK_DETAIL)
     pdf.setLineWidth(0.5)
     pdf.line(41.9, height - 147.6, 552.9, height - 147.6)
 
@@ -482,9 +491,9 @@ def _draw_ocr_mark_scheme_cover(
     left = 59.5
     pdf.setFillColor(colors.HexColor("#1f315f"))
     pdf.setFont(bold_font, 28)
-    pdf.drawString(left, height - 58.1, "PAPER")
+    pdf.drawString(left, height - 58.1, PDF_WORDMARK)
     pdf.setFont(bold_font, 11)
-    pdf.drawString(left, height - 79.2, "CREATOR")
+    pdf.drawString(left, height - 79.2, PDF_WORDMARK_DETAIL)
     pdf.setFillColor(colors.HexColor("#141414"))
 
     rows = (
@@ -502,7 +511,7 @@ def _draw_ocr_mark_scheme_cover(
     pdf.drawString(
         left,
         height - 824.5,
-        "Paper Creator • Independent unofficial practice",
+        f"{APP_NAME} • Independent unofficial practice",
     )
 
 

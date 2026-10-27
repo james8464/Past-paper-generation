@@ -56,7 +56,7 @@ def test_mark_scheme_cover_uses_shared_measured_title_grid(tmp_path):
     document = fitz.open(output)
     try:
         page = document[0]
-        assert page.search_for("PAPER")[0].x0 == pytest.approx(46.8, abs=2)
+        assert page.search_for("KELDIN")[0].x0 == pytest.approx(46.8, abs=2)
         spans = [
             span
             for block in page.get_text("dict")["blocks"]

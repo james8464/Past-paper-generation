@@ -42,6 +42,18 @@ def test_all_paper_rules_have_exact_candidate_marks_and_syllabus_scope() -> None
         validate_rule(rule, SYLLABUS.topic_ids)
 
 
+def test_paper_three_cover_counts_all_compulsory_mcqs(tmp_path):
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=270127)
+    profile = render_pdf._cover_profile(paper)
+    assert profile.mark_rows == (("A", 30), ("B", 50))
+    assert sum(marks for _section, marks in profile.mark_rows) == paper.total_marks
+    output = tmp_path / "paper-three.pdf"
+    render_question_paper(paper, output)
+    with fitz.open(output) as document:
+        text = document[0].get_text()
+        assert "A\n30\nB\n50\nTOTAL\n80" in text
+
+
 def test_paper_one_and_two_have_exact_aqa_choice_structure() -> None:
     for paper_id in ("paper_1", "paper_2"):
         rule = RULES[paper_id]

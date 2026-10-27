@@ -454,7 +454,7 @@ def pdf_probe(output_dir: Path) -> float:
         pdf = canvas.Canvas(str(path), pagesize=A4)
         for page in range(pages):
             pdf.setFont("Helvetica", 11)
-            pdf.drawString(72, 780, f"Paper creator diagnostic page {page + 1}")
+            pdf.drawString(72, 780, f"Keldin diagnostic page {page + 1}")
             for line in range(36):
                 y = 744 - line * 18
                 pdf.line(72, y, 520, y)

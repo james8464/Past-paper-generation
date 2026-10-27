@@ -10,6 +10,7 @@ from reportlab.lib import colors
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
+from Backend.Core.branding import PDF_WORDMARK, PDF_WORDMARK_DETAIL
 from Backend.Core.computer_science_reference_solutions import (
     paper1_reference_code as _paper1_reference_code,
 )
@@ -683,8 +684,8 @@ def _set_document_metadata(
     role: str,
 ) -> None:
     pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
-    pdf.setAuthor("Paper creator")
-    pdf.setCreator("Paper creator")
+    pdf.setAuthor("Keldin")
+    pdf.setCreator("Keldin")
     pdf.setSubject("Independent A-level Computer Science practice material")
 
 
@@ -851,9 +852,9 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _rf("ExamCover-Medium", "ExamCover-SemiBold")
     on_screen = blueprint.delivery_mode == "on-screen"
     pdf.setFont(FONT_BOLD, 27)
-    pdf.drawString(40, 768, "PAPER")
+    pdf.drawString(40, 768, PDF_WORDMARK)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(40, 752, "CREATOR")
+    pdf.drawString(40, 752, PDF_WORDMARK_DETAIL)
     pdf.setFont(FONT, 11)
     if not on_screen:
         pdf.rect(40, 564, 504, 166, stroke=1, fill=0)
@@ -1069,14 +1070,14 @@ def _draw_question_page_header(
         caption=f"{page:02d}",
         style=AQA_CS_FOOTER_BARCODE,
     )
-    pdf.drawRightString(539, 28, f"Paper Creator / {blueprint.paper_code}")
+    pdf.drawRightString(539, 28, f"Keldin / {blueprint.paper_code}")
 
 
 def _draw_on_screen_footer(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFillColor(colors.black)
     pdf.setFont(FONT, 6.96)
     pdf.drawString(
-        50.76, 17.82, f"Paper Creator / {blueprint.paper_code} / Unofficial practice"
+        50.76, 17.82, f"Keldin / {blueprint.paper_code} / Unofficial practice"
     )
 
 
@@ -1717,9 +1718,9 @@ def _mark_scheme_intro(
     pdf.setFont(FONT, 10)
     paragraphs = [
         (
-            "This independent mark scheme supports consistent marking of Paper Creator's A-level Computer Science topic question bank."
+            "This independent mark scheme supports consistent marking of Keldin's A-level Computer Science topic question bank."
             if blueprint.assessment_kind == "question-bank"
-            else f"This independent mark scheme supports consistent marking of Paper Creator's A-level Computer Science Paper {blueprint.paper_number} practice assessment."
+            else f"This independent mark scheme supports consistent marking of Keldin's A-level Computer Science Paper {blueprint.paper_number} practice assessment."
         ),
         "Apply the guidance positively. Award credit for what a response demonstrates, and do not deduct marks for an omission unless the question or guidance explicitly requires that element.",
         "The listed answers describe responses that are likely to earn credit. They are not exhaustive. Credit a technically correct alternative when it answers the precise question and is consistent with the stated scenario.",

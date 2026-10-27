@@ -72,7 +72,7 @@ def independent_practice_page(
         Paragraph("Independent practice material", styles["heading"]),
         Spacer(1, 3 * mm),
         Paragraph(
-            "Created by Paper Creator for private revision. This mark scheme is not "
+            "Created by Keldin for private revision. This mark scheme is not "
             "produced, endorsed or approved by AQA or any examination board.",
             styles["small"],
         ),

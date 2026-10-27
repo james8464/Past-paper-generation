@@ -70,7 +70,7 @@ def load_assessment_package(path: Path) -> dict[str, Any]:
         return _migrate_schema_zero(document)
     raise AssessmentPackageCompatibilityError(
         f"Assessment package schema version {version} is not supported; "
-        "update Paper Creator and try again."
+        "update Keldin and try again."
     )
 
 

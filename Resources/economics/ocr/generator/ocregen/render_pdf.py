@@ -144,7 +144,7 @@ def render_mark_scheme(
             Paragraph("Independent practice material", STYLES["heading"]),
             Spacer(1, 5 * mm),
             Paragraph(
-                "This mark scheme was created by Paper Creator for private revision. "
+                "This mark scheme was created by Keldin for private revision. "
                 "It is not produced, endorsed or approved by OCR or any examination board.",
                 STYLES["body"],
             ),
@@ -1632,7 +1632,7 @@ def _question_paper_legal_page() -> list[Flowable]:
         Paragraph("Independent practice material", STYLES["heading"]),
         Spacer(1, 3 * mm),
         Paragraph(
-            "Created by Paper Creator for private revision. This paper is not produced, "
+            "Created by Keldin for private revision. This paper is not produced, "
             "endorsed or approved by OCR or any examination board. Any third-party names "
             "or scenarios are fictional unless explicitly stated otherwise.",
             STYLES["small"],
@@ -1963,7 +1963,7 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
         topMargin=19 * mm,
         bottomMargin=18 * mm,
         title=f"{paper.paper_code} {paper.title} — {kind}",
-        author="Paper creator",
+        author="Keldin",
         subject="Independent A-level Economics practice material",
     )
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
