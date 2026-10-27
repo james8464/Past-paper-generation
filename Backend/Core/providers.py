@@ -193,20 +193,12 @@ class HostedLLMClient:
                     },
                 )
             if schema.get("required"):
-                # Outlines applies the model's chat template itself. Applying it
-                # here too would nest role delimiters and degrade instruction fit.
                 response = self._mlx_structured_response(prompt, schema)
             else:
-                if getattr(self._apple_tokenizer, "has_chat_template", False):
-                    prompt = self._apple_tokenizer.apply_chat_template(
-                        [{"role": "user", "content": prompt}],
-                        tokenize=False,
-                        add_generation_prompt=True,
-                    )
                 response = generate(
                     self._apple_model,
                     self._apple_tokenizer,
-                    prompt=prompt,
+                    prompt=_mlx_json_prompt(self._apple_tokenizer, prompt),
                     max_tokens=4096,
                     verbose=False,
                 )
@@ -262,6 +254,10 @@ class HostedLLMClient:
             self._apple_structured_model = outlines.from_mlxlm(
                 self._apple_model, self._apple_tokenizer
             )
+            # Outlines 1.3.3 otherwise applies the default thinking template.
+            # Own formatting here so JSON starts in the model's answer channel,
+            # with exactly one chat template and no mutation of its tokenizer.
+            self._apple_structured_model.type_adapter.has_chat_template = False
         # A fresh decoder per call avoids carrying accepted tokens into repairs.
         # llguidance avoids the large finite-state compilation cost of bounded
         # strings/arrays in the default Outlines backend (see retained timings).
@@ -271,7 +267,8 @@ class HostedLLMClient:
         if grammar_error:
             raise ValueError(f"MLX cannot constrain this response format: {grammar_error}")
         response = self._apple_structured_model(
-            prompt, JsonSchema(decoder_schema), backend="llguidance",
+            _mlx_json_prompt(self._apple_tokenizer, prompt),
+            JsonSchema(decoder_schema), backend="llguidance",
             max_tokens=4096, verbose=False,
         )
         if len(response.encode("utf-8")) > 1_048_576:
@@ -480,6 +477,19 @@ def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
             raise ValueError(f"Model returned duplicate JSON field: {key}")
         value[key] = child
     return value
+
+
+def _mlx_json_prompt(tokenizer: Any, prompt: str) -> str:
+    """Keep hybrid-model reasoning tags outside the JSON-only response channel."""
+
+    if not getattr(tokenizer, "has_chat_template", False):
+        return prompt
+    return tokenizer.apply_chat_template(
+        [{"role": "user", "content": prompt}],
+        tokenize=False,
+        add_generation_prompt=True,
+        enable_thinking=False,
+    )
 
 
 def _mlx_decoder_schema(schema: dict) -> dict:
