@@ -1737,7 +1737,9 @@ def _draw_draw_part_with_axes(
     axis_width = min(BLANK_AXIS_WIDTH_PT, width - x - 78)
     target_height = min(BLANK_AXIS_HEIGHT_PT, max_axis_height or BLANK_AXIS_HEIGHT_PT)
     axis_height = min(target_height, max(180, y - (SECTION_A_FOOTER_SAFE_Y + 35)))
-    return _draw_blank_answer_axes(pdf, x + 34, y, axis_width, axis_height, x_label=x_label, y_label=y_label) - 10
+    # The x-axis caption sits 14 points below the axis. Reserve its descent
+    # and a gap before the next prompt's right-aligned mark annotation.
+    return _draw_blank_answer_axes(pdf, x + 34, y, axis_width, axis_height, x_label=x_label, y_label=y_label) - 30
 
 
 def _draw_calculate_part_with_working_lines(pdf: canvas.Canvas, part, x: float, y: float) -> float:

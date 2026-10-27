@@ -171,6 +171,14 @@ class HostedLLMClient:
             if self._apple_model is None or self._apple_tokenizer is None:
                 local_model = resolve_local_mlx_model(self.model)
                 self._apple_model, self._apple_tokenizer = load(local_model)
+            # Instruct models require their own role delimiters and assistant
+            # prefix, just as in mlx-lm's CLI. Base models keep the raw prompt.
+            if getattr(self._apple_tokenizer, "has_chat_template", False):
+                prompt = self._apple_tokenizer.apply_chat_template(
+                    [{"role": "user", "content": prompt}],
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
             response = generate(
                 self._apple_model,
                 self._apple_tokenizer,

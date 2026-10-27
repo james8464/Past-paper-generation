@@ -29,8 +29,12 @@ def supported_mlx_environment(monkeypatch):
     # Keep the real validation, with explicit supported environment inputs.
     monkeypatch.setattr(
         "Backend.Core.mlx_setup.validate_mlx_setup_environment",
-        partial(validate_mlx_setup_environment, python_version=(3, 12),
-                machine="arm64", free_bytes=20 * 1024**3),
+        partial(
+            validate_mlx_setup_environment,
+            python_version=(3, 12),
+            machine="arm64",
+            free_bytes=20 * 1024**3,
+        ),
     )
 
 
@@ -134,7 +138,23 @@ def test_local_model_resolution_never_enables_network_download(tmp_path: Path) -
     )
 
     assert resolved == str(snapshot)
-    assert calls == [{"repo_id": "mlx-community/test-model", "local_files_only": True}]
+    assert calls == [
+        {
+            "repo_id": "mlx-community/test-model",
+            "local_files_only": True,
+            "allow_patterns": [
+                "*.json",
+                "model*.safetensors",
+                "*.py",
+                "tokenizer.model",
+                "*.tiktoken",
+                "tiktoken.model",
+                "*.txt",
+                "*.jsonl",
+                "*.jinja",
+            ],
+        }
+    ]
 
 
 def test_missing_local_model_requests_setup_again() -> None:
@@ -174,7 +194,9 @@ def test_setup_handler_reports_success_without_terminal_instructions(
     assert all("pip" not in event.get("message", "").lower() for event in events)
 
 
-def test_setup_handler_reports_plain_recovery_error(monkeypatch, capsys, supported_mlx_environment) -> None:
+def test_setup_handler_reports_plain_recovery_error(
+    monkeypatch, capsys, supported_mlx_environment
+) -> None:
     def fail_to_load(_model: str) -> None:
         raise MLXSetupError("The model could not be prepared. Try Setup Again.")
 

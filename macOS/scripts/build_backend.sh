@@ -47,6 +47,7 @@ build_fingerprint() {
       "$ROOT_DIR/Resources/empirical-calibration.schema.json" \
       "$ROOT_DIR/Resources/empirical-calibration-policy.json" \
       "$ROOT_DIR/Resources/reference-demand-profiles.json" \
+      "$ROOT_DIR/Resources/level-of-response-policies.json" \
       "$ROOT_DIR/Resources/generator-registry.json" \
       "$ROOT_DIR/Resources/layout-master-runtime.json" \
       "$ROOT_DIR/Resources/layout-profiles.json" \
@@ -115,6 +116,7 @@ PYINSTALLER_ARGS=(
   --add-data "$ROOT_DIR/Resources/empirical-calibration.schema.json:Resources"
   --add-data "$ROOT_DIR/Resources/empirical-calibration-policy.json:Resources"
   --add-data "$ROOT_DIR/Resources/reference-demand-profiles.json:Resources"
+  --add-data "$ROOT_DIR/Resources/level-of-response-policies.json:Resources"
   --add-data "$ROOT_DIR/Resources/board-profiles:Resources/board-profiles"
   --add-data "$ROOT_DIR/Resources/france:Resources/france"
   --add-data "$ROOT_DIR/Backend/Core/fonts:Backend/Core/fonts"

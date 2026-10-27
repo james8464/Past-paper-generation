@@ -8,12 +8,14 @@ import UniformTypeIdentifiers
 struct DocumentPreviewView: View {
     @EnvironmentObject private var application: ApplicationCoordinator
     let files: [GeneratedFile]
+    let selectedID: GeneratedFile.ID?
     @State private var selection: GeneratedFile.ID?
     @State private var exportError: String?
     @StateObject private var quickLook = QuickLookCoordinator()
 
     init(files: [GeneratedFile], selectedID: GeneratedFile.ID? = nil) {
         self.files = files.filter { $0.url.pathExtension.lowercased() == "pdf" }
+        self.selectedID = selectedID
         _selection = State(initialValue: selectedID ?? self.files.first?.id)
     }
 
@@ -40,6 +42,7 @@ struct DocumentPreviewView: View {
 
                     if let file = selectedFile, file.exists {
                         PDFDocumentView(url: file.url)
+                            .id(file.id)
                             .accessibilityLabel("Preview of \(file.title)")
                     } else {
                         ContentUnavailableView(
@@ -52,6 +55,9 @@ struct DocumentPreviewView: View {
             }
         }
         .navigationTitle("Documents")
+        .onChange(of: selectedID) {
+            selection = selectedID
+        }
         .toolbar {
             ToolbarItemGroup {
                 Button("Quick Look", systemImage: "eye") {
@@ -94,9 +100,7 @@ struct DocumentPreviewView: View {
 
     private var provenanceRecord: GenerationJobRecord? {
         guard let file = selectedFile else { return nil }
-        return application.recentDocumentStore.records.first { record in
-            record.artifacts.contains { $0.id == file.id || $0.url == file.url }
-        }
+        return PDFDocumentActions.provenanceRecord(for: file, records: application.recentDocumentStore.records)
     }
 
     private var exportAlertBinding: Binding<Bool> {
@@ -108,12 +112,9 @@ struct DocumentPreviewView: View {
 
     private func printSelected() {
         guard let file = selectedFile,
-              let document = PDFDocument(url: file.url)
+              let operation = PDFDocumentActions.printOperation(for: file.url)
         else { return }
-        let view = PDFView(frame: .zero)
-        view.document = document
-        view.autoScales = true
-        NSPrintOperation(view: view).run()
+        operation.run()
     }
 
     private func exportSelected() {
@@ -123,10 +124,7 @@ struct DocumentPreviewView: View {
         panel.allowedContentTypes = [.pdf]
         guard panel.runModal() == .OK, let destination = panel.url else { return }
         do {
-            if FileManager.default.fileExists(atPath: destination.path) {
-                try FileManager.default.removeItem(at: destination)
-            }
-            try FileManager.default.copyItem(at: file.url, to: destination)
+            try PDFDocumentActions.export(from: file.url, to: destination)
         } catch {
             exportError = error.localizedDescription
         }
@@ -137,6 +135,35 @@ struct DocumentPreviewView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(provenanceRecord.provenanceSummary, forType: .string)
+    }
+}
+
+enum PDFDocumentActions {
+    static func provenanceRecord(for file: GeneratedFile, records: [GenerationJobRecord]) -> GenerationJobRecord? {
+        let matches = records.filter { record in
+            record.artifacts.contains { $0.id == file.id }
+        }
+        // Old history may have copied a library artifact into several jobs.
+        // A reused filename is not proof of provenance for this revision.
+        return matches.count == 1 ? matches.first : nil
+    }
+
+    @MainActor
+    static func printOperation(for url: URL) -> NSPrintOperation? {
+        guard let document = PDFDocument(url: url) else { return nil }
+        // Printing a zero-sized PDFView prints the view, not the whole paper.
+        return document.printOperation(
+            for: NSPrintInfo.shared,
+            scalingMode: .pageScaleToFit,
+            autoRotate: true
+        )
+    }
+
+    static func export(from source: URL, to destination: URL) throws {
+        if source.standardizedFileURL == destination.standardizedFileURL { return }
+        // Read before replacing anything. Atomic writing keeps an existing
+        // export intact if the source is missing or writing cannot finish.
+        try Data(contentsOf: source, options: .mappedIfSafe).write(to: destination, options: .atomic)
     }
 }
 
