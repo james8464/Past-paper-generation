@@ -453,6 +453,19 @@ def difficulty_review(
         + json.dumps(required_operations, ensure_ascii=False)
         + f"\nEXPECTED_MINUTES_RANGE={timing_range}\n"
     )
+    requires_context = target_payload.get("requires_context")
+    if requires_context is True:
+        checklist += (
+            "CONTEXT_REQUIRED=true\nThis target requires application: context must be "
+            "indispensable to earning its application marks, not decorative.\n"
+        )
+    elif requires_context is False:
+        checklist += (
+            "CONTEXT_REQUIRED=false\nA self-contained knowledge item can fit this target "
+            "if its stem supplies everything needed. Assess that sufficiency; do not "
+            "demand an external extract or contextualisation solely because it is "
+            "multiple choice. This does not waive coherence or any other review check.\n"
+        )
     review_payload = json.dumps(
         {
             "item_id": item_id,

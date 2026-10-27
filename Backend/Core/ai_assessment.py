@@ -51,7 +51,7 @@ from Backend.Core.reference_demand import (
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v4-specific-source-cues"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v5-explicit-context-demand"
 
 
 class AssessmentLLMClient(Protocol):
