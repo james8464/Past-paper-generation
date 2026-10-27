@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 15 October 2026.
+Updated 27 October 2026.
 
 ## Formal requirement
 
@@ -10,11 +10,11 @@ The jury evaluates the relationship with Occitanie, originality, engineering cha
 
 ## Prepared files
 
-Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate:
+Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate the templates. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
 - `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal application (two pages before personal details; three-page maximum);
-- `Paper-Creator-NSI-Technical-and-User-Report.docx` — technical and user dossier;
-- `Paper-Creator-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
+- `Keldin-NSI-Technical-and-User-Report.docx` — technical and user dossier;
+- `Keldin-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
 
 The formal application is in French, following the organiser's form. The
 supporting technical/user and mathematical reports are in English, as requested
@@ -50,30 +50,28 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 ## Evidence boundaries
 
-The French NSI path is a working prototype. The official 2021–2026 archive is
-reconciled locally (79 canonical papers, 13 holdouts, 43 recorded accessibility
-representations, two duplicate-content groups), and automated controls, measured PDF
-geometry and a resumable local-model benchmark are implemented. A complete accepted
-qualifying multi-paper French benchmark, two independent French NSI teacher recommendations and a
-supervised learner pilot are not yet complete. The application therefore describes
-those items as planned qualification work, not achieved approval.
+The public French V32 path is a working prototype with three finite whole-paper
+families. It makes no AI-provider call and refuses repeated families. The
+[local corpus audit](../../quality/french-nsi-corpus-rights-audit-2026-10-11.md)
+verified 81 registered files. Its 79 indexed sources comprise 77 distinct paper
+contents and two foundational documents, with 66 reference / 13 holdout sources.
+Source PDFs remain local and reference-only; per-document rights remain open.
+Teacher recommendations and a supervised learner pilot have not been obtained.
+Six distinct pilot papers require expansion beyond the present three families.
 
 The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
 failures and later failed one-paper diagnostics remain retained evidence, not a
 model recommendation. All three exercises now use app-owned, versioned French
-question, answer and credit contracts. A pinned V25 paper passed automated
-checks on its first attempt, but
-[manual comparison with the official 2026 paper](../../quality/french-nsi-v25-two-outage-live-diagnostic-2026-10-15.md)
-kept fidelity on hold: the thirteen-page subject has 34 numbered questions,
-versus 36 across 16 official pages. E1 now links two outages and retains writable before/after route
-tables, E2 reconciliation now sustains linked SQL and algorithm reasoning, and
-E3 links routing, process recovery and security. E1 pages 4–5, E2 page 10 and the
-final E3 page remain sparse, with insufficient sustained depth and learner
-working-space flow. The V24–V15 live holds and V12–V14 failures remain
-separate evidence. No
-multi-paper model qualification, teacher recommendation or learner calibration
-has been achieved. The application must present the generator as a prototype,
-not a validated classroom-ready paper maker.
+question, answer and credit contracts. The earlier model-driven failures and
+V15–V31 single-paper holds remain separate historical evidence. The
+[V32 every-page comparison](../../quality/keldin-engineering-and-french-audit-2026-10-26.md)
+reviewed standard subjects of 7–8 pages and corrections of 17–18 pages, plus
+enlarged copies. Each paper has 34 questions, versus 36 in the 16-page official
+2026 comparator. The cases now contain connected reasoning, but remain compact
+and table-led, with sparse tails and fewer diagrams/scaffolded code. Manual
+fidelity remains HOLD. No model qualification, teacher recommendation or learner
+calibration is claimed. The technical report labels its retained screenshot as
+an earlier interface, not the current V32 workflow.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 
