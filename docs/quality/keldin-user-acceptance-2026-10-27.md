@@ -117,6 +117,20 @@ missing, extra, duplicated, malformed or mismatched question/review identifiers
 and requests a repair that names the batch problem. It does not remap identifiers
 or repair answers. Generic requests and model chat-template behavior are retained.
 
+A separate computer-control run in the signed sandbox completed guided 3B model
+setup and continued into real drafting. The bounded generation was rejected for
+an invalid batch; the app displayed the error, retained a private diagnostic and
+recorded a failed History entry. It published no Accounting paper 1 files. The
+same app then completed an Accounting paper 2 layout preview and exported exactly
+its four expected artifacts, without attaching the older Economics or French
+files. This verifies runtime and recovery, not live-paper quality.
+
+The long retry exposed another presentation bug: the elapsed estimate reached
+zero while drafting continued. Remaining-time text now says “Taking longer than
+estimated” instead of promising “0s”; a positive subsecond estimate shows at least
+“1s”. Both states have native regression tests, including recovery when observed
+progress supplies a new estimate. The overdue message has a French translation.
+
 Fresh full-paper diagnostic attempts used Accounting paper 1, seed 270127:
 Llama-3.2-3B-Instruct-4bit and Qwen2.5-7B-Instruct-4bit both failed protected content
 validation at the first question. Qwen returned the correct batch identifier, but
@@ -127,7 +141,7 @@ published and the default model was not changed. Two first-response traces were
 deliberately stopped diagnostics, not complete live runs. Settings now explain,
 in English and French, that model setup does not qualify paper quality.
 
-Final local checks: **3,532 backend tests passed, two skipped; 85 native tests
+Final local checks: **3,532 backend tests passed, two skipped; 87 native tests
 passed**. Ruff, repository hygiene, plist lint, shell syntax, direct Release build
 and development-signed App Store preflight passed. Read-only source review found
 no additional defect in this patch. These results do not replace the open live

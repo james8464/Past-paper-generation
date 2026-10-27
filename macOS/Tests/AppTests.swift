@@ -467,6 +467,31 @@ final class PaperCreatorTests: XCTestCase {
         XCTAssertGreaterThan(large.totalSeconds, small.totalSeconds)
     }
 
+    func testExpiredGenerationEstimateDoesNotPromiseZeroSeconds() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        let estimate = GenerationEstimate(
+            startedAt: start, totalSeconds: 60, remainingSeconds: 60,
+            confidence: 0.5, factors: []
+        )
+        let delayed = GenerationEstimator.update(
+            estimate: estimate, progress: 0.02, now: start.addingTimeInterval(120)
+        )
+        XCTAssertEqual(delayed.remainingText, String(localized: "Taking longer than estimated"))
+        let resumed = GenerationEstimator.update(
+            estimate: delayed, progress: 0.5, now: start.addingTimeInterval(120)
+        )
+        XCTAssertGreaterThan(resumed.remainingSeconds, 0)
+        XCTAssertNotEqual(resumed.remainingText, delayed.remainingText)
+    }
+
+    func testPositiveGenerationEstimateNeverRoundsDownToZeroSeconds() {
+        let estimate = GenerationEstimate(
+            startedAt: Date(), totalSeconds: 10, remainingSeconds: 0.2,
+            confidence: 0.5, factors: []
+        )
+        XCTAssertEqual(estimate.remainingText, "1s")
+    }
+
     func testOllamaGuideSelectsAMemoryAppropriateModel() throws {
         let guide = try OllamaModelGuide.load(bundle: .main)
         let eightGB = guide.recommendation(physicalMemoryBytes: 8 * 1_073_741_824)

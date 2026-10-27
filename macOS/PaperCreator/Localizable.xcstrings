@@ -650,6 +650,16 @@
     "Use Hosted AI" : {
 
     },
+    "Taking longer than estimated" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus long que prévu"
+          }
+        }
+      }
+    },
     "Use Recommended Model" : {
 
     },

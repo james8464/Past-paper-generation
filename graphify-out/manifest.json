@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793122008.290889,
+    "mtime": 1793122193.4449842,
     "ast_hash": "1145f2b5fae44c3c2852ca0f07e68a5d",
     "semantic_hash": ""
   },
@@ -1315,8 +1315,8 @@
     "semantic_hash": "af9171976da3bc85eb789c48cfe3ddb0"
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1791129181.584198,
-    "ast_hash": "7afe094f5cf479cb86f6429a4b298d71",
+    "mtime": 1793122458.3013167,
+    "ast_hash": "e0a9a0520b56d2e62d859309f654d15e",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AssessmentBundleExporter.swift": {
@@ -1445,8 +1445,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793109304.6191454,
-    "ast_hash": "28a94cd05193ac720ed3e1d77e241446",
+    "mtime": 1793122408.9935608,
+    "ast_hash": "a8138ae4e69aedb788d718f1cb7a0ab6",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793122151.2562406,
-    "ast_hash": "be288a95bea08740059ae69fc100946c",
+    "mtime": 1793122640.7251623,
+    "ast_hash": "226c5cdb9eeba769bd4d3157f2744b41",
     "semantic_hash": ""
   }
 }

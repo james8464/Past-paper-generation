@@ -531,7 +531,10 @@ struct GenerationEstimate: Equatable {
     }
 
     var remainingText: String {
-        Self.formatDuration(remainingSeconds)
+        guard remainingSeconds > 0 else {
+            return String(localized: "Taking longer than estimated")
+        }
+        return Self.formatDuration(max(1, remainingSeconds))
     }
 
     static func formatDuration(_ seconds: TimeInterval) -> String {
