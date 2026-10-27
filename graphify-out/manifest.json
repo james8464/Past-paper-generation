@@ -5,7 +5,7 @@
     "semantic_hash": "3d1ab5a4264585250405f620062dca5b"
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1793140702.3876362,
+    "mtime": 1793141052.2987542,
     "ast_hash": "e2f9df9f644502da3ac41d89c4a4ee06",
     "semantic_hash": ""
   },
@@ -25,7 +25,7 @@
     "semantic_hash": "3128e3abecd8fab6ae9432cf80f5da5e"
   },
   "Backend/Core/assessment_package.py": {
-    "mtime": 1793140879.8884435,
+    "mtime": 1793141052.2990623,
     "ast_hash": "7fb5342f83107552e34862fa648789ae",
     "semantic_hash": ""
   },
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793140769.0818489,
+    "mtime": 1793141052.2993565,
     "ast_hash": "eedeef8206493a6be6cb401ba2824049",
     "semantic_hash": ""
   },
@@ -1545,7 +1545,7 @@
     "semantic_hash": "60d231b1fa852893644bad48fa19ed0c"
   },
   "tests/test_assessment_package_migration.py": {
-    "mtime": 1793140906.671621,
+    "mtime": 1793141052.3144472,
     "ast_hash": "17f52e88157261f3e8f55c6ea450cd30",
     "semantic_hash": ""
   },
@@ -1555,7 +1555,7 @@
     "semantic_hash": "c4552267511694fdd64c69d2581fd462"
   },
   "tests/test_assessment_source_projection.py": {
-    "mtime": 1793140752.585147,
+    "mtime": 1793141052.314698,
     "ast_hash": "cf816ae83103675932ad6faaa672f102",
     "semantic_hash": ""
   },
@@ -1565,7 +1565,7 @@
     "semantic_hash": ""
   },
   "tests/test_candidate_paths.py": {
-    "mtime": 1793140815.1094272,
+    "mtime": 1793141052.3149495,
     "ast_hash": "03c2986879406b88e12a56569b9ad8bd",
     "semantic_hash": ""
   },
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/quality/keldin-user-acceptance-2026-10-27.md": {
-    "mtime": 1793140953.226837,
-    "ast_hash": "a5b03198be4ee0a81fb97338c5c1b1b8",
+    "mtime": 1793141386.69114,
+    "ast_hash": "a3fb474d13e6b21431e1a509d536ef11",
     "semantic_hash": ""
   },
   "Backend/Core/branding.py": {
@@ -3650,7 +3650,7 @@
     "semantic_hash": ""
   },
   "Backend/Core/shared_source_scope.py": {
-    "mtime": 1793140681.4138882,
+    "mtime": 1793141052.2992048,
     "ast_hash": "3f8c3fa4108d1152a48245175a70da31",
     "semantic_hash": ""
   }
