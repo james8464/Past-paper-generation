@@ -50,35 +50,57 @@ def test_supporting_reports_are_in_english_while_the_application_stays_french() 
     mathematical = Document(build_mathematical_analysis())
 
     assert application.paragraphs[0].text == "Candidature au Prix Occitanie 2026"
-    assert technical.paragraphs[0].text == "Paper Creator for French NSI"
+    assert technical.paragraphs[0].text == "Keldin for French NSI"
     assert mathematical.paragraphs[0].text == "Mathematical analysis of qualification"
     assert "0/10 accepted" in " ".join(
         paragraph.text for paragraph in technical.paragraphs
     )
-    assert "finite French-language catalogue" in " ".join(
+    assert "three finite whole-paper families" in " ".join(
         paragraph.text for paragraph in technical.paragraphs
     )
 
 
-def test_technical_report_distinguishes_live_engineering_pass_from_fidelity_hold() -> (
+def test_technical_report_distinguishes_current_catalogue_from_historical_model_trials() -> (
     None
 ):
     technical = Document(build_technical_dossier())
     text = " ".join(paragraph.text for paragraph in technical.paragraphs).lower()
 
     assert "all three exercises use app-owned contracts" in text
-    assert "first-attempt live engineering pass" in text
+    assert "v32 does not call an ai model" in text
+    assert "three finite whole-paper families" in text
     assert "manual fidelity hold" in text
-    assert "34 numbered questions across thirteen subject pages" in text
-    assert "v25 single-paper diagnostic" in text
-    assert "twenty-page proposed correction" in text
-    assert "e2 reconciliation" in text
-    assert "writable before/after route tables" in text
-    assert "linked routing, process recovery and security case" in text
+    assert "34 questions" in text
+    assert "7 to 8 subject pages" in text
+    assert "17 to 18 correction pages" in text
+    assert "historical model" in text
+    assert "choose a model" not in text
+    assert "vector diagrams" not in text
+    assert "v25 single-paper diagnostic" not in text
     assert "18 numbered questions across seven subject pages" not in text
     assert "eleven-page proposed correction" not in text
     assert "other two exercises remain model-authored" not in text
     assert "has not passed a live paper" not in text
+
+
+def test_current_submission_brand_and_french_scope_are_explicit():
+    for builder in (build_application, build_technical_dossier, build_mathematical_analysis):
+        text = " ".join(p.text for p in Document(builder()).paragraphs)
+        assert "Keldin" in text
+        assert "Paper Creator" not in text
+        assert "V32" in text
+    application = " ".join(p.text for p in Document(build_application()).paragraphs)
+    assert "L’enseignant choisit un modèle local" not in application
+    assert "trois familles" in application
+
+
+def test_submission_can_be_built_without_replacing_an_existing_personal_form(tmp_path):
+    original = tmp_path / "Prix-Occitanie-2026-Candidature-James-Durup.docx"
+    original.write_bytes(b"Applicant-owned completed form")
+    destination = tmp_path / "refreshed"
+    submission.main(["--output", str(destination)])
+    assert original.read_bytes() == b"Applicant-owned completed form"
+    assert len(list(destination.glob("*.docx"))) == 3
 
 
 def test_technical_report_shows_and_describes_the_real_mac_workflow() -> None:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -149,7 +150,7 @@ def configure_document(
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    footer.add_run("Paper Creator  ·  Prix Occitanie 2026  ·  ")
+    footer.add_run("Keldin  ·  Prix Occitanie 2026  ·  ")
     add_page_field(footer)
     for run in footer.runs:
         run.font.name = "Arial"
@@ -276,7 +277,7 @@ def build_application() -> Path:
     title_block(
         doc,
         "Candidature au Prix Occitanie 2026",
-        "Paper Creator, pilote NSI Occitanie",
+        "Keldin pilote NSI Occitanie",
     )
     add_label_paragraph(
         doc, "Candidat", "James Durup · CentraleSupélec · promotion : À compléter"
@@ -287,13 +288,13 @@ def build_application() -> Path:
     add_label_paragraph(doc, "Adresse", "À compléter")
     doc.add_heading("Présentation du candidat", level=1)
     doc.add_paragraph(
-        "Je suis étudiant à CentraleSupélec et je développe Paper Creator, une application macOS qui utilise des modèles d’intelligence artificielle locaux pour produire des sujets d’entraînement originaux. Je m’intéresse à la conception de logiciels vérifiables et à l’usage responsable de l’IA dans l’éducation. Une première version consacrée aux A levels britanniques m’a permis de construire le moteur de génération, les contrôles techniques et la production de PDF. Le projet présenté ici adapte ce travail au baccalauréat français et prépare un pilote avec des enseignants de NSI en Occitanie."
+        "Je suis étudiant à CentraleSupélec et je développe Keldin, une application macOS de sujets d’entraînement. Ses parcours britanniques utilisent des modèles d’intelligence artificielle. Le parcours français V32 construit trois familles de sujets de NSI sans appeler de modèle. Je m’intéresse aux logiciels vérifiables et à l’usage responsable de l’IA dans l’éducation. Le projet présenté prépare l’évaluation de ce prototype avec des enseignants de NSI en Occitanie."
     )
     doc.add_heading("Titre du projet", level=1)
-    doc.add_paragraph("Paper Creator, pilote NSI Occitanie")
+    doc.add_paragraph("Keldin pilote NSI Occitanie")
     doc.add_heading("Description synthétique du projet", level=1)
     doc.add_paragraph(
-        "Le projet aide un enseignant de Terminale à créer un sujet inédit de spécialité Numérique et sciences informatiques, accompagné d’un corrigé proposé et d’un barème indicatif. L’enseignant choisit un modèle local, lance la génération, puis relit les deux PDF avant de les imprimer ou de les distribuer par l’ENT. Les élèves n’ont besoin ni d’un Mac, ni d’un compte, ni d’un accès à une IA. L’application ne collecte aucune copie d’élève."
+        "Le projet aide un enseignant de Terminale à préparer un sujet de spécialité Numérique et sciences informatiques, accompagné d’un corrigé proposé et d’un barème indicatif. L’enseignant choisit l’impression standard ou agrandie, crée un brouillon puis relit les deux PDF. Le catalogue est limité à trois familles de sujets ; le contrôle d’originalité refuse leur répétition. Les élèves consultent les PDF sur l’ENT ou sur papier, sans compte ni accès à une IA. L’application ne collecte aucune copie d’élève."
     )
     doc.add_paragraph(
         "La version française suit les règles annoncées pour la session 2027 : trois exercices indépendants, 3 h 30, 18 points techniques et 2 points pour la maîtrise de la langue. Chaque question est rattachée à une capacité du programme officiel. Le logiciel vérifie les totaux, les durées, certaines réponses calculables, les requêtes SQL, les traces d’algorithmes, les graphes et la cohérence entre le sujet et le corrigé. Les documents portent clairement la mention « entraînement non officiel » et restent non relus tant qu’un enseignant n’a pas enregistré sa décision."
@@ -301,7 +302,7 @@ def build_application() -> Path:
 
     doc.add_heading("Originalité du projet", level=1)
     doc.add_paragraph(
-        "Paper Creator ne se limite pas à envoyer une consigne générale à un agent conversationnel. Il sépare le programme, les règles d’examen et les références historiques. Il demande au modèle de produire des données structurées, résout ensuite chaque exercice sans lui montrer le corrigé proposé, puis applique des contrôles déterministes et un second contrôle indépendant. Les preuves, les versions du modèle et les empreintes des fichiers restent attachées au sujet. Une relecture humaine est liée aux empreintes exactes des PDF : toute modification la rend caduque."
+        "Le parcours NSI associe des questions, réponses et critères de crédit à des données définies par l’application. Les vérifications portent notamment sur les algorithmes, le SQL et les totaux exacts. Les versions et les empreintes des fichiers restent attachées au sujet. La décision d’un enseignant ne vaut que pour les PDF effectivement relus ; toute modification impose une nouvelle relecture. Ces contrôles ne prouvent pas l’équivalence pédagogique avec le baccalauréat."
     )
     doc.add_paragraph(
         "L’ancrage régional sera construit et mesuré, non simplement nommé. Je souhaite organiser un pilote avec des enseignants des académies de Toulouse et de Montpellier, puis créer un module optionnel fondé sur des données ouvertes d’Occitanie. Les lycées, les transports, la consommation d’énergie et, si les droits le permettent, les ressources en eau pourront nourrir des exercices d’algorithmique et de bases de données sur des questions territoriales et climatiques réelles. Aucun partenariat régional n’est encore conclu."
@@ -315,7 +316,7 @@ def build_application() -> Path:
         doc,
         [
             "Prototype technique : parcours français distinct, génération locale, références filtrées, points décimaux exacts, contrôles de réponses et PDF standard ou agrandi.",
-            "Qualité non qualifiée : 79 annales officielles 2021–2026 sont réconciliées et 13 réservées à l’évaluation. La première campagne a rejeté dix sujets sur dix. Un diagnostic ultérieur a passé les contrôles automatiques, mais sa fidélité pédagogique reste à confirmer ; aucun modèle n’est recommandé.",
+            "Qualité non qualifiée : V32 fournit trois familles finies, sans modèle. Le corpus local audité contient 79 sources indexées, dont 13 réservées à l’évaluation. Les anciens essais de modèles restent des preuves historiques ; la fidélité pédagogique reste à confirmer.",
             "Validation humaine à organiser : aucun partenariat régional ni avis d’enseignant français n’est revendiqué. Le prix financerait l’amélioration et l’évaluation indépendante.",
         ],
     )
@@ -340,8 +341,8 @@ def build_application() -> Path:
     for period, activity, evidence in (
         (
             "Mois 1 à 2",
-            "Banc d’essai local et recrutement de deux enseignants de NSI",
-            "résultats conservés, choix du modèle motivé, protocole de relecture",
+            "Extension du catalogue et recrutement de deux enseignants de NSI",
+            "résultats conservés et protocole de relecture documenté",
         ),
         (
             "Mois 3 à 4",
@@ -391,15 +392,15 @@ def build_technical_dossier() -> Path:
     configure_document(doc, editorial=True)
     title_block(
         doc,
-        "Paper Creator for French NSI",
-        "Technical and user report · Prix Occitanie 2026",
+        "Keldin for French NSI",
+        "Technical and user report Prix Occitanie 2026",
     )
     doc.add_paragraph(
-        "This report explains the prototype, what a teacher can do with it today, and the evidence still needed before classroom recommendation. All three exercises use app-owned contracts for questions, answers and marking clauses. The first complete Gemma 4 12B campaign rejected all ten papers. A later pinned V25 diagnostic achieved a first-attempt live engineering pass, but remains on manual fidelity hold: 34 numbered questions across thirteen subject pages are less developed than the official 2026 comparison of 36 questions across 16 pages. No French model is recommended. Two independent NSI teacher reviewers and a supervised pilot remain essential."
+        "Keldin produces French NSI drafts for teacher review. All three exercises use app-owned contracts for questions, answers and marking clauses. V32 does not call an AI model. It offers three finite whole-paper families, not unlimited new papers. Each has 34 questions; the reviewed standard copies have 7 to 8 subject pages and 17 to 18 correction pages. Comparison with the official 2026 paper leaves a manual fidelity hold. Independent NSI teacher review and a supervised pilot remain essential."
     )
     doc.add_heading("The teacher’s task", level=1)
     doc.add_paragraph(
-        "A teacher has a finite supply of past papers and needs fresh practice without introducing errors in questions or marking. Paper Creator produces a complete draft for review. The teacher decides whether to share it; the app neither marks student work nor collects student responses."
+        "Teachers need additional practice without introducing errors in questions or marking. Keldin prepares a draft from its limited catalogue. The teacher decides whether to share it; the app neither marks student work nor collects student responses."
     )
     screenshot = (
         ROOT
@@ -413,10 +414,10 @@ def build_technical_dossier() -> Path:
     crop.set("b", "20000")
     picture._inline.graphic.graphicData.pic.blipFill.insert(1, crop)
     picture._inline.docPr.set(
-        "descr", "French NSI workspace in the Paper Creator macOS prototype"
+        "descr", "French NSI workspace in an earlier Keldin macOS prototype before V32"
     )
     caption = doc.add_paragraph(
-        "Prototype interface · local draft controls and assessment context."
+        "Earlier prototype interface before V32. The model controls shown are not part of the current French workflow."
     )
     caption.paragraph_format.space_after = Pt(12)
     for run in caption.runs:
@@ -428,15 +429,15 @@ def build_technical_dossier() -> Path:
     for label, detail in (
         (
             "01  Prepare references.",
-            "The teacher permits a local download; the app identifies and indexes eligible official documents.",
+            "The teacher checks the local reference notices. Downloads require consent; reference access does not grant redistribution rights.",
         ),
         (
-            "02  Choose a model.",
-            "The teacher selects a local Ollama model and print profile; the app records the model identity.",
+            "02  Choose a print profile.",
+            "The teacher selects standard or enlarged print. V32 needs neither an AI model nor an Ollama installation.",
         ),
         (
             "03  Create a draft.",
-            "The app plans three exercises, generates proposed answers, solves independently, and checks failures.",
+            "The app constructs three exercises from one of its three whole-paper families and checks the answers and exact credits.",
         ),
         (
             "04  Inspect the evidence.",
@@ -464,11 +465,11 @@ def build_technical_dossier() -> Path:
         ),
         (
             "Generation.",
-            "Three independent plans and French questions, with rejected attempts in resumable checkpoints.",
+            "Three independent exercises with versioned facts, French prompts, proposed answers and marking clauses. Repeated families are refused.",
         ),
         (
             "Verification.",
-            "Bounded SQL and algorithm checks, blind solving and originality; unsupported claims remain unresolved.",
+            "Bounded SQL and algorithm checks, exact credit arithmetic and originality screening; unsupported claims remain unresolved.",
         ),
         (
             "Publication and review.",
@@ -491,22 +492,22 @@ def build_technical_dossier() -> Path:
 
     doc.add_heading("Question quality", level=1)
     doc.add_paragraph(
-        "The model receives a constrained plan, not a vague request. For the first graph/tree exercise, it selects from a finite French-language catalogue: the engine renders every instruction, answer and exact-credit clause from locked data. Database and network exercises also use app-owned data, prompts, answers and exact-credit contracts. Versioned selections and source identity are bound to checkpoints, packages and exported PDFs. A passing structural check is not proof that the questions are educationally sound."
+        "The current catalogue combines graph or tree reasoning, database work and network or process cases. The engine constructs the prompts, proposed answers and exact-credit clauses from app-owned data. Package replay checks their versioned identity. The three families limit usable variety and do not establish full curriculum coverage. A passing structural check is not proof of educational quality."
     )
     doc.add_paragraph(
-        "A difficulty label from a model is not proof of difficulty. The schema rejects recall-only sequences and requires progression towards analysis, design, debugging, or justification. Final calibration must compare drafts with held-out past papers and observed learner timings."
+        "The schema rejects recall-only sequences and requires progression towards analysis, design, debugging or justification. These declared labels do not measure learner difficulty. Calibration still needs comparison with held-out papers and observed completion times."
     )
 
     doc.add_heading("PDF fidelity", level=1)
     doc.add_paragraph(
-        "The A4 profile was measured against a 2026 Métropole paper: 595.32 × 841.92 points, body text close to 12-point Arial, and code close to 12-point Courier New. The provisional 2027 cover carries the hierarchy, vertical placement, duration, and no-calculator notice. Exercises use centred titles, italic scope lines, indented numbering, and vector diagrams. Independent branding and a visible ‘non-official practice’ title prevent confusion with an official examination paper."
+        "The A4 profile was measured against a 2026 Métropole paper: 595.32 × 841.92 points, body text close to 12-point Arial and code close to 12-point Courier New. The provisional cover states the 2027 duration and no-calculator rule. V32 remains more compact and table-led than the 16-page, 36-question comparator, which includes substantial diagrams and scaffolded code. All pages of the three normal and enlarged paper pairs were inspected. Sparse tails remain. Independent branding and a non-official notice distinguish the drafts from examination papers."
     )
 
     doc.add_heading("Safety, privacy, and rights", level=1)
     for label, detail in (
         (
             "Data exposure.",
-            "The French UI uses loopback Ollama, with no student responses or silent cloud fallback. A separate CLI permits a remote server only by explicit HTTPS opt-in.",
+            "Public V32 French generation makes no AI-provider call and collects no student responses. Historical model experiments are separate; there is no silent cloud fallback.",
         ),
         (
             "Generated code.",
@@ -530,17 +531,17 @@ def build_technical_dossier() -> Path:
     doc.add_page_break()
     doc.add_heading("Qualification evidence", level=1)
     doc.add_paragraph(
-        "The runner tests ten papers (30 exercises) per model at fixed seeds. It preserves PDFs, failures, checkpoints, timing, hardware, Ollama and model identities, and source identity. A lock prevents overlapping campaigns; a code or reference change stops the run."
+        "The historical model benchmark tests ten papers per model at fixed seeds and retains failures and identities. It is separate from V32. Repeating a catalogue family, or rendering it in enlarged print, does not add an independent paper to a qualification sample."
     )
     add_label_paragraph(
         doc,
         "Initial campaign · 0/10 accepted.",
-        "Gemma 4 12B passed 0/10 in the first campaign. The pinned V25 single-paper diagnostic passed automation first try without repairs: thirteen-page subject, twenty-page proposed correction. E1 now includes a second causally linked outage; writable before/after route tables remain. E2 reconciliation spans four pages; E3 is a linked routing, process recovery and security case. E1 pages 4–5, E2 page 10 and the final E3 page remain sparse, so manual fidelity is on hold against the 2026 Métropole paper. This is not multi-paper model qualification or teacher approval.",
+        "Gemma 4 12B passed 0/10 in the first campaign. Earlier failures and the V15–V31 single-paper holds remain historical model evidence. V32 has no model to qualify. Its three finite families passed engineering checks and page review, but remain on manual fidelity hold; no teacher approval or learner calibration has been obtained.",
     )
     add_label_paragraph(
         doc,
         "Teachers · not recruited.",
-        "Two NSI teachers must independently review six papers; correctness and marking must each score 4/4, with other dimensions at least 3/4.",
+        "Two NSI teachers must independently review six distinct papers after the catalogue is expanded. Correctness and marking must each score 4/4, with other dimensions at least 3/4. The present three families are insufficient for that sample.",
     )
     add_label_paragraph(
         doc,
@@ -614,7 +615,7 @@ def build_technical_dossier() -> Path:
     for index, (label, url) in enumerate(sources, 1):
         add_source(doc, index, label, url)
 
-    path = OUTPUT / "Paper-Creator-NSI-Technical-and-User-Report.docx"
+    path = OUTPUT / "Keldin-NSI-Technical-and-User-Report.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     finalize_fonts(doc)
     doc.save(path)
@@ -627,10 +628,10 @@ def build_mathematical_analysis() -> Path:
     title_block(
         doc,
         "Mathematical analysis of qualification",
-        "Paper Creator · Occitanie NSI pilot · 3 October 2026",
+        "Keldin Occitanie NSI pilot 27 October 2026",
     )
     doc.add_paragraph(
-        "This note defines what the project measures and the thresholds for deciding whether a paper may proceed through qualification. A small sample cannot prove psychometric equivalence to the baccalauréat. Numerical examples remain illustrative until a supervised pilot supplies observations."
+        "This note defines the proposed qualification measures for Keldin. Public V32 supplies three finite paper families without an AI-model call. Repeated families or enlarged copies are not independent new samples. A small sample cannot prove psychometric equivalence to the baccalauréat; numerical examples remain illustrative until a supervised pilot supplies observations."
     )
     doc.add_paragraph(
         "Observed result on 3 October 2026: the first campaign of ten complete Gemma 4 12B papers accepted none. The zero-defect sample calculations below describe a possible future result; they do not apply to this campaign or justify recommending that model."
@@ -668,7 +669,7 @@ def build_mathematical_analysis() -> Path:
     )
     doc.add_heading("Teacher evaluation", level=1)
     doc.add_paragraph(
-        "Two teachers score six papers independently on eight dimensions: correctness, ambiguity, curriculum fit, French, difficulty, duration, marking, and authentic structure. Scores run from 1 to 4. After revisions, a paper passes only if both reviewers give correctness = 4 and marking = 4, with every other dimension at least 3. A high average cannot hide a substantive error."
+        "Two teachers will score six distinct papers independently on correctness, curriculum alignment, French, difficulty, timing, marking, layout and originality. The catalogue must first expand beyond its current three families. Scores run from 1 to 4. After revisions, both reviewers must give correctness = 4 and marking = 4, with every other dimension at least 3. A high average cannot hide a substantive error."
     )
     doc.add_paragraph(
         "Agreement will be reported per dimension. For ordinal ratings, the project will calculate quadratically weighted kappa κw, alongside a disagreement matrix and comments. High agreement can still coexist with shared bias, and only twelve review sheets leave wide uncertainty."
@@ -752,14 +753,21 @@ def build_mathematical_analysis() -> Path:
         "https://association.centralesupelec-alumni.com/medias/editor/PRIX_OCCITANIE_2026/REGLEMENT_PRIX_OCCITANIE_2026.pdf",
     )
 
-    path = OUTPUT / "Paper-Creator-NSI-Mathematical-Analysis.docx"
+    path = OUTPUT / "Keldin-NSI-Mathematical-Analysis.docx"
     OUTPUT.mkdir(parents=True, exist_ok=True)
     finalize_fonts(doc)
     doc.save(path)
     return path
 
 
-def main() -> None:
+def main(argv: list[str] | None = None) -> None:
+    global OUTPUT
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--output", type=Path, default=OUTPUT,
+        help="Output directory. Use a fresh directory to preserve completed personal forms.",
+    )
+    OUTPUT = parser.parse_args(argv).output.expanduser().resolve()
     for path in (
         build_application(),
         build_technical_dossier(),

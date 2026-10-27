@@ -1,5 +1,22 @@
 # Keldin user acceptance — 27 October 2026
 
+## Current competition documents
+
+The submission builder, claims register, demonstration and unsent email draft
+now describe Keldin's public V32 workflow: three finite whole-paper families,
+no AI-provider call, repeated-family refusal and manual fidelity HOLD. Historical
+model trials remain separate evidence. The six-distinct-paper teacher protocol
+requires catalogue expansion; repeated or enlarged copies are not independent
+samples. The technical report labels its older interface screenshot explicitly.
+
+Eleven report regressions passed, including a fresh-output-directory check that
+preserves an existing personal form. New copies were generated with the bundled
+document runtime under ignored `output/occitanie-2026/current-20261027`, rendered
+with bundled LibreOffice, and all nine pages visually inspected: application
+two A4 pages, technical report four and analysis three. No clipping or new
+pagination defect was found. Personal eligibility, contact and funding fields
+remain for the applicant; no submission was sent or approval claimed.
+
 ## Accounting print follow-up — retained-content replay
 
 Two regressions reproduced the visible choice/box contact and repeated marking

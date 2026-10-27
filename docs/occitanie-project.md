@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-09. This is an evidence/status record, not a claim of
+Last updated: 2026-10-27. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -10,6 +10,19 @@ and [competition submission pack](competition/occitanie-2026/README.md). The for
 application currently renders as two A4 pages, within the three-page limit, but
 personal eligibility, contact fields and prior-funding status still require
 James's confirmation.
+
+## Current public workflow
+
+Keldin V32 constructs three finite whole-paper families without an AI-provider
+call. It does not require Ollama or model selection. Originality checks refuse
+repeated families; the catalogue does not provide unlimited fresh papers.
+The [26 October audit](quality/keldin-engineering-and-french-audit-2026-10-26.md)
+reviewed every page of the three standard/enlarged subject and correction pairs.
+Standard subjects have 34 questions over 7–8 pages, with 17–18 correction pages.
+They remain more compact and table-led than the official 2026 comparator.
+Manual fidelity is HOLD; teacher review, learner calibration and rights/accessibility
+clearance remain open. Six distinct pilot papers require catalogue expansion.
+The dated model experiments below are retained history, not the public default.
 
 ## Problem and beneficiaries
 
@@ -33,7 +46,7 @@ automated passing must not be represented as examiner approval.
   decimal credit; three exercises, 18 technical + 2 language points.
 - Local scoped SQLite/FTS references; filter before ranking; no UK fallback;
   holdouts excluded; hashes, provenance and rights status retained.
-- French authoring, blind solver and separate review passes; bounded SQL, binary,
+- Historical model authoring, blind solver and separate review passes; bounded SQL, binary,
   shortest-path and restricted Python-trace checks; unsupported contracts unresolved.
 - Structured tables and vector graphs; programme-capability mappings, cognitive
   operations, estimated time and a required progression beyond simple recall.
@@ -43,22 +56,24 @@ automated passing must not be represented as examiner approval.
   similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
-- All three written exercises now have app-owned facts, answers and exact
-  credits; the model chooses only finite French wording IDs. The graph/tree,
+- All three public V32 exercises have app-owned facts, answers and exact
+  credits, with no model selection. The graph/tree,
   relational database and network/process/security contracts are replayed in
   the package and checked against extracted standard/large-print PDFs. This
   engineering control does not establish classroom suitability.
 - Native French workspace, consent before downloads, French interface translations,
-  local Ollama endpoint, standard/enlarged print, history metadata and review UI.
+  standard/enlarged print, history metadata and review UI. Historical model routes
+  remain separate from the public V32 workflow.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
   not authenticated; this is not an official signature or school approval system.
 
 ## Evidence and limits
 
-The official 2021–2026 archive index and content are reconciled locally: 79 canonical
-papers, 43 accessibility representations, 122 links, 13 frozen holdouts and no
-download failures. All 81 registered documents (79 papers plus the programme and
-language rubric) have pinned SHA-256 hashes. Two byte-identical Nouvelle-Calédonie
+The 11 October audit reconciled 81 registered local files: 79 paper records plus
+the programme and language rubric. The 79 indexed sources comprise 77 distinct
+paper contents and two foundational documents, split 66 reference / 13 holdout.
+Forty-three accessibility links are alternative representations, not extra indexed
+sources. All registered files matched their pinned SHA-256 hashes. Two byte-identical Nouvelle-Calédonie
 2022 normal/replacement pairs are recorded and collapsed in retrieval. Neither pair
 crosses the holdout boundary. Source PDFs remain local and unbundled; document-specific
 rights and third-party illustrations still need review before redistribution.
@@ -73,6 +88,9 @@ implemented and manually inspected on fixtures. A 2026 source cannot establish a
 official 2027 template. Timing and AI difficulty judgements remain non-empirical;
 restricted code evaluation does not support all Python; originality thresholds
 still require labelled calibration.
+
+## Historical diagnostics
+
 The [6 October v12 PDF check](quality/french-nsi-v12-pdf-verification-2026-10-06.md)
 inspected all pages of four deterministic fixture PDFs. Exercise 1 is more
 substantive than the earlier generic fixture, but its figure is smaller than the
