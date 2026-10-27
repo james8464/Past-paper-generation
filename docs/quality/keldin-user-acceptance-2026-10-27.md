@@ -1,5 +1,54 @@
 # Keldin user acceptance — 27 October 2026
 
+## Structured MLX follow-up
+
+MLX now uses pinned Outlines 1.3.3 and llguidance 1.9.1 to constrain structured
+responses. Full JSON-schema validation follows decoding. Array uniqueness stays
+in that validation because llguidance does not implement `uniqueItems`; other
+unsupported grammar rules fail before inference. Truncated JSON, duplicate fields
+and commentary outside the object are rejected. Batch identifiers remain exact.
+
+Independent multiple-choice solving is limited to the public options, without
+the private key. A one-mark choice cannot invent alternative correct options.
+MLX can now use the same reviewed seeded-stem recovery as Ollama after bounded
+wording failures. It restores the original question and repeats the required
+answer, marking, difficulty and originality checks. Provenance records
+`reviewed-seeded-fallback:apple` when this happens.
+
+The retained isolated Qwen2.5 7B MCQ diagnostics returned the correct purchases
+journal answer and a consistent mark point. Total observed times were 83.57
+seconds with the default Outlines backend and 9.66 seconds with llguidance.
+These single observations do not establish a performance guarantee or qualify a
+paper. The corrected full-paper run, seed 270127, accepted questions 01 and 02,
+then stopped at question 03 because the difficulty reviewer rejected scaffolding
+fit. No completed paper was published. Earlier batch, numeric-drift and
+alternative-answer failures remain under `tmp/final-validation-20261027/`.
+
+Computer-control testing of the development-signed sandbox build reached real
+Llama 3.2 3B inference and accepted its first accounting item, seed 1288688945.
+The test then used Cancel. History recorded Cancelled and creation controls
+became available again; this bounded smoke test did not complete a paper.
+A newer Qwen3 8B trial is separate and is not counted as qualification here.
+
+Model setup now downloads data files without repository Python files. Loading
+explicitly disables remote tokenizer code and tokenizer network access. All
+decoder code is packaged with the helper. Frozen apps still cannot install a
+runtime. This addresses a download-policy risk identified against Apple's
+rules; distribution signing, upload and Apple review remain open.
+
+The final local suite passed **3,546 tests with two skipped**; all **87 native
+tests** passed. Development-signed App Store preflight and strict bundle signature
+verification passed. An earlier suite ran while source files were being edited
+and correctly rejected an implementation-identity change during V33 replay. The
+43-test V33 suite and subsequent frozen-source full runs passed. No replay check
+was relaxed.
+
+Sources: [Outlines MLX integration](https://github.com/dottxt-ai/outlines/blob/main/docs/features/models/mlxlm.md),
+[llguidance schema support](https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md),
+[Apple review rules](https://developer.apple.com/app-store/review/guidelines/).
+French source and layout were unchanged; their recorded manual fidelity HOLD,
+rights gap and external teacher/learner reviews remain open.
+
 ## Result
 
 Computer-control testing reproduced failures that the source-tree tests had missed. This update fixes MLX setup, instruct-model formatting, packaged UK marking policies, document selection, replaced-file previews, multi-page printing and safe PDF export. It does **not** qualify every model or establish that the app is ready for public educational use.

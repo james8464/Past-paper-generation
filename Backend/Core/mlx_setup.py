@@ -20,13 +20,14 @@ MLX_PACKAGE_SPECS = (
     "mlx-lm==0.30.2",
     "mlx==0.29.3",
     "mlx-metal==0.29.3",
+    "outlines==1.3.3",
+    "llguidance==1.9.1",
 )
-# Match mlx-lm 0.30.2's download filter. A complete inference snapshot need not
-# contain the repository's README or Git metadata; newer Hub clients check this.
+# Only model data may be downloaded. Architecture and tokenizer implementation
+# must come from the packaged runtime, never from a model repository's Python.
 MLX_MODEL_PATTERNS = [
     "*.json",
     "model*.safetensors",
-    "*.py",
     "tokenizer.model",
     "*.tiktoken",
     "tiktoken.model",
@@ -99,7 +100,9 @@ def mlx_runtime_available() -> bool:
 
     try:
         import mlx.core as mx
+        from llguidance import grammar_from
         from mlx_lm import generate, load
+        from outlines import from_mlxlm
 
         expected_versions = {
             spec.partition("==")[0]: spec.partition("==")[2]
@@ -108,7 +111,7 @@ def mlx_runtime_available() -> bool:
         for package, expected in expected_versions.items():
             if importlib.metadata.version(package) != expected:
                 return False
-        if not callable(load) or not callable(generate):
+        if not all(callable(function) for function in (load, generate, from_mlxlm, grammar_from)):
             return False
         value = mx.array([1])
         mx.eval(value)
@@ -222,7 +225,9 @@ def resolve_local_mlx_model(
         ) from error
 
 
-def load_mlx_model(model: str) -> None:
+def load_mlx_model(
+    model: str, *, snapshot_resolver: Callable[..., str] | None = None,
+) -> None:
     emit_progress(
         "Preparing the selected model. The first download may take several minutes…",
         stage="mlx-model",
@@ -231,7 +236,18 @@ def load_mlx_model(model: str) -> None:
     try:
         from mlx_lm import load
 
-        load(model)
+        path = Path(model).expanduser()
+        if not path.exists():
+            if snapshot_resolver is None:
+                from huggingface_hub import snapshot_download
+
+                snapshot_resolver = snapshot_download
+            path = Path(snapshot_resolver(
+                repo_id=model, local_files_only=False, allow_patterns=MLX_MODEL_PATTERNS,
+            ))
+        load(str(path.resolve()), tokenizer_config={
+            "trust_remote_code": False, "local_files_only": True,
+        })
         resolve_local_mlx_model(model)
     except MLXModelSetupRequired:
         raise
