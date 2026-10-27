@@ -314,13 +314,15 @@ private struct QualityReviewView: View {
             Section("Qualification") {
                 qualityRow(
                     "Engineering",
-                    detail: qualificationDetail(
+                    detail: application.lastQualityReport == nil
+                        ? "Engineering evidence is created with a saved package."
+                        : qualificationDetail(
                         saved: application.lastQualityReport?.engineeringValidated,
                         current: application.selectedPaper.readiness.engineeringValidated,
                         passed: "Generation, validation, rendering, and packaging checks pass.",
                         pending: "Engineering validation is incomplete for this paper."
                     ),
-                    state: qualificationState(
+                    state: application.lastQualityReport == nil ? .atCreation : qualificationState(
                         saved: application.lastQualityReport?.engineeringValidated,
                         current: application.selectedPaper.readiness.engineeringValidated
                     )

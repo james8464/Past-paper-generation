@@ -18,7 +18,13 @@ struct JobHistoryView: View {
                     TableColumn("Paper") { record in
                         VStack(alignment: .leading) {
                             Text(boardTitle(record.configuration.boardID))
-                            Text("Paper \(record.configuration.paperID)")
+                            Group {
+                                if record.configuration.boardID == "fr-national-nsi" {
+                                    Text("Written assessment")
+                                } else {
+                                    Text("Paper \(record.configuration.paperID)")
+                                }
+                            }
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -87,6 +93,7 @@ struct JobHistoryView: View {
     }
 
     private func boardTitle(_ id: String) -> String {
+        if id == "fr-national-nsi" { return "Baccalauréat · NSI" }
         guard let board = ExamCatalog.board(id: id) else { return id }
         return "\(board.subjectTitle) — \(board.shortTitle)"
     }

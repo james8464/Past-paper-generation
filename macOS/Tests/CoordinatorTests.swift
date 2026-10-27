@@ -29,6 +29,17 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.status, "Writing PDFs")
     }
 
+    @MainActor
+    func testGenerationMessagesHonorTheChosenFrenchInterfaceLanguage() {
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let model = isolatedApplication(defaults: defaults)
+        model.apply(.progress(stage: "generation", message: "Refining AI item 01 after an automated quality check: context check failed", progress: 0.1))
+        XCTAssertEqual(model.status, "Nouvelle vérification de la question 01")
+        model.apply(.error(message: "AI could not produce a valid, second-pass reviewed item for question 01: rejected", code: "generation_failed"))
+        XCTAssertTrue(model.errorMessage.hasPrefix("Ce modèle n'a pas pu créer une épreuve"))
+    }
+
     private var temporaryDirectory: URL!
 
     override func setUpWithError() throws {
