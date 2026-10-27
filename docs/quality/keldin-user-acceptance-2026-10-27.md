@@ -1,5 +1,31 @@
 # Keldin user acceptance — 27 October 2026
 
+## Accounting print follow-up — retained-content replay
+
+Two regressions reproduced the visible choice/box contact and repeated marking
+instructions. The choice column now reserves a 4 mm gap before the selection
+box. General instructions print once, and repeated identical indicative rows
+are suppressed without changing the stored question, answer or credit limits.
+All **41 Accounting tests** passed, including PDF-coordinate checks around the
+selection boxes and checks for a single occurrence of each affected instruction.
+The frozen-source full suite passed **3,581 tests with two skipped**; the
+development-signed direct Release build also passed.
+
+The saved MLX assessment was replayed through the changed renderer, with measured
+page-box conformance and release PDF checks. This is **not another live run**.
+The original assessment and original published PDFs were retained unchanged.
+The replay remains 36 QP / 26 MS pages. Normalised QP text is unchanged on every
+page; only MS pages 3–7 and 22 have changed text, removing repetition. Updated
+choice pages and every changed scheme page were visually checked: the choices
+now wrap clear of the boxes, and no new clipping was found. Some scheme pages
+are now sparse; they were not filled with replacement boilerplate. Question
+variety, full marking calibration and the other manual HOLD findings below are
+not resolved by these presentation fixes.
+
+Retained replay: `tmp/final-validation-20261027/accounting-print-retained-replay`.
+SHA-256 QP `aeb8b755a7131eba04242040616318bf13911000cd0947f492ddeb2316c79615`;
+MS `823e42ca5bf1c404c6c3a5a2a42462e968452d3f1b83b1d7d9ba563ed85d679d`.
+
 ## Full native MLX attempt and export source scope
 
 The sandboxed, development-signed app completed all 13 item batches using

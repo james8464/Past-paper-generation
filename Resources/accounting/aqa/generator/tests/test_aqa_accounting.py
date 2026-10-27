@@ -826,6 +826,42 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
         assert all(path.stat().st_size > 2000 for path in paths.values())
 
 
+def test_long_mcq_choices_leave_clear_space_before_selection_boxes(tmp_path):
+    from aqaaccountgen.render_pdf import render_question_paper
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, seed=123)
+    paper.sections[0].options[0].questions[4].choices[0] = (
+        "The issue of shares is normally used to finance long-term assets."
+    )
+    path = tmp_path / "choices.pdf"
+    render_question_paper(paper, path)
+    with fitz.open(path) as document:
+        page = document[2]
+        boxes = [
+            drawing["rect"] for drawing in page.get_drawings()
+            if abs(drawing["rect"].width - 22) < .1
+            and abs(drawing["rect"].height - 13) < .1
+        ]
+        assert len(boxes) == 12
+        for box in boxes:
+            for word in page.get_text("words"):
+                if 140 < word[0] < box.x0 and word[1] < box.y1 and word[3] > box.y0:
+                    assert word[2] <= box.x0 - 5, word
+
+
+def test_paper_one_prints_general_and_indicative_guidance_once(tmp_path):
+    from aqaaccountgen.render_pdf import render_mark_scheme
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, seed=123)
+    path = tmp_path / "guidance.pdf"
+    render_mark_scheme(paper, path)
+    text = " ".join(" ".join(p.extract_text() or "" for p in PdfReader(path).pages).split())
+    assert text.count("Final standardisation check") == 1
+    question = paper.sections[-1].options[0].questions[0]
+    for point in question.mark_scheme[:5]:
+        assert text.count(" ".join(point.split())) == 1, point
+
+
 def test_paper_two_uses_distinct_source_verification_pages_not_repeated_guidance(
     tmp_path: Path,
 ) -> None:
