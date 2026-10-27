@@ -298,18 +298,18 @@ final class ApplicationCoordinator: ObservableObject {
         decision: FrenchReviewDecision,
         scores: [String: Int],
         notes: String
-    ) {
-        guard !isRunning else { return }
+    ) -> FrenchReviewSubmissionOutcome {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return .cancelled }
         let panel = NSOpenPanel()
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         panel.allowsMultipleSelection = false
         panel.allowedContentTypes = [.json]
         panel.message = String(localized: "Choose the manifest.json file from the reviewed assessment bundle.")
-        guard panel.runModal() == .OK, let manifest = panel.url else { return }
+        guard panel.runModal() == .OK, let manifest = panel.url else { return .cancelled }
         guard manifest.lastPathComponent == "manifest.json" else {
             setError(String(localized: "Choose the bundle's manifest.json file."))
-            return
+            return .rejected
         }
         let request = FrenchReviewRequest(
             manifest: manifest,
@@ -320,13 +320,14 @@ final class ApplicationCoordinator: ObservableObject {
         )
         guard request.isComplete else {
             setError(String(localized: "Complete every review score and add review notes."))
-            return
+            return .rejected
         }
         startFrenchOperation(
             arguments: request.arguments,
             seed: nil,
             statusMessage: String(localized: "Recording teacher review")
         )
+        return isRunning ? .submitted : .rejected
     }
 
     private func startFrenchOperation(

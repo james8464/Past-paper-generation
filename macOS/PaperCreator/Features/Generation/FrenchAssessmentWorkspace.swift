@@ -203,12 +203,13 @@ private struct FrenchTeacherReviewSheet: View {
                 }
                 Section("Rubric · 1 to 4") {
                     ForEach(FrenchReviewRequest.rubricKeys, id: \.self) { key in
-                        Stepper(value: scoreBinding(for: key), in: 1 ... 4) {
-                            LabeledContent(
-                                LocalizedStringKey(FrenchReviewRubric.localizationKey(for: key)),
-                                value: String(scores[key] ?? 1)
-                            )
+                        Picker(LocalizedStringKey(FrenchReviewRubric.localizationKey(for: key)), selection: scoreBinding(for: key)) {
+                            ForEach(1 ... 4, id: \.self) { score in
+                                Text(score, format: .number).tag(score)
+                            }
                         }
+                        .pickerStyle(.menu)
+                        .accessibilityIdentifier("french-review-\(key)")
                     }
                 }
                 Section("Review notes") {
@@ -225,13 +226,13 @@ private struct FrenchTeacherReviewSheet: View {
                     .keyboardShortcut(.cancelAction)
                 Spacer()
                 Button("Choose Reviewed Bundle and Record") {
-                    application.recordFrenchReview(
+                    let outcome = application.recordFrenchReview(
                         reviewer: reviewer,
                         decision: decision,
                         scores: scores,
                         notes: notes
                     )
-                    dismiss()
+                    if outcome.closesReviewForm { dismiss() }
                 }
                 .keyboardShortcut(.defaultAction)
                 .buttonStyle(.borderedProminent)

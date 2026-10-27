@@ -1,5 +1,13 @@
 import Foundation
 
+enum FrenchReviewSubmissionOutcome: Equatable {
+    case cancelled
+    case submitted
+    case rejected
+
+    var closesReviewForm: Bool { self != .cancelled }
+}
+
 enum FrenchReviewDecision: String, CaseIterable, Identifiable {
     case approved
     case revise
