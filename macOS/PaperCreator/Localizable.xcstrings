@@ -650,11 +650,31 @@
     "Use Hosted AI" : {
 
     },
+    "Taking longer than estimated" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plus long que prévu"
+          }
+        }
+      }
+    },
     "Use Recommended Model" : {
 
     },
     "Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model." : {
 
+    },
+    "Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La préparation vérifie que le modèle peut fonctionner, pas la qualité des sujets. La génération s’arrête si le modèle modifie les données sources ou échoue aux contrôles des réponses et du barème."
+          }
+        }
+      }
     },
     "Use the recommended local model" : {
 

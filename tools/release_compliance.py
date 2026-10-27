@@ -134,6 +134,7 @@ def _check_entitlements(root: Path, failures: list[str]) -> bool:
             "com.apple.security.app-sandbox": True,
             "com.apple.security.files.user-selected.read-write": True,
             "com.apple.security.network.client": True,
+            "com.apple.security.print": True,
         }
         for key, expected in required.items():
             if app.get(key) is not expected:

@@ -1,10 +1,26 @@
 from __future__ import annotations
 
+import plistlib
 from pathlib import Path
 
 from tools.release_compliance import inspect_release_compliance
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_sandbox_allows_the_apps_print_command():
+    payload = plistlib.loads(
+        (ROOT / "macOS/PaperCreator/PaperCreator.entitlements").read_bytes()
+    )
+    assert payload.get("com.apple.security.print") is True
+
+
+def test_signed_build_settings_are_optional_and_forwarded():
+    makefile = (ROOT / "macOS/Makefile").read_text()
+    assert 'CODE_SIGN_IDENTITY="$(SIGNING_IDENTITY)"' in makefile
+    assert 'DEVELOPMENT_TEAM="$(SIGNING_TEAM)"' in makefile
+    assert 'CODE_SIGN_STYLE="$(SIGNING_STYLE)"' in makefile
+    assert makefile.count("$(SIGNING_BUILD_SETTINGS)") == 2
 
 
 def test_release_compliance_passes_for_the_repository() -> None:
@@ -31,7 +47,9 @@ def test_release_compliance_detects_a_tracked_secret_signature(tmp_path: Path) -
     assert any("example.txt" in failure for failure in report["failures"])
 
 
-def test_release_compliance_rejects_unbounded_runtime_dependencies(tmp_path: Path) -> None:
+def test_release_compliance_rejects_unbounded_runtime_dependencies(
+    tmp_path: Path,
+) -> None:
     requirements = tmp_path / "requirements.txt"
     requirements.write_text("unsafe-package>=1\n", encoding="utf-8")
 
@@ -43,9 +61,7 @@ def test_release_compliance_rejects_unbounded_runtime_dependencies(tmp_path: Pat
 
 def test_release_compliance_is_part_of_local_and_ci_preflight() -> None:
     makefile = (ROOT / "macOS" / "Makefile").read_text(encoding="utf-8")
-    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(
-        encoding="utf-8"
-    )
+    workflow = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
 
     assert "tools/release_compliance.py" in makefile
     assert "tools/release_compliance.py" in workflow

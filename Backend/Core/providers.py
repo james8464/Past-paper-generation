@@ -68,6 +68,15 @@ class HostedLLMClient:
                     "again, with concise string fields, no Markdown, no commentary, "
                     "and no omitted closing brackets."
                 )
+                if (
+                    isinstance(error, GenerationEvidenceError)
+                    and error.details.get("kind") == "provider_batch_contract"
+                ):
+                    current_prompt = prompt + (
+                        "\n\nREPAIR INSTRUCTION: The question identifiers or count did not match "
+                        "the requested batch. Return exactly one item for every supplied id, "
+                        "copying each id unchanged. Do not invent or repeat questions."
+                    )
         raise ValueError(
             "Provider could not return valid structured output."
         ) from last_error
@@ -157,6 +166,14 @@ class HostedLLMClient:
             ) from error
 
     def _apple(self, prompt: str) -> dict[str, object]:
+        source_prompt = prompt
+        schema = _ollama_json_schema(prompt)
+        if schema.get("required"):
+            # MLX has no server-side JSON-schema constraint. Give the same format
+            # contract explicitly; downstream answer and marking checks still apply.
+            prompt += "\n\nReturn JSON only, following OUTPUT_SCHEMA=" + json.dumps(
+                schema, separators=(",", ":")
+            )
         try:
             from mlx_lm import generate, load
         except ImportError:
@@ -186,7 +203,32 @@ class HostedLLMClient:
                 max_tokens=4096,
                 verbose=False,
             )
-        return parse_json_object(response)
+        parsed = parse_json_object(response)
+        identifiers = _prompt_item_identifiers(source_prompt)
+        for field in ("questions", "reviews"):
+            if identifiers and field in schema.get("required", []):
+                items = parsed.get(field)
+                actual = (
+                    [
+                        item.get("id") if isinstance(item, dict) else None
+                        for item in items
+                    ]
+                    if isinstance(items, list)
+                    else []
+                )
+                if (
+                    len(actual) != len(identifiers)
+                    or not all(isinstance(identifier, str) for identifier in actual)
+                    or set(actual) != set(identifiers)
+                ):
+                    raise GenerationEvidenceError(
+                        "MLX question identifiers or count did not match the requested batch.",
+                        details={
+                            "kind": "provider_batch_contract",
+                            "provider": "apple",
+                        },
+                    )
+        return parsed
 
     def _openai(self, prompt: str) -> dict[str, object]:
         payload = json.dumps(
@@ -484,7 +526,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         question = {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "maxLength": 64},
+                "id": _batch_identifier_schema(prompt),
                 "prompt": {"type": "string", "maxLength": 1200},
                 "choices": {
                     "type": "array",
@@ -526,7 +568,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         review = {
             "type": "object",
             "properties": {
-                "id": {"type": "string", "maxLength": 64},
+                "id": _batch_identifier_schema(prompt),
                 "approved": {"type": "boolean"},
                 "factual_issues": text_list,
                 "marking_issues": text_list,
@@ -756,6 +798,44 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
     return schema
 
 
+def _prompt_batch_items(prompt: str) -> list[object]:
+    # Real batch declarations start a line. A quoted candidate may contain a
+    # different marker; it must not override the enclosing review's identifiers.
+    marker = re.search(r"(?m)^(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
+    if marker is None:
+        marker = re.search(r"(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
+    if marker is None:
+        return []
+    try:
+        items = json.JSONDecoder().raw_decode(prompt[marker.end() :])[0]
+    except ValueError:
+        return []
+    return items if isinstance(items, list) else []
+
+
+def _prompt_item_identifiers(prompt: str) -> list[str]:
+    items = _prompt_batch_items(prompt)
+    if items or any(marker in prompt for marker in ("BLUEPRINT_DATA=", "REVIEW_DATA=")):
+        return list(
+            dict.fromkeys(
+                item["id"]
+                for item in items
+                if isinstance(item, dict)
+                and isinstance(item.get("id"), str)
+                and re.fullmatch(r"\d+/\d+/\d+", item["id"])
+            )
+        )
+    return list(dict.fromkeys(re.findall(r'"id"\s*:\s*"(\d+/\d+/\d+)"', prompt)))
+
+
+def _batch_identifier_schema(prompt: str) -> dict[str, object]:
+    result: dict[str, object] = {"type": "string", "maxLength": 64}
+    identifiers = _prompt_item_identifiers(prompt)
+    if identifiers:
+        result["enum"] = identifiers
+    return result
+
+
 def _prompt_item_count(prompt: str) -> int:
     """Derive the exact batch cardinality already declared in prompt data.
 
@@ -766,7 +846,7 @@ def _prompt_item_count(prompt: str) -> int:
     requested item, so they are a safe, inexpensive cardinality signal.
     """
 
-    count = len(set(re.findall(r'"id"\s*:\s*"\d+/\d+/\d+"', prompt)))
+    count = len(_prompt_item_identifiers(prompt))
     return min(6, max(1, count))
 
 

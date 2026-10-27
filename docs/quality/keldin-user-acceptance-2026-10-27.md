@@ -62,3 +62,95 @@ There were no French authoring or layout changes in this update. The [26 October
 The default MLX 3B model has not passed full-paper validation. A successful setup or small JSON request must not be presented as evidence that it can author a valid complete assessment. Do not weaken identifier, answer, marking or second-pass review checks to make it pass.
 
 Older UK layouts still display Paper Creator branding; this update does not rewrite their calibrated cover masters. Per-document reference rights, independent accessibility review, teacher/learner evidence, distribution signing and store review also remain open. No Apple, examiner, school, regional or prize approval is claimed.
+
+## Same-day follow-up: signed runtime and MLX contracts
+
+The earlier production-identity launch failure above is retained as historical
+evidence. A subsequent Xcode build successfully used the existing personal
+development identity with the original `com.jamesdurup.PaperCreator` bundle ID.
+The build wrapper's isolated home hid Xcode's signing configuration. Selecting
+the normal signing home through `HOME_PATH`, together with `SIGNING_IDENTITY`
+and `SIGNING_TEAM`, resolved certificate selection. The Makefile now forwards
+optional identity, team and signing-style settings to build and test. No
+credentials were copied into the repository. No container was deleted or
+reassigned, and no library-validation exception or sandbox bypass was added.
+
+The signed Release passed strict bundle verification and App Store preflight.
+Computer-control testing launched that original-identity build, generated an
+Economics layout preview through its bundled helper, reopened its saved documents
+after relaunch, and opened a print dialog offering all eight subject pages. The
+app was missing `com.apple.security.print`; it is now declared and required by
+the compliance check. No physical print job was sent. This is development-signed
+runtime evidence, not a distribution-signed archive, upload or Apple approval.
+
+Within the sandboxed app, the French reference preparation completed after the
+download confirmation. A fresh V32 draft, seed **1876489898**, completed and
+automatically exported its four-file assessment bundle to the user-selected test
+folder. A separate single-PDF export also succeeded. The subject has seven pages
+and the correction seventeen. Package and complete-PDF validation passed. Every
+page's extracted text and rendered pixels match the previously reviewed
+expression-tree/booking-capacity/lock-cycle family, seed 270101. The manifest
+remains `unreviewed_draft`.
+
+| Sandboxed French artifact | SHA-256 |
+|---|---|
+| Subject | `0c510d8079eda78497b0f1a7af5b11387e8ce67cfbbf7186847d910cb776be26` |
+| Correction | `92700ec894020fd0899d56ee62a8dcf52c5af472d35e79489ba72bd04e6c9b15` |
+| Assessment | `905c4808e6f7eb9694eddabbf28624c5e4f755540ab4f2d91918d7a2d1210e15` |
+
+The earlier UI-created seed 1535248359 was also rechecked: all eight subject and
+eighteen correction pages were visually inspected, and the questions, worked
+traces and indicative credits were read against the supplied cases. All sixteen
+pages of the official 2026 Métropole day-one comparator were reread and visually
+compared. The generated paper has connected decoding/transcoding, chronological
+stock and ordered-delivery reasoning, but remains more compact and table-led,
+with less diagram interpretation and scaffolded code than the comparator.
+Sparse tails remain. No clipping or overlap was found in these reviewed copies.
+No new official marking scheme was compared. The fidelity **HOLD**, finite-family
+limit and external teacher/learner calibration gates remain unchanged. This is
+not a new live-model French qualification or the deferred final matrix.
+
+MLX now receives the same explicit output-schema guidance used for structured
+local requests. Both local providers constrain batch identifiers to the supplied
+root records, ignoring nested candidate and repair-data identifiers. MLX rejects
+missing, extra, duplicated, malformed or mismatched question/review identifiers
+and requests a repair that names the batch problem. It does not remap identifiers
+or repair answers. Generic requests and model chat-template behavior are retained.
+An additional regression verifies that a fake blueprint marker inside quoted
+candidate text cannot override the enclosing review declaration.
+
+A separate computer-control run in the signed sandbox completed guided 3B model
+setup and continued into real drafting. The bounded generation was rejected for
+an invalid batch; the app displayed the error, retained a private diagnostic and
+recorded a failed History entry. It published no Accounting paper 1 files. The
+same app then completed an Accounting paper 2 layout preview and exported exactly
+its four expected artifacts, without attaching the older Economics or French
+files. This verifies runtime and recovery, not live-paper quality.
+
+The long retry exposed another presentation bug: the elapsed estimate reached
+zero while drafting continued. Remaining-time text now says “Taking longer than
+estimated” instead of promising “0s”; a positive subsecond estimate shows at least
+“1s”. Both states have native regression tests, including recovery when observed
+progress supplies a new estimate. The overdue message has a French translation.
+
+Fresh full-paper diagnostic attempts used Accounting paper 1, seed 270127:
+Llama-3.2-3B-Instruct-4bit and Qwen2.5-7B-Instruct-4bit both failed protected content
+validation at the first question. Qwen returned the correct batch identifier, but
+invented currency figures and a ledger-entry task instead of the requested book
+of prime entry; its claimed answer was also unsuitable. An additional numeric
+reminder did not solve this and was not retained in production. No paper was
+published and the default model was not changed. Two first-response traces were
+deliberately stopped diagnostics, not complete live runs. Settings now explain,
+in English and French, that model setup does not qualify paper quality.
+
+Final local checks: **3,533 backend tests passed, two skipped; 87 native tests
+passed**. Ruff, repository hygiene, plist lint, shell syntax, direct Release build
+and development-signed App Store preflight passed. Read-only source review found
+no additional defect in this patch. These results do not replace the open live
+model matrix or independent accessibility and educational review.
+
+Retained ignored root: `tmp/final-validation-20261027/`. It contains signing
+failures and successful build logs, full-suite results, the three failed MLX
+attempts, the two deliberately interrupted response traces, French review
+renders, and the sandbox exports. Earlier attempts and historical packages were
+not removed.
