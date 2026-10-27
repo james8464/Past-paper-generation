@@ -204,6 +204,7 @@ def test_bundle_check_rejects_missing_marking_policy(monkeypatch, capsys):
 
 
 def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
+    # This seed previously placed the next MCQ mark over a diagram axis label.
     events = run_bridge(
         "generate",
         "--subject",
@@ -214,7 +215,7 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         str(tmp_path),
         "--dry-run",
         "--seed",
-        "123",
+        "22",
     )
     files = {
         event["role"]: Path(str(event["path"]))
@@ -236,7 +237,7 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     manifest = json.loads(files["package_manifest"].read_text(encoding="utf-8"))
     assert manifest["schema_version"] == 2
     assert manifest["generator"]["content_mode"] == "ai-assisted"
-    assert manifest["request"]["seed"] == 123
+    assert manifest["request"]["seed"] == 22
     assert manifest["evidence"]["difficulty_independently_verified"] is False
     assert manifest["evidence"]["qualification_levels"] == {
         "engineering_validated": True,
