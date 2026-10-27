@@ -23,7 +23,7 @@ if ! "$PYTHON" -c 'import PyInstaller' 2>/dev/null; then
   exit 1
 fi
 
-if ! "$PYTHON" -c 'import mlx_lm' 2>/dev/null; then
+if ! "$PYTHON" -c 'import mlx_lm, outlines, llguidance' 2>/dev/null; then
   echo "error: Apple MLX support is missing from .venv. Run 'make backend-env' before building." >&2
   exit 1
 fi
@@ -107,6 +107,9 @@ PYINSTALLER_ARGS=(
   --collect-data pymupdf
   --collect-all mlx
   --collect-all mlx_lm
+  --collect-all outlines
+  --collect-all outlines_core
+  --collect-all llguidance
   --add-data "$ROOT_DIR/Resources/layout-master-runtime.json:Resources"
   --add-data "$ROOT_DIR/Resources/layout-profiles.json:Resources"
   --add-data "$ROOT_DIR/Resources/generator-registry.json:Resources"

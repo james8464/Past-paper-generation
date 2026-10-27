@@ -762,7 +762,7 @@ def _independently_validate_candidate(
 def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
     """Permit a reviewed local blueprint stem only for formatting-only drift."""
 
-    return provider.casefold() == "ollama" and any(
+    return provider.casefold() in {"ollama", "apple"} and any(
         reason in failure.casefold()
         for reason in (
             "changed the required precision instruction",

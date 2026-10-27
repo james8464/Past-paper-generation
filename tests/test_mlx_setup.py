@@ -3,9 +3,11 @@ from __future__ import annotations
 import json
 import os
 import signal
+import sys
 from argparse import Namespace
 from functools import partial
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -18,6 +20,7 @@ from Backend.Core.mlx_setup import (
     handle_mlx_status,
     handle_setup_mlx,
     install_mlx_runtime,
+    load_mlx_model,
     resolve_local_mlx_model,
     validate_mlx_setup_environment,
 )
@@ -145,7 +148,6 @@ def test_local_model_resolution_never_enables_network_download(tmp_path: Path) -
             "allow_patterns": [
                 "*.json",
                 "model*.safetensors",
-                "*.py",
                 "tokenizer.model",
                 "*.tiktoken",
                 "tiktoken.model",
@@ -155,6 +157,28 @@ def test_local_model_resolution_never_enables_network_download(tmp_path: Path) -
             ],
         }
     ]
+
+
+def test_guided_setup_downloads_data_only_and_never_trusts_remote_code(monkeypatch, tmp_path):
+    snapshot = tmp_path / "snapshot"
+    snapshot.mkdir()
+    downloads = []
+    loads = []
+    module = ModuleType("mlx_lm")
+    module.load = lambda path, **kwargs: loads.append((path, kwargs))
+    monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.mlx_setup.resolve_local_mlx_model", lambda model: str(snapshot)
+    )
+    load_mlx_model(
+        "mlx-community/test", snapshot_resolver=lambda **kwargs: downloads.append(kwargs) or str(snapshot)
+    )
+    assert downloads[0]["repo_id"] == "mlx-community/test"
+    assert downloads[0]["local_files_only"] is False
+    assert "*.py" not in downloads[0]["allow_patterns"]
+    assert loads == [(str(snapshot), {"tokenizer_config": {
+        "trust_remote_code": False, "local_files_only": True,
+    }})]
 
 
 def test_missing_local_model_requests_setup_again() -> None:

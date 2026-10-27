@@ -29,6 +29,7 @@ class HostedLLMClient:
         self.base_url = _normalise_base_url(base_url)
         self._apple_model: Any | None = None
         self._apple_tokenizer: Any | None = None
+        self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
 
     @property
@@ -169,8 +170,7 @@ class HostedLLMClient:
         source_prompt = prompt
         schema = _ollama_json_schema(prompt)
         if schema.get("required"):
-            # MLX has no server-side JSON-schema constraint. Give the same format
-            # contract explicitly; downstream answer and marking checks still apply.
+            # Keep the format visible to the model as well as the token decoder.
             prompt += "\n\nReturn JSON only, following OUTPUT_SCHEMA=" + json.dumps(
                 schema, separators=(",", ":")
             )
@@ -187,23 +187,38 @@ class HostedLLMClient:
         with self._apple_lock:
             if self._apple_model is None or self._apple_tokenizer is None:
                 local_model = resolve_local_mlx_model(self.model)
-                self._apple_model, self._apple_tokenizer = load(local_model)
-            # Instruct models require their own role delimiters and assistant
-            # prefix, just as in mlx-lm's CLI. Base models keep the raw prompt.
-            if getattr(self._apple_tokenizer, "has_chat_template", False):
-                prompt = self._apple_tokenizer.apply_chat_template(
-                    [{"role": "user", "content": prompt}],
-                    tokenize=False,
-                    add_generation_prompt=True,
+                self._apple_model, self._apple_tokenizer = load(
+                    local_model, tokenizer_config={
+                        "trust_remote_code": False, "local_files_only": True,
+                    },
                 )
-            response = generate(
-                self._apple_model,
-                self._apple_tokenizer,
-                prompt=prompt,
-                max_tokens=4096,
-                verbose=False,
-            )
-        parsed = parse_json_object(response)
+            if schema.get("required"):
+                # Outlines applies the model's chat template itself. Applying it
+                # here too would nest role delimiters and degrade instruction fit.
+                response = self._mlx_structured_response(prompt, schema)
+            else:
+                if getattr(self._apple_tokenizer, "has_chat_template", False):
+                    prompt = self._apple_tokenizer.apply_chat_template(
+                        [{"role": "user", "content": prompt}],
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                response = generate(
+                    self._apple_model,
+                    self._apple_tokenizer,
+                    prompt=prompt,
+                    max_tokens=4096,
+                    verbose=False,
+                )
+        if schema.get("required"):
+            # Never salvage a truncated constrained response or duplicate fields.
+            if len(response.encode("utf-8")) > 1_048_576:
+                raise ValueError("Model response exceeded the 1 MB JSON limit.")
+            parsed = json.loads(response, object_pairs_hook=_unique_json_fields)
+            if not isinstance(parsed, dict):
+                raise ValueError("Model returned JSON, but not an object.")
+        else:
+            parsed = parse_json_object(response)
         identifiers = _prompt_item_identifiers(source_prompt)
         for field in ("questions", "reviews"):
             if identifiers and field in schema.get("required", []):
@@ -229,6 +244,44 @@ class HostedLLMClient:
                         },
                     )
         return parsed
+
+    def _mlx_structured_response(self, prompt: str, schema: dict) -> str:
+        """Constrain syntax, public option values and batch IDs, not correctness."""
+
+        try:
+            import llguidance
+            import outlines
+            from jsonschema import Draft202012Validator, ValidationError
+            from outlines.types import JsonSchema
+        except ImportError:
+            raise RuntimeError(
+                "Apple MLX structured output is not ready. Open Settings and run "
+                "the guided setup, or update the app, then try again."
+            ) from None
+        if self._apple_structured_model is None:
+            self._apple_structured_model = outlines.from_mlxlm(
+                self._apple_model, self._apple_tokenizer
+            )
+        # A fresh decoder per call avoids carrying accepted tokens into repairs.
+        # llguidance avoids the large finite-state compilation cost of bounded
+        # strings/arrays in the default Outlines backend (see retained timings).
+        decoder_schema = _mlx_decoder_schema(schema)
+        grammar = llguidance.grammar_from("json_schema", json.dumps(decoder_schema))
+        grammar_error = llguidance.LLMatcher.validate_grammar(grammar)
+        if grammar_error:
+            raise ValueError(f"MLX cannot constrain this response format: {grammar_error}")
+        response = self._apple_structured_model(
+            prompt, JsonSchema(decoder_schema), backend="llguidance",
+            max_tokens=4096, verbose=False,
+        )
+        if len(response.encode("utf-8")) > 1_048_576:
+            raise ValueError("Model response exceeded the 1 MB JSON limit.")
+        parsed = json.loads(response, object_pairs_hook=_unique_json_fields)
+        try:
+            Draft202012Validator(schema).validate(parsed)
+        except ValidationError as error:
+            raise ValueError("MLX response did not match the required output schema.") from error
+        return response
 
     def _openai(self, prompt: str) -> dict[str, object]:
         payload = json.dumps(
@@ -429,6 +482,24 @@ def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return value
 
 
+def _mlx_decoder_schema(schema: dict) -> dict:
+    """Defer only array uniqueness to validation; reject other unsupported rules."""
+
+    result = {key: value for key, value in schema.items() if key != "uniqueItems"}
+    if isinstance(schema.get("properties"), dict):
+        result["properties"] = {
+            name: _mlx_decoder_schema(value)
+            for name, value in schema["properties"].items()
+        }
+    for key in ("items", "additionalProperties"):
+        if isinstance(schema.get(key), dict):
+            result[key] = _mlx_decoder_schema(schema[key])
+    for key in ("allOf", "anyOf", "oneOf", "prefixItems"):
+        if isinstance(schema.get(key), list):
+            result[key] = [_mlx_decoder_schema(value) for value in schema[key]]
+    return result
+
+
 def _ollama_json_schema(prompt: str) -> dict[str, object]:
     """Return a bounded top-level schema while leaving subject fields extensible."""
 
@@ -439,8 +510,17 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         "maxItems": 6,
     }
     object_items = {"type": "object", "additionalProperties": True}
-    if prompt.startswith("Independently solve") and '"response_slots": [' in prompt:
-        item = json.JSONDecoder().raw_decode(prompt.split("\n", 1)[1])[0]["item"]
+    solver_item = {}
+    if prompt.startswith("Independently solve") and "\n" in prompt:
+        try:
+            payload = json.JSONDecoder().raw_decode(prompt.split("\n", 1)[1])[0]
+            candidate = payload.get("item") if isinstance(payload, dict) else None
+            if isinstance(candidate, dict):
+                solver_item = candidate
+        except ValueError:
+            pass
+    if solver_item:
+        item = solver_item
         slots = item.get("response_slots") or []
         if slots:
             answers = {
@@ -484,6 +564,24 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "partial_credit_boundaries": {**text_list, "maxItems": 8},
             "follow_through_rules": {**text_list, "maxItems": 8},
         }
+        choices = solver_item.get("choices")
+        if (
+            solver_item.get("kind") == "multiple_choice"
+            and isinstance(choices, list)
+            and choices
+            and all(isinstance(choice, str) and choice.strip() for choice in choices)
+        ):
+            # Constrain the format to public options, never to the private key.
+            # Reconciliation still rejects a wrong answer or contradictory point.
+            option = {"type": "string", "enum": choices}
+            properties["answer"] = option
+            properties["mark_points"] = {
+                "type": "array", "items": option, "minItems": 1, "maxItems": 1,
+            }
+            if solver_item.get("marks") == 1:
+                # One selected option earns the single mark. Other options are
+                # distractors, not alternative correct answers to invent.
+                properties["alternatives"] = {**text_list, "maxItems": 0}
         required = list(properties)
     elif "`questions` array" in prompt or "a `questions` array" in prompt:
         item_count = _prompt_item_count(prompt)

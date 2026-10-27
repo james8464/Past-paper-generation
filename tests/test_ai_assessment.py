@@ -127,25 +127,26 @@ def test_family_prompt_word_limit_rejects_layout_breaking_text() -> None:
         )
 
 
-def test_local_seeded_fallback_is_limited_to_safe_stem_failures() -> None:
+@pytest.mark.parametrize("provider", ["ollama", "apple"])
+def test_local_seeded_fallback_is_limited_to_safe_stem_failures(provider) -> None:
     assert _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure="calculation changed the required precision instruction",
     )
     assert _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure="question 7 is only a paraphrase of the draft (1.000)",
     )
     assert _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure="question 8 prompt has 27 words; maximum is 20",
     )
     assert _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure="question 9 omitted a required source or visual term",
     )
     assert _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure=(
             "mcq changed immutable numeric data: expected Counter(), "
             "got Counter({'2016': 1})"
@@ -156,12 +157,13 @@ def test_local_seeded_fallback_is_limited_to_safe_stem_failures() -> None:
         failure="calculation changed the required precision instruction",
     )
     assert not _seeded_fallback_allowed(
-        provider="ollama",
+        provider=provider,
         failure="mark scheme has incorrect causal reasoning",
     )
 
 
-def test_local_precision_drift_uses_independently_reviewed_seeded_stem() -> None:
+@pytest.mark.parametrize("provider", ["ollama", "apple"])
+def test_local_precision_drift_uses_independently_reviewed_seeded_stem(provider) -> None:
     point = MarkSchemePoint(
         text="Award two marks for the correct method and result.",
         marks=2,
@@ -216,9 +218,11 @@ def test_local_precision_drift_uses_independently_reviewed_seeded_stem() -> None
         def generate_json(self, _prompt: str) -> dict[str, object]:
             return next(self.responses)
 
+    client = Client()
+    client.provider = provider
     result = _generate_item_transaction(
         task,
-        client=Client(),
+        client=client,
         subject="Economics",
         seed=1,
         policy=GenerationPolicy(attempts=3),
@@ -227,7 +231,7 @@ def test_local_precision_drift_uses_independently_reviewed_seeded_stem() -> None
     )
 
     assert result.prompt == question.prompt
-    assert result.provenance == "reviewed-seeded-fallback:ollama"
+    assert result.provenance == f"reviewed-seeded-fallback:{provider}"
 
 
 class _Client:

@@ -11,6 +11,7 @@ import pytest
 
 from Backend.Core.providers import (
     HostedLLMClient,
+    _mlx_decoder_schema,
     _ollama_json_schema,
     _ollama_output_budget,
     _ollama_temperature,
@@ -141,9 +142,10 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     calls = {"load": 0, "generate": 0}
     module = ModuleType("mlx_lm")
 
-    def load(model_name: str) -> tuple[object, object]:
+    def load(model_name: str, *, tokenizer_config) -> tuple[object, object]:
         calls["load"] += 1
         assert model_name == "/local/test-model"
+        assert tokenizer_config == {"trust_remote_code": False, "local_files_only": True}
         return object(), object()
 
     def generate(
@@ -178,6 +180,29 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     assert client.supports_parallel_generation is False
 
 
+def test_solver_schema_bounds_multiple_choice_to_candidate_options():
+    choices = ["Cash book", "Purchases journal", "Sales journal", "General journal"]
+    schema = _ollama_json_schema(
+        "Independently solve this item.\n"
+        + json.dumps({"item": {"kind": "multiple_choice", "marks": 1, "choices": choices}})
+    )
+    properties = schema["properties"]
+    assert properties["answer"]["enum"] == choices
+    assert properties["mark_points"]["items"]["enum"] == choices
+    assert properties["mark_points"]["minItems"] == 1
+    assert properties["mark_points"]["maxItems"] == 1
+    assert properties["alternatives"]["maxItems"] == 0
+    assert "correct_choice" not in json.dumps(schema)
+
+
+def test_solver_schema_reads_compact_closed_slots_before_choice_shape():
+    schema = _ollama_json_schema(
+        'Independently solve this item.\n{"item":{"kind":"multiple_choice",'
+        '"choices":["A","B"],"response_slots":["row-1","row-2"]}}'
+    )
+    assert schema["properties"]["answer"]["required"] == ["row-1", "row-2"]
+
+
 def test_apple_provider_applies_the_models_chat_template(monkeypatch) -> None:
     module = ModuleType("mlx_lm")
     calls = []
@@ -189,7 +214,7 @@ def test_apple_provider_applies_the_models_chat_template(monkeypatch) -> None:
             calls.append((messages, kwargs))
             return "formatted conversation"
 
-    module.load = lambda _path: (object(), Tokenizer())
+    module.load = lambda _path, **kwargs: (object(), Tokenizer())
 
     def generate(_model, _tokenizer, *, prompt, **_kwargs):
         assert prompt == "formatted conversation"
@@ -240,13 +265,17 @@ def test_apple_batch_format_and_identifier_repair(monkeypatch):
             '{"questions":[{"id":"0/0/0"}]}',
         ]
     )
-    module.load = lambda _: (object(), object())
+    module.load = lambda _, **kwargs: (object(), object())
 
     def generate(_model, _tokenizer, *, prompt, **kwargs):
         prompts.append(prompt)
         return next(replies)
 
     module.generate = generate
+    monkeypatch.setattr(
+        HostedLLMClient, "_mlx_structured_response",
+        lambda self, prompt, schema: generate(None, None, prompt=prompt),
+    )
     monkeypatch.setitem(sys.modules, "mlx_lm", module)
     monkeypatch.setattr(
         "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
@@ -282,8 +311,12 @@ def test_apple_batch_format_and_identifier_repair(monkeypatch):
 )
 def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, prompt):
     module = ModuleType("mlx_lm")
-    module.load = lambda _: (object(), object())
+    module.load = lambda _, **kwargs: (object(), object())
     module.generate = lambda *args, **kwargs: json.dumps({field: items})
+    monkeypatch.setattr(
+        HostedLLMClient, "_mlx_structured_response",
+        lambda self, prompt, schema: json.dumps({field: items}),
+    )
     monkeypatch.setitem(sys.modules, "mlx_lm", module)
     monkeypatch.setattr(
         "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
@@ -294,6 +327,93 @@ def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, p
             prompt + '[{"id":"0/0/0"}]',
             retries=1,
         )
+
+
+@pytest.mark.parametrize("duplicate", [False, True])
+def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatch, duplicate):
+    calls = []
+    adapters = []
+    outlines = ModuleType("outlines")
+    types = ModuleType("outlines.types")
+    types.JsonSchema = lambda schema: {"schema": schema}
+
+    def adapter(model, tokenizer):
+        adapters.append((model, tokenizer))
+
+        def generate(prompt, output_type, **kwargs):
+            calls.append((prompt, output_type, kwargs))
+            return '{"answer":["ready","ready"]}' if duplicate else '{"answer":"ready"}'
+
+        return generate
+
+    outlines.from_mlxlm = adapter
+    monkeypatch.setitem(sys.modules, "outlines", outlines)
+    monkeypatch.setitem(sys.modules, "outlines.types", types)
+    llguidance = ModuleType("llguidance")
+    llguidance.grammar_from = lambda format, text: text
+    class Matcher:
+        @staticmethod
+        def validate_grammar(grammar):
+            assert "uniqueItems" not in grammar
+            return ""
+    llguidance.LLMatcher = Matcher
+    monkeypatch.setitem(sys.modules, "llguidance", llguidance)
+    client = HostedLLMClient(provider="apple", model="test", api_key="")
+    schema = {"type": "object", "required": ["answer"]}
+    if duplicate:
+        schema["properties"] = {"answer": {"type": "array", "uniqueItems": True}}
+        with pytest.raises(ValueError, match="required output schema"):
+            client._mlx_structured_response("prompt", schema)
+        return
+    for _ in range(2):
+        assert client._mlx_structured_response("unformatted prompt", schema) == '{"answer":"ready"}'
+    assert len(adapters) == 1
+    assert len(calls) == 2
+    assert calls[0] == (
+        "unformatted prompt", {"schema": schema},
+        {"backend": "llguidance", "max_tokens": 4096, "verbose": False},
+    )
+
+
+def test_mlx_decoder_schema_preserves_property_names_and_original_contract():
+    schema = {"type": "object", "properties": {
+        "uniqueItems": {"type": "boolean"},
+        "values": {"type": "array", "uniqueItems": True, "maxItems": 3},
+    }}
+    adapted = _mlx_decoder_schema(schema)
+    assert adapted["properties"]["uniqueItems"] == {"type": "boolean"}
+    assert adapted["properties"]["values"] == {"type": "array", "maxItems": 3}
+    assert schema["properties"]["values"]["uniqueItems"] is True
+
+
+def test_apple_structured_decoder_missing_dependency_is_actionable(monkeypatch):
+    monkeypatch.setitem(sys.modules, "outlines", None)
+    client = HostedLLMClient(provider="apple", model="test", api_key="")
+    with pytest.raises(RuntimeError, match="guided setup"):
+        client._mlx_structured_response("prompt", {"required": ["answer"]})
+
+
+@pytest.mark.parametrize("response", [
+    '{"answer":"partial"',
+    '{"answer":"first","answer":"second"}',
+    'Commentary {"answer":"complete"}',
+    '[{"answer":"complete"}]',
+])
+def test_apple_constrained_output_is_not_salvaged(monkeypatch, response):
+    module = ModuleType("mlx_lm")
+    module.load = lambda _, **kwargs: (object(), object())
+    module.generate = lambda *args, **kwargs: pytest.fail("unconstrained generation")
+    monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
+    )
+    monkeypatch.setattr(
+        HostedLLMClient, "_mlx_structured_response",
+        lambda self, prompt, schema: response,
+    )
+    client = HostedLLMClient(provider="apple", model="test", api_key="")
+    with pytest.raises(ValueError):
+        client.generate_json("Independently solve this question.", retries=1)
 
 
 def test_batch_schema_ignores_nested_candidate_identifiers():
