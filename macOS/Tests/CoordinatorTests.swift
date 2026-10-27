@@ -3,6 +3,32 @@ import XCTest
 @testable import PaperCreator
 
 final class CoordinatorTests: XCTestCase {
+    @MainActor
+    func testQualityFailureShowsRecoveryAdviceAndKeepsOriginalActivity() {
+        let model = isolatedApplication()
+        let diagnostic = "AI could not produce a valid, second-pass reviewed item for question 05: context check failed"
+        model.apply(.error(message: diagnostic, code: "generation_failed"))
+        XCTAssertEqual(model.errorMessage, String(localized: "This model couldn't create a paper that passed the quality checks. No new paper was published. Try another model. You can copy diagnostics from Tools."))
+        XCTAssertEqual(model.progressEntries.last?.message, diagnostic)
+        XCTAssertTrue(model.diagnosticSummary.contains(diagnostic))
+
+        model.apply(.error(message: "Cannot write to the selected folder", code: "output_error"))
+        XCTAssertEqual(model.errorMessage, "Cannot write to the selected folder")
+    }
+
+    @MainActor
+    func testRefinementStatusKeepsQuestionNumberAndDetailedActivity() {
+        let model = isolatedApplication()
+        let diagnostic = "Refining AI item 03.2 after an automated quality check: Counter({'AO1': 2})"
+        model.apply(.progress(stage: "generation", message: diagnostic, progress: 0.25))
+        XCTAssertEqual(model.status, String(localized: "Rechecking question \("03.2")"))
+        XCTAssertEqual(model.progressEntries.last?.message, diagnostic)
+        XCTAssertEqual(model.generationProgress, 0.25)
+
+        model.apply(.progress(stage: "generation", message: "Writing PDFs", progress: 0.9))
+        XCTAssertEqual(model.status, "Writing PDFs")
+    }
+
     private var temporaryDirectory: URL!
 
     override func setUpWithError() throws {

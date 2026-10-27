@@ -1,5 +1,27 @@
 # Keldin user acceptance — 27 October 2026
 
+## Generation feedback and preview history
+
+History now labels layout-only jobs “Layout preview” instead of displaying the
+selected model as if inference had run. The stored configuration and provenance
+are unchanged. Computer-control inspection of the Release build confirmed the
+label on completed and failed preview jobs; live failures still show their model.
+The new labels fit the table without clipping.
+
+The workspace shortens the known refinement message to the question being
+rechecked. A known model-quality failure explains that no paper was published,
+suggests another model and points to Tools for diagnostics. Other errors retain
+their original wording. Activity keeps the original backend messages, and Copy
+Diagnostic Summary now includes the six most recent activity entries. The new
+messages and preview label have French translations. Two regressions failed
+before the change, then all **89 native tests** passed. Release build, repository
+inventory checks and static release compliance passed.
+
+After the source-scope fix below, a fresh Qwen3 8B native attempt and a duplicate
+of the earlier failed configuration both stopped on question 01's context-demand
+review. Both remained failed jobs without a new paper. These observations do not
+establish a completed MLX paper or justify changing the recommended model.
+
 ## Review source scope
 
 A real sandboxed Qwen3 8B attempt accepted four Accounting items, then rejected
