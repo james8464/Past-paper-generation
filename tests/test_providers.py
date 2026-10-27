@@ -178,6 +178,38 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     assert client.supports_parallel_generation is False
 
 
+def test_apple_provider_applies_the_models_chat_template(monkeypatch) -> None:
+    module = ModuleType("mlx_lm")
+    calls = []
+
+    class Tokenizer:
+        has_chat_template = True
+
+        def apply_chat_template(self, messages, **kwargs):
+            calls.append((messages, kwargs))
+            return "formatted conversation"
+
+    module.load = lambda _path: (object(), Tokenizer())
+
+    def generate(_model, _tokenizer, *, prompt, **_kwargs):
+        assert prompt == "formatted conversation"
+        return '{"answer":"ready"}'
+
+    module.generate = generate
+    monkeypatch.setitem(sys.modules, "mlx_lm", module)
+    monkeypatch.setattr(
+        "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
+    )
+    client = HostedLLMClient(provider="apple", model="test-model", api_key="")
+    assert client.generate_json("Return JSON.") == {"answer": "ready"}
+    assert calls == [
+        (
+            [{"role": "user", "content": "Return JSON."}],
+            {"tokenize": False, "add_generation_prompt": True},
+        )
+    ]
+
+
 def test_apple_provider_missing_runtime_uses_human_recovery_message(
     monkeypatch,
 ) -> None:

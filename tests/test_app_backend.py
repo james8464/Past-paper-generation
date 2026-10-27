@@ -18,11 +18,18 @@ ROOT = Path(__file__).resolve().parents[1]
 BRIDGE = ROOT / "bridge.py"
 
 
-def test_checkpoint_namespace_changes_when_editorial_rules_change(tmp_path, monkeypatch):
-    request = Namespace(subject="economics_aqa", paper="3", seed=1,
-                        provider="ollama", model="test")
+def test_checkpoint_namespace_changes_when_editorial_rules_change(
+    tmp_path, monkeypatch
+):
+    request = Namespace(
+        subject="economics_aqa", paper="3", seed=1, provider="ollama", model="test"
+    )
     current = checkpoint_path_for_job(request, tmp_path)
-    monkeypatch.setattr("Backend.Core.generation.ASSESSMENT_REVIEW_VERSION", "older-rules", raising=False)
+    monkeypatch.setattr(
+        "Backend.Core.generation.ASSESSMENT_REVIEW_VERSION",
+        "older-rules",
+        raising=False,
+    )
     assert checkpoint_path_for_job(request, tmp_path) != current
 
 
@@ -55,7 +62,9 @@ def run_bridge_raw(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def test_relative_output_is_resolved_from_callers_working_directory(tmp_path: Path) -> None:
+def test_relative_output_is_resolved_from_callers_working_directory(
+    tmp_path: Path,
+) -> None:
     events = run_bridge(
         "generate",
         "--subject",
@@ -178,6 +187,22 @@ def test_bundle_check_rejects_unrenderable_french_corrections(monkeypatch, capsy
     assert any("French NSI" in error for error in status["errors"])
 
 
+def test_bundle_check_rejects_missing_marking_policy(monkeypatch, capsys):
+    from argparse import Namespace
+
+    from Backend.Core import level_of_response
+    from Backend.Core.cli import handle_bundle_check
+
+    def missing_policy(*args, **kwargs):
+        raise FileNotFoundError("level-of-response-policies.json")
+
+    monkeypatch.setattr(level_of_response, "load_level_policies", missing_policy)
+    assert handle_bundle_check(Namespace()) == 1
+    status = json.loads(capsys.readouterr().out.splitlines()[-1])
+    assert status["healthy"] is False
+    assert any("marking policy" in error for error in status["errors"])
+
+
 def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
     events = run_bridge(
         "generate",
@@ -191,7 +216,11 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         "--seed",
         "123",
     )
-    files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
+    files = {
+        event["role"]: Path(str(event["path"]))
+        for event in events
+        if event["type"] == "file"
+    }
     assert files.keys() == {
         "question_paper",
         "source_booklet",
@@ -214,17 +243,13 @@ def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
         "visually_calibrated": True,
         "empirically_calibrated": False,
     }
-    assessment = json.loads(
-        files["assessment_package"].read_text(encoding="utf-8")
-    )
+    assessment = json.loads(files["assessment_package"].read_text(encoding="utf-8"))
     assert assessment["form_id"].startswith("economics-1-")
     assert (
         manifest["evidence"]["assessment_validation"]["form_id"]
         == assessment["form_id"]
     )
-    provenance = manifest["evidence"]["assessment_validation"][
-        "authoring_provenance"
-    ]
+    provenance = manifest["evidence"]["assessment_validation"]["authoring_provenance"]
     assert provenance["items"] == len(assessment["items"])
     assert sum(provenance["counts"].values()) == provenance["items"]
     assert provenance["unknown_items"] == 0
@@ -263,9 +288,7 @@ def test_protocol_v2_envelopes_every_backend_event(tmp_path: Path) -> None:
         "transactional-output",
     ]
     assert all(event["protocol"] == 2 for event in events)
-    assert [event["event_id"] for event in events] == list(
-        range(1, len(events) + 1)
-    )
+    assert [event["event_id"] for event in events] == list(range(1, len(events) + 1))
     assert all(event["timestamp"] for event in events)
 
 
@@ -438,7 +461,11 @@ def test_cs_dry_run_generates_expected_files_without_audit(tmp_path: Path) -> No
         "--seed",
         "123",
     )
-    files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
+    files = {
+        event["role"]: Path(str(event["path"]))
+        for event in events
+        if event["type"] == "file"
+    }
     assert files.keys() == {
         "question_paper",
         "mark_scheme",
@@ -463,7 +490,11 @@ def test_cs_paper1_dry_run_generates_on_screen_package(tmp_path: Path) -> None:
         "--seed",
         "123",
     )
-    files = {event["role"]: Path(str(event["path"])) for event in events if event["type"] == "file"}
+    files = {
+        event["role"]: Path(str(event["path"]))
+        for event in events
+        if event["type"] == "file"
+    }
     assert files.keys() == {
         "question_paper",
         "preliminary_material",
@@ -604,8 +635,16 @@ def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
     assert "disk_free_gb" in sample
     assert "small_file_ms" in sample
     assert "pdf_pages_per_s" in sample
-    metric_names = {event.get("name") for event in events if event["type"] == "benchmark_metric"}
-    assert {"Memory Pressure", "Swap Used", "Output Free Space", "PDF Render", "Small-file Latency"} <= metric_names
+    metric_names = {
+        event.get("name") for event in events if event["type"] == "benchmark_metric"
+    }
+    assert {
+        "Memory Pressure",
+        "Swap Used",
+        "Output Free Space",
+        "PDF Render",
+        "Small-file Latency",
+    } <= metric_names
     assert events[-1]["type"] == "benchmark_done"
     assert 0 <= float(events[-1]["score"]) <= 1
 

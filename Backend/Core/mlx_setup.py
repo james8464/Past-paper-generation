@@ -21,6 +21,19 @@ MLX_PACKAGE_SPECS = (
     "mlx==0.29.3",
     "mlx-metal==0.29.3",
 )
+# Match mlx-lm 0.30.2's download filter. A complete inference snapshot need not
+# contain the repository's README or Git metadata; newer Hub clients check this.
+MLX_MODEL_PATTERNS = [
+    "*.json",
+    "model*.safetensors",
+    "*.py",
+    "tokenizer.model",
+    "*.tiktoken",
+    "tiktoken.model",
+    "*.txt",
+    "*.jsonl",
+    "*.jinja",
+]
 MINIMUM_MLX_FREE_BYTES = 8 * 1024**3
 SUPPORTED_PYTHON_MIN = (3, 10)
 SUPPORTED_PYTHON_MAX = (3, 13)
@@ -195,7 +208,13 @@ def resolve_local_mlx_model(
             from huggingface_hub import snapshot_download
 
             snapshot_resolver = snapshot_download
-        return str(snapshot_resolver(repo_id=model, local_files_only=True))
+        return str(
+            snapshot_resolver(
+                repo_id=model,
+                local_files_only=True,
+                allow_patterns=MLX_MODEL_PATTERNS,
+            )
+        )
     except Exception as error:
         raise MLXModelSetupRequired(
             "The selected Apple MLX model is no longer stored on this Mac. "

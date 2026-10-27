@@ -138,6 +138,10 @@ def test_backend_bundle_includes_declarative_profile_resources() -> None:
     assert "generator-capability.schema.json" in script
     assert "empirical-calibration-policy.json" in script
     assert "reference-demand-profiles.json" in script
+    assert (
+        '--add-data "$ROOT_DIR/Resources/level-of-response-policies.json:Resources"'
+        in script
+    )
     assert "Resources/board-profiles:Resources/board-profiles" in script
 
 
@@ -149,10 +153,7 @@ def test_backend_bundle_includes_pymupdf_runtime_data() -> None:
 
 def test_backend_bundle_keeps_source_used_in_french_corrections() -> None:
     script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
-    assert (
-        '--add-data "$french_source:Backend/Core/france"'
-        in script
-    )
+    assert '--add-data "$french_source:Backend/Core/france"' in script
     assert 'find "$ROOT_DIR/Backend/Core/france" -maxdepth 1 -type f' in script
 
 

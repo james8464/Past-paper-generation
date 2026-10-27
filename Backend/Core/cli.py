@@ -54,7 +54,9 @@ def build_parser() -> argparse.ArgumentParser:
     mlx_status.set_defaults(handler=handle_mlx_status)
 
     benchmark = subparsers.add_parser("benchmark")
-    benchmark.add_argument("--duration", type=float, default=DEFAULT_BENCHMARK_DURATION_SECONDS)
+    benchmark.add_argument(
+        "--duration", type=float, default=DEFAULT_BENCHMARK_DURATION_SECONDS
+    )
     benchmark.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     benchmark.set_defaults(handler=handle_benchmark)
 
@@ -68,25 +70,40 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     generate.add_argument("--seed", type=int, default=None)
     generate.add_argument("--model", default=DEFAULT_MODEL)
-    generate.add_argument("--provider", choices=["ollama", "openai", "anthropic", "apple"], default="ollama")
-    generate.add_argument("--api-key", default=os.environ.get("PAPER_CREATOR_API_KEY", ""))
+    generate.add_argument(
+        "--provider",
+        choices=["ollama", "openai", "anthropic", "apple"],
+        default="ollama",
+    )
+    generate.add_argument(
+        "--api-key", default=os.environ.get("PAPER_CREATOR_API_KEY", "")
+    )
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")
     generate.set_defaults(handler=handle_generate)
 
-    assessment = subparsers.add_parser("generate-assessment", help="Generate a national-framework practice assessment")
+    assessment = subparsers.add_parser(
+        "generate-assessment", help="Generate a national-framework practice assessment"
+    )
     assessment.add_argument("--assessment", required=True)
     assessment.add_argument("--reference-index", type=Path, required=True)
     assessment.add_argument("--output", default=str(DEFAULT_OUTPUT_DIR))
     assessment.add_argument("--seed", type=int, required=True)
     assessment.add_argument("--model", default=DEFAULT_MODEL)
-    assessment.add_argument("--provider", choices=["application-owned", "ollama"], default="application-owned")
+    assessment.add_argument(
+        "--provider",
+        choices=["application-owned", "ollama"],
+        default="application-owned",
+    )
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")
     assessment.add_argument("--allow-remote", action="store_true")
     assessment.set_defaults(handler=handle_framework_generate)
-    references = subparsers.add_parser("prepare-french-references", help="Download the registered official French reference PDFs")
+    references = subparsers.add_parser(
+        "prepare-french-references",
+        help="Download the registered official French reference PDFs",
+    )
     references.add_argument("--output", type=Path, required=True)
     references.set_defaults(handler=handle_french_references)
     review = subparsers.add_parser(
@@ -112,12 +129,23 @@ def handle_framework_generate(args: argparse.Namespace) -> int:
 
 def handle_french_references(args: argparse.Namespace) -> int:
     from Backend.Core.france.corpus import ingest
+
     try:
-        report = ingest(REPO_ROOT / "Resources/france/nsi/source-register.json", args.output)
+        report = ingest(
+            REPO_ROOT / "Resources/france/nsi/source-register.json", args.output
+        )
         if report["failures"]:
-            emit("error", code="french_sources_incomplete", message="Téléchargement incomplet : " + "; ".join(item["error"] for item in report["failures"]))
+            emit(
+                "error",
+                code="french_sources_incomplete",
+                message="Téléchargement incomplet : "
+                + "; ".join(item["error"] for item in report["failures"]),
+            )
             return 1
-        emit("done", message="Sources initiales préparées. L'archive complète reste en cours de vérification.")
+        emit(
+            "done",
+            message="Sources initiales préparées. L'archive complète reste en cours de vérification.",
+        )
         return 0
     except Exception as error:
         emit("error", message=str(error), code="french_sources_failed")
@@ -134,6 +162,12 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
     """Check dynamic UK imports and render every public French case family."""
     loaded: list[str] = []
     errors: list[str] = []
+    try:
+        from Backend.Core.level_of_response import load_level_policies
+
+        load_level_policies(REPO_ROOT / "Resources" / "level-of-response-policies.json")
+    except Exception as error:
+        errors.append(f"UK marking policy: {error}")
     for capability in generator_capabilities().values():
         generator_root = REPO_ROOT / "Resources" / capability.python_path
         root_text = str(generator_root)
