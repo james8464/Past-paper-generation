@@ -53,6 +53,20 @@ make test
 make preflight-app-store
 ```
 
+The default preflight checks the bundle, not App Store upload readiness. For a
+local development-signed sandbox build, use your own team and signing home:
+
+```bash
+HOME_PATH=/absolute/path/to/your/user-folder make preflight-app-store \
+  SIGNING_IDENTITY='Apple Development' SIGNING_TEAM=YOUR_TEAM_ID
+```
+
+The build wrapper normally uses an isolated home folder, which cannot see your
+Xcode signing configuration. `HOME_PATH` selects the existing signing home; it
+does not copy credentials into the checkout. `SIGNING_STYLE=Manual` is available
+for a manually provisioned identity. Release uploads still require the appropriate
+distribution identity, provisioning, runtime testing and App Store review.
+
 ## Recommended Ollama model
 
 The app chooses a recommendation from the Mac's unified-memory capacity. For
