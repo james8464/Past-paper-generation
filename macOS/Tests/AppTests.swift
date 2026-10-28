@@ -4,6 +4,21 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testCreationContextKeepsFrenchIndependentOfUKModelReadiness() {
+        let normal = PaperCreationContext.french(largePrint: false)
+        let enlarged = PaperCreationContext.french(largePrint: true)
+        XCTAssertEqual(normal.frenchLargePrint, false)
+        XCTAssertEqual(enlarged.frenchLargePrint, true)
+        XCTAssertNil(PaperCreationContext.board.frenchLargePrint)
+        for context in [normal, enlarged] {
+            XCTAssertTrue(context.canCreate(boardCanGenerate: false, hasFrenchReferences: true, isBusy: false))
+            XCTAssertFalse(context.canCreate(boardCanGenerate: true, hasFrenchReferences: false, isBusy: false))
+            XCTAssertFalse(context.canCreate(boardCanGenerate: true, hasFrenchReferences: true, isBusy: true))
+        }
+        XCTAssertFalse(PaperCreationContext.board.canCreate(boardCanGenerate: false, hasFrenchReferences: true, isBusy: false))
+        XCTAssertTrue(PaperCreationContext.board.canCreate(boardCanGenerate: true, hasFrenchReferences: false, isBusy: false))
+    }
+
     @MainActor
     func testDocumentCommandsFollowSelectionAndMissingFiles() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
