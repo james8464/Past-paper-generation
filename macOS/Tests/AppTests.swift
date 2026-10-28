@@ -4,6 +4,20 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    func testInterfaceTextUsesChosenLanguageOutsideTheViewTree() {
+        XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "fr"), "Créer un sujet")
+        XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "en"), "Create Paper")
+        let original: LocalizedStringResource = "Create Paper"
+        let french = InterfaceText.localizedResource(original, locale: Locale(identifier: "fr"))
+        XCTAssertEqual(String(localized: french), "Créer un sujet")
+        XCTAssertEqual(french.key, original.key)
+        XCTAssertEqual(original.locale, Locale.current)
+        XCTAssertEqual(
+            InterfaceText.resolve(HelpTopic.frenchBaccalaureat.titleResource, language: "fr"),
+            "Baccalauréat français · NSI"
+        )
+    }
+
     func testCreationContextKeepsFrenchIndependentOfUKModelReadiness() {
         let normal = PaperCreationContext.french(largePrint: false)
         let enlarged = PaperCreationContext.french(largePrint: true)

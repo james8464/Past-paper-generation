@@ -2,7 +2,7 @@
   "schema_version": 1,
   "researched_at": "2026-08-22",
   "default_model": "gemma4:12b",
-  "other_model_warning": "Paper Creator is tuned and checked against the recommended model for this Mac. Results may vary with other models or quantisations, including question quality, difficulty, factual accuracy, mark schemes, and structured-output reliability.",
+  "other_model_warning": "Keldin is tuned and checked against the recommended model for this Mac. Results may vary with other models or quantisations, including question quality, difficulty, factual accuracy, mark schemes, and structured-output reliability.",
   "tiers": [
     {
       "id": "memory-compatible",

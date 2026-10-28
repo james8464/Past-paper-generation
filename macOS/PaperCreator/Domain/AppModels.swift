@@ -394,6 +394,10 @@ enum HelpTopic: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 
     var title: String {
+        String(localized: titleResource)
+    }
+
+    var titleResource: LocalizedStringResource {
         switch self {
         case .gettingStarted: "Getting Started"
         case .choosingAModel: "Choosing a Model"

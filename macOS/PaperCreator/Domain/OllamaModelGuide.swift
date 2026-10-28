@@ -45,6 +45,10 @@ struct OllamaModelGuideDocument: Decodable {
     let tiers: [OllamaModelRecommendation]
     let sources: [URL]
 
+    var otherModelWarningResource: LocalizedStringResource {
+        LocalizedStringResource(stringLiteral: otherModelWarning)
+    }
+
     private enum CodingKeys: String, CodingKey {
         case schemaVersion = "schema_version"
         case researchedAt = "researched_at"

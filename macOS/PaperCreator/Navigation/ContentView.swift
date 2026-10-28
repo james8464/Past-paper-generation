@@ -7,6 +7,10 @@ struct ContentView: View {
     private var navigationColumnVisibility = "all"
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
 
+    private var interfaceLocale: Locale {
+        interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage)
+    }
+
     var body: some View {
         @Bindable var catalog = catalog
         GeometryReader { geometry in
@@ -38,8 +42,7 @@ struct ContentView: View {
             .navigationSplitViewStyle(.balanced)
         }
         .frame(minWidth: 720, minHeight: 560)
-        .environment(\.locale, interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage))
-        .alert("Generation Error", isPresented: $application.showError) {
+        .alert("Couldn't complete the action", isPresented: $application.showError) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(application.errorMessage)
@@ -75,10 +78,12 @@ struct ContentView: View {
         .sheet(isPresented: $application.showWelcome) {
             WelcomeSheet()
                 .environmentObject(application)
+                .environment(\.locale, interfaceLocale)
         }
         .sheet(isPresented: $application.showHelp) {
             HelpSheet()
                 .environmentObject(application)
+                .environment(\.locale, interfaceLocale)
         }
         .onAppear(perform: ensureSidebarSelection)
         .onChange(of: catalog.sidebarSelection) { _, newSelection in
@@ -89,6 +94,7 @@ struct ContentView: View {
                 application.refreshOllama()
             }
         }
+        .environment(\.locale, interfaceLocale)
     }
 
     private func columnVisibility(

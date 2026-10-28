@@ -53,9 +53,10 @@ struct WelcomeSheet: View {
 }
 
 private struct WelcomeRow: View {
+    @Environment(\.locale) private var locale
     let systemImage: String
-    let title: String
-    let message: String
+    let title: LocalizedStringResource
+    let message: LocalizedStringResource
 
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -66,9 +67,9 @@ private struct WelcomeRow: View {
                 .frame(width: 30, height: 30)
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
-                Text(title)
+                Text(InterfaceText.localizedResource(title, locale: locale))
                     .font(.headline)
-                Text(message)
+                Text(InterfaceText.localizedResource(message, locale: locale))
                     .foregroundStyle(.secondary)
             }
         }
@@ -78,12 +79,17 @@ private struct WelcomeRow: View {
 
 struct HelpSheet: View {
     @EnvironmentObject private var application: ApplicationCoordinator
+    @Environment(\.locale) private var locale
 
     var body: some View {
         VStack(spacing: 0) {
             NavigationSplitView {
                 List(HelpTopic.allCases, selection: $application.helpTopic) { topic in
-                    Label(topic.title, systemImage: topic.systemImage)
+                    Label {
+                        Text(InterfaceText.localizedResource(topic.titleResource, locale: locale))
+                    } icon: {
+                        Image(systemName: topic.systemImage)
+                    }
                         .tag(topic)
                 }
                 .listStyle(.sidebar)
@@ -113,12 +119,17 @@ struct HelpSheet: View {
 
 private struct HelpTopicPage: View {
     @EnvironmentObject private var application: ApplicationCoordinator
+    @Environment(\.locale) private var locale
     let topic: HelpTopic
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Label(topic.title, systemImage: topic.systemImage)
+                Label {
+                    Text(InterfaceText.localizedResource(topic.titleResource, locale: locale))
+                } icon: {
+                    Image(systemName: topic.systemImage)
+                }
                     .font(.largeTitle.weight(.semibold))
                     .symbolRenderingMode(.hierarchical)
 
@@ -190,14 +201,9 @@ private struct HelpTopicPage: View {
                 .padding(.top, 4)
             }
 
-            HelpScreenshot(
-                name: "TutorialModelSettings",
-                caption: "AI Settings identifies the recommendation and warns when another model is selected."
-            )
-
             HelpCallout(
                 title: "Results may vary with other models",
-                message: OllamaModelGuide.document.otherModelWarning,
+                message: OllamaModelGuide.document.otherModelWarningResource,
                 systemImage: "exclamationmark.triangle.fill"
             )
 
@@ -231,11 +237,6 @@ private struct HelpTopicPage: View {
 
     private var creatingAPaper: some View {
         Group {
-            HelpScreenshot(
-                name: "TutorialWorkspace",
-                caption: "The workspace keeps the paper configuration, create action, recent files, and release gates visible together."
-            )
-
             HelpSteps(
                 rows: [
                     ("Select subject and board", "Only implemented generators appear. Their papers come from the canonical generator registry."),
@@ -292,18 +293,13 @@ private struct HelpTopicPage: View {
             Text("The French route creates original Terminale NSI written practice for the 2027 rules. It is separate from the UK exam-board generators and does not include the practical component.")
                 .foregroundStyle(.secondary)
 
-            HelpScreenshot(
-                name: "TutorialFrenchNSI",
-                caption: "The French workspace keeps the official context, local references, model warning, accessibility format and human-review gate together."
-            )
-
             HelpSteps(
                 rows: [
                     ("Prepare references", "Approve the one-time download from registered French Ministry sources. Holdout material is excluded from generation."),
                     ("Create a draft", "The app builds three independent exercises, 18 technical points and a distinct indicative two-point language component."),
                     ("Inspect the bundle", "Read the subject, proposed correction and validation record. Check every structured table, graph, answer and allocation."),
-                    ("Record teacher review", "Choose the bundle manifest, score all eight review dimensions and record an explicit decision. The record is bound to every artifact hash."),
-                    ("Use with learners only after review", "Difficulty and timing remain reference-informed until teacher and learner evidence exists for the exact form."),
+                    ("Work through the paper", "Check the syllabus content, reasoning steps, calculations and proposed marks against official papers. Automated checks do not establish equal difficulty."),
+                    ("Keep the limits visible", "Difficulty and completion time are uncalibrated. An optional teacher-review record can be attached to the exact artifact hashes; the app does not invent one."),
                 ]
             )
 
@@ -393,15 +389,20 @@ private struct HelpTopicPage: View {
 }
 
 private struct HelpSection: View {
-    let title: String
-    let rows: [String]
+    @Environment(\.locale) private var locale
+    let title: LocalizedStringResource
+    let rows: [LocalizedStringResource]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
+            Text(InterfaceText.localizedResource(title, locale: locale))
                 .font(.headline)
-            ForEach(rows, id: \.self) { row in
-                Label(row, systemImage: "checkmark.circle")
+            ForEach(rows, id: \.key) { row in
+                Label {
+                    Text(InterfaceText.localizedResource(row, locale: locale))
+                } icon: {
+                    Image(systemName: "checkmark.circle")
+                }
                     .symbolRenderingMode(.hierarchical)
             }
         }
@@ -409,20 +410,21 @@ private struct HelpSection: View {
 }
 
 private struct HelpSteps: View {
-    let rows: [(String, String)]
+    @Environment(\.locale) private var locale
+    let rows: [(LocalizedStringResource, LocalizedStringResource)]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { index, row in
+            ForEach(Array(rows.enumerated()), id: \.element.0.key) { index, row in
                 HStack(alignment: .top, spacing: 12) {
                     Image(systemName: "\(index + 1).circle.fill")
                         .font(.title3)
                         .symbolRenderingMode(.hierarchical)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(row.0)
+                        Text(InterfaceText.localizedResource(row.0, locale: locale))
                             .font(.headline)
-                        Text(row.1)
+                        Text(InterfaceText.localizedResource(row.1, locale: locale))
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -433,8 +435,9 @@ private struct HelpSteps: View {
 }
 
 private struct HelpCallout: View {
-    let title: String
-    let message: String
+    @Environment(\.locale) private var locale
+    let title: LocalizedStringResource
+    let message: LocalizedStringResource
     let systemImage: String
 
     var body: some View {
@@ -444,32 +447,13 @@ private struct HelpCallout: View {
                     .symbolRenderingMode(.hierarchical)
                     .accessibilityHidden(true)
                 VStack(alignment: .leading, spacing: 3) {
-                    Text(title)
+                    Text(InterfaceText.localizedResource(title, locale: locale))
                         .font(.headline)
-                    Text(message)
+                    Text(InterfaceText.localizedResource(message, locale: locale))
                         .foregroundStyle(.secondary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
-private struct HelpScreenshot: View {
-    let name: String
-    let caption: String
-
-    var body: some View {
-        if let image = NSImage(named: NSImage.Name(name)) {
-            VStack(alignment: .leading, spacing: 8) {
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .accessibilityLabel(caption)
-                Text(caption)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
         }
     }
 }
