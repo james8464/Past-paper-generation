@@ -167,3 +167,39 @@ retained evidence and any justified deferrals here. The file-level coverage
 inventory must be completed before claiming a whole-project audit.
 App Store distribution credentials, third-party rights and observed learner
 calibration are separate from this implementation audit and remain unverified.
+
+### Primary storage and configuration package checkpoint
+
+The preceding count of 17 planned packages predates these four completed
+implementations on the primary branch. N5/N6/N7 are committed at `6295278`:
+history removal and retention preserve failed records, Keychain errors remain
+explicit without exposing credentials, and UK publication commits a complete
+output directory before changing document URLs. The final combined native run
+passed 178 tests and the personal-development-signed Store preflight passed.
+An external-folder Store layout preview published four artifacts with matching
+manifest hashes and byte counts; its subject opened and Cmd-P showed 36 pages
+before cancellation. This is preview/publication evidence, not live paper
+qualification. See `docs/quality/native-storage-transactions-review-2026-10-28.md`.
+
+T7 is committed at `b74c5b1`. A fake-bootstrap regression reproduced five missing
+advertised projects without modifying the real environment or accessing the
+network. Bootstrap installation, backend CI, pytest paths and conftest routing
+now agree on the seven advertised generator roots. All four scoped parity tests
+pass. See `docs/quality/generator-configuration-parity-review-2026-10-28.md`.
+
+The separate saved-PDF access repair is committed at `1c6e109`; it is not counted
+as completion of another planned package. On this primary checkpoint, 13 of the
+original 24 packages remain planned. Parallel Accounting/Python changes require
+their own fixed-source acceptance and protected merge before this primary
+completion record is reconciled with them.
+
+The new file-level coverage ledger records tracked paths as pending or explicitly
+excluded, with reasons: 844 tracked files, 640 pending and 204 excluded at this
+checkpoint. Its producer detects missing, duplicate, stale and
+forged exclusions. It does not infer semantic review from inventory membership
+or mark the whole repository reviewed. That remaining file-by-file work is
+separate from completing these defect-specific packages.
+
+The combined coverage/parity/hygiene check passes 25 tests (15 coverage, four
+parity and six hygiene). Ruff passes. These results do not replace the final
+native suite or fixed-source release checks.
