@@ -5,6 +5,152 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testBenchmarkResultKeepsProcessOwnershipUntilItsExit() throws {
+        let backend = ControlledRunBackend()
+        let benchmark = BenchmarkCoordinator(backend: backend)
+        benchmark.start(generationIsRunning: false)
+        let run = try XCTUnwrap(backend.requests.first)
+        run.onEvent(.benchmarkDone(BenchmarkVerdict(score: 2, verdict: "Ready", detail: "Fixture result")))
+
+        XCTAssertTrue(benchmark.isRunning)
+        XCTAssertEqual(benchmark.progress, 1)
+        benchmark.start(generationIsRunning: false)
+        XCTAssertEqual(backend.requests.count, 1)
+
+        run.onFinish(.success(0))
+        XCTAssertFalse(benchmark.isRunning)
+        benchmark.start(generationIsRunning: false)
+        XCTAssertEqual(backend.requests.count, 2)
+        benchmark.cancel()
+    }
+
+    @MainActor
+    func testModelLaunchConfirmationsCannotInterruptBenchmarkOwnership() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.startBenchmark()
+        let status = application.status
+        application.modelToPull = "fixture-model"
+
+        application.confirmPullModel()
+        application.confirmMLXSetup()
+
+        XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertTrue(application.benchmarkCoordinator.isRunning)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertEqual(application.status, status)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        application.cancelBenchmark()
+    }
+
+    @MainActor
+    func testModelLaunchConfirmationsCannotReplaceGenerationOwnership() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.generateFrenchPaper(largePrint: false)
+        let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+        let status = application.status
+        application.modelToPull = "fixture-model"
+
+        application.confirmPullModel()
+        application.confirmMLXSetup()
+
+        XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertEqual(application.status, status)
+        XCTAssertEqual(application.generationCoordinator.activeJob, job)
+        XCTAssertTrue(application.isRunning)
+        application.cancelGeneration()
+    }
+
+    @MainActor
+    func testModelPullOutcomesNeverFinalizeAnUnrelatedGenerationHistory() throws {
+        let outcomes: [Result<Int32, Error>] = [.success(0), .success(1), .failure(CocoaError(.fileReadUnknown))]
+        for outcome in outcomes {
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, historyDirectory: history)
+            let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
+            application.selectBoard(board)
+            application.setDryRun(true)
+            application.generate()
+            let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+            let backup = history.deletingLastPathComponent().appendingPathComponent("history-backup")
+            try FileManager.default.moveItem(at: history, to: backup)
+            try Data("temporary write blocker".utf8).write(to: history)
+            application.cancelGeneration()
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            try FileManager.default.removeItem(at: history)
+            try FileManager.default.moveItem(at: backup, to: history)
+            let originalHistory = application.recentDocumentStore.records
+            let historyFile = history.appendingPathComponent("\(job.id.uuidString).json")
+            let originalBytes = try Data(contentsOf: historyFile)
+            application.modelToPull = "fixture-model"
+
+            application.confirmPullModel()
+            let pull = try XCTUnwrap(backend.requests.last)
+            XCTAssertEqual(backend.requests.count, 2)
+            pull.onFinish(outcome)
+
+            XCTAssertFalse(application.isRunning)
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            XCTAssertEqual(application.recentDocumentStore.records, originalHistory)
+            XCTAssertEqual(try Data(contentsOf: historyFile), originalBytes)
+        }
+    }
+
+    @MainActor
+    func testFailedModelDownloadUsesTheSelectedFrenchMessage() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = application(backend: backend, defaults: defaults)
+        let originalModel = application.selectedModel
+        application.modelToPull = "fixture-model"
+        application.confirmPullModel()
+        let pull = try XCTUnwrap(backend.requests.first)
+
+        pull.onFinish(.success(7))
+
+        XCTAssertEqual(application.errorMessage, "Ollama a interrompu le téléchargement du modèle (code de sortie 7). Vérifiez Ollama, puis réessayez.")
+        XCTAssertEqual(application.selectedModel, originalModel)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+    }
+
+    @MainActor
+    func testCancellingModelPullDoesNotCancelAnUnrelatedGenerationJob() throws {
+        let backend = ControlledRunBackend()
+        let history = try temporaryHistoryURL()
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
+        application.selectBoard(board)
+        application.setDryRun(true)
+        application.generate()
+        let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+        let backup = history.deletingLastPathComponent().appendingPathComponent("history-backup")
+        try FileManager.default.moveItem(at: history, to: backup)
+        try Data("temporary write blocker".utf8).write(to: history)
+        application.cancelGeneration()
+        try FileManager.default.removeItem(at: history)
+        try FileManager.default.moveItem(at: backup, to: history)
+        let originalHistory = application.recentDocumentStore.records
+        let historyFile = history.appendingPathComponent("\(job.id.uuidString).json")
+        let originalBytes = try Data(contentsOf: historyFile)
+        application.modelToPull = "fixture-model"
+        application.confirmPullModel()
+
+        application.cancelGeneration()
+
+        XCTAssertFalse(application.isRunning)
+        XCTAssertEqual(application.generationCoordinator.activeJob, job)
+        XCTAssertEqual(application.recentDocumentStore.records, originalHistory)
+        XCTAssertEqual(try Data(contentsOf: historyFile), originalBytes)
+        XCTAssertEqual(application.progressEntries.last?.message, "Téléchargement du modèle annulé.")
+    }
+
+    @MainActor
     func testHistoryBeginFailurePreservesThePreviousCoordinatorState() throws {
         for hasActiveJob in [false, true] {
             let historyURL = try temporaryHistoryURL()

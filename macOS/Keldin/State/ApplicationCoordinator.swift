@@ -742,6 +742,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmMLXSetup() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !model.isEmpty else {
             showMLXSetupConfirmation = false
@@ -788,7 +789,8 @@ final class ApplicationCoordinator: ObservableObject {
     func cancelGeneration() {
         ollamaRefreshRevision = UUID()
         didCancelRun = true
-        try? generationCoordinator.cancel()
+        let operation = activeOperation
+        if operation == .generation { try? generationCoordinator.cancel() }
         mlxRecoveryState.cancel()
         // MLX setup keeps ownership until its helper exits. Other operations can
         // release the UI immediately, but their queued callbacks no longer own it.
@@ -806,13 +808,18 @@ final class ApplicationCoordinator: ObservableObject {
         }
         runningProcess = nil
         isRunning = false
-        status = "Cancelled"
+        status = operation == .modelPull
+            ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
+            : "Cancelled"
         generationProgress = nil
         generationEstimate = nil
         etaTimer?.cancel()
         etaTimer = nil
         activeOperation = .none
-        progressEntries.append(ProgressEntry(stage: "cancel", message: "Generation cancelled."))
+        let message = operation == .modelPull
+            ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
+            : "Generation cancelled."
+        progressEntries.append(ProgressEntry(stage: "cancel", message: message))
     }
 
     func pullSelectedModel() {
@@ -826,6 +833,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmPullModel() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         guard distributionMode.canManageOllama else {
             setError("The App Store build can detect Ollama, but cannot install or pull models.")
             return
@@ -851,17 +859,12 @@ final class ApplicationCoordinator: ObservableObject {
             } onFinish: { [weak self] result in
                 guard let self, self.activeRunSession == session else { return }
                 self.activeRunSession = nil
-                if case .success(0) = result {
-                    self.selectedModel = model
-                    self.defaults.set(model, forKey: AppStorageKey.ollamaModel)
-                }
-                self.finishGeneration(result)
-                self.refreshOllama()
+                self.finishModelPull(result, model: model)
             }
             notifyStarted(for: .modelPull)
         } catch {
             activeRunSession = nil
-            finishGeneration(.failure(error))
+            finishModelPull(.failure(error), model: model)
         }
     }
 
@@ -1263,6 +1266,36 @@ final class ApplicationCoordinator: ObservableObject {
             notifyFailure(for: operation, message: error.localizedDescription)
             try? generationCoordinator.fail(message: error.localizedDescription)
             pendingGenerationSeed = nil
+        }
+    }
+
+    private func finishModelPull(_ result: Result<Int32, Error>, model: String) {
+        runningProcess = nil
+        isRunning = false
+        activeOperation = .none
+        generationProgress = nil
+        generationEstimate = nil
+        etaTimer?.cancel()
+        etaTimer = nil
+        // A model download owns no generation job, even when an earlier job's
+        // cancellation could not be written to history.
+        switch result {
+        case .success(0) where !didReceiveBackendError:
+            selectedModel = model
+            defaults.set(model, forKey: AppStorageKey.ollamaModel)
+            status = InterfaceText.resolve("Done", language: presentationLanguage)
+            generationProgress = 1
+            notifySuccess(for: .modelPull)
+            refreshOllama()
+        case let .success(code):
+            if !didReceiveBackendError {
+                let message = InterfaceText.resolve("Ollama stopped the model download (exit code \(String(code))). Check Ollama, then try again.", language: presentationLanguage)
+                setError(message)
+                notifyFailure(for: .modelPull, message: message)
+            }
+        case let .failure(error):
+            setError(error.localizedDescription)
+            notifyFailure(for: .modelPull, message: error.localizedDescription)
         }
     }
 

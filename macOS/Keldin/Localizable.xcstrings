@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Model download cancelled." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Téléchargement du modèle annulé." } } }
+    },
+    "Ollama stopped the model download (exit code %@). Check Ollama, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama a interrompu le téléchargement du modèle (code de sortie %@). Vérifiez Ollama, puis réessayez." } } }
+    },
     "Try Again" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réessayer" } } }
     },

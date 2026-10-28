@@ -40,6 +40,22 @@ passes 13 cases: 11 new cases and two existing document-action checks.
 Logs remain in `tmp/pdf-access-red.log`, `tmp/pdf-access-final-targeted.log`,
 `tmp/pdf-reader-identity-red.log` and `tmp/pdf-reader-identity-green.log`.
 The existing fixture now creates a real PDF instead of treating arbitrary text
-bytes as a valid document. Full native tests, signed packaging and actual Store
-recovery still need their final results recorded. This is not a whole-HIG or
-complete interaction-coverage claim.
+bytes as a valid document. At `c6e2965`, the full native gate passed 189 tests
+with no failures. Personal-development-signed Store Release preflight and strict
+signatures passed. Logs are `tmp/native-storage-access-final.log` and
+`tmp/native-storage-access-store-preflight.log`.
+
+Computer control verified recovery in that signed Store bundle. The external
+preview scheme initially showed the denied-access message and disabled actions.
+Cancelling kept that state. Selecting its subject instead produced the explicit
+wrong-file refusal. Selecting the exact scheme rendered it and enabled Print;
+the native panel showed all 26 pages and was cancelled. After a complete process
+exit and restart, the bookmark restored the PDF without another chooser and
+Print again showed all 26 pages. The original internal output folder and preview-
+off preference were unchanged. The app was closed. No paper was generated,
+exported or printed during this recovery check.
+
+Both retained preview PDFs still match the hashes recorded before recovery.
+This older 26-page preview is not V11 Accounting content acceptance. These scoped
+results do not certify later source changes, whole-HIG compliance or complete
+interaction coverage. Protected publication remains a separate gate.

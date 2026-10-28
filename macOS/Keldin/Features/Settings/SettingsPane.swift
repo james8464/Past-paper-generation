@@ -183,7 +183,7 @@ private struct AISettingsTab: View {
                             TextField("Model name", text: $application.modelToPull)
                                 .frame(minWidth: 190)
                             Button("Download", action: application.requestPullModel)
-                                .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || application.isRunning)
+                                .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || application.isRunning || application.benchmarkCoordinator.isRunning)
                         }
                     }
                 } else {

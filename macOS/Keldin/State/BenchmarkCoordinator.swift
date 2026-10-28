@@ -67,7 +67,6 @@ final class BenchmarkCoordinator {
         case let .benchmarkDone(result):
             verdict = result
             progress = 1
-            isRunning = false
         case let .error(message, _):
             errorMessage = message
         default:
