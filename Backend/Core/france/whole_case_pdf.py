@@ -12,17 +12,23 @@ from pathlib import Path
 
 import pymupdf
 
+from Backend.Core.france.expanded_pipeline import VERSION as EXPANDED_VERSION
 from Backend.Core.france.extended_pipeline import VERSION as EXTENDED_VERSION
-from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027, NSIExercise, NSITableMaterial
+from Backend.Core.france.nsi import (
+    LANGUAGE_RUBRIC_2027,
+    NSIExercise,
+    NSITableMaterial,
+    NSIWeightedGraphMaterial,
+)
 from Backend.Core.france.pipeline import (
     CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     validate_package,
 )
 from Backend.Core.france.print_policy import (
+    INTERNAL_REVIEW_POLICIES,
     V34_CORRECTION_GUIDANCE,
     V34_CREDIT_NOTICE,
     V34_FOOTER,
-    V34_PRINT_POLICY,
     V34_REVIEW_NOTICE,
 )
 from Backend.Core.france.synthesized_pipeline import VERSION as SYNTHESIZED_VERSION
@@ -51,7 +57,7 @@ def _expected_preface(correction: bool, *, print_policy: str | None = None) -> s
         if correction
         else (
             "SUJET D’ENTRAÎNEMENT - NON OFFICIEL"
-            if print_policy == V34_PRINT_POLICY
+            if print_policy in INTERNAL_REVIEW_POLICIES
             else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL"
         ),
         "Durée de l’épreuve : 3 heures 30",
@@ -62,7 +68,7 @@ def _expected_preface(correction: bool, *, print_policy: str | None = None) -> s
         if correction
         else "Dès que ce sujet vous est remis, assurez-vous qu’il est complet.",
         V34_REVIEW_NOTICE
-        if print_policy == V34_PRINT_POLICY
+        if print_policy in INTERNAL_REVIEW_POLICIES
         else "Ce document doit être relu par un enseignant avant toute utilisation.",
         "Évaluation : 18 points techniques et 2 points pour la maîtrise de la langue.",
         "Trois exercices indépendants - corrigé proposé."
@@ -70,7 +76,7 @@ def _expected_preface(correction: bool, *, print_policy: str | None = None) -> s
         else "Le sujet est composé de trois exercices indépendants.",
         (
             V34_CREDIT_NOTICE
-            if print_policy == V34_PRINT_POLICY
+            if print_policy in INTERNAL_REVIEW_POLICIES
             else "Barème et variantes à confirmer par un enseignant."
         )
         if correction
@@ -88,7 +94,7 @@ def _expected_preface(correction: bool, *, print_policy: str | None = None) -> s
             [
                 "Consignes générales de correction",
                 V34_CORRECTION_GUIDANCE
-                if print_policy == V34_PRINT_POLICY
+                if print_policy in INTERNAL_REVIEW_POLICIES
                 else "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative.",
                 "Maîtrise de la langue - 2 points sur l'ensemble de la copie",
                 "Apprécier l'orthographe, la syntaxe, la précision du vocabulaire et l'organisation du raisonnement conformément à la grille nationale. La répartition détaillée entre ces dimensions n'est pas présentée comme officielle. Cette application ne note pas les copies des élèves.",
@@ -127,6 +133,10 @@ def _expected(
     for question in exercise.questions:
         for material in exercise.materials:
             if material.id not in question.material_ids or material.id in printed:
+                continue
+            if isinstance(material, NSIWeightedGraphMaterial):
+                parts.extend([material.title, *[str(weight) for _, _, weight in material.edges], *material.nodes])
+                printed.add(material.id)
                 continue
             if not isinstance(material, NSITableMaterial):
                 raise ValueError("Type de document V32 non pris en charge")
@@ -175,8 +185,9 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
         SYNTHESIZED_VERSION,
         EXTENDED_VERSION,
+        EXPANDED_VERSION,
     }:
-        raise ValueError("Ce contrôle exige un sujet complet V32, V33 ou V34")
+        raise ValueError("Ce contrôle exige un sujet complet V32, V33, V34 ou V35")
     # Late import permits runtime to select this validator without a cycle.
     from Backend.Core.france.runtime import validate_pdf
 
@@ -185,20 +196,27 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
     print_policy = package["identity"].get("print_policy")
     footers = (
         {V34_FOOTER}
-        if print_policy == V34_PRINT_POLICY
+        if print_policy in INTERNAL_REVIEW_POLICIES
         else {
             "Paper Creator — entraînement non officiel — non relu",
             "Keldin — entraînement non officiel — non relu",
         }
     )
     with pymupdf.open(path) as pdf:
+        if package["identity"]["prompt_version"] == EXPANDED_VERSION:
+            from Backend.Core.france.graph_pdf import validate_graph
+
+            for exercise in exercises:
+                for material in exercise.materials:
+                    if isinstance(material, NSIWeightedGraphMaterial):
+                        validate_graph(pdf, material)
         if any(
             abs(page.rect.width - 595.276) > 0.5 or abs(page.rect.height - 841.89) > 0.5
             for page in pdf
         ):
             raise ValueError("Toutes les pages du sujet V32 doivent être au format A4")
         for number, page in enumerate(pdf, 1):
-            if package["identity"]["prompt_version"] == EXTENDED_VERSION:
+            if package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION}:
                 body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
                 if not body.strip():
                     raise ValueError(f"Page {number} sans contenu dans le sujet V34")
@@ -236,7 +254,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         if text[positions[index] : end] != _expected(
             exercise,
             correction,
-            compact_correction=package["identity"]["prompt_version"] == EXTENDED_VERSION,
+            compact_correction=package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION},
         ):
             raise ValueError(
                 f"Contenu imprimé de l'exercice {exercise.id} incompatible avec le sujet vérifié"

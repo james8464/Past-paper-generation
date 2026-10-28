@@ -18,12 +18,13 @@ from Backend.Core.france import (
 )
 from Backend.Core.france import extended_pipeline as retained
 from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027, NSIExercise
+from Backend.Core.france.print_policy import V35_PRINT_POLICY
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.synthesized_pipeline import _references
 from Backend.Core.scoped_references import ReferenceIndex
 
 VERSION = "fr-nsi-written-2027-v35"
-PRINT_POLICY = "fr-nsi-v35-internal-review-v1"
+PRINT_POLICY = V35_PRINT_POLICY
 FAMILIES = (*retained.FAMILIES, "directories-eligibility-channel")
 FAMILY_COUNT = len(FAMILIES)
 FamilyCatalogueExhausted = retained.FamilyCatalogueExhausted

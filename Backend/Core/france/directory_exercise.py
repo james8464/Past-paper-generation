@@ -89,13 +89,13 @@ def render_case(seed):
             "L'instruction from collections import deque est déjà exécutée : deque([x]) crée une file, append ajoute à droite et popleft retire à gauche. Compléter la fonction suivante. La file attente contient des couples (objet, distance). Marquer chaque identifiant dès son entrée dans la file. Expliquer pourquoi le premier retrait de la cible fournit une distance minimale.\n"
             + _solution(distance_minimale)
             .replace("attente.popleft()", "__A__")
-            .replace("return distance", "return __B__")
-            .replace("vus.add(enfant.identifiant)", "__C__")
-            .replace("attente.append((enfant, distance + 1))", "__D__"),
+            .replace("return dist", "return __B__")
+            .replace("vus.add(cle)", "__C__")
+            .replace("(lien, dist + 1)", "__D__"),
             _solution(distance_minimale)
             + "\nLa file retire les sommets par distance non décroissante. Chaque nouvel arc ajoute une unité ; marquer à l'entrée évite les réinsertions dues au cycle.",
-            [("0.25", "A = attente.popleft() et B = distance."),
-             ("0.25", "C marque enfant.identifiant ; D ajoute (enfant, distance + 1)."),
+            [("0.25", "A = attente.popleft() et B = dist."),
+             ("0.25", "C = vus.add(cle) ; D = (lien, dist + 1)."),
              ("0.25", "L'ordre des distances dans la file justifie le premier retrait de la cible.")],
             "design", "ALG-GRAPHES",
         ),

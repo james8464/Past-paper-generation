@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import re
 from decimal import Decimal
 
 from Backend.Core.france.allocation_case import (
@@ -56,17 +57,16 @@ def render_case(seed):
              ("0.25", "Les quatre couples et leur ordre sont exacts.")], "design", "BDD-SQL-SELECT",
         ),
         (
-            "Partie B. On dispose des couples précédents dans candidats et de taches = [10, 11, 12]. Chaque tâche doit recevoir une équipe distincte. La fonction suivante choisit la première équipe disponible pour chaque tâche ; next(..., None) renvoie None si aucune ne convient. Exécuter cette fonction puis expliquer pourquoi son échec ne démontre pas que l'affectation complète est impossible.\n" + _solution(glouton),
+            "Partie B. On dispose des couples précédents dans candidats et de taches = [10, 11, 12]. Chaque tâche doit recevoir une équipe distincte. La fonction suivante choisit la première équipe disponible pour chaque tâche. Exécuter cette fonction puis expliquer pourquoi son échec ne démontre pas que l'affectation complète est impossible.\n" + _solution(glouton),
             "Elle attribue 10 à 1 puis renvoie None à la tâche 11, car 1 est déjà prise. Pourtant 10 à 2, 11 à 1, 12 à 3 est valide : c'est le premier choix qui doit être révisé.",
             [("0.25", "Le choix 10 vers 1 et l'arrêt sur 11 sont exacts."),
              ("0.25", "Une affectation complète valide réfute la conclusion d'impossibilité.")], "analyse", "LP-DEBUG",
         ),
         (
-            "Compléter la fonction récursive suivante. chercher(rang, resultat, prises) attribue les tâches avant rang ; prises contient leurs équipes. Les nouvelles listes sont des copies propres à la branche. A exprime le cas terminé ; B vérifie que le couple concerne la tâche courante et une équipe libre ; C construit les arguments du prochain appel. Donner aussi le résultat sur les données initiales.\n"
-            + _solution(affecter)
+            "Compléter la fonction récursive suivante. chercher(rang, choix, prises) attribue les tâches avant rang ; prises contient leurs équipes. Les nouvelles listes sont des copies propres à la branche. A exprime le cas terminé ; B vérifie que le couple concerne la tâche courante et une équipe libre ; C donne les trois arguments du prochain appel. Donner aussi le résultat sur les données initiales.\n"
+            + re.sub(r"rang \+ 1,\s*suite,\s*nouvelles,", "__C__,", _solution(affecter))
             .replace("rang == len(taches)", "__A__")
-            .replace("tache == taches[rang] and equipe not in prises", "__B__")
-            .replace("rang + 1, [*resultat, (tache, equipe)], [*prises, equipe]", "__C__"),
+            .replace("ok and e not in prises", "__B__"),
             _solution(affecter) + "\nRésultat : [(10, 2), (11, 1), (12, 3)].",
             [("0.25", "Le cas terminé renvoie l'affectation construite."),
              ("0.25", "Le couple doit concerner la tâche courante et une équipe non prise."),
@@ -74,13 +74,13 @@ def render_case(seed):
         ),
         (
             "Tracer les choix et retours récursifs avant l'obtention de la première solution. Préciser à quel moment l'équipe 1 redevient disponible après l'échec initial, sans instruction qui efface une liste partagée.",
-            "La branche 10 vers 1 échoue sur 11. Son appel retourne None ; ses listes locales ne sont pas réutilisées. Le niveau initial essaie alors 10 vers 2, puis 11 vers 1, puis 12 vers 3. Les anciennes listes prises et resultat sont restées inchangées.",
+            "La branche 10 vers 1 échoue sur 11. Son appel retourne None ; ses listes locales ne sont pas réutilisées. Le niveau initial essaie alors 10 vers 2, puis 11 vers 1, puis 12 vers 3. Les anciennes listes prises et choix sont restées inchangées.",
             [("0.25", "L'ordre d'essai, d'échec puis de reprise est exact."),
              ("0.25", "Les listes distinctes des branches expliquent la disponibilité retrouvée de 1.")], "apply", "LP-RECURSIVITE",
         ),
         (
             "Justifier que toute solution renvoyée attribue chaque tâche exactement une fois, respecte les habilitations et ne réutilise aucune équipe. Distinguer la propriété garantie par la requête de celles garanties par la récursion.",
-            "La requête ne fournit que des couples actifs et habilités. Chaque niveau traite exactement taches[rang], puis avance d'un rang ; le cas terminé exige d'avoir traité toutes les tâches. Le test equipe not in prises interdit de réutiliser une équipe.",
+            "La requête ne fournit que des couples actifs et habilités. Chaque niveau traite exactement taches[rang], puis avance d'un rang ; le cas terminé exige d'avoir traité toutes les tâches. Le test e not in prises interdit de réutiliser une équipe.",
             [("0.25", "L'activité et l'habilitation proviennent de la requête."),
              ("0.25", "L'avancement et le test prises garantissent complétude et unicité.")], "justify", "LP-RECURSIVITE",
         ),
@@ -104,7 +104,7 @@ def render_case(seed):
             id="2" + "abcdefghijkl"[index], prompt=prompt, answer=answer,
             points=str(sum(Decimal(value) for value, _ in credits)),
             marking=[dict(points=value, criterion=criterion) for value, criterion in credits],
-            material_ids=["teams", "tasks", "skills"], curriculum_codes=[code],
+            material_ids=["equipe", "tache", "habilitation"], curriculum_codes=[code],
             operation=operation, difficulty=4 if index in (7, 8, 9) else 3,
             estimated_minutes=minutes[index], verification=dict(
                 kind="allocation_case_contract", version=VERSION, seed=seed, case_sha256=digest),
@@ -114,11 +114,11 @@ def render_case(seed):
         context="Une régie attribue des tâches à des équipes. Chaque tâche exige exactement une équipe active habilitée dans son domaine ; chaque équipe reçoit au plus une tâche. La priorité fixe l'ordre de traitement, pas une possibilité d'omettre une tâche. Schéma : Equipe(id, nom, active), Tache(id, domaine, priorite), Habilitation(equipe, domaine). Equipe.id et Tache.id sont clés primaires ; (equipe, domaine) est la clé primaire de Habilitation ; equipe référence Equipe.id. active vaut 0 ou 1. Les contraintes de clés sont actives. Les données initiales sont restaurées après chaque question sauf indication contraire. Un petit nombre de tâches permet d'explorer les choix récursivement ; aucune efficacité en grande taille n'est affirmée. Rédiger sur votre copie.",
         topics=["bases-donnees", "langages-programmation"], minutes=70, target_points="6",
         materials=[
-            dict(kind="table", id="teams", title="Equipe", columns=["id", "nom", "active"],
+            dict(kind="table", id="equipe", title="equipe", columns=["id", "nom", "active"],
                  rows=[[str(value) for value in row] for row in case["teams"]]),
-            dict(kind="table", id="tasks", title="Tache", columns=["id", "domaine", "priorite"],
+            dict(kind="table", id="tache", title="tache", columns=["id", "domaine", "priorite"],
                  rows=[[str(value) for value in row] for row in case["tasks"]]),
-            dict(kind="table", id="skills", title="Habilitation", columns=["equipe", "domaine"],
+            dict(kind="table", id="habilitation", title="habilitation", columns=["equipe", "domaine"],
                  rows=[[str(value) for value in row] for row in case["skills"]]),
         ], questions=questions,
     )

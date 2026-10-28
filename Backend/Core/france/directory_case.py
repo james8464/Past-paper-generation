@@ -7,6 +7,8 @@ Two distinct directories may have the same displayed name.
 from collections import deque
 
 
+# These solutions retain short lines for enlarged-print code listings.
+# fmt: off
 class Dossier:
     def __init__(self, identifiant, nom):
         self.identifiant = identifiant
@@ -14,8 +16,11 @@ class Dossier:
         self.enfants = []
 
     def relier(self, autre):
-        if all(enfant.identifiant != autre.identifiant for enfant in self.enfants):
-            self.enfants.append(autre)
+        cle = autre.identifiant
+        for lien in self.enfants:
+            if lien.identifiant == cle:
+                return
+        self.enfants.append(autre)
 
 
 def explorer(depart, vus):
@@ -31,16 +36,20 @@ def distance_minimale(depart, cible):
     attente = deque([(depart, 0)])
     vus = {depart.identifiant}
     while attente:
-        courant, distance = attente.popleft()
-        if courant.identifiant == cible:
-            return distance
-        for enfant in courant.enfants:
-            if enfant.identifiant not in vus:
-                vus.add(enfant.identifiant)
-                attente.append((enfant, distance + 1))
+        objet, dist = attente.popleft()
+        if objet.identifiant == cible:
+            return dist
+        for lien in objet.enfants:
+            cle = lien.identifiant
+            if cle not in vus:
+                vus.add(cle)
+                attente.append(
+                    (lien, dist + 1)
+                )
     return None
 
 
+# fmt: on
 def build_objects(case):
     """Allocate each object once so shared links preserve object identity."""
     dossiers = {

@@ -10,37 +10,50 @@ WHERE Equipe.active = 1
 ORDER BY Tache.priorite, Tache.id, Equipe.id"""
 
 
+# These solutions retain short lines for enlarged-print code listings.
+# fmt: off
 def glouton(taches, candidats):
-    resultat = []
+    sortie = []
     prises = []
     for tache in taches:
-        equipe = next(
-            (e for t, e in candidats if t == tache and e not in prises), None
-        )
-        if equipe is None:
+        choix = None
+        for t, e in candidats:
+            if (
+                t == tache
+                and e not in prises
+            ):
+                choix = e
+                break
+        if choix is None:
             return None
-        resultat.append((tache, equipe))
-        prises.append(equipe)
-    return resultat
+        sortie.append((tache, choix))
+        prises.append(choix)
+    return sortie
 
 
 def affecter(taches, candidats):
     """Backtrack on assignments; failed branches leave no shared state."""
-    def chercher(rang, resultat, prises):
+    def chercher(rang, choix, prises):
         if rang == len(taches):
-            return resultat
-        for tache, equipe in candidats:
-            if tache == taches[rang] and equipe not in prises:
-                solution = chercher(
-                    rang + 1, [*resultat, (tache, equipe)], [*prises, equipe]
+            return choix
+        for t, e in candidats:
+            ok = t == taches[rang]
+            if ok and e not in prises:
+                suite = [*choix, (t, e)]
+                nouvelles = [*prises, e]
+                reponse = chercher(
+                    rang + 1,
+                    suite,
+                    nouvelles,
                 )
-                if solution is not None:
-                    return solution
+                if reponse is not None:
+                    return reponse
         return None
 
     return chercher(0, [], [])
 
 
+# fmt: on
 def build_case(seed):
     """One structural family, with an inactive decoy and shared eligibility."""
     if type(seed) is not int or not -(2**63) <= seed < 2**63:

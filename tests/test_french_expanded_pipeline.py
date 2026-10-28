@@ -1,5 +1,6 @@
 """Experimental V35 must replay all five families and preserve refusal."""
 
+import json
 from copy import deepcopy
 
 import pytest
@@ -111,5 +112,50 @@ def test_approval_and_unknown_fields_remain_refused(tmp_path, field, value):
 
     package = generate(tmp_path)
     package[field] = value
+    with pytest.raises(ValueError):
+        validate(package)
+
+
+@pytest.mark.parametrize("seed", range(270100, 270104))
+def test_retained_exercises_are_not_rewritten_by_the_new_version(seed):
+    from Backend.Core.france.expanded_pipeline import _source
+    from Backend.Core.france.extended_pipeline import _source as retained_source
+
+    assert _source(seed)[1:] == retained_source(seed)[1:]
+
+
+@pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63) - 1, 2**63])
+def test_selection_refuses_invalid_seed_without_writing(seed):
+    from Backend.Core.france.expanded_pipeline import choose_fresh_seed
+
+    with pytest.raises(ValueError):
+        choose_fresh_seed(seed)
+
+
+@pytest.mark.parametrize("history", ["text", [""], [False], ["x" * 100001], ["x"] * 21])
+def test_selection_refuses_invalid_history(history):
+    from Backend.Core.france.expanded_pipeline import choose_fresh_seed
+
+    with pytest.raises(ValueError):
+        choose_fresh_seed(270104, previous_texts=history)
+
+
+def test_checkpoint_with_forged_request_does_not_get_overwritten(tmp_path):
+    generate(tmp_path)
+    path = tmp_path / "checkpoint-270104.json"
+    state = json.loads(path.read_text())
+    state["request"]["history"] = "forged"
+    path.write_text(json.dumps(state))
+    before = path.read_bytes()
+    with pytest.raises(ValueError, match="checkpoint identity"):
+        generate(tmp_path)
+    assert path.read_bytes() == before
+
+
+def test_forged_print_policy_cannot_replay(tmp_path):
+    from Backend.Core.france.expanded_pipeline import validate
+
+    package = generate(tmp_path)
+    package["identity"]["print_policy"] = "fr-nsi-v34-internal-review-v1"
     with pytest.raises(ValueError):
         validate(package)

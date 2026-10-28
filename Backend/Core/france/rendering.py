@@ -32,10 +32,10 @@ from Backend.Core.france.nsi import (
     NSIWeightedGraphMaterial,
 )
 from Backend.Core.france.print_policy import (
+    INTERNAL_REVIEW_POLICIES,
     V34_CORRECTION_GUIDANCE,
     V34_CREDIT_NOTICE,
     V34_FOOTER,
-    V34_PRINT_POLICY,
     V34_REVIEW_NOTICE,
 )
 
@@ -49,6 +49,9 @@ WHOLE_CASE_KINDS = frozenset(
         "loan_case_contract",
         "round_robin_case_contract",
         "curriculum_database_case_contract",
+        "directory_case_contract",
+        "allocation_case_contract",
+        "channel_case_contract",
     }
 )
 
@@ -200,6 +203,21 @@ def structured_material(
                 ("F", 0.85, 0.25),
             )
         }
+    elif (
+        material.id == "directory_graph"
+        and material.directed
+        and set(material.nodes) == set("rabcde")
+        and {(start, end) for start, end, _ in material.edges}
+        == {("r", "a"), ("r", "b"), ("a", "c"), ("b", "c"), ("c", "d"), ("d", "a")}
+    ):
+        # Shared shortcuts form a diamond; the return arc runs above it.
+        positions = {
+            node: (width * x, height * y)
+            for node, x, y in (
+                ("r", 0.15, 0.50), ("a", 0.42, 0.75), ("b", 0.42, 0.25),
+                ("c", 0.70, 0.50), ("d", 0.85, 0.80), ("e", 0.85, 0.15),
+            )
+        }
     else:
         positions = {
             node: (
@@ -208,6 +226,8 @@ def structured_material(
             )
             for index, node in enumerate(material.nodes)
         }
+    label_size = body.fontSize if material.id == "directory_graph" else 9
+    node_size = body.fontSize if material.id == "directory_graph" else 8
     for start, end, weight in material.edges:
         x1, y1 = positions[start]
         x2, y2 = positions[end]
@@ -237,8 +257,8 @@ def structured_material(
             Rect(
                 label_x - 3,
                 label_y - 3,
-                stringWidth(label, regular_font, 9) + 6,
-                12,
+                stringWidth(label, regular_font, label_size) + 6,
+                label_size + 3,
                 fillColor=colors.white,
                 strokeColor=None,
             )
@@ -249,7 +269,7 @@ def structured_material(
                 label_y,
                 label,
                 fontName=regular_font,
-                fontSize=9,
+                fontSize=label_size,
             )
         )
     for node, (x, y) in positions.items():
@@ -261,7 +281,7 @@ def structured_material(
                 node,
                 textAnchor="middle",
                 fontName=bold_font,
-                fontSize=8,
+                fontSize=node_size,
             )
         )
     return KeepTogether([title, Spacer(1, 4), drawing, Spacer(1, 10)])
@@ -300,7 +320,7 @@ class NumberedCanvas(Canvas):
                 70,
                 43,
                 V34_FOOTER
-                if self._print_policy == V34_PRINT_POLICY
+                if self._print_policy in INTERNAL_REVIEW_POLICIES
                 else f"{self._brand_name} — entraînement non officiel — non relu",
             )
             self.setFont("ExamSans", 10)
@@ -340,7 +360,7 @@ def draw_cover_page(
         if correction
         else (
             "SUJET D’ENTRAÎNEMENT - NON OFFICIEL"
-            if print_policy == V34_PRINT_POLICY
+            if print_policy in INTERNAL_REVIEW_POLICIES
             else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL"
         ),
         376,
@@ -368,7 +388,7 @@ def draw_cover_page(
         )
     centred(
         V34_REVIEW_NOTICE
-        if print_policy == V34_PRINT_POLICY
+        if print_policy in INTERNAL_REVIEW_POLICIES
         else "Ce document doit être relu par un enseignant avant toute utilisation.",
         583,
         11,
@@ -391,7 +411,7 @@ def draw_cover_page(
     centred(
         (
             V34_CREDIT_NOTICE
-            if print_policy == V34_PRINT_POLICY
+            if print_policy in INTERNAL_REVIEW_POLICIES
             else "Barème et variantes à confirmer par un enseignant."
         )
         if correction
@@ -423,7 +443,7 @@ def render_assessment(
     compact_correction: bool = False,
     print_policy: str | None = None,
 ):
-    if print_policy not in (None, V34_PRINT_POLICY):
+    if print_policy is not None and print_policy not in INTERNAL_REVIEW_POLICIES:
         raise ValueError("Unknown French print policy")
     # Historical contracts keep their recorded identity; current whole cases use
     # the public app name without changing their questions or indicative credit.
@@ -597,7 +617,7 @@ def render_assessment(
         paragraph("Consignes générales de correction", heading)
         paragraph(
             V34_CORRECTION_GUIDANCE
-            if print_policy == V34_PRINT_POLICY
+            if print_policy in INTERNAL_REVIEW_POLICIES
             else "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative."
         )
         paragraph(
