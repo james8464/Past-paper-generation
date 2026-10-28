@@ -158,10 +158,11 @@ private struct AISettingsTab: View {
                     Label("Recommended model selected", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.primary)
                 } else {
-                    Label(
-                        InterfaceText.localizedResource(OllamaModelGuide.document.otherModelWarningResource, locale: locale),
-                        systemImage: "exclamationmark.triangle.fill"
-                    )
+                    Label {
+                        Text(InterfaceText.localizedResource(OllamaModelGuide.document.otherModelWarningResource, locale: locale))
+                    } icon: {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                    }
                     .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
                 }

@@ -85,7 +85,11 @@ struct HelpSheet: View {
         VStack(spacing: 0) {
             NavigationSplitView {
                 List(HelpTopic.allCases, selection: $application.helpTopic) { topic in
-                    Label(InterfaceText.localizedResource(topic.titleResource, locale: locale), systemImage: topic.systemImage)
+                    Label {
+                        Text(InterfaceText.localizedResource(topic.titleResource, locale: locale))
+                    } icon: {
+                        Image(systemName: topic.systemImage)
+                    }
                         .tag(topic)
                 }
                 .listStyle(.sidebar)
@@ -121,7 +125,11 @@ private struct HelpTopicPage: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Label(InterfaceText.localizedResource(topic.titleResource, locale: locale), systemImage: topic.systemImage)
+                Label {
+                    Text(InterfaceText.localizedResource(topic.titleResource, locale: locale))
+                } icon: {
+                    Image(systemName: topic.systemImage)
+                }
                     .font(.largeTitle.weight(.semibold))
                     .symbolRenderingMode(.hierarchical)
 
@@ -390,7 +398,11 @@ private struct HelpSection: View {
             Text(InterfaceText.localizedResource(title, locale: locale))
                 .font(.headline)
             ForEach(rows, id: \.key) { row in
-                Label(InterfaceText.localizedResource(row, locale: locale), systemImage: "checkmark.circle")
+                Label {
+                    Text(InterfaceText.localizedResource(row, locale: locale))
+                } icon: {
+                    Image(systemName: "checkmark.circle")
+                }
                     .symbolRenderingMode(.hierarchical)
             }
         }

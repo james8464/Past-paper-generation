@@ -43,6 +43,12 @@ def test_help_containers_keep_localisable_resources_and_stable_identity():
     assert (
         "InterfaceText.localizedResource(topic.titleResource, locale: locale)" in source
     )
+    assert "Label(InterfaceText.localizedResource" not in source
+    settings = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    assert (
+        "Text(InterfaceText.localizedResource(OllamaModelGuide.document.otherModelWarningResource"
+        in settings
+    )
 
 
 def test_french_help_explains_internal_review_without_fabricated_attestation():
