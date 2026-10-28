@@ -148,6 +148,32 @@ these actual fixes. Earlier successful builds remain historical evidence, not
 acceptance of this later frontend. Core/French and live runtime identities remain
 the two exact hashes recorded above, so the current paper run was not restarted.
 
+Those final local gates passed at `2dbb7de46438896add79e6e5ddd6d1828e307b82`:
+4,506 Python tests, two optional local-notes skips and five third-party PyMuPDF
+warnings in 579.28 seconds; 224 native tests; personal-development-signed direct
+Release and Store-mode preflight. The exact Core and runtime hashes before and
+after the suite match. The rebuilt direct helper still has SHA-256
+`7857708915a9cc8180fbc79fe5b7c0876f59cd1e36e630492f3fb0b591960c58`,
+so the frozen French acceptance applies to these same helper bytes. Logs:
+`tmp/consolidated-release-discovery-{full-suite,full-native,direct,store}.log`
+and `tmp/consolidated-release-final-identities-{before,after}.log`.
+
+GitHub main subsequently contains an unrelated empty-tree history merge at
+`6623fb17af8204a83d0014ee720a2ab5df69c8f9`. Its app-file tree is identical to
+the protected PR112 baseline. The app topic still needs alignment and both
+latest-head protected checks before publication. Contribution-art work is
+outside this release and remains untouched by this task, as the user requested.
+
+After the other chat finished its separate history work, main was stable at
+`60f5e47fe7a0ec0bc500e25a030fcf3da1a3d907`, still exactly the PR112 app-file
+tree `828da1711f62cd01c72e9adac111ffa2f572c700`. A normal topic-branch base
+alignment preserved the candidate tree exactly:
+`a00eeece942a75ac3130b75eed881f8679142ce1` before and after. Both implementation
+hashes remained unchanged, and the live Accounting run continued. This task
+did not merge contribution art or change repository protections. The following
+documentation-only evidence update does not change application/runtime files;
+both protected checks must nevertheless pass on its final head.
+
 The canonical local app currently contains protected PR112, matching its tested
 direct Release frontend/helper bytes and strict signature. Its predecessor is
 recoverable as `Keldin-before-PR112-20261028.app` in Trash; user data is retained.
