@@ -28,7 +28,7 @@ class CheckpointIdentity(BaseModel):
 
     schema_version: Literal[1] = 1
     paper_id: str = Field(min_length=1)
-    seed: int
+    seed: int = Field(strict=True)
     provider: str = Field(min_length=1)
     model: str = Field(min_length=1)
     blueprint_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -52,7 +52,7 @@ def identity_for_blueprint(
     if not paper_id:
         raise ValueError("checkpoint blueprint has no paper identity")
     seed = payload.get("seed")
-    if not isinstance(seed, int):
+    if type(seed) is not int:
         raise ValueError("checkpoint blueprint has no integer seed")
     digest = hashlib.sha256(
         json.dumps(
