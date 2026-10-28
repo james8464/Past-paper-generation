@@ -4,6 +4,20 @@ import XCTest
 @testable import Keldin
 
 final class KeldinTests: XCTestCase {
+    func testOllamaAvailabilityStatusUsesFrenchTranslation() {
+        let expected = [
+            "Not checked": "Non vérifié",
+            "Ollama is available.": "Ollama est disponible.",
+            "Ollama is not installed.": "Ollama n’est pas installé.",
+            "Ollama is installed but not responding.": "Ollama est installé mais ne répond pas.",
+        ]
+        for (message, translation) in expected {
+            let state = OllamaState(message: message)
+            XCTAssertEqual(InterfaceText.resolve(state.messageResource, language: "fr"), translation)
+            XCTAssertEqual(state.message, message)
+        }
+    }
+
     func testInterfaceTextUsesChosenLanguageOutsideTheViewTree() {
         XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "fr"), "Créer un sujet")
         XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "en"), "Create Paper")

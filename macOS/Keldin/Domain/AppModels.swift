@@ -509,6 +509,10 @@ struct OllamaState: Equatable {
     var running = false
     var command: String?
     var message = "Not checked"
+
+    var messageResource: LocalizedStringResource {
+        LocalizedStringResource(stringLiteral: message)
+    }
 }
 
 struct ProgressEntry: Identifiable, Equatable {

@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
-    "mtime": 1793196957.4521108,
-    "ast_hash": "2139158e8a83e8cc489fcfb327db0f7e",
+    "mtime": 1793203918.0612164,
+    "ast_hash": "5d775d3926d7fb7b146bc51c9c4e2f59",
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793203276.143307,
-    "ast_hash": "f7037bf670010505b81f94ccb9964a85",
+    "mtime": 1793203734.9283707,
+    "ast_hash": "bb46ff11f1712c3373d1bf8326e0d94c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1270,8 +1270,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793196890.1408825,
-    "ast_hash": "e8db13efb9557ba3942546e037378ab7",
+    "mtime": 1793204007.339611,
+    "ast_hash": "d990766faeb2ad785aea8814ecde4def",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -1505,8 +1505,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1793203300.4144866,
-    "ast_hash": "8d5b702f730cbbdc29c5db7435a4b39b",
+    "mtime": 1793204118.1453805,
+    "ast_hash": "dbad95ba89a3b4f9fbfc1af829902160",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793197423.1840653,
-    "ast_hash": "5b95bd573ea289329e0f6ee9bade6be4",
+    "mtime": 1793203783.1879668,
+    "ast_hash": "a2ac272c23bb6c12a57cd85429d50875",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3420,8 +3420,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/legacy_migration.py": {
-    "mtime": 1793197778.7410603,
-    "ast_hash": "df501d07341c3e73be87c83d42e7bb35",
+    "mtime": 1793203918.0608537,
+    "ast_hash": "7b5961317e5a8c212839b6d1802a15c7",
     "semantic_hash": ""
   },
   "macOS/Keldin/AppIcon.icon/icon.json": {
@@ -3490,8 +3490,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AppModels.swift": {
-    "mtime": 1793196269.9986923,
-    "ast_hash": "be7640673ae6da99aa8122e1a9e12cab",
+    "mtime": 1793204172.981098,
+    "ast_hash": "e7fff8e785352a188aebed8cc41af855",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AssessmentBundleExporter.swift": {
@@ -3570,8 +3570,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793197084.2791283,
-    "ast_hash": "61e688f96b79d81929ab661369d15983",
+    "mtime": 1793204172.9815557,
+    "ast_hash": "6a7ed8a9e046210a732c6c2a7ccabd4b",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -3590,8 +3590,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/SecretStore.swift": {
-    "mtime": 1793197084.2846458,
-    "ast_hash": "1b3c64a0d61b9c63c2e4edc1e90a75dd",
+    "mtime": 1793203799.36158,
+    "ast_hash": "e50a1d485d467fe7b0baf86b1e0b46e2",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
@@ -3640,8 +3640,8 @@
     "semantic_hash": ""
   },
   "tests/test_keldin_migration.py": {
-    "mtime": 1793197778.7412007,
-    "ast_hash": "2f40480e935b28088f26aec7f9230498",
+    "mtime": 1793203894.183559,
+    "ast_hash": "1a3188bed8b0d136aa382dd012372a2d",
     "semantic_hash": ""
   },
   "docs/keldin-migration.md": {

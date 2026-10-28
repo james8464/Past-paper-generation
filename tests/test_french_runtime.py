@@ -1106,6 +1106,7 @@ def test_saved_families_are_excluded_in_a_fresh_output_folder(tmp_path):
     assert not list(other.rglob("*.pdf"))
     assert not list(other.rglob("assessment.json"))
     assert not (other / ".papercreator-checkpoints").exists()
+    assert not (other / ".keldin-checkpoints").exists()
 
 
 def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp_path):
@@ -1127,7 +1128,9 @@ def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp
     ])
     assert args.handler(args) == 0
     assert old.read_bytes() == before
-    current = [path for path in old.parent.glob("*.json") if path != old]
+    imported = output / ".keldin-checkpoints" / old.name
+    assert imported.read_bytes() == before
+    current = [path for path in imported.parent.glob("*.json") if path != imported]
     assert len(current) == 1
     state = json.loads(current[0].read_text())
     assert state["request"]["version"] == "fr-nsi-written-2027-v35"

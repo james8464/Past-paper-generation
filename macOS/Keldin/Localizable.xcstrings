@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Not checked" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non vérifié" } } }
+    },
+    "Ollama is available." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama est disponible." } } }
+    },
+    "Ollama is not installed." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama n’est pas installé." } } }
+    },
+    "Ollama is installed but not responding." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama est installé mais ne répond pas." } } }
+    },
     "Previous app data imported. Restart Keldin to load imported settings.": {
       "localizations": {
         "fr": {

@@ -173,7 +173,7 @@ private struct AISettingsTab: View {
                     Button("Check Again", action: application.refreshOllama)
                         .disabled(application.isRefreshingOllama)
                     Spacer()
-                    Text(application.ollamaState.message)
+                    Text(InterfaceText.localizedResource(application.ollamaState.messageResource, locale: locale))
                         .foregroundStyle(.secondary)
                 }
 

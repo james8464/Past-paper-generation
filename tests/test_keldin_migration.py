@@ -2,12 +2,20 @@
 
 
 import pytest
+from hashlib import sha256
 
 from Backend.Core.legacy_migration import (
     copy_missing_tree,
     environment_value,
     output_directory,
 )
+
+
+def test_rebrand_preserves_the_historical_v32_origin_digest():
+    from Backend.Core.france.provider import ApplicationOwnedFrenchClient
+
+    expected = sha256(b"Paper Creator application-owned French cases v32").hexdigest()
+    assert ApplicationOwnedFrenchClient.model_digest == expected
 
 
 def test_environment_alias_is_read_only_and_new_value_takes_precedence():

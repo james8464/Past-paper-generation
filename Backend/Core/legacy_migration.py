@@ -17,6 +17,7 @@ LEGACY_OUTPUT_DIRECTORIES = {
 }
 LEGACY_APP_FOLDER = "Paper creator"
 LEGACY_PUBLISHER = "Paper Creator"
+LEGACY_V32_ORIGIN = f"{LEGACY_PUBLISHER} application-owned French cases v32".encode()
 LEGACY_FRENCH_FOOTER = f"{LEGACY_PUBLISHER} — entraînement non officiel — non relu"
 
 

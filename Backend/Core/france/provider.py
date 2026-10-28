@@ -2,6 +2,7 @@
 
 import json
 from hashlib import sha256
+from Backend.Core.legacy_migration import LEGACY_V32_ORIGIN
 
 from Backend.Core.france.database_audit_contract import DatabaseAuditContract
 from Backend.Core.france.database_audit_prose import database_audit_selection_schema
@@ -63,10 +64,8 @@ class ApplicationOwnedFrenchClient:
 
     provider = "application-owned"
     model = "app-owned-v32"
-    model_digest = sha256(
-        # Identify newly generated app-owned cases independently of legacy packages.
-        b"Keldin application-owned French cases v32"
-    ).hexdigest()
+    # V32's recorded identity does not change when the app is renamed.
+    model_digest = sha256(LEGACY_V32_ORIGIN).hexdigest()
 
     def generate_json(self, *args, **kwargs):
         raise RuntimeError("Application-owned authoring cannot call a language model")
