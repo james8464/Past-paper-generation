@@ -76,8 +76,8 @@ def run_backend(
             errors.write(str(error))
             return_code = 127
         else:
-            deadline = time.monotonic() + timeout_seconds
             try:
+                deadline = time.monotonic() + timeout_seconds
                 while True:
                     pid, status, usage = os.wait4(process.pid, os.WNOHANG)
                     if pid:
