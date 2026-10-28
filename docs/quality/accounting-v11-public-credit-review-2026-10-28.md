@@ -173,8 +173,14 @@ pagination/marking-policy suite passes 63 tests. Its final logs are
 `accounting-scheme-position-red.log` and `accounting-scheme-position-green.log`
 under `tmp/final-validation-20261028`. Ruff and the diff whitespace check pass.
 
-Full fixed-source tests, packaged acceptance, a fresh pinned complete live run
-and protected publication still need their actual results recorded. Teacher
+The final fixed-source suite at `bc36bb09` passed 4,122 tests with two skips in
+538.70 seconds. Five warnings came from PyMuPDF's SWIG bindings. The retained log
+is `tmp/final-validation-20261028/accounting-v11-final-full-suite.log`.
+Personal-development-signed Store Release preflight and strict bundle/helper
+signature checks also passed, recorded in `accounting-v11-final-store-preflight.log`.
+This is engineering preflight, not App Store approval. Direct frozen-runtime
+acceptance, a fresh pinned complete live run and protected publication still
+need their actual results recorded. Teacher
 review, observed learner timing and mark calibration remain unperformed. Neither
 this baseline nor any successful solver probe establishes complete provider,
 paper-family, App Store or project-wide qualification.
