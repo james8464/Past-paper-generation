@@ -55,9 +55,11 @@ def test_main_window_and_help_use_public_name():
         '.navigationTitle("Keldin")'
         in (APP / "Navigation/SidebarView.swift").read_text()
     )
-    assert (
-        'Button("Keldin Help")' in (APP / "Application/AppCommands.swift").read_text()
-    )
+    commands = (APP / "Application/AppCommands.swift").read_text()
+    assert 'Button(localized("Keldin Help"))' in commands
+    assert "application.showHelpGuide()" in commands
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    assert catalog["Keldin Help"]["localizations"]["fr"]["stringUnit"]["value"] == "Aide de Keldin"
 
 
 def test_rebrand_preserves_existing_storage_and_keychain_names():

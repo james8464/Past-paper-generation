@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793186965.2110677,
+    "mtime": 1793188651.2159662,
     "ast_hash": "969283c73284990b33cc3cd18de14bf1",
     "semantic_hash": ""
   },
@@ -1370,12 +1370,12 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1793187548.4180403,
+    "mtime": 1793187791.1176133,
     "ast_hash": "f1ec71c0d494a05d7d70c00818c9d087",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793187548.418273,
+    "mtime": 1793187791.117773,
     "ast_hash": "2eee2227e9c9a088c74a07fe59912951",
     "semantic_hash": ""
   },
@@ -3390,8 +3390,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793146331.5570183,
-    "ast_hash": "a6339ca55872c55edff79afd330d06d6",
+    "mtime": 1793188665.3367295,
+    "ast_hash": "0def42de4b10f23bd80ad63788f2e861",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3735,7 +3735,7 @@
     "semantic_hash": ""
   },
   "tests/test_french_interface_copy.py": {
-    "mtime": 1793187566.5497081,
+    "mtime": 1793187791.1179047,
     "ast_hash": "22b071d1a6a9ab800690fc85f97b57d8",
     "semantic_hash": ""
   }
