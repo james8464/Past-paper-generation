@@ -72,10 +72,14 @@ def test_legacy_source_scope_remains_read_only_and_replayable(tmp_path, monkeypa
     def legacy_extract(*args, **kwargs):
         return original(*args, **kwargs, scoped_shared_sources=False)
 
+    legacy_paper = paper_for()
+    # New P1 generation no longer invents shared planning extracts. Supply a
+    # retained legacy extract explicitly to exercise that historical layout.
+    legacy_paper.sections[0].options[0].stimulus = ["Retained legacy shared source."]
     with monkeypatch.context() as legacy:
         legacy.setattr(package, "_extract_items", legacy_extract)
         package.write_assessment_package(
-            paper_for(), path, subject="accounting", paper_number="1",
+            legacy_paper, path, subject="accounting", paper_number="1",
             preview=True, provider=None, model=None,
         )
     document = json.loads(path.read_text())

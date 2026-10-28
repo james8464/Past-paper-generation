@@ -29,6 +29,7 @@ from Backend.Core.computer_science_authoring import (
 )
 from Backend.Core.generator_registry import generator_capability
 from Backend.Core.level_of_response import (
+    BoardLevelPolicy,
     LevelOfResponseEngine,
     load_level_policies,
     scale_level_policy,
@@ -792,13 +793,18 @@ def _evidence_ids(raw: dict[str, Any]) -> list[str]:
 
 
 def _assessment_contract(raw: dict[str, Any]) -> dict[str, Any]:
+    context = raw.get("authoring_context")
+    grouped = {
+        field: context[field]
+        for field in ("grouped_level_policy", "accounting_marking_policy")
+        if isinstance(context, dict) and field in context
+    }
     instance_contract = raw.get("assessment_contract")
     if isinstance(instance_contract, dict) and instance_contract:
-        return instance_contract
+        return {**instance_contract, **grouped}
     contract = raw.get("contract")
     if isinstance(contract, dict):
-        return contract
-    context = raw.get("authoring_context")
+        return {**contract, **grouped}
     if not isinstance(context, dict):
         return {}
     fields = (
@@ -812,6 +818,8 @@ def _assessment_contract(raw: dict[str, Any]) -> dict[str, Any]:
         "common_errors",
         "follow_through_rules",
         "level_policy_id",
+        "grouped_level_policy",
+        "accounting_marking_policy",
     )
     return {field: context[field] for field in fields if field in context}
 
@@ -824,9 +832,17 @@ def _level_policies() -> dict[str, Any]:
 
 
 def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
+    contract = item.get("assessment_contract")
+    if isinstance(contract, dict) and "grouped_level_policy" in contract:
+        return _validate_grouped_reason_bands(item, contract)
+    if (
+        isinstance(contract, dict)
+        and contract.get("accounting_marking_policy") == "aqa-accounting-explicit-credit-v1"
+        and item.get("scheme_mode") == "levels"
+    ):
+        raise ValueError(f"assessment item {item.get('id')} grouped level policy is missing")
     if item.get("scheme_mode") != "levels":
         return None
-    contract = item.get("assessment_contract")
     if not isinstance(contract, dict):
         return None
     policy_id = contract.get("level_policy_id")
@@ -886,6 +902,107 @@ def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
         "marks": marks,
         "monotonic": True,
         "annotations_complete": True,
+    }
+
+
+def _validate_grouped_reason_bands(item: dict[str, Any], contract: dict[str, Any]) -> dict[str, Any]:
+    def invalid(detail: str) -> ValueError:
+        return ValueError(f"assessment item {item.get('id')} grouped level policy {detail}")
+
+    declared = contract["grouped_level_policy"]
+    if (
+        not isinstance(declared, dict)
+        or set(declared) != {"id", "schema_version", "distinct_reasons_required", "groups", "levels"}
+        or declared.get("id") != "aqa-accounting-two-reasons-v1"
+        or type(declared.get("schema_version")) is not int
+        or declared["schema_version"] != 1
+        or declared.get("distinct_reasons_required") is not True
+        or item.get("subject") not in {"accounting_aqa", "accounting"}
+        or str(item.get("paper")) != "1"
+        or type(item.get("marks")) is not int
+        or item["marks"] != 6
+        or item.get("scheme_mode") != "levels"
+        or str(item.get("command_word", "")).casefold() != "explain"
+    ):
+        raise invalid("is missing, malformed or outside its supported Accounting task")
+    groups = declared["groups"]
+    if not isinstance(groups, list) or len(groups) != 2:
+        raise invalid("requires two distinct three-mark reason groups")
+    seen_features: set[str] = set()
+    for group, expected_id in zip(groups, ("first_reason", "second_reason"), strict=True):
+        if (
+            not isinstance(group, dict)
+            or set(group) != {"id", "maximum_mark", "assessment_objective", "observable_mark_points"}
+            or group.get("id") != expected_id
+            or type(group.get("maximum_mark")) is not int
+            or group["maximum_mark"] != 3
+            or group.get("assessment_objective") != "AO1"
+        ):
+            raise invalid("has invalid reason identities, caps or objectives")
+        features = group["observable_mark_points"]
+        if (
+            not isinstance(features, list) or len(features) != 3
+            or any(not isinstance(text, str) or not text.strip() for text in features)
+        ):
+            raise invalid("requires identification, development and business-benefit features")
+        normalised = {" ".join(text.casefold().split()) for text in features}
+        if len(normalised) != 3 or seen_features.intersection(normalised):
+            raise invalid("repeats a reason or its credit features")
+        seen_features.update(normalised)
+    levels = declared["levels"]
+    if not isinstance(levels, list) or len(levels) != 4:
+        raise invalid("requires the complete per-reason zero-to-three grid")
+    for level, coverage, row in zip(range(4), (0.0, 0.01, 0.5, 0.75), levels, strict=True):
+        if (
+            not isinstance(row, dict)
+            or set(row) != {"level", "minimum_mark", "maximum_mark", "minimum_coverage", "descriptor"}
+            or any(type(row.get(key)) is not int or row[key] != level for key in ("level", "minimum_mark", "maximum_mark"))
+            or type(row.get("minimum_coverage")) not in {int, float}
+            or row["minimum_coverage"] != coverage
+            or not isinstance(row.get("descriptor"), str) or not row["descriptor"].strip()
+        ):
+            raise invalid("has an invalid per-reason level descriptor")
+    points = item.get("structured_mark_scheme")
+    if not isinstance(points, list) or any(not isinstance(point, dict) for point in points):
+        raise invalid("has no structured reason budgets")
+    awarded = [point for point in points if point.get("marks", 0)]
+    if (
+        len(awarded) != 2
+        or any(
+            type(point.get("marks")) is not int or point["marks"] != 3
+            or point.get("credit_type") != "level" or point.get("assessment_objective") != "AO1"
+            for point in awarded
+        )
+    ):
+        raise invalid("does not match two distinct three-mark structured budgets")
+    policy = BoardLevelPolicy(
+        id=declared["id"], board="aqa", maximum_mark=3,
+        levels=levels, misconception_cap_level=1,
+    )
+    reports = []
+    totals = [0, 0, 0]
+    for group in groups:
+        responses = ResponseSimulator().responses({
+            "id": f"{item.get('id')}:{group['id']}", "prompt": item.get("prompt"),
+            "authoring_context": {
+                "observable_mark_points": group["observable_mark_points"],
+                "misconception_targets": contract.get("misconception_targets", []),
+            },
+        })
+        decisions = [LevelOfResponseEngine().mark(response, policy) for response in responses]
+        marks = [decision.mark for decision in decisions]
+        if marks != [1, 2, 3] or any(
+            len(decision.annotations) != 3 or any(not note.reason for note in decision.annotations)
+            for decision in decisions
+        ):
+            raise invalid("cannot distinguish its synthetic response bands with complete annotations")
+        totals = [total + mark for total, mark in zip(totals, marks, strict=True)]
+        reports.append({"id": group["id"], "maximum_mark": 3, "marks": marks})
+    return {
+        "item_id": item.get("id"), "policy_id": declared["id"],
+        "simulation_kind": "synthetic-grouped-reasons", "groups": reports,
+        "bands": ["weak", "average", "excellent"], "marks": totals,
+        "monotonic": True, "annotations_complete": True,
     }
 
 

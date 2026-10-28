@@ -14,6 +14,8 @@ from aqaaccountgen.case_data import (
     SalesLedgerCase,
     ShareholderCase,
 )
+from aqaaccountgen.marking_policy import apply_marking_policy, finalise_marking_policy
+from aqaaccountgen.selected_response import build_accounting_choice
 from aqaaccountgen.syllabus import Syllabus, Topic
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
@@ -161,12 +163,14 @@ def build_paper(
             topic = topics_by_id[topic_id]
             number = _number(rule.id, section_rule.id, index)
             if question_rule.kind == "multiple_choice":
-                question = _mcq(rule.id, question_rule, number, index, topic, rng)
+                question = _mcq(rule.id, question_rule, number, index, topic, rng, seed=run_seed)
             else:
                 question = _written(
                     rule.id, question_rule, number, topic, business, case_id, values, rng
                 )
             question.assessment_objectives = dict(question_rule.assessment_objectives)
+            if question.kind != "multiple_choice":
+                question = apply_marking_policy(question)
             references = {
                 "company_adjustment": ("company_statement",),
                 "partnership_3": ("partnership_1", "partnership_2"),
@@ -188,13 +192,16 @@ def build_paper(
                         "require a judgement only where the command asks for one."
                     )
             questions.append(question)
+        # Preserve the seeded draws used by later cases, but do not publish
+        # invented section extracts that the Paper 1 candidate never sees.
+        planning_extracts = [
+            _extract(section_rule.id, business, case_id, rng, 1),
+            _extract(section_rule.id, business, case_id, rng, 2),
+        ]
         option = GeneratedOption(
             id=f"{section_rule.id}1",
             title=business,
-            stimulus=[
-                _extract(section_rule.id, business, case_id, rng, 1),
-                _extract(section_rule.id, business, case_id, rng, 2),
-            ],
+            stimulus=[] if rule.id == "paper_1" else planning_extracts,
             chart_title=f"Five-year accounting index for {business}",
             chart_labels=["2021", "2022", "2023", "2024", "2025"],
             chart_values=values,
@@ -222,7 +229,11 @@ def build_paper(
     paper = enrich_paper(paper, syllabus.topics, subject="accounting")
     for section in paper.sections:
         for question in section.options[0].questions:
-            if question.scheme_mode == "levels":
+            finalised = finalise_marking_policy(question)
+            question.structured_mark_scheme = finalised.structured_mark_scheme
+            if question.scheme_mode == "levels" and not question.authoring_context.get(
+                "accounting_marking_policy"
+            ):
                 question.structured_mark_scheme = _level_credit(question)
     validate_generated_paper(paper, rule, syllabus.topic_ids)
     return paper
@@ -279,26 +290,28 @@ def _mcq(
     index: int,
     topic: Topic,
     rng: random.Random,
+    *,
+    seed: int,
 ) -> GeneratedQuestion:
+    if paper_id == "paper_1" and index in {5, 6, 7, 8}:
+        _consume_previous_paper_one_choice_draws(index, rng)
+        scenario = build_accounting_choice(
+            index, random.Random(f"accounting-selected-response-v1:{seed}:{index}")
+        )
+        return GeneratedQuestion(
+            rule_id=rule.id, number=number, marks=rule.marks,
+            kind=rule.kind, command_word=rule.command_word, topic_id=topic.id,
+            prompt=scenario.prompt, choices=scenario.choices,
+            correct_choice=scenario.correct_choice,
+            mark_scheme=[scenario.choices[scenario.correct_choice]],
+            authoring_context={
+                "preserve_prompt": True, "preserve_mark_scheme": True,
+                "selected_response_contract": scenario.public_contract,
+                "source_data": scenario.public_contract["inputs"],
+            },
+        )
     _, stem, correct, distractors = MCQ_TASKS[paper_id][index]
-    if (paper_id, index) == ("paper_1", 6):
-        revenue = rng.randrange(120, 220, 5) * 1_000
-        cost = rng.randrange(35, 55, 5) * 1_000
-        stem = (
-            f"Revenue is {_gbp(revenue)} and cost of sales is {_gbp(cost)}. "
-            "What is gross profit?"
-        )
-        correct = _gbp(revenue - cost)
-        distractors = [_gbp(revenue + cost), _gbp(cost), _gbp(revenue)]
-    elif (paper_id, index) == ("paper_1", 8):
-        shares = rng.randrange(10, 50, 5) * 1_000
-        stem = (
-            f"A company issues {shares:,} ordinary shares with nominal value £1 "
-            "for £3 each. What amount is credited to the share premium account?"
-        )
-        correct = _gbp(shares * 2)
-        distractors = [_gbp(shares), _gbp(shares * 3), _gbp(shares * 4)]
-    elif (paper_id, index) == ("paper_2", 3):
+    if (paper_id, index) == ("paper_2", 3):
         opening = rng.randrange(10, 30, 5) * 1_000
         receipts = rng.randrange(40, 80, 5) * 1_000
         payments = rng.randrange(30, 40, 5) * 1_000
@@ -340,6 +353,19 @@ def _mcq(
         correct_choice=answer,
         mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
     )
+
+
+def _consume_previous_paper_one_choice_draws(index: int, rng: random.Random) -> None:
+    # Keep the already-reviewed non-MCQ case values attached to their seeds.
+    # New choice scenarios use their own RNG; this compatibility shim consumes
+    # only the former amount and option-order draws, not an old question bank.
+    if index == 6:
+        rng.randrange(120, 220, 5)
+        rng.randrange(35, 55, 5)
+    elif index == 8:
+        rng.randrange(10, 50, 5)
+    order = list(range(4))
+    rng.shuffle(order)
 
 
 def _written(
@@ -439,9 +465,21 @@ def _written(
         scheme = case.appropriation_mark_scheme_points()
         authoring_context = case.appropriation_authoring_context()
     elif rule.id == "partnership_3":
+        case = PartnershipCase.from_chart_values(values)
         prompt = (
-            "Assess the view that the formal partnership agreement was unnecessary."
+            "Assess the importance of a formal partnership agreement for Alex, "
+            "Morgan and Riley, using the retirement and profit-sharing information."
         )
+        authoring_context = {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "candidate_source": case.agreement_candidate_source(),
+            "task_scope": (
+                "Assess the formal agreement using only the named partners' "
+                "retirement, capital and two-period profit-sharing arrangements."
+            ),
+            "required_prompt_terms": ["Alex", "Morgan", "Riley", "partnership agreement"],
+        }
         scheme = [
             "AO2: Apply the agreement to Riley's retirement and the reallocation of capital between Alex and Morgan;",
             "AO2: Use the two profit-sharing periods, partners' interest and Morgan's salary as examples of terms requiring agreement;",
@@ -459,12 +497,14 @@ def _written(
         scheme = [*case.mark_scheme_points(), *_decision_levels()]
         authoring_context = case.authoring_context()
     elif rule.id == "decision_2":
+        # This shareholding case is independent of the preceding sole trader.
+        company = f"{business} plc" if paper_id == "paper_1" else business
         prompt = (
-            f"Advise the investor whether the shares in {business} should be retained "
+            f"Advise the investor whether the shares in {company} should be retained "
             "or sold. Use the financial and non-financial evidence and reach a "
             "justified conclusion."
         )
-        case = ShareholderCase.from_chart_values(business, values)
+        case = ShareholderCase.from_chart_values(company, values)
         scheme = [*case.mark_scheme_points(), *_decision_levels()]
         authoring_context = case.authoring_context()
     elif rule.id == "frc":

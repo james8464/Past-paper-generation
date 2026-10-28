@@ -8,6 +8,11 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from Backend.Core.subjects.accounting_selected_response import (
+    ACCOUNTING_SELECTED_RESPONSE_VERSION,
+    solve_accounting_selected_response,
+)
+
 SELECTED_RESPONSE_VERSION = "selected-response-v1"
 _NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$")
 
@@ -100,6 +105,8 @@ def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
     )
     if raw_contract is None:
         return None
+    if isinstance(raw_contract, dict) and raw_contract.get("version") == ACCOUNTING_SELECTED_RESPONSE_VERSION:
+        return solve_accounting_selected_response(item)
     if item.get("kind") != "multiple_choice" or item.get("marks") != 1:
         raise ValueError("selected-response contract requires a one-mark choice item")
     contract = SelectedResponseContract.model_validate(raw_contract)
