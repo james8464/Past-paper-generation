@@ -197,7 +197,8 @@ final class ApplicationCoordinator: ObservableObject {
         let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
-            retentionLimit: settings.historyRetentionLimit
+            retentionLimit: settings.historyRetentionLimit,
+            defaults: defaults
         )
         settingsStore = settings
         catalogStore = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
@@ -663,7 +664,6 @@ final class ApplicationCoordinator: ObservableObject {
                 empiricallyCalibrated: readiness.empiricallyCalibrated
             )
         )
-        try? generationCoordinator.begin(record)
         let processOutputFolder = distributionMode == .appStore
             ? AppDefaults.appStoreWorkingFolder()
             : outputFolder
@@ -714,6 +714,7 @@ final class ApplicationCoordinator: ObservableObject {
 
         let session = beginRunSession()
         do {
+            try generationCoordinator.begin(record)
             runningProcess = try backend.run(arguments: arguments, environment: backendEnvironment) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
@@ -1151,6 +1152,7 @@ final class ApplicationCoordinator: ObservableObject {
         isRunning = false
         etaTimer?.cancel()
         etaTimer = nil
+        generationEstimate = nil
         if didCancelRun {
             didCancelRun = false
             mlxRecoveryState.cancel()

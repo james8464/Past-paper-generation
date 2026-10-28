@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793207594.8590631,
-    "ast_hash": "8ef76cd452e88da3b5133bf59e7c3e5f",
+    "mtime": 1793209868.024374,
+    "ast_hash": "5c703e3e47e2e68af0efdf4fcf168476",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1285,8 +1285,8 @@
     "semantic_hash": "4fa9dfb92771238f19e9b459a6c38fd1"
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1793197165.54723,
-    "ast_hash": "5aa98e49e7ebe9e94839a52924b921ce",
+    "mtime": 1793208548.97929,
+    "ast_hash": "5bc2520792968da74f53ef5e77353c0b",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -1315,8 +1315,8 @@
     "semantic_hash": "2e686de7969302ab207e50d1fed9b593"
   },
   "macOS/scripts/xcbuild.sh": {
-    "mtime": 1793196890.1430569,
-    "ast_hash": "6aadc5729676ec762733fca4ccfc4638",
+    "mtime": 1793208329.088506,
+    "ast_hash": "c8ae9c60d828ed6862f90e074eb9af96",
     "semantic_hash": ""
   },
   "tests/support/edexcel.py": {
@@ -3595,8 +3595,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793207843.7069488,
-    "ast_hash": "d60ea2dce20c8d3980d70d26bcfa0206",
+    "mtime": 1793208903.9039245,
+    "ast_hash": "4a098af47de9a9ec858cc6e7c40f50e9",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3615,8 +3615,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/GenerationCoordinator.swift": {
-    "mtime": 1793196270.003343,
-    "ast_hash": "3e4e595fdd94d9f005d742ed628d5194",
+    "mtime": 1793208303.3578994,
+    "ast_hash": "2fd287cddc628a5e85520eaf4b32902d",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ModelCoordinator.swift": {
@@ -3625,8 +3625,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/RecentDocumentStore.swift": {
-    "mtime": 1793197614.1228986,
-    "ast_hash": "0a22609d69c9ca64b25f3be0e374a5de",
+    "mtime": 1793209160.3829513,
+    "ast_hash": "f03b8f612c5008fd136884b7613e994a",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/SettingsStore.swift": {
@@ -3885,18 +3885,33 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793207843.707607,
-    "ast_hash": "c2195a78adf4d41662d9364e93b91462",
+    "mtime": 1793208224.2741516,
+    "ast_hash": "6336f1c7df9142cb2c7bbcbee9c91a74",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
-    "mtime": 1793207920.1698968,
-    "ast_hash": "bcd5943b77cb3b96338d12f50f494c3f",
+    "mtime": 1793208113.3526602,
+    "ast_hash": "e01f58f9e336a8187214c145f642bf0e",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-28-implementation-quality-audit.md": {
-    "mtime": 1793207920.1708484,
-    "ast_hash": "7384ef15513cc4f65f0330d5c8e2b716",
+    "mtime": 1793209500.0073924,
+    "ast_hash": "511d9bdc221887373382899be66ba6f5",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/HistoryStorageTests.swift": {
+    "mtime": 1793209092.8582904,
+    "ast_hash": "504aff721ded6108a37b3a46e03d2195",
+    "semantic_hash": ""
+  },
+  "tests/test_build_script_integrity.py": {
+    "mtime": 1793208591.8632224,
+    "ast_hash": "1c52bf415a693896c009c6cecd91de90",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-storage-build-integrity-review-2026-10-28.md": {
+    "mtime": 1793209866.7514358,
+    "ast_hash": "d2bfd6a9a53e5df962d152c171ee0ca6",
     "semantic_hash": ""
   }
 }

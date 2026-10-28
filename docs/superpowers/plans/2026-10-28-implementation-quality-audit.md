@@ -13,6 +13,20 @@ The tooling sample covered 24 Python tools, eight macOS scripts and representati
 tests from 177 root test modules. These findings are a starting inventory, not
 evidence that every line or runtime path has been reviewed.
 
+Before declaring the project-wide audit complete, record coverage for every
+tracked file using the repository inventory. Each maintained source, test and
+build/configuration file needs a review entry and disposition. Classify generated
+metadata, assets and immutable historical implementations separately, with an
+explicit reason for retaining or excluding them from refactoring. Formatter or
+lint coverage alone does not count as a semantic review.
+
+Review entry points, validation, failure paths, resource cleanup and ownership as
+well as names and layout. Check proposed dead-code removals against Graphify,
+imports, registry discovery and dynamic CLI entry points before deletion. Preserve
+compatibility code that still serves saved packages. Profile suspected hot paths
+before making performance claims, and compare outputs after reusable helpers are
+extracted.
+
 A read-only Ruff 0.16.4 baseline checked `Backend`, `Resources`, `tools`,
 `tests`, `bridge.py` and `conftest.py`: lint passed; formatting would change
 234 files, with 263 already formatted. No formatter changes were applied during
@@ -101,7 +115,7 @@ topic branches. Install only a tested merged build and preserve user data.
 
 ## Completion record
 
-The audit covers the stated sampled scope. N1/N2/N9 are implemented locally:
+The audit covers the stated sampled scope. N1/N2/N9 are implemented in `fd120fd`:
 the old behaviour failed 37 assertions in the 121-test native suite; the fixed
 suite passed 123 tests. Five further N9 cases reproduced 17 assertion failures
 against that source, with the original 123 tests still passing. The final fixed
@@ -109,8 +123,19 @@ native suite passes 128 tests. Personal-development-signed Store-mode preflight
 and direct Release builds pass; the direct bundle also passes strict signature
 verification. See
 `docs/quality/native-run-isolation-review-2026-10-28.md`. Scoped native cancellation
-checks pass; protected publication gates remain pending. The other packages
-remain planned. Record
-implemented commits, tests, retained evidence and any justified deferrals here.
+checks pass; protected publication gates remain pending.
+
+N3/N4/T1/T2 are also implemented locally. The full native suite now passes
+138 tests and the build-script suite passes seven cases. Valid history stays out
+of quarantine on I/O failure; combined migrations write once; history-start
+failure refuses generation; installed dependency versions invalidate the helper
+cache; failed log capture fails the build. Personal-development-signed direct
+Release and Store-mode preflight builds pass. See
+`docs/quality/native-storage-build-integrity-review-2026-10-28.md` for red/green
+evidence and limits. Protected publication remains pending.
+
+The remaining 17 work packages are planned. Record implemented commits, tests,
+retained evidence and any justified deferrals here. The file-level coverage
+inventory must be completed before claiming a whole-project audit.
 App Store distribution credentials, third-party rights and observed learner
 calibration are separate from this implementation audit and remain unverified.

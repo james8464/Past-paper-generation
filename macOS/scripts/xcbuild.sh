@@ -121,6 +121,7 @@ set +e
 } 2>&1 | tee "$LOG_PATH" | "${FILTER_CMD[@]}"
 PIPESTATUSES=(${PIPESTATUS[@]})
 XCBUILD_STATUS=${PIPESTATUSES[0]:-1}
+LOG_CAPTURE_STATUS=${PIPESTATUSES[1]:-1}
 FILTER_STATUS=${PIPESTATUSES[2]:-0}
 set -e
 
@@ -128,10 +129,18 @@ if [[ $FILTER_STATUS -ne 0 ]]; then
   echo "Warning: output filter exited with status $FILTER_STATUS" >&2
 fi
 
+if [[ $LOG_CAPTURE_STATUS -ne 0 ]]; then
+  echo "Build output could not be saved (status $LOG_CAPTURE_STATUS): $LOG_PATH" >&2
+fi
+
 if [[ $XCBUILD_STATUS -ne 0 ]]; then
   echo "xcodebuild failed (status $XCBUILD_STATUS). See $LOG_PATH" >&2
   echo "Result bundle: $RESULT_BUNDLE" >&2
   exit $XCBUILD_STATUS
+fi
+
+if [[ $LOG_CAPTURE_STATUS -ne 0 ]]; then
+  exit $LOG_CAPTURE_STATUS
 fi
 
 echo "xcodebuild succeeded. Log: $LOG_PATH  Result: $RESULT_BUNDLE"

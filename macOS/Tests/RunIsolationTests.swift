@@ -5,6 +5,80 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testHistoryBeginFailurePreservesThePreviousCoordinatorState() throws {
+        for hasActiveJob in [false, true] {
+            let historyURL = try temporaryHistoryURL()
+            let history = RecentDocumentStore(directory: historyURL, retentionLimit: 10)
+            let coordinator = GenerationCoordinator(history: history)
+            if hasActiveJob {
+                try coordinator.begin(pendingJob(seed: 1))
+                coordinator.receive(.progress(stage: "current", message: "Existing job", progress: 0.4))
+                coordinator.receive(.file(role: "question_paper", path: "/existing/question.pdf"))
+                try FileManager.default.moveItem(
+                    at: historyURL,
+                    to: historyURL.deletingLastPathComponent().appendingPathComponent("preserved-history")
+                )
+            }
+            // A regular file at the directory path fails reliably, including for
+            // privileged test runners, without changing filesystem permissions.
+            try Data("not a directory".utf8).write(to: historyURL)
+            let previousJob = coordinator.activeJob
+            let previousStatus = coordinator.status
+            let previousProgress = coordinator.progress
+            let previousEntries = coordinator.progressEntries
+            let previousFiles = coordinator.generatedFiles
+            let previousHistory = history.records
+
+            XCTAssertThrowsError(try coordinator.begin(pendingJob(seed: 2)))
+
+            XCTAssertEqual(coordinator.activeJob, previousJob)
+            XCTAssertEqual(coordinator.status, previousStatus)
+            XCTAssertEqual(coordinator.progress, previousProgress)
+            XCTAssertEqual(coordinator.progressEntries, previousEntries)
+            XCTAssertEqual(coordinator.generatedFiles, previousFiles)
+            XCTAssertEqual(history.records, previousHistory)
+        }
+    }
+
+    @MainActor
+    func testUKGenerationRefusesBackendLaunchWhenHistoryCannotBeSaved() throws {
+        let backend = ControlledRunBackend()
+        let history = try temporaryHistoryURL()
+        try Data("not a directory".utf8).write(to: history)
+        let application = application(backend: backend, historyDirectory: history)
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
+        application.selectBoard(board)
+        application.setDryRun(true)
+
+        application.generate()
+
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertTrue(application.showError)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+        XCTAssertNil(application.pendingGenerationSeed)
+        XCTAssertNil(application.generationEstimate)
+        application.cancelGeneration()
+    }
+
+    @MainActor
+    func testFrenchGenerationHistoryFailureLeavesNoPhantomActiveJob() throws {
+        let backend = ControlledRunBackend()
+        let history = try temporaryHistoryURL()
+        try Data("not a directory".utf8).write(to: history)
+        let application = application(backend: backend, historyDirectory: history)
+
+        application.generateFrenchPaper(largePrint: false)
+
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertTrue(application.showError)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        XCTAssertNil(application.pendingGenerationSeed)
+    }
+
+    @MainActor
     func testCancelledGenerationCannotChangeItsReplacement() throws {
         for french in [false, true] {
             let backend = ControlledRunBackend()
@@ -293,14 +367,37 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
-    private func application(backend: any BackendRunning, defaults: UserDefaults? = nil) -> ApplicationCoordinator {
+    private func application(
+        backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil
+    ) -> ApplicationCoordinator {
         let defaults = defaults ?? isolatedDefaults()
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
         defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
-        let history = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRunIsolation-\(UUID().uuidString)")
+        let history = historyDirectory ?? FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRunIsolation-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: history) }
         return ApplicationCoordinator(
             defaults: defaults, secrets: RunIsolationSecrets(), historyDirectory: history, backend: backend
+        )
+    }
+
+    private func temporaryHistoryURL() throws -> URL {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinHistoryFailure-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        addTeardownBlock { try? FileManager.default.removeItem(at: root) }
+        return root.appendingPathComponent("history")
+    }
+
+    private func pendingJob(seed: Int) -> GenerationJobRecord {
+        GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: "economics-aqa", paperID: "1", provider: "ollama",
+                model: "fixture", seed: seed, dryRun: false
+            ),
+            provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+            state: .pending, artifacts: [],
+            qualification: QualificationSnapshot(
+                engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false
+            )
         )
     }
 }
