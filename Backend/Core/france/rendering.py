@@ -707,14 +707,17 @@ def render_assessment(
                             flatten=coherent_material_flow
                             and not (
                                 correction
-                                and question.verification.get("kind")
-                                in {
-                                    "expression_synthesis_contract",
-                                    "postfix_synthesis_contract",
-                                    "loan_case_contract",
-                                    "curriculum_database_case_contract",
-                                    "round_robin_case_contract",
-                                }
+                                and (
+                                    (compact_correction and question_index == 0)
+                                    or question.verification.get("kind")
+                                    in {
+                                        "expression_synthesis_contract",
+                                        "postfix_synthesis_contract",
+                                        "loan_case_contract",
+                                        "curriculum_database_case_contract",
+                                        "round_robin_case_contract",
+                                    }
+                                )
                             )
                             and (
                                 question_index > 0
@@ -912,16 +915,18 @@ def render_assessment(
                     # together when they fit. Nested KeepTogether groups can
                     # falsely consume a full page and strand the prompt.
                     start = material_start if coherent_material_flow else question_start
-                    if question.verification.get("kind") in {
+                    if (
+                        compact_correction and question_index == 0
+                    ) or question.verification.get("kind") in {
                         "expression_synthesis_contract",
                         "postfix_synthesis_contract",
                         "loan_case_contract",
                         "curriculum_database_case_contract",
                         "round_robin_case_contract",
                     }:
-                        # A complete source table plus a worked tree can fill a
-                        # page. Let the table remain with the case introduction;
-                        # keep only the prompt, answer and credit together.
+                        # Source tables must remain available beside the case
+                        # introduction. Group only the worked question here;
+                        # including its table can push both onto the next page.
                         start = question_start
                     story[start:] = [KeepTogether(story[start:])]
                 elif (
