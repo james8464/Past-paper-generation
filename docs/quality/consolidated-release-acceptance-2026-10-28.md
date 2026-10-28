@@ -93,11 +93,60 @@ No immutable French exercise source was changed. This CLI edit changes the Core
 implementation identity, so the a93ecb86 source acceptance above remains a
 historical checkpoint rather than acceptance of the new final identity.
 
-Fresh complete-paper Ollama/MLX acceptance for this frozen pipeline is NOT RUN
-at this checkpoint. Earlier V10 Accounting automation success remains a historical
-manual HOLD and is not relabelled as V11 acceptance. Final frozen helper
-collection, current packaged generation, installed-app interaction, latest-head
-protected checks and publication remain required.
+The new Core identity is
+`babc3dec7917ce725217d83c0146098c312ff14562497a247052216aac4033cc`.
+Its repeated current-source acceptance also passed all ten packages and 341 PDF
+pages, including both unchanged-output sixth refusals. All page rasters remain
+identical to reviewed V35 run 2. Evidence now also exists under
+`tmp/pdfs/french-v35-current-source-20261028-final/`; summary.json has SHA-256
+`005ce9f5b66e0888cbea1156825b3b30a6b13a5f2ba13d8bb4a420c3424bf30a`.
+This rerun inherits the earlier exact-raster visual coverage; it is not another
+claim that every page was freshly viewed.
+
+Separate frozen-helper acceptance then passed the same ten packages and 341
+pages. Every raster matches both the final source and reviewed V35 run 2. Both
+sixth refusals preserved all existing output/checkpoint bytes. The exact direct
+Release helper SHA-256 remained
+`7857708915a9cc8180fbc79fe5b7c0876f59cd1e36e630492f3fb0b591960c58`.
+Its implementation identity is
+`01573f02623a8508549a02ad561b215c2b2dce7717f36a15a65e5218e5e64c4a`.
+Production source validation still rejects these actual frozen identities, as
+intended. Independent content comparison excludes only implementation identity
+and its dependent evidence digest; it does not rewrite packages or loosen
+validation. Evidence: `tmp/pdfs/french-v35-frozen-final-20261028/summary.json`,
+SHA-256 `7f2ced233ba49dda42b700becca976457f6a630bcf18146d80216004a7b1aa5a`.
+
+A fresh pinned V11 Accounting Ollama run is RUNNING, not accepted, under
+`tmp/final-v11-accounting-live-20261028/`. Complete-paper MLX acceptance is NOT
+RUN. Earlier V10 Accounting automation success remains a historical manual HOLD
+and is not relabelled as V11 acceptance. Final installed-app interaction,
+latest-head protected checks and publication remain required.
+
+The next Python gate was deliberately interrupted before later fixes:
+`tmp/consolidated-release-final-full-suite.log` records 2,050 passes and a
+KeyboardInterrupt after 357.16 seconds, not a full-suite pass. Subsequent source
+review reproduced a post-spawn process-cleanup gap. `8d5c675` moves deadline
+initialisation into the existing cleanup guard. The failing fake-clock test then
+passed with 32 related cases, including real timeout, termination and descendant
+cleanup tests. Logs: `tmp/post-spawn-cleanup-{red,green}.log`. The Core and live
+runtime identities remain unchanged; the already-started Accounting child was
+not stopped or altered by this tooling-only fix.
+
+`d52024e` fixes two further native discovery findings. Collected output now uses
+the same strict complete-byte-line decoder as streaming output, reports malformed
+events and silent nonzero exits, and preserves explicit backend errors. The old
+String split also mishandled CRLF event boundaries. Implicit direct-development
+root discovery now walks the source ancestors instead of stopping one directory
+too early. Store builds still refuse all repository fallbacks. Fake processes
+and a controlled real refresh caller reproduced six failing assertions across
+eight tests; 94 focused native tests then passed without skips. Evidence:
+`tmp/backend-discovery-{red,green}.log`. Existing invalid UTF-8-in-JSON tests remain
+green; the strict buffer itself was already correct and was not changed.
+
+The final full Python/native and signed packaging gates are being repeated after
+these actual fixes. Earlier successful builds remain historical evidence, not
+acceptance of this later frontend. Core/French and live runtime identities remain
+the two exact hashes recorded above, so the current paper run was not restarted.
 
 The canonical local app currently contains protected PR112, matching its tested
 direct Release frontend/helper bytes and strict signature. Its predecessor is

@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793229399.1629794,
+    "mtime": 1793229653.5810359,
     "ast_hash": "605be20ece1812e611dba2738a6bd646",
     "semantic_hash": ""
   },
@@ -1560,9 +1560,9 @@
     "semantic_hash": "024242ab3f5bc7beb5a9bf3453121b07"
   },
   "tests/test_live_process.py": {
-    "mtime": 1791129181.603627,
-    "ast_hash": "7889001c45e6d53f3edc8a22ddf1cdd1",
-    "semantic_hash": "7889001c45e6d53f3edc8a22ddf1cdd1"
+    "mtime": 1793230060.6061845,
+    "ast_hash": "96fd071a4b234f170fbff850cb68c896",
+    "semantic_hash": ""
   },
   "tests/test_mark_scheme_enrichment.py": {
     "mtime": 1791129181.604048,
@@ -1805,8 +1805,8 @@
     "semantic_hash": ""
   },
   "tools/live_process.py": {
-    "mtime": 1793225632.9932766,
-    "ast_hash": "8018dbbc44f62a7efd8e09d6bfb20bc3",
+    "mtime": 1793230065.74178,
+    "ast_hash": "e309fa94e820d303d54a7b07f7857ede",
     "semantic_hash": ""
   },
   "tools/ocr_computer_science_calibration.py": {
@@ -3575,8 +3575,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/BackendClient.swift": {
-    "mtime": 1793212155.6533375,
-    "ast_hash": "f172c0c9eaa97121c60ec1fda381dbfd",
+    "mtime": 1793230299.7590756,
+    "ast_hash": "dba7db67c8fa7c7d90451c348900d99e",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/SecretStore.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/BackendStreamTests.swift": {
-    "mtime": 1793212155.6539252,
-    "ast_hash": "218f49627411ca1f43b5d69c1f96f9d2",
+    "mtime": 1793230299.7604096,
+    "ast_hash": "cdc74a7adeb74046237a43241ebc64a8",
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
@@ -4025,7 +4025,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793229399.105461,
+    "mtime": 1793229653.523707,
     "ast_hash": "edd51a5ea775d44f4102c9f544b42e52",
     "semantic_hash": ""
   },
@@ -4320,8 +4320,8 @@
     "semantic_hash": ""
   },
   "docs/quality/consolidated-release-acceptance-2026-10-28.md": {
-    "mtime": 1793229574.0596406,
-    "ast_hash": "794016f652068b4f9db7faff8376303d",
+    "mtime": 1793230494.84977,
+    "ast_hash": "f27b84df7c07fd9345142e045e71d38e",
     "semantic_hash": ""
   },
   "docs/quality/final-native-presentation-notification-review-2026-10-28.md": {
