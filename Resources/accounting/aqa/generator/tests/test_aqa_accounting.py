@@ -817,7 +817,7 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 26, "2": 28}
+    mark_scheme_pages = {"1": 24, "2": 28}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -1177,11 +1177,11 @@ def test_paper_one_mark_scheme_matches_reference_question_sequence(tmp_path: Pat
         18: "Profit and loss appropriation account",
         19: "formal partnership agreement",
         20: "Advise the owner",
-        22: "Question 16 continued",
-        23: "Advise the investor",
-        25: "Question 17 continued",
+        21: "Question 16 continued",
+        22: "Advise the investor",
+        23: "Question 17 continued",
     }
-    assert len(pages) == 26
+    assert len(pages) == 24
     for page_index, label in expected.items():
         assert label in (pages[page_index].extract_text() or "")
 

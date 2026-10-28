@@ -8,8 +8,13 @@ import pymupdf
 import pytest
 from aqaaccountgen.configs import load_rule
 from aqaaccountgen.generator import build_paper
-from aqaaccountgen.render_pdf import _indicative_content_page, render_mark_scheme
+from aqaaccountgen.render_pdf import (
+    _indicative_content_page,
+    render_mark_scheme,
+    render_question_paper,
+)
 from aqaaccountgen.syllabus import load_syllabus
+from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate
 
 from Backend.Core.assessment_package import (
@@ -293,3 +298,65 @@ def test_full_paper_pdf_award_cells_match_persisted_credit_routes(
                         and rect.y0 <= (word[1] + word[3]) / 2 <= rect.y1
                     )
             assert cells == [str(point.marks)], (item.number, point.text, cells)
+
+
+def test_question_paper_vector_tables_fit_inside_the_answer_border(paper, tmp_path):
+    path = tmp_path / "question-paper.pdf"
+    render_question_paper(paper, path)
+    with pymupdf.open(path) as document:
+        assert len(document) == 36
+        for number, page in enumerate(document, start=1):
+            if number == 1:
+                continue
+            for drawing in page.get_drawings():
+                rect = drawing["rect"]
+                # Check actual table/grid strokes in the body, not ReportLab's
+                # declared wrap width or the footer's outside-box instructions.
+                if rect.y0 > 60 and rect.y1 < 770:
+                    assert rect.x0 >= 14 * mm - 0.5, (number, rect)
+                    assert rect.x1 <= 198 * mm + 0.5, (number, rect)
+        asset_page = document[7].get_text()
+        for text in (
+            "Foundry Components",
+            "Plant and machinery",
+            "Motor vehicles",
+            "At the start",
+            "Additional information",
+            "reducing-balance",
+            "purchases",
+            "disposals",
+        ):
+            assert text in asset_page
+
+
+def test_general_judgement_guidance_is_printed_once_without_padding(paper, tmp_path):
+    path = tmp_path / "compact-scheme.pdf"
+    render_mark_scheme(paper, path)
+    with pymupdf.open(path) as document:
+        pages = [re.sub(r"\s+", " ", page.get_text()) for page in document]
+        text = " ".join(pages)
+        assert (
+            text.count("Weigh the principal financial and non-financial evidence.") == 1
+        )
+        assert text.count("The recommendation should weigh the alternatives") == 1
+        assert (
+            text.count(
+                "Credit a different recommendation where it is supported by valid accounting analysis."
+            )
+            == 1
+        )
+        assert len(document) == 24
+        assert "Weigh the principal financial and non-financial evidence." in " ".join(
+            pages[:7]
+        )
+        for rule_id in ("decision_1", "decision_2"):
+            item = question(paper, rule_id)
+            source_points = [
+                re.sub(r"\s+", " ", entry["text"])
+                for entry in item.authoring_context["accounting_source_content"]
+                if entry["role"] == "indicative"
+            ]
+            assert all(text.count(point) == 1 for point in source_points)
+            assert any(all(point in page for point in source_points) for page in pages)
+            positions = [text.index(point) for point in source_points]
+            assert positions == sorted(positions)

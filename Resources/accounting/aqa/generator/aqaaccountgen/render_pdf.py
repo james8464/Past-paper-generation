@@ -111,7 +111,7 @@ def render_mark_scheme(
     )
     if paper.paper_id == "paper_1":
         pages = _paper_one_mark_scheme_pages(paper)
-        assert len(pages) == 25
+        assert len(pages) == 23
         for page in pages:
             story.append(PageBreak())
             story.extend(page)
@@ -168,10 +168,8 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
         ),
         _levels_scheme_page(questions["16"], "Improving the accounting records"),
         _extended_indicative_content_page(questions["16"], "Question 16"),
-        _extended_judgement_page(questions["16"], "Question 16"),
         _levels_scheme_page(questions["17"], "The shareholder's decision"),
         _extended_indicative_content_page(questions["17"], "Question 17"),
-        _extended_judgement_page(questions["17"], "Question 17"),
     ]
     return pages
 
@@ -227,11 +225,6 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 ]
             ),
             Spacer(1, 5 * mm),
-            Paragraph(
-                "The indicative content is not exhaustive. Reward other valid accounting "
-                "arguments when they are applied to the information in the question.",
-                STYLES["small"],
-            ),
         ],
         [
             Paragraph("Level of response marking", STYLES["kicker"]),
@@ -282,7 +275,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             ),
             Spacer(1, 5 * mm),
             Paragraph(
-                "Extended responses should contain a supported judgement. The judgement "
+                "Where the command requires a judgement, the judgement "
                 "may appear anywhere in the response and need not be in a separate conclusion.",
                 STYLES["small"],
             ),
@@ -494,6 +487,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 Spacer(1, 4 * mm),
             ]
         )
+    pages[1].extend(_general_judgement_guidance())
     return pages
 
 
@@ -929,12 +923,6 @@ def _levels_scheme_page(
             levels,
             [20 * mm, 25 * mm, 122 * mm],
         ),
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Use a best-fit approach. The indicative content on the following page "
-            "illustrates material that may be credited; it is not a model answer.",
-            STYLES["small"],
-        ),
     ]
 
 
@@ -1010,12 +998,6 @@ def _indicative_content_page(
             rows,
             [132 * mm, 35 * mm],
         ),
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Credit a different conclusion where it follows from valid accounting "
-            "analysis and is supported by the circumstances in the question.",
-            STYLES["small"],
-        ),
     ]
 
 
@@ -1023,7 +1005,7 @@ def _extended_indicative_content_page(
     question: GeneratedQuestion,
     title: str,
 ) -> list[Flowable]:
-    points = indicative_content(question)[:5]
+    points = indicative_content(question)
     rows = [
         [
             Paragraph(point, STYLES["scheme_small"]),
@@ -1040,7 +1022,12 @@ def _extended_indicative_content_page(
             rows,
             [137 * mm, 30 * mm],
         ),
-        Spacer(1, 4 * mm),
+    ]
+
+
+def _general_judgement_guidance() -> list[Flowable]:
+    return [
+        Spacer(1, 5 * mm),
         Paragraph("Judgement", STYLES["heading"]),
         Paragraph(
             "The recommendation should weigh the alternatives, recognise the limitations "
@@ -1048,25 +1035,7 @@ def _extended_indicative_content_page(
             "A conclusion without supporting analysis cannot reach the highest level.",
             STYLES["small"],
         ),
-    ]
-
-
-def _extended_judgement_page(
-    question: GeneratedQuestion,
-    title: str,
-) -> list[Flowable]:
-    applied_points = indicative_content(question)[5:]
-    return [
-        Paragraph(f"{title} continued", STYLES["kicker"]),
-        Paragraph("Analysis and evaluation", STYLES["heading"]),
         Spacer(1, 3 * mm),
-        _scheme_grid(
-            ["Further guidance", "AO"],
-            [[point, _indicative_objective(point)] for point in applied_points],
-            [137 * mm, 30 * mm],
-        ),
-        Spacer(1, 5 * mm),
-        Paragraph("Judgement", STYLES["heading"]),
         _guidance_table(
             [
                 (
@@ -2349,7 +2318,7 @@ def _non_current_asset_case(option: GeneratedOption) -> Table:
             "",
         ]
     )
-    table = Table(case_rows, colWidths=[142 * mm, 25 * mm])
+    table = Table(case_rows, colWidths=[128 * mm, 25 * mm])
     table.setStyle(
         TableStyle(
             [
