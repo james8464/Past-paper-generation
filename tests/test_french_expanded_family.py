@@ -1,4 +1,4 @@
-"""The unpublished fifth family must coexist without relaxing similarity rules."""
+# The unpublished fifth family must coexist without relaxing similarity rules.
 
 import ast
 import re

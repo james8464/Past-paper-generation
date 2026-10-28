@@ -1,4 +1,4 @@
-"""V24 PDF gates retain source facts, working space and correction credit."""
+# V24 PDF gates retain source facts, working space and correction credit.
 
 from __future__ import annotations
 

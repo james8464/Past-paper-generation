@@ -1,4 +1,4 @@
-"""Build the maintained Prix Occitanie 2026 application evidence documents."""
+# Build the maintained Prix Occitanie 2026 application evidence documents.
 
 from __future__ import annotations
 
@@ -158,8 +158,8 @@ def configure_document(
         run.font.color.rgb = RGBColor(85, 85, 85)
 
 
+# Use an explicit portable face instead of Word's serif theme fallback.
 def finalize_fonts(doc: Document) -> None:
-    """Use an explicit portable face instead of Word's serif theme fallback."""
     paragraphs = list(doc.paragraphs)
     for paragraph in doc.paragraphs:
         paragraph.paragraph_format.keep_together = True
@@ -763,7 +763,7 @@ def build_mathematical_analysis() -> Path:
 
 def main(argv: list[str] | None = None) -> None:
     global OUTPUT
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description='Build the maintained Prix Occitanie 2026 application evidence documents.')
     parser.add_argument(
         "--output", type=Path, default=OUTPUT,
         help="Output directory. Use a fresh directory to preserve completed personal forms.",

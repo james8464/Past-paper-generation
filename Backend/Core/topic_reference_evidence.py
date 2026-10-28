@@ -1,9 +1,8 @@
-"""Reviewed feature-only AQA topic subsets, never topic AO targets.
-
-Admission is fixed before generation: exact topic, actual operation and response
-mode; tasks with clear evidence of mixed operations remain mixed. Context-incomplete records are excluded.
-Source audit expanded 28 September 2026. No source prose retained.
-"""
+# Reviewed feature-only AQA topic subsets, never topic AO targets.
+#
+# Admission is fixed before generation: exact topic, actual operation and response
+# mode; tasks with clear evidence of mixed operations remain mixed. Context-incomplete records are excluded.
+# Source audit expanded 28 September 2026. No source prose retained.
 
 from __future__ import annotations
 
@@ -299,8 +298,8 @@ STYLE_FOCUS = {
 }
 
 
+# Conservative semantic selectors for reviewed bank tasks; hints cannot override prose.
 def task_content_focus(item: dict[str, Any]) -> str | None:
-    """Conservative semantic selectors for reviewed bank tasks; hints cannot override prose."""
     prompt = str(item.get("prompt", "")).casefold()
     rules = {
         "4.2": [
@@ -349,13 +348,12 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
     return None
 
 
+# Conservative dependencies for the reviewed bank forms, not a language solver.
+#
+# Presence of an introductory stem is not presence of its data. Applied tasks
+# must retain the named definitions/schema/relationships that make them
+# answerable. New forms need reviewed selectors; metadata alone cannot qualify them.
 def task_context_complete(item: dict[str, Any], focus: str | None) -> bool:
-    """Conservative dependencies for the reviewed bank forms, not a language solver.
-
-    Presence of an introductory stem is not presence of its data. Applied tasks
-    must retain the named definitions/schema/relationships that make them
-    answerable. New forms need reviewed selectors; metadata alone cannot qualify them.
-    """
     raw = item.get("context") or []
     context = "\n".join(raw).casefold() if isinstance(raw, list) and all(isinstance(v, str) for v in raw) else ""
     prompt = str(item.get("prompt", "")).casefold()
@@ -443,13 +441,12 @@ def reviewed_topic_records(topic: str) -> list[dict[str, Any]]:
     return result
 
 
+# Require task/context membership and an evidenced response form.
+#
+# A stimulus table is not an answer table; multiple answer slots are not a
+# trace table. Broad authoring operations may be refined only by an actual
+# response instruction/contract, never an incidental noun in prose.
 def task_features(item: dict[str, Any]) -> dict[str, Any]:
-    """Require task/context membership and an evidenced response form.
-
-    A stimulus table is not an answer table; multiple answer slots are not a
-    trace table. Broad authoring operations may be refined only by an actual
-    response instruction/contract, never an incidental noun in prose.
-    """
     raw_contract = item.get("reference_task_contract")
     if not isinstance(raw_contract, dict):
         return {"topic_id": None, "operation": "unknown", "mode": "unknown"}

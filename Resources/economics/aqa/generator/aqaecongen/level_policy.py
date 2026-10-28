@@ -15,8 +15,8 @@ class LevelRow:
 _ZERO = LevelRow(0, "0", "No creditworthy material.")
 
 
+# Return the AQA Economics response bands for a supported tariff.
 def level_rows(marks: int) -> tuple[LevelRow, ...]:
-    """Return the AQA Economics response bands for a supported tariff."""
     if marks == 9:
         return (
             LevelRow(

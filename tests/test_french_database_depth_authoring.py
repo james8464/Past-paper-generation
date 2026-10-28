@@ -1,4 +1,4 @@
-"""V2 database wording is finite, credit-locked, and replayable."""
+# V2 database wording is finite, credit-locked, and replayable.
 
 import json
 from copy import deepcopy

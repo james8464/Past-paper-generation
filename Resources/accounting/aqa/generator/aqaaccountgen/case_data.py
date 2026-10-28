@@ -17,9 +17,9 @@ def _round_pounds(value: Decimal) -> int:
     return int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
+# Candidate-visible source for the bookkeeping-system decision.
 @dataclass(frozen=True)
 class AccountingSystemCase:
-    """Candidate-visible source for the bookkeeping-system decision."""
 
     business: str
     annual_bookkeeper_salary: int
@@ -181,9 +181,9 @@ class CostingCase:
         }
 
 
+# Candidate-visible source contract for the Paper 1 shareholder decision.
 @dataclass(frozen=True)
 class ShareholderCase:
-    """Candidate-visible source contract for the Paper 1 shareholder decision."""
 
     business: str
     nominal_share_value_pence: int
@@ -242,9 +242,9 @@ class ShareholderCase:
             comparator_total_equity_thousands=round(values[3] * 78),
         )
 
+    # Rehydrate the renderer's case only from the published source data.
     @classmethod
     def from_candidate_source(cls, source: dict[str, object]) -> ShareholderCase:
-        """Rehydrate the renderer's case only from the published source data."""
 
         equity = dict(source["statement_of_changes_in_equity"])
         market = dict(source["market_data"])
@@ -369,8 +369,8 @@ class ShareholderCase:
             1,
         )
 
+    # Return only facts and units printed on the candidate source page.
     def candidate_source(self) -> dict[str, object]:
-        """Return only facts and units printed on the candidate source page."""
 
         return {
             "business": self.business,
@@ -464,9 +464,9 @@ class ShareholderCase:
         ]
 
 
+# Complete, internally consistent source for the Paper 1 company statement.
 @dataclass(frozen=True)
 class IncomeStatementCase:
-    """Complete, internally consistent source for the Paper 1 company statement."""
 
     business: str
     administration_expenses: int
@@ -568,8 +568,8 @@ class IncomeStatementCase:
     def profit_for_year(self) -> int:
         return self.profit_before_tax - self.current_tax_charge
 
+    # Return one exact, independently checkable award point per mark.
     def mark_scheme_points(self) -> list[str]:
-        """Return one exact, independently checkable award point per mark."""
         gross_profit = self.revenue - self.adjusted_cost_of_sales
         new_interest = self.new_debenture_interest
         earlier_interest = self.earlier_debenture_interest
@@ -686,9 +686,9 @@ class IncomeStatementCase:
         }
 
 
+# Complete retirement and appropriation data for Paper 1 Question 15.
 @dataclass(frozen=True)
 class PartnershipCase:
-    """Complete retirement and appropriation data for Paper 1 Question 15."""
 
     opening_capital: dict[str, int]
     goodwill: int
@@ -1203,14 +1203,13 @@ class NonCurrentAssetCase:
         }
 
 
+# Shared figures for the Paper 1 sales-ledger case.
+#
+# The question paper, AI authoring contract and mark scheme all consume this
+# object so every amount remains present, sufficient and arithmetically
+# consistent.
 @dataclass(frozen=True)
 class SalesLedgerCase:
-    """Shared figures for the Paper 1 sales-ledger case.
-
-    The question paper, AI authoring contract and mark scheme all consume this
-    object so every amount remains present, sufficient and arithmetically
-    consistent.
-    """
 
     business: str
     opening_receivables: int

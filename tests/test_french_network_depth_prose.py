@@ -1,4 +1,4 @@
-"""The v15 network case prints every needed fact and awards exact, separable credit."""
+# The v15 network case prints every needed fact and awards exact, separable credit.
 
 from copy import deepcopy
 from decimal import Decimal

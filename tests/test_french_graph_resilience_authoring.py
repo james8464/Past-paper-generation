@@ -1,4 +1,4 @@
-"""V20 finite selection is hash-bound and earlier versions remain distinct."""
+# V20 finite selection is hash-bound and earlier versions remain distinct.
 
 from copy import deepcopy
 from decimal import Decimal

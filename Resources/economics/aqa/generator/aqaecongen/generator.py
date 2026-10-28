@@ -957,8 +957,8 @@ def _applied_mcq(
     )
 
 
+# Project one typed source into candidate text, options and checked key.
 def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
-    """Project one typed source into candidate text, options and checked key."""
     values = source.model_dump(mode="json", exclude={"operation"})
     contract = selected_response_contract(source.operation, inputs=values)
 

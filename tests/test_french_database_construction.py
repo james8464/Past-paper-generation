@@ -1,4 +1,4 @@
-"""V28 construction must be executable, independent of row order and replay-bound."""
+# V28 construction must be executable, independent of row order and replay-bound.
 
 import itertools
 from copy import deepcopy

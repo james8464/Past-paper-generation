@@ -1,4 +1,4 @@
-"""Whole E3 sequences: distinct reasoning, aligned credits and bound facts."""
+# Whole E3 sequences: distinct reasoning, aligned credits and bound facts.
 
 from copy import deepcopy
 from decimal import Decimal

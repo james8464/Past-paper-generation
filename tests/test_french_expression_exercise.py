@@ -1,4 +1,4 @@
-"""Synthesized cases must produce complete, bound questions, not data alone."""
+# Synthesized cases must produce complete, bound questions, not data alone.
 
 from copy import deepcopy
 from decimal import Decimal

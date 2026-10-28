@@ -1,4 +1,4 @@
-"""Strict H3 source evidence boundaries; aggregate-v2 is not path qualification."""
+# Strict H3 source evidence boundaries; aggregate-v2 is not path qualification.
 
 from __future__ import annotations
 

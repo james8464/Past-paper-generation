@@ -1,4 +1,4 @@
-"""Small, bounded verification contracts. Never execute model-supplied Python."""
+# Small, bounded verification contracts. Never execute model-supplied Python.
 
 import ast
 import heapq
@@ -251,8 +251,8 @@ def _shortest_path(contract):
     raise ValueError("Aucun chemin")
 
 
+# Compare evidence recursively without Python's bool/int/float coercion.
 def _same_typed_value(actual, expected) -> bool:
-    """Compare evidence recursively without Python's bool/int/float coercion."""
     if type(actual) is not type(expected):
         return False
     if isinstance(actual, dict):

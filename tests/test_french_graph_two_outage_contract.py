@@ -1,4 +1,4 @@
-"""V25 route facts are immutable and independently checkable."""
+# V25 route facts are immutable and independently checkable.
 
 from __future__ import annotations
 

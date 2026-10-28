@@ -1250,8 +1250,8 @@ def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
     return drawing
 
 
+# Render the opening Paper 2 appendix in its reference-style dual series.
 def _paper_two_grouped_bar_chart(option: GeneratedOption) -> Drawing:
-    """Render the opening Paper 2 appendix in its reference-style dual series."""
 
     drawing = Drawing(165 * mm, 64 * mm)
     x0, y0, width, height = 38, 34, 402, 118

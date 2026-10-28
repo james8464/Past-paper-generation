@@ -1,4 +1,4 @@
-"""Public identity changes must not orphan existing documents or credentials."""
+# Public identity changes must not orphan existing documents or credentials.
 
 import json
 import plistlib

@@ -1,4 +1,4 @@
-"""V35 must explicitly request its notices and preserve all printed content."""
+# V35 must explicitly request its notices and preserve all printed content.
 
 from copy import deepcopy
 from itertools import combinations

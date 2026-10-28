@@ -322,13 +322,13 @@ def generate_questions_with_ollama(
     return blueprint.model_copy(update={"questions": questions})
 
 
+# Run an independent demand-only gate over every rendered question item.
 def review_blueprint_difficulty(
     client: object,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
 ) -> PaperBlueprint:
-    """Run an independent demand-only gate over every rendered question item."""
 
     emit = progress or (lambda _message: None)
     profile = profile_for(
@@ -556,8 +556,8 @@ def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object
     ]
 
 
+# Keep a multipart review focused on the rendered part-level guidance.
 def _multipart_review_view(question: QuestionBlueprint) -> QuestionBlueprint:
-    """Keep a multipart review focused on the rendered part-level guidance."""
 
     if not question.parts:
         return question
@@ -899,8 +899,8 @@ def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
     return _restore_source_reference(cleaned, question.source_reference)
 
 
+# Keep calibrated Section A stimuli aligned with rendered assessment data.
 def _uses_review_only_generation(question: QuestionBlueprint) -> bool:
-    """Keep calibrated Section A stimuli aligned with rendered assessment data."""
     return question.section == "A" and bool(question.stimulus_kind)
 
 

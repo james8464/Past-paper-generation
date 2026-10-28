@@ -1,4 +1,4 @@
-"""Experimental authoring replay binds the entire exercise, not just answers."""
+# Experimental authoring replay binds the entire exercise, not just answers.
 
 from copy import deepcopy
 

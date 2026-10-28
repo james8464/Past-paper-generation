@@ -1,4 +1,4 @@
-"""The V20 outage is derived by trusted code and isolated from V3."""
+# The V20 outage is derived by trusted code and isolated from V3.
 
 from copy import deepcopy
 from itertools import pairwise

@@ -1,8 +1,7 @@
-"""Bounded candidate-answerable paths; printed alternatives remain reviewable.
-
-Topology is data, never parsed from candidate-facing instructions. Item IDs are
-the export's leaf paths, so parent summaries cannot silently duplicate marks.
-"""
+# Bounded candidate-answerable paths; printed alternatives remain reviewable.
+#
+# Topology is data, never parsed from candidate-facing instructions. Item IDs are
+# the export's leaf paths, so parent summaries cannot silently duplicate marks.
 
 from __future__ import annotations
 

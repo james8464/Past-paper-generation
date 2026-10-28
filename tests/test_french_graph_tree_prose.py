@@ -1,4 +1,4 @@
-"""The closed French renderer cannot print model-authored factual prose."""
+# The closed French renderer cannot print model-authored factual prose.
 
 from copy import deepcopy
 from decimal import Decimal

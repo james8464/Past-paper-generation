@@ -1,4 +1,4 @@
-"""Independent checks for the complete V29 recursive construction task."""
+# Independent checks for the complete V29 recursive construction task.
 
 from copy import deepcopy
 from decimal import Decimal

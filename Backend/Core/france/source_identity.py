@@ -1,4 +1,4 @@
-"""Bind resumable work to its implementation so a version label alone cannot validate it."""
+# Bind resumable work to its implementation so a version label alone cannot validate it.
 
 import sys
 from hashlib import sha256

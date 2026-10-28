@@ -27,10 +27,10 @@ AQA_CS_SCHEME_PAGINATION = "generated-aqa-cs-paper2-mark-scheme-content-v1"
 AQA_CS_PAPER1_SCHEME_PAGINATION = "generated-aqa-cs-paper1-mark-scheme-content-v1"
 
 
+# Generated-content policy is not an observed reference-count range.
 def runtime_page_count_policy(
     family: str, role: str, reference_count: int, *, paper: str | None = None
 ) -> dict:
-    """Generated-content policy is not an observed reference-count range."""
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
     if family == "ocr-economics" and role == "mark-scheme":
@@ -43,10 +43,10 @@ def runtime_page_count_policy(
     return {"kind": "exact", "minimum": reference_count, "maximum": reference_count}
 
 
+# Content-driven pagination must preserve every published marking statement.
 def _aqa_cs_printed_credit(
     pdf_path: Path, assessment_path: Path | None, reference_count: int, *, paper: str = "2"
 ) -> dict:
-    """Content-driven pagination must preserve every published marking statement."""
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.open_credit import printed_credit_points
 

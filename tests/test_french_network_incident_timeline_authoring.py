@@ -1,4 +1,4 @@
-"""V26 bounded wording selection and timed candidate hashes replay exactly."""
+# V26 bounded wording selection and timed candidate hashes replay exactly.
 
 from copy import deepcopy
 

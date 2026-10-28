@@ -1,8 +1,7 @@
-"""V26 finite selection with a separately bound timed candidate.
-
-The model selects only inherited scene/wording IDs. It never supplies timing
-facts or answers; the V26 layer derives those from its immutable contract.
-"""
+# V26 finite selection with a separately bound timed candidate.
+#
+# The model selects only inherited scene/wording IDs. It never supplies timing
+# facts or answers; the V26 layer derives those from its immutable contract.
 
 from __future__ import annotations
 

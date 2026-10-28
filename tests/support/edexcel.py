@@ -1,4 +1,4 @@
-"""Shared Edexcel test fixtures, importable in full and family-only runs."""
+# Shared Edexcel test fixtures, importable in full and family-only runs.
 
 import random
 

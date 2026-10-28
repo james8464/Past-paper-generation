@@ -44,8 +44,8 @@ class CoverProfile:
             raise ValueError("Cover section marks must be positive and sum to the paper total without duplicate sections.")
 
 
+# Fixed-grid, board-shaped front page without copying protected artwork.
 class QuestionPaperCover(Flowable):
-    """Fixed-grid, board-shaped front page without copying protected artwork."""
 
     def __init__(
         self,
@@ -62,9 +62,9 @@ class QuestionPaperCover(Flowable):
         self.width = 167 * mm
         self.height = 235 * mm
 
+    # Return the renderer-neutral representation used for qualification.
     @property
     def component(self) -> Cover:
-        """Return the renderer-neutral representation used for qualification."""
         return Cover(
             title=self.profile.subject,
             subtitle=self.profile.paper_title,

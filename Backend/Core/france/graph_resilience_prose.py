@@ -1,4 +1,4 @@
-"""Finite French wording and exact marks for the V20 graph-resilience case."""
+# Finite French wording and exact marks for the V20 graph-resilience case.
 
 from __future__ import annotations
 

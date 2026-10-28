@@ -1,4 +1,4 @@
-"""Keep component topics attached to the tasks they actually assess."""
+# Keep component topics attached to the tasks they actually assess.
 
 import re
 from pathlib import Path

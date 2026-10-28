@@ -1,4 +1,4 @@
-"""Immutable V20 app-owned graph-resilience facts; V3 packages stay unchanged."""
+# Immutable V20 app-owned graph-resilience facts; V3 packages stay unchanged.
 
 from __future__ import annotations
 

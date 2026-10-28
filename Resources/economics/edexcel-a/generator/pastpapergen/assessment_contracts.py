@@ -1,4 +1,4 @@
-"""One instance supplies the paper's source, credit, solver and review views."""
+# One instance supplies the paper's source, credit, solver and review views.
 
 from __future__ import annotations
 

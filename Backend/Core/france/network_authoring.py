@@ -1,4 +1,4 @@
-"""Hash-bound, selection-only authoring for the French network exercise."""
+# Hash-bound, selection-only authoring for the French network exercise.
 
 from __future__ import annotations
 

@@ -169,8 +169,8 @@ def handle_french_review(args: argparse.Namespace) -> int:
     return handle_record_review(args)
 
 
+# Check dynamic UK imports and render every public French case family.
 def handle_bundle_check(_args: argparse.Namespace) -> int:
-    """Check dynamic UK imports and render every public French case family."""
     loaded: list[str] = []
     errors: list[str] = []
     try:

@@ -7,13 +7,13 @@ from pathlib import Path
 import pymupdf as fitz
 
 
+# Extract stable reading-order text without a Poppler CLI dependency.
 def extract_pdf_text(
     path: Path,
     *,
     first_page: int = 1,
     last_page: int | None = None,
 ) -> str:
-    """Extract stable reading-order text without a Poppler CLI dependency."""
 
     document = fitz.open(path)
     try:
@@ -30,8 +30,8 @@ def extract_pdf_text(
         document.close()
 
 
+# Return the font families actually used by visible text spans.
 def pdf_font_names(path: Path) -> set[str]:
-    """Return the font families actually used by visible text spans."""
 
     document = fitz.open(path)
     try:

@@ -5,8 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 
 
+# Expand a user path without resolving sandbox-approved symlinks.
 def absolute_user_path(value: str | Path) -> Path:
-    """Expand a user path without resolving sandbox-approved symlinks."""
     return Path(value).expanduser().absolute()
 
 

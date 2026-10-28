@@ -9,13 +9,12 @@ from pathlib import Path
 import pymupdf as fitz
 
 
+# Attach a deterministic page-level structure tree and marked content.
+#
+# Each page is one ordered ``Sect`` element associated with an MCID. This
+# preserves the renderer's deliberate content-stream order for assistive
+# technology while leaving page geometry untouched.
 def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
-    """Attach a deterministic page-level structure tree and marked content.
-
-    Each page is one ordered ``Sect`` element associated with an MCID. This
-    preserves the renderer's deliberate content-stream order for assistive
-    technology while leaving page geometry untouched.
-    """
 
     path = Path(path)
     descriptor, staged_name = tempfile.mkstemp(
@@ -78,8 +77,8 @@ def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
         staged.unlink(missing_ok=True)
 
 
+# Return whether a page is linked to marked content in a structure tree.
 def has_logical_page_order(document: fitz.Document, page: fitz.Page) -> bool:
-    """Return whether a page is linked to marked content in a structure tree."""
 
     if not _has_structure_tree(document, document.pdf_catalog()):
         return False

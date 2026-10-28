@@ -1,4 +1,4 @@
-"""One bounded database selection is checkpointed and exactly replayable."""
+# One bounded database selection is checkpointed and exactly replayable.
 
 import json
 from copy import deepcopy

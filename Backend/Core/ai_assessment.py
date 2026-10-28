@@ -83,11 +83,11 @@ class GenerationPolicy:
     require_difficulty_review: bool = False
 
 
+# A checked answer does not establish stem or distractor quality.
 def _requires_model_review(
     question: GeneratedQuestion,
     policy: GenerationPolicy,
 ) -> bool:
-    """A checked answer does not establish stem or distractor quality."""
 
     return policy.require_model_review
 
@@ -104,6 +104,7 @@ class _Task:
         return "/".join(str(part) for part in self.key)
 
 
+# Replace draft items while keeping the authoritative assessment blueprint frozen.
 def generate_unique_paper(
     paper: GeneratedPaper,
     *,
@@ -117,7 +118,6 @@ def generate_unique_paper(
     checkpoint_store: AssessmentCheckpointStore | None = None,
     demand_profile: ReferenceDemandProfile | None = None,
 ) -> GeneratedPaper:
-    """Replace draft items while keeping the authoritative assessment blueprint frozen."""
 
     policy = policy or GenerationPolicy()
     emit = progress or (lambda _message: None)
@@ -501,11 +501,11 @@ def _validate_checkpoint_item(
         )
 
 
+# Adopt a newly added layout budget without weakening item validation.
 def _upgrade_checkpoint_metadata(
     task: _Task,
     candidate: GeneratedQuestion,
 ) -> GeneratedQuestion:
-    """Adopt a newly added layout budget without weakening item validation."""
 
     current = dict(task.question.authoring_context)
     stored = dict(candidate.authoring_context)
@@ -766,8 +766,8 @@ def _independently_validate_candidate(
     return solution
 
 
+# Permit a reviewed local blueprint stem only for formatting-only drift.
 def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
-    """Permit a reviewed local blueprint stem only for formatting-only drift."""
 
     return provider.casefold() in {"ollama", "apple"} and any(
         reason in failure.casefold()
@@ -781,11 +781,11 @@ def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
     )
 
 
+# Keep local structured responses below practical context/output limits.
 def _effective_batch_size(
     client: AssessmentLLMClient,
     policy: GenerationPolicy,
 ) -> int:
-    """Keep local structured responses below practical context/output limits."""
 
     if getattr(client, "supports_parallel_generation", False):
         return policy.batch_size
@@ -1086,8 +1086,8 @@ def _normalise_calculation_guidance(
     ]
 
 
+# Apply the package quality gate before an item can be checkpointed.
 def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
-    """Apply the package quality gate before an item can be checkpointed."""
 
     raw = question.model_dump(mode="json")
     evidence_ids = list(question.source_references)
@@ -1123,12 +1123,12 @@ def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
     )
 
 
+# Make the selected answer explicit when a model uses only a shorthand label.
 def _normalise_multiple_choice_answer(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
     answer: str,
 ) -> list[MarkSchemePoint]:
-    """Make the selected answer explicit when a model uses only a shorthand label."""
 
     awarded = [index for index, point in enumerate(points) if point.marks]
     if question.marks != 1 or len(awarded) != 1:
@@ -1227,16 +1227,15 @@ def _is_examiner_meta_guidance(text: str) -> bool:
     )
 
 
+# Use blueprint AO totals when building levels-based schemes.
+#
+# Levels-based schemes separate AO accounting, band descriptors and indicative
+# content. Local models often blur those roles, so retain their substantive
+# material as guidance while creating neutral, exact AO allocation rows.
 def _normalise_level_allocations(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
 ) -> list[MarkSchemePoint]:
-    """Use blueprint AO totals when building levels-based schemes.
-
-    Levels-based schemes separate AO accounting, band descriptors and indicative
-    content. Local models often blur those roles, so retain their substantive
-    material as guidance while creating neutral, exact AO allocation rows.
-    """
 
     if question.scheme_mode != "levels":
         return points
@@ -1540,10 +1539,10 @@ def _generation_prompt(
     )
 
 
+# Describe the exact awarded rows a model must author for one item.
 def _required_awarded_entries(
     question: GeneratedQuestion, *, subject: str = ""
 ) -> list[dict[str, object]]:
-    """Describe the exact awarded rows a model must author for one item."""
 
     requirements = objective_policy_for(subject, question.topic_id).meanings
     objectives = [
@@ -1656,8 +1655,8 @@ _SEMANTIC_STOPWORDS = frozenset(
 )
 
 
+# Reduce planning prose to semantic anchors without inviting a paraphrase.
 def _semantic_task_contract(task: _Task) -> dict[str, object]:
-    """Reduce planning prose to semantic anchors without inviting a paraphrase."""
 
     question = task.question
     named_entities: list[str] = []
@@ -1761,8 +1760,8 @@ def _review_prompt(
     )
 
 
+# Add an unambiguous human-facing key without changing stored item data.
 def _review_question_payload(candidate: GeneratedQuestion) -> dict[str, object]:
-    """Add an unambiguous human-facing key without changing stored item data."""
 
     payload = candidate.model_dump(mode="json")
     if (
@@ -1925,28 +1924,27 @@ def _difficulty_specification(task: _Task) -> dict[str, object]:
     }
 
 
+# Return whether the shared option material is evidence for this item.
+#
+# A section can contain independent short questions alongside a later case study.
+# Passing that case study to every item lets an assessment reviewer mistake an
+# unrelated figure for a contradiction in a self-contained stem. Explicit source
+# references and specific material cues take priority; topic nouns such as
+# 'source of finance' and 'data structure' do not refer to an extract. Otherwise
+# only written questions that name the option inherit its material.
 def _question_uses_option_source(task: _Task) -> bool:
-    """Return whether the shared option material is evidence for this item.
-
-    A section can contain independent short questions alongside a later case study.
-    Passing that case study to every item lets an assessment reviewer mistake an
-    unrelated figure for a contradiction in a self-contained stem. Explicit source
-    references and specific material cues take priority; topic nouns such as
-    'source of finance' and 'data structure' do not refer to an extract. Otherwise
-    only written questions that name the option inherit its material.
-    """
 
     return uses_shared_option_source(
         task.question.model_dump(mode="json"), task.option.model_dump(mode="json")
     )
 
 
+# Remove model-added presentation labels that the renderer already owns.
 def _clean_generated_prompt(
     value: str,
     *,
     question: GeneratedQuestion,
 ) -> str:
-    """Remove model-added presentation labels that the renderer already owns."""
 
     labels = {
         question.number,
@@ -1997,8 +1995,8 @@ def _contains_command_word(prompt: str, command_word: str) -> bool:
     return bool(words & expected)
 
 
+# Replace only a leading alternative exam command with the blueprint command.
 def _normalise_command_word(prompt: str, command_word: str) -> str:
-    """Replace only a leading alternative exam command with the blueprint command."""
 
     if _contains_command_word(prompt, command_word):
         return prompt

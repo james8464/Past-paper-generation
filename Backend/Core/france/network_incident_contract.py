@@ -1,7 +1,6 @@
-"""Immutable app-owned facts for the V23 written network incident.
-
-V18 and earlier network contracts remain unchanged for package replay.
-"""
+# Immutable app-owned facts for the V23 written network incident.
+#
+# V18 and earlier network contracts remain unchanged for package replay.
 
 from __future__ import annotations
 
@@ -18,10 +17,10 @@ def _canonical(value: dict) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
+# List simple paths without using the inherited route-working algorithm.
 def _enumerated_paths(
     links: list[list], source: str, target: str
 ) -> list[tuple[int, list[str]]]:
-    """List simple paths without using the inherited route-working algorithm."""
     adjacent: dict[str, list[tuple[str, int]]] = {}
     for left, right, cost in links:
         adjacent.setdefault(left, []).append((right, cost))
@@ -41,10 +40,10 @@ def _enumerated_paths(
     return paths
 
 
+# Select a unique shortest path by exhaustive enumeration.
 def _independent_shortest_path(
     links: list[list], source: str, target: str
 ) -> tuple[list[str], int]:
-    """Select a unique shortest path by exhaustive enumeration."""
     paths = _enumerated_paths(links, source, target)
     if not paths:
         raise ValueError("Network incident route is disconnected")
@@ -54,8 +53,8 @@ def _independent_shortest_path(
     return route, cost
 
 
+# Derive all per-node predecessors and provisional states by path search.
 def _independent_route_working(links: list[list]) -> dict:
-    """Derive all per-node predecessors and provisional states by path search."""
     nodes = ("Central", "R1", "R2", "R3", "Station")
     routes = {
         node: (["Central"], 0)

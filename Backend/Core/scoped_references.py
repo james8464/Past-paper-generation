@@ -1,4 +1,4 @@
-"""Filter local references by scope before ranking their text; never fall back."""
+# Filter local references by scope before ranking their text; never fall back.
 
 import json
 import re
@@ -23,8 +23,9 @@ CATEGORIES = frozenset(
 )
 
 
+# No eligible source supports a requested reference query.
 class EvidenceGap(ValueError):
-    """No eligible source supports a requested reference query."""
+    pass
 
 
 @dataclass(frozen=True)

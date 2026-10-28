@@ -1,4 +1,4 @@
-"""Whole tree cases: different reasoning, independent oracles, linked states."""
+# Whole tree cases: different reasoning, independent oracles, linked states.
 
 from copy import deepcopy
 from itertools import product

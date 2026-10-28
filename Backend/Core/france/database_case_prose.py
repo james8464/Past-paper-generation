@@ -1,8 +1,7 @@
-"""Original V32 whole E2 sequences; not yet connected to the publication route.
-
-Each case progresses from relational interpretation to an independently checked
-algorithm and a discriminating boundary test. No generated solution is executed.
-"""
+# Original V32 whole E2 sequences; not yet connected to the publication route.
+#
+# Each case progresses from relational interpretation to an independently checked
+# algorithm and a discriminating boundary test. No generated solution is executed.
 
 import ast
 import inspect
@@ -22,8 +21,8 @@ VERSION = "fr-nsi-database-case-prose-v1"
 _MINUTES = (3, 4, 5, 6, 5, 7, 6, 12, 6, 7, 5, 4)
 
 
+# Keep correction code identical to the tested application algorithm.
 def _solution(function):
-    """Keep correction code identical to the tested application algorithm."""
     source = inspect.getsource(function)
     tree = ast.parse(source)
     node = tree.body[0]
@@ -531,8 +530,8 @@ def case_task(seed, total="6"):
     )
 
 
+# Closed app-owned content binding; never accept altered marking or sources.
 def verify_candidate(candidate, seed, *, total="6"):
-    """Closed app-owned content binding; never accept altered marking or sources."""
     try:
         return json.dumps(candidate, ensure_ascii=False, sort_keys=True) == json.dumps(
             render_case(seed, total=total), ensure_ascii=False, sort_keys=True

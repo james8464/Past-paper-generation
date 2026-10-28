@@ -74,9 +74,9 @@ INTENTIONAL_BLANK_PAGE_CONTRACTS = {
 }
 
 
+# A compact, serialisable sample of one rendered PDF glyph.
 @dataclass(frozen=True)
 class GlyphMetric:
-    """A compact, serialisable sample of one rendered PDF glyph."""
 
     font_file: str | None
     embedded_name: str
@@ -86,18 +86,17 @@ class GlyphMetric:
     line_height: float
 
 
+# Extract print and accessibility evidence without retaining source prose.
+#
+# Glyph characters are deliberately omitted. Geometry remains useful for
+# regression comparisons while examination content does not leak into audit
+# reports.
 def extract_pdf_evidence(
     path: Path,
     *,
     non_printable_margin_mm: float = 4.2,
     maximum_glyphs_per_page: int = 2048,
 ) -> dict[str, Any]:
-    """Extract print and accessibility evidence without retaining source prose.
-
-    Glyph characters are deliberately omitted. Geometry remains useful for
-    regression comparisons while examination content does not leak into audit
-    reports.
-    """
 
     margin_points = non_printable_margin_mm * 72 / 25.4
     with fitz.open(path) as document:
@@ -129,11 +128,11 @@ def extract_pdf_evidence(
     }
 
 
+# Compare typography and print geometry on a stable zero-to-one scale.
 def compare_page_evidence(
     generated: dict[str, Any],
     reference: dict[str, Any],
 ) -> dict[str, float]:
-    """Compare typography and print geometry on a stable zero-to-one scale."""
 
     return {
         "font_identity": _set_score(
@@ -388,8 +387,8 @@ def _union_rects(rects: list[fitz.Rect]) -> fitz.Rect | None:
     return result
 
 
+# Return whether an image is a full-bleed background rather than content.
 def _is_decorative_bleed(bounds: fitz.Rect, page_bounds: fitz.Rect) -> bool:
-    """Return whether an image is a full-bleed background rather than content."""
     if bounds.is_empty or page_bounds.is_empty:
         return False
     coverage = bounds.get_area() / page_bounds.get_area()
@@ -402,12 +401,12 @@ def _is_decorative_bleed(bounds: fitz.Rect, page_bounds: fitz.Rect) -> bool:
     return touches_edge and coverage >= 0.9
 
 
+# Exclude repeated non-answerable printer furniture from the safety box.
 def _is_margin_furniture(
     text: str,
     bounds: fitz.Rect,
     page_bounds: fitz.Rect,
 ) -> bool:
-    """Exclude repeated non-answerable printer furniture from the safety box."""
     near_vertical_edge = (
         bounds.x0 <= page_bounds.x0 + 18 or bounds.x1 >= page_bounds.x1 - 18
     )
@@ -595,6 +594,7 @@ def _count_score(first: int, second: int) -> float:
     return round(min(first, second) / max(first, second), 4)
 
 
+# Fail closed on malformed, substituted, annotated, or low-resolution PDFs.
 def validate_pdf_for_release(
     path: Path,
     *,
@@ -602,7 +602,6 @@ def validate_pdf_for_release(
     paper_number: str | None = None,
     role: str | None = None,
 ) -> dict[str, Any]:
-    """Fail closed on malformed, substituted, annotated, or low-resolution PDFs."""
 
     document = fitz.open(path)
     try:

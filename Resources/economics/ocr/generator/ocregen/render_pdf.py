@@ -1712,8 +1712,8 @@ def _answer_mark(question: GeneratedQuestion) -> Table:
     )
 
 
+# Carry the visible question label into an in-row continuation.
 class _CreditTable(Table):
-    """Carry the visible question label into an in-row continuation."""
 
     @staticmethod
     def _cell_text(value):

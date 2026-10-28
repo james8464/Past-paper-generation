@@ -189,8 +189,8 @@ def profile_for(
     raise ValueError(f"no reference demand profile for {family_id} paper {paper_id}")
 
 
+# Return the stable content identity used by the checked-in source record.
 def _profile_fingerprint(payload: Any) -> str:
-    """Return the stable content identity used by the checked-in source record."""
     canonical = json.dumps(
         payload,
         sort_keys=True,
@@ -201,8 +201,8 @@ def _profile_fingerprint(payload: Any) -> str:
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
+# Read the authoritative profile record without retaining mutable authority.
 def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
-    """Read the authoritative profile record without retaining mutable authority."""
     try:
         payload = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
         record = next(
@@ -216,8 +216,8 @@ def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
     return _profile_fingerprint(record)
 
 
+# Accept only content that exactly matches the checked-in source record.
 def _is_checked_in_reference_profile(profile: Any) -> bool:
-    """Accept only content that exactly matches the checked-in source record."""
     if not isinstance(profile, ReferenceDemandProfile):
         return False
     try:
@@ -229,19 +229,19 @@ def _is_checked_in_reference_profile(profile: Any) -> bool:
         return False
 
 
+# Load a source-backed profile for the internal generation path.
 def verified_reference_profile(
     family_id: str,
     paper_id: str,
 ) -> ReferenceDemandProfile:
-    """Load a source-backed profile for the internal generation path."""
     profile = profile_for(family_id, paper_id)
     if not _is_checked_in_reference_profile(profile):
         raise ValueError("loaded reference evidence no longer matches its source record")
     return profile
 
 
+# Validate a profile context against its current checked-in source record.
 def profile_for_verified_context(context: Any) -> ReferenceDemandProfile:
-    """Validate a profile context against its current checked-in source record."""
     if not _is_checked_in_reference_profile(context):
         raise ValueError("canonical reference evidence context is required")
     return context
@@ -670,8 +670,8 @@ def _response_mode(*, marks: int, command: str, kind: str, calculation: bool) ->
     return "constructed-response"
 
 
+# Shared generated/source semantics for non-computational written tasks.
 def operation_response_mode(operation: str, marks: int) -> str:
-    """Shared generated/source semantics for non-computational written tasks."""
     return {
         "retrieve": "recall",
         "explain": "structured-reasoning",

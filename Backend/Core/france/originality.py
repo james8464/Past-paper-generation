@@ -1,4 +1,4 @@
-"""Conservative French NSI similarity screen with labelled-fixture thresholds."""
+# Conservative French NSI similarity screen with labelled-fixture thresholds.
 
 import re
 from difflib import SequenceMatcher
@@ -19,8 +19,9 @@ COMMON_INSTRUCTIONS = (
 CODE_BLOCK = re.compile(r"```(?:python|sql)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
 
 
+# The candidate exceeded a calibrated similarity threshold.
 class SimilarityRejected(ValueError):
-    """The candidate exceeded a calibrated similarity threshold."""
+    pass
 
 
 def _normalise_prose(value: str) -> tuple[str, list[str]]:

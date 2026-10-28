@@ -1,4 +1,4 @@
-"""Check the distinct E3 reasoning tasks against independently derived answers."""
+# Check the distinct E3 reasoning tasks against independently derived answers.
 
 from copy import deepcopy
 

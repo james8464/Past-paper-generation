@@ -1,8 +1,7 @@
-"""Bounded, candidate-grounded SQL verification for the declared AQA tasks.
-
-This module parses a deliberately small SELECT/INSERT subset.  It never executes
-SQL and does not claim that unsupported syntax is invalid in every SQL dialect.
-"""
+# Bounded, candidate-grounded SQL verification for the declared AQA tasks.
+#
+# This module parses a deliberately small SELECT/INSERT subset.  It never executes
+# SQL and does not claim that unsupported syntax is invalid in every SQL dialect.
 from __future__ import annotations
 
 import hashlib
@@ -175,12 +174,12 @@ class SQLValidationResult(_Frozen):
     findings: list[SQLValidationFinding] = Field(default_factory=list)
 
 
+# Fail closed when the public declaration leaves the bounded v2 task.
 def _validate_supported_select_intent(
     intent: SQLSelectIntent,
     tables: dict[str, SQLTableContract],
     joins: list[SQLJoinContract],
 ) -> None:
-    """Fail closed when the public declaration leaves the bounded v2 task."""
     for field_name in (intent.projection_field, intent.group_field):
         try:
             table_name, column_name = field_name.split(".", 1)
@@ -214,8 +213,8 @@ def _validate_supported_select_intent(
         )
 
 
+# Return the public schema and the two declared construction intents.
 def fitness_centre_sql_contract() -> SQLSourceContract:
-    """Return the public schema and the two declared construction intents."""
     return SQLSourceContract(
         source_id="aqa-7517-fitness-centre-schema-v1",
         tables=[
@@ -278,8 +277,8 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
     )
 
 
+# Render only public schema facts; no worked query is present.
 def render_sql_schema(contract: SQLSourceContract) -> str:
-    """Render only public schema facts; no worked query is present."""
     lines = []
     for table in contract.tables:
         fields = [
@@ -323,8 +322,8 @@ def render_sql_schema(contract: SQLSourceContract) -> str:
     return "\n".join(lines)
 
 
+# Render the candidate instruction represented by a supported intent.
 def render_sql_intent_prompt(intent: SQLSelectIntent | SQLInsertIntent) -> str:
-    """Render the candidate instruction represented by a supported intent."""
     if isinstance(intent, SQLSelectIntent):
         if (
             [table.casefold() for table in intent.source_tables]
@@ -376,10 +375,10 @@ def sql_source_intent_sha256(contract: SQLSourceContract, intent_id: str) -> str
     ).hexdigest()
 
 
+# Public solver projection derived from the candidate's one declaration.
 def selected_sql_answer_contract(
     contract: SQLSourceContract, intent_id: str
 ) -> dict[str, object]:
-    """Public solver projection derived from the candidate's one declaration."""
     return {
         "version": contract.version,
         "source_id": contract.source_id,
@@ -393,13 +392,13 @@ def selected_sql_answer_contract(
     }
 
 
+# Validate the answer and every model-presented full statement separately.
 def validate_sql_response(
     answer: str,
     mark_points: list[str],
     contract: SQLSourceContract,
     intent_id: str,
 ) -> SQLValidationResult:
-    """Validate the answer and every model-presented full statement separately."""
     digest = sql_source_intent_sha256(contract, intent_id)
     try:
         intent = contract.intents[intent_id]
@@ -510,8 +509,8 @@ _SQL_STATEMENT_SHAPES = (
 )
 
 
+# Recognise executable shapes without extracting a statement substring.
 def _has_sql_statement_shape(text: str) -> bool:
-    """Recognise executable shapes without extracting a statement substring."""
     return any(re.search(pattern, text, re.IGNORECASE) for pattern in _SQL_STATEMENT_SHAPES)
 
 

@@ -1,4 +1,4 @@
-"""V32 integrity runs must never become evidence of live model generation."""
+# V32 integrity runs must never become evidence of live model generation.
 
 import json
 from argparse import Namespace

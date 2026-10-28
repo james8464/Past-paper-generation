@@ -1,9 +1,8 @@
-"""Compare complete printed French exercises with their verified package.
-
-This is a content-integrity gate, not educational or visual calibration. It
-checks the entire exercise stream in order, so finding a few keywords is
-not enough. Whitespace and Markdown fences are presentation, not source facts.
-"""
+# Compare complete printed French exercises with their verified package.
+#
+# This is a content-integrity gate, not educational or visual calibration. It
+# checks the entire exercise stream in order, so finding a few keywords is
+# not enough. Whitespace and Markdown fences are presentation, not source facts.
 
 import re
 import unicodedata
@@ -177,8 +176,8 @@ def _expected(
     return _compact("\n".join(parts))
 
 
+# Reject altered source, missing/extra content, or a swapped PDF role.
 def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> None:
-    """Reject altered source, missing/extra content, or a swapped PDF role."""
     if type(correction) is not bool:
         raise ValueError("Rôle du PDF invalide")
     validate_package(package)

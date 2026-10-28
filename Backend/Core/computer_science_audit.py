@@ -1,4 +1,4 @@
-"""CS component policy audit over candidate-answerable paths, not printed totals."""
+# CS component policy audit over candidate-answerable paths, not printed totals.
 from __future__ import annotations
 
 from collections import Counter

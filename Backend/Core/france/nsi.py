@@ -1,4 +1,4 @@
-"""French NSI authoring records and prompts, written for the French curriculum."""
+# French NSI authoring records and prompts, written for the French curriculum.
 
 import json
 from decimal import Decimal
@@ -345,8 +345,8 @@ class NSIExercise(BaseModel):
 AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
 
 
+# Require generation-only fields without changing legacy package readers.
 def authoring_schema() -> dict:
-    """Require generation-only fields without changing legacy package readers."""
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
     schema["properties"]["materials"]["minItems"] = 1
@@ -355,8 +355,8 @@ def authoring_schema() -> dict:
     return schema
 
 
+# Reject omitted generation fields before legacy-compatible defaults apply.
 def require_authoring_fields(candidate: dict) -> None:
-    """Reject omitted generation fields before legacy-compatible defaults apply."""
     if (
         not isinstance(candidate, dict)
         or not isinstance(candidate.get("materials"), list)

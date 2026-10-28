@@ -1,4 +1,4 @@
-"""V32 app-owned E2 checkpointing must not invent model-generation evidence."""
+# V32 app-owned E2 checkpointing must not invent model-generation evidence.
 
 from copy import deepcopy
 

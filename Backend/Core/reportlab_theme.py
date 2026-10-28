@@ -9,14 +9,13 @@ from reportlab.lib.units import mm
 from reportlab.platypus import Flowable, TableStyle
 
 
+# Return a Table subclass whose raw string cells use the controlled font.
+#
+# ReportLab otherwise silently draws raw table values in built-in Helvetica,
+# even when every Paragraph and canvas operation uses the board font.
 def themed_table_class[TableType](
     base: type[TableType], font_name: str
 ) -> type[TableType]:
-    """Return a Table subclass whose raw string cells use the controlled font.
-
-    ReportLab otherwise silently draws raw table values in built-in Helvetica,
-    even when every Paragraph and canvas operation uses the board font.
-    """
 
     class ThemedTable(base):  # type: ignore[misc, valid-type]
         def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -27,8 +26,8 @@ def themed_table_class[TableType](
     return ThemedTable
 
 
+# Shared, measured answer-line primitive used by every board renderer.
 class AnswerLineFlowable(Flowable):
-    """Shared, measured answer-line primitive used by every board renderer."""
 
     def __init__(
         self,
@@ -82,14 +81,13 @@ class AQACompactAnswerLines(AnswerLineFlowable):
         super().__init__(count, width_mm=165, spacing_mm=6.2, colour="#666666")
 
 
+# OCR dotted writing rules inside the existing allocated answer area.
+#
+# Reviewed 2024 H446/02 p29 and H460/01 p17 use Arial 11 full stops,
+# #231f20 ink and 26.004pt baseline pitch, not pale dashed vector strokes.
+# Legacy count/spacing still determines the area, so matching the printed
+# ruling pitch does not move questions or create extra pages.
 class OCRAnswerLines(AnswerLineFlowable):
-    """OCR dotted writing rules inside the existing allocated answer area.
-
-    Reviewed 2024 H446/02 p29 and H460/01 p17 use Arial 11 full stops,
-    #231f20 ink and 26.004pt baseline pitch, not pale dashed vector strokes.
-    Legacy count/spacing still determines the area, so matching the printed
-    ruling pitch does not move questions or create extra pages.
-    """
 
     def __init__(self, count: int, *, spacing_mm: float = 6.0, width_mm: float = 167) -> None:
         super().__init__(count, width_mm=width_mm, spacing_mm=spacing_mm, colour="#231f20", dashed=False)

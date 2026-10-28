@@ -10,8 +10,8 @@ def module():
     return importlib.import_module("tools.source_candidate_paths")
 
 
+# Original synthetic text, with the audited editions' page/mark structure.
 def _fixture_pdf(path, pages):
-    """Original synthetic text, with the audited editions' page/mark structure."""
     path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(path))
     for number in range(1, max(pages) + 1):

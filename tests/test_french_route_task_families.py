@@ -1,4 +1,4 @@
-"""Check route algorithms against independent results, including boundaries and input preservation."""
+# Check route algorithms against independent results, including boundaries and input preservation.
 
 from copy import deepcopy
 from itertools import pairwise, permutations
@@ -47,8 +47,8 @@ def test_v31_package_binds_selected_family_and_rejects_mutation(tmp_path, seed):
     checked_package(tmp_path, seed)
 
 
+# Historical replay remains readable, not retrospectively qualified.
 def test_v31_retained_e2_failure_is_not_relabelled_as_v32_success(tmp_path):
-    """Historical replay remains readable, not retrospectively qualified."""
     from Backend.Core.france.nsi import NSIExercise
     from Backend.Core.france.originality import screen_originality
     from Backend.Core.france.pipeline import exercise_candidate_text
@@ -65,10 +65,10 @@ def test_v31_retained_e2_failure_is_not_relabelled_as_v32_success(tmp_path):
         screen_originality(texts[1], [], previous_texts=texts[:1])
 
 
+# Release acceptance: all exercises, not only the new construction item.
 @pytest.mark.parametrize("seed", (270101, 270102))
 @pytest.mark.parametrize("exercise_index", (0, 1, 2))
 def test_successive_families_are_substantively_distinct(tmp_path, seed, exercise_index):
-    """Release acceptance: all exercises, not only the new construction item."""
     from Backend.Core.france.nsi import NSIExercise
     from Backend.Core.france.originality import screen_originality
     from Backend.Core.france.pipeline import exercise_candidate_text

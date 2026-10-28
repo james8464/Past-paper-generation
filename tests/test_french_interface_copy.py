@@ -1,4 +1,4 @@
-"""French interface copy survives scene boundaries and reusable help views."""
+# French interface copy survives scene boundaries and reusable help views.
 
 import json
 import re

@@ -1,4 +1,4 @@
-"""Task-specific credit projections; examples never add to a tariff twice."""
+# Task-specific credit projections; examples never add to a tariff twice.
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""V21 prompts and candidate working surfaces stay tied to locked audit facts."""
+# V21 prompts and candidate working surfaces stay tied to locked audit facts.
 
 from __future__ import annotations
 

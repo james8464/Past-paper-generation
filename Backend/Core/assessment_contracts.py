@@ -140,8 +140,8 @@ class AssessmentContract(BaseModel):
             )
 
 
+# Return an explicit item contract or hydrate one for a legacy blueprint.
 def contract_for_question(question: Any) -> AssessmentContract:
-    """Return an explicit item contract or hydrate one for a legacy blueprint."""
 
     explicit = getattr(question, "contract", None)
     if isinstance(explicit, AssessmentContract):

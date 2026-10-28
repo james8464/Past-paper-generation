@@ -1,9 +1,8 @@
-"""Experimental structural synthesis for the next French authoring contract.
-
-Not selected by the public generator. Structural diversity is not evidence of
-original wording, calibrated demand, or educational equivalence. Publication
-still requires the complete authoring, originality and PDF gates.
-"""
+# Experimental structural synthesis for the next French authoring contract.
+#
+# Not selected by the public generator. Structural diversity is not evidence of
+# original wording, calibrated demand, or educational equivalence. Publication
+# still requires the complete authoring, originality and PDF gates.
 
 import json
 from copy import deepcopy
@@ -53,13 +52,12 @@ def _invalidated(rows, leaf):
     return path
 
 
+# Build bounded arithmetic cases with two causally effective revisions.
+#
+# Tree shape, operation placement, leaf data and mutation targets vary. The
+# existing recursive solution is checked against bottom-up dependency
+# evaluation at every state; no generated code is executed.
 def build_case(seed):
-    """Build bounded arithmetic cases with two causally effective revisions.
-
-    Tree shape, operation placement, leaf data and mutation targets vary. The
-    existing recursive solution is checked against bottom-up dependency
-    evaluation at every state; no generated code is executed.
-    """
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("Expression synthesis requires a signed 64-bit integer seed")
     random = Random(f"{VERSION}:{seed}")
@@ -128,8 +126,8 @@ def build_case(seed):
     raise ValueError("No bounded, causally effective expression case found")
 
 
+# Reject modified source or answers even if their outer hash was replaced.
 def verify_case(case):
-    """Reject modified source or answers even if their outer hash was replaced."""
     try:
         return isinstance(case, dict) and _canonical(case) == _canonical(
             build_case(case["seed"])

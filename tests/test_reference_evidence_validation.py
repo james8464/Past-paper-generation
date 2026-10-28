@@ -184,8 +184,8 @@ def test_mutated_unknown_policy_cannot_bypass_direct_audit():
     assert result["failed_paths"]
 
 
+# Only membership in a validated schema-3 document may qualify H3 evidence.
 def test_direct_profile_cannot_qualify_after_private_version_marker_mutation():
-    """Only membership in a validated schema-3 document may qualify H3 evidence."""
     profile = profile_for("aqa/economics", "3").model_copy(deep=True)
     profile._document_schema_version = 3
     item = {
@@ -215,8 +215,8 @@ def test_direct_profile_cannot_qualify_after_private_version_marker_mutation():
     assert result["evidence_state"] == "insufficient"
 
 
+# `model_copy(update=...)` does not re-run schema-three evidence validation.
 def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
-    """`model_copy(update=...)` does not re-run schema-three evidence validation."""
     checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
     source = ReferenceDemandDocument.model_validate(
         {
@@ -275,8 +275,8 @@ def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
     assert result["evidence_state"] == "insufficient"
 
 
+# Calling a public Pydantic validator is not evidence of canonical loading.
 def test_direct_document_validator_cannot_qualify_a_forged_h3_document():
-    """Calling a public Pydantic validator is not evidence of canonical loading."""
     checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
     source = ReferenceDemandDocument.model_validate(
         {
@@ -335,8 +335,8 @@ def test_direct_document_validator_cannot_qualify_a_forged_h3_document():
     assert result["evidence_validation_passed"] is False
 
 
+# A loader-issued context is bound to the reviewed source evidence.
 def test_canonical_evidence_context_rejects_post_issue_profile_mutation():
-    """A loader-issued context is bound to the reviewed source evidence."""
     context = verified_reference_profile("aqa/economics", "3")
     profile = profile_for_verified_context(context)
     original = profile.reference_forms[0]["source_sha256"]
@@ -348,8 +348,8 @@ def test_canonical_evidence_context_rejects_post_issue_profile_mutation():
         profile.reference_forms[0]["source_sha256"] = original
 
 
+# The caller receives a capability, not writable qualification state.
 def test_canonical_evidence_context_cannot_be_retargeted_to_a_copied_profile():
-    """The caller receives a capability, not writable qualification state."""
     context = verified_reference_profile("aqa/economics", "3")
     copied = profile_for_verified_context(context).model_copy(deep=True)
 
@@ -357,8 +357,8 @@ def test_canonical_evidence_context_cannot_be_retargeted_to_a_copied_profile():
         context.profile = copied
 
 
+# Public accessors cannot qualify content absent from the source record.
 def test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile():
-    """Public accessors cannot qualify content absent from the source record."""
     forged = verified_reference_profile("aqa/economics", "3").model_copy(deep=True)
     forged.reference_forms[0]["source_sha256"] = "f" * 64
 
@@ -366,8 +366,8 @@ def test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile():
         validate_profile_evidence(forged, evidence_context=forged)
 
 
+# Qualification cannot survive a post-validation profile-list mutation.
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():
-    """Qualification cannot survive a post-validation profile-list mutation."""
     checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
     document = ReferenceDemandDocument.model_validate(
         {

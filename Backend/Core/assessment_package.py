@@ -50,8 +50,9 @@ from Backend.Core.subjects.sql_contracts import (
 )
 
 
+# The package cannot be upgraded safely by this application version.
 class AssessmentPackageCompatibilityError(ValueError):
-    """The package cannot be upgraded safely by this application version."""
+    pass
 
 
 def load_assessment_package(path: Path) -> dict[str, Any]:
@@ -116,6 +117,7 @@ def _migrate_schema_zero(document: dict[str, Any]) -> dict[str, Any]:
     return migrated
 
 
+# Write the renderer-independent item record used by release validation.
 def write_assessment_package(
     paper: Any,
     path: Path,
@@ -126,7 +128,6 @@ def write_assessment_package(
     provider: str | None,
     model: str | None,
 ) -> Path:
-    """Write the renderer-independent item record used by release validation."""
 
     payload = _serialise(paper)
     validate_aqa_cs_reviews(payload, required=not preview)
@@ -888,8 +889,8 @@ def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+# Validate cross-item clues and return the paper's assessment balance.
 def validate_cross_paper_quality(items: list[dict[str, Any]]) -> dict[str, Any]:
-    """Validate cross-item clues and return the paper's assessment balance."""
 
     topics: Counter[str] = Counter()
     objectives: Counter[str] = Counter()

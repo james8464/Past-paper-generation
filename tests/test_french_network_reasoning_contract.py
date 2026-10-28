@@ -1,4 +1,4 @@
-"""Locked app-owned facts for the deeper written Exercise 3."""
+# Locked app-owned facts for the deeper written Exercise 3.
 
 import copy
 

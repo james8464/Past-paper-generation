@@ -1,4 +1,4 @@
-"""Hash-bound finite V20 graph-resilience selection and replay."""
+# Hash-bound finite V20 graph-resilience selection and replay.
 
 from __future__ import annotations
 

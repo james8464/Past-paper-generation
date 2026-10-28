@@ -596,8 +596,8 @@ def _repartition_paper2_question(
     return question.model_copy(update={"parts": rebuilt})
 
 
+# Six marks for the compound query; finite row analysis replaces two writes.
 def _paper2_sql_task(question: Question) -> Question:
-    """Six marks for the compound query; finite row analysis replaces two writes."""
     assert question.stimulus is not None
     stimulus = question.stimulus.model_copy(deep=True)
     assert stimulus.sql_contract is not None
@@ -1004,12 +1004,12 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
     return _align_paper1_structure(questions, context, rng)
 
 
+# Match the recurring 7517/1 sub-question and mark pattern.
 def _align_paper1_structure(
     questions: list[Question],
     context: Paper1Context,
     rng: random.Random,
 ) -> list[Question]:
-    """Match the recurring 7517/1 sub-question and mark pattern."""
     recursive_n = rng.choice([5, 6])
     parts_by_question: dict[int, list[QuestionPart]] = {
         1: [

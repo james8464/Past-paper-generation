@@ -1,4 +1,4 @@
-"""Candidate data and bounded Edexcel calculations, never draft answer keys."""
+# Candidate data and bounded Edexcel calculations, never draft answer keys.
 
 from __future__ import annotations
 
@@ -126,8 +126,8 @@ UNSUPPORTED_CALCULATIONS = {
 }
 
 
+# Code-owned requested operation, not a draft/model-provided instruction.
 def calculation_prompt(source: EconomicsSource, marks: int) -> str:
-    """Code-owned requested operation, not a draft/model-provided instruction."""
     kind = source.kind
     if (kind, marks) not in SUPPORTED_CALCULATIONS:
         raise ValueError(f"unsupported Edexcel calculation: {kind}/{marks}")
@@ -310,8 +310,8 @@ def _three_largest_shares(source: EconomicsSource) -> list[Decimal]:
     return sorted(shares, reverse=True)[:3]
 
 
+# Show substituted inputs without inventing unchecked intermediate outputs.
 def calculation_working(source: EconomicsSource, marks: int) -> str:
-    """Show substituted inputs without inventing unchecked intermediate outputs."""
     c, v, kind = source.cell, source.values, source.kind
     if kind == "household_savings_line_chart":
         return f"{max(v)} − {min(v)}"

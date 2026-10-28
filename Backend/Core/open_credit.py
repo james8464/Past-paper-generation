@@ -1,9 +1,8 @@
-"""Scoped semantic adjudication for the declared AQA stored-program task.
-
-The preceding solver is blind. This later model review sees private criteria;
-strict record checks and bounded two-criterion quote rules fail closed without
-claiming a generic essay-entailment capability.
-"""
+# Scoped semantic adjudication for the declared AQA stored-program task.
+#
+# The preceding solver is blind. This later model review sees private criteria;
+# strict record checks and bounded two-criterion quote rules fail closed without
+# claiming a generic essay-entailment capability.
 
 from __future__ import annotations
 
@@ -59,8 +58,8 @@ def cpu_credit_allocations() -> list[dict[str, Any]]:
     ]
 
 
+# Same actual text/allocation projection for renderer and adjudicator.
 def printed_credit_points(marking: dict[str, Any]) -> list[str]:
-    """Same actual text/allocation projection for renderer and adjudicator."""
     allocation = {
         row["point_index"]: row["marks"]
         for row in marking.get("credit_allocations", [])
@@ -159,8 +158,8 @@ _CPU_INCOMPATIBLE_ORDER = (
 _CPU_NEGATION_QUALIFIER = r"(?:necessarily |always )?"
 
 
+# Normalize wording while retaining strong clause boundaries.
 def _normalise_cpu_clauses(value: str) -> tuple[str, ...]:
-    """Normalize wording while retaining strong clause boundaries."""
     text = unicodedata.normalize("NFKC", value).casefold()
     text = re.sub(r"[\u2010-\u2015\u2212-]+", " ", text)
     text = text.replace("’", "").replace("'", "")
@@ -178,8 +177,8 @@ def _normalise_cpu_clauses(value: str) -> tuple[str, ...]:
     return tuple(clauses)
 
 
+# Detect a restricting qualifier attached immediately to one proposition.
 def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
-    """Detect a restricting qualifier attached immediately to one proposition."""
     if match is None:
         return False
     leading = re.search(
@@ -202,10 +201,10 @@ def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Mat
     )
 
 
+# Return paired asserted/denied forms for one bounded passive relation.
 def _passive_relation_patterns(
     subject: str, action: str, suffix: str
 ) -> tuple[str, str]:
-    """Return paired asserted/denied forms for one bounded passive relation."""
     assertion = (
         rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
     )
@@ -280,8 +279,8 @@ def _storage_clause_contradicts(clause: str) -> bool:
     return bool(explicit_negation or qualified_assertion)
 
 
+# Allow an adjacent pronoun only after an instruction-only referent.
 def _has_unambiguous_instruction_antecedent(clause: str) -> bool:
-    """Allow an adjacent pronoun only after an instruction-only referent."""
     return bool(re.search(rf"\b{_CPU_INSTRUCTION}\b", clause)) and not bool(
         re.search(r"\bdata\b", clause)
     )
@@ -378,8 +377,8 @@ def _serial_clause_evidence(
     return bool(matches and not contradiction), contradiction
 
 
+# Fail-closed evidence rules for the two registered stored-program marks.
 def _cpu_quote_supports_criterion(criterion_id: str, answer_quote: str) -> bool:
-    """Fail-closed evidence rules for the two registered stored-program marks."""
     clauses = _normalise_cpu_clauses(answer_quote)
     if not clauses:
         return False
@@ -457,8 +456,8 @@ def _validate_judgement(
     return result
 
 
+# Describe the exact response shape without supplying semantic answers.
 def _semantic_response_envelope(item: dict[str, Any]) -> dict[str, Any]:
-    """Describe the exact response shape without supplying semantic answers."""
     contract = validate_open_credit_contract(item)
     allocations = {
         row["criterion_id"]: row for row in item["marking"]["credit_allocations"]

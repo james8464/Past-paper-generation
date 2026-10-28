@@ -1,4 +1,4 @@
-"""Immutable V25 two-outage graph facts; V22-V24 facts stay unchanged."""
+# Immutable V25 two-outage graph facts; V22-V24 facts stay unchanged.
 
 from __future__ import annotations
 

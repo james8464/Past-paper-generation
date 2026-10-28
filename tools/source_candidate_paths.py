@@ -1,9 +1,8 @@
-"""Edition-bound, feature-only reference paths (H/F primary-source audits).
-
-No student-time, reasoning-step or facility measurement is inferred. Tariff/
-command demand bands remain declared engineering proxies. Unknown editions or
-unreconciled leaf inventories are quarantined rather than treated as all-items.
-"""
+# Edition-bound, feature-only reference paths (H/F primary-source audits).
+#
+# No student-time, reasoning-step or facility measurement is inferred. Tariff/
+# command demand bands remain declared engineering proxies. Unknown editions or
+# unreconciled leaf inventories are quarantined rather than treated as all-items.
 
 from __future__ import annotations
 
@@ -240,12 +239,11 @@ def _source_text(path: Path, *, family: str, paper: str) -> str:
         return "\n".join(p.get_text(sort=True) for p in document)
 
 
+# Audited 2024 subparts, bounded by their own stem/tariff/options.
+#
+# Operations are task inferences (numerical transformation, conceptual/data
+# application or recall), not AO or learner-difficulty classifications.
 def _edexcel_selected_features(rows, path: Path, paper: str):
-    """Audited 2024 subparts, bounded by their own stem/tariff/options.
-
-    Operations are task inferences (numerical transformation, conceptual/data
-    application or recall), not AO or learner-difficulty classifications.
-    """
     if paper not in {"1", "2"}:
         return
     editions = {

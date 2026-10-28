@@ -476,8 +476,8 @@ def _scheme_guidance(
     return "<br/>".join(escape(point) for point in guidance)
 
 
+# Keep credit-bearing content in the answer column, once and in full.
 def _credited_scheme_points(question: GeneratedQuestion) -> list[str]:
-    """Keep credit-bearing content in the answer column, once and in full."""
     points = [
         point.text
         for point in question.structured_mark_scheme
@@ -486,8 +486,8 @@ def _credited_scheme_points(question: GeneratedQuestion) -> list[str]:
     return points or question.mark_scheme
 
 
+# Keep a closed answer exhaustive while excluding examiner-only notes.
 def _observable_credit_points(question: GeneratedQuestion) -> list[str]:
-    """Keep a closed answer exhaustive while excluding examiner-only notes."""
     observed = question.authoring_context.get("observable_mark_points") or []
     guidance = {
         point.text
@@ -504,13 +504,13 @@ def _is_shared_guidance(text: str) -> bool:
     )
 
 
+# Keep an AO allocation beside its question while defining it once up front.
 def _assessment_objective_label(text: str) -> str:
-    """Keep an AO allocation beside its question while defining it once up front."""
     return text.partition(":")[0] if text.casefold().startswith("ao") else text
 
 
+# Collect the authoritative AO definitions used by this paper in first-use order.
 def _assessment_objective_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
-    """Collect the authoritative AO definitions used by this paper in first-use order."""
     seen: set[str] = set()
     definitions: list[str] = []
     for section in paper.sections:
@@ -527,8 +527,8 @@ def _assessment_objective_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     return tuple(definitions)
 
 
+# Move repeated scenario-specific instructions to the scheme introduction.
 def _repeated_case_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
-    """Move repeated scenario-specific instructions to the scheme introduction."""
     counts: dict[str, int] = {}
     order: list[str] = []
     for section in paper.sections:
@@ -548,10 +548,10 @@ def _repeated_case_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     return tuple(point for point in order if counts[point] > 1)
 
 
+# Provide the same compact fallback for direct table-level consumers.
 def _repeated_guidance_from_items(
     items: list[tuple[GeneratedQuestion, int, int]],
 ) -> tuple[str, ...]:
-    """Provide the same compact fallback for direct table-level consumers."""
     counts: dict[str, int] = {}
     order: list[str] = []
     for question, _segment, _segment_count in items:

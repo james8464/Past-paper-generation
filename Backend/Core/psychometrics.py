@@ -134,8 +134,8 @@ class Response:
         return self.score / self.max_score
 
 
+# Load anonymised long-form response data with strict range validation.
 def load_responses(path: Path) -> list[Response]:
-    """Load anonymised long-form response data with strict range validation."""
 
     with path.open(newline="", encoding="utf-8-sig") as stream:
         reader = csv.DictReader(stream)
@@ -151,6 +151,10 @@ def load_responses(path: Path) -> list[Response]:
     return responses
 
 
+# Produce conservative, auditable item and form evidence.
+#
+# Multiple marker rows for one candidate/item are averaged for attainment
+# statistics and retained separately for inter-rater agreement.
 def calibrate_responses(
     responses: Iterable[Response],
     *,
@@ -160,11 +164,6 @@ def calibrate_responses(
     review: dict[str, Any] | None = None,
     policy_path: Path | None = None,
 ) -> dict[str, Any]:
-    """Produce conservative, auditable item and form evidence.
-
-    Multiple marker rows for one candidate/item are averaged for attainment
-    statistics and retained separately for inter-rater agreement.
-    """
 
     policy = load_calibration_policy(policy_path)
     thresholds = policy.thresholds

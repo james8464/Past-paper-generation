@@ -26,6 +26,6 @@ def formatted_generation_date() -> str:
     return f"{value:%A} {value.day} {value:%B %Y}"
 
 
+# Return the month/year form used on mark-scheme covers.
 def formatted_generation_series() -> str:
-    """Return the month/year form used on mark-scheme covers."""
     return generation_date().strftime("%B %Y")

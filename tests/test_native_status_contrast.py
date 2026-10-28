@@ -1,4 +1,4 @@
-"""Status text stays readable independently of its symbol colour."""
+# Status text stays readable independently of its symbol colour.
 
 from pathlib import Path
 

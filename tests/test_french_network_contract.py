@@ -1,4 +1,4 @@
-"""The third exercise must be answerable from application-owned facts."""
+# The third exercise must be answerable from application-owned facts.
 
 from copy import deepcopy
 

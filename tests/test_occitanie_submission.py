@@ -12,9 +12,9 @@ from tools.build_occitanie_submission import (
 )
 
 
+# Tests must not overwrite the applicant's editable submission copies.
 @pytest.fixture(autouse=True)
 def isolate_generated_submission_files(tmp_path, monkeypatch):
-    """Tests must not overwrite the applicant's editable submission copies."""
     monkeypatch.setattr(submission, "OUTPUT", tmp_path)
 
 

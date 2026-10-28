@@ -1,4 +1,4 @@
-"""The deeper network case is deterministic, independently checkable, and sealed."""
+# The deeper network case is deterministic, independently checkable, and sealed.
 
 from copy import deepcopy
 
@@ -20,8 +20,8 @@ BASE_LINKS = (
 )
 
 
+# Independent exhaustive oracle, not the production Dijkstra method.
 def _all_routes(links):
-    """Independent exhaustive oracle, not the production Dijkstra method."""
     neighbours = {}
     for left, right, weight in links:
         neighbours.setdefault(left, []).append((right, weight))

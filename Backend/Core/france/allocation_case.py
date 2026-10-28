@@ -1,4 +1,4 @@
-"""Eligibility joins and a greedy counterexample for French practice."""
+# Eligibility joins and a greedy counterexample for French practice.
 
 
 def candidate_query():
@@ -31,8 +31,8 @@ def glouton(taches, candidats):
     return sortie
 
 
+# Backtrack on assignments; failed branches leave no shared state.
 def affecter(taches, candidats):
-    """Backtrack on assignments; failed branches leave no shared state."""
     def chercher(rang, choix, prises):
         if rang == len(taches):
             return choix
@@ -54,8 +54,8 @@ def affecter(taches, candidats):
 
 
 # fmt: on
+# One structural family, with an inactive decoy and shared eligibility.
 def build_case(seed):
-    """One structural family, with an inactive decoy and shared eligibility."""
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("A signed 64-bit integer seed is required")
     return {

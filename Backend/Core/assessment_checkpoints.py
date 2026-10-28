@@ -72,8 +72,8 @@ def identity_for_blueprint(
     )
 
 
+# Persist independently accepted questions without partial JSON writes.
 class AssessmentCheckpointStore:
-    """Persist independently accepted questions without partial JSON writes."""
 
     def __init__(self, path: Path, identity: CheckpointIdentity) -> None:
         self.path = path

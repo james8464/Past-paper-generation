@@ -1,4 +1,4 @@
-"""Finite original French prose for a grounded NSI network exercise."""
+# Finite original French prose for a grounded NSI network exercise.
 
 from __future__ import annotations
 

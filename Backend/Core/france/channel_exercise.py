@@ -1,4 +1,4 @@
-"""A fully specified blocking trace and endpoint-security distinction."""
+# A fully specified blocking trace and endpoint-security distinction.
 
 import hashlib
 import json

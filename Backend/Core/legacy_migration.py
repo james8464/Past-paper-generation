@@ -1,4 +1,4 @@
-"""Read pre-Keldin settings and copy local data without replacing newer files."""
+# Read pre-Keldin settings and copy local data without replacing newer files.
 
 from __future__ import annotations
 
@@ -21,13 +21,13 @@ LEGACY_V32_ORIGIN = f"{LEGACY_PUBLISHER} application-owned French cases v32".enc
 LEGACY_FRENCH_FOOTER = f"{LEGACY_PUBLISHER} — entraînement non officiel — non relu"
 
 
+# Prefer a Keldin setting, including an explicitly empty value, over its alias.
 def environment_value(
     name: str,
     default: str | None = "",
     *,
     environment: Mapping[str, str] | None = None,
 ) -> str | None:
-    """Prefer a Keldin setting, including an explicitly empty value, over its alias."""
     values = os.environ if environment is None else environment
     if name in values:
         return values[name]
@@ -35,8 +35,8 @@ def environment_value(
     return values.get(legacy, default)
 
 
+# Copy ordinary files only; leave both the originals and newer data intact.
 def copy_missing_tree(source: Path, destination: Path) -> None:
-    """Copy ordinary files only; leave both the originals and newer data intact."""
     if source.is_symlink() or not source.is_dir():
         return
     if destination.is_symlink():
@@ -66,8 +66,8 @@ def copy_missing_tree(source: Path, destination: Path) -> None:
                     temporary.unlink(missing_ok=True)
 
 
+# Import old checkpoints or diagnostics before returning their current folder.
 def output_directory(parent: Path, name: str) -> Path:
-    """Import old checkpoints or diagnostics before returning their current folder."""
     target = parent / name
     legacy = LEGACY_OUTPUT_DIRECTORIES.get(name)
     marker = target / ".legacy-import-complete"

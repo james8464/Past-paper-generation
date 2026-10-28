@@ -262,8 +262,8 @@ def _difficulty_candidate(question: Question, part: QuestionPart) -> object:
     )
 
 
+# Keep independent work for demand review, never its private CPU contract.
 def _difficulty_solution(solution: object) -> dict[str, object]:
-    """Keep independent work for demand review, never its private CPU contract."""
     public_solution = solution.model_dump(mode="json")
     public_solution.pop("open_credit_contract", None)
     public_solution.pop("program_first_failure", None)
@@ -506,8 +506,8 @@ def _sql_attempt_audit(
     )
 
 
+# A bounded SQL correction failed, retaining both private attempts.
 class SQLProgramValidationError(ValueError):
-    """A bounded SQL correction failed, retaining both private attempts."""
 
     def __init__(
         self,
@@ -546,8 +546,8 @@ def _uses_scenario_only_generation(question: Question) -> bool:
     return authoring_route(question.model_dump(mode="json")) == "scenario-only"
 
 
+# Keep all source-coupled tasks immutable, without claiming authorship.
 def _uses_review_only_generation(question: Question) -> bool:
-    """Keep all source-coupled tasks immutable, without claiming authorship."""
     return authoring_route(question.model_dump(mode="json")) == "reviewed-fixed"
 
 

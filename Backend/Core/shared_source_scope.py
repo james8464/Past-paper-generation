@@ -1,4 +1,4 @@
-"""Source-scope rules shared by item review and assessment export."""
+# Source-scope rules shared by item review and assessment export.
 
 from __future__ import annotations
 
@@ -31,8 +31,8 @@ def owns_shared_source(question: dict[str, Any]) -> bool:
     return bool(_OWNED_SOURCE_KEYS.intersection(question.get("authoring_context") or {}))
 
 
+# Specific material cues refer to extracts; topic nouns alone do not.
 def uses_shared_option_source(question: dict[str, Any], option: dict[str, Any]) -> bool:
-    """Specific material cues refer to extracts; topic nouns alone do not."""
     if question.get("source_references"):
         return True
     prompt = str(question.get("prompt", ""))

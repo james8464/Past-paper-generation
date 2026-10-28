@@ -320,8 +320,8 @@ def test_topic_contract_rejects_cross_topic_prompt_even_when_metadata_agrees():
     assert module().task_features(item)["topic_id"] is None
 
 
+# A serialised hint must never override the question that will be printed.
 def test_topic_contract_cannot_relabel_the_question_operation_or_response_form():
-    """A serialised hint must never override the question that will be printed."""
     item = {
         "topic_id": "4.2",
         "task_operation": "analyse",
@@ -344,8 +344,8 @@ def test_topic_contract_cannot_relabel_the_question_operation_or_response_form()
     }
 
 
+# Only the versioned contract may establish a reference comparison.
 def test_topic_contract_rejects_unknown_serialised_fields():
-    """Only the versioned contract may establish a reference comparison."""
     item = {
         "topic_id": "4.2",
         "task_operation": "explain",

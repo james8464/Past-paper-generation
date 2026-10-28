@@ -7,9 +7,9 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 
 
+# A measured distance stored in PDF points.
 @dataclass(frozen=True, order=True)
 class Length:
-    """A measured distance stored in PDF points."""
 
     pt: float
 
@@ -182,9 +182,9 @@ class RenderEvidence:
     warnings: tuple[str, ...] = ()
 
 
+# Versioned capabilities declared by a family renderer.
 @dataclass(frozen=True)
 class RendererContract:
-    """Versioned capabilities declared by a family renderer."""
 
     profile: BoardProfile
     document_roles: tuple[DocumentRole, ...]

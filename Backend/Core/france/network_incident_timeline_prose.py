@@ -1,4 +1,4 @@
-"""Versioned V26 recovery chronology layered on replayable V23 prose."""
+# Versioned V26 recovery chronology layered on replayable V23 prose.
 
 from __future__ import annotations
 
@@ -244,6 +244,7 @@ def render_network_incident_timeline_candidate(
     return raw
 
 
+# Reject altered timeline premises, working tables, answers and credits.
 def validate_network_incident_timeline_exercise(
     contract: NetworkIncidentTimelineContract,
     exercise,
@@ -251,7 +252,6 @@ def validate_network_incident_timeline_exercise(
     *,
     revision: int = 1,
 ) -> None:
-    """Reject altered timeline premises, working tables, answers and credits."""
     raw = exercise.model_dump(mode="json")
     scene = next(
         (key for key, (title, _) in _SCENES.items() if title == raw.get("title")),

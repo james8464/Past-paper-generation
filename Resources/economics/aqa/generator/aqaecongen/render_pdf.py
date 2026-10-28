@@ -664,8 +664,8 @@ def _scheme_question_page(
     return flowables
 
 
+# Keep awarded and item-specific rows; common guidance is printed once up front.
 def _visible_scheme_points(question: GeneratedQuestion) -> list[str]:
-    """Keep awarded and item-specific rows; common guidance is printed once up front."""
 
     if not question.structured_mark_scheme:
         return question.mark_scheme

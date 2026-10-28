@@ -1,13 +1,12 @@
-"""Atomic one-slot communication model, not an operating-system emulator.
+# Atomic one-slot communication model, not an operating-system emulator.
+#
+# P sends A, sends B, then optionally closes. C receives three times. A blocked
+# instruction keeps its position and becomes runnable when its condition changes.
+# Closing preserves the slot; only an empty closed channel produces EOF.
 
-P sends A, sends B, then optionally closes. C receives three times. A blocked
-instruction keeps its position and becomes runnable when its condition changes.
-Closing preserves the slot; only an empty closed channel produces EOF.
-"""
 
-
+# Return status, delivered value and the slot after an atomic receive.
 def recevoir(case, ferme):
-    """Return status, delivered value and the slot after an atomic receive."""
     if case is not None:
         return ("valeur", case, None)
     if ferme:

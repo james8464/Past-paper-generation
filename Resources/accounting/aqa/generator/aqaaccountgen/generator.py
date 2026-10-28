@@ -93,8 +93,8 @@ DECISIONS = [
 ]
 
 
+# Format whole-pound values in the style used by AQA accounting papers.
 def _gbp(value: int) -> str:
-    """Format whole-pound values in the style used by AQA accounting papers."""
 
     sign = "−" if value < 0 else ""
     return f"{sign}£{abs(value):,}"
@@ -228,8 +228,8 @@ def build_paper(
     return paper
 
 
+# Best-fit AO budgets are not marks awarded repeatedly to indicative examples.
 def _level_credit(question: GeneratedQuestion) -> list[MarkSchemePoint]:
-    """Best-fit AO budgets are not marks awarded repeatedly to indicative examples."""
     return [
         *[
             MarkSchemePoint(
@@ -631,12 +631,12 @@ def _written(
     )
 
 
+# Build a complete, internally solved data contract for each numeric task.
 def _management_calculation(
     rule_id: str,
     business: str,
     values: list[float],
 ) -> tuple[str, list[str], dict[str, object]]:
-    """Build a complete, internally solved data contract for each numeric task."""
 
     seeds = [max(2, round(value)) for value in values]
     if rule_id == "budget":

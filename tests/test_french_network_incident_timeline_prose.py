@@ -1,4 +1,4 @@
-"""The V26 candidate surface must demand the new causal timing work."""
+# The V26 candidate surface must demand the new causal timing work.
 
 from copy import deepcopy
 

@@ -1,4 +1,4 @@
-"""Strict E3 provenance/checkpoint binding and independently rebuilt contracts."""
+# Strict E3 provenance/checkpoint binding and independently rebuilt contracts.
 
 import json
 from copy import deepcopy

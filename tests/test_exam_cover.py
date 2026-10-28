@@ -159,13 +159,13 @@ def test_aqa_economics_scheme_cover_rules_follow_its_compact_title_grid(
         )
 
 
+# Frame padding must not displace the identity block or candidate grid.
 @pytest.mark.parametrize(
     "candidate_fields,left,title_baseline", [(True, 41.04, 311.2), (False, 48.0, 150.0)]
 )
 def test_aqa_question_cover_anchors_to_paper_not_story_margins(
     tmp_path, candidate_fields, left, title_baseline
 ):
-    """Frame padding must not displace the identity block or candidate grid."""
     path = tmp_path / "question-cover.pdf"
     profile = CoverProfile(
         "aqa",

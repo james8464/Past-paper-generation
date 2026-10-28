@@ -1,4 +1,4 @@
-"""V32 whole-case foundations: SQL and independent list-based evidence."""
+# V32 whole-case foundations: SQL and independent list-based evidence.
 
 from copy import deepcopy
 

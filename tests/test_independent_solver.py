@@ -56,8 +56,8 @@ def test_independent_solver_recomputes_arithmetic_without_the_draft_scheme() -> 
     assert any(issue.field == "answer" for issue in reconciliation.issues)
 
 
+# Numeric workings support an MCQ key; they do not make it a free response.
 def test_numeric_selected_response_does_not_require_free_entry_output_slots() -> None:
-    """Numeric workings support an MCQ key; they do not make it a free response."""
 
     choices = [
         "12 units of product Y",

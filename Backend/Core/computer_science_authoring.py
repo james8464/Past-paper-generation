@@ -1,8 +1,7 @@
-"""AQA CS source-coupled review identity, shared by authoring/resume/export.
-
-This is content-integrity evidence, not a cryptographic attestation of model work.
-The projection excludes only review metadata and separately checked difficulty.
-"""
+# AQA CS source-coupled review identity, shared by authoring/resume/export.
+#
+# This is content-integrity evidence, not a cryptographic attestation of model work.
+# The projection excludes only review metadata and separately checked difficulty.
 from __future__ import annotations
 
 import hashlib
@@ -56,11 +55,11 @@ def question_content_sha256(question: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "sql_validation": sql_version, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
 
 
+# Bind one AQA part review to the complete evidence-free parent question.
 def aqa_cs_difficulty_candidate(
     question: dict[str, Any],
     part: dict[str, Any],
 ) -> DifficultyCandidateProjection:
-    """Bind one AQA part review to the complete evidence-free parent question."""
 
     public_part = deepcopy(part)
     public_part.pop("open_credit_contract", None)
@@ -84,13 +83,12 @@ def aqa_cs_difficulty_candidate(
     )
 
 
+# One adapter/reuse projection; caller supplies candidate-visible figure data.
+#
+# The scoped CPU contract has no figure. Its saved review is rebuilt from the
+# same projection here, which other review paths can also reuse.
+# Private marking remains available for reconciliation; the solver removes it.
 def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]) -> dict[str, Any]:
-    """One adapter/reuse projection; caller supplies candidate-visible figure data.
-
-    The scoped CPU contract has no figure. Its saved review is rebuilt from the
-    same projection here, which other review paths can also reuse.
-    Private marking remains available for reconciliation; the solver removes it.
-    """
     authoring_context: dict[str, Any] = {
         "open_credit_contract": part.get("open_credit_contract", {}),
         "expected_answer_form": "numeric" if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"} else "constructed_response",

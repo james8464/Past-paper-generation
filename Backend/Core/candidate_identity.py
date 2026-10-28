@@ -1,4 +1,4 @@
-"""Canonical, evidence-free identity for difficulty-review candidates."""
+# Canonical, evidence-free identity for difficulty-review candidates.
 
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ _SOURCE_PROVENANCE_ROLES = frozenset(
 )
 
 
+# Host projection with separate model-visible and identity-bearing views.
 class DifficultyCandidateProjection(BaseModel):
-    """Host projection with separate model-visible and identity-bearing views."""
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -70,12 +70,12 @@ def difficulty_candidate_projection(
     )
 
 
+# Project a shared-route item with its candidate-visible parent source.
 def shared_difficulty_candidate_projection(
     *,
     question: Any,
     option: Any,
 ) -> DifficultyCandidateProjection:
-    """Project a shared-route item with its candidate-visible parent source."""
 
     parent = _mapping(option)
     parent.pop("questions", None)
@@ -89,13 +89,13 @@ def shared_difficulty_candidate_projection(
     )
 
 
+# Bind Edexcel source and selected part without duplicate parent credit.
 def edexcel_difficulty_candidate_projection(
     *,
     question: Any,
     part: Any,
     review_content: Any,
 ) -> DifficultyCandidateProjection:
-    """Bind Edexcel source and selected part without duplicate parent credit."""
 
     parent = _mapping(question)
     selected_part = _mapping(part)

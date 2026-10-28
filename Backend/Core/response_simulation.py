@@ -25,8 +25,8 @@ class CandidateResponse(BaseModel):
     available_mark_points: int = Field(default=0, ge=0)
 
 
+# Create diagnostic responses without exposing a drafted mark scheme.
 class ResponseSimulator:
-    """Create diagnostic responses without exposing a drafted mark scheme."""
 
     def __init__(self, client: SimulationClient | None = None) -> None:
         self.client = client

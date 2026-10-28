@@ -8,13 +8,12 @@ from typing import Any
 from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput, numeric_result
 
 
+# Recompute known closed accounting contracts from candidate-visible data.
+#
+# No renderer, draft mark scheme, or verified-answer field is consulted. The
+# normal model content and difficulty reviews still run after this arithmetic
+# pass. Unrecognised closed calculations fail on the shared solver boundary.
 def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
-    """Recompute known closed accounting contracts from candidate-visible data.
-
-    No renderer, draft mark scheme, or verified-answer field is consulted. The
-    normal model content and difficulty reviews still run after this arithmetic
-    pass. Unrecognised closed calculations fail on the shared solver boundary.
-    """
     context = item.get("authoring_context")
     if not isinstance(context, dict) or not (
         context.get("preserve_prompt") is True
@@ -73,14 +72,13 @@ def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
     return solution
 
 
+# Derive prior-question figures for an open response from public inputs.
+#
+# This deliberately calls the same source-only arithmetic used for closed
+# accounting tasks. It never reads a draft scheme or ``verified_answers``.
 def derive_accounting_open_response_context(
     item: dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Derive prior-question figures for an open response from public inputs.
-
-    This deliberately calls the same source-only arithmetic used for closed
-    accounting tasks. It never reads a draft scheme or ``verified_answers``.
-    """
 
     if item.get("rule_id") != "company_adjustment":
         return None
@@ -185,8 +183,8 @@ def management_input_contract(rule: str, source: dict[str, Any]) -> dict[str, An
     }
 
 
+# Code-owned role selectors. They contain no solved numbers or draft keys.
 def accounting_outputs(rule: str, context: dict[str, Any]) -> list[NumericOutput]:
-    """Code-owned role selectors. They contain no solved numbers or draft keys."""
     patterns: dict[str, str] = {}
     units: dict[str, str] = {}
     places = 0
@@ -341,12 +339,11 @@ def accounting_outputs(rule: str, context: dict[str, Any]) -> list[NumericOutput
     ]
 
 
+# Complete code-owned row continuations; never a free suffix wildcard.
+#
+# Other computed quantities on the same row have their own output checks.
+# Given quantities in working remain source inputs, not accepted alternatives.
 def _accounting_endings(rule: str) -> dict[str, str]:
-    """Complete code-owned row continuations; never a free suffix wildcard.
-
-    Other computed quantities on the same row have their own output checks.
-    Given quantities in working remain source inputs, not accepted alternatives.
-    """
     money = rf"[−+\-]?£{NUMBER}"
     second = rf"; second period {money}\."
     if rule == "statement_extract":

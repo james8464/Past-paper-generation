@@ -1,4 +1,4 @@
-"""Bounded, checkpointed French graph/tree authoring over immutable facts."""
+# Bounded, checkpointed French graph/tree authoring over immutable facts.
 
 from __future__ import annotations
 
@@ -87,8 +87,8 @@ def _save(path: Path, payload: dict) -> None:
         Path(name).unlink(missing_ok=True)
 
 
+# Exact Ollama format for one two-question response.
 def part_response_schema(part: str) -> dict:
-    """Exact Ollama format for one two-question response."""
     if part not in "ABC" or len(part) != 1:
         raise ValueError("Partie NSI inconnue")
     question = deepcopy(NSIQuestion.model_json_schema())
@@ -219,6 +219,7 @@ def _check_part(part: str, response: dict, request: dict) -> None:
         )
 
 
+# Persist each accepted part; resume only against identical inputs.
 def author_graph_tree_parts(
     client,
     task: dict,
@@ -228,7 +229,6 @@ def author_graph_tree_parts(
     *,
     run_identity: dict,
 ) -> tuple[dict, dict]:
-    """Persist each accepted part; resume only against identical inputs."""
     identity = {
         "contract_sha256": contract.digest,
         "task_sha256": _hash(task),
@@ -294,6 +294,7 @@ def author_graph_tree_parts(
     return raw, deepcopy(draft)
 
 
+# Rebuild a candidate only from the three hash-linked accepted responses.
 def replay_graph_tree_parts(
     task: dict,
     contract: GraphTreeContract,
@@ -302,7 +303,6 @@ def replay_graph_tree_parts(
     *,
     run_identity: dict,
 ) -> dict:
-    """Rebuild a candidate only from the three hash-linked accepted responses."""
     identity = {
         "contract_sha256": contract.digest,
         "task_sha256": _hash(task),
@@ -346,10 +346,10 @@ def replay_graph_tree_parts(
     return raw
 
 
+# Only prompt, answer, marking and verification can change.
 def apply_graph_tree_repair(
     raw: dict, question_id: str, replacement: dict, contract: GraphTreeContract
 ) -> tuple[dict, dict]:
-    """Only prompt, answer, marking and verification can change."""
     if raw.get("materials") != [] or not isinstance(raw.get("questions"), list):
         raise ValueError("Supports ou questions hors contrat")
     found = [
@@ -382,8 +382,8 @@ def apply_graph_tree_repair(
     }
 
 
+# Selection-only v12 schema; v11's prose schema remains unchanged.
 def part_selection_schema(part: str) -> dict:
-    """Selection-only v12 schema; v11's prose schema remains unchanged."""
     return selection_schema(part)
 
 
@@ -553,6 +553,7 @@ def _check_closed_saved_part(
     validate_selection(part, saved["response"], task, contract)
 
 
+# Persist validated finite selections and every rejected raw attempt.
 def author_closed_prose_parts(
     client,
     task: dict,
@@ -562,7 +563,6 @@ def author_closed_prose_parts(
     *,
     run_identity: dict,
 ) -> tuple[dict, dict]:
-    """Persist validated finite selections and every rejected raw attempt."""
     identity = _closed_identity(task, contract, references, run_identity)
     prompts = {
         part: part_selection_prompt(part, task, contract, references) for part in "ABC"
@@ -672,6 +672,7 @@ def replay_closed_prose_parts(
     )
 
 
+# Change only one finite question choice, preserving scene and peers.
 def apply_closed_prose_repair(
     selections: list[dict],
     question_id: str,
@@ -679,7 +680,6 @@ def apply_closed_prose_repair(
     task: dict,
     contract: GraphTreeContract,
 ) -> tuple[list[dict], dict, dict]:
-    """Change only one finite question choice, preserving scene and peers."""
     before = render_graph_tree_candidate(task, contract, selections)
     task_ids = contract.to_dict()["task_ids"]
     if question_id not in task_ids or not isinstance(replacement, dict):

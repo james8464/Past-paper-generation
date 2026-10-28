@@ -215,12 +215,12 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
     return lookup
 
 
+# Add standardisation metadata omitted by a bespoke indicative scheme.
 def _complete_extended_guidance(
     points: list[str],
     marks: int,
     command_word: str,
 ) -> list[str]:
-    """Add standardisation metadata omitted by a bespoke indicative scheme."""
 
     if marks < 8 or command_word.casefold() not in {
         "analyse",

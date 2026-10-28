@@ -1,8 +1,7 @@
-"""Immutable, app-owned incident-audit facts for French NSI V21.
-
-The V3 source is separate from earlier database contracts so saved papers replay
-against the exact facts and executable queries that originally produced them.
-"""
+# Immutable, app-owned incident-audit facts for French NSI V21.
+#
+# The V3 source is separate from earlier database contracts so saved papers replay
+# against the exact facts and executable queries that originally produced them.
 
 from __future__ import annotations
 
@@ -156,9 +155,9 @@ def _expected(tables: dict) -> dict:
         connection.close()
 
 
+# Canonical JSON, including deterministic, independently checked results.
 @dataclass(frozen=True)
 class DatabaseAuditContract:
-    """Canonical JSON, including deterministic, independently checked results."""
 
     _json: str
 

@@ -1,4 +1,4 @@
-"""Loan availability must agree with relational and interval-based evidence."""
+# Loan availability must agree with relational and interval-based evidence.
 
 from copy import deepcopy
 from itertools import permutations

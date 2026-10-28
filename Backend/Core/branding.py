@@ -1,4 +1,4 @@
-"""Shared public branding for Keldin documents and interface copy."""
+# Shared public branding for Keldin documents and interface copy.
 
 APP_NAME = "Keldin"
 PDF_WORDMARK = APP_NAME.upper()

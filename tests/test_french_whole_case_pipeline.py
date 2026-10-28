@@ -1,4 +1,4 @@
-"""V32 integration: whole E1/E2 cases, honest provenance and strict replay."""
+# V32 integration: whole E1/E2 cases, honest provenance and strict replay.
 
 from copy import deepcopy
 from decimal import Decimal

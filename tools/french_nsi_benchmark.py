@@ -1,10 +1,9 @@
-"""Resumable integrity runner for the French NSI written assessment.
-
-The runner launches the public backend command in a separate process, preserves
-every log and checkpoint, and refuses to continue if the implementation changes.
-V32 uses application-owned cases, not live model generation. Automated success
-does not imply teacher or learner approval or qualification of the selected model.
-"""
+# Resumable integrity runner for the French NSI written assessment.
+#
+# The runner launches the public backend command in a separate process, preserves
+# every log and checkpoint, and refuses to continue if the implementation changes.
+# V32 uses application-owned cases, not live model generation. Automated success
+# does not imply teacher or learner approval or qualification of the selected model.
 
 from __future__ import annotations
 
@@ -719,8 +718,8 @@ def _accepted_payload(
     )
 
 
+# Replay app-authored evidence and both PDFs, never award a model pass.
 def _accepted_whole_case(result, manifest, manifest_path):
-    """Replay app-authored evidence and both PDFs, never award a model pass."""
     from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
 
     if (

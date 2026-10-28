@@ -1,4 +1,4 @@
-"""Whole-case publication must validate what was actually printed."""
+# Whole-case publication must validate what was actually printed.
 
 from copy import deepcopy
 

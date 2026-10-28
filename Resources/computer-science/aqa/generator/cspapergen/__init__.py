@@ -1,4 +1,4 @@
-"""AQA A-level Computer Science Paper 2 practice paper generator."""
+# AQA A-level Computer Science Paper 2 practice paper generator.
 
 __all__ = ["__version__"]
 
