@@ -1,6 +1,30 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certains anciens éléments de l’historique n’ont pas pu être supprimés. Ils restent affichés. Keldin réessaiera lors du prochain enregistrement de l’historique ou au redémarrage." } } }
+    },
+    "Some older history items couldn't be removed. They remain listed in History until cleanup succeeds." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certains anciens éléments de l’historique n’ont pas pu être supprimés. Ils restent affichés dans Historique tant que leur suppression échoue." } } }
+    },
+    "Couldn't remove this history item. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de supprimer cet élément de l’historique. %@" } } }
+    },
+    "Couldn't load generation history. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de charger l’historique de création. %@" } } }
+    },
+    "The API key couldn't be read from Keychain. Check Keychain access and try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez." } } }
+    },
+    "The API key couldn't be saved in Keychain. Check Keychain access and try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible d’enregistrer la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez." } } }
+    },
+    "The API key couldn't be fully removed from Keychain. Retry to finish removing the saved entries." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La clé API n’a pas pu être entièrement supprimée du trousseau. Réessayez pour supprimer les entrées restantes." } } }
+    },
+    "The saved API key couldn't be read. Replace it in Settings." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire la clé API enregistrée. Remplacez-la dans Réglages." } } }
+    },
     "Not checked" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non vérifié" } } }
     },

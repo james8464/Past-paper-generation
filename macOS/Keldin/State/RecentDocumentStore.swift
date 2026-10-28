@@ -132,15 +132,15 @@ enum RecentDocumentStoreError: LocalizedError {
 final class RecentDocumentStore {
     private(set) var records: [GenerationJobRecord] = []
     private(set) var quarantinedRecordCount = 0
-    var retentionLimit: Int {
-        didSet { retentionLimit = max(1, retentionLimit) }
-    }
+    private(set) var retentionFailureIDs: [UUID] = []
+    private(set) var retentionLimit: Int
 
     @ObservationIgnored private let directory: URL
     @ObservationIgnored private let fileManager: FileManager
     @ObservationIgnored private let clock: AppClock
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let recordWriter: (Data, URL) throws -> Void
+    @ObservationIgnored private let recordRemover: (URL) throws -> Void
 
     init(
         directory: URL,
@@ -148,6 +148,9 @@ final class RecentDocumentStore {
         fileManager: FileManager = .default,
         clock: AppClock = SystemAppClock(),
         defaults: UserDefaults = .standard,
+        recordRemover: @escaping (URL) throws -> Void = { url in
+            try FileManager.default.removeItem(at: url)
+        },
         recordWriter: @escaping (Data, URL) throws -> Void = { data, url in
             try data.write(to: url, options: [.atomic])
         }
@@ -158,6 +161,7 @@ final class RecentDocumentStore {
         self.clock = clock
         self.defaults = defaults
         self.recordWriter = recordWriter
+        self.recordRemover = recordRemover
     }
 
     func load() throws {
@@ -215,7 +219,7 @@ final class RecentDocumentStore {
             loaded.append(record)
         }
         records = loaded.sorted(by: Self.newestFirst)
-        try enforceRetention()
+        enforceRetention()
     }
 
     func save(_ record: GenerationJobRecord) throws {
@@ -226,12 +230,18 @@ final class RecentDocumentStore {
         records.removeAll { $0.id == record.id }
         records.append(record)
         records.sort(by: Self.newestFirst)
-        try enforceRetention()
+        enforceRetention()
     }
 
     func remove(_ record: GenerationJobRecord) throws {
-        try? fileManager.removeItem(at: fileURL(for: record.id))
+        try removeRecordFile(for: record.id)
         records.removeAll { $0.id == record.id }
+        retentionFailureIDs.removeAll { $0 == record.id }
+    }
+
+    func updateRetentionLimit(_ value: Int) {
+        retentionLimit = max(1, value)
+        enforceRetention()
     }
 
     func duplicateConfiguration(
@@ -265,12 +275,29 @@ final class RecentDocumentStore {
         try recordWriter(data, fileURL(for: record.id))
     }
 
-    private func enforceRetention() throws {
+    private func enforceRetention() {
+        retentionFailureIDs = []
         guard records.count > retentionLimit else { return }
+        var removed = Set<UUID>()
         for record in records.dropFirst(retentionLimit) {
-            try? fileManager.removeItem(at: fileURL(for: record.id))
+            do {
+                try removeRecordFile(for: record.id)
+                removed.insert(record.id)
+            } catch {
+                retentionFailureIDs.append(record.id)
+            }
         }
-        records = Array(records.prefix(retentionLimit))
+        // Saving a new record has already committed. Cleanup failures must not
+        // turn that successful save into a failed generation start.
+        records.removeAll { removed.contains($0.id) }
+    }
+
+    private func removeRecordFile(for id: UUID) throws {
+        do {
+            try recordRemover(fileURL(for: id))
+        } catch let error as CocoaError where error.code == .fileNoSuchFile {
+            // Another process or the user may already have removed the item.
+        }
     }
 
     private func quarantine(_ url: URL) throws {

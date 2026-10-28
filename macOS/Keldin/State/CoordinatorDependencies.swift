@@ -32,16 +32,22 @@ struct SystemWorkspaceOpener: WorkspaceOpening {
 }
 
 protocol SecretStoring {
-    func read(_ account: String) -> String
-    func save(_ value: String, account: String)
+    func read(_ account: String) throws -> String
+    func save(_ value: String, account: String) throws
 }
 
 struct KeychainSecretStore: SecretStoring {
-    func read(_ account: String) -> String {
-        SecretStore.read(account)
+    let keychain: any KeychainAccessing
+
+    init(keychain: any KeychainAccessing = SystemKeychainAccess()) {
+        self.keychain = keychain
     }
 
-    func save(_ value: String, account: String) {
-        SecretStore.save(value, account: account)
+    func read(_ account: String) throws -> String {
+        try SecretStore.read(account, keychain: keychain)
+    }
+
+    func save(_ value: String, account: String) throws {
+        try SecretStore.save(value, account: account, keychain: keychain)
     }
 }

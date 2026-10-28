@@ -57,13 +57,20 @@ struct JobHistoryView: View {
                         }
                         Divider()
                         Button("Remove from History", role: .destructive) {
-                            try? store.remove(record)
+                            application.removeHistory(record)
                         }
                     }
                 }
             }
         }
         .navigationTitle("History")
+        .safeAreaInset(edge: .bottom) {
+            if !store.retentionFailureIDs.isEmpty {
+                Label("Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened.", systemImage: "exclamationmark.triangle")
+                    .font(.callout)
+                    .padding()
+            }
+        }
         .toolbar {
             ToolbarItemGroup {
                 Button("Duplicate Configuration", systemImage: "doc.on.doc") {
