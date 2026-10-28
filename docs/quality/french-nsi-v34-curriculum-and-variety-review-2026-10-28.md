@@ -144,6 +144,37 @@ more table-led than the official comparator. Allocated minutes and difficulty
 labels are author estimates, not measurements from learners. No equivalence or
 classroom approval follows from the unit tests.
 
+### Retained-family source-table flow
+
+The run-6 review covered all 52 normal correction pages of the three retained
+families and all 28 enlarged correction pages of the first family. No new
+arithmetic mismatch or clipped content was found in those pages. Enlarged
+corrections still separated the first family's tree and routing introductions
+from their source tables, on pages 3/4 and 21/22 respectively. The earlier
+regressions covered only the fourth family's database and scheduler.
+
+The V34 correction policy now lets an exercise's opening source table paginate
+separately from its first worked question. Later working tables retain their
+existing question grouping. Candidate subjects and the default historical print
+policy are unchanged. Eleven introduction checks cover all relevant exercises
+across the four families. The postfix exercise starts with an inline calculation
+and only introduces its tree for the second question, so it is not forced to show
+that later table on its first page. Five genuine stranded-introduction cases
+failed before the fix. A first wider change passed 154 print/replay tests, but
+visual inspection showed it also separated a later routing working table from
+its question. The final change is limited to each exercise's first question,
+with an additional regression for that later table. The full-suite run against
+the wider change was stopped before editing the source; it is not final evidence.
+
+Run 7 rebuilt all 16 PDFs with the actual local French reference index. Each
+passes the ordered-content, A4, footer and nonempty-body checks; the fifth
+repeated family is still refused. The enlarged correction page counts are
+28, 25, 28 and 34. These are application-owned trials, not live model runs.
+Exact hashes are retained in `run-7/summary.json`. Run 8 rebuilds the scoped fix.
+Changed-page visual review and
+the full repository suite remain separate acceptance steps; automated content
+checks alone do not close the manual review.
+
 The public route must not change until its complete-package, print, originality,
 packaged-runtime and native-app checks pass. No official PDF is bundled; the
 document-specific third-party rights gap remains open.

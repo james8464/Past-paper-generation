@@ -173,24 +173,36 @@ def test_all_four_families_have_complete_printed_content(
     validate_whole_case_pdf(path, package, correction=correction)
 
 
-@pytest.mark.parametrize("exercise,source", [("2", "Atlas"), ("3", "Durée CPU")])
-def test_enlarged_new_correction_keeps_source_table_with_introduction(
-    tmp_path, exercise, source
+@pytest.mark.parametrize(
+    "seed,exercise",
+    [
+        (seed, exercise)
+        for seed in range(270100, 270104)
+        for exercise in range(3)
+        # Postfix starts with an inline calculation, before the tree is needed.
+        if (seed, exercise) != (270103, 0)
+    ],
+)
+def test_enlarged_correction_keeps_source_table_with_introduction(
+    tmp_path, seed, exercise
 ):
     import pymupdf
 
     from tests.test_french_whole_case_pdf import render
 
-    package = generate(tmp_path)
-    path = tmp_path / "loan-correction.pdf"
+    package = generate(tmp_path, seed)
+    path = tmp_path / "correction.pdf"
     render(path, package, True, large_print=True)
     with pymupdf.open(path) as pdf:
         introduction = [
-            page for page in pdf if page.search_for(f"Exercice {exercise} (6 points)")
+            page for page in pdf if page.search_for(f"Exercice {exercise + 1} (6 points)")
         ]
         assert len(introduction) == 1
         # A case heading alone gives the reader no data to work with.
-        assert source in introduction[0].get_text()
+        source_title = package["exercises"][exercise]["materials"][0]["title"]
+        assert " ".join(source_title.split()) in " ".join(
+            introduction[0].get_text().split()
+        )
 
 
 def test_v34_correction_replaces_only_blank_code_with_subject_reference():
@@ -205,6 +217,24 @@ def test_v34_correction_replaces_only_blank_code_with_subject_reference():
     assert "return 1 / 0" in printed
     assert "Compléter A." in printed
     assert "Le code à compléter figure dans le sujet." in printed
+
+
+def test_enlarged_correction_keeps_later_working_table_with_its_question(tmp_path):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path, seed=270100)
+    path = tmp_path / "routing-correction.pdf"
+    render(path, package, True, large_print=True)
+    with pymupdf.open(path) as pdf:
+        table_pages = [
+            page for page in pdf if page.search_for("Tableau à compléter pour 3c")
+        ]
+        assert len(table_pages) == 1
+        assert "Compléter les trois tours du tableau" in " ".join(
+            table_pages[0].get_text().split()
+        )
 
 
 def test_v34_correction_keeps_filled_code_and_subject_keeps_blanks(tmp_path):
