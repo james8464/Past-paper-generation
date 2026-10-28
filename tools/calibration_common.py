@@ -78,7 +78,9 @@ def public_candidate_content(
 ) -> dict[str, Any]:
     # Import lazily: standalone tools must still support --help before generator
     # roots have been added to sys.path by their generation entry points.
-    from Backend.Core.independent_solver import _without_answer_key
+    from Backend.Core.answer_projection import (
+        without_private_answer_keys as _without_answer_key,
+    )
     from Backend.Core.shared_source_scope import (
         owns_shared_source,
         uses_shared_option_source,

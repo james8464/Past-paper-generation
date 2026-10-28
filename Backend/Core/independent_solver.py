@@ -15,6 +15,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from Backend.Core.answer_projection import without_private_answer_keys
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity
@@ -38,6 +39,7 @@ from Backend.Core.numeric_integrity import (
     numeric_result,
 )
 from Backend.Core.open_credit import validate_open_credit_review
+from Backend.Core.solver_prompts import build_solver_prompt, solver_output_contract
 from Backend.Core.subjects.accounting import (
     derive_accounting_open_response_context,
     solve_accounting_calculation,
@@ -48,6 +50,8 @@ from Backend.Core.subjects.computer_science_contracts import (
 from Backend.Core.subjects.economics_contracts import solve_economics_contract
 from Backend.Core.subjects.selected_response import solve_selected_response
 from Backend.Core.subjects.sql_contracts import SQLValidationResult
+
+_without_answer_key = without_private_answer_keys
 
 
 # Private durable record of one model-presented SQL attempt.
@@ -166,13 +170,7 @@ class IndependentSolver:
             or len(set(response_slots)) != len(response_slots)
         ):
             raise ValueError(f"{item_id} invalid closed response slot contract")
-        deterministic = solve_accounting_calculation(raw_item)
-        if deterministic is None:
-            deterministic = solve_computer_science_contract(raw_item)
-        if deterministic is None:
-            deterministic = solve_economics_contract(raw_item)
-        if deterministic is None:
-            deterministic = solve_selected_response(raw_item)
+        deterministic = _deterministic_subject_solution(raw_item)
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         expressions = context.get("calculation_expressions")
@@ -223,74 +221,18 @@ class IndependentSolver:
         elif not response_slots and _requires_numeric_contract(raw_item):
             raise ValueError(f"{item_id} unsupported closed numeric output contract")
         result: dict[str, Any] = deterministic or {}
-        response_instructions = (
-            " For a closed response (response_slots supplied), answer and "
-            "mark_points must EACH be a JSON object mapping EVERY supplied "
-            "slot ID to the same single final answer string, with no extra "
-            "slots or commentary. Work out the solution in steps FIRST, then "
-            "write answer, then copy those final values into mark_points. "
-            "In steps, solve each requested slot in turn using that slot's position and "
-            "all relevant source evidence. Check that every slot has been considered before "
-            "finalising either map; results may coincide only if separately justified by "
-            "the item. "
-            'Format example only: "answer": {"slot-id": "final value"}, '
-            '"mark_points": {"slot-id": "final value"}. Use the actual supplied '
-            "slot IDs. Do not put grading prose or nested objects in either mapping."
-            if response_slots
-            else " For multiple choice, mark_points must contain exactly one string: "
-            "the same selected option as answer. Put reasoning in steps."
-        )
         if deterministic is None and self.client is not None:
-            correction = ""
-            if correction_findings:
-                if context.get("sql_answer_contract") is None:
-                    raise ValueError("solver correction findings require a public SQL contract")
-                correction = (
-                    " This is the single permitted correction of a prior SQL response. "
-                    "Correct every structured verifier finding using only the same public "
-                    "schema, intent and supported syntax. Do not ask for or infer a private "
-                    "worked query. SQL_VALIDATION_FINDINGS="
-                    + json.dumps(list(correction_findings), ensure_ascii=False, sort_keys=True)
-                )
             raw_result = _generate_solver_response(
-                    self.client,
-                    "Independently solve this UK A-level assessment item. Do not "
-                    "infer or reproduce a draft mark scheme. Recompute every numeric "
-                    "result and cite only the supplied evidence IDs; when sources is "
-                    "empty, evidence_ids must be an empty array. For multiple choice, "
-                    "return the complete option text rather than its number or letter. "
-                    "Return exactly one JSON object with these seven top-level fields, "
-                    "and no others: steps, answer, mark_points, evidence_ids, alternatives, "
-                    "partial_credit_boundaries, follow_through_rules. Every field is required; "
-                    "every array must be present explicitly even when empty; do not return null. "
-                    "Follow every independent_solver_instructions entry in authoring_context; "
-                    "derive its requested facts solely from candidate-visible inputs and show "
-                    "those derivations in steps. "
-                    "When independently_derived_context is present, treat its numeric results "
-                    "as authoritative code-derived facts from the public inputs; use them in "
-                    "the answer and do not replace them with new model arithmetic. "
-                    'For an open response the literal envelope is: {"steps":["reasoning step"],'
-                    '"answer":"complete answer","mark_points":["creditable point"],'
-                    '"evidence_ids":[],"alternatives":[],"partial_credit_boundaries":[],'
-                    '"follow_through_rules":[]}. '
-                    + response_instructions
-                    + correction
-                    + "\n"
-                    + json.dumps(
-                        {
-                            "item": solver_item,
-                            "sources": [source.model_dump() for source in sources],
-                        },
-                        ensure_ascii=False,
-                    ),
-                    item_id=item_id,
-                    derived_context=derived_context,
-                    output_contract=OutputContract(
-                        "solver", response_slots=tuple(response_slots),
-                        choices=tuple(solver_item["choices"]) if isinstance(solver_item.get("choices"), list) and all(isinstance(choice, str) and choice.strip() for choice in solver_item["choices"]) else (),
-                        kind=solver_item.get("kind"), marks=solver_item.get("marks"),
-                    ),
-                )
+                self.client,
+                build_solver_prompt(
+                    solver_item, sources, response_slots,
+                    correction_findings=correction_findings,
+                    sql_contract_present=context.get("sql_answer_contract") is not None,
+                ),
+                item_id=item_id,
+                derived_context=derived_context,
+                output_contract=solver_output_contract(solver_item, response_slots),
+            )
             try:
                 envelope = SolverResponseEnvelope.model_validate(raw_result, strict=True)
             except ValidationError as error:
@@ -459,6 +401,17 @@ class IndependentSolver:
 
 
 # Repair missing public numeric evidence at the solver, not by rewriting the question.
+def _deterministic_subject_solution(item: dict[str, Any]) -> dict[str, Any] | None:
+    result = solve_accounting_calculation(item)
+    if result is None:
+        result = solve_computer_science_contract(item)
+    if result is None:
+        result = solve_economics_contract(item)
+    if result is None:
+        result = solve_selected_response(item)
+    return result
+
+
 def _generate_solver_response(
     client: SolverClient,
     prompt: str,
@@ -514,48 +467,6 @@ def _generate_solver_response(
     )
 
 
-def _without_answer_key(value: Any) -> Any:
-    hidden = {
-        # Private instance credit must not enter the blind model context.
-        # Keep candidate input contracts and ordinary source fields (including
-        # a source's own "credit" column) intact for independent derivation.
-        "assessment_contract",
-        "open_credit_contract",
-        "open_credit_review",
-        "credit_allocations",
-        "credit_review_item",
-        "accounting_source_content",
-        "accounting_marking_policy",
-        "grouped_level_policy",
-        "mark_scheme",
-        "structured_mark_scheme",
-        "marking",
-        "mark_breakdown",
-        "indicative_content",
-        "correct_choice",
-        "correct_option",
-        "verified_answers",
-        "canonical_solution",
-        "observable_mark_points",
-        "valid_alternatives",
-        "alternative_permission_ids",
-        "alternative_permission_version",
-        "partial_credit_boundaries",
-        "follow_through_rules",
-        "difficulty_evidence",
-        "required_mark_scheme_terms",
-        "forbidden_mark_scheme_terms",
-        "closed_answers",
-    }
-    if isinstance(value, dict):
-        return {
-            key: _without_answer_key(child)
-            for key, child in value.items()
-            if key not in hidden
-        }
-    if isinstance(value, list):
-        return [_without_answer_key(child) for child in value]
-    return value
 
 
 # Retain finite route evidence, but fingerprint open text instead of logging it.
