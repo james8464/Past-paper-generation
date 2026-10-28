@@ -945,8 +945,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/cli.py": {
-    "mtime": 1793225632.5901816,
-    "ast_hash": "680c7a1bae911c2a9f10fec762ab91fd",
+    "mtime": 1793226398.633756,
+    "ast_hash": "6b2ce473b72e4a0d0582ebd11a0d5361",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793225425.7943103,
-    "ast_hash": "cb094ca497eed6c82cad2ed4f72b2ec5",
+    "mtime": 1793226066.088543,
+    "ast_hash": "392a45d11d0df02070b7bd3eeff76be2",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3635,8 +3635,8 @@
     "semantic_hash": ""
   },
   "docs/keldin-migration.md": {
-    "mtime": 1793225633.0339792,
-    "ast_hash": "301cf1846bfca1299c041d07bdac01aa",
+    "mtime": 1793226437.6073112,
+    "ast_hash": "bdac6928d5b7a138ce1dfa7fd25199f7",
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-08-26-keldin-excellence-programme.md": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793225406.3317935,
-    "ast_hash": "8782a088ded4312e3b29b43316f5b1d2",
+    "mtime": 1793226066.012662,
+    "ast_hash": "99697786424dd0317f69e7586841bfd5",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4255,8 +4255,8 @@
     "semantic_hash": ""
   },
   "docs/quality/edexcel-branding-facade-review-2026-10-28.md": {
-    "mtime": 1793225633.0343816,
-    "ast_hash": "621b3238a13e893f7e1f4d4ff5b0c81a",
+    "mtime": 1793226672.0383537,
+    "ast_hash": "b659dfb043b3eceaa64b3a0725412b87",
     "semantic_hash": ""
   },
   "docs/quality/json-client-boundary-review-2026-10-28.md": {
@@ -4297,6 +4297,16 @@
   "docs/superpowers/plans/2026-10-28-trusted-generation-requests.md": {
     "mtime": 1793225632.6600533,
     "ast_hash": "d5c85cb4a388597d70bfc9b7cc0ea7aa",
+    "semantic_hash": ""
+  },
+  "Resources/economics/edexcel-a/generator/pastpapergen/_cli_runtime.py": {
+    "mtime": 1793226398.6334672,
+    "ast_hash": "5edbfe4884770f342f14e73a5a62f345",
+    "semantic_hash": ""
+  },
+  "tests/test_edexcel_console_runtime.py": {
+    "mtime": 1793226437.6951392,
+    "ast_hash": "89f6ed10583ba051f308c50478030922",
     "semantic_hash": ""
   }
 }

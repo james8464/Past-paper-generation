@@ -6,14 +6,14 @@
     "documentation": 145,
     "durable-derived-configuration": 1,
     "durable-derived-metadata": 14,
-    "runtime-resource": 166,
+    "runtime-resource": 167,
     "runtime-source": 260,
-    "test": 252,
+    "test": 253,
     "test-configuration": 2,
     "tooling": 31
   },
   "forbidden": [],
   "schema_version": 1,
-  "tracked_files": 907,
+  "tracked_files": 909,
   "unclassified": []
 }

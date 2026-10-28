@@ -2078,6 +2078,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/economics/edexcel-a/generator/pastpapergen/_cli_runtime.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -4293,6 +4299,12 @@
     },
     {
       "path": "tests/test_edexcel_branding_facade.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_edexcel_console_runtime.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
