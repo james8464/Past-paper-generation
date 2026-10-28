@@ -1,0 +1,116 @@
+import json
+import os
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+from threading import Barrier
+from unittest.mock import patch
+
+import pytest
+
+from tools.atomic_json import write_json_atomically
+from tools.live_generation_matrix import _write_run_qualification_manifest
+
+
+def test_atomic_json_preserves_previous_document_on_replace_failure(tmp_path: Path):
+    path = tmp_path / "matrix-result.json"
+    previous = b'{"passed": false}\n'
+    path.write_bytes(previous)
+    with (
+        patch("tools.atomic_json.os.replace", side_effect=OSError("disk unavailable")),
+        pytest.raises(OSError, match="disk unavailable"),
+    ):
+        write_json_atomically(path, {"passed": True})
+    assert path.read_bytes() == previous
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_atomic_json_uses_unique_sibling_files_and_complete_documents(tmp_path: Path):
+    path = tmp_path / "new" / "result.json"
+    siblings = []
+
+    def inspect(source, destination):
+        source = Path(source)
+        assert source.parent == path.parent
+        assert source != path
+        assert json.loads(source.read_text(encoding="utf-8"))["label"] == "élève"
+        siblings.append(source)
+        os_replace(source, destination)
+
+    os_replace = os.replace
+    with patch("tools.atomic_json.os.replace", side_effect=inspect):
+        write_json_atomically(path, {"label": "élève"})
+        write_json_atomically(path, {"label": "élève"})
+    assert len(set(siblings)) == 2
+    assert path.read_text(encoding="utf-8").endswith("\n")
+    assert list(path.parent.iterdir()) == [path]
+
+
+def test_atomic_json_serialization_failure_leaves_evidence_untouched(tmp_path: Path):
+    path = tmp_path / "result.json"
+    path.write_bytes(b'{"passed": false}\n')
+    with pytest.raises(TypeError):
+        write_json_atomically(path, {"invalid": object()})
+    assert path.read_bytes() == b'{"passed": false}\n'
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_live_manifest_interruption_keeps_previous_resume_document(tmp_path: Path):
+    path = tmp_path / "qualification-run-manifest.json"
+    previous = b'{"complete": false}\n'
+    path.write_bytes(previous)
+    with (
+        patch("tools.atomic_json.os.replace", side_effect=OSError("interrupted")),
+        pytest.raises(OSError, match="interrupted"),
+    ):
+        _write_run_qualification_manifest(
+            output_root=tmp_path,
+            report={
+                "results": [],
+                "summary": {},
+                "complete": True,
+                "expected_jobs": 0,
+            },
+            model="test",
+            provider="ollama",
+            base_seed=270100,
+        )
+    assert path.read_bytes() == previous
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_atomic_json_flush_failure_keeps_previous_document(tmp_path: Path):
+    path = tmp_path / "result.json"
+    path.write_bytes(b'{"passed": false}\n')
+    with (
+        patch("tools.atomic_json.os.fsync", side_effect=OSError("flush failed")),
+        pytest.raises(OSError, match="flush failed"),
+    ):
+        write_json_atomically(path, {"passed": True})
+    assert path.read_bytes() == b'{"passed": false}\n'
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_overlapping_atomic_json_writers_do_not_share_temporary_files(tmp_path: Path):
+    path = tmp_path / "result.json"
+    barrier = Barrier(2)
+    os_replace = os.replace
+
+    def synchronized_replace(source, destination):
+        barrier.wait(timeout=5)
+        os_replace(source, destination)
+
+    with (
+        patch("tools.atomic_json.os.replace", side_effect=synchronized_replace),
+        ThreadPoolExecutor(max_workers=2) as pool,
+    ):
+        futures = [
+            pool.submit(write_json_atomically, path, {"writer": index})
+            for index in range(2)
+        ]
+        for future in futures:
+            future.result(timeout=10)
+    assert json.loads(path.read_text(encoding="utf-8")) in [
+        {"writer": 0},
+        {"writer": 1},
+    ]
+    assert list(tmp_path.iterdir()) == [path]
