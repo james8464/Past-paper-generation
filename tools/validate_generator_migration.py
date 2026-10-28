@@ -45,7 +45,7 @@ class MigrationValidator:
         self.run_preview = run_preview
 
     def validate_all(self) -> tuple[MigrationReport, ...]:
-        registry = self._json(self.resources / "generator-registry.json") or {}
+        registry = self._required_registry()
         reports: list[MigrationReport] = []
         for family in registry.get("families", []):
             if not family.get("advertised", False):
@@ -55,12 +55,35 @@ class MigrationValidator:
         return tuple(reports)
 
     def advertised_capabilities(self) -> tuple[dict[str, Any], ...]:
-        registry = self._json(self.resources / "generator-registry.json") or {}
+        registry = self._required_registry()
         return tuple(
             family
             for family in registry.get("families", [])
             if family.get("advertised", False)
         )
+
+    def _required_registry(self) -> dict[str, Any]:
+        registry = self._json(self.resources / "generator-registry.json")
+        if (
+            not isinstance(registry, dict)
+            or type(registry.get("schema_version")) is not int
+            or registry["schema_version"] not in {4, 5}
+        ):
+            raise ValueError("generator registry is missing, malformed or unsupported")
+        families = registry.get("families")
+        if (
+            not isinstance(families, list)
+            or any(
+                not isinstance(family, dict)
+                or type(family.get("advertised")) is not bool
+                for family in families
+            )
+            or not any(family["advertised"] for family in families)
+        ):
+            raise ValueError(
+                "generator registry requires a non-empty advertised family inventory"
+            )
+        return registry
 
     def entry_point_source(self, family: dict[str, Any]) -> str:
         python_root = self.resources / str(family["python_path"])
@@ -257,11 +280,7 @@ class MigrationValidator:
         module_name, separator, function_name = str(
             family.get("entry_point", "")
         ).partition(":")
-        if (
-            not separator
-            or not python_root.is_dir()
-            or not syllabus.is_file()
-        ):
+        if not separator or not python_root.is_dir() or not syllabus.is_file():
             return "deterministic preview inputs are incomplete"
         try:
             if str(python_root) not in sys.path:
@@ -279,7 +298,9 @@ class MigrationValidator:
                 )
                 expected = set(output_map.get(papers[0], []))
                 if not isinstance(result, dict) or set(result) != expected:
-                    return "deterministic preview output roles disagree with the manifest"
+                    return (
+                        "deterministic preview output roles disagree with the manifest"
+                    )
                 if any(not Path(path).is_file() for path in result.values()):
                     return "deterministic preview reported a missing artifact"
         except Exception as error:
@@ -323,7 +344,9 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     args = build_parser().parse_args()
     validator = MigrationValidator()
-    reports = validator.validate_all() if args.all else (validator.validate(args.family),)
+    reports = (
+        validator.validate_all() if args.all else (validator.validate(args.family),)
+    )
     for report in reports:
         state = "passed" if report.passed else "failed"
         print(f"{report.family_id}: {state}")

@@ -3,53 +3,43 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 import re
 import statistics
-import subprocess
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any
 
+if __package__:
+    from .atomic_json import write_json_atomically
+    from .calibration_common import (
+        CALIBRATION_CONTENT_POLICY,
+        paper_content_fingerprint,
+        render_json,
+    )
+    from .calibration_common import ordered_document_fingerprint as _fingerprint
+    from .pdf_process import pdf_page_count as _page_count
+    from .pdf_process import pdf_text as _pdf_text
+else:
+    from atomic_json import write_json_atomically
+    from calibration_common import (
+        CALIBRATION_CONTENT_POLICY,
+        paper_content_fingerprint,
+        render_json,
+    )
+    from calibration_common import ordered_document_fingerprint as _fingerprint
+    from pdf_process import pdf_page_count as _page_count
+    from pdf_process import pdf_text as _pdf_text
+
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_ROOT = (
-    ROOT
-    / "Reference Corpus"
-    / "a-level"
-    / "aqa"
-    / "economics"
-    / "economics-7136"
+    ROOT / "Reference Corpus" / "a-level" / "aqa" / "economics" / "economics-7136"
 )
 GENERATOR_ROOT = ROOT / "Resources" / "economics" / "aqa" / "generator"
 OUTPUT = GENERATOR_ROOT / "data" / "difficulty-calibration.json"
+REPORT_OUTPUT_V2 = OUTPUT.with_name("difficulty-calibration-v2.json")
 WORD_PATTERN = re.compile(r"[A-Za-z]+(?:[-'][A-Za-z]+)?")
 MARK_PATTERN = re.compile(r"\[(\d+) marks?\]", re.IGNORECASE)
-
-
-def _command(*args: str) -> str:
-    result = subprocess.run(args, check=True, capture_output=True, text=True)
-    return result.stdout
-
-
-def _page_count(path: Path) -> int:
-    match = re.search(r"^Pages:\s+(\d+)$", _command("pdfinfo", str(path)), re.MULTILINE)
-    if not match:
-        raise ValueError(f"could not read page count from {path}")
-    return int(match.group(1))
-
-
-def _pdf_text(path: Path) -> str:
-    return _command("pdftotext", "-layout", str(path), "-")
-
-
-def _fingerprint(paths: list[Path]) -> str:
-    digest = hashlib.sha256()
-    for path in paths:
-        digest.update(path.name.encode())
-        digest.update(hashlib.sha256(path.read_bytes()).digest())
-    return digest.hexdigest()
 
 
 def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
@@ -60,12 +50,18 @@ def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
     for paper in ("1", "2", "3"):
         paths = sorted(question_root.glob(f"AQA-7136{paper}-QP-*.PDF"))
         if not paths:
-            raise ValueError(f"no official AQA Economics Paper {paper} references found")
+            raise ValueError(
+                f"no official AQA Economics Paper {paper} references found"
+            )
         source_paths.extend(paths)
-        mark_sequences = [list(map(int, MARK_PATTERN.findall(_pdf_text(path)))) for path in paths]
+        mark_sequences = [
+            list(map(int, MARK_PATTERN.findall(_pdf_text(path)))) for path in paths
+        ]
         pages = [_page_count(path) for path in paths]
         if len({tuple(sequence) for sequence in mark_sequences}) != 1:
-            raise ValueError(f"Paper {paper} does not have a stable printed mark sequence")
+            raise ValueError(
+                f"Paper {paper} does not have a stable printed mark sequence"
+            )
         paper_profile: dict[str, Any] = {
             "documents": len(paths),
             "printed_mark_sequence": mark_sequences[0],
@@ -78,7 +74,9 @@ def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
         if paper == "3":
             inserts = sorted(insert_root.glob("AQA-71363-INS-*.PDF"))
             source_paths.extend(inserts)
-            insert_words = [len(WORD_PATTERN.findall(_pdf_text(path))) for path in inserts]
+            insert_words = [
+                len(WORD_PATTERN.findall(_pdf_text(path))) for path in inserts
+            ]
             insert_pages = [_page_count(path) for path in inserts]
             paper_profile["source_insert"] = {
                 "documents": len(inserts),
@@ -103,7 +101,9 @@ def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
     }
 
 
-def build_generated_profile(reference: dict[str, Any], seeds: range = range(100, 120)) -> dict[str, Any]:
+def build_generated_profile(
+    reference: dict[str, Any], seeds: range = range(100, 120)
+) -> dict[str, Any]:
     if str(ROOT) not in sys.path:
         sys.path.insert(0, str(ROOT))
     if str(GENERATOR_ROOT) not in sys.path:
@@ -118,17 +118,7 @@ def build_generated_profile(reference: dict[str, Any], seeds: range = range(100,
     for paper_number in ("1", "2", "3"):
         rule = RULES[f"paper_{paper_number}"]
         generated = [build_paper(rule, syllabus, seed) for seed in seeds]
-        fingerprints = {
-            hashlib.sha256(
-                "\n".join(
-                    question.prompt
-                    for section in paper.sections
-                    for option in section.options
-                    for question in option.questions
-                ).encode()
-            ).hexdigest()
-            for paper in generated
-        }
+        fingerprints = {paper_content_fingerprint(paper) for paper in generated}
         topic_ids = {
             question.topic_id
             for paper in generated
@@ -142,7 +132,9 @@ def build_generated_profile(reference: dict[str, Any], seeds: range = range(100,
             for option in section.options
             for question in option.questions
         ]
-        with tempfile.TemporaryDirectory(prefix=f"examforge-calibration-{paper_number}-") as folder:
+        with tempfile.TemporaryDirectory(
+            prefix=f"examforge-calibration-{paper_number}-"
+        ) as folder:
             question_path = Path(folder) / "question.pdf"
             render_question_paper(generated[0], question_path)
             page_count = _page_count(question_path)
@@ -160,12 +152,12 @@ def build_generated_profile(reference: dict[str, Any], seeds: range = range(100,
         checks: dict[str, bool] = {
             "printed_mark_sequence": mark_sequence == expected["printed_mark_sequence"],
             "page_count": page_band["minimum"] <= page_count <= page_band["maximum"],
-            "unique_seed_batch": len(fingerprints) == len(generated),
+            "unique_candidate_content_batch": len(fingerprints) == len(generated),
             "syllabus_coverage": topic_ids == rule.allowed_topic_ids,
         }
         paper_profile: dict[str, Any] = {
             "seeds": len(generated),
-            "unique_fingerprints": len(fingerprints),
+            "unique_candidate_content_fingerprints": len(fingerprints),
             "printed_mark_sequence": mark_sequence,
             "page_count": page_count,
             "covered_topic_ids": sorted(topic_ids),
@@ -177,7 +169,9 @@ def build_generated_profile(reference: dict[str, Any], seeds: range = range(100,
             mcq_questions = [
                 option.questions[0] for option in generated[0].sections[0].options
             ]
-            quantitative = sum("index linked" in question.prompt for question in mcq_questions)
+            quantitative = sum(
+                "index linked" in question.prompt for question in mcq_questions
+            )
             conceptual = len(mcq_questions) - quantitative
             checks["source_insert_page_count"] = (
                 insert_band["page_count"]["minimum"]
@@ -206,7 +200,8 @@ def build_report(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
         all(paper["checks"].values()) for paper in generated["papers"].values()
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "calibration_policy": CALIBRATION_CONTENT_POLICY,
         "qualification": "AQA A-level Economics 7136",
         "purpose": "aggregate structural-demand calibration; not a psychometric equivalence claim",
         "reference": reference,
@@ -221,25 +216,33 @@ def build_report(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
     }
 
 
-def render_json(value: dict[str, Any]) -> str:
-    return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
-
-
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Calibrate AQA Economics generated-paper demand.")
+    parser = argparse.ArgumentParser(
+        description="Calibrate AQA Economics generated-paper demand."
+    )
     parser.add_argument("--write", action="store_true")
     parser.add_argument("--check", action="store_true")
     parser.add_argument("--corpus-root", type=Path, default=CORPUS_ROOT)
     args = parser.parse_args(argv)
     if args.write and args.check:
         parser.error("--write and --check are mutually exclusive")
-    rendered = render_json(build_report(args.corpus_root))
+    if args.check and not REPORT_OUTPUT_V2.exists():
+        raise SystemExit(
+            f"Version 2 report {REPORT_OUTPUT_V2} is missing; run tools/difficulty_calibration.py --write"
+        )
+    report = build_report(args.corpus_root)
+    rendered = render_json(report)
     if args.write:
-        OUTPUT.write_text(rendered, encoding="utf-8")
+        write_json_atomically(REPORT_OUTPUT_V2, report)
         return 0
     if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != rendered:
-            raise SystemExit(f"{OUTPUT} is stale; run tools/difficulty_calibration.py --write")
+        if (
+            not REPORT_OUTPUT_V2.exists()
+            or REPORT_OUTPUT_V2.read_text(encoding="utf-8") != rendered
+        ):
+            raise SystemExit(
+                f"Version 2 report {REPORT_OUTPUT_V2} is missing or stale; run tools/difficulty_calibration.py --write"
+            )
         return 0
     print(rendered, end="")
     return 0

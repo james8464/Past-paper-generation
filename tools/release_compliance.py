@@ -41,10 +41,13 @@ def inspect_release_compliance(
 ) -> dict[str, object]:
     root = root.resolve()
     failures: list[str] = []
-    requirements = tuple(requirement_paths or (
-        root / "requirements-build.txt",
-        root / "requirements-test.txt",
-    ))
+    requirements = tuple(
+        requirement_paths
+        or (
+            root / "requirements-build.txt",
+            root / "requirements-test.txt",
+        )
+    )
 
     checks = {
         "bounded_dependencies": _check_dependencies(requirements, failures),
@@ -58,6 +61,14 @@ def inspect_release_compliance(
         "passed": not failures,
         "checks": checks,
         "failures": sorted(failures),
+        "dependency_scope": {
+            "manifests": [
+                str(path.relative_to(root)) if path.is_relative_to(root) else str(path)
+                for path in requirements
+            ],
+            "editable_project_constraints_checked": False,
+            "transitive_resolution_checked": False,
+        },
     }
 
 
@@ -67,7 +78,9 @@ def _check_dependencies(paths: Iterable[Path], failures: list[str]) -> bool:
         if not path.is_file():
             failures.append(f"missing dependency manifest: {path}")
             continue
-        for line_number, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        for line_number, raw in enumerate(
+            path.read_text(encoding="utf-8").splitlines(), 1
+        ):
             line = raw.split("#", 1)[0].strip()
             if not line or line.startswith(("-e ", "--")):
                 continue
@@ -84,10 +97,14 @@ def _check_font_licences(root: Path, failures: list[str]) -> bool:
     font_root = root / "Backend" / "Core" / "fonts"
     for font in sorted(font_root.rglob("*.ttf")):
         licence = font.parent / "OFL.txt"
-        if not licence.is_file() or "SIL OPEN FONT LICENSE" not in licence.read_text(
-            encoding="utf-8", errors="ignore"
-        ).upper():
-            failures.append(f"font has no bundled SIL OFL licence: {font.relative_to(root)}")
+        if (
+            not licence.is_file()
+            or "SIL OPEN FONT LICENSE"
+            not in licence.read_text(encoding="utf-8", errors="ignore").upper()
+        ):
+            failures.append(
+                f"font has no bundled SIL OFL licence: {font.relative_to(root)}"
+            )
     return len(failures) == before
 
 
@@ -155,11 +172,7 @@ def _tracked_paths(root: Path) -> list[Path]:
         check=True,
         capture_output=True,
     )
-    return [
-        root / value.decode()
-        for value in completed.stdout.split(b"\0")
-        if value
-    ]
+    return [root / value.decode() for value in completed.stdout.split(b"\0") if value]
 
 
 def _check_secrets(

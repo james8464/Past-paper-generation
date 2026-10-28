@@ -3,20 +3,34 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
-import json
 import re
-import statistics
 import sys
 import tempfile
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
 if __package__:
+    from .atomic_json import write_json_atomically
+    from .calibration_common import (
+        CALIBRATION_CONTENT_POLICY,
+        paper_content_fingerprint,
+        render_json,
+    )
+    from .calibration_common import integer_band as _band
+    from .calibration_common import mark_sequence_inventory as _sequence_inventory
+    from .calibration_common import ordered_document_fingerprint as _fingerprint
     from .pdf_process import pdf_page_count as _page_count
     from .pdf_process import pdf_text as _pdf_text
 else:
+    from atomic_json import write_json_atomically
+    from calibration_common import (
+        CALIBRATION_CONTENT_POLICY,
+        paper_content_fingerprint,
+        render_json,
+    )
+    from calibration_common import integer_band as _band
+    from calibration_common import mark_sequence_inventory as _sequence_inventory
+    from calibration_common import ordered_document_fingerprint as _fingerprint
     from pdf_process import pdf_page_count as _page_count
     from pdf_process import pdf_text as _pdf_text
 
@@ -31,6 +45,7 @@ CORPUS_ROOT = (
 )
 GENERATOR_ROOT = ROOT / "Resources" / "economics" / "ocr" / "generator"
 OUTPUT = GENERATOR_ROOT / "data" / "difficulty-calibration.json"
+REPORT_OUTPUT_V2 = OUTPUT.with_name("difficulty-calibration-v2.json")
 WORD_PATTERN = re.compile(r"[A-Za-z]+(?:[-'][A-Za-z]+)?")
 MARK_PATTERN = re.compile(r"\[(\d+)\]")
 PAPER_NAMES = {
@@ -38,30 +53,6 @@ PAPER_NAMES = {
     "2": "macroeconomics",
     "3": "themes-in-economics",
 }
-
-
-def _fingerprint(paths: list[Path]) -> str:
-    digest = hashlib.sha256()
-    for path in paths:
-        digest.update(path.name.encode())
-        digest.update(hashlib.sha256(path.read_bytes()).digest())
-    return digest.hexdigest()
-
-
-def _band(values: list[int]) -> dict[str, float | int]:
-    return {
-        "minimum": min(values),
-        "median": statistics.median(values),
-        "maximum": max(values),
-    }
-
-
-def _sequence_inventory(sequences: list[list[int]]) -> list[dict[str, Any]]:
-    counts = Counter(tuple(sequence) for sequence in sequences)
-    return [
-        {"sequence": list(sequence), "documents": count}
-        for sequence, count in sorted(counts.items())
-    ]
 
 
 def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
@@ -75,12 +66,13 @@ def build_reference_profile(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
             if "correction" not in path.name
         )
         if not paths:
-            raise ValueError(f"no official OCR Economics Paper {paper} references found")
+            raise ValueError(
+                f"no official OCR Economics Paper {paper} references found"
+            )
         source_paths.extend(paths)
         texts = [_pdf_text(path) for path in paths]
         sequences = [
-            [int(value) for value in MARK_PATTERN.findall(text)]
-            for text in texts
+            [int(value) for value in MARK_PATTERN.findall(text)] for text in texts
         ]
         papers[paper] = {
             "documents": len(paths),
@@ -117,22 +109,9 @@ def build_generated_profile(
     for paper_number in ("1", "2", "3"):
         rule = RULES[f"paper_{paper_number}"]
         generated = [build_paper(rule, syllabus, seed) for seed in seeds]
-        fingerprints = {
-            hashlib.sha256(
-                json.dumps(paper.model_dump(), sort_keys=True).encode()
-            ).hexdigest()
-            for paper in generated
-        }
+        fingerprints = {paper_content_fingerprint(paper) for paper in generated}
         stimulus_fingerprints = {
-            hashlib.sha256(
-                "\n".join(
-                    text
-                    for section in paper.sections
-                    for option in section.options
-                    for text in option.stimulus
-                ).encode()
-            ).hexdigest()
-            for paper in generated
+            paper_content_fingerprint(paper, source_only=True) for paper in generated
         }
         topic_ids = {
             question.topic_id
@@ -176,14 +155,14 @@ def build_generated_profile(
                 mark_sequence == expected["current_printed_mark_sequence"]
             ),
             "page_count": page_band["minimum"] <= page_count <= page_band["maximum"],
-            "unique_seed_batch": len(fingerprints) == len(generated),
-            "unique_stimulus_batch": len(stimulus_fingerprints) == len(generated),
+            "unique_candidate_content_batch": len(fingerprints) == len(generated),
+            "unique_public_source_batch": len(stimulus_fingerprints) == len(generated),
             "syllabus_coverage": topic_ids == rule.allowed_topic_ids,
         }
         paper_profile: dict[str, Any] = {
             "seeds": len(generated),
-            "unique_fingerprints": len(fingerprints),
-            "unique_stimulus_fingerprints": len(stimulus_fingerprints),
+            "unique_candidate_content_fingerprints": len(fingerprints),
+            "unique_public_source_fingerprints": len(stimulus_fingerprints),
             "printed_mark_sequence": mark_sequence,
             "page_count": page_count,
             "document_word_count": document_words,
@@ -218,7 +197,8 @@ def build_report(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
         all(paper["checks"].values()) for paper in generated["papers"].values()
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "calibration_policy": CALIBRATION_CONTENT_POLICY,
         "qualification": "OCR A-level Economics H460",
         "purpose": (
             "aggregate structural-demand calibration against current paper structure; "
@@ -236,10 +216,6 @@ def build_report(corpus_root: Path = CORPUS_ROOT) -> dict[str, Any]:
     }
 
 
-def render_json(value: dict[str, Any]) -> str:
-    return json.dumps(value, indent=2, ensure_ascii=False) + "\n"
-
-
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Calibrate OCR Economics generated-paper structure."
@@ -250,14 +226,22 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.write and args.check:
         parser.error("--write and --check are mutually exclusive")
-    rendered = render_json(build_report(args.corpus_root))
+    if args.check and not REPORT_OUTPUT_V2.exists():
+        raise SystemExit(
+            f"Version 2 report {REPORT_OUTPUT_V2} is missing; run tools/ocr_economics_calibration.py --write"
+        )
+    report = build_report(args.corpus_root)
+    rendered = render_json(report)
     if args.write:
-        OUTPUT.write_text(rendered, encoding="utf-8")
+        write_json_atomically(REPORT_OUTPUT_V2, report)
         return 0
     if args.check:
-        if not OUTPUT.exists() or OUTPUT.read_text(encoding="utf-8") != rendered:
+        if (
+            not REPORT_OUTPUT_V2.exists()
+            or REPORT_OUTPUT_V2.read_text(encoding="utf-8") != rendered
+        ):
             raise SystemExit(
-                f"{OUTPUT} is stale; run tools/ocr_economics_calibration.py --write"
+                f"Version 2 report {REPORT_OUTPUT_V2} is missing or stale; run tools/ocr_economics_calibration.py --write"
             )
         return 0
     print(rendered, end="")
