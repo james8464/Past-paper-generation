@@ -41,16 +41,20 @@ struct DocumentPreviewView: View {
 
                     Divider()
 
-                    if let file = selectedFile, file.exists {
-                        PDFDocumentView(url: file.url)
+                    if let file = selectedFile, let pdf = documentActions.loadedPDF {
+                        PDFDocumentView(document: pdf.document)
                             .id(file.id)
                             .accessibilityLabel("Preview of \(file.title)")
                     } else {
-                        ContentUnavailableView(
-                            "PDF not found",
-                            systemImage: "doc.badge.ellipsis",
-                            description: Text("Reveal the job in History or create the paper again.")
-                        )
+                        ContentUnavailableView {
+                            Label("PDF unavailable", systemImage: "doc.badge.ellipsis")
+                        } description: {
+                            if let failure = documentActions.loadFailure { Text(failure.messageResource) }
+                        } actions: {
+                            Button("Choose This PDF…", action: documentActions.choosePDFForAccess)
+                                .disabled(selectedFile == nil)
+                            Button("Try Again", action: documentActions.refresh)
+                        }
                     }
                 }
             }
@@ -66,6 +70,8 @@ struct DocumentPreviewView: View {
         .onChange(of: selectedID) {
             selection = selectedID
         }
+        .onAppear { documentActions.update(file: selectedFile, provenance: provenanceRecord) }
+        .onDisappear { documentActions.clear() }
         .toolbar {
             ToolbarItemGroup {
                 Button("Quick Look", systemImage: "eye", action: documentActions.quickLookSelected)
@@ -84,7 +90,7 @@ struct DocumentPreviewView: View {
                     .disabled(!documentActions.canAccessDocument)
             }
         }
-        .alert("The PDF could not be exported", isPresented: exportAlertBinding) {
+        .alert("Couldn't complete the PDF action", isPresented: exportAlertBinding) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(documentActions.exportError ?? "Try another destination.")
@@ -120,43 +126,112 @@ final class DocumentActionController: ObservableObject {
     @Published private(set) var selectedFile: GeneratedFile?
     @Published private(set) var provenance: GenerationJobRecord?
     @Published var exportError: String?
+    @Published private(set) var loadedPDF: LoadedPDF?
+    @Published private(set) var loadFailure: PDFLoadFailure?
+    private let access: PDFDocumentAccess
     private let quickLook = QuickLookCoordinator()
 
-    var canAccessDocument: Bool { selectedFile?.exists == true }
+    var canAccessDocument: Bool { loadedPDF != nil && selectedFile?.exists == true }
+
+    init(access: PDFDocumentAccess = PDFDocumentAccess()) { self.access = access }
 
     func update(file: GeneratedFile?, provenance: GenerationJobRecord?) {
+        if selectedFile?.url != file?.url { access.release() }
         selectedFile = file
         self.provenance = provenance
+        refresh()
+    }
+
+    func clear() {
+        access.release()
+        selectedFile = nil
+        provenance = nil
+        loadedPDF = nil
+        loadFailure = nil
+    }
+
+    func refresh() {
+        loadFailure = nil
+        guard let selectedFile else {
+            loadedPDF = nil
+            return
+        }
+        switch access.load(selectedFile.url) {
+        case .success(let pdf):
+            // Keep PDFView's page and zoom when validation reads the same bytes.
+            if loadedPDF?.bytes != pdf.bytes { loadedPDF = pdf }
+        case .failure(let failure):
+            loadedPDF = nil
+            loadFailure = failure
+        }
     }
 
     func quickLookSelected() {
+        guard prepareAction() else { return }
         guard canAccessDocument, let file = selectedFile else { return }
         quickLook.present(file.url)
     }
 
     func revealSelected() {
+        guard prepareAction() else { return }
         guard canAccessDocument, let file = selectedFile else { return }
         NSWorkspace.shared.activateFileViewerSelecting([file.url])
     }
 
     func printSelected() {
-        guard canAccessDocument, let file = selectedFile,
-              let operation = PDFDocumentActions.printOperation(for: file.url)
+        guard prepareAction(), let pdf = loadedPDF,
+              let operation = pdf.document.printOperation(for: NSPrintInfo.shared, scalingMode: .pageScaleToFit, autoRotate: true)
         else { return }
         operation.run()
     }
 
     func exportSelected() {
-        guard canAccessDocument, let file = selectedFile else { return }
+        guard prepareAction(), let file = selectedFile, let bytes = loadedPDF?.bytes else { return }
         let panel = NSSavePanel()
         panel.nameFieldStringValue = file.url.lastPathComponent
         panel.allowedContentTypes = [.pdf]
         guard panel.runModal() == .OK, let destination = panel.url else { return }
         do {
-            try PDFDocumentActions.export(from: file.url, to: destination)
+            if file.url.standardizedFileURL != destination.standardizedFileURL {
+                try bytes.write(to: destination, options: .atomic)
+            }
         } catch {
             exportError = error.localizedDescription
         }
+    }
+
+    func choosePDFForAccess() {
+        guard let file = selectedFile else { return }
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.resolvesAliases = false
+        panel.allowedContentTypes = [.pdf]
+        panel.directoryURL = file.url.deletingLastPathComponent()
+        panel.message = InterfaceText.resolve("Choose the same PDF shown in History. Other files won't replace it.", language: language)
+        recoverAccess(selected: panel.runModal() == .OK ? panel.url : nil)
+    }
+
+    func recoverAccess(selected: URL?) {
+        guard let file = selectedFile else { return }
+        do {
+            if try access.recover(expected: file.url, selected: selected) { refresh() }
+        } catch {
+            let failure = (error as? PDFLoadFailure) ?? .unreadable
+            exportError = InterfaceText.resolve(failure.messageResource, language: language)
+        }
+    }
+
+    private var language: String { UserDefaults.standard.string(forKey: "interfaceLanguage") ?? "system" }
+
+    private func prepareAction() -> Bool {
+        refresh()
+        guard canAccessDocument else {
+            if let loadFailure { exportError = InterfaceText.resolve(loadFailure.messageResource, language: language) }
+            return false
+        }
+        return true
     }
 
     func copyProvenance() {
@@ -197,7 +272,7 @@ enum PDFDocumentActions {
 }
 
 private struct PDFDocumentView: NSViewRepresentable {
-    let url: URL
+    let document: PDFDocument
 
     func makeNSView(context: Context) -> PDFView {
         let view = PDFView()
@@ -209,8 +284,8 @@ private struct PDFDocumentView: NSViewRepresentable {
     }
 
     func updateNSView(_ view: PDFView, context: Context) {
-        if view.document?.documentURL != url {
-            view.document = PDFDocument(url: url)
+        if view.document !== document {
+            view.document = document
         }
     }
 }
