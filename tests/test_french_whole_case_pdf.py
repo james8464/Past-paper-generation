@@ -38,6 +38,8 @@ def render(path, package, correction, large_print=False):
             large_print=large_print,
             human_readable_graph_titles=True,
             coherent_material_flow=True,
+            compact_correction=package.get("identity", {}).get("prompt_version")
+            == "fr-nsi-written-2027-v34",
         ),
         role="mark_scheme" if correction else "question_paper",
         language="fr-FR",

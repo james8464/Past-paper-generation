@@ -92,7 +92,11 @@ def _expected_preface(correction: bool) -> str:
     return _compact("\n".join(parts))
 
 
-def _expected(exercise: NSIExercise, correction: bool) -> str:
+def _expected(
+    exercise: NSIExercise, correction: bool, *, compact_correction: bool = False
+) -> str:
+    from Backend.Core.france.rendering import correction_prompt
+
     title = exercise.title.strip().rstrip(".")
     scope = (
         f"{title}."
@@ -119,7 +123,12 @@ def _expected(exercise: NSIExercise, correction: bool) -> str:
             for row in material.rows:
                 parts.extend(row)
             printed.add(material.id)
-        parts.extend([f"{question.id}.", _prose(question.prompt)])
+        prompt = (
+            correction_prompt(question.prompt)
+            if correction and compact_correction
+            else question.prompt
+        )
+        parts.extend([f"{question.id}.", _prose(prompt)])
         if correction:
             parts.extend(
                 [
@@ -197,7 +206,11 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         )
     for index, exercise in enumerate(exercises):
         end = positions[index + 1] if index + 1 < len(positions) else len(text)
-        if text[positions[index] : end] != _expected(exercise, correction):
+        if text[positions[index] : end] != _expected(
+            exercise,
+            correction,
+            compact_correction=package["identity"]["prompt_version"] == EXTENDED_VERSION,
+        ):
             raise ValueError(
                 f"Contenu imprimé de l'exercice {exercise.id} incompatible avec le sujet vérifié"
             )
