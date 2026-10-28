@@ -450,6 +450,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
+    var subtitleResource: LocalizedStringResource {
+        LocalizedStringResource(stringLiteral: subtitle)
+    }
+
     var sendsPromptsOffDevice: Bool {
         self == .openAI || self == .anthropic
     }

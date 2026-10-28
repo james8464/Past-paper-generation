@@ -1,34 +1,34 @@
 {
   "schema_version": 1,
-  "researched_at": "2026-08-22",
+  "researched_at": "2026-10-28",
   "default_model": "gemma4:12b",
-  "other_model_warning": "Keldin is tuned and checked against the recommended model for this Mac. Results may vary with other models or quantisations, including question quality, difficulty, factual accuracy, mark schemes, and structured-output reliability.",
+  "other_model_warning": "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation.",
   "tiers": [
     {
       "id": "memory-compatible",
       "minimum_memory_gb": 0,
       "maximum_memory_gb": 16,
       "model": "qwen2.5:7b",
-      "title": "Memory-compatible choice",
+      "title": "Smaller local option",
       "download_size_gb": 4.7,
       "context_window": "32K",
       "app_context_window": "16K",
       "validated_for_full_matrix": false,
-      "detail": "Fits the tighter memory budget of an 8 GB Apple-silicon Mac. It is a compatibility choice, so carefully review every question and mark scheme before use.",
-      "quality_note": "Smaller models have less capacity for long, source-based questions and detailed level-of-response mark schemes."
+      "detail": "A smaller download for Macs with less than 16 GB of unified memory. Memory use also depends on the context and other running apps.",
+      "quality_note": "Review the questions and marking guidance before use. Fitting in memory does not establish accuracy."
     },
     {
       "id": "quality",
       "minimum_memory_gb": 16,
       "maximum_memory_gb": null,
       "model": "gemma4:12b",
-      "title": "Recommended for paper quality",
-      "download_size_gb": 7.6,
+      "title": "Local option for 16 GB or more",
+      "download_size_gb": 8.0,
       "context_window": "256K",
       "app_context_window": "16K",
       "validated_for_full_matrix": false,
-      "detail": "The best balance of instruction following, subject reasoning, structured output, and local memory use for this assessment-writing workflow. A Mac with at least 16 GB unified memory is recommended.",
-      "quality_note": "Keep other memory-heavy apps closed while generating a full paper."
+      "detail": "For Macs with at least 16 GB of unified memory. Close other memory-heavy apps before generating. Paper quality is still under review.",
+      "quality_note": "Download size does not include all memory needed during generation."
     }
   ],
   "sources": [
