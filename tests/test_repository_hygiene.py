@@ -28,15 +28,15 @@ def test_committed_inventory_matches_the_current_repository() -> None:
 
 def test_generated_and_binary_outputs_are_rejected() -> None:
     assert classify_path("tmp/paper.pdf").error == "generated output path"
-    assert classify_path("macOS/build/PaperCreator.app/data").error == "build output path"
+    assert classify_path("macOS/build/Keldin.app/data").error == "build output path"
     assert classify_path("Backend/Core/__pycache__/module.pyc").error == "cache path"
-    assert classify_path("release/PaperCreator.dmg").error == "unapproved binary artifact"
+    assert classify_path("release/Keldin.dmg").error == "unapproved binary artifact"
 
 
 def test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs() -> None:
     assert classify_path("Design/AppIcon/icon.png").category == "design-resource"
     assert classify_path(
-        "macOS/PaperCreator/Assets.xcassets/AppIcon.appiconset/icon.png"
+        "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/icon.png"
     ).category == "runtime-resource"
     assert classify_path("screenshots/random.png").error == "unapproved binary artifact"
 

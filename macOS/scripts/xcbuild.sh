@@ -69,8 +69,8 @@ fi
 
 # Swift parses OTHER_SWIFT_FLAGS as a whitespace-delimited setting. Keep module
 # caches outside a checkout whose path may contain spaces so the compiler never
-# receives a split path as two input files.
-CACHE_ROOT="${CACHE_ROOT:-/tmp/papercreator-xcbuild-cache/$SANITIZED_LABEL}"
+# receives the whole path as one setting.
+CACHE_ROOT="${CACHE_ROOT:-/tmp/keldin-xcbuild-cache/$SANITIZED_LABEL}"
 CLANG_MODULE_CACHE_PATH="${CLANG_MODULE_CACHE_PATH:-$CACHE_ROOT/clang/ModuleCache}"
 SWIFT_MODULE_CACHE_PATH="${SWIFT_MODULE_CACHE_PATH:-$CACHE_ROOT/swift/ModuleCache}"
 SWIFT_PACKAGE_CACHE_PATH="${SWIFT_PACKAGE_CACHE_PATH:-$CACHE_ROOT/swiftpm}"

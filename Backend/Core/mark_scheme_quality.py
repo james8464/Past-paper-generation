@@ -1,3 +1,5 @@
+# Check that item marking guidance contains the required substantive content.
+
 from __future__ import annotations
 
 import math

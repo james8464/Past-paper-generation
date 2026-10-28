@@ -1,4 +1,4 @@
-"""Finite, versioned French wording for the controlled database exercise."""
+# Finite, versioned French wording for the controlled database exercise.
 
 from __future__ import annotations
 

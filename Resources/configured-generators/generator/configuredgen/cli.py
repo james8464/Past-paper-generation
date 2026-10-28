@@ -1,3 +1,5 @@
+# Connect configured-family generation to the shared backend workflow.
+
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -96,7 +98,7 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
             emit("Creating practical source-file template")
             path = output / f"{syllabus.subject_plugin}-paper-{paper}-solution.py"
             path.write_text(
-                '"""Candidate source file. Complete this original task offline."""\n\n'
+                '# Candidate source file. Complete this original task offline.\n\n'
                 "def main() -> None:\n"
                 "    raise NotImplementedError(\"Complete the examination task\")\n\n"
                 'if __name__ == "__main__":\n'

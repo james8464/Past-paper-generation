@@ -1,3 +1,5 @@
+# Render Edexcel Economics papers and marking guidance using the shared PDF components.
+
 # The project-root bootstrap must precede imports from the shared backend.
 
 from __future__ import annotations
@@ -200,8 +202,8 @@ def _count_pages(blueprint: PaperBlueprint) -> int:
         buf.close()
 
 
+# Match Pearson question-paper bleed and crop boxes without changing A4 content.
 def _apply_edexcel_page_boxes(output_path: Path) -> None:
-    """Match Pearson question-paper bleed and crop boxes without changing A4 content."""
     try:
         import pymupdf as fitz
     except ImportError:
@@ -756,8 +758,8 @@ def _draw_paper_3_source_page(
     )
 
 
+# Draw figures from source cells so the chart matches the printed data.
 def _draw_case_source_figure(pdf, x, y, number, source):
-    """A figure is a view of source cells, never a random hash illustration."""
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(x, y, f"Figure {number}: illustrative case information")
     y -= 20
@@ -2008,8 +2010,8 @@ _GRAPH_FUNCS: dict[str, object] = {
 }
 
 
+# Expose the same source values and dispatch rules used to draw a figure.
 def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
-    """Expose the same source values and dispatch rules used to draw a figure."""
     if question.source_instance:
         source = question.source_instance
         if question.parts and question.parts[0].command_word == "draw":
@@ -2195,8 +2197,8 @@ def _table_rows(kind: str) -> list[list[str]]:
     return table_rows(kind)
 
 
+# Actual numeric ordinate mapping, with exact data readings and time labels.
 def _draw_instance_chart(pdf: canvas.Canvas, x: float, y: float, source: EconomicsSource) -> float:
-    """Actual numeric ordinate mapping, with exact data readings and time labels."""
     values = [float(value) for value in source.values]
     width, height = 408, 126
     bottom = y - height - 20
@@ -2669,12 +2671,12 @@ def render_mark_scheme(
     _cleanup_graph_cache()
 
 
+# Attach stable, searchable metadata to every released PDF role.
 def _set_pdf_metadata(
     pdf: canvas.Canvas,
     blueprint: PaperBlueprint,
     document_role: str,
 ) -> None:
-    """Attach stable, searchable metadata to every released PDF role."""
     pdf.setTitle(f"{blueprint.title} — {document_role}")
     pdf.setAuthor("Keldin")
     pdf.setSubject(
@@ -2912,8 +2914,8 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
     return rows
 
 
+# Render each contract criterion as a discrete, visible examiner point.
 def _source_backed_mark_scheme_lines(item) -> list[str]:
-    """Render each contract criterion as a discrete, visible examiner point."""
     criteria = []
     for point in item.mark_scheme:
         stripped = point.strip()
@@ -2940,8 +2942,8 @@ def _source_backed_mark_scheme_lines(item) -> list[str]:
     ]
 
 
+# Keep the two-mark calculation on its reference-matched single page.
 def _paper_two_short_calculation_lines(question, part, topic) -> list[str]:
-    """Keep the two-mark calculation on its reference-matched single page."""
 
     return [
         *_specific_mark_scheme_context(
@@ -2960,8 +2962,8 @@ def _paper_two_short_calculation_lines(question, part, topic) -> list[str]:
     ]
 
 
+# Match the three-page knowledge, analysis and evaluation structure.
 def _paper_one_fifteen_mark_scheme_lines(question, topic) -> list[str]:
-    """Match the three-page knowledge, analysis and evaluation structure."""
 
     indicative = _scheme_bullets(
         question.indicative_content or topic.points,
@@ -3014,8 +3016,8 @@ def _paper_one_five_mark_diagram_lines(question, topic) -> list[str]:
     ]
 
 
+# Keep four-mark short answers concise enough for the measured page rhythm.
 def _paper_one_section_a_mark_scheme_lines(question, part, topic) -> list[str]:
-    """Keep four-mark short answers concise enough for the measured page rhythm."""
 
     if part.command_word == "draw":
         return [
@@ -3044,8 +3046,8 @@ def _paper_one_section_a_mark_scheme_lines(question, part, topic) -> list[str]:
     ]
 
 
+# Use the four-page analysis/evaluation rhythm of the current Paper 2 scheme.
 def _paper_two_extended_mark_scheme_lines(question, topic) -> list[str]:
-    """Use the four-page analysis/evaluation rhythm of the current Paper 2 scheme."""
 
     indicative = _scheme_bullets(
         question.indicative_content or topic.points,

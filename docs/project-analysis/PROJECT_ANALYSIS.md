@@ -1,10 +1,10 @@
-# Paper creator: deep project analysis
+# Keldin: deep project analysis
 
 Date: 29 July 2026
 
 ## Executive assessment
 
-Paper creator is a native macOS front end over a Python document-generation
+Keldin is a native macOS front end over a Python document-generation
 platform. Its core product promise is not merely “ask an LLM for questions”; it
 is to produce a coordinated assessment package whose structure, typography,
 pagination, source material, mark allocation, and marking guidance resemble a
@@ -95,8 +95,8 @@ flowchart LR
 
 ### 1. Catalogue and selection
 
-`macOS/PaperCreator/AppModels.swift` and the runtime resources load subject and
-board metadata. `macOS/PaperCreator/AppConfiguration.swift` joins the broad
+`macOS/Keldin/AppModels.swift` and the runtime resources load subject and
+board metadata. `macOS/Keldin/AppConfiguration.swift` joins the broad
 catalogue with `Resources/generator-registry.json`, so only advertised generator
 families are shown as ready.
 
@@ -107,7 +107,7 @@ reference is not the same as implementing or verifying a generator.
 
 ### 2. Swift state and command construction
 
-`macOS/PaperCreator/AppViewModel.swift` owns the selected board, paper, provider,
+`macOS/Keldin/AppViewModel.swift` owns the selected board, paper, provider,
 model, output location, consent state, generation progress, and output files.
 When generation starts it:
 
@@ -127,7 +127,7 @@ by other local tooling.
 
 ### 3. Process bridge and event protocol
 
-`macOS/PaperCreator/BackendClient.swift` launches either:
+`macOS/Keldin/BackendClient.swift` launches either:
 
 - the PyInstaller backend inside the app bundle; or
 - the development Python interpreter and `bridge.py`.
@@ -427,7 +427,7 @@ cancel action are sufficient.
 
 ### HIG-specific findings
 
-1. `PaperCreatorApp` disables state restoration. Apple recommends launching
+1. `KeldinApp` disables state restoration. Apple recommends launching
    quickly and restoring previous state where appropriate.
 2. Command-G is assigned to “Generate Paper,” but Command-G is the conventional
    “Find Next” shortcut. New-document behavior should use Command-N; cancellation
@@ -440,7 +440,7 @@ cancel action are sufficient.
 5. The fixed minimum window size and sidebar minimum reduce graceful collapse at
    narrow widths.
 6. Settings has three tabs but a generic “Settings” navigation title. A custom
-   settings window should identify the active pane or use “Paper creator
+   settings window should identify the active pane or use “Keldin
    Settings,” remember the last pane, and avoid enabled minimize/zoom controls.
 7. AI settings uses an explicit Save button, while several other settings persist
    immediately. The transaction model is inconsistent.

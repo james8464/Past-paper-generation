@@ -1,4 +1,4 @@
-"""Closed numeric output contracts, distinct from examiner credit metadata."""
+# Closed numeric output contracts, distinct from examiner credit metadata.
 
 from __future__ import annotations
 
@@ -91,13 +91,12 @@ def numeric_result(
     }
 
 
+# Accept only the contract's unit and the current templates' result endings.
+#
+# A regex-selected numeric prefix is not a complete quantity: ``27.90e6`` and
+# ``£27.90 million`` must not inherit approval for ``£27.90/unit``. Unknown
+# quantity notation fails closed, including uncontracted currency words.
 def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
-    """Accept only the contract's unit and the current templates' result endings.
-
-    A regex-selected numeric prefix is not a complete quantity: ``27.90e6`` and
-    ``£27.90 million`` must not inherit approval for ``£27.90/unit``. Unknown
-    quantity notation fails closed, including uncontracted currency words.
-    """
     suffix = suffix.lstrip(" \t")
     if check.unit == "GBPm":
         unit_pattern = r"m\b"
@@ -134,15 +133,14 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
     return re.fullmatch(check.scheme_ending, suffix.strip(), re.IGNORECASE) is not None
 
 
+# Match each asserted result to its role in the published working.
+#
+# Patterns are code-owned field selectors, not expected answer strings. Some
+# printed intermediate units are supplied by their row/column heading; final
+# canonical answers always include the full unit.
 def check_published_outputs(
     checks: list[CheckedNumericOutput], text: str | list[str]
 ) -> list[str]:
-    """Bind each asserted result to its role in the published working, never a number bag.
-
-    Patterns are code-owned field selectors, not expected answer strings. Some
-    printed intermediate units are supplied by their row/column heading; final
-    canonical answers always include the full unit.
-    """
     statements = [text] if isinstance(text, str) else text
     errors = []
     for check in checks:
@@ -186,15 +184,14 @@ def check_published_outputs(
     return errors
 
 
+# Unconditional alternatives need a unique role and a complete quantity.
+#
+# A single selected point can supply the role. Multi-output/general alternatives
+# must name it explicitly. Conditional own-figure credit belongs in its separate
+# follow-through field, never in this unconditional acceptance list.
 def check_numeric_alternatives(
     checks: list[CheckedNumericOutput | CheckedTextOutput], alternatives: list[str]
 ) -> list[str]:
-    """Unconditional alternatives need a unique role and a complete quantity.
-
-    A single selected point can supply the role. Multi-output/general alternatives
-    must name it explicitly. Conditional own-figure credit belongs in its separate
-    follow-through field, never in this unconditional acceptance list.
-    """
     errors = []
     for alternative in alternatives:
         quantity = re.sub(
@@ -212,8 +209,8 @@ def check_numeric_alternatives(
     return errors
 
 
+# Small explicit grammar: GBP/pence, declared denominator, percent, ratio.
 def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quantity: str) -> bool:
-    """Small explicit grammar: GBP/pence, declared denominator, percent, ratio."""
     if isinstance(check, CheckedTextOutput):
         # Encoded results preserve their complete width/order; only case and
         # terminal punctuation vary. Never accept a prefix or an extra claim.
@@ -264,8 +261,8 @@ def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quanti
     return actual == expected
 
 
+# Candidate chart endpoints and the requested one-decimal percentage output.
 def percentage_change_context(start: float, end: float) -> dict[str, Any]:
-    """Candidate chart endpoints and the requested one-decimal percentage output."""
     return {
         "preserve_prompt": True,
         "calculation_expression": "(end - start) / start * 100",

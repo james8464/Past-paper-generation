@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 import subprocess
 import sys
@@ -98,7 +99,7 @@ def test_checkpoint_path_is_stable_and_outside_transaction_staging(
     second = checkpoint_path_for_job(request, tmp_path)
 
     assert first == second
-    assert first.parent == tmp_path / ".papercreator-checkpoints"
+    assert first.parent == tmp_path / ".keldin-checkpoints"
     assert first.suffix == ".json"
     assert "gemma4" not in first.name
 
@@ -180,6 +181,9 @@ def test_bundle_check_rejects_unrenderable_french_corrections(monkeypatch, capsy
     def missing_source(*args, **kwargs):
         raise OSError("could not get source code")
 
+    # Import the consumer before patching so its module-level alias cannot retain
+    # this fake renderer after the test restores the original function.
+    importlib.import_module("Backend.Core.france.database_case_authoring")
     monkeypatch.setattr(database_case_prose, "render_case", missing_source)
     assert handle_bundle_check(Namespace()) == 1
     status = json.loads(capsys.readouterr().out.splitlines()[-1])
@@ -623,7 +627,7 @@ def test_backend_crash_is_structured_and_removes_staging_output(
     events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     assert events[-1]["code"] == "generation_failed"
     assert "renderer process stopped unexpectedly" in events[-1]["message"]
-    assert not list(tmp_path.glob(".papercreator-*"))
+    assert not list(tmp_path.glob(".keldin-*"))
 
 
 def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:

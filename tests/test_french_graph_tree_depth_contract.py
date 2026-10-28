@@ -1,4 +1,4 @@
-"""V17 graph/tree facts are fixed by the app, not a model's answer."""
+# V17 graph/tree facts are fixed by the app, not a model's answer.
 
 from copy import deepcopy
 from itertools import pairwise

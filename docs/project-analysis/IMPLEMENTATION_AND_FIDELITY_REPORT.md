@@ -4,7 +4,7 @@ Date: 26 August 2026
 
 ## Release outcome
 
-Paper Creator now has one modular generation path for all seven advertised
+Keldin now has one modular generation path for all seven advertised
 subject/board families and 18 papers. AI writes new questions inside immutable
 paper blueprints; deterministic validators and a separate model-review pass
 check marks, assessment objectives, command words, source use, numerical
@@ -39,7 +39,7 @@ endorsement.
 - Board-specific composition masters define page boxes, cover hierarchy,
   candidate fields, answer grids, tables, diagrams, mark positions, page-role
   sequences, and footer anchors. Protected branding is replaced with neutral
-  Paper Creator branding.
+  Keldin branding.
 - Swift sources are divided into Application, Components, Domain, Features,
   Navigation, Services, and State. Adding a conforming registry family does not
   require a new backend dispatch branch or matrix entry.
@@ -49,7 +49,7 @@ endorsement.
 The shared recommendation registry selects `gemma4:12b` for Macs with at least
 16 GB unified memory. It selects `qwen2.5:7b` as the 8 GB compatibility option
 and presents a stronger review warning. The app explains download size, the
-model's maximum context, Paper Creator's fixed 16K context, and why results may
+model's maximum context, Keldin's fixed 16K context, and why results may
 vary with another model or quantisation. The same record drives the Swift UI,
 backend defaults, standalone CLIs, tests, and in-app guide.
 

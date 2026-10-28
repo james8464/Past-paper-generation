@@ -1,8 +1,7 @@
-"""Original whole-tree cases for the unreleased V32 draft.
-
-Fixed application algorithms only. Independent flat/iterative/prefix-table
-oracles check answers; no model-supplied code or expressions are executed.
-"""
+# Original whole-tree cases for the unreleased V32 draft.
+#
+# Fixed application algorithms only. Independent flat/iterative/prefix-table
+# oracles check answers; no model-supplied code or expressions are executed.
 
 import json
 from copy import deepcopy
@@ -18,8 +17,8 @@ def _canonical(value):
 
 # Keep printed solution lines legible in the enlarged-print correction.
 # fmt: off
+# Strict BST, unique integer keys; count keys strictly below limit.
 def count_below(nodes, root, limit):
-    """Strict BST, unique integer keys; count keys strictly below limit."""
     if root is None:
         return 0
     key, left, right = nodes[root]
@@ -30,8 +29,8 @@ def count_below(nodes, root, limit):
     return 1 + a + b
 
 
+# Full binary tree: integer leaves; internal +, - or * operators.
 def expression_value(nodes, root):
-    """Full binary tree: integer leaves; internal +, - or * operators."""
     value, left, right = nodes[root]
     if left is None:
         return value
@@ -44,22 +43,21 @@ def expression_value(nodes, root):
     return a * b
 
 
+# Reuse strict ranks for inclusive integer bounds low <= high.
 def count_interval(
     nodes, root, low, high
 ):
-    """Reuse strict ranks for inclusive integer bounds low <= high."""
     end = high + 1
     a = count_below(nodes, root, end)
     b = count_below(nodes, root, low)
     return a - b
 
 
+# Full prefix tree with distinct letter leaves; 0 left, 1 right.
+#
+# Empty message is valid. Reject non-bits and a final incomplete code word.
+# Reset to root after each emitted leaf. No mutation of the code tree.
 def decode_message(nodes, root, bits):
-    """Full prefix tree with distinct letter leaves; 0 left, 1 right.
-
-    Empty message is valid. Reject non-bits and a final incomplete code word.
-    Reset to root after each emitted leaf. No mutation of the code tree.
-    """
     output = ""
     current = root
     for bit in bits:
@@ -76,14 +74,13 @@ def decode_message(nodes, root, bits):
     return output
 
 
+# Decode old bits, then encode the same letters with the supplied new code.
+#
+# Precondition: new_codes contains a valid nonempty prefix code for every
+# letter in the old alphabet. No optimal-code construction is required.
 def transcode(
     nodes, root, bits, new_codes
 ):
-    """Decode old bits, then encode the same letters with the supplied new code.
-
-    Precondition: new_codes contains a valid nonempty prefix code for every
-    letter in the old alphabet. No optimal-code construction is required.
-    """
     message = decode_message(
         nodes, root, bits
     )
@@ -94,8 +91,8 @@ def transcode(
 # fmt: on
 
 
+# Check the complete tree, not only parent/child local relationships.
 def _shape(rows, root, family):
-    """Check the complete tree, not only parent/child local relationships."""
     if family not in FAMILIES:
         raise ValueError("Unknown tree case family")
     nodes = {}
@@ -151,8 +148,8 @@ def _shape(rows, root, family):
     )
 
 
+# Bottom-up dependency evaluation, independent of recursive solution.
 def _expression_oracle(nodes, root):
-    """Bottom-up dependency evaluation, independent of recursive solution."""
     values, order = {}, []
     pending = [(root, False)]
     while pending:
@@ -170,8 +167,8 @@ def _expression_oracle(nodes, root):
     return values[root], dict(values=values, postorder=order)
 
 
+# Enumerate leaf code words first; tokenize without walking the tree.
 def _prefix_oracle(nodes, root, bits):
-    """Enumerate leaf code words first; tokenize without walking the tree."""
     words, pending = {}, [(root, "")]
     while pending:
         node, path = pending.pop()

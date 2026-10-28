@@ -1,9 +1,9 @@
-"""Keep visible French authoring claims aligned with the current catalogue."""
+# Keep visible French authoring claims aligned with the current catalogue.
 
 import json
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1] / "macOS" / "PaperCreator"
+ROOT = Path(__file__).resolve().parents[1] / "macOS" / "Keldin"
 
 
 def test_fixed_assessment_values_defer_localization_to_swiftui():

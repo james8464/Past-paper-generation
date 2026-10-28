@@ -1,4 +1,4 @@
-"""Candidate-source, selected-credit and printed-source integrity regressions."""
+# Candidate-source, selected-credit and printed-source integrity regressions.
 
 import ast
 import json

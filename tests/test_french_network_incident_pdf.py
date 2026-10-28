@@ -1,4 +1,4 @@
-"""V23 PDF gates bind staged candidate evidence and correction credit."""
+# V23 PDF gates bind staged candidate evidence and correction credit.
 
 from copy import deepcopy
 

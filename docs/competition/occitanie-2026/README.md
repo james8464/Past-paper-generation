@@ -19,7 +19,7 @@ Run `tools/build_occitanie_submission.py` with the bundled document runtime to r
 The formal application is in French, following the organiser's form. The
 supporting technical/user and mathematical reports are in English, as requested
 by James. Matching PDFs have been rendered and visually checked page by page in
-`output/occitanie-2026/`: two A4 pages for the formal application, four for
+`output/occitanie-2026/current-20261028/`: two A4 pages for the formal application, four for
 the technical/user dossier and three for the mathematical analysis. The directory
 is intentionally ignored by Git so personal submission copies are not published
 automatically. Regenerate and reinspect the formal PDF after filling personal facts.
@@ -50,28 +50,29 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 ## Evidence boundaries
 
-The public French V32 path is a working prototype with three finite whole-paper
+The public French V35 path is a working prototype with five finite whole-paper
 families. It makes no AI-provider call and refuses repeated families. The
 [local corpus audit](../../quality/french-nsi-corpus-rights-audit-2026-10-11.md)
 verified 81 registered files. Its 79 indexed sources comprise 77 distinct paper
 contents and two foundational documents, with 66 reference / 13 holdout sources.
 Source PDFs remain local and reference-only; per-document rights remain open.
 Teacher recommendations and a supervised learner pilot have not been obtained.
-Six distinct pilot papers require expansion beyond the present three families.
+Teacher review is unavailable. Internal review is used for engineering acceptance,
+without inventing external approval or learner timing.
 
 The first pinned Gemma 4 12B campaign accepted 0 of 10 complete papers. Its
 failures and later failed one-paper diagnostics remain retained evidence, not a
 model recommendation. All three exercises now use app-owned, versioned French
 question, answer and credit contracts. The earlier model-driven failures and
 V15–V31 single-paper holds remain separate historical evidence. The
-[V32 every-page comparison](../../quality/keldin-engineering-and-french-audit-2026-10-26.md)
-reviewed standard subjects of 7–8 pages and corrections of 17–18 pages, plus
-enlarged copies. Each paper has 34 questions, versus 36 in the 16-page official
-2026 comparator. The cases now contain connected reasoning, but remain compact
-and table-led, with sparse tails and fewer diagrams/scaffolded code. Manual
-fidelity remains HOLD. No model qualification, teacher recommendation or learner
+[V35 internal comparison](../../quality/french-nsi-v35-expanded-practice-review-2026-10-28.md)
+records all 341 standard/enlarged pages, inspected or raster-matched in full to
+previously inspected pages. Standard subjects have 7–9 pages and 34 or 36 questions,
+versus 36 in the 16-page official 2026 comparator. The fifth family adds object
+graphs, backtracking allocation and blocking-channel reasoning. Sparse tails remain.
+Difficulty and duration are uncalibrated. No model qualification, teacher recommendation or learner
 calibration is claimed. The technical report labels its retained screenshot as
-an earlier interface, not the current V32 workflow.
+an earlier interface, not the current V35 workflow.
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 

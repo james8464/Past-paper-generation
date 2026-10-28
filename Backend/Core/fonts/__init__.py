@@ -1,3 +1,5 @@
+# Register bundled font faces and use controlled fallbacks when a face is unavailable.
+
 from __future__ import annotations
 
 from pathlib import Path

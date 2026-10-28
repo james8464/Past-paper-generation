@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Classify tracked files and reject generated output or unapproved artifacts.
+
 from __future__ import annotations
 
 import argparse
@@ -81,7 +83,7 @@ def classify_path(value: str) -> Classification:
         return Classification(category=category)
     if value.startswith("macOS/Tests/"):
         return Classification(category="test")
-    if value.startswith("macOS/PaperCreator/"):
+    if value.startswith("macOS/Keldin/"):
         category = "runtime-resource" if "Assets.xcassets" in value else "runtime-source"
         return Classification(category=category)
     if value.startswith("macOS/"):

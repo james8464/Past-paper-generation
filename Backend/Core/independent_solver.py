@@ -1,3 +1,5 @@
+# Solve from candidate-visible inputs, then reconcile answers with the draft scheme.
+
 from __future__ import annotations
 
 import ast
@@ -46,8 +48,8 @@ from Backend.Core.subjects.selected_response import solve_selected_response
 from Backend.Core.subjects.sql_contracts import SQLValidationResult
 
 
+# Private durable record of one model-presented SQL attempt.
 class SQLProgramAttemptAudit(BaseModel):
-    """Private durable record of one model-presented SQL attempt."""
 
     model_config = ConfigDict(frozen=True)
 
@@ -61,8 +63,8 @@ class SolverClient(Protocol):
     def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
+# Exact raw-provider shape; semantic validation remains item-specific below.
 class SolverResponseEnvelope(BaseModel):
-    """Exact raw-provider shape; semantic validation remains item-specific below."""
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -124,8 +126,8 @@ class ReconciliationResult(BaseModel):
     issues: list[ReconciliationIssue] = Field(default_factory=list)
 
 
+# Solve an item in a context that deliberately excludes its draft scheme.
 class IndependentSolver:
-    """Solve an item in a context that deliberately excludes its draft scheme."""
 
     def __init__(self, client: SolverClient | None = None) -> None:
         self.client = client
@@ -491,10 +493,10 @@ def _without_answer_key(value: Any) -> Any:
     return value
 
 
+# Retain finite route evidence, but fingerprint open text instead of logging it.
 def solution_failure_evidence(
     solution: CanonicalSolution, issues: Sequence[ReconciliationIssue]
 ) -> dict[str, Any]:
-    """Retain finite route evidence, but fingerprint open text instead of logging it."""
     safe_slots = {}
     for slot, value in solution.answer_slots.items():
         is_route = slot == "route-in-order" and re.fullmatch(
@@ -943,8 +945,8 @@ def _requires_numeric_contract(item: dict[str, Any]) -> bool:
     )
 
 
+# Parse route notation without discarding vertex identity, order or count.
 def _route_vertices(value: str) -> tuple[str, ...] | None:
-    """Parse route notation without discarding vertex identity, order or count."""
     value = value.strip().rstrip(".;").rstrip()
     vertices: object
     if value.startswith("[") and value.endswith("]"):

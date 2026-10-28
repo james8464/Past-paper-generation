@@ -1,4 +1,4 @@
-"""Student-visible materials and canonical answers from locked database facts."""
+# Student-visible materials and canonical answers from locked database facts.
 
 from __future__ import annotations
 

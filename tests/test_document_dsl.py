@@ -121,7 +121,7 @@ def test_reportlab_backend_renders_selectable_tagged_metadata_atomically(
         ),
         metadata=DocumentMetadata(
             title="Economics Paper 1",
-            author="Paper Creator",
+            author="Keldin",
             subject="Independent practice material",
             language="en-GB",
         ),
@@ -160,7 +160,7 @@ def test_scheme_grid_wraps_long_guidance_inside_the_page(tmp_path: Path) -> None
                 ),
             ),
         ),
-        metadata=DocumentMetadata(title="Scheme", author="Paper Creator"),
+        metadata=DocumentMetadata(title="Scheme", author="Keldin"),
     )
     destination = tmp_path / "scheme.pdf"
 
@@ -202,7 +202,7 @@ def test_question_mark_label_does_not_collide_with_prompt(tmp_path: Path) -> Non
                 components=(QuestionBlock(number="4", prompt=prompt, marks=8),),
             ),
         ),
-        metadata=DocumentMetadata(title="Question", author="Paper Creator"),
+        metadata=DocumentMetadata(title="Question", author="Keldin"),
     )
     destination = tmp_path / "question.pdf"
 
@@ -238,7 +238,7 @@ def test_cover_fits_long_paper_titles_inside_the_page(tmp_path: Path) -> None:
                 ),
             ),
         ),
-        metadata=DocumentMetadata(title="Scheme", author="Paper Creator"),
+        metadata=DocumentMetadata(title="Scheme", author="Keldin"),
     )
     destination = tmp_path / "long-cover.pdf"
 

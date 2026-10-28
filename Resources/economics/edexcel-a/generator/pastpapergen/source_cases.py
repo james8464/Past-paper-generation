@@ -1,3 +1,5 @@
+# Supply Edexcel Economics case data used by questions and their marking guidance.
+
 from __future__ import annotations
 
 GENERIC_SOURCE_ATTRIBUTION = "Source: fictional illustrative case; not official statistics"

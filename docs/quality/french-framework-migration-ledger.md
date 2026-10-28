@@ -22,22 +22,22 @@ outputs. Re-run those checks whenever a boundary symbol is added.
 
 ### `ExamBoardOption` - six files - UK-specific, retained
 
-- `macOS/PaperCreator/Domain/AppModels.swift`
-- `macOS/PaperCreator/Domain/GenerationEstimator.swift`
-- `macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift`
-- `macOS/PaperCreator/Navigation/SidebarView.swift`
-- `macOS/PaperCreator/State/ApplicationCoordinator.swift`
-- `macOS/PaperCreator/State/CatalogStore.swift`
+- `macOS/Keldin/Domain/AppModels.swift`
+- `macOS/Keldin/Domain/GenerationEstimator.swift`
+- `macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift`
+- `macOS/Keldin/Navigation/SidebarView.swift`
+- `macOS/Keldin/State/ApplicationCoordinator.swift`
+- `macOS/Keldin/State/CatalogStore.swift`
 
 These symbols represent the existing UK catalogue only. France is a distinct
 `SidebarItem.frenchBaccalaureat` and never constructs a fictitious exam board.
 
 ### `selectedBoard` / `selectedBoardID` - five files - compatibility key, retained
 
-- `macOS/PaperCreator/Application/AppConfiguration.swift`
-- `macOS/PaperCreator/Navigation/ContentView.swift`
-- `macOS/PaperCreator/State/ApplicationCoordinator.swift`
-- `macOS/PaperCreator/State/CatalogStore.swift`
+- `macOS/Keldin/Application/AppConfiguration.swift`
+- `macOS/Keldin/Navigation/ContentView.swift`
+- `macOS/Keldin/State/ApplicationCoordinator.swift`
+- `macOS/Keldin/State/CatalogStore.swift`
 - `macOS/Tests/CoordinatorTests.swift`
 
 The stored UK board/paper selection remains readable. Framework navigation is
@@ -55,7 +55,7 @@ Unknown or incomplete framework policies fail closed.
 ### `generate-assessment` - five files - French-separated dispatch
 
 - `Backend/Core/cli.py`
-- `macOS/PaperCreator/Domain/FrenchAssessmentRequest.swift`
+- `macOS/Keldin/Domain/FrenchAssessmentRequest.swift`
 - `macOS/Tests/AppTests.swift`
 - `tests/test_french_framework.py`
 - `tools/french_nsi_benchmark.py`

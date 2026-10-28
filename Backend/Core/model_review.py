@@ -1,3 +1,5 @@
+# Collect independent content and demand reviews and validate their saved evidence.
+
 from __future__ import annotations
 
 import hashlib
@@ -85,8 +87,8 @@ CANONICAL_COGNITIVE_OPERATIONS: tuple[CanonicalCognitiveOperation, ...] = (
 )
 
 
+# Deterministic operation evidence bound only to the public candidate task.
 class PublicTaskOperationEvidence(BaseModel):
-    """Deterministic operation evidence bound only to the public candidate task."""
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -290,6 +292,7 @@ def require_difficulty_review(
     )
 
 
+# Recheck persisted evidence without another model request or permissive defaults.
 def validate_saved_difficulty_evidence(
     evidence: Any,
     target: Any,
@@ -297,7 +300,6 @@ def validate_saved_difficulty_evidence(
     item_id: str,
     candidate: Any | None = None,
 ) -> None:
-    """Recheck persisted evidence without another model request or permissive defaults."""
     if not isinstance(evidence, dict):
         raise ValueError(f"{item_id} has incomplete difficulty evidence; regenerate it")
     schema_version = evidence.get("schema_version")
@@ -587,8 +589,8 @@ def difficulty_review(
     return result
 
 
+# Classify only the bounded public SQL-construction instruction.
 def _candidate_task_facts(candidate: Any) -> dict[str, object]:
-    """Classify only the bounded public SQL-construction instruction."""
     evidence = _public_task_operation_evidence(candidate)
     return {
         "candidate_authors_declarative_sql": (
@@ -598,8 +600,8 @@ def _candidate_task_facts(candidate: Any) -> dict[str, object]:
     }
 
 
+# Bind bounded verified operations to the exact public task projection.
 def _public_task_operation_evidence(candidate: Any) -> PublicTaskOperationEvidence:
-    """Bind bounded verified operations to the exact public task projection."""
     payload = candidate_review_content(candidate)
     task = payload.get("part", payload) if isinstance(payload, dict) else {}
     raw_prompt = task.get("prompt", "") if isinstance(task, dict) else ""

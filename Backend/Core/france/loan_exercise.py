@@ -1,4 +1,4 @@
-"""Original relational/interval reasoning for an experimental fourth family."""
+# Original relational/interval reasoning for an experimental fourth family.
 
 from Backend.Core.france.database_case_prose import _solution
 from Backend.Core.france.loan_case import ACTIVE_LOANS_QUERY, build_case

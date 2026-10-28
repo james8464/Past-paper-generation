@@ -1,3 +1,5 @@
+# Load response bands and record marking decisions against board policies.
+
 from __future__ import annotations
 
 import json

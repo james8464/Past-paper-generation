@@ -1,3 +1,5 @@
+# Define paper rules and generated question records shared by the subject families.
+
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -485,11 +487,11 @@ def _hydrate_assessment_metadata(
         question.structured_mark_scheme = _structured_scheme(question)
 
 
+# Return the immutable rules for one printed option (one-based).
 def resolve_question_rules(
     section: SectionRule,
     option_index: int,
 ) -> list[QuestionRule]:
-    """Return the immutable rules for one printed option (one-based)."""
     if option_index < 1 or option_index > section.option_count:
         raise ValueError("question option index is out of range")
     return section.question_overrides.get(option_index, section.questions)

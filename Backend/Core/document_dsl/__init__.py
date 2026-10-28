@@ -1,3 +1,5 @@
+# Expose the shared document model and rendering components.
+
 from Backend.Core.document_dsl.components import (
     AnswerSpace,
     BlankPage,

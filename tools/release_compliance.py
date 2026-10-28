@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Check repository metadata and dependencies required for release.
+
 from __future__ import annotations
 
 import argparse
@@ -105,7 +107,7 @@ def _load_plist(path: Path, failures: list[str]) -> dict[str, object] | None:
 def _check_privacy_manifest(root: Path, failures: list[str]) -> bool:
     before = len(failures)
     payload = _load_plist(
-        root / "macOS" / "PaperCreator" / "PrivacyInfo.xcprivacy",
+        root / "macOS" / "Keldin" / "PrivacyInfo.xcprivacy",
         failures,
     )
     if payload is not None:
@@ -122,11 +124,11 @@ def _check_privacy_manifest(root: Path, failures: list[str]) -> bool:
 def _check_entitlements(root: Path, failures: list[str]) -> bool:
     before = len(failures)
     app = _load_plist(
-        root / "macOS" / "PaperCreator" / "PaperCreator.entitlements",
+        root / "macOS" / "Keldin" / "Keldin.entitlements",
         failures,
     )
     helper = _load_plist(
-        root / "macOS" / "PaperCreator" / "PaperCreatorBackend.entitlements",
+        root / "macOS" / "Keldin" / "KeldinBackend.entitlements",
         failures,
     )
     if app is not None:

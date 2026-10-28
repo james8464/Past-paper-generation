@@ -1,12 +1,14 @@
-APP_NAME := PaperCreator
-APP_PROJECT := PaperCreator.xcodeproj
-APP_WORKSPACE := PaperCreator.xcworkspace
-APP_SCHEME ?= PaperCreator
+# Build and package the Keldin application and its standalone backend.
+
+APP_NAME := Keldin
+APP_PROJECT := Keldin.xcodeproj
+APP_WORKSPACE := Keldin.xcworkspace
+APP_SCHEME ?= Keldin
 APP_GENERATOR := xcodegen
 CONFIGURATION ?= Debug
 DISTRIBUTION_MODE ?= direct
 APP_SANDBOX_ENABLED ?= NO
-CODE_SIGN_ENTITLEMENTS_FILE ?= PaperCreator/PaperCreatorDirect.entitlements
+CODE_SIGN_ENTITLEMENTS_FILE ?= Keldin/KeldinDirect.entitlements
 CODE_SIGN_INJECT_BASE_ENTITLEMENTS ?= YES
 # Leave Xcode's normal signing selection intact unless a release operator supplies
 # an identity and team. The backend build uses Xcode's expanded identity as well.
@@ -42,15 +44,15 @@ endif
 DERIVED_BASE := build/DerivedData
 DERIVED := $(DERIVED_BASE)/$(AGENT_NAME)
 LOG_DIR := build/logs/$(AGENT_NAME)
-CACHE_ROOT := /tmp/papercreator-build/$(AGENT_NAME)/cache
-TMPDIR_PATH := /tmp/papercreator-build/$(AGENT_NAME)/tmp
+CACHE_ROOT := /tmp/keldin-build/$(AGENT_NAME)/cache
+TMPDIR_PATH := /tmp/keldin-build/$(AGENT_NAME)/tmp
 
 DESTINATION := platform=macOS,arch=arm64
 
 BUILD_PRODUCTS := $(DERIVED)/Build/Products/$(CONFIGURATION)
 APP_PATH := $(BUILD_PRODUCTS)/$(APP_SCHEME).app
 APP_STORE_APP_PATH := $(DERIVED)/Build/Products/Release/$(APP_SCHEME).app
-APP_STORE_HELPER_PATH := $(APP_STORE_APP_PATH)/Contents/Resources/PaperCreatorBackend/PaperCreatorBackend
+APP_STORE_HELPER_PATH := $(APP_STORE_APP_PATH)/Contents/Resources/KeldinBackend/KeldinBackend
 
 PHONY_TARGETS := $(TARGET_PREFIX)help $(TARGET_PREFIX)diagnose $(TARGET_PREFIX)build \
 	$(TARGET_PREFIX)test $(TARGET_PREFIX)run $(TARGET_PREFIX)build-and-run \
@@ -131,11 +133,11 @@ $(TARGET_PREFIX)build-and-run-background: $(TARGET_PREFIX)build
 	@$(SCRIPTS_DIR)/run_app_macos.sh --app-path "$(APP_PATH)" --background
 
 $(TARGET_PREFIX)build-app-store:
-	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=PaperCreator/PaperCreator.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
+	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build CONFIGURATION=Release DISTRIBUTION_MODE=app-store APP_SANDBOX_ENABLED=YES CODE_SIGN_ENTITLEMENTS_FILE=Keldin/Keldin.entitlements CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO
 
 $(TARGET_PREFIX)preflight-app-store:
 	@../.venv/bin/python ../tools/release_compliance.py ..
-	@plutil -lint PaperCreator/Info.plist PaperCreator/PrivacyInfo.xcprivacy PaperCreator/PaperCreator.entitlements PaperCreator/PaperCreatorBackend.entitlements
+	@plutil -lint Keldin/Info.plist Keldin/PrivacyInfo.xcprivacy Keldin/Keldin.entitlements Keldin/KeldinBackend.entitlements
 	@$(MAKE) --no-print-directory $(TARGET_PREFIX)build-app-store
 	@codesign --verify --deep --strict --verbose=2 "$(APP_STORE_APP_PATH)"
 	@codesign -d --entitlements :- "$(APP_STORE_APP_PATH)" 2>/dev/null | plutil -extract 'com\.apple\.security\.app-sandbox' raw -o - - | grep -qx true

@@ -1,4 +1,4 @@
-"""App-owned E3 whole-case provenance, with strict checkpoint replay."""
+# App-owned E3 whole-case provenance, with strict checkpoint replay.
 
 import json
 from hashlib import sha256

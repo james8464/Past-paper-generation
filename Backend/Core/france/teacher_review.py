@@ -1,4 +1,6 @@
-"""Self-attested human review records; hashes bind scope, not reviewer credentials."""
+# Self-attested human reviews whose hashes identify the reviewed content.
+#
+# The hashes do not verify reviewer credentials.
 
 import json
 import os

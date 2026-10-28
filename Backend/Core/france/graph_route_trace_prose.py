@@ -1,4 +1,4 @@
-"""Finite V22 French wording for staged graph route and debugging work."""
+# Finite V22 French wording for staged graph route and debugging work.
 
 from __future__ import annotations
 

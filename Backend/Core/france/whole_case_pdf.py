@@ -1,9 +1,8 @@
-"""Compare complete printed French exercises with their verified package.
-
-This is a content-integrity gate, not educational or visual calibration. It
-checks the entire ordered exercise stream, not just the presence of a few
-keywords. Whitespace and Markdown fences are presentation, not source facts.
-"""
+# Compare complete printed French exercises with their verified package.
+#
+# This is a content-integrity gate, not educational or visual calibration. It
+# checks the entire exercise stream in order, so finding a few keywords is
+# not enough. Whitespace and Markdown fences are presentation, not source facts.
 
 import re
 import unicodedata
@@ -32,6 +31,7 @@ from Backend.Core.france.print_policy import (
     V34_REVIEW_NOTICE,
 )
 from Backend.Core.france.synthesized_pipeline import VERSION as SYNTHESIZED_VERSION
+from Backend.Core.legacy_migration import LEGACY_FRENCH_FOOTER
 
 
 def _compact(text: str) -> str:
@@ -176,8 +176,8 @@ def _expected(
     return _compact("\n".join(parts))
 
 
+# Reject altered source, missing/extra content, or a swapped PDF role.
 def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> None:
-    """Reject altered source, missing/extra content, or a swapped PDF role."""
     if type(correction) is not bool:
         raise ValueError("Rôle du PDF invalide")
     validate_package(package)
@@ -198,7 +198,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         {V34_FOOTER}
         if print_policy in INTERNAL_REVIEW_POLICIES
         else {
-            "Paper Creator — entraînement non officiel — non relu",
+            LEGACY_FRENCH_FOOTER,
             "Keldin — entraînement non officiel — non relu",
         }
     )

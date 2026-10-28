@@ -19,7 +19,7 @@ def test_cover_title_widths_match_measured_open_sans_reference() -> None:
     import pytest
 
     register_fonts("ExamCover-Medium", "ExamCover-SemiBold")
-    # Source PDF advances differ slightly from upstream3.003, below0.3pt.
+    # Source PDF advances differ from upstream 3.003 by less than 0.3pt.
     assert pdfmetrics.stringWidth(
         "A-level", "ExamCover-Medium", 27.96
     ) == pytest.approx(88.439, abs=0.3)

@@ -1,3 +1,5 @@
+# Check migrated generators against shared content and layout requirements.
+
 from __future__ import annotations
 
 import argparse
@@ -265,7 +267,7 @@ class MigrationValidator:
             if str(python_root) not in sys.path:
                 sys.path.insert(0, str(python_root))
             function = getattr(importlib.import_module(module_name), function_name)
-            with tempfile.TemporaryDirectory(prefix="papercreator-migration-") as temporary:
+            with tempfile.TemporaryDirectory(prefix="keldin-migration-") as temporary:
                 result = function(
                     paper=papers[0],
                     syllabus_path=syllabus,

@@ -12,9 +12,9 @@ from tools.build_occitanie_submission import (
 )
 
 
+# Tests must not overwrite the applicant's editable submission copies.
 @pytest.fixture(autouse=True)
 def isolate_generated_submission_files(tmp_path, monkeypatch):
-    """Tests must not overwrite the applicant's editable submission copies."""
     monkeypatch.setattr(submission, "OUTPUT", tmp_path)
 
 
@@ -22,18 +22,18 @@ def test_application_title_uses_a_real_title_paragraph() -> None:
     document = Document()
     configure_document(document, compact=True)
 
-    title_block(document, "Candidature au Prix Occitanie 2026", "Paper Creator")
+    title_block(document, "Candidature au Prix Occitanie 2026", "Keldin")
 
     assert document.paragraphs[0].style.name == "Title"
     assert document.paragraphs[0].text == "Candidature au Prix Occitanie 2026"
-    assert document.paragraphs[1].text == "Paper Creator"
+    assert document.paragraphs[1].text == "Keldin"
     assert not document.tables
 
 
 def test_explicit_fonts_preserve_the_document_hierarchy() -> None:
     document = Document()
     configure_document(document, compact=True)
-    title_block(document, "Candidature au Prix Occitanie 2026", "Paper Creator")
+    title_block(document, "Candidature au Prix Occitanie 2026", "Keldin")
     heading = document.add_heading("Présentation du candidat", level=1)
     heading.add_run(" ")
 
@@ -55,7 +55,7 @@ def test_supporting_reports_are_in_english_while_the_application_stays_french() 
     assert "0/10 accepted" in " ".join(
         paragraph.text for paragraph in technical.paragraphs
     )
-    assert "three finite whole-paper families" in " ".join(
+    assert "five finite whole-paper families" in " ".join(
         paragraph.text for paragraph in technical.paragraphs
     )
 
@@ -67,15 +67,14 @@ def test_technical_report_distinguishes_current_catalogue_from_historical_model_
     text = " ".join(paragraph.text for paragraph in technical.paragraphs).lower()
 
     assert "all three exercises use app-owned contracts" in text
-    assert "v32 does not call an ai model" in text
-    assert "three finite whole-paper families" in text
-    assert "manual fidelity hold" in text
-    assert "34 questions" in text
-    assert "7 to 8 subject pages" in text
-    assert "17 to 18 correction pages" in text
+    assert "v35 does not call an ai model" in text
+    assert "five finite whole-paper families" in text
+    assert "difficulty and duration remain uncalibrated" in text
+    assert "34 or 36 questions" in text
+    assert "7 to 9 subject pages" in text
+    assert "nineteen-page correction" in text
     assert "historical model" in text
     assert "choose a model" not in text
-    assert "vector diagrams" not in text
     assert "v25 single-paper diagnostic" not in text
     assert "18 numbered questions across seven subject pages" not in text
     assert "eleven-page proposed correction" not in text
@@ -88,10 +87,33 @@ def test_current_submission_brand_and_french_scope_are_explicit():
         text = " ".join(p.text for p in Document(builder()).paragraphs)
         assert "Keldin" in text
         assert "Paper Creator" not in text
-        assert "V32" in text
+        assert "V35" in text
     application = " ".join(p.text for p in Document(build_application()).paragraphs)
     assert "L’enseignant choisit un modèle local" not in application
-    assert "trois familles" in application
+    assert "cinq familles" in application
+
+
+def test_reports_state_v35_scope_and_do_not_require_unavailable_teacher_reviews():
+    application = " ".join(p.text for p in Document(build_application()).paragraphs)
+    technical = " ".join(p.text for p in Document(build_technical_dossier()).paragraphs)
+    mathematical = " ".join(p.text for p in Document(build_mathematical_analysis()).paragraphs)
+    assert "V35" in application and "cinq familles" in application
+    assert "five finite whole-paper families" in technical
+    assert "34 or 36 questions" in technical
+    assert "7 to 9 subject pages" in technical
+    assert "internal review" in technical.lower()
+    assert "not been measured" in mathematical
+    for text in (technical, mathematical):
+        assert "Two NSI teachers must" not in text
+        assert "Two teachers will score" not in text
+        assert "two written teacher recommendations" not in text
+        assert "V32 supplies" not in text
+
+
+def test_mathematical_report_uses_current_equal_exercise_credits():
+    text = " ".join(p.text for p in Document(build_mathematical_analysis()).paragraphs)
+    assert "6 points per exercise" in text
+    assert "5.5, 6, and 6.5" not in text
 
 
 def test_submission_can_be_built_without_replacing_an_existing_personal_form(tmp_path):
@@ -166,6 +188,6 @@ def test_formal_application_uses_readable_milestones_instead_of_split_grids() ->
 
     assert not application.tables
     assert "Mois 10 à 12" in text
-    assert "500 €" in text
+    assert "Répartition à confirmer" in text
     assert "À compléter" in text
-    assert "fidélité pédagogique reste à confirmer" in text
+    assert "difficulté et leur durée ne sont pas étalonnées" in text

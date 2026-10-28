@@ -1,20 +1,18 @@
-"""Bounded scheduling model for a new, not-yet-public French case.
-
-Arrivals during a slice join the queue before its unfinished process returns.
-This is an explicit teaching model, not a simulation of a real operating system.
-"""
+# Bounded scheduling model for a new, not-yet-public French case.
+#
+# Arrivals during a slice join the queue before its unfinished process returns.
+# This is an explicit teaching model, not a simulation of a real operating system.
 
 from collections import deque
 from copy import deepcopy
 
 
+# Return nonempty CPU slices, finish times and the queue after each slice.
+#
+# Jobs are (name, arrival, CPU duration), sorted by arrival. Equal arrivals
+# retain input order. There is no I/O or switching cost. New arrivals do not
+# interrupt a slice. Intervals include their start and exclude their end.
 def schedule(jobs, quantum):
-    """Return nonempty CPU slices, finish times and the queue after each slice.
-
-    Jobs are (name, arrival, CPU duration), sorted by arrival. Equal arrivals
-    retain input order. There is no I/O or switching cost. New arrivals do not
-    interrupt a slice. Intervals include their start and exclude their end.
-    """
     if type(quantum) is not int or not 1 <= quantum <= 16:
         raise ValueError("Quantum must be an integer from 1 to 16")
     if type(jobs) not in (list, tuple) or len(jobs) > 32:
@@ -65,8 +63,8 @@ def schedule(jobs, quantum):
     return {"slices": slices, "finished": finished, "ready_after": queues}
 
 
+# One structural family; a new seed does not mean a new question family.
 def build_case(seed):
-    """One structural family; a new seed does not mean a new question family."""
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("A signed 64-bit integer seed is required")
     jobs = [["A", 0, 5], ["B", 1, 3], ["C", 2, 1], ["D", 7, 2]]

@@ -422,8 +422,8 @@ def test_generated_stem_preserves_required_specification_scope() -> None:
         _validate_ai_question(policy_question, broadened)
 
 
+# An authored stem cannot narrow the immutable expansion task to one route.
 def test_generated_stem_preserves_scenario_event_and_outcome_scope() -> None:
-    """An authored stem cannot narrow the immutable expansion task to one route."""
 
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     blueprint = build_paper_blueprint(

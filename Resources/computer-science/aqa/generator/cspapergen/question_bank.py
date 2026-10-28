@@ -1,3 +1,5 @@
+# Build AQA Computer Science question templates with matching source data and answers.
+
 from __future__ import annotations
 
 import random

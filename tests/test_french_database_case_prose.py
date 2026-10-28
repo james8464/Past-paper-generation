@@ -1,4 +1,4 @@
-"""Whole E2 cases must differ in reasoning, not just names or numbers."""
+# Whole E2 cases must differ in reasoning, not just names or numbers.
 
 from decimal import Decimal
 

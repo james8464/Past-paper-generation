@@ -48,10 +48,10 @@ identity changes. Preview or fixture output cannot replace a live result.
 
 ## Storage and privacy
 
-The app stores reference PDFs/index under its Application Support `Paper Creator/
-French References` folder. Outputs go to the selected folder (via the app's existing
+The app stores reference PDFs/index under its Application Support
+`Keldin/French References` folder. Outputs go to the selected folder (via the app's existing
 App Store export path when applicable). Checkpoints and failed attempts are in
-`.papercreator-checkpoints` under the output root. Existing history remains local.
+`.keldin-checkpoints` under the output root. Existing history remains local.
 Reference requests expose normal network metadata to source hosts. Local Ollama
 requests contain source excerpts and generated content; an explicitly selected
 remote server receives those too. There is no new telemetry or student-answer

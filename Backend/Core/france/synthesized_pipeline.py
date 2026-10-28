@@ -1,9 +1,8 @@
-"""Experimental V33 whole-assessment path; V32 remains the public default.
-
-Every package is reconstructed from app-owned source, including complete
-questions, rubrics and provenance. This is not model authoring, publication
-approval, or educational calibration. Originality remains an independent gate.
-"""
+# Experimental V33 whole-assessment path; V32 remains the public default.
+#
+# Every package is reconstructed from app-owned source, including complete
+# questions, rubrics and provenance. This is not model authoring, publication
+# approval, or educational calibration. Originality remains an independent gate.
 
 import json
 import re

@@ -77,7 +77,7 @@ def test_diagnostics_are_bounded_redacted_and_do_not_follow_symlinks(tmp_path):
     assert len(list(path.parent.glob("failure-*.json"))) == 20
     other = tmp_path / "other"
     other.mkdir()
-    (other / ".papercreator-diagnostics").symlink_to(
+    (other / ".keldin-diagnostics").symlink_to(
         path.parent, target_is_directory=True
     )
     assert save_failure_diagnostic(other, error) is None

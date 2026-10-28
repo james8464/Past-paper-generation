@@ -1,4 +1,4 @@
-"""Original E1 whole-case questions and indicative marking for draft V32."""
+# Original E1 whole-case questions and indicative marking for draft V32.
 
 import json
 from decimal import Decimal

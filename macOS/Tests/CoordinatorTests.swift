@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import PaperCreator
+@testable import Keldin
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
@@ -108,7 +108,7 @@ final class CoordinatorTests: XCTestCase {
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PaperCreatorCoordinatorTests-(UUID().uuidString)")
+            .appendingPathComponent("KeldinCoordinatorTests-(UUID().uuidString)")
         try FileManager.default.createDirectory(
             at: temporaryDirectory,
             withIntermediateDirectories: true
@@ -314,7 +314,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCatalogStoreFiltersAndPersistsFavouritesAndRecentConfigurations() throws {
-        let suite = "PaperCreatorCatalogTests-(UUID().uuidString)"
+        let suite = "KeldinCatalogTests-(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
@@ -338,7 +338,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testSidebarDefaultsToAvailableBoardsButSearchRevealsPlannedBoards() throws {
-        let suite = "PaperCreatorSidebarFocusTests-\(UUID().uuidString)"
+        let suite = "KeldinSidebarFocusTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
@@ -381,7 +381,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCatalogStoreOwnsAndRestoresValidSelection() throws {
-        let suite = "PaperCreatorCatalogSelectionTests-\(UUID().uuidString)"
+        let suite = "KeldinCatalogSelectionTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let board = try XCTUnwrap(ExamCatalog.readyBoards.last)
@@ -400,7 +400,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCatalogStoreRestoresNonBoardNavigationDestination() throws {
-        let suite = "PaperCreatorCatalogNavigationTests-\(UUID().uuidString)"
+        let suite = "KeldinCatalogNavigationTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
 
@@ -413,7 +413,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testSettingsStorePersistsPreferencesAndDelegatesSecrets() throws {
-        let suite = "PaperCreatorSettingsTests-\(UUID().uuidString)"
+        let suite = "KeldinSettingsTests-\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let secrets = MemorySecrets()

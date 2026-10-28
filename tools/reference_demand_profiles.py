@@ -1,3 +1,5 @@
+# Extract reference-paper task features and build demand profiles.
+
 from __future__ import annotations
 
 import argparse
@@ -260,6 +262,7 @@ def extract_reference_features(
     }
 
 
+# Pair each tariff with its nearest local command, retaining no prose.
 def extract_reference_items(
     text: str,
     *,
@@ -268,7 +271,6 @@ def extract_reference_items(
     paper_id: str | None = None,
     source_name: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Pair each tariff with its nearest local command, retaining no prose."""
 
     policy = objective_policy_for(family_id or "")
     if policy.computational:

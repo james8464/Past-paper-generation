@@ -1,12 +1,13 @@
-"""Public identity changes must not orphan existing documents or credentials."""
+# Public identity changes must not orphan existing documents or credentials.
 
 import json
 import plistlib
 import re
+import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = ROOT / "macOS/PaperCreator"
+APP = ROOT / "macOS/Keldin"
 
 
 def test_native_app_copy_uses_plain_punctuation():
@@ -38,18 +39,18 @@ def test_panel_actions_signal_that_more_input_is_needed():
     assert catalog["%lld to %lld"]["localizations"]["fr"]["stringUnit"]["value"] == "%lld à %lld"
 
 
-def test_display_name_is_keldin_without_changing_bundle_identity():
+def test_display_and_bundle_identity_use_keldin():
     info = plistlib.loads((APP / "Info.plist").read_bytes())
     assert info["CFBundleDisplayName"] == "Keldin"
     assert info["CFBundleName"] == "Keldin"
     project = (ROOT / "macOS/project.yml").read_text()
-    assert "PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PaperCreator" in project
+    assert "PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.Keldin" in project
 
 
 def test_main_window_and_help_use_public_name():
     assert (
         'WindowGroup("Keldin"'
-        in (APP / "Application/PaperCreatorApp.swift").read_text()
+        in (APP / "Application/KeldinApp.swift").read_text()
     )
     assert (
         '.navigationTitle("Keldin")'
@@ -62,14 +63,16 @@ def test_main_window_and_help_use_public_name():
     assert catalog["Keldin Help"]["localizations"]["fr"]["stringUnit"]["value"] == "Aide de Keldin"
 
 
-def test_rebrand_preserves_existing_storage_and_keychain_names():
+def test_rebrand_uses_keldin_storage_and_imports_legacy_credentials():
     defaults = (APP / "Application/AppConfiguration.swift").read_text()
-    assert '"Paper creator/Generated papers"' in defaults
-    assert '.appendingPathComponent("Paper creator", isDirectory: true)' in defaults
-    assert (
-        'kSecAttrService as String: "Paper creator"'
-        in (APP / "Services/SecretStore.swift").read_text()
-    )
+    assert '"Keldin/Generated papers"' in defaults
+    assert '.appendingPathComponent("Keldin", isDirectory: true)' in defaults
+    secrets = (APP / "Services/SecretStore.swift").read_text()
+    assert 'baseQuery(account, service: "Keldin")' in secrets
+    assert "KeldinMigration.legacyKeychainService" in secrets
+    assert "if status == errSecSuccess { SecItemDelete(legacyQuery as CFDictionary) }" not in secrets
+    launch = (APP / "Application/KeldinApp.swift").read_text()
+    assert "KeldinMigration.prepare()" in launch
 
 
 def test_current_uk_renderers_do_not_publish_the_previous_name():
@@ -123,3 +126,26 @@ def test_warm_accent_has_hig_appearance_and_contrast_variants():
         frozenset({("contrast", "high")}): (197, 83, 0),
         frozenset({("luminosity", "dark"), ("contrast", "high")}): (255, 160, 86),
     }
+
+
+def test_active_code_and_build_names_only_use_legacy_identity_in_migration_readers():
+    legacy = re.compile(r"paper[ _-]?creator", re.IGNORECASE)
+    exceptions = {
+        "Backend/Core/legacy_migration.py",
+        "macOS/Keldin/Application/KeldinMigration.swift",
+    }
+    paths = subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines()
+    offenders = []
+    for name in paths:
+        if name.startswith((".codex/", "graphify-out/", "docs/", "tests/", "macOS/Tests/")) or "/tests/" in name:
+            continue
+        assert not legacy.search(name), name
+        if name in exceptions:
+            continue
+        try:
+            text = (ROOT / name).read_text()
+        except UnicodeDecodeError:
+            continue
+        if legacy.search(text):
+            offenders.append(name)
+    assert not offenders, offenders

@@ -1,3 +1,5 @@
+# Check item data and compare completed papers for repeated content.
+
 from __future__ import annotations
 
 import hashlib
@@ -20,8 +22,8 @@ NUMBER_PATTERN = re.compile(
 WORD_PATTERN = re.compile(r"[a-z0-9]+(?:'[a-z]+)?")
 
 
+# Return a stable comparison form without conflating visible output text.
 def normalise_item_text(value: str, *, abstract_numbers: bool = True) -> str:
-    """Return a stable comparison form without conflating visible output text."""
 
     text = unicodedata.normalize("NFKC", value).casefold()
     if abstract_numbers:
@@ -29,8 +31,8 @@ def normalise_item_text(value: str, *, abstract_numbers: bool = True) -> str:
     return " ".join(WORD_PATTERN.findall(text))
 
 
+# Extract quantities exactly enough to catch broken data/source rewrites.
 def numeric_tokens(value: str) -> tuple[str, ...]:
-    """Extract quantities exactly enough to catch broken data/source rewrites."""
 
     return tuple(
         " ".join(match.group(0).casefold().split())
@@ -38,13 +40,13 @@ def numeric_tokens(value: str) -> tuple[str, ...]:
     )
 
 
+# Validate candidate quantities against their declared semantic roles.
 def validate_candidate_contract(
     original: str,
     candidate: str,
     contract: AssessmentContract,
     generated_values: Mapping[str, float] | None = None,
 ) -> None:
-    """Validate candidate quantities against their declared semantic roles."""
 
     original_precision = _precision_instructions(original)
     candidate_precision = _precision_instructions(candidate)
@@ -102,8 +104,8 @@ def validate_candidate_contract(
             f"{contract.item_id} changed ordered immutable numeric data"
         )
 
+# Reject common exchange-rate reversals before model review.
 def validate_economics_causal_direction(value: str) -> None:
-    """Reject common exchange-rate reversals before model review."""
 
     text = " ".join(value.casefold().split())
     import_cost = r"(?:import (?:costs?|prices?)|(?:costs?|prices?) of imports)"
@@ -197,8 +199,8 @@ def item_fingerprint(value: str) -> str:
     return hashlib.sha256(normalised.encode("utf-8")).hexdigest()
 
 
+# Weighted token-shingle Jaccard similarity in the closed interval 0...1.
 def content_similarity(left: str, right: str, *, width: int = 3) -> float:
-    """Weighted token-shingle Jaccard similarity in the closed interval 0...1."""
 
     left_counter = _shingles(normalise_item_text(left), width=width)
     right_counter = _shingles(normalise_item_text(right), width=width)
@@ -231,13 +233,13 @@ def assert_distinct_items(
                 )
 
 
+# Compare a completed assessment package with earlier published packages.
 def validate_package_novelty(
     package_path: Path,
     *,
     history_root: Path,
     threshold: float = 0.84,
 ) -> dict[str, Any]:
-    """Compare a completed assessment package with earlier published packages."""
 
     current = _load_package(package_path)
     current_items = _items(current)

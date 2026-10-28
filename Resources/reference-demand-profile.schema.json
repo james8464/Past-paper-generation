@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://papercreator.local/schemas/reference-demand-profile.schema.json",
+  "$id": "https://keldin.local/schemas/reference-demand-profile.schema.json",
   "title": "Reference Demand Profiles",
   "type": "object",
   "additionalProperties": false,

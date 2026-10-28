@@ -1,3 +1,5 @@
+# Build seeded AQA Computer Science paper content and its marking guidance.
+
 from __future__ import annotations
 
 import random
@@ -44,7 +46,7 @@ PAPER2_QUESTION_PLAN = [
 Paper2Standardisation = tuple[tuple[str, ...], tuple[str, ...]]
 
 # These notes play the same role as question-specific standardisation guidance in
-# an awarding-body mark scheme.  They are deliberately attached here, after the
+# an awarding-body mark scheme.  Attach them here, after the
 # Paper 2 repartitioning step, because the source question-bank items can be used
 # with different part structures and mark totals elsewhere in the application.
 PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
@@ -594,8 +596,8 @@ def _repartition_paper2_question(
     return question.model_copy(update={"parts": rebuilt})
 
 
+# Six marks for the compound query; finite row analysis replaces two writes.
 def _paper2_sql_task(question: Question) -> Question:
-    """Six marks for the compound query; finite row analysis replaces two writes."""
     assert question.stimulus is not None
     stimulus = question.stimulus.model_copy(deep=True)
     assert stimulus.sql_contract is not None
@@ -1002,12 +1004,12 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
     return _align_paper1_structure(questions, context, rng)
 
 
+# Match the recurring 7517/1 sub-question and mark pattern.
 def _align_paper1_structure(
     questions: list[Question],
     context: Paper1Context,
     rng: random.Random,
 ) -> list[Question]:
-    """Match the recurring 7517/1 sub-question and mark pattern."""
     recursive_n = rng.choice([5, 6])
     parts_by_question: dict[int, list[QuestionPart]] = {
         1: [

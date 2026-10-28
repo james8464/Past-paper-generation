@@ -1,3 +1,5 @@
+# Define OCR Computer Science paper structure, marks and question rules.
+
 from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
@@ -73,7 +75,7 @@ COMMANDS = {
 }
 
 
-# Task-based inferred allocations, NOT published per-item OCR data. The rounded
+# These task-based allocations are inferred, not published per-item OCR data. The rounded
 # H446 specification component shares imply about 52.5/22.5/25% and 37.5/45/17.5%.
 # These integer budgets (74/31/35 and 53/63/24) are original-task design choices.
 OBJECTIVES = {
@@ -104,8 +106,8 @@ OBJECTIVES = {
 
 
 def _question(index: int, marks: int, kind: str, allocation: tuple[int, int, int], *, description: bool = False) -> QuestionRule:
-    # These former generic "develop" prompts now analyse supplied implementations
-    # (or explain general principles); they do not pretend to assess new code.
+    # These prompts analyse supplied implementations or explain general
+    # principles; they do not assess the construction of new code.
     if kind == "programming" and not allocation[2]:
         kind = "analysis"
     return QuestionRule(

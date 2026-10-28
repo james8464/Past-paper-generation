@@ -1,3 +1,5 @@
+# Compare advertised paper families with their implementation and qualification records.
+
 from __future__ import annotations
 
 import argparse

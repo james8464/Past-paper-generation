@@ -1,4 +1,4 @@
-"""Provisional French paper layout measured from the 2026 Métropole NSI paper."""
+# Provisional French paper layout measured from the 2026 Métropole NSI paper.
 
 import re
 from decimal import Decimal
@@ -56,18 +56,17 @@ WHOLE_CASE_KINDS = frozenset(
 )
 
 
+# Remove source Markdown delimiters without mutating replayable rubric data.
 def printable_database_criterion(criterion: str) -> str:
-    """Remove source Markdown delimiters without mutating replayable rubric data."""
     return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
 
 
+# Refer to blank scaffolds in the subject; retain every other code example.
+#
+# V34 corrections already print the complete solution below the prompt.
+# Repeating a long blank program separates that solution from its credits in
+# enlarged print. Faulty programs are evidence and must remain visible.
 def correction_prompt(text: str) -> str:
-    """Refer to blank scaffolds in the subject; retain every other code example.
-
-    V34 corrections already print the complete solution below the prompt.
-    Repeating a long blank program separates that solution from its credits in
-    enlarged print. Faulty programs are evidence and must remain visible.
-    """
     def replace(match: re.Match[str]) -> str:
         if re.search(r"__[A-Z][A-Z0-9_]*__", match.group()):
             return "Le code à compléter figure dans le sujet."
@@ -76,8 +75,8 @@ def correction_prompt(text: str) -> str:
     return re.sub(r"```(?:python|sql)?[^`]*```", replace, text)
 
 
+# Escape prose and bind French punctuation, never executable listings.
 def french_prose_markup(text: str) -> str:
-    """Escape prose and bind French punctuation, never executable listings."""
     text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
     text = re.sub(r"«[ \t]+", "«\u00a0", text)
     return escape(text).replace("\n", "<br/>")
@@ -287,8 +286,8 @@ def structured_material(
     return KeepTogether([title, Spacer(1, 4), drawing, Spacer(1, 10)])
 
 
+# Never rewrite executable text to make it fit a page.
 def code_listing(source: str, style: ParagraphStyle, available_width: float):
-    """Never rewrite executable text to make it fit a page."""
     if any(
         stringWidth(line, style.fontName, style.fontSize) > available_width
         for line in source.splitlines()
@@ -300,8 +299,9 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
+# New renders use Keldin; validators still recognise retained publisher labels.
 class NumberedCanvas(Canvas):
-    def __init__(self, *args, brand_name="Paper Creator", print_policy=None, **kwargs):
+    def __init__(self, *args, brand_name="Keldin", print_policy=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._brand_name = brand_name
         self._print_policy = print_policy
@@ -329,6 +329,7 @@ class NumberedCanvas(Canvas):
         super().save()
 
 
+# Draw the cover from measured 2026 coordinates, with independent branding.
 def draw_cover_page(
     canvas: Canvas,
     doc: SimpleDocTemplate,
@@ -338,10 +339,9 @@ def draw_cover_page(
     regular_font: str,
     bold_font: str,
     italic_font: str,
-    brand_name: str = "Paper Creator",
+    brand_name: str = "Keldin",
     print_policy: str | None = None,
 ) -> None:
-    """Draw the cover from measured 2026 coordinates, with independent branding."""
 
     width, height = A4
     scale = 1.15 if large_print else 1.0
@@ -445,17 +445,7 @@ def render_assessment(
 ):
     if print_policy is not None and print_policy not in INTERNAL_REVIEW_POLICIES:
         raise ValueError("Unknown French print policy")
-    # Historical contracts keep their recorded identity; current whole cases use
-    # the public app name without changing their questions or indicative credit.
-    brand_name = (
-        "Keldin"
-        if any(
-            question.verification.get("kind") in WHOLE_CASE_KINDS
-            for exercise in exercises
-            for question in exercise.questions
-        )
-        else "Paper Creator"
-    )
+    brand_name = "Keldin"
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
     bold = faces["ExamSans-Bold"]

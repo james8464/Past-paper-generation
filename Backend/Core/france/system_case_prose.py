@@ -1,4 +1,4 @@
-"""Original linked E3 reasoning sequences and indicative marking, draft V32."""
+# Original linked E3 reasoning sequences and indicative marking, draft V32.
 
 import json
 from decimal import Decimal

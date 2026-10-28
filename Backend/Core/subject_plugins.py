@@ -1,3 +1,5 @@
+# Register and discover the supported subject validation engines.
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -7,9 +9,9 @@ from Backend.Core.subject_contracts import SubjectPlugin as SubjectPlugin
 from Backend.Core.subject_contracts import SubjectValidation as SubjectValidation
 
 
+# Safe baseline plugin for families with validation in their own contracts.
 @dataclass(frozen=True)
 class ContractSubjectPlugin:
-    """Safe baseline plugin for families with validation in their own contracts."""
 
     id: str
 

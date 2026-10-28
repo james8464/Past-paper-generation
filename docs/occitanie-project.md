@@ -1,6 +1,6 @@
 # Occitanie: original French NSI practice papers
 
-Last updated: 2026-10-27. This is an evidence/status record, not a claim of
+Last updated: 2026-10-28. This is an evidence/status record, not a claim of
 educational approval. No teacher, school, Région, examiner or Ministry endorsement
 has been obtained. No prize application has been submitted.
 
@@ -13,15 +13,18 @@ James's confirmation.
 
 ## Current public workflow
 
-Keldin V32 constructs three finite whole-paper families without an AI-provider
+Keldin V35 constructs five finite whole-paper families without an AI-provider
 call. It does not require Ollama or model selection. Originality checks refuse
 repeated families; the catalogue does not provide unlimited fresh papers.
-The [26 October audit](quality/keldin-engineering-and-french-audit-2026-10-26.md)
-reviewed every page of the three standard/enlarged subject and correction pairs.
-Standard subjects have 34 questions over 7–8 pages, with 17–18 correction pages.
-They remain more compact and table-led than the official 2026 comparator.
-Manual fidelity is HOLD; teacher review, learner calibration and rights/accessibility
-clearance remain open. Six distinct pilot papers require catalogue expansion.
+The [28 October review](quality/french-nsi-v35-expanded-practice-review-2026-10-28.md)
+covers all 341 standard/enlarged pages by inspection or full-page comparison with
+inspected pages. Standard subjects have 34 or 36 questions over 7–9 pages. They
+remain more compact than the official 16-page, 36-question 2026 comparator.
+The fifth family connects object graphs, allocation search and a blocking channel.
+Internal review checks syllabus, answers, reasoning and page flow; difficulty and
+duration remain uncalibrated. Unavailable teacher reviews are not a required
+engineering milestone. No teacher approval or measured learner result is invented.
+Rights and accessibility clearance remain open.
 The dated model experiments below are retained history, not the public default.
 
 ## Problem and beneficiaries
@@ -50,20 +53,20 @@ automated passing must not be represented as examiner approval.
   shortest-path and restricted Python-trace checks; unsupported contracts unresolved.
 - Structured tables and vector graphs; programme-capability mappings, cognitive
   operations, estimated time and a required progression beyond simple recall.
-- Seeded 5.5/6/6.5 technical allocations totalling 18, plus a separate two-point
+- Public six-point exercise allocations totalling 18, plus a separate two-point
   language component. The detailed allocation remains an indicative product barème.
 - Text, normalized-code, structural and generation-history originality screening;
   similarity remains risk evidence, not a copyright guarantee.
 - Hash-bound checkpoints, rejected attempts retained, French draft PDFs and
   atomic folder publication. All outputs remain non-official, unreviewed drafts.
-- All three public V32 exercises have app-owned facts, answers and exact
+- All three public V35 exercises have app-owned facts, answers and exact
   credits, with no model selection. The graph/tree,
   relational database and network/process/security contracts are replayed in
   the package and checked against extracted standard/large-print PDFs. This
   engineering control does not establish classroom suitability.
 - Native French workspace, consent before downloads, French interface translations,
   standard/enlarged print, history metadata and review UI. Historical model routes
-  remain separate from the public V32 workflow.
+  remain separate from the public V35 workflow.
 - Human review-record API tied to artifact hashes. Reviewer identity is self-attested,
   not authenticated; this is not an official signature or school approval system.
 
@@ -257,9 +260,9 @@ not a target for this Mac executable. The published Lenovo Gen 5 specification
 includes 8 GB RAM; a 7.6 GB model download is not evidence of practical inference
 within that memory. PDF reading does not require an AI model.
 
-Recruit two NSI teachers from the Toulouse/Montpellier academies, then seek one
-school pilot. No contact or partnership is assumed. Seek differing school contexts
-and record actual constraints rather than asserting a rural/urban achievement gap.
+Teacher review is unavailable and has been removed from required engineering
+acceptance. A future school pilot would require a real partner and consent. No
+contact, partnership, reviewer availability or rural/urban achievement gap is assumed.
 Optional future work: smaller models, school-hosted inference and accessible
 formats. Each requires security, hardware and institutional evaluation.
 
@@ -271,31 +274,31 @@ accounts, answer collection or telemetry. CLI remote Ollama requires explicit
 opt-in and HTTPS; the French UI currently uses loopback only. Local processing
 alone is not proof of GDPR compliance. School deployment needs a governance review.
 
-## Evaluation and success criteria — PLANNED external gates
+## Evaluation and engineering acceptance
 
 1. Thirty fixed exercise tasks per candidate local model; retain failed attempts,
    latency, model digest, quantisation/runtime and actual hardware evidence.
 2. Ten complete papers on the selected configuration, with every page inspected.
-3. Two NSI teachers independently review six stratified papers: correctness,
-   curriculum, French, difficulty, timing, marking, originality and layout.
-4. No unresolved substantive correctness/marking defect; both reviewers recommend
-   classroom practice after revisions. Record disagreements, not just averages.
-5. A supervised learner pilot measures timings, ambiguous items and teacher workload.
-   Claims of difficulty calibration or impact wait for this evidence.
+3. Internal review checks every catalogue family against the official syllabus,
+   task logic, answers, marking, originality and printed pages.
+4. No known blocking correctness or marking defect; preserve failed attempts,
+   source identities and explicit scope limits. Internal review is not teacher approval.
+5. Learner timing and educational impact remain unmeasured. Any future study
+   needs a partner, consent and actual observations; no calibration claim precedes them.
 
 ## Twelve-month roadmap
 
 | Period | Deliverable | Gate |
 |---|---|---|
-| Months 1–2 | Reviewable French prototype, source register, teacher recruitment | Complete engineering checks; no false qualification |
-| Months 3–4 | Teacher evaluation and revisions | Two independent NSI reviews |
-| Months 5–6 | Small supervised school pilot | School agreement and data governance |
+| Months 1–2 | Catalogue expansion and source register | Internal answer and page checks |
+| Months 3–4 | Reviewed new families and revisions | Traced defects and reproducible checks |
+| Months 5–6 | Usability trials and possible school study | Any school work requires an agreement |
 | Months 7–9 | Measured quality/accessibility improvements | Documented evidence, not benchmark marketing |
 | Months 10–12 | Decide second speciality or school-hosted inference | Demonstrated need and feasible hardware |
 
-Provisional €1,000 use: €500 teacher review, €200 pilot travel, €200 hardware and
-accessibility testing, €100 contingency. These are proposed allocations, not
-expenditure or commitments. Confirm prize rules and reviewer availability first.
+The applicant must confirm the €1,000 allocation before submission. Hardware,
+accessibility and regional data are possible uses, not expenditure commitments.
+No paid review by unavailable teachers is assumed.
 
 ## Prize preparation — IMPLEMENTED documents / PLANNED submission
 

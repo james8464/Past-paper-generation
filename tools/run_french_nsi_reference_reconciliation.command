@@ -1,4 +1,6 @@
 #!/bin/zsh
+# Reconcile the registered French NSI references before using them for generation.
+
 set -euo pipefail
 
 project_root="${0:A:h:h}"

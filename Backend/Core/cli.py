@@ -1,3 +1,5 @@
+# Parse backend commands and dispatch generation, model and reference operations.
+
 from __future__ import annotations
 
 import argparse
@@ -11,6 +13,7 @@ from Backend.Core.benchmark import handle_benchmark
 from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
 from Backend.Core.generator_registry import generator_capabilities, generator_subjects
+from Backend.Core.legacy_migration import environment_value
 from Backend.Core.mlx_setup import handle_mlx_status, handle_setup_mlx
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.ollama import (
@@ -21,7 +24,7 @@ from Backend.Core.ollama import (
 from Backend.Core.paths import REPO_ROOT
 
 DEFAULT_OUTPUT_DIR = Path.home() / "Downloads"
-DEFAULT_MODEL = os.environ.get("PAPER_CREATOR_DEFAULT_MODEL", default_ollama_model())
+DEFAULT_MODEL = environment_value("KELDIN_DEFAULT_MODEL", default_ollama_model())
 DEFAULT_OLLAMA_URL = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 DEFAULT_BENCHMARK_DURATION_SECONDS = 30.0
 
@@ -76,7 +79,7 @@ def build_parser() -> argparse.ArgumentParser:
         default="ollama",
     )
     generate.add_argument(
-        "--api-key", default=os.environ.get("PAPER_CREATOR_API_KEY", "")
+        "--api-key", default=environment_value("KELDIN_API_KEY", "")
     )
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
@@ -166,8 +169,8 @@ def handle_french_review(args: argparse.Namespace) -> int:
     return handle_record_review(args)
 
 
+# Check dynamic UK imports and render every public French case family.
 def handle_bundle_check(_args: argparse.Namespace) -> int:
-    """Check dynamic UK imports and render every public French case family."""
     loaded: list[str] = []
     errors: list[str] = []
     try:

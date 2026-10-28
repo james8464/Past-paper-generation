@@ -1,4 +1,4 @@
-"""Strict, deterministic task contracts for AQA CS topic-reference evidence."""
+# Strict, deterministic task contracts for AQA CS topic-reference evidence.
 
 from __future__ import annotations
 
@@ -33,8 +33,8 @@ ResponseMode = Literal[
 ]
 
 
+# The serialised summary is valid only when it agrees with the question.
 class ReferenceTaskContract(BaseModel):
-    """The serialised summary is valid only when it agrees with the question."""
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
@@ -46,6 +46,7 @@ class ReferenceTaskContract(BaseModel):
     source_dependency: Literal["self-contained", "task-context"]
 
 
+# Derive the comparison form from printed question data, never its hint.
 def derive_task_semantics(
     *,
     task_operation: Any,
@@ -53,7 +54,6 @@ def derive_task_semantics(
     options: Any = (),
     response_slots: Any = (),
 ) -> tuple[TaskOperation, ResponseMode] | None:
-    """Derive the comparison form from printed question data, never its hint."""
     operation = str(task_operation).casefold().strip()
     text = str(prompt).casefold().strip()
     has_options = isinstance(options, list) and bool(options)

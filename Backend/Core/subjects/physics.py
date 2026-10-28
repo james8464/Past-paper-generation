@@ -1,3 +1,5 @@
+# Compare physical answers with their expected values, units and precision.
+
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation

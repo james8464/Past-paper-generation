@@ -1,4 +1,4 @@
-"""Independent facts for the controlled French database exercise."""
+# Independent facts for the controlled French database exercise.
 
 from copy import deepcopy
 

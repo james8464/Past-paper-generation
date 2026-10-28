@@ -1,4 +1,6 @@
-name: PaperCreator
+# Keldin build targets and signing identities; prior local data is imported at startup.
+
+name: Keldin
 options:
   deploymentTarget:
     macOS: "15.0"
@@ -51,17 +53,17 @@ settings:
     SDKROOT: macosx
 
 schemes:
-  PaperCreator:
+  Keldin:
     shared: true
     build:
       targets:
-        PaperCreator: all
+        Keldin: all
     run:
       config: Debug
     test:
       config: Debug
       targets:
-        - PaperCreatorTests
+        - KeldinTests
     profile:
       config: Release
     analyze:
@@ -70,18 +72,18 @@ schemes:
       config: Release
 
 targets:
-  PaperCreator:
+  Keldin:
     type: application
     platform: macOS
-    bundleId: com.jamesdurup.PaperCreator
+    bundleId: com.jamesdurup.Keldin
     sources:
-      - path: PaperCreator
+      - path: Keldin
         type: syncedFolder
         excludes:
           - Info.plist
-          - PaperCreator.entitlements
-          - PaperCreatorDirect.entitlements
-          - PaperCreatorBackend.entitlements
+          - Keldin.entitlements
+          - KeldinDirect.entitlements
+          - KeldinBackend.entitlements
       - path: ../Resources/catalog.json
         buildPhase: resources
       - path: ../Resources/generator-registry.json
@@ -111,7 +113,7 @@ targets:
           - "$(SRCROOT)/../Resources/business/aqa/generator/pyproject.toml"
           - "$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml"
         outputFiles:
-          - "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/PaperCreatorBackend/.built"
+          - "$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/KeldinBackend/.built"
         basedOnDependencyAnalysis: false
     settings:
       base:
@@ -119,7 +121,7 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         APP_SANDBOX_ENABLED: NO
         CODE_SIGN_ENTITLEMENTS: "$(CODE_SIGN_ENTITLEMENTS_FILE)"
-        CODE_SIGN_ENTITLEMENTS_FILE: PaperCreator/PaperCreatorDirect.entitlements
+        CODE_SIGN_ENTITLEMENTS_FILE: Keldin/KeldinDirect.entitlements
         CODE_SIGN_STYLE: Automatic
         COMBINE_HIDPI_IMAGES: YES
         CURRENT_PROJECT_VERSION: 1
@@ -131,12 +133,12 @@ targets:
         ENABLE_OUTGOING_NETWORK_CONNECTIONS: YES
         ENABLE_USER_SELECTED_FILES: readwrite
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: PaperCreator/Info.plist
+        INFOPLIST_FILE: Keldin/Info.plist
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/../Frameworks"
         MARKETING_VERSION: 1.0
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PaperCreator
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.Keldin
         PRODUCT_NAME: "$(TARGET_NAME)"
         REGISTER_APP_GROUPS: YES
         STRING_CATALOG_GENERATE_SYMBOLS: YES
@@ -145,16 +147,16 @@ targets:
         SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY: YES
         SWIFT_VERSION: 5.0
 
-  PaperCreatorTests:
+  KeldinTests:
     type: bundle.unit-test
     platform: macOS
-    bundleId: com.jamesdurup.PaperCreator.Tests
+    bundleId: com.jamesdurup.Keldin.Tests
     sources:
       - path: Tests
         type: syncedFolder
     settings:
       base:
         INFOPLIST_FILE: Tests/Info.plist
-        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.PaperCreator.Tests
+        PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.Keldin.Tests
     dependencies:
-      - target: PaperCreator
+      - target: Keldin

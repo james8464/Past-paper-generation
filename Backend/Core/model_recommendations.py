@@ -1,3 +1,5 @@
+# Read and validate the configured recommendations for local Ollama models.
+
 from __future__ import annotations
 
 import json

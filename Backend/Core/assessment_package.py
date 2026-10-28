@@ -1,3 +1,5 @@
+# Write, migrate and validate assessment packages independently of PDF rendering.
+
 from __future__ import annotations
 
 import hashlib
@@ -48,8 +50,9 @@ from Backend.Core.subjects.sql_contracts import (
 )
 
 
+# The package cannot be upgraded safely by this application version.
 class AssessmentPackageCompatibilityError(ValueError):
-    """The package cannot be upgraded safely by this application version."""
+    pass
 
 
 def load_assessment_package(path: Path) -> dict[str, Any]:
@@ -114,6 +117,7 @@ def _migrate_schema_zero(document: dict[str, Any]) -> dict[str, Any]:
     return migrated
 
 
+# Write the renderer-independent item record used by release validation.
 def write_assessment_package(
     paper: Any,
     path: Path,
@@ -124,7 +128,6 @@ def write_assessment_package(
     provider: str | None,
     model: str | None,
 ) -> Path:
-    """Write the renderer-independent item record used by release validation."""
 
     payload = _serialise(paper)
     validate_aqa_cs_reviews(payload, required=not preview)
@@ -416,8 +419,8 @@ def _reference_demand_audit(
         report["evidence_state"] = topic["evidence_state"]
         report["profile_fit_passed"] = topic["passed"]
         paths["evidence_state"] = topic["evidence_state"]
-        # Controller ruling: insufficiency is not a calibration pass nor an
-        # exemption from structural, source/content, correctness or review gates.
+        # Insufficient calibration evidence cannot count as a pass. Structural,
+        # source/content, correctness and review checks still apply.
         structural_failures = [
             failure
             for row in paths["paths"]
@@ -886,8 +889,8 @@ def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
+# Validate cross-item clues and return the paper's assessment balance.
 def validate_cross_paper_quality(items: list[dict[str, Any]]) -> dict[str, Any]:
-    """Validate cross-item clues and return the paper's assessment balance."""
 
     topics: Counter[str] = Counter()
     objectives: Counter[str] = Counter()

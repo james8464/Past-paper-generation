@@ -1,4 +1,4 @@
-"""Answer-free, item-level review of French NSI curriculum alignment."""
+# Answer-free, item-level review of French NSI curriculum alignment.
 
 import json
 
@@ -12,8 +12,8 @@ from Backend.Core.france.graph_tree_prose import render_graph_tree_candidate
 from Backend.Core.france.nsi import CURRICULUM_OBJECTIVES, NSIExercise
 
 
+# Ask a separate reviewer to check whether the question supports its claimed label.
 def alignment_prompt(exercise: NSIExercise, task: dict, references: list[dict]) -> str:
-    """Ask a separate reviewer to judge the question, not its claimed label."""
     blueprint = task["question_blueprint"]
     objectives = {
         plan["required_curriculum_code"]: CURRICULUM_OBJECTIVES[
@@ -45,15 +45,15 @@ def alignment_prompt(exercise: NSIExercise, task: dict, references: list[dict]) 
     )
 
 
+# Incomplete or contradictory model evidence never authorises a question.
 def check_question_alignment(exercise: NSIExercise, task: dict, review: dict) -> None:
-    """Incomplete or contradictory model evidence never authorises a question."""
     failures = alignment_failures(exercise, task, review)
     if failures:
         raise ValueError(f"Question {failures[0]} : alignement non établi")
 
 
+# Return specifically rejected items; malformed review is not repair evidence.
 def alignment_failures(exercise: NSIExercise, task: dict, review: dict) -> list[str]:
-    """Return specifically rejected items; malformed review is not repair evidence."""
     items = review.get("questions") if isinstance(review, dict) else None
     blueprint = task["question_blueprint"]
     if not isinstance(items, list) or len(items) != len(blueprint):
@@ -77,13 +77,13 @@ def alignment_failures(exercise: NSIExercise, task: dict, review: dict) -> list[
     return failures
 
 
+# Keep the scenario and peer questions fixed while revising one draft.
 def repair_question_prompt(
     exercise: NSIExercise,
     task: dict,
     authored_question: dict,
     reviewer_item: dict,
 ) -> str:
-    """Keep the scenario and peer questions fixed while revising one draft."""
     planned = next(
         item
         for item in task["question_blueprint"]
@@ -109,8 +109,8 @@ def repair_question_prompt(
     )
 
 
+# Repair an invalid allocation without permitting a change of task or answer.
 def repair_marking_prompt(authored_question: dict, planned: dict) -> str:
-    """Repair an invalid allocation without permitting a change of task or answer."""
     return (
         "Répare uniquement le barème de cette question NSI Terminale. "
         "Chaque crédit doit être strictement positif et leur somme doit être "
@@ -126,6 +126,7 @@ def repair_marking_prompt(authored_question: dict, planned: dict) -> str:
     )
 
 
+# Expose only the one question, its plan and immutable part facts.
 def graph_tree_repair_prompt(
     raw: dict,
     task: dict,
@@ -133,7 +134,6 @@ def graph_tree_repair_prompt(
     question_id: str,
     reviewer_item: dict,
 ) -> str:
-    """Expose only the one question, its plan and immutable part facts."""
     matches = [item for item in raw["questions"] if item.get("id") == question_id]
     if len(matches) != 1 or question_id not in contract.to_dict()["task_ids"]:
         raise ValueError("Question de contrat introuvable")
@@ -163,6 +163,7 @@ def graph_tree_repair_prompt(
     )
 
 
+# Ask for one finite choice change, never a replacement sentence.
 def closed_prose_repair_prompt(
     selections: list[dict],
     task: dict,
@@ -170,7 +171,6 @@ def closed_prose_repair_prompt(
     question_id: str,
     reviewer_item: dict,
 ) -> str:
-    """Ask for one finite choice change, never a replacement sentence."""
     render_graph_tree_candidate(task, contract, selections)
     task_ids = contract.to_dict()["task_ids"]
     if question_id not in task_ids:

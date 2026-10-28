@@ -1,3 +1,5 @@
+# Load the OCR Economics syllabus records used to select topics.
+
 from __future__ import annotations
 
 from pathlib import Path

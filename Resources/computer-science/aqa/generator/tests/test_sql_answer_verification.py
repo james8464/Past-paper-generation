@@ -1,4 +1,4 @@
-"""Candidate-grounded verification for the bounded AQA SQL construction tasks."""
+# Candidate-grounded verification for the bounded AQA SQL construction tasks.
 
 from __future__ import annotations
 

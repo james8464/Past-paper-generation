@@ -1,4 +1,4 @@
-"""A-Level Economics A practice paper generator."""
+# A-Level Economics A practice paper generator.
 
 __all__ = ["__version__"]
 

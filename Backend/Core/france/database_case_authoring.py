@@ -1,8 +1,7 @@
-"""Versioned deterministic E2 authoring, explicitly separate from model evidence.
-
-V32 uses app-owned whole cases. The surrounding assessment may use a model, but
-this adapter does not call it or fabricate an accepted response/repair history.
-"""
+# Versioned deterministic E2 authoring, explicitly separate from model evidence.
+#
+# V32 uses app-owned whole cases. The surrounding assessment may use a model, but
+# this adapter does not call it or fabricate an accepted response/repair history.
 
 import json
 from hashlib import sha256

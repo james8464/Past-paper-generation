@@ -1,4 +1,4 @@
-"""Keep French inference on the explicitly selected server, without proxy routing."""
+# Keep French inference on the explicitly selected server, without proxy routing.
 
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 

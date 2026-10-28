@@ -1,4 +1,4 @@
-"""V23 finite model selection is hash-bound and replayable."""
+# V23 finite model selection is hash-bound and replayable.
 
 from copy import deepcopy
 

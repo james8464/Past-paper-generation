@@ -1,4 +1,4 @@
-"""V32 integrity runs must never become evidence of live model generation."""
+# V32 integrity runs must never become evidence of live model generation.
 
 import json
 from argparse import Namespace
@@ -69,7 +69,7 @@ def published(tmp_path, monkeypatch):
     result = benchmark.summarize_run(
         BackendRun(0, False, "", "", 1000),
         elapsed_seconds=1,
-        checkpoint=next((output / ".papercreator-checkpoints").glob("*.json")),
+        checkpoint=next((output / ".keldin-checkpoints").glob("*.json")),
         artifact_manifest=manifest,
     )
     result.update(

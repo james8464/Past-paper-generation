@@ -1,4 +1,4 @@
-"""V21 incident-audit facts must be independent of model-written answers."""
+# V21 incident-audit facts must be independent of model-written answers.
 
 from __future__ import annotations
 

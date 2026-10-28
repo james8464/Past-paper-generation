@@ -1,3 +1,5 @@
+# Find local AQA Computer Science notes and cache their extracted text for topic context.
+
 from __future__ import annotations
 
 import shutil
@@ -5,9 +7,11 @@ import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 
+from Backend.Core.legacy_migration import LEGACY_APP_FOLDER, copy_missing_tree
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_NOTES_SOURCE = PROJECT_ROOT.parent / "notes"
-DEFAULT_NOTES_CACHE = Path.home() / "Library" / "Caches" / "Paper creator" / "cs-notes"
+DEFAULT_NOTES_CACHE = Path.home() / "Library" / "Caches" / "Keldin" / "cs-notes"
 
 
 @dataclass(frozen=True)
@@ -25,6 +29,7 @@ def discover_note_pdfs(source_dir: Path = DEFAULT_NOTES_SOURCE) -> list[Path]:
 
 
 def cache_notes(source_dir: Path = DEFAULT_NOTES_SOURCE, cache_dir: Path = DEFAULT_NOTES_CACHE) -> NotesManifest:
+    _migrate_cache(cache_dir)
     raw_dir = cache_dir / "raw"
     text_dir = cache_dir / "text"
     raw_dir.mkdir(parents=True, exist_ok=True)
@@ -46,6 +51,7 @@ def cache_notes(source_dir: Path = DEFAULT_NOTES_SOURCE, cache_dir: Path = DEFAU
 
 
 def note_context_for_topic(topic_id: str, title: str, cache_dir: Path = DEFAULT_NOTES_CACHE, max_chars: int = 2200) -> str:
+    _migrate_cache(cache_dir)
     text_dir = cache_dir / "text"
     if not text_dir.exists():
         return ""
@@ -82,3 +88,9 @@ def _extract_text(pdf: Path, text_path: Path) -> None:
         subprocess.run(["pdftotext", "-layout", str(pdf), str(text_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except (OSError, subprocess.CalledProcessError):
         text_path.write_text("", encoding="utf-8")
+
+
+def _migrate_cache(cache_dir: Path) -> None:
+    if cache_dir == DEFAULT_NOTES_CACHE:
+        legacy = cache_dir.parent.parent / LEGACY_APP_FOLDER / "cs-notes"
+        copy_missing_tree(legacy, cache_dir)

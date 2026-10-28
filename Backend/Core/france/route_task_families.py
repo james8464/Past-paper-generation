@@ -1,4 +1,4 @@
-"""Original task-family primitives; independent evidence, no candidate execution."""
+# Task-family building blocks checked independently without running candidate code.
 
 import json
 from copy import deepcopy
@@ -179,8 +179,8 @@ def family_for_seed(seed):
     return FAMILIES[(seed - 270100) % len(FAMILIES)]
 
 
+# Derive public cases with edge-set operations independently of the solution algorithms.
 def family_expected(data):
-    """Derive public cases with edge-set operations, not the solution algorithms."""
     facts = route_selection_expected(data)
     family = family_for_seed(data["seed"])
     routes, costs = facts["routes"], facts["costs"]

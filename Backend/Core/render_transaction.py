@@ -1,3 +1,5 @@
+# Render into a temporary file and replace the destination only after validation.
+
 from __future__ import annotations
 
 import os
@@ -14,16 +16,19 @@ import pymupdf as fitz
 from Backend.Core.pdf_accessibility import add_page_structure_tree
 
 
+# A document role could not be rendered safely.
 class RenderTransactionError(RuntimeError):
-    """A document role could not be rendered safely."""
+    pass
 
 
+# Rendering exceeded its bounded qualification window.
 class RenderTimeout(RenderTransactionError):
-    """Rendering exceeded its bounded qualification window."""
+    pass
 
 
+# A renderer returned without producing a readable PDF.
 class InvalidRenderOutput(RenderTransactionError):
-    """A renderer returned without producing a readable PDF."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -33,6 +38,7 @@ class RenderResult:
     elapsed_seconds: float
 
 
+# Render one PDF role under a deadline and promote it atomically.
 def render_pdf_atomically(
     destination: Path,
     renderer: Callable[[Path], None],
@@ -41,7 +47,6 @@ def render_pdf_atomically(
     timeout_seconds: float = 30.0,
     language: str = "en-GB",
 ) -> RenderResult:
-    """Render one PDF role under a deadline and promote it atomically."""
     if not role.strip():
         raise ValueError("render role must not be empty")
     if timeout_seconds <= 0:
@@ -53,6 +58,7 @@ def render_pdf_atomically(
 
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
+    # A sibling temporary file keeps the final replacement on the same filesystem.
     descriptor, temporary_name = tempfile.mkstemp(
         dir=destination.parent,
         prefix=f".{destination.name}.",
@@ -67,6 +73,7 @@ def render_pdf_atomically(
             renderer(temporary)
             _readable_page_count(temporary, role)
             add_page_structure_tree(temporary, language=language)
+        # Accessibility rewriting must leave a readable PDF before publication.
         pages = _readable_page_count(temporary, role)
         _sync_file(temporary)
         os.replace(temporary, destination)
@@ -108,6 +115,7 @@ class _render_deadline:
         signal.setitimer(signal.ITIMER_REAL, 0)
         if self._previous_handler is not None:
             signal.signal(signal.SIGALRM, self._previous_handler)
+        # Resume any outer deadline with the time spent rendering subtracted.
         remaining, interval = self._previous_timer
         if remaining > 0:
             elapsed = time.monotonic() - self._started

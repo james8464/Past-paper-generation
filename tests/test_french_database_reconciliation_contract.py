@@ -1,4 +1,4 @@
-"""V24's database and algorithm results are app-owned, not model answers."""
+# V24's database and algorithm results are app-owned, not model answers.
 
 from __future__ import annotations
 

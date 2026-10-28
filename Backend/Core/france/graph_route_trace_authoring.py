@@ -1,4 +1,4 @@
-"""Hash-bound finite V22 route-trace selection and replay."""
+# Hash-bound finite V22 route-trace selection and replay.
 
 from __future__ import annotations
 

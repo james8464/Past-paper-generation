@@ -1,3 +1,5 @@
+# Check chemical formulae and equation balance for chemistry items.
+
 from __future__ import annotations
 
 import re

@@ -1,9 +1,23 @@
 import AppKit
 import PDFKit
 import XCTest
-@testable import PaperCreator
+@testable import Keldin
 
-final class PaperCreatorTests: XCTestCase {
+final class KeldinTests: XCTestCase {
+    func testOllamaAvailabilityStatusUsesFrenchTranslation() {
+        let expected = [
+            "Not checked": "Non vérifié",
+            "Ollama is available.": "Ollama est disponible.",
+            "Ollama is not installed.": "Ollama n’est pas installé.",
+            "Ollama is installed but not responding.": "Ollama est installé mais ne répond pas.",
+        ]
+        for (message, translation) in expected {
+            let state = OllamaState(message: message)
+            XCTAssertEqual(InterfaceText.resolve(state.messageResource, language: "fr"), translation)
+            XCTAssertEqual(state.message, message)
+        }
+    }
+
     func testInterfaceTextUsesChosenLanguageOutsideTheViewTree() {
         XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "fr"), "Créer un sujet")
         XCTAssertEqual(InterfaceText.resolve("Create Paper", language: "en"), "Create Paper")
@@ -292,7 +306,7 @@ final class PaperCreatorTests: XCTestCase {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }
         let bundle = root.appendingPathComponent("Keldin.app")
-        let executable = bundle.appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
+        let executable = bundle.appendingPathComponent("Contents/Resources/KeldinBackend/KeldinBackend")
         try FileManager.default.createDirectory(at: executable.deletingLastPathComponent(), withIntermediateDirectories: true)
         try Data("# Selection fixture; this test never starts a process.\n".utf8).write(to: executable)
         try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
@@ -309,18 +323,18 @@ final class PaperCreatorTests: XCTestCase {
     func testBuiltAppContainsStandaloneBackend() throws {
         let bundle = Bundle(for: ApplicationCoordinator.self).bundleURL
         let executable = bundle
-            .appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
+            .appendingPathComponent("Contents/Resources/KeldinBackend/KeldinBackend")
         XCTAssertTrue(FileManager.default.isExecutableFile(atPath: executable.path))
         let calibrationSchema = bundle.appendingPathComponent(
-            "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration.schema.json"
+            "Contents/Resources/KeldinBackend/_internal/Resources/empirical-calibration.schema.json"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationSchema.path))
         let calibrationPolicy = bundle.appendingPathComponent(
-            "Contents/Resources/PaperCreatorBackend/_internal/Resources/empirical-calibration-policy.json"
+            "Contents/Resources/KeldinBackend/_internal/Resources/empirical-calibration-policy.json"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: calibrationPolicy.path))
         let demandProfiles = bundle.appendingPathComponent(
-            "Contents/Resources/PaperCreatorBackend/_internal/Resources/reference-demand-profiles.json"
+            "Contents/Resources/KeldinBackend/_internal/Resources/reference-demand-profiles.json"
         )
         XCTAssertTrue(FileManager.default.fileExists(atPath: demandProfiles.path))
     }
@@ -697,7 +711,7 @@ final class PaperCreatorTests: XCTestCase {
     func testAppStoreWorkspaceIsPrivateAndNotDownloads() {
         let path = AppDefaults.appStoreWorkingFolder().path
         XCTAssertTrue(path.contains("/Library/Containers/"))
-        XCTAssertTrue(path.hasSuffix("/Data/Library/Application Support/Paper creator/Generated papers"))
+        XCTAssertTrue(path.hasSuffix("/Data/Library/Application Support/Keldin/Generated papers"))
         XCTAssertFalse(path.contains("/Data/Downloads"))
     }
 

@@ -1,8 +1,7 @@
-"""Application-owned facts for the French NSI written network exercise.
-
-The model cannot supply, change or infer these routing, process or security facts.
-The four printed link costs alone determine every routing answer.
-"""
+# Application-owned facts for the French NSI written network exercise.
+#
+# The model cannot supply, change or infer these routing, process or security facts.
+# The four printed link costs alone determine every routing answer.
 
 from __future__ import annotations
 
@@ -41,8 +40,8 @@ def _facts(seed: int) -> tuple[list[list], dict]:
     return links, {"link": ["R1", "Station"], "new_cost": values[4]}
 
 
+# Enumerate simple paths to check the stored shortest-path answer.
 def _paths(links: list[list]) -> dict:
-    """Enumerate simple paths rather than trusting a stored shortest-path answer."""
     adjacent: dict[str, list[tuple[str, int]]] = {}
     for left, right, cost in links:
         adjacent.setdefault(left, []).append((right, cost))

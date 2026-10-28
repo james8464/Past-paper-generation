@@ -1,3 +1,5 @@
+# Connect AQA Economics generation to the shared backend workflow.
+
 from __future__ import annotations
 
 import argparse

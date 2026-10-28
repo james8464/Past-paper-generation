@@ -1,3 +1,5 @@
+# Measure local performance and emit benchmark events for the app.
+
 from __future__ import annotations
 
 import argparse
@@ -279,7 +281,7 @@ def network_latency_ms() -> float | None:
     try:
         request = urllib.request.Request(
             NETWORK_PROBE_URL,
-            headers={"User-Agent": "PaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "KeldinBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
             response.read(128)
@@ -295,7 +297,7 @@ def network_download_mb_s() -> float | None:
     try:
         request = urllib.request.Request(
             NETWORK_DOWNLOAD_URL,
-            headers={"User-Agent": "PaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "KeldinBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
             total = 0
@@ -314,7 +316,7 @@ def ollama_latency_ms() -> float | None:
     try:
         request = urllib.request.Request(
             "http://127.0.0.1:11434/api/tags",
-            headers={"User-Agent": "PaperCreatorBenchmark/1.0"},
+            headers={"User-Agent": "KeldinBenchmark/1.0"},
         )
         with urllib.request.urlopen(request, timeout=0.8) as response:
             response.read(128)

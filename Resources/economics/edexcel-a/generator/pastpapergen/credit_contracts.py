@@ -1,4 +1,4 @@
-"""Task-specific credit projections; examples never add to a tariff twice."""
+# Task-specific credit projections; examples never add to a tariff twice.
 
 from __future__ import annotations
 
@@ -371,8 +371,8 @@ def short_credit(question, part, source) -> list[str]:
         return [f"AO1 (1 mark): {points[0]}", f"AO3 (1 mark): {points[1]}"]
     if not generic and part.marks == 4:
         points = clean_points(existing)
-        # Existing source-specific theory/application/mechanism remains useful,
-        # but the analysis chain is one budget, not two separately additive marks.
+        # Retain the source-specific theory, application and mechanism,
+        # but count the analysis chain within one budget to avoid duplicate marks.
         return [
             f"AO1 (2 marks): {points[0]} Identify the relevant factor and explain its economic meaning.",
             f"AO2 (1 mark): {points[1]}",

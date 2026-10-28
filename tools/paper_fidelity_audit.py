@@ -1,3 +1,5 @@
+# Compare generated PDFs with reference geometry, typography and page roles.
+
 from __future__ import annotations
 
 import argparse
@@ -111,12 +113,11 @@ for (subject, paper), (
     }
 
 
+# Return same-paper documents from different sessions, newest first.
+#
+# Board archives use unrelated naming schemes, so matching is intentionally
+# conservative. A false peer is worse than a smaller evidence range.
 def _reference_peers(reference: Path, *, maximum: int = 3) -> list[Path]:
-    """Return same-paper documents from different sessions, newest first.
-
-    Board archives use unrelated naming schemes, so matching is intentionally
-    conservative. A false peer is worse than a smaller evidence range.
-    """
 
     if maximum < 1:
         raise ValueError("maximum reference peers must be positive")
@@ -457,6 +458,7 @@ def _geometry_page(
     }
 
 
+# Render static paper content and reject unknown MuPDF diagnostics.
 def _render_page_pixmap(
     page: fitz.Page,
     width: float,
@@ -466,7 +468,6 @@ def _render_page_pixmap(
     columns: int | None = None,
     rows: int | None = None,
 ) -> fitz.Pixmap:
-    """Render static paper content and reject unknown MuPDF diagnostics."""
 
     if columns is None or rows is None:
         columns, rows = _grid_dimensions(
@@ -762,13 +763,12 @@ def compare(generated: dict[str, Any], reference: dict[str, Any]) -> dict[str, A
     }
 
 
+# Keep report JSON useful without serialising page raster grids.
+#
+# Embedding six raster grids per page can make the supported matrix report
+# several gigabytes long. Keep geometry in memory during comparison and
+# save only compact page scores and document summaries.
 def _compact_profile(value: dict[str, Any]) -> dict[str, Any]:
-    """Keep report JSON useful without serialising page raster grids.
-
-    The former report embedded six grids per page and reached multiple
-    gigabytes for the supported matrix. Geometry remains in memory while
-    comparing, then only compact page scores and document summaries are saved.
-    """
 
     return {key: item for key, item in value.items() if key != "geometry"}
 
@@ -841,13 +841,13 @@ def _page_comparisons(
     return sorted(result, key=lambda item: int(item["page"]))
 
 
+# Classify stable page furniture without retaining source-paper text.
 def classify_page_role(
     text: str,
     *,
     document_role: str,
     page_number: int,
 ) -> str:
-    """Classify stable page furniture without retaining source-paper text."""
 
     if page_number == 1:
         return "cover"
@@ -1008,13 +1008,13 @@ def _translated(
     return translated
 
 
+# Find a small whole-page translation without deforming either page.
 def _registration_shift(
     reference: Image.Image,
     generated: Image.Image,
     *,
     dpi: int,
 ) -> tuple[int, int]:
-    """Find a small whole-page translation without deforming either page."""
 
     generated = generated.resize(reference.size, Image.Resampling.LANCZOS)
     thumbnail_width = min(420, reference.width)
@@ -1098,6 +1098,7 @@ def _block_mask(
     return mask
 
 
+# Mask question-specific prose while keeping matching boilerplate visible.
 def _unstable_blocks(
     first: list[dict[str, Any]],
     second: list[dict[str, Any]],
@@ -1105,7 +1106,6 @@ def _unstable_blocks(
     first_rect: fitz.Rect,
     second_rect: fitz.Rect,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
-    """Mask question-specific prose while keeping matching boilerplate visible."""
 
     def is_stable(
         block: dict[str, Any],
@@ -1684,11 +1684,11 @@ def _generated_document(
     return direct
 
 
+# Return stable, human-readable release-gate failures.
 def validate_thresholds(
     report: dict[str, Any],
     thresholds: dict[str, Any],
 ) -> list[str]:
-    """Return stable, human-readable release-gate failures."""
     errors: list[str] = []
     if thresholds.get("schema_version") != 1:
         return [
@@ -2026,13 +2026,13 @@ img { width: 300px; height: auto; border: 1px solid #aaa; }
     (output_dir / "index.html").write_text(page, encoding="utf-8")
 
 
+# Write compact first-page comparisons spanning the full support matrix.
 def write_overview_sheets(
     report: dict[str, Any],
     output_dir: Path,
     *,
     dpi: int = 96,
 ) -> list[Path]:
-    """Write compact first-page comparisons spanning the full support matrix."""
 
     rows: list[Image.Image] = []
     for family, result in report["families"].items():
@@ -2095,13 +2095,13 @@ def write_overview_sheets(
     return outputs
 
 
+# Write the weakest page from every primary document on compact sheets.
 def write_worst_page_sheets(
     report: dict[str, Any],
     output_dir: Path,
     *,
     dpi: int = 96,
 ) -> list[Path]:
-    """Write the weakest page from every primary document on compact sheets."""
 
     rows: list[Image.Image] = []
     for family, result in report["families"].items():

@@ -1,8 +1,7 @@
-"""Immutable V26 timing facts layered over the replayable V23 incident.
-
-The second deadline concerns the encrypted report, not arrival of M-27. A
-late packet can still produce an on-time report after a successful recovery.
-"""
+# Immutable V26 timing facts layered over the replayable V23 incident.
+#
+# The second deadline concerns the encrypted report, not arrival of M-27. A
+# late packet can still produce an on-time report after a successful recovery.
 
 from __future__ import annotations
 

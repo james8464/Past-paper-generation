@@ -1,3 +1,5 @@
+# Build reusable ReportLab page and question furniture.
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -22,8 +24,8 @@ class SectionHeaderData(Protocol):
     instructions: str
 
 
+# Flatten explicit pages while preserving the leading-break contract.
 def page_sequence(pages: Iterable[Sequence[Flowable]]) -> list[Flowable]:
-    """Flatten explicit pages while preserving the leading-break contract."""
 
     result: list[Flowable] = []
     for page in pages:
@@ -32,6 +34,7 @@ def page_sequence(pages: Iterable[Sequence[Flowable]]) -> list[Flowable]:
     return result
 
 
+# Build the measured AQA section heading shared by AQA families.
 def aqa_section_intro(
     section: SectionHeaderData,
     *,
@@ -39,7 +42,6 @@ def aqa_section_intro(
     ink: Color,
     table_class: type[Table] = Table,
 ) -> list[Flowable]:
-    """Build the measured AQA section heading shared by AQA families."""
 
     return [
         table_class(
@@ -61,11 +63,11 @@ def aqa_section_intro(
     ]
 
 
+# Return the neutral-branding page shared by AQA mark schemes.
 def independent_practice_page(
     *,
     styles: Mapping[str, ParagraphStyle],
 ) -> list[Flowable]:
-    """Return the neutral-branding page shared by AQA mark schemes."""
 
     return [
         Spacer(1, 205 * mm),
@@ -79,8 +81,8 @@ def independent_practice_page(
     ]
 
 
+# Return the measured AQA option-selection lozenge.
 def aqa_lozenge(ink: Color) -> Drawing:
-    """Return the measured AQA option-selection lozenge."""
 
     drawing = Drawing(25, 15)
     drawing.add(Rect(1, 1, 22, 13, strokeColor=ink, fillColor=None, strokeWidth=0.7))
@@ -90,20 +92,20 @@ def aqa_lozenge(ink: Color) -> Drawing:
     return drawing
 
 
+# Pair a family-profiled question header with measured trailing space.
 def flowable_question_block(
     question: QuestionHeaderData,
     *,
     question_table: Callable[[QuestionHeaderData], Flowable],
     spacing_mm: float = 4.0,
 ) -> list[Flowable]:
-    """Pair a family-profiled question header with measured trailing space."""
 
     return [question_table(question), Spacer(1, spacing_mm * mm)]
 
 
+# Measured AQA question-number, prompt, and tariff flowables.
 @dataclass(frozen=True)
 class AQAQuestionHeaderFactory:
-    """Measured AQA question-number, prompt, and tariff flowables."""
 
     body_style: ParagraphStyle
     marks_style: ParagraphStyle
@@ -157,9 +159,9 @@ class AQAQuestionHeaderFactory:
         )
 
 
+# Measured OCR question-number, prompt, and tariff flowables.
 @dataclass(frozen=True)
 class OCRQuestionHeaderFactory:
-    """Measured OCR question-number, prompt, and tariff flowables."""
 
     body_style: ParagraphStyle
     marks_style: ParagraphStyle
@@ -203,9 +205,9 @@ class OCRQuestionHeaderFactory:
         )
 
 
+# Create measured section banners and information panels.
 @dataclass(frozen=True)
 class SingleCellPanelFactory:
-    """Create measured section banners and information panels."""
 
     paragraph_style: ParagraphStyle
     width: float

@@ -225,8 +225,8 @@ def test_french_pdf_renders_structured_tables_and_graphs_as_vectors(tmp_path):
         assert all(not page.get_images(full=True) for page in pdf)
 
 
+# Keep the provisional 2027 profile close to the measured 2026 subject.
 def test_french_pdf_uses_measured_bac_page_geometry(tmp_path):
-    """Keep the provisional 2027 profile close to the measured 2026 subject."""
     from Backend.Core.france.nsi import NSIExercise
     from Backend.Core.france.rendering import render_assessment
 

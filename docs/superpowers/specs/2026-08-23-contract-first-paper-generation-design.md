@@ -5,7 +5,7 @@
 
 ## Purpose
 
-Paper Creator must generate genuinely new A-level examination papers and mark schemes while matching the structure, typography, page geometry, density, difficulty profile, assessment-objective distribution, and marking depth of the relevant exam-board papers. It must do this reliably on supported Macs, preserve completed work across failures, and make adding a subject, specification, or board a configuration-led task rather than another independent generator rewrite.
+Keldin must generate genuinely new A-level examination papers and mark schemes while matching the structure, typography, page geometry, density, difficulty profile, assessment-objective distribution, and marking depth of the relevant exam-board papers. It must do this reliably on supported Macs, preserve completed work across failures, and make adding a subject, specification, or board a configuration-led task rather than another independent generator rewrite.
 
 This design replaces the current late-validation pipeline with a shared contract-first workflow. AI remains responsible for original contexts, questions, and reasoning. Deterministic code owns facts that must be exact: marks, assessment objectives, numeric datasets, calculations, graph geometry, evidence references, pagination constraints, and release checks.
 
@@ -36,7 +36,7 @@ The evidence is stored in `tmp/pdfs/live-full-matrix-2026-08-22/`, including `ma
 ## Non-Goals and Product Boundaries
 
 - The app will not copy official questions or mark schemes.
-- It will not display official logos or imply endorsement. “Reference-identical” means equivalent document grammar and geometry while retaining a clear Paper Creator identity.
+- It will not display official logos or imply endorsement. “Reference-identical” means equivalent document grammar and geometry while retaining a clear Keldin identity.
 - Software checks cannot prove psychometric equivalence. Difficulty targets will use board evidence, expert rules, and model review until anonymized learner-performance data is available.
 - The work will not introduce cloud dependence; local Ollama generation remains supported.
 - It will not preserve duplicated family-specific behavior where a shared contract can express the same rule.
@@ -139,7 +139,7 @@ The shared renderer interface receives only a validated package plus a `BoardDoc
 
 - page size, margins, baseline grid, columns, and role-specific frames;
 - font families, weights, sizes, leading, and fallbacks;
-- cover hierarchy and Paper Creator branding treatment;
+- cover hierarchy and Keldin branding treatment;
 - header, footer, folio, rule, barcode-like identifier, and continuation geometry;
 - question numbering, mark boxes, answer lines, tables, charts, source-booklet, and supplementary-page components;
 - expected page counts and content-density ranges by document role;

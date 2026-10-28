@@ -1,3 +1,5 @@
+# Define the structured records used by the AQA Computer Science generator.
+
 from __future__ import annotations
 
 from typing import Literal
@@ -87,8 +89,8 @@ class QuestionPart(BaseModel):
     reference_task_contract: ReferenceTaskContract | None = None
     sql_intent_id: str = ""
 
+    # Attach the immutable marking key separately from candidate slot IDs.
     def set_closed_answers(self, answers: dict[str, list[str]]) -> None:
-        """Attach the immutable marking key separately from candidate slot IDs."""
         self.response_slots = list(answers)
         self.marking.closed_answers = answers
 

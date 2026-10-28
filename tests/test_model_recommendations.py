@@ -64,7 +64,7 @@ def test_warning_separates_memory_from_paper_review() -> None:
 
 def test_model_guide_does_not_promise_output_correctness() -> None:
     root = Path(__file__).resolve().parents[1]
-    view = (root / "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift").read_text()
+    view = (root / "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift").read_text()
     assert "It follows the app’s exact JSON schemas" not in view
     assert "It has enough reasoning capacity" not in view
     assert "for the intended quality level" not in view
@@ -73,7 +73,7 @@ def test_model_guide_does_not_promise_output_correctness() -> None:
 
 def test_resource_backed_guidance_has_french_translations() -> None:
     root = Path(__file__).resolve().parents[1]
-    catalogue = json.loads((root / "macOS/PaperCreator/Localizable.xcstrings").read_text())["strings"]
+    catalogue = json.loads((root / "macOS/Keldin/Localizable.xcstrings").read_text())["strings"]
     document = payload()
     keys = [document["other_model_warning"], "About %@ GB download · %@ app context"]
     for tier in document["tiers"]:
@@ -86,12 +86,12 @@ def test_resource_backed_guidance_has_french_translations() -> None:
 
 def test_provider_subtitle_uses_a_localised_resource() -> None:
     root = Path(__file__).resolve().parents[1]
-    settings = (root / "macOS/PaperCreator/Features/Settings/SettingsPane.swift").read_text()
+    settings = (root / "macOS/Keldin/Features/Settings/SettingsPane.swift").read_text()
     assert "application.aiProvider.subtitleResource" in settings
 
 
 def test_help_formats_dynamic_values_from_selected_language() -> None:
     root = Path(__file__).resolve().parents[1]
-    help_view = (root / "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift").read_text()
+    help_view = (root / "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift").read_text()
     assert "downloadResource(locale: selectedLocale" in help_view
     assert "private var currentMemoryResource: LocalizedStringResource" in help_view

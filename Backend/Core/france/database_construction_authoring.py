@@ -1,4 +1,4 @@
-"""V28 app-owned construction task layered over immutable V24 incident facts."""
+# V28 app-owned construction task layered over immutable V24 incident facts.
 
 import json
 from copy import deepcopy
@@ -110,8 +110,8 @@ def construction_blueprint(blueprint: list[dict]) -> list[dict]:
     return result
 
 
+# Count canonical source rows independently; never execute candidate code.
 def construction_expected(data: dict) -> dict:
-    """Count canonical source rows independently; never execute candidate code."""
     rows = data["tables"]["incident"]["rows"]
     categories = [1, 2, 3, 4, 5]
     prefixes = [

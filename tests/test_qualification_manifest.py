@@ -44,7 +44,7 @@ def manifest() -> QualificationManifest:
         },
         evidence=[],
         reviewer_identity_class="automation",
-        tool_versions={"paper-creator-backend": "2.0.0"},
+        tool_versions={"keldin-backend": "2.0.0"},
         created_at=datetime(2026, 8, 26, tzinfo=UTC),
     )
 

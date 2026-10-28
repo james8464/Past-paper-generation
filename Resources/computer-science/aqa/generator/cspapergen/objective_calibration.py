@@ -1,9 +1,8 @@
-"""Original task allocations calibrated to AQA 7517, not tariff-based guessing.
-
-Full-paper design budgets match the locally verified June 2025 totals
-(20/30/50 and 56/40/4). The source's discounted P1 item is not used as a
-difficulty anchor. Focused banks deliberately have their own task-led budgets.
-"""
+# Allocate AQA 7517 assessment objectives from the work each task requires.
+#
+# Full-paper design budgets match the locally verified June 2025 totals
+# (20/30/50 and 56/40/4). The source's discounted P1 item is not used as a
+# difficulty anchor. Focused banks deliberately have their own task-led budgets.
 from __future__ import annotations
 
 from Backend.Core.assessment_objectives import objective_policy_for

@@ -1,4 +1,4 @@
-"""Public branding; storage, signing and historical paper identities stay unchanged."""
+# Shared public branding for Keldin documents and interface copy.
 
 APP_NAME = "Keldin"
 PDF_WORDMARK = APP_NAME.upper()

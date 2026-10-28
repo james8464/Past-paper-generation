@@ -1,4 +1,4 @@
-"""Run a qualification backend with durable progress and bounded cleanup."""
+# Run a qualification backend with durable progress and bounded cleanup.
 
 from __future__ import annotations
 
@@ -22,9 +22,9 @@ class BackendRun:
     peak_backend_rss_bytes: int | None
 
 
+# Route SIGTERM through the same cleanup as a keyboard interrupt.
 @contextmanager
 def _handle_termination():
-    """Route SIGTERM through the same cleanup as a keyboard interrupt."""
     if threading.current_thread() is not threading.main_thread():
         yield
         return
@@ -40,14 +40,13 @@ def _handle_termination():
         signal.signal(signal.SIGTERM, previous)
 
 
+# Stream directly to files; wait4 measures this child, not earlier jobs.
+#
+# The memory figure is backend peak resident memory, not Ollama's separate
+# server/GPU allocation. A separate process group permits timeout cleanup.
 def run_backend(
     command: list[str], *, cwd: Path, run_dir: Path, timeout_seconds: float
 ) -> BackendRun:
-    """Stream directly to files; wait4 measures this child, not earlier jobs.
-
-    The memory figure is backend peak resident memory, not Ollama's separate
-    server/GPU allocation. A separate process group permits timeout cleanup.
-    """
     output_path = run_dir / "events.jsonl"
     error_path = run_dir / "stderr.log"
     peak_rss = None

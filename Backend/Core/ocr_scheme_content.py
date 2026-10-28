@@ -1,4 +1,4 @@
-"""Content-preserving pagination checks for OCR Economics marking tables."""
+# Content-preserving pagination checks for OCR Economics marking tables.
 
 from __future__ import annotations
 

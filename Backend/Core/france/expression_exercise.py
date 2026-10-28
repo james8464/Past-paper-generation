@@ -1,8 +1,7 @@
-"""Experimental complete exercise over synthesized expression cases.
-
-Not a public generation route or originality qualification. Exact replay binds
-all prose and marking to checked case data; pedagogical timing is indicative.
-"""
+# Experimental complete exercise over synthesized expression cases.
+#
+# Not a public generation route or originality qualification. Exact replay binds
+# all prose and marking to checked case data; pedagogical timing is indicative.
 
 import json
 from decimal import Decimal

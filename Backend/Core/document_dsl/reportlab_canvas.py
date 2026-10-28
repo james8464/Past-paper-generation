@@ -1,3 +1,5 @@
+# Share answer-rule and barcode drawing between board renderers.
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -42,6 +44,7 @@ class CanvasBarcodeStyle:
     color: Color = colors.black
 
 
+# Draw a fixed number of solid response rules and return the next baseline.
 def draw_solid_answer_rules(
     pdf: Canvas,
     *,
@@ -49,7 +52,6 @@ def draw_solid_answer_rules(
     count: int,
     style: SolidRuleStyle,
 ) -> float:
-    """Draw a fixed number of solid response rules and return the next baseline."""
 
     pdf.setStrokeColor(style.color)
     pdf.setLineWidth(style.width)
@@ -60,6 +62,7 @@ def draw_solid_answer_rules(
     return first_y - count * style.gap
 
 
+# Draw selectable glyph-based response rules and return the next baseline.
 def draw_glyph_answer_rules(
     pdf: Canvas,
     *,
@@ -67,7 +70,6 @@ def draw_glyph_answer_rules(
     count: int,
     style: GlyphRuleStyle,
 ) -> float:
-    """Draw selectable glyph-based response rules and return the next baseline."""
 
     for index in range(count):
         text = pdf.beginText()
@@ -80,6 +82,7 @@ def draw_glyph_answer_rules(
     return first_y - count * style.gap
 
 
+# Draw a repeatable practice-paper barcode and its caption.
 def draw_barcode(
     pdf: Canvas,
     *,
@@ -88,7 +91,6 @@ def draw_barcode(
     caption: str,
     style: CanvasBarcodeStyle,
 ) -> None:
-    """Draw a deterministic neutral-practice barcode and its caption."""
 
     pdf.setFillColor(style.color)
     cursor = x

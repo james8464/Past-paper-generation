@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
+# Package and sign the Keldin backend helper used by the native app.
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$SRCROOT/.." && pwd)"
 PYTHON="$ROOT_DIR/.venv/bin/python"
 HELPER_DIR="$TARGET_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH"
-WORK_DIR="$DERIVED_FILE_DIR/PaperCreatorBackend"
+WORK_DIR="$DERIVED_FILE_DIR/KeldinBackend"
 DIST_DIR="$WORK_DIR/dist"
-BACKEND_DIR="$HELPER_DIR/PaperCreatorBackend"
+BACKEND_DIR="$HELPER_DIR/KeldinBackend"
 FINGERPRINT_FILE="$BACKEND_DIR/.build-fingerprint"
 
 if [[ ! -x "$PYTHON" ]]; then
@@ -40,7 +42,7 @@ build_fingerprint() {
     shasum \
       "$ROOT_DIR/bridge.py" \
       "$ROOT_DIR/requirements-build.txt" \
-      "$ROOT_DIR/macOS/PaperCreator/PaperCreatorBackend.entitlements" \
+      "$ROOT_DIR/macOS/Keldin/KeldinBackend.entitlements" \
       "$ROOT_DIR/macOS/scripts/build_backend.sh" \
       "$ROOT_DIR/Resources/backend-protocol.schema.json" \
       "$ROOT_DIR/Resources/generator-capability.schema.json" \
@@ -75,7 +77,7 @@ build_fingerprint() {
 }
 
 CURRENT_FINGERPRINT="$(build_fingerprint)"
-if [[ -x "$BACKEND_DIR/PaperCreatorBackend" \
+if [[ -x "$BACKEND_DIR/KeldinBackend" \
   && -f "$BACKEND_DIR/.built" \
   && -f "$FINGERPRINT_FILE" \
   && "$(<"$FINGERPRINT_FILE")" == "$CURRENT_FINGERPRINT" ]]; then
@@ -98,7 +100,7 @@ PYINSTALLER_ARGS=(
   --noconfirm
   --clean
   --onedir
-  --name PaperCreatorBackend
+  --name KeldinBackend
   --distpath "$DIST_DIR"
   --workpath "$WORK_DIR/work"
   --specpath "$WORK_DIR"
@@ -160,30 +162,30 @@ done < <(
     'from Backend.Core.generator_registry import generator_capabilities; print(*[item.syllabus_path for item in generator_capabilities().values()], sep="\n")'
 )
 
-PAPER_CREATOR_PYINSTALLER_NATIVE=1 \
+KELDIN_PYINSTALLER_NATIVE=1 \
   "$PYTHON" -m PyInstaller "${PYINSTALLER_ARGS[@]}" "$ROOT_DIR/bridge.py"
 
-if ! "$DIST_DIR/PaperCreatorBackend/PaperCreatorBackend" bundle-check \
+if ! "$DIST_DIR/KeldinBackend/KeldinBackend" bundle-check \
   > "$WORK_DIR/bundle-check.jsonl"; then
   cat "$WORK_DIR/bundle-check.jsonl" >&2
   echo "error: Packaged backend failed its generator health check." >&2
   exit 1
 fi
-if ! "$DIST_DIR/PaperCreatorBackend/PaperCreatorBackend" mlx-status \
+if ! "$DIST_DIR/KeldinBackend/KeldinBackend" mlx-status \
   > "$WORK_DIR/mlx-status.jsonl"; then
   cat "$WORK_DIR/mlx-status.jsonl" >&2
   echo "error: Packaged backend is missing Apple MLX support." >&2
   exit 1
 fi
 
-ditto "$DIST_DIR/PaperCreatorBackend" "$BACKEND_DIR"
+ditto "$DIST_DIR/KeldinBackend" "$BACKEND_DIR"
 
 find "$BACKEND_DIR/_internal/Resources" -type f -exec chmod 0644 {} +
 xattr -cr "$BACKEND_DIR"
 
 SIGN_IDENTITY="${EXPANDED_CODE_SIGN_IDENTITY:--}"
-HELPER_EXECUTABLE="$BACKEND_DIR/PaperCreatorBackend"
-HELPER_ENTITLEMENTS="$ROOT_DIR/macOS/PaperCreator/PaperCreatorBackend.entitlements"
+HELPER_EXECUTABLE="$BACKEND_DIR/KeldinBackend"
+HELPER_ENTITLEMENTS="$ROOT_DIR/macOS/Keldin/KeldinBackend.entitlements"
 find "$BACKEND_DIR" -type f -print0 |
   while IFS= read -r -d '' file; do
     if /usr/bin/file -b "$file" | grep -q 'Mach-O'; then
@@ -199,7 +201,7 @@ find "$BACKEND_DIR" -type f -print0 |
       fi
       if [[ "${DISTRIBUTION_MODE:-direct}" == "app-store" && "$file" == "$HELPER_EXECUTABLE" ]]; then
         codesign_args+=(
-          --identifier com.jamesdurup.PaperCreator.PaperCreatorBackend
+          --identifier com.jamesdurup.Keldin.KeldinBackend
           --entitlements "$HELPER_ENTITLEMENTS"
         )
       fi

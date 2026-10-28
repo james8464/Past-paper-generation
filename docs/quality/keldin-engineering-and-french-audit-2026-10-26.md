@@ -10,7 +10,7 @@ The repository-wide automated suite passed **3,515 tests, with two skips** on `3
 
 - Reject malformed V33 checkpoint failure records before accepting saved work; retain the invalid file for diagnosis.
 - Stop retrying an identical deterministic V32 case after originality refusal. Legacy model retry behavior is unchanged.
-- Bind every printed page to exactly one correct footer and page counter. Current whole-case PDFs say Keldin; historical Paper Creator footers remain accepted for replay.
+- Bind every printed page to exactly one correct footer and page counter. Current whole-case PDFs say Keldin; historical publisher labels remain accepted for replay.
 - Clarify routing question 3e: the incorrect in-place algorithm happens to return the same B value in this case. Numerical agreement does not validate its forbidden read of the current A value.
 - Keep the first E2 prompt together in enlarged print. Allocate database-table widths to preserve identifiers such as `temperature`, without reducing the requested text size.
 - Remove unused model-selection state from French requests and readiness presentation. Keep the finite catalogue and teacher-review limits visible.

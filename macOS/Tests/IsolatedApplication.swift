@@ -1,6 +1,6 @@
 import Foundation
 import XCTest
-@testable import PaperCreator
+@testable import Keldin
 
 extension XCTestCase {
     func isolatedDefaults() -> UserDefaults {

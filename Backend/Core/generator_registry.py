@@ -1,3 +1,5 @@
+# Read the supported generator families and their declared qualification evidence.
+
 from __future__ import annotations
 
 import json
@@ -94,8 +96,8 @@ def generator_subjects() -> tuple[str, ...]:
     return tuple(generator_capabilities())
 
 
+# National frameworks are not exam boards and never inherit UK AO policy.
 def assessment_framework(identifier: str):
-    """National frameworks are not exam boards and never inherit UK AO policy."""
     from Backend.Core.education_context import NSI_2027
 
     payload = json.loads(REGISTRY_PATH.read_text(encoding="utf-8"))

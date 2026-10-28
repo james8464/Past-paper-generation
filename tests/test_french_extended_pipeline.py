@@ -1,4 +1,4 @@
-"""Four real whole-paper families must replay and retain originality refusal."""
+# Four real whole-paper families must replay and retain originality refusal.
 
 from copy import deepcopy
 

@@ -1,6 +1,6 @@
 # Bundled examination fonts
 
-Paper Creator bundles open, deterministic font files so a paper renders with
+Keldin bundles open, deterministic font files so a paper renders with
 the same metrics on every supported Mac and inside the signed backend helper.
 
 - `arimo/` is [Google Fonts Arimo](https://github.com/googlefonts/arimo), a

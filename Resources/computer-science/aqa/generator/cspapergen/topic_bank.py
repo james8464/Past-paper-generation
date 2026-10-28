@@ -1,8 +1,7 @@
-"""Original, source-comparable topic-bank tasks. Full-paper templates are untouched.
-
-Tariffs/AOs describe the actual work, not a scaled whole-paper target. Source
-comparability is independently checked by Backend.Core.topic_reference_evidence.
-"""
+# Original, source-comparable topic-bank tasks. Full-paper templates are untouched.
+#
+# Tariffs/AOs describe the actual work, not a scaled whole-paper target. Source
+# comparability is independently checked by Backend.Core.topic_reference_evidence.
 from __future__ import annotations
 
 import random

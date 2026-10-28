@@ -1,4 +1,4 @@
-"""One instance supplies the paper's source, credit, solver and review views."""
+# One instance supplies the paper's source, credit, solver and review views.
 
 from __future__ import annotations
 
@@ -168,7 +168,7 @@ def source_instance(question, seed: int) -> EconomicsSource:
                 v + offset if kind != "current_account_line_chart" else v - offset
                 for v in values
             ]
-            # Change extrema/endpoint differences too, not just the origin.
+            # Vary extrema and endpoint differences as well as the origin.
             position = (
                 values.index(max(values))
                 if kind == "household_savings_line_chart"
@@ -243,7 +243,7 @@ def objective_budget(marks: int, command: str) -> dict[str, int]:
     if command == "mcq":
         return {
             "AO2": 1
-        }  # generated contextual selection, not claimed official MCQ metadata
+        }  # Generated contextual selection; this is not official MCQ metadata.
     if command == "calculate":
         return {"AO2": 2} if marks == 2 else {"AO1": 2, "AO2": 2}
     if command == "draw":

@@ -1,4 +1,4 @@
-"""Command-line entry point for the app's scoped French corpus importer."""
+# Command-line entry point for the app's scoped French corpus importer.
 
 import sys
 from pathlib import Path

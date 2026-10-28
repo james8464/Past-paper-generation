@@ -1,3 +1,5 @@
+# Prepare local MLX models and report setup failures the app can act on.
+
 from __future__ import annotations
 
 import argparse
@@ -40,16 +42,19 @@ SUPPORTED_PYTHON_MIN = (3, 10)
 SUPPORTED_PYTHON_MAX = (3, 13)
 
 
+# A recoverable Apple MLX setup failure suitable for the app UI.
 class MLXSetupError(RuntimeError):
-    """A recoverable Apple MLX setup failure suitable for the app UI."""
+    pass
 
 
+# Apple MLX setup was cancelled by the user.
 class MLXSetupCancelled(MLXSetupError):
-    """Apple MLX setup was cancelled by the user."""
+    pass
 
 
+# The selected model no longer has a complete local snapshot.
 class MLXModelSetupRequired(MLXSetupError):
-    """The selected model no longer has a complete local snapshot."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -58,13 +63,13 @@ class MLXSetupResult:
     model_ready: bool
 
 
+# Fail before download when the local MLX environment cannot succeed.
 def validate_mlx_setup_environment(
     *,
     python_version: tuple[int, int] | None = None,
     machine: str | None = None,
     free_bytes: int | None = None,
 ) -> None:
-    """Fail before download when the local MLX environment cannot succeed."""
 
     version = python_version or (sys.version_info.major, sys.version_info.minor)
     architecture = (machine or platform.machine()).lower()
@@ -95,8 +100,8 @@ def _available_cache_bytes() -> int:
     return shutil.disk_usage(probe).free
 
 
+# Exercise the packaged runtime instead of merely checking module metadata.
 def mlx_runtime_available() -> bool:
-    """Exercise the packaged runtime instead of merely checking module metadata."""
 
     try:
         import mlx.core as mx
@@ -126,8 +131,8 @@ def mlx_runtime_available() -> bool:
         return False
 
 
+# Only permit package installation inside the repository-owned virtualenv.
 def is_managed_development_environment() -> bool:
-    """Only permit package installation inside the repository-owned virtualenv."""
 
     prefix = Path(sys.prefix).resolve()
     executable = Path(sys.executable).absolute()
@@ -195,12 +200,12 @@ def install_mlx_runtime(
     return return_code == 0 and mlx_runtime_available()
 
 
+# Return a complete local model path without allowing a network download.
 def resolve_local_mlx_model(
     model: str,
     *,
     snapshot_resolver: Callable[..., str] | None = None,
 ) -> str:
-    """Return a complete local model path without allowing a network download."""
 
     local_path = Path(model).expanduser()
     if local_path.exists():
@@ -258,6 +263,7 @@ def load_mlx_model(
         ) from error
 
 
+# Install a development runtime if needed, then prepare the chosen model.
 def ensure_mlx_ready(
     model: str,
     *,
@@ -267,7 +273,6 @@ def ensure_mlx_ready(
     frozen: bool,
     managed_environment: Callable[[], bool] = is_managed_development_environment,
 ) -> MLXSetupResult:
-    """Install a development runtime if needed, then prepare the chosen model."""
 
     model = model.strip()
     if not model:

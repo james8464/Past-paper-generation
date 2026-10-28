@@ -1,4 +1,4 @@
-"""Fetch explicitly registered public French PDFs; never infer redistribution rights."""
+# Fetch explicitly registered public French PDFs; never infer redistribution rights.
 
 import argparse
 import json
@@ -58,14 +58,13 @@ def check_download(url: str, content: bytes):
         raise ValueError("Source response is not a bounded PDF document")
 
 
+# Use macOS certificate trust when bundled Python cannot reach an official PDF.
+#
+# Redirects are deliberately disabled: only a registered canonical URL may be
+# fetched by this fallback. TLS verification is never disabled.
 def download_with_system_trust(url: str) -> bytes:
-    """Use macOS certificate trust when bundled Python cannot reach an official PDF.
-
-    Redirects are deliberately disabled: only a registered canonical URL may be
-    fetched by this fallback. TLS verification is never disabled.
-    """
     check_url(url)
-    with tempfile.TemporaryDirectory(prefix="papercreator-reference-") as folder:
+    with tempfile.TemporaryDirectory(prefix="keldin-reference-") as folder:
         destination = Path(folder) / "source.pdf"
         subprocess.run(
             [
@@ -136,8 +135,8 @@ def discover_links(html: str, base_url: str) -> list[str]:
     return sorted(parser.urls)
 
 
+# Freeze this result before authoring; one in five papers per session held out.
 def assign_splits(entries: list[dict]) -> dict[str, str]:
-    """Freeze this result before authoring; one in five papers per session held out."""
     groups = defaultdict(list)
     result = {entry["id"]: "reference" for entry in entries}
     for entry in entries:
@@ -157,15 +156,14 @@ def _identifier_part(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", plain.casefold()).strip("-")
 
 
+# Turn a captured official archive index into a frozen acquisition register.
+#
+# The split is assigned from metadata before any new paper content is read. Only
+# the standard representation becomes a candidate source; enlarged-print and
+# braille links remain in the manifest as non-retrieval aliases.
 def reconcile_archive_discovery(
     discovery: dict, foundational_documents: list[dict]
 ) -> dict:
-    """Turn a captured official archive index into a frozen acquisition register.
-
-    The split is assigned from metadata before any new paper content is read. Only
-    the standard representation becomes a candidate source; enlarged-print and
-    braille links remain in the manifest as non-retrieval aliases.
-    """
     if discovery.get("schema_version") != 1:
         raise ValueError("Unsupported French archive discovery schema")
     rows = discovery.get("rows")
@@ -278,8 +276,8 @@ def reconcile_archive_discovery(
     }
 
 
+# Pin successfully acquired bytes without concealing gaps or duplicates.
 def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
-    """Pin successfully acquired bytes without concealing gaps or duplicates."""
     if manifest.get("failures") or not manifest.get("complete_archive"):
         raise ValueError("Cannot pin an incomplete French archive acquisition")
     by_id = {
@@ -306,12 +304,11 @@ def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
     return pinned
 
 
+# Choose one indexed identity per byte-identical group.
+#
+# When an identical file crosses the holdout boundary, the holdout identity is
+# retained so the same bytes can never re-enter retrieval through an alias.
 def duplicate_index_policy(documents: list[dict]) -> list[dict]:
-    """Choose one indexed identity per byte-identical group.
-
-    When an identical file crosses the holdout boundary, the holdout identity is
-    retained so the same bytes can never re-enter retrieval through an alias.
-    """
     by_digest = defaultdict(list)
     for document in documents:
         by_digest[document["sha256"]].append(document)
@@ -388,7 +385,7 @@ def ingest(register: Path, output: Path) -> dict:
                         with opener.open(
                             Request(
                                 entry["url"],
-                                headers={"User-Agent": "PaperCreator-ReferenceAudit/1"},
+                                headers={"User-Agent": "Keldin-ReferenceAudit/1"},
                             ),
                             timeout=45,
                         ) as response:
@@ -488,7 +485,7 @@ def ingest(register: Path, output: Path) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description='Fetch explicitly registered public French PDFs; never infer redistribution rights.')
     parser.add_argument("--register", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()

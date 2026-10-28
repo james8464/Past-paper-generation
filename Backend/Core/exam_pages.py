@@ -1,3 +1,5 @@
+# Draw shared page borders, footers and answer-page furniture.
+
 from __future__ import annotations
 
 import hashlib
@@ -27,8 +29,8 @@ class ExamPageProfile:
     message: str = ""
 
 
+# A full-page shell that can also live inside a Platypus story.
 class ExamPage(Flowable):
-    """A full-page shell that can also live inside a Platypus story."""
 
     def __init__(
         self,
@@ -48,9 +50,9 @@ class ExamPage(Flowable):
         self.width = 167 * mm
         self.height = 226 * mm
 
+    # Expose identical page intent to the renderer-neutral DSL.
     @property
     def component(self) -> BlankPage | ContinuationPage | RuleSet:
-        """Expose identical page intent to the renderer-neutral DSL."""
         if self.profile.variant == "blank":
             return BlankPage(message=self.profile.message or self.profile.heading)
         if self.profile.variant == "continuation":

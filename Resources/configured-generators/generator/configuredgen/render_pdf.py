@@ -1,3 +1,5 @@
+# Render configured-family papers and marking guidance using the shared PDF components.
+
 from __future__ import annotations
 
 from pathlib import Path

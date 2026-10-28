@@ -1,1 +1,1 @@
-"""Development tooling for Paper creator."""
+# Development tooling for Keldin.

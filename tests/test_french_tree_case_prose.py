@@ -1,4 +1,4 @@
-"""Complete E1 case demand, rubric alignment and closed-content integrity."""
+# Complete E1 case demand, rubric alignment and closed-content integrity.
 
 from copy import deepcopy
 from decimal import Decimal

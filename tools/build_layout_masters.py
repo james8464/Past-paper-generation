@@ -1,3 +1,5 @@
+# Extract measured page geometry from registered reference PDFs.
+
 from __future__ import annotations
 
 import argparse

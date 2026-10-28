@@ -1,8 +1,7 @@
-"""Five whole-paper families with immutable V34 source reuse.
-
-Reconstruction certifies source integrity and retained-history screening,
-not difficulty or learner timing.
-"""
+# Five whole-paper families with immutable V34 source reuse.
+#
+# Reconstruction certifies source integrity and retained-history screening,
+# not difficulty or learner timing.
 
 import json
 from copy import deepcopy

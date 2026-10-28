@@ -1,3 +1,5 @@
+# Store calibration rows locally with caller-supplied encryption keys.
+
 from __future__ import annotations
 
 import csv
@@ -76,13 +78,12 @@ class ConsentRecord:
             raise ValueError("consent records require date and provenance")
 
 
+# Encrypted local storage for row-level calibration evidence.
+#
+# Keys are deliberately supplied by the caller so a macOS client can keep
+# them in Keychain. Dataset files contain only authenticated ciphertext;
+# aggregate reports never contain candidate or marker identifiers.
 class CalibrationStore:
-    """Encrypted local storage for row-level calibration evidence.
-
-    Keys are deliberately supplied by the caller so a macOS client can keep
-    them in Keychain. Dataset files contain only authenticated ciphertext;
-    aggregate reports never contain candidate or marker identifiers.
-    """
 
     def __init__(self, root: Path, *, key: bytes | str) -> None:
         self.root = root

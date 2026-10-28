@@ -16,7 +16,7 @@ by itself prove accessibility compliance.
 
 ## Final workspace
 
-![Final Paper Creator workspace](ui-audit-2026-08/01-final-workspace.png)
+![Final Keldin workspace](ui-audit-2026-08/01-final-workspace.png)
 
 The main window uses a native three-column `NavigationSplitView`: subject and
 board navigation, the paper-creation task, and a collapsible quality inspector.

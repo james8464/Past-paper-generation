@@ -318,8 +318,8 @@ def test_multiple_choice_answer_shorthand_is_normalised_to_the_full_choice() -> 
     ) == "Which document is evidence of a credit purchase?"
 
 
+# A model must not corrupt units or precision in deterministic MCQ options.
 def test_candidate_question_preserves_selected_response_choices_owned_by_contract() -> None:
-    """A model must not corrupt units or precision in deterministic MCQ options."""
 
     choices = [
         "12 units of product Y",

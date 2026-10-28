@@ -1,8 +1,7 @@
-"""Immutable app-owned facts for the V17 French graph/tree reasoning sequence.
-
-The older six-question graph/tree contract is intentionally left unchanged.
-Only trusted, fixed application code appears in the candidate material.
-"""
+# Immutable app-owned facts for the V17 French graph/tree reasoning sequence.
+#
+# The older six-question graph/tree contract is intentionally left unchanged.
+# Only trusted, fixed application code appears in the candidate material.
 
 from __future__ import annotations
 
@@ -44,10 +43,10 @@ def _adjacency(graph: dict) -> dict[str, list[tuple[str, int]]]:
     return adjacent
 
 
+# Trace the first two settled vertices and cross-check the final path.
 def _dijkstra_steps(
     adjacency: dict[str, list[tuple[str, int]]],
 ) -> tuple[list[dict], dict]:
-    """Trace the first two settled vertices and cross-check the final path."""
     best: dict[str, tuple[int, tuple[str, ...]]] = {"A": (0, ("A",))}
     previous: dict[str, str] = {}
     queue = [(0, ("A",), "A")]

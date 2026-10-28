@@ -1,4 +1,4 @@
-"""Finite French wording and staged working surfaces for V23 Exercise 3."""
+# Finite French wording and staged working surfaces for V23 Exercise 3.
 
 from __future__ import annotations
 
@@ -381,10 +381,10 @@ def render_network_incident_candidate(
     }
 
 
+# Reject mutated candidate facts, answers or credits before PDF inspection.
 def validate_network_incident_exercise(
     contract: NetworkIncidentContract, exercise, task_specs: list[dict]
 ) -> None:
-    """Reject mutated candidate facts, answers or credits before PDF inspection."""
     raw = exercise.model_dump(mode="json")
     scene = next(
         (key for key, (title, _) in _SCENES.items() if title == raw.get("title")),

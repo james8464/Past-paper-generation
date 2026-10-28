@@ -1,3 +1,5 @@
+# Run each generator's tests from its resource root and expose all family packages.
+
 from __future__ import annotations
 
 import os

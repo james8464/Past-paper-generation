@@ -1,4 +1,4 @@
-"""Check the new scheduling case against an independent, one-tick simulator."""
+# Check the new scheduling case against an independent, one-tick simulator.
 
 from copy import deepcopy
 from itertools import product

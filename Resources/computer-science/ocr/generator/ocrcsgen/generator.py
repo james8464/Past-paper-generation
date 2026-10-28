@@ -1,3 +1,5 @@
+# Build seeded OCR Computer Science paper content and its marking guidance.
+
 from __future__ import annotations
 
 import random

@@ -1,2 +1,2 @@
-"""Independent AQA 7132 practice-paper generator."""
+# Independent AQA 7132 practice-paper generator.
 

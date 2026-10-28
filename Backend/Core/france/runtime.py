@@ -1,4 +1,4 @@
-"""Framework-specific publication, sharing providers/events/render transactions."""
+# Publish French assessments using shared providers, events and render transactions.
 
 import json
 import os
@@ -128,6 +128,7 @@ from Backend.Core.france.rendering import (
 )
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.generator_registry import assessment_framework
+from Backend.Core.legacy_migration import LEGACY_PUBLISHER, output_directory
 from Backend.Core.render_transaction import render_pdf_atomically
 
 
@@ -199,6 +200,7 @@ def validate_pdf(path: Path):
             raise ValueError("Crédits ou statut du document manquants")
 
 
+# Compare extracted printed facts with the locked first-exercise contract.
 def validate_contract_pdf(
     path: Path,
     contract: GraphTreeContract,
@@ -206,7 +208,6 @@ def validate_contract_pdf(
     correction: bool,
     exercise: NSIExercise | None = None,
 ) -> None:
-    """Compare extracted printed facts with the locked first-exercise contract."""
     data = contract.to_dict()
     with pymupdf.open(path) as pdf:
         lines = [
@@ -214,7 +215,7 @@ def validate_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -288,6 +289,7 @@ def validate_contract_pdf(
                     raise ValueError(f"Barème {question.id} révélé dans le sujet")
 
 
+# Check every printed V17 graph/tree fact, question and credit.
 def validate_graph_tree_depth_contract_pdf(
     path: Path,
     contract: GraphTreeDepthContract,
@@ -295,7 +297,6 @@ def validate_graph_tree_depth_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Check every printed V17 graph/tree fact, question and credit."""
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Graph/tree depth exercise does not match its contract")
@@ -305,7 +306,7 @@ def validate_graph_tree_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -390,6 +391,7 @@ def validate_graph_tree_depth_contract_pdf(
                 )
 
 
+# Fail closed on V20 printed facts, staging, answers and exact credit.
 def validate_graph_resilience_pdf(
     path: Path,
     contract: GraphResilienceContract,
@@ -397,7 +399,6 @@ def validate_graph_resilience_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Fail closed on V20 printed facts, staging, answers and exact credit."""
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Graph resilience exercise differs from locked contract")
@@ -407,7 +408,7 @@ def validate_graph_resilience_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -512,6 +513,7 @@ def validate_graph_resilience_pdf(
                 raise ValueError(f"Graph resilience rubric {question.id} leaked")
 
 
+# Bind every V22 printed stage and credit to its immutable route facts.
 def validate_graph_route_trace_pdf(
     path: Path,
     contract: GraphRouteTraceContract,
@@ -519,7 +521,6 @@ def validate_graph_route_trace_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Bind every V22 printed stage and credit to its immutable route facts."""
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Route trace exercise differs from locked contract")
@@ -529,7 +530,7 @@ def validate_graph_route_trace_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     flat = " ".join(" ".join(lines).split())
@@ -643,10 +644,10 @@ def validate_graph_route_trace_pdf(
                 raise ValueError(f"Route trace rubric {question.id} leaked")
 
 
+# Bind V30's public catalogue/helper and all answer/credit phases.
 def _validate_route_selection_pdf(
     path, data, exercise, *, correction, coherent_material_flow
 ):
-    """Bind V30's public catalogue/helper and all answer/credit phases."""
     from Backend.Core.france.route_selection_authoring import (
         HELPER_CODE,
         route_material,
@@ -669,7 +670,7 @@ def _validate_route_selection_pdf(
             [
                 line.strip()
                 for line in page.get_text().splitlines()
-                if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+                if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
             ]
             for page in pdf
         ]
@@ -805,6 +806,7 @@ def _validate_route_selection_pdf(
         raise ValueError("Route selection solution code leaked")
 
 
+# Bind V25's two ordered outages, working surfaces, answers and credit.
 def validate_graph_two_outage_pdf(
     path: Path,
     contract: GraphTwoOutageContract,
@@ -814,7 +816,6 @@ def validate_graph_two_outage_pdf(
     human_readable_titles: bool = False,
     coherent_material_flow: bool = False,
 ) -> None:
-    """Bind V25's two ordered outages, working surfaces, answers and credit."""
     data = contract.to_dict()
     if exercise.id != "1" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Two-outage exercise differs from locked contract")
@@ -843,7 +844,7 @@ def validate_graph_two_outage_pdf(
                 line.strip()
                 for line in page.get_text().splitlines()
                 if line.strip()
-                and not line.startswith("Paper Creator —")
+                and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
                 and not line.startswith("Page : ")
             ]
             for page in pdf
@@ -1023,6 +1024,7 @@ def validate_graph_two_outage_pdf(
                 raise ValueError(f"Two-outage rubric {question.id} leaked")
 
 
+# Check that both PDF roles print the exact locked database exercise.
 def validate_database_contract_pdf(
     path: Path,
     contract: DatabaseContract,
@@ -1030,7 +1032,6 @@ def validate_database_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Check that both PDF roles print the exact locked database exercise."""
     data = contract.to_dict()
     if (
         exercise.id != "2"
@@ -1043,7 +1044,7 @@ def validate_database_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1106,6 +1107,7 @@ def validate_database_contract_pdf(
                 raise ValueError(f"Database rubric {question.id} leaked into paper")
 
 
+# Fail closed on missing V2 facts, ten tasks, answers or rubric credits.
 def validate_database_depth_contract_pdf(
     path: Path,
     contract: DatabaseDepthContract,
@@ -1113,7 +1115,6 @@ def validate_database_depth_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Fail closed on missing V2 facts, ten tasks, answers or rubric credits."""
     data = contract.to_dict()
     if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Database depth exercise does not match its contract")
@@ -1123,7 +1124,7 @@ def validate_database_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1183,6 +1184,7 @@ def validate_database_depth_contract_pdf(
                 )
 
 
+# Require V2 facts and each V19 reasoning phase in its intended role.
 def validate_database_reasoning_pdf(
     path: Path,
     contract: DatabaseDepthContract,
@@ -1190,7 +1192,6 @@ def validate_database_reasoning_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Require V2 facts and each V19 reasoning phase in its intended role."""
     validate_database_depth_contract_pdf(
         path, contract, correction=correction, exercise=exercise
     )
@@ -1260,6 +1261,7 @@ def validate_database_reasoning_pdf(
                     )
 
 
+# Bind V24 printed facts, staged working surfaces and exact correction credit.
 def validate_database_reconciliation_pdf(
     path: Path,
     contract: DatabaseReconciliationContract,
@@ -1267,7 +1269,6 @@ def validate_database_reconciliation_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Bind V24 printed facts, staged working surfaces and exact correction credit."""
     data = contract.to_dict()
     if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Incident-reconciliation exercise differs from contract")
@@ -1282,7 +1283,7 @@ def validate_database_reconciliation_pdf(
         for page in pages
         for line in page.splitlines()
         if line.strip()
-        and not line.startswith("Paper Creator —")
+        and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
         and not line.startswith("Page : ")
     ]
     flat = " ".join(lines)
@@ -1414,6 +1415,7 @@ def validate_database_reconciliation_pdf(
                 previous_credit = at
 
 
+# Bind V21 printed incident facts, staged working tables and exact credit.
 def validate_database_audit_pdf(
     path: Path,
     contract: DatabaseAuditContract,
@@ -1421,7 +1423,6 @@ def validate_database_audit_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Bind V21 printed incident facts, staged working tables and exact credit."""
     data = contract.to_dict()
     if exercise.id != "2" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Incident-audit exercise differs from locked contract")
@@ -1432,7 +1433,7 @@ def validate_database_audit_pdf(
         line.strip()
         for line in raw.splitlines()
         if line.strip()
-        and not line.startswith("Paper Creator —")
+        and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
         and not line.startswith("Page : ")
     ]
     flat = " ".join(raw.split())
@@ -1594,6 +1595,7 @@ def validate_database_audit_pdf(
             raise ValueError(f"Incident-audit answer {question.id} leaked")
 
 
+# Require exact app-owned network evidence in each published PDF role.
 def validate_network_contract_pdf(
     path: Path,
     contract: NetworkContract,
@@ -1601,7 +1603,6 @@ def validate_network_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Require exact app-owned network evidence in each published PDF role."""
     data = contract.to_dict()
     if (
         exercise.id != "3"
@@ -1614,7 +1615,7 @@ def validate_network_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1673,6 +1674,7 @@ def validate_network_contract_pdf(
                 raise ValueError(f"Network rubric {question.id} leaked into paper")
 
 
+# Fail closed if a v15 PDF omits locked facts or exposes an answer.
 def validate_network_depth_contract_pdf(
     path: Path,
     contract: NetworkDepthContract,
@@ -1680,7 +1682,6 @@ def validate_network_depth_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Fail closed if a v15 PDF omits locked facts or exposes an answer."""
     data = contract.to_dict()
     if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Network depth exercise does not match its contract")
@@ -1690,7 +1691,7 @@ def validate_network_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1800,6 +1801,7 @@ def validate_network_depth_contract_pdf(
                 raise ValueError(f"Network depth rubric {question.id} leaked")
 
 
+# Reject V18 PDFs whose case facts or per-question roles do not print.
 def validate_network_reasoning_contract_pdf(
     path: Path,
     contract: NetworkReasoningContract,
@@ -1807,7 +1809,6 @@ def validate_network_reasoning_contract_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Reject V18 PDFs whose case facts or per-question roles do not print."""
     data = contract.to_dict()
     if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Network reasoning exercise differs from contract")
@@ -1817,7 +1818,7 @@ def validate_network_reasoning_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1940,6 +1941,7 @@ def validate_network_reasoning_contract_pdf(
                 raise ValueError(f"Network reasoning rubric {question.id} leaked")
 
 
+# Bind V23's three displayed incident stages and answer/credit roles.
 def validate_network_incident_pdf(
     path: Path,
     contract: NetworkIncidentContract,
@@ -1947,7 +1949,6 @@ def validate_network_incident_pdf(
     correction: bool,
     exercise: NSIExercise,
 ) -> None:
-    """Bind V23's three displayed incident stages and answer/credit roles."""
     data = contract.to_dict()
     if exercise.id != "3" or [q.id for q in exercise.questions] != data["task_ids"]:
         raise ValueError("Network incident exercise differs from contract")
@@ -2032,7 +2033,7 @@ def validate_network_incident_pdf(
             line.strip()
             for page in pages
             for line in page.splitlines()
-            if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+            if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
         ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
@@ -2119,6 +2120,7 @@ def validate_network_incident_pdf(
                 raise ValueError(f"Network incident credit {question.id} missing")
 
 
+# Bind V26's printed chronology, questions and correction credits.
 def validate_network_incident_timeline_pdf(
     path: Path,
     contract: NetworkIncidentTimelineContract,
@@ -2127,7 +2129,6 @@ def validate_network_incident_timeline_pdf(
     exercise: NSIExercise,
     revision: int = 1,
 ) -> None:
-    """Bind V26's printed chronology, questions and correction credits."""
     from Backend.Core.france.pipeline import _tasks_for_seed_v26
 
     data = contract.to_dict()
@@ -2162,7 +2163,7 @@ def validate_network_incident_timeline_pdf(
         line.strip()
         for page in pages
         for line in page.splitlines()
-        if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+        if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
     ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
@@ -2263,8 +2264,8 @@ def validate_network_incident_timeline_pdf(
                 )
 
 
+# Read recent, valid local candidate text, independently of seed ordering.
 def load_originality_history(output: Path) -> list[str]:
-    """Read recent, valid local candidate text, independently of seed ordering."""
     history: list[str] = []
     if not output.is_dir():
         return history
@@ -2310,8 +2311,8 @@ def load_originality_history(output: Path) -> list[str]:
     return history
 
 
+# Never silently render an unknown French package with an older validator.
 def network_pdf_contract_version(prompt_version: str) -> str:
-    """Never silently render an unknown French package with an older validator."""
     if prompt_version == EXPANDED_VERSION:
         return "v35"
     if prompt_version == EXTENDED_VERSION:
@@ -2450,7 +2451,7 @@ def handle_generate_assessment(args) -> int:
             if application_owned
             else f"{definition.id}-{selected_seed}.json"
         )
-        checkpoint = output / ".papercreator-checkpoints" / checkpoint_name
+        checkpoint = output_directory(output, ".keldin-checkpoints") / checkpoint_name
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(
             index_path=args.reference_index,

@@ -1,4 +1,4 @@
-"""Finite French V24 questions and working surfaces for incident reconciliation."""
+# Finite French V24 questions and working surfaces for incident reconciliation.
 
 from __future__ import annotations
 

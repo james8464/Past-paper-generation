@@ -1,4 +1,4 @@
-"""Selection-only French authoring preserves rejected responses and replay identity."""
+# Selection-only French authoring preserves rejected responses and replay identity.
 
 import io
 import json

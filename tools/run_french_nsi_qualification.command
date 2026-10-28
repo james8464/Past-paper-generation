@@ -1,12 +1,14 @@
 #!/bin/zsh
+# Run resumable French NSI checks against the local reference catalogue.
+
 set -euo pipefail
 
 SCRIPT_DIR=${0:A:h}
 PROJECT_DIR=${SCRIPT_DIR:h}
 PYTHON_BIN="$PROJECT_DIR/.venv/bin/python"
 REFERENCE_INDEX="$PROJECT_DIR/Reference Corpus/france/nsi/references.sqlite"
-OUTPUT_DIR=${PAPER_CREATOR_FRENCH_QUALIFICATION_OUTPUT:-"$PROJECT_DIR/tmp/qualification-fr-nsi-2027"}
-MODELS=${PAPER_CREATOR_FRENCH_MODELS:-"gemma4:12b,ministral-3:8b,qwen3:8b"}
+OUTPUT_DIR=${KELDIN_FRENCH_QUALIFICATION_OUTPUT:-"$PROJECT_DIR/tmp/qualification-fr-nsi-2027"}
+MODELS=${KELDIN_FRENCH_MODELS:-"gemma4:12b,ministral-3:8b,qwen3:8b"}
 
 if [[ ! -x "$PYTHON_BIN" ]]; then
   print -u2 "Python environment missing: $PYTHON_BIN"

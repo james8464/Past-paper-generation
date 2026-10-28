@@ -1,4 +1,4 @@
-"""Finite, original French wording for the version-two NSI network case."""
+# Finite, original French wording for the version-two NSI network case.
 
 from __future__ import annotations
 

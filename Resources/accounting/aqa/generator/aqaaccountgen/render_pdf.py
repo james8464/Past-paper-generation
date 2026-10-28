@@ -1,3 +1,5 @@
+# Render AQA Accounting papers and marking guidance using the shared PDF components.
+
 from __future__ import annotations
 
 from functools import partial
@@ -942,8 +944,8 @@ def _levels_scheme_page(
     ]
 
 
+# Preserve declared objectives; row position is not assessment evidence.
 def _indicative_objective(point: str) -> str:
-    """Preserve declared objectives; row position is not assessment evidence."""
     objective_policy_for("accounting").validate(point)
     prefix, separator, _ = point.partition(":")
     objectives = [value.strip().upper() for value in prefix.split("/")]
@@ -2535,8 +2537,8 @@ def _response_line_count(question: GeneratedQuestion) -> int:
     return min(18, max(4, question.marks * 2 + 2))
 
 
+# Explain the scannable response method before the first MCQ.
 class _MultipleChoiceInstructions(Flowable):
-    """Explain the scannable response method before the first MCQ."""
 
     width = 167 * mm
     height = 156.7

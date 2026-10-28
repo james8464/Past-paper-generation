@@ -1,4 +1,4 @@
-"""Shared subject interfaces, independent of plugin implementations and discovery."""
+# Shared subject interfaces, independent of plugin implementations and discovery.
 
 from __future__ import annotations
 

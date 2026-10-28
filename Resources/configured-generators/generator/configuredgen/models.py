@@ -1,3 +1,5 @@
+# Define the structured records used by the configured-family generator.
+
 from __future__ import annotations
 
 import json

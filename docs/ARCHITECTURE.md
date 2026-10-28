@@ -2,7 +2,7 @@
 
 ## Product boundary
 
-Paper Creator produces independently authored, unofficial A-level practice
+Keldin produces independently authored, unofficial A-level practice
 packages. It treats assessment design and visual composition as separate
 problems: an immutable paper blueprint controls what must be assessed, AI writes
 new content inside that blueprint, validators reject unsafe output, and
@@ -58,7 +58,7 @@ Resources/
       <package>/             family blueprint, renderer, and CLI
       data/                  syllabus and derived calibration data
 
-macOS/PaperCreator/
+macOS/Keldin/
   Application/              app entry point, commands, configuration
   Components/               reusable native views and view styles
   Domain/                   value types and generation estimates
@@ -132,7 +132,7 @@ flushes it to disk, then promotes it with `os.replace`. Timeouts, renderer
 exceptions, and malformed outputs remove the temporary artifact and cannot
 replace a previously valid destination.
 
-The checkpoint lives in `.papercreator-checkpoints` beside the selected output
+The checkpoint lives in `.keldin-checkpoints` beside the selected output
 folder, outside the disposable staging directory. Its identity includes the
 blueprint hash, seed, provider, model and prompt version. Successful publication
 removes it; cancellation or failure leaves it resumable.

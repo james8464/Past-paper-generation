@@ -1,3 +1,5 @@
+# Validate the Edexcel Economics blueprint before publishing its artifacts.
+
 from __future__ import annotations
 
 import re

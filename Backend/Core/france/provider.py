@@ -1,4 +1,4 @@
-"""Explicit French transport policy; UK prompt detection remains unchanged."""
+# Explicit French transport policy; UK prompt detection remains unchanged.
 
 import json
 from hashlib import sha256
@@ -55,17 +55,17 @@ from Backend.Core.france.network_reasoning_prose import (
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.legacy_migration import LEGACY_V32_ORIGIN
 from Backend.Core.providers import HostedLLMClient
 
 
+# Explicit no-transport identity for the verified V32 case authoring path.
 class ApplicationOwnedFrenchClient:
-    """Explicit no-transport identity for the verified V32 case authoring path."""
 
     provider = "application-owned"
     model = "app-owned-v32"
-    model_digest = sha256(
-        b"Paper Creator application-owned French cases v32"
-    ).hexdigest()
+    # V32's recorded identity does not change when the app is renamed.
+    model_digest = sha256(LEGACY_V32_ORIGIN).hexdigest()
 
     def generate_json(self, *args, **kwargs):
         raise RuntimeError("Application-owned authoring cannot call a language model")

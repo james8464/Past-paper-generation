@@ -1,3 +1,5 @@
+# Define written AQA Economics tasks and their question-specific marking content.
+
 from __future__ import annotations
 
 from dataclasses import dataclass

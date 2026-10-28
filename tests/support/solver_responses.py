@@ -1,4 +1,4 @@
-"""Complete strict solver envelopes for tests exercising later pipeline stages."""
+# Complete strict solver envelopes for tests exercising later pipeline stages.
 
 from __future__ import annotations
 

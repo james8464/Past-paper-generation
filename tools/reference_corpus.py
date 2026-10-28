@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Discover and download registered board reference documents with acquisition records.
+
 from __future__ import annotations
 
 import argparse
@@ -22,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CORPUS = ROOT / "Reference Corpus"
 DEFAULT_MANIFEST = DEFAULT_CORPUS / "manifest.json"
 DEFAULT_LAYOUT_SUMMARY = ROOT / "Resources" / "layout-profiles.json"
-USER_AGENT = "PaperCreator-Reference-Corpus/1.0"
+USER_AGENT = "Keldin-Reference-Corpus/1.0"
 ALLOWED_DOWNLOAD_HOSTS = {
     "cdn.sanity.io",
     "filestore.aqa.org.uk",

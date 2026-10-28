@@ -1,3 +1,5 @@
+# Supply Edexcel Economics source data for the candidate booklet.
+
 from __future__ import annotations
 
 LINE_CHART_SERIES: dict[str, tuple[str, str, tuple[float, ...]]] = {

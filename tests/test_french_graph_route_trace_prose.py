@@ -1,4 +1,4 @@
-"""V22 wording must expose the intended work but not the derived answers."""
+# V22 wording must expose the intended work but not the derived answers.
 
 from __future__ import annotations
 

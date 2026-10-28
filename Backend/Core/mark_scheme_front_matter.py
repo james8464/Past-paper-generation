@@ -1,3 +1,5 @@
+# Build the shared introductory guidance for AQA mark schemes.
+
 from __future__ import annotations
 
 from reportlab.lib.units import mm

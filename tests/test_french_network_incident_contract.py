@@ -1,4 +1,4 @@
-"""V23's incident facts must be causal, deterministic and immutable."""
+# V23's incident facts must be causal, deterministic and immutable.
 
 from copy import deepcopy
 

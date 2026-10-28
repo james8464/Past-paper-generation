@@ -159,13 +159,13 @@ def test_aqa_economics_scheme_cover_rules_follow_its_compact_title_grid(
         )
 
 
+# Frame padding must not displace the identity block or candidate grid.
 @pytest.mark.parametrize(
     "candidate_fields,left,title_baseline", [(True, 41.04, 311.2), (False, 48.0, 150.0)]
 )
 def test_aqa_question_cover_anchors_to_paper_not_story_margins(
     tmp_path, candidate_fields, left, title_baseline
 ):
-    """Frame padding must not displace the identity block or candidate grid."""
     path = tmp_path / "question-cover.pdf"
     profile = CoverProfile(
         "aqa",
@@ -333,8 +333,8 @@ def test_ocr_cover_template_does_not_overlay_body_page_furniture(tmp_path, modul
     renderer = importlib.import_module(module_name)
     path = tmp_path / "chrome.pdf"
     pdf = Canvas(str(path), pagesize=A4)
-    pdf.drawString(95, 761, "PAPER CREATOR")
+    pdf.drawString(95, 761, "KELDIN")
     renderer._chrome(pdf, SimpleNamespace(page=1), "H446/02", "Question paper")
     pdf.save()
     with fitz.open(path) as document:
-        assert document[0].get_text().strip() == "PAPER CREATOR"
+        assert document[0].get_text().strip() == "KELDIN"

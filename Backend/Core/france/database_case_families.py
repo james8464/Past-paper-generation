@@ -1,8 +1,7 @@
-"""V32 original relational cases with separate public sources and private oracles.
-
-Not yet a publication path: authoring and whole-package integration are separate.
-Only fixed application SQL executes. Model-provided SQL/code is never executed.
-"""
+# V32 original relational cases with separate public sources and private oracles.
+#
+# Not yet a publication path: authoring and whole-package integration are separate.
+# Only fixed application SQL executes. Model-provided SQL/code is never executed.
 
 import json
 import sqlite3
@@ -21,12 +20,11 @@ def _table(name, columns, rows):
     return {"name": name, "columns": columns, "rows": rows}
 
 
+# Single pass over (sensor, temperature, valid); unknown IDs are invalid inputs.
+#
+# Sensor IDs are unique. None represents no valid observation, not zero degrees.
+# Inputs are not mutated; observations may be a one-shot iterator.
 def sensor_extrema(sensor_ids, observations):
-    """Single pass over (sensor, temperature, valid); unknown IDs are invalid inputs.
-
-    Sensor IDs are unique. None represents no valid observation, not zero degrees.
-    Inputs are not mutated; observations may be a one-shot iterator.
-    """
     result = dict.fromkeys(sensor_ids)
     for sensor, value, valid in observations:
         if valid:
@@ -42,11 +40,10 @@ def sensor_extrema(sensor_ids, observations):
     return result
 
 
+# Subtract confirmed group sizes; negative availability remains an alert.
+#
+# Reservations are (session, positive seats, confirmed), with known session IDs.
 def remaining_places(capacities, reservations):
-    """Subtract confirmed group sizes; negative availability remains an alert.
-
-    Reservations are (session, positive seats, confirmed), with known session IDs.
-    """
     result = capacities.copy()
     for session, seats, valid in reservations:
         if valid:
@@ -54,12 +51,11 @@ def remaining_places(capacities, reservations):
     return result
 
 
+# Return first failing movement ID, not final balance or list position.
+#
+# Precondition: initial >= 0; (ID, signed delta) rows already chronologically
+# ordered for one article. A balance of exactly zero is permitted.
 def first_stock_deficit(initial, movements):
-    """Return first failing movement ID, not final balance or list position.
-
-    Precondition: initial >= 0; (ID, signed delta) rows already chronologically
-    ordered for one article. A balance of exactly zero is permitted.
-    """
     balance = initial
     for identifier, delta in movements:
         balance += delta
@@ -246,8 +242,8 @@ _BAD_INSERTS = {
 }
 
 
+# Fixed application-owned actions, used in the correction and SQL oracle.
 def linked_sql(family, public):
-    """Fixed application-owned actions, used in the correction and SQL oracle."""
     if family == "sensors":
         corrected = public["tables"][1]["rows"][0][3] + 3
         return [
@@ -269,8 +265,8 @@ def linked_sql(family, public):
     raise ValueError("Unknown database case family")
 
 
+# Transform lists directly, independently of SQL statement interpretation.
 def _independent_states(family, public):
-    """Transform lists directly, independently of SQL statement interpretation."""
     current = deepcopy(public)
     states = [deepcopy(current)]
     rows = current["tables"][1]["rows"]

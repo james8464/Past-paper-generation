@@ -1,9 +1,8 @@
-"""Original tasks supporting the inferred OCR item budgets.
-
-AO2 rows analyse an actual implementation or constraint. They are not generic
-recall with a business name appended. AO3 coding rows specify observable code
-features; the separate discussion tasks retain best-fit evaluation.
-"""
+# Original tasks supporting the inferred OCR item budgets.
+#
+# AO2 rows analyse an actual implementation or constraint. They are not generic
+# recall with a business name appended. AO3 coding rows specify observable code
+# features; the separate discussion tasks retain best-fit evaluation.
 from __future__ import annotations
 
 # Keys are (component, group, part); marks and syllabus coverage live in configs.

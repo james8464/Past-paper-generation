@@ -1,4 +1,4 @@
-"""Edexcel's public-source and selected-answer handoff to the shared solver."""
+# Edexcel's public-source and selected-answer handoff to the shared solver.
 
 from __future__ import annotations
 

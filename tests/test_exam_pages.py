@@ -69,8 +69,8 @@ def test_aqa_additional_page_matches_measured_response_grid(tmp_path: Path) -> N
         document.close()
 
 
+# Catch inherited grey strokes and small type on the shared answer shell.
 def test_aqa_answer_grid_prints_black_with_full_size_header(tmp_path: Path) -> None:
-    """Catch inherited grey strokes and small type on the shared answer shell."""
     document = _render(
         tmp_path,
         ExamPageProfile("aqa", "7127/2", "Additional page, if required", "additional"),
@@ -100,13 +100,13 @@ def test_aqa_answer_grid_prints_black_with_full_size_header(tmp_path: Path) -> N
         document.close()
 
 
+# A legal note must not shorten the diagonal or move the central warning.
 @pytest.mark.parametrize(
     "module_name", ["aqaaccountgen.render_pdf", "aqabizgen.render_pdf"]
 )
 def test_aqa_final_blank_uses_page_coordinates_not_remaining_flow_height(
     tmp_path: Path, module_name: str
 ) -> None:
-    """A legal note must not shorten the diagonal or move the central warning."""
     import importlib
 
     from reportlab.platypus import SimpleDocTemplate

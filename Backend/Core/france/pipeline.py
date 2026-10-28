@@ -1,4 +1,4 @@
-"""Source-scoped French authoring with hash-bound reviews and resumable drafts."""
+# Source-scoped French authoring with hash-bound reviews and resumable drafts.
 
 import ast
 import json
@@ -410,8 +410,8 @@ def _tasks_for_seed(seed: int) -> list[dict]:
     return tasks
 
 
+# Preserve old blueprints while reallocating the deeper third exercise.
 def _tasks_for_seed_v15(seed: int) -> list[dict]:
-    """Preserve old blueprints while reallocating the deeper third exercise."""
     tasks = deepcopy(_tasks_for_seed(seed))
     exercise = tasks[2]
     credits = NETWORK_DEPTH_POINT_PROFILES[exercise["technical_points"]]
@@ -420,8 +420,8 @@ def _tasks_for_seed_v15(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep V15 exercises 1/3, deepen only the versioned database case.
 def _tasks_for_seed_v16(seed: int) -> list[dict]:
-    """Keep V15 exercises 1/3, deepen only the versioned database case."""
     tasks = _tasks_for_seed_v15(seed)
     exercise = tasks[1]
     total = exercise["technical_points"]
@@ -480,8 +480,8 @@ def _tasks_for_seed_v16(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep V16 E2 and V15 E3; deepen only the first exercise.
 def _tasks_for_seed_v17(seed: int) -> list[dict]:
-    """Keep V16 E2 and V15 E3; deepen only the first exercise."""
     tasks = _tasks_for_seed_v16(seed)
     exercise = tasks[0]
     total = exercise["technical_points"]
@@ -540,8 +540,8 @@ def _tasks_for_seed_v17(seed: int) -> list[dict]:
     return tasks
 
 
+# Retain V17 E1 and V16 E2; deepen only the third exercise.
 def _tasks_for_seed_v18(seed: int) -> list[dict]:
-    """Retain V17 E1 and V16 E2; deepen only the third exercise."""
     tasks = _tasks_for_seed_v17(seed)
     exercise = tasks[2]
     total = exercise["technical_points"]
@@ -596,13 +596,13 @@ def _tasks_for_seed_v18(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep all V18 scoring and facts; bind only E2 to finite V19 prose.
 def _tasks_for_seed_v19(seed: int) -> list[dict]:
-    """Keep all V18 scoring and facts; bind only E2 to finite V19 prose."""
     return _tasks_for_seed_v18(seed)
 
 
+# Stage the E1 resilience case without changing V19 E2 or V18 E3.
 def _tasks_for_seed_v20(seed: int) -> list[dict]:
-    """Stage the E1 resilience case without changing V19 E2 or V18 E3."""
     tasks = _tasks_for_seed_v19(seed)
     exercise = tasks[0]
     total = exercise["technical_points"]
@@ -620,8 +620,8 @@ def _tasks_for_seed_v20(seed: int) -> list[dict]:
     return tasks
 
 
+# Retain V20 E1/V18 E3 and stage the V3 incident audit only in E2.
 def _tasks_for_seed_v21(seed: int) -> list[dict]:
-    """Retain V20 E1/V18 E3 and stage the V3 incident audit only in E2."""
     tasks = _tasks_for_seed_v20(seed)
     exercise = tasks[1]
     total = exercise["technical_points"]
@@ -687,18 +687,18 @@ def _tasks_for_seed_v21(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep V21 scoring and E2/E3; replace only E1 facts and wording.
 def _tasks_for_seed_v22(seed: int) -> list[dict]:
-    """Keep V21 scoring and E2/E3; replace only E1 facts and wording."""
     return _tasks_for_seed_v21(seed)
 
 
+# Keep V22 E1/V21 E2 credit and replace only E3 facts and wording.
 def _tasks_for_seed_v23(seed: int) -> list[dict]:
-    """Keep V22 E1/V21 E2 credit and replace only E3 facts and wording."""
     return _tasks_for_seed_v22(seed)
 
 
+# Keep V23 E1/E3 while staging the reconciliation sequence in E2.
 def _tasks_for_seed_v24(seed: int) -> list[dict]:
-    """Keep V23 E1/E3 while staging the reconciliation sequence in E2."""
     tasks = _tasks_for_seed_v23(seed)
     exercise = tasks[1]
     quarters = {
@@ -755,8 +755,8 @@ def _tasks_for_seed_v24(seed: int) -> list[dict]:
     return tasks
 
 
+# Whole app-owned cases; release qualification remains a separate gate.
 def _tasks_for_seed_v32(seed: int) -> list[dict]:
-    """Whole app-owned cases; release qualification remains a separate gate."""
     tasks = _tasks_for_seed_v31(seed)
     tasks[0] = tree_case_task(seed, tasks[0]["technical_points"])
     tasks[1] = case_task(seed, tasks[1]["technical_points"])
@@ -802,8 +802,8 @@ def _tasks_for_seed_v28(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep V24 E2/V23 E3 and deepen only the connected E1 route case.
 def _tasks_for_seed_v25(seed: int) -> list[dict]:
-    """Keep V24 E2/V23 E3 and deepen only the connected E1 route case."""
     tasks = _tasks_for_seed_v24(seed)
     blueprint = tasks[0]["question_blueprint"]
     minutes = (3, 3, 10, 8, 8, 10, 11, 6, 5, 6)
@@ -814,8 +814,8 @@ def _tasks_for_seed_v25(seed: int) -> list[dict]:
     return tasks
 
 
+# Keep V25 E1/V24 E2 and credit the causal E3 chronology.
 def _tasks_for_seed_v26(seed: int) -> list[dict]:
-    """Keep V25 E1/V24 E2 and credit the causal E3 chronology."""
     tasks = _tasks_for_seed_v25(seed)
     blueprint = tasks[2]["question_blueprint"]
     blueprint[6].update(points="0.75", estimated_minutes=8, difficulty=4)
@@ -831,8 +831,8 @@ def digest(value) -> str:
     ).hexdigest()
 
 
+# Read explicit figure names, including coordinated French references.
 def _named_figure_ids(prompt: str, declared: set[str]) -> list[str]:
-    """Read explicit figure names, including coordinated French references."""
     token = re.compile(
         r"\s*(?:`([a-z][a-z0-9_-]{1,31})`|«\s*([a-z][a-z0-9_-]{1,31})\s*»|([a-z][a-z0-9_-]{1,31}))",
         flags=re.IGNORECASE,
@@ -865,8 +865,8 @@ def _named_figure_ids(prompt: str, declared: set[str]) -> list[str]:
     return mentioned
 
 
+# Recover only links the model wrote verbatim, leaving vague references unresolved.
 def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
-    """Recover only links the model wrote verbatim, leaving vague references unresolved."""
     if (
         not isinstance(raw, dict)
         or not isinstance(raw.get("materials"), list)
@@ -911,8 +911,8 @@ def bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
     return result, bindings
 
 
+# Replay the v5-v7 binding rule without changing recorded evidence.
 def _legacy_bind_explicit_material_ids(raw: dict) -> tuple[dict, list[dict]]:
-    """Replay the v5-v7 binding rule without changing recorded evidence."""
     if (
         not isinstance(raw, dict)
         or not isinstance(raw.get("materials"), list)
@@ -962,8 +962,8 @@ def _invalid_marking_allocation(authored: dict, plan: dict) -> bool:
     )
 
 
+# Assemble immutable credit/identity from the plan, rejecting authored drift.
 def assemble_planned_question(plan: dict, authored: dict) -> NSIQuestion:
-    """Assemble immutable credit/identity from the plan, rejecting authored drift."""
     if not isinstance(authored, dict):
         raise ValueError("Question du plan manquante")
     fields = ("id", "estimated_minutes", "operation", "difficulty")
@@ -1018,8 +1018,8 @@ def _assemble_planned_exercise(
     return NSIExercise.model_validate(assembled), records
 
 
+# Bind a repaired candidate to its original and at most two raw replacements.
 def _replay_targeted_repairs(evidence: dict, final_candidate: dict, task: dict) -> None:
-    """Bind a repaired candidate to its original and at most two raw replacements."""
     repairs = evidence.get("targeted_repairs")
     initial = evidence.get("initial_candidate")
     if not isinstance(repairs, list) or len(repairs) > 2:
@@ -1083,8 +1083,8 @@ def _replay_targeted_repairs(evidence: dict, final_candidate: dict, task: dict) 
         raise ValueError("La réparation ciblée ne reproduit pas le brouillon accepté")
 
 
+# Reject deictic figure references that have no traceable structured input.
 def require_link_for_material_mentions(exercise: NSIExercise) -> None:
-    """Reject deictic figure references that have no traceable structured input."""
     kinds = {material.kind for material in exercise.materials}
     patterns = []
     use_verb = (
@@ -1113,8 +1113,8 @@ def require_link_for_material_mentions(exercise: NSIExercise) -> None:
             )
 
 
+# SQL must name only relations actually printed as structured materials.
 def require_declared_relations(exercise: NSIExercise) -> None:
-    """SQL must name only relations actually printed as structured materials."""
     declared = {
         material.id.lower()
         for material in exercise.materials
@@ -1169,8 +1169,8 @@ def require_declared_relations(exercise: NSIExercise) -> None:
             )
 
 
+# Reject explicit BST placements that contradict its ordering invariant.
 def require_consistent_tree_premises(text: str) -> None:
-    """Reject explicit BST placements that contradict its ordering invariant."""
     if not re.search(r"\b(?:ABR|arbre binaire de recherche)\b", text, re.IGNORECASE):
         return
     root_before = re.search(r"\b(\d+)\s+est\s+(?:la\s+)?racine\b", text, re.IGNORECASE)
@@ -1206,13 +1206,12 @@ def require_consistent_tree_premises(text: str) -> None:
             )
 
 
+# Reject a specific false diagnosis of a conventional breadth-first traversal.
+#
+# Duplicate queued vertices can make this implementation inefficient; they do
+# not make it stop early on a finite cyclic graph. This is deliberately a
+# narrow contradiction check, not a general proof of generated algorithms.
 def require_algorithm_premises(prompt: str, answer: str) -> None:
-    """Reject a specific false diagnosis of a conventional breadth-first traversal.
-
-    Duplicate queued vertices can make this implementation inefficient; they do
-    not make it stop early on a finite cyclic graph. This is deliberately a
-    narrow contradiction check, not a general proof of generated algorithms.
-    """
     if not (
         re.search(r"s['’]arrête\s+prématurément", prompt, re.IGNORECASE)
         and re.search(r"\bboucle\b", prompt, re.IGNORECASE)
@@ -1270,8 +1269,8 @@ def require_algorithm_premises(prompt: str, answer: str) -> None:
             )
 
 
+# A model solution must not rely on a node constructor unseen by students.
 def require_tree_constructor_context(prompt: str, answer: str, context: str) -> None:
-    """A model solution must not rely on a node constructor unseen by students."""
     if not re.search(r"\bNoeud\s*\(", answer):
         return
     visible = context + "\n" + prompt
@@ -1285,8 +1284,8 @@ def require_tree_constructor_context(prompt: str, answer: str, context: str) -> 
         )
 
 
+# Require an explicit current-question assumption for logarithmic BST claims.
 def require_tree_complexity_premise(prompt: str, answer: str, context: str) -> None:
-    """Require an explicit current-question assumption for logarithmic BST claims."""
     if not (
         re.search(r"\b(?:ABR|arbre binaire de recherche)\b", prompt, re.I)
         and re.search(r"plus efficace", prompt, re.I)
@@ -1545,6 +1544,7 @@ def _check_exercise_plan(exercise: NSIExercise, task: dict, key: str) -> None:
         )
 
 
+# Recheck the entire affected exercise after every targeted content change.
 def _prepare_candidate(
     raw,
     task,
@@ -1555,7 +1555,6 @@ def _prepare_candidate(
     contract: GraphTreeContract | None = None,
     closed_selections: list[dict] | None = None,
 ):
-    """Recheck the entire affected exercise after every targeted content change."""
     contract_binding = None
     if contract is None:
         require_authoring_fields(raw)
@@ -1581,6 +1580,10 @@ def _prepare_candidate(
     return exercise, bindings, assembly, checks, originality, contract_binding
 
 
+# Run every existing gate after each bounded graph/tree repair.
+#
+# `record` is mutated before each provider call so the outer checkpoint can
+# preserve a rejected response or interruption without publishing a package.
 def evaluate_graph_tree_draft(
     raw: dict,
     task: dict,
@@ -1590,11 +1593,6 @@ def evaluate_graph_tree_draft(
     client,
     record: dict,
 ) -> tuple[NSIExercise, dict]:
-    """Run every existing gate after each bounded graph/tree repair.
-
-    `record` is mutated before each provider call so the outer checkpoint can
-    preserve a rejected response or interruption without publishing a package.
-    """
     record["candidate"] = deepcopy(raw)
     initial = deepcopy(raw)
     repairs: list[dict] = []
@@ -1668,6 +1666,7 @@ def evaluate_graph_tree_draft(
     return exercise, evidence
 
 
+# Rebuild the accepted exercise from immutable parts and bounded repairs.
 def replay_graph_tree_evidence(
     exercise: NSIExercise,
     evidence: dict,
@@ -1677,7 +1676,6 @@ def replay_graph_tree_evidence(
     previous_texts: list[str],
     run_identity: dict,
 ) -> bool:
-    """Rebuild the accepted exercise from immutable parts and bounded repairs."""
     if not isinstance(evidence, dict) or evidence.get("references") != references:
         raise ValueError("Références de l'exercice incompatibles")
     raw = replay_graph_tree_parts(
@@ -1743,6 +1741,7 @@ def replay_graph_tree_evidence(
     return True
 
 
+# Run the existing gates, allowing only finite single-item repair.
 def evaluate_closed_prose_draft(
     raw: dict,
     selections: list[dict],
@@ -1753,7 +1752,6 @@ def evaluate_closed_prose_draft(
     client,
     record: dict,
 ) -> tuple[NSIExercise, dict]:
-    """Run the existing gates, allowing only finite single-item repair."""
     record["candidate"] = deepcopy(raw)
     initial = deepcopy(raw)
     repairs: list[dict] = []

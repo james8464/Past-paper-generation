@@ -1,9 +1,11 @@
 #!/bin/zsh
+# Prepare the app and start a user-selected screen recording for the Occitanie demo.
+
 set -euo pipefail
 
 project_root="${0:A:h:h}"
 recording_dir="$project_root/output/occitanie-2026/video"
-recording_path="$recording_dir/Paper-Creator-NSI-Occitanie-demo.mov"
+recording_path="$recording_dir/Keldin-NSI-Occitanie-demo.mov"
 
 locked=$(/usr/sbin/ioreg -n Root -d1 2>/dev/null | /usr/bin/grep -c 'CGSSessionScreenIsLocked.*Yes' || true)
 if [[ "$locked" != "0" ]]; then
@@ -16,7 +18,7 @@ fi
 cd "$project_root/macOS"
 make build-and-run-background
 
-/usr/bin/osascript -e 'display dialog "Paper Creator est prêt. Fermez les fenêtres personnelles, placez l’application comme indiqué dans le scénario, puis cliquez sur Démarrer. macOS vous demandera de sélectionner la zone à enregistrer." buttons {"Annuler", "Démarrer"} default button "Démarrer" cancel button "Annuler" with title "Démonstration Prix Occitanie"'
+/usr/bin/osascript -e 'display dialog "Keldin est prêt. Fermez les fenêtres personnelles, placez l’application comme indiqué dans le scénario, puis cliquez sur Démarrer. macOS vous demandera de sélectionner la zone à enregistrer." buttons {"Annuler", "Démarrer"} default button "Démarrer" cancel button "Annuler" with title "Démonstration Prix Occitanie"'
 
 /usr/sbin/screencapture -i -J video -g -k "$recording_path"
 

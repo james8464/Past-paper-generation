@@ -1,3 +1,5 @@
+# Persist accepted items with the blueprint identity needed to resume them safely.
+
 from __future__ import annotations
 
 import hashlib
@@ -70,8 +72,8 @@ def identity_for_blueprint(
     )
 
 
+# Persist independently accepted questions without partial JSON writes.
 class AssessmentCheckpointStore:
-    """Persist independently accepted questions without partial JSON writes."""
 
     def __init__(self, path: Path, identity: CheckpointIdentity) -> None:
         self.path = path
@@ -137,9 +139,11 @@ class AssessmentCheckpointStore:
                 ensure_ascii=False,
             )
             handle.write("\n")
+            # Flush file contents before replacing the previous accepted checkpoint.
             handle.flush()
             os.fsync(handle.fileno())
         temporary.replace(self.path)
+        # Sync the directory too, so the replacement survives a crash.
         directory = os.open(self.path.parent, os.O_RDONLY)
         try:
             os.fsync(directory)

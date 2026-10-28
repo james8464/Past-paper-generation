@@ -1,4 +1,4 @@
-"""Private, bounded evidence for rejected generation; never approved checkpoints."""
+# Private, bounded evidence for rejected generation; never approved checkpoints.
 
 from __future__ import annotations
 
@@ -11,6 +11,8 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+
+from Backend.Core.legacy_migration import output_directory
 
 
 class GenerationEvidenceError(ValueError):
@@ -38,6 +40,10 @@ def _bounded(value: Any, secrets: tuple[str, ...], depth: int = 0) -> Any:
     return text[:2048]
 
 
+# Save only explicitly supplied evidence, not arbitrary errors or prompts.
+#
+# Failure to save must never mask the original generation failure. Directory
+# descriptors prevent a replaced/symlinked report folder redirecting writes.
 def save_failure_diagnostic(
     output_dir: Path,
     error: BaseException,
@@ -45,11 +51,6 @@ def save_failure_diagnostic(
     secrets: tuple[str, ...] = (),
     context: dict[str, Any] | None = None,
 ) -> Path | None:
-    """Save only explicitly supplied evidence, not arbitrary errors or prompts.
-
-    Failure to save must never mask the original generation failure. Directory
-    descriptors prevent a replaced/symlinked report folder redirecting writes.
-    """
     seen: set[int] = set()
     while not isinstance(error, GenerationEvidenceError):
         if id(error) in seen or len(seen) >= 16:
@@ -72,9 +73,10 @@ def save_failure_diagnostic(
     payload = json.dumps(record, ensure_ascii=True, indent=2).encode()
     if len(payload) > 32_768:
         return None
-    directory = output_dir / ".papercreator-diagnostics"
+    directory = output_dir / ".keldin-diagnostics"
     descriptor = None
     try:
+        output_directory(output_dir, ".keldin-diagnostics")
         directory.mkdir(mode=0o700, exist_ok=True)
         descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         os.fchmod(descriptor, 0o700)

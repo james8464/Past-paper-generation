@@ -1,4 +1,4 @@
-"""Release qualification evidence and policy models."""
+# Release qualification evidence and policy models.
 
 from Backend.Core.qualification.manifest import (
     ArtifactEvidence,
