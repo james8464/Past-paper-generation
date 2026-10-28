@@ -109,6 +109,10 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var generationBlocker: String? {
+        generationBlockerResource.map { InterfaceText.resolve($0, language: presentationLanguage) }
+    }
+
+    var generationBlockerResource: LocalizedStringResource? {
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
@@ -132,9 +136,11 @@ final class ApplicationCoordinator: ObservableObject {
             return nil
         case .openAI:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
+            if openAIAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.openAIAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an OpenAI API key in Settings." : nil
         case .anthropic:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
+            if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         case .apple:
             return nil
@@ -190,7 +196,10 @@ final class ApplicationCoordinator: ObservableObject {
         defaults: UserDefaults = .standard,
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
-        backend: any BackendRunning = BackendClient()
+        backend: any BackendRunning = BackendClient(),
+        historyRecordRemover: @escaping (URL) throws -> Void = { url in
+            try FileManager.default.removeItem(at: url)
+        }
     ) {
         self.defaults = defaults
         self.backend = backend
@@ -198,7 +207,8 @@ final class ApplicationCoordinator: ObservableObject {
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
             retentionLimit: settings.historyRetentionLimit,
-            defaults: defaults
+            defaults: defaults,
+            recordRemover: historyRecordRemover
         )
         settingsStore = settings
         catalogStore = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
@@ -242,6 +252,7 @@ final class ApplicationCoordinator: ObservableObject {
         // Invalid saved usage stays untouched; the creation action reports it.
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = outputFolder
+        if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
     }
 
     func refreshOllama() {
@@ -619,7 +630,12 @@ final class ApplicationCoordinator: ObservableObject {
             status = "Apple MLX setup required"
             return
         }
-        persistSettings()
+        let settingsSaved = persistSettings(
+            includeCredentials: !dryRun && selectedBoard.usesAI && aiProvider.sendsPromptsOffDevice
+        )
+        if !settingsSaved, !dryRun, selectedBoard.usesAI,
+           let account = activeSecretAccount,
+           settingsStore.credentialFailure(for: account) != nil { return }
 
         progressEntries.removeAll()
         lastQualityReport = nil
@@ -730,6 +746,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmMLXSetup() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !model.isEmpty else {
             showMLXSetupConfirmation = false
@@ -776,7 +793,8 @@ final class ApplicationCoordinator: ObservableObject {
     func cancelGeneration() {
         ollamaRefreshRevision = UUID()
         didCancelRun = true
-        try? generationCoordinator.cancel()
+        let operation = activeOperation
+        if operation == .generation { try? generationCoordinator.cancel() }
         mlxRecoveryState.cancel()
         // MLX setup keeps ownership until its helper exits. Other operations can
         // release the UI immediately, but their queued callbacks no longer own it.
@@ -794,13 +812,18 @@ final class ApplicationCoordinator: ObservableObject {
         }
         runningProcess = nil
         isRunning = false
-        status = "Cancelled"
+        status = operation == .modelPull
+            ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
+            : "Cancelled"
         generationProgress = nil
         generationEstimate = nil
         etaTimer?.cancel()
         etaTimer = nil
         activeOperation = .none
-        progressEntries.append(ProgressEntry(stage: "cancel", message: "Generation cancelled."))
+        let message = operation == .modelPull
+            ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
+            : "Generation cancelled."
+        progressEntries.append(ProgressEntry(stage: "cancel", message: message))
     }
 
     func pullSelectedModel() {
@@ -814,6 +837,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmPullModel() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         guard distributionMode.canManageOllama else {
             setError("The App Store build can detect Ollama, but cannot install or pull models.")
             return
@@ -839,17 +863,12 @@ final class ApplicationCoordinator: ObservableObject {
             } onFinish: { [weak self] result in
                 guard let self, self.activeRunSession == session else { return }
                 self.activeRunSession = nil
-                if case .success(0) = result {
-                    self.selectedModel = model
-                    self.defaults.set(model, forKey: AppStorageKey.ollamaModel)
-                }
-                self.finishGeneration(result)
-                self.refreshOllama()
+                self.finishModelPull(result, model: model)
             }
             notifyStarted(for: .modelPull)
         } catch {
             activeRunSession = nil
-            finishGeneration(.failure(error))
+            finishModelPull(.failure(error), model: model)
         }
     }
 
@@ -898,8 +917,26 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func removeGeneratedFile(_ file: GeneratedFile) {
-        generatedFiles.removeAll { $0.id == file.id }
+        let path = file.url.standardizedFileURL.path
+        var hidden = hiddenRecentPaths
+        hidden.insert(path)
+        defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
+        generatedFiles.removeAll { $0.url.standardizedFileURL.path == path }
         persistRecentDocuments()
+    }
+
+    func removeHistory(_ record: GenerationJobRecord) {
+        do {
+            try recentDocumentStore.remove(record)
+        } catch {
+            setError(InterfaceText.resolve("Couldn't remove this history item. \(error.localizedDescription)", language: presentationLanguage))
+        }
+    }
+
+    func setHistoryRetentionLimit(_ value: Int) {
+        settingsStore.historyRetentionLimit = max(1, value)
+        _ = saveSettingsAndReportSecretFailure()
+        recentDocumentStore.updateRetentionLimit(value)
     }
 
     func dismissWelcome() {
@@ -969,7 +1006,7 @@ final class ApplicationCoordinator: ObservableObject {
     func setNotificationsEnabled(_ enabled: Bool) {
         notificationsEnabled = enabled
         settingsStore.notificationsEnabled = enabled
-        settingsStore.save()
+        saveSettingsAndReportSecretFailure()
         if enabled {
             requestNotificationAuthorization()
         }
@@ -979,7 +1016,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning else { return }
         dryRun = enabled
         settingsStore.dryRun = enabled
-        settingsStore.save()
+        saveSettingsAndReportSecretFailure()
     }
 
     func startBenchmark() {
@@ -996,7 +1033,8 @@ final class ApplicationCoordinator: ObservableObject {
         benchmarkCoordinator.cancel()
     }
 
-    private func persistSettings() {
+    @discardableResult
+    private func persistSettings(includeCredentials: Bool = true) -> Bool {
         settingsStore.provider = aiProvider
         settingsStore.ollamaModel = selectedModel
         settingsStore.openAIModel = openAIModel
@@ -1006,8 +1044,24 @@ final class ApplicationCoordinator: ObservableObject {
         settingsStore.notificationsEnabled = notificationsEnabled
         settingsStore.openAIAPIKey = openAIAPIKey
         settingsStore.anthropicAPIKey = anthropicAPIKey
-        settingsStore.save()
+        let saved = saveSettingsAndReportSecretFailure(includeCredentials: includeCredentials)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
+        return saved
+    }
+
+    @discardableResult
+    func saveSettingsAndReportSecretFailure(includeCredentials: Bool = false) -> Bool {
+        let saved = settingsStore.save(includeCredentials: includeCredentials)
+        if !saved, let message = settingsStore.secretFailureMessage(language: presentationLanguage) { setError(message) }
+        return saved
+    }
+
+    private var activeSecretAccount: String? {
+        switch aiProvider {
+        case .openAI: SecretAccount.openAIAPIKey
+        case .anthropic: SecretAccount.anthropicAPIKey
+        case .ollama, .apple: nil
+        }
     }
 
     private static let generationDateFormatter: DateFormatter = {
@@ -1095,6 +1149,9 @@ final class ApplicationCoordinator: ObservableObject {
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
+            var hidden = hiddenRecentPaths
+            hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
+            defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
             let file = GeneratedFile(
                 role: role,
                 url: URL(fileURLWithPath: path),
@@ -1223,6 +1280,36 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
+    private func finishModelPull(_ result: Result<Int32, Error>, model: String) {
+        runningProcess = nil
+        isRunning = false
+        activeOperation = .none
+        generationProgress = nil
+        generationEstimate = nil
+        etaTimer?.cancel()
+        etaTimer = nil
+        // A model download owns no generation job, even when an earlier job's
+        // cancellation could not be written to history.
+        switch result {
+        case .success(0) where !didReceiveBackendError:
+            selectedModel = model
+            defaults.set(model, forKey: AppStorageKey.ollamaModel)
+            status = InterfaceText.resolve("Done", language: presentationLanguage)
+            generationProgress = 1
+            notifySuccess(for: .modelPull)
+            refreshOllama()
+        case let .success(code):
+            if !didReceiveBackendError {
+                let message = InterfaceText.resolve("Ollama stopped the model download (exit code \(String(code))). Check Ollama, then try again.", language: presentationLanguage)
+                setError(message)
+                notifyFailure(for: .modelPull, message: message)
+            }
+        case let .failure(error):
+            setError(error.localizedDescription)
+            notifyFailure(for: .modelPull, message: error.localizedDescription)
+        }
+    }
+
     private func finishMLXSetup(_ result: Result<Int32, Error>, model: String) {
         runningProcess = nil
         isRunning = false
@@ -1285,31 +1372,35 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
 
-        try FileManager.default.createDirectory(
-            at: destinationFolder,
-            withIntermediateDirectories: true
-        )
-        generatedFiles = try generatedFiles.map { file in
-            guard currentGenerationFileIDs.contains(file.id),
-                  file.url.deletingLastPathComponent().standardizedFileURL == workingFolder else {
-                return file
-            }
-            let destination = destinationFolder.appendingPathComponent(file.url.lastPathComponent)
-            try Data(contentsOf: file.url, options: .mappedIfSafe)
-                .write(to: destination, options: .atomic)
-            return GeneratedFile(
-                id: file.id,
-                role: file.role,
-                url: destination,
-                createdAt: file.createdAt,
-                subject: file.subject,
-                paper: file.paper
-            )
+        try publishUKGeneratedFiles(from: workingFolder, to: destinationFolder)
+    }
+
+    func publishUKGeneratedFiles(
+        from workingFolder: URL,
+        to destinationFolder: URL,
+        publisher: UKArtifactPublisher = UKArtifactPublisher()
+    ) throws {
+        let files = currentGenerationFiles
+        guard !files.isEmpty else { return }
+        guard files.allSatisfy({
+            $0.url.deletingLastPathComponent().standardizedFileURL == workingFolder.standardizedFileURL
+        }) else {
+            throw CocoaError(.fileReadInvalidFileName)
+        }
+        let published = try publisher.publish(files, to: destinationFolder)
+        let byID = Dictionary(uniqueKeysWithValues: published.map { ($0.id, $0) })
+        generatedFiles = generatedFiles.map { file in
+            byID[file.id] ?? file
         }
     }
 
     private func restoreRecentDocuments() {
-        try? recentDocumentStore.load()
+        do {
+            try recentDocumentStore.load()
+        } catch {
+            setError(InterfaceText.resolve("Couldn't load generation history. \(error.localizedDescription)", language: presentationLanguage))
+            return
+        }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
         if !jobArtifacts.isEmpty {
             generatedFiles = latestDocumentVersions(jobArtifacts)
@@ -1327,9 +1418,15 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
         var seen = Set<URL>()
+        let hidden = hiddenRecentPaths
         return Array(documents.filter {
-            seen.insert($0.url.standardizedFileURL).inserted
+            !hidden.contains($0.url.standardizedFileURL.path)
+                && seen.insert($0.url.standardizedFileURL).inserted
         }.prefix(60))
+    }
+
+    private var hiddenRecentPaths: Set<String> {
+        Set(defaults.stringArray(forKey: AppStorageKey.hiddenRecentDocumentPaths) ?? [])
     }
 
     private func persistRecentDocuments() {

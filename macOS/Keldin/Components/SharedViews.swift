@@ -3,6 +3,7 @@
 import SwiftUI
 
 struct GeneratedFilesTable: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     let files: [GeneratedFile]
 
@@ -14,7 +15,7 @@ struct GeneratedFilesTable: View {
             Table(files) {
                 TableColumn("Document") { file in
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(file.title)
+                        Text(InterfaceText.localizedResource(file.titleResource, locale: locale))
                         if !file.paperDescription.isEmpty {
                             Text(file.paperDescription)
                                 .font(.caption)
@@ -69,16 +70,17 @@ struct GeneratedFilesTable: View {
 }
 
 struct PanelEmptyState: View {
-    let title: String
-    let message: String
+    @Environment(\.locale) private var locale
+    let title: LocalizedStringResource
+    let message: LocalizedStringResource
     let systemImage: String
 
     var body: some View {
         ContentUnavailableView {
-            Label(title, systemImage: systemImage)
+            Label { Text(InterfaceText.localizedResource(title, locale: locale)) } icon: { Image(systemName: systemImage) }
                 .symbolRenderingMode(.hierarchical)
         } description: {
-            Text(message)
+            Text(InterfaceText.localizedResource(message, locale: locale))
         }
         .frame(maxWidth: .infinity)
     }

@@ -4,6 +4,7 @@ import SwiftUI
 import TipKit
 
 struct GeneratorWorkspace: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     @State private var showsQualityReview = false
     let board: ExamBoardOption
@@ -40,7 +41,7 @@ struct GeneratorWorkspace: View {
                         .help("Cancel paper creation")
                     } else {
                         Button(action: application.generate) {
-                            Label(createButtonTitle, systemImage: "doc.badge.plus")
+                            Label { Text(InterfaceText.localizedResource(createButtonTitle, locale: locale)) } icon: { Image(systemName: "doc.badge.plus") }
                         }
                         .buttonStyle(.borderedProminent)
                         .disabled(!application.canGenerate)
@@ -80,19 +81,18 @@ struct GeneratorWorkspace: View {
     }
 
     private var generateHelp: String {
-        application.generationBlocker
-            ?? "Create a new assessment, mark scheme, and validation package."
+        String(localized: InterfaceText.localizedResource(application.generationBlockerResource
+            ?? "Create a new assessment, mark scheme, and validation package.", locale: locale))
     }
 
-    private var createButtonTitle: String {
-        application.selectedPaper.assessmentKind == .questionBank
-            ? "Create Practice Set"
-            : "Create Paper"
+    private var createButtonTitle: LocalizedStringResource {
+        NativeInterfaceCopy.creationTitle(for: application.selectedPaper.assessmentKind)
     }
 
 }
 
 private struct PaperConfiguration: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     let board: ExamBoardOption
 
@@ -209,13 +209,13 @@ private struct PaperConfiguration: View {
                 Section("Progress") {
                     GenerationProgress()
                 }
-            } else if let blocker = application.generationBlocker {
+            } else if let blocker = application.generationBlockerResource {
                 Section("Action required") {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
                             .foregroundStyle(.orange)
                             .accessibilityHidden(true)
-                        Text(blocker)
+                        Text(InterfaceText.localizedResource(blocker, locale: locale))
                         Spacer()
                         SettingsLink {
                             Text("Open Settings…")
@@ -310,6 +310,7 @@ private struct RecentDocuments: View {
 }
 
 private struct QualityReviewView: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
@@ -318,7 +319,7 @@ private struct QualityReviewView: View {
                 qualityRow(
                     "Engineering",
                     detail: application.lastQualityReport == nil
-                        ? "Engineering evidence is created with a saved package."
+                        ? text("Engineering evidence is created with a saved package.")
                         : qualificationDetail(
                         saved: application.lastQualityReport?.engineeringValidated,
                         current: application.selectedPaper.readiness.engineeringValidated,
@@ -376,7 +377,7 @@ private struct QualityReviewView: View {
             if let report = application.lastQualityReport {
                 Section("Latest package") {
                     LabeledContent("Items", value: "\(report.itemCount)")
-                    LabeledContent("Saved mode", value: report.savedMode.rawValue)
+                    LabeledContent("Saved mode", value: text(report.savedMode.titleResource))
                     if let subject = report.identity.subject,
                        let paper = report.identity.paper {
                         LabeledContent("Saved target", value: "\(subject) · \(paper)")
@@ -398,7 +399,7 @@ private struct QualityReviewView: View {
                     }
                     LabeledContent(
                         "Fingerprints",
-                        value: report.fingerprintsVerified ? "Verified" : "Failed"
+                        value: text(report.fingerprintsVerified ? "Verified" : "Failed")
                     )
                     LabeledContent(
                         "History checks",
@@ -413,7 +414,7 @@ private struct QualityReviewView: View {
                     LabeledContent("Validated PDFs", value: "\(report.pdfCount)")
                     LabeledContent(
                         "Demand profile",
-                        value: GenerationQualityPolicy.presentation(for: report).referenceDemandState.title
+                        value: text(GenerationQualityPolicy.presentation(for: report, locale: locale).referenceDemandState.titleResource)
                     )
                     if let count = report.candidatePathCount {
                         LabeledContent("Legal candidate paths", value: "\(count)")
@@ -447,24 +448,21 @@ private struct QualityReviewView: View {
                             "Reasoning range",
                             value: fitCount(
                                 report.difficultyReasoningFitItems,
-                                reviewed: report.difficultyReviewedItems,
-                                suffix: "fit"
+                                reviewed: report.difficultyReviewedItems
                             )
                         )
                         LabeledContent(
                             "Context use",
                             value: fitCount(
                                 report.difficultyContextFitItems,
-                                reviewed: report.difficultyReviewedItems,
-                                suffix: "fit"
+                                reviewed: report.difficultyReviewedItems
                             )
                         )
                         LabeledContent(
                             "Shortcut resistance",
                             value: fitCount(
                                 report.difficultyShortcutFitItems,
-                                reviewed: report.difficultyReviewedItems,
-                                suffix: "pass"
+                                reviewed: report.difficultyReviewedItems
                             )
                         )
                     }
@@ -497,7 +495,7 @@ private struct QualityReviewView: View {
     }
 
     private func qualityRow(
-        _ title: String,
+        _ title: LocalizedStringResource,
         detail: String,
         state: GenerationQualityState
     ) -> some View {
@@ -508,9 +506,9 @@ private struct QualityReviewView: View {
                 .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
-                    Text(title)
+                    Text(InterfaceText.localizedResource(title, locale: locale))
                     Spacer()
-                    Text(state.title)
+                    Text(InterfaceText.localizedResource(state.titleResource, locale: locale))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -523,7 +521,7 @@ private struct QualityReviewView: View {
     }
 
     private var presentation: GenerationQualityPresentation {
-        GenerationQualityPolicy.presentation(for: application.lastQualityReport)
+        GenerationQualityPolicy.presentation(for: application.lastQualityReport, locale: locale)
     }
 
     private var originalityState: GenerationQualityState {
@@ -542,8 +540,8 @@ private struct QualityReviewView: View {
         presentation.referenceDemandDetail
     }
 
-    private func fitCount(_ count: Int?, reviewed: Int, suffix: String) -> String {
-        count.map { "\($0) of \(reviewed) \(suffix)" } ?? "Unknown"
+    private func fitCount(_ count: Int?, reviewed: Int) -> String {
+        count.map { text("\($0) of \(reviewed)") } ?? text("Unknown")
     }
 
     private func qualificationState(
@@ -559,13 +557,17 @@ private struct QualityReviewView: View {
     private func qualificationDetail(
         saved: Bool?,
         current: Bool,
-        passed: String,
-        pending: String
+        passed: LocalizedStringResource,
+        pending: LocalizedStringResource
     ) -> String {
         if application.lastQualityReport != nil, saved == nil {
-            return "This evidence is not recorded in the saved package."
+            return text("This evidence is not recorded in the saved package.")
         }
-        return (saved ?? current) ? passed : pending
+        return text((saved ?? current) ? passed : pending)
+    }
+
+    private func text(_ resource: LocalizedStringResource) -> String {
+        String(localized: InterfaceText.localizedResource(resource, locale: locale))
     }
 }
 

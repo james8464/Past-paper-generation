@@ -31,5 +31,5 @@ def test_warning_keeps_a_symbol_and_explanation_without_colour():
         ".accessibilityElement", 1
     )[0]
     assert 'Image(systemName: "exclamationmark.triangle.fill")' in warning
-    assert "Text(blocker)" in warning
+    assert "Text(InterfaceText.localizedResource(blocker, locale: locale))" in warning
     assert 'Text("Open Settings…")' in warning

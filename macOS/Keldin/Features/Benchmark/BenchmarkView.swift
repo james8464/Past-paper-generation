@@ -7,39 +7,38 @@ enum BenchmarkAccessibility {
     static func chartSummary(
         title: String,
         unit: String,
-        values: [Double]
+        values: [Double], locale: Locale = .current
     ) -> String {
+        let displayUnit = NativeInterfaceCopy.benchmarkUnit(unit, locale: locale)
         guard let latest = values.last,
               let minimum = values.min(),
               let maximum = values.max() else {
             return String(
-                format: String(localized: "%@. No samples."),
-                locale: .current,
+                format: String(localized: InterfaceText.localizedResource("%@. No samples.", locale: locale)),
+                locale: locale,
                 title
             )
         }
         let value: (Double) -> String = {
-            $0.formatted(.number.precision(.fractionLength(0...1)))
+            $0.formatted(.number.precision(.fractionLength(0...1)).locale(locale))
         }
         return String(
-            format: String(
-                localized: "%@. %lld samples. Latest %@ %@. Range %@ to %@ %@."
-            ),
-            locale: .current,
+            format: String(localized: InterfaceText.localizedResource("%@. %lld samples. Latest %@ %@. Range %@ to %@ %@.", locale: locale)),
+            locale: locale,
             title,
             Int64(values.count),
             value(latest),
-            unit,
+            displayUnit,
             value(minimum),
             value(maximum),
-            unit
+            displayUnit
         )
     }
 }
 
 struct BenchmarkWorkspace: View {
+    @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(BenchmarkCoordinator.self) private var benchmark
-    @Environment(GenerationCoordinator.self) private var generation
 
     var body: some View {
         ScrollView {
@@ -58,20 +57,18 @@ struct BenchmarkWorkspace: View {
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if benchmark.isRunning {
-                    Button(role: .cancel, action: benchmark.cancel) {
+                    Button(role: .cancel, action: application.cancelBenchmark) {
                         Label("Cancel", systemImage: "xmark.circle")
                     }
                 } else {
-                    Button {
-                        benchmark.start(generationIsRunning: generation.activeJob != nil)
-                    } label: {
+                    Button(action: application.startBenchmark) {
                         Label(
                             "Run \(Int(AppDefaults.benchmarkDurationSeconds)) Second Test",
                             systemImage: "play.fill"
                         )
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(generation.activeJob != nil)
+                    .disabled(application.isRunning)
                 }
             }
         }
@@ -79,6 +76,7 @@ struct BenchmarkWorkspace: View {
 }
 
 private struct BenchmarkOverviewPanel: View {
+    @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(BenchmarkCoordinator.self) private var benchmark
 
     var body: some View {
@@ -97,6 +95,14 @@ private struct BenchmarkOverviewPanel: View {
                 )
                 .accessibilityAddTraits(.updatesFrequently)
                 .progressViewStyle(.linear)
+            } else if let error = benchmark.errorMessage {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label("The benchmark couldn't finish", systemImage: "exclamationmark.triangle")
+                    Text("Try again, or copy diagnostics from Tools if the problem continues.")
+                    Text(error).font(.caption).foregroundStyle(.secondary)
+                    Button("Try Again", action: application.startBenchmark)
+                        .disabled(application.isRunning)
+                }
             } else if let verdict = benchmark.verdict {
                 BenchmarkVerdictSummary(verdict: verdict)
             } else {
@@ -110,6 +116,7 @@ private struct BenchmarkOverviewPanel: View {
 }
 
 private struct BenchmarkVerdictSummary: View {
+    @Environment(\.locale) private var locale
     let verdict: BenchmarkVerdict
 
     var body: some View {
@@ -131,7 +138,7 @@ private struct BenchmarkVerdictSummary: View {
         Gauge(value: verdict.score, in: 0...1) {
             Text("Score")
         } currentValueLabel: {
-            Text(verdict.score.formatted(.percent.precision(.fractionLength(0))))
+            Text(verdict.score.formatted(.percent.precision(.fractionLength(0)).locale(locale)))
                 .font(.headline.monospacedDigit())
         }
         .gaugeStyle(.accessoryCircularCapacity)
@@ -142,11 +149,15 @@ private struct BenchmarkVerdictSummary: View {
 
     private var verdictText: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Label(verdict.verdict, systemImage: verdict.score >= 0.72 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+            Label {
+                Text(NativeInterfaceCopy.benchmarkText(verdict.verdict, locale: locale)).foregroundStyle(.primary)
+            } icon: {
+                Image(systemName: verdict.score >= 0.72 ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                    .foregroundStyle(verdict.score >= 0.72 ? .green : .orange)
+            }
                 .font(.headline)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(verdict.score >= 0.72 ? .green : .orange)
-            Text(verdict.detail)
+            Text(NativeInterfaceCopy.benchmarkText(verdict.detail, locale: locale))
                 .foregroundStyle(.secondary)
         }
     }
@@ -223,7 +234,8 @@ private struct BenchmarkLiveCharts: View {
 }
 
 private struct BenchmarkChart: View {
-    let title: String
+    @Environment(\.locale) private var locale
+    let title: LocalizedStringResource
     let unit: String
     let samples: [BenchmarkSample]
     let value: KeyPath<BenchmarkSample, Double>
@@ -234,7 +246,7 @@ private struct BenchmarkChart: View {
                 HStack {
                     Spacer()
                     if let latest = samples.last {
-                        Text(latest[keyPath: value].formatted(.number.precision(.fractionLength(0...1))) + " \(unit)")
+                        Text(latest[keyPath: value].formatted(.number.precision(.fractionLength(0...1)).locale(locale)) + " \(NativeInterfaceCopy.benchmarkUnit(unit, locale: locale))")
                             .foregroundStyle(.secondary)
                             .monospacedDigit()
                     }
@@ -259,12 +271,12 @@ private struct BenchmarkChart: View {
                         .foregroundStyle(.tint.opacity(0.12))
                     }
                     .chartXAxisLabel("seconds")
-                    .chartYAxisLabel(unit)
+                    .chartYAxisLabel(NativeInterfaceCopy.benchmarkUnit(unit, locale: locale))
                     .frame(height: 150)
                 }
             }
         } label: {
-            Label(title, systemImage: "chart.xyaxis.line")
+            Label { Text(InterfaceText.localizedResource(title, locale: locale)) } icon: { Image(systemName: "chart.xyaxis.line") }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilitySummary)
@@ -275,14 +287,15 @@ private struct BenchmarkChart: View {
 
     private var accessibilitySummary: String {
         BenchmarkAccessibility.chartSummary(
-            title: title,
+            title: String(localized: InterfaceText.localizedResource(title, locale: locale)),
             unit: unit,
-            values: samples.map { $0[keyPath: value] }
+            values: samples.map { $0[keyPath: value] }, locale: locale
         )
     }
 }
 
 private struct BenchmarkMetricGrid: View {
+    @Environment(\.locale) private var locale
     @Environment(BenchmarkCoordinator.self) private var benchmark
 
     var body: some View {
@@ -293,15 +306,15 @@ private struct BenchmarkMetricGrid: View {
             } else {
                 Table(benchmark.metrics) {
                     TableColumn("Metric") { metric in
-                        Text(metric.name)
+                        Text(NativeInterfaceCopy.benchmarkText(metric.name, locale: locale))
                     }
                     TableColumn("Value") { metric in
-                        Text(metric.displayValue)
+                        Text(metric.displayValue(locale: locale))
                             .monospacedDigit()
                     }
                     TableColumn("Score") { metric in
                         if let score = metric.score {
-                            Text(score.formatted(.percent.precision(.fractionLength(0))))
+                            Text(score.formatted(.percent.precision(.fractionLength(0)).locale(locale)))
                                 .monospacedDigit()
                         } else {
                             Text("Not available")
@@ -309,7 +322,7 @@ private struct BenchmarkMetricGrid: View {
                         }
                     }
                     TableColumn("Detail") { metric in
-                        Text(metric.detail ?? "")
+                        Text(NativeInterfaceCopy.benchmarkText(metric.detail ?? "", locale: locale))
                             .foregroundStyle(.secondary)
                     }
                 }

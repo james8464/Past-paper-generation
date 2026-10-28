@@ -1,6 +1,435 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Benchmark failed" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Échec du test de performance" } } }
+    },
+    "No samples were collected." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun échantillon n’a été recueilli." } } }
+    },
+    "Ready for local generation" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Prêt pour la création locale" } } }
+    },
+    "This Mac should generate papers comfortably with the selected local setup." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce Mac devrait pouvoir créer des sujets dans de bonnes conditions avec la configuration locale sélectionnée." } } }
+    },
+    "Capable with slower local models" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Compatible avec des modèles locaux plus lents" } } }
+    },
+    "Generation should work, but large Ollama models may take noticeably longer." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La création devrait fonctionner, mais les grands modèles Ollama peuvent prendre sensiblement plus de temps." } } }
+    },
+    "Use smaller models or hosted AI" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Utilisez des modèles plus petits ou une IA hébergée" } } }
+    },
+    "The diagnostic found limited headroom for local generation." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le diagnostic indique une marge de ressources limitée pour la création locale." } } }
+    },
+    "Hashing workload used as a local model proxy." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La charge de calcul par hachage sert d’indicateur pour un modèle local." } } }
+    },
+    "Proxy for many small PDF and image writes." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Indicateur pour de nombreuses petites écritures de PDF et d’images." } } }
+    },
+    "Unavailable during benchmark" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Indisponible pendant le test de performance" } } }
+    },
+    "Ollama was not reachable during benchmark" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama était inaccessible pendant le test de performance" } } }
+    },
+    "Unavailable on this Mac" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Indisponible sur ce Mac" } } }
+    },
+    "Device" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Appareil" } } }
+    },
+    "Architecture" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Architecture" } } }
+    },
+    "Processor" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Processeur" } } }
+    },
+    "CPU Cores" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cœurs CPU" } } }
+    },
+    "Memory" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mémoire" } } }
+    },
+    "Python Runtime" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Version de Python" } } }
+    },
+    "Performance Cores" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cœurs de performance" } } }
+    },
+    "Efficiency Cores" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cœurs économes en énergie" } } }
+    },
+    "Average CPU Load" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Charge CPU moyenne" } } }
+    },
+    "Swap Used" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mémoire d’échange utilisée" } } }
+    },
+    "Disk Read" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lecture disque" } } }
+    },
+    "Small-file Latency" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Latence des petits fichiers" } } }
+    },
+    "Output Free Space" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Espace disponible pour les fichiers" } } }
+    },
+    "Network Download" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Téléchargement réseau" } } }
+    },
+    "Ollama Response" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réponse d’Ollama" } } }
+    },
+    "Thermal Speed Limit" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Limite de performance thermique" } } }
+    },
+    "Power Source" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Alimentation" } } }
+    },
+    "Battery Level" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Niveau de batterie" } } }
+    },
+    "cores" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "cœurs" } } }
+    },
+    "GB" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Go" } } }
+    },
+    "MB/s" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mo/s" } } }
+    },
+    "Generation is already running." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Une création est déjà en cours." } } }
+    },
+    "Benchmark is running." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le test de performance est en cours." } } }
+    },
+    "Finish the welcome guide before creating a paper." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Terminez le guide de bienvenue avant de créer un sujet." } } }
+    },
+    "%@ %@ is coming soon." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ %@ sera bientôt disponible." } } }
+    },
+    "%@ is not supported by this generator." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ n’est pas pris en charge par ce générateur." } } }
+    },
+    "Choose a model before generating." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisissez un modèle avant de lancer la création." } } }
+    },
+    "Check Ollama before generating." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérifiez Ollama avant de lancer la création." } } }
+    },
+    "Download the selected Ollama model before generating." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Téléchargez le modèle Ollama sélectionné avant de lancer la création." } } }
+    },
+    "Review and accept the hosted AI disclosure in Settings." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Consultez et acceptez les informations sur l’IA hébergée dans Réglages." } } }
+    },
+    "Enter an OpenAI API key in Settings." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Saisissez une clé API OpenAI dans Réglages." } } }
+    },
+    "Enter an Anthropic API key in Settings." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Saisissez une clé API Anthropic dans Réglages." } } }
+    },
+    "Create a new assessment, mark scheme, and validation package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Créer un sujet, son corrigé et les éléments de validation." } } }
+    },
+    "Completed" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Terminé" } } }
+    },
+    "Interrupted" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Interrompu" } } }
+    },
+    "Creating" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Création en cours" } } }
+    },
+    "Cancelled" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Annulé" } } }
+    },
+    "Failed" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Échec" } } }
+    },
+    "Files Missing" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fichiers manquants" } } }
+    },
+    "Pending" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "En attente" } } }
+    },
+    "Passed" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Validé" } } }
+    },
+    "Live" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Création réelle" } } }
+    },
+    "At creation" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "À la création" } } }
+    },
+    "Unknown" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Inconnu" } } }
+    },
+    "Insufficient" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Insuffisant" } } }
+    },
+    "Create Practice Set" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Créer une série d’exercices" } } }
+    },
+    "Question Paper" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Sujet" } } }
+    },
+    "Source Booklet" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dossier documentaire" } } }
+    },
+    "Mark Scheme" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Corrigé" } } }
+    },
+    "Assessment Package" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dossier d’évaluation" } } }
+    },
+    "Package Manifest" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Manifeste du dossier" } } }
+    },
+    "Preliminary Material" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Documents préparatoires" } } }
+    },
+    "Electronic Answer Document" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Document de réponse électronique" } } }
+    },
+    "Skeleton Program" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Programme à compléter" } } }
+    },
+    "Practice Data" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Données d’entraînement" } } }
+    },
+    "The benchmark couldn't finish" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le test de performance n’a pas pu se terminer" } } }
+    },
+    "Try again, or copy diagnostics from Tools if the problem continues." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réessayez ou copiez les informations de diagnostic depuis Outils si le problème persiste." } } }
+    },
+    "CPU Load" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Charge CPU" } } }
+    },
+    "CPU Throughput" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Débit CPU" } } }
+    },
+    "Free Memory" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mémoire disponible" } } }
+    },
+    "Memory Pressure" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pression mémoire" } } }
+    },
+    "Disk Write" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Écriture disque" } } }
+    },
+    "Network Latency" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Latence réseau" } } }
+    },
+    "PDF Render" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rendu PDF" } } }
+    },
+    "Thermal Limit" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Limite thermique" } } }
+    },
+    "No Samples" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun échantillon" } } }
+    },
+    "No Results" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun résultat" } } }
+    },
+    "No papers yet" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun sujet pour le moment" } } }
+    },
+    "Your question paper and mark scheme will appear here." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le sujet et le corrigé apparaîtront ici." } } }
+    },
+    "Start the benchmark to populate this chart." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lancez le test de performance pour remplir ce graphique." } } }
+    },
+    "Metric results appear as the diagnostic runs." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les mesures s’affichent pendant le diagnostic." } } }
+    },
+    "Engineering" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérifications techniques" } } }
+    },
+    "Visual profile" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Présentation" } } }
+    },
+    "Reference demand" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Exigences de référence" } } }
+    },
+    "Empirical demand" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Difficulté mesurée" } } }
+    },
+    "Candidate paths" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Parcours du candidat" } } }
+    },
+    "Engineering evidence is created with a saved package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle technique sont créés avec le dossier enregistré." } } }
+    },
+    "Generation, validation, rendering, and packaging checks pass." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les contrôles de création, de validation, de rendu et de mise en dossier sont validés." } } }
+    },
+    "Engineering validation is incomplete for this paper." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La validation technique de ce sujet est incomplète." } } }
+    },
+    "Reference geometry has been reviewed." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La mise en page de référence a été examinée." } } }
+    },
+    "This paper still needs a completed visual calibration." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La comparaison visuelle de ce sujet reste à terminer." } } }
+    },
+    "Independent student and marker calibration is complete." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La comparaison indépendante à partir de réponses d’élèves et de corrections est terminée." } } }
+    },
+    "The paper targets the board demand profile; equivalent difficulty is not claimed." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le sujet vise les exigences du programme d’examen, sans garantie de difficulté équivalente." } } }
+    },
+    "This evidence is not recorded in the saved package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ces éléments de contrôle ne figurent pas dans le dossier enregistré." } } }
+    },
+    "Originality evidence is created with a saved package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle de l’originalité sont créés avec le dossier enregistré." } } }
+    },
+    "Reference-demand evidence is created with a saved package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de comparaison aux exigences de référence sont créés avec le dossier enregistré." } } }
+    },
+    "Candidate-path evidence is not available." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle des parcours ne sont pas disponibles." } } }
+    },
+    "Preview history comparison is skipped; authorship and originality are not reviewed." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "L’aperçu n’est pas comparé à l’historique. Sa rédaction et son originalité ne sont pas examinées." } } }
+    },
+    "Saved-package similarity checks passed. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les contrôles de similarité du dossier enregistré sont validés. %@" } } }
+    },
+    "Saved-package similarity checks did not pass. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les contrôles de similarité du dossier enregistré ont échoué. %@" } } }
+    },
+    "Saved-package originality evidence is incomplete. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle de l’originalité du dossier enregistré sont incomplets. %@" } } }
+    },
+    "%lld of %lld items (%@)" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%lld éléments sur %lld (%@)" } } }
+    },
+    "%lld of %lld" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%lld sur %lld" } } }
+    },
+    "unknown item coverage" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "couverture des éléments inconnue" } } }
+    },
+    "Reference calibration is insufficient; item review covers %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La comparaison aux références est insuffisante. L’examen des éléments couvre %@." } } }
+    },
+    "Aggregate profile fit is preview-only; validated item depth covers %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La correspondance du profil global ne concerne que l’aperçu. La profondeur validée des éléments couvre %@." } } }
+    },
+    "Aggregate profile fit passed and validated item depth covers %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La correspondance du profil global est validée. La profondeur validée des éléments couvre %@." } } }
+    },
+    "Saved profile or item-review coverage is missing; item depth is unknown." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le profil enregistré ou la couverture de l’examen des éléments manque. Leur profondeur est inconnue." } } }
+    },
+    "Profile fit or validated item coverage is incomplete: %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La correspondance du profil ou la couverture validée des éléments est incomplète : %@." } } }
+    },
+    "Candidate-path reference qualification is insufficient. A structurally valid practice bank is not calibrated or externally qualified." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La comparaison des parcours aux références est insuffisante. Une banque d’exercices structurellement valide n’est pas pour autant calibrée ou validée par un tiers." } } }
+    },
+    "Candidate-path evidence passed." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les contrôles des parcours sont validés." } } }
+    },
+    "Candidate-path evidence needs review." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle des parcours doivent être examinés." } } }
+    },
+    "Candidate-path and focused-bank evidence is not present in this package." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les éléments de contrôle des parcours et des banques ciblées ne figurent pas dans ce dossier." } } }
+    },
+    "All content follows reviewed fixed contracts; no AI-authored wording is recorded." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout le contenu suit des définitions fixes examinées. Aucune rédaction par IA n’est enregistrée." } } }
+    },
+    "The package records AI-authored content; review coverage remains a separate check." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le dossier contient du contenu rédigé par IA. La couverture de l’examen fait l’objet d’un contrôle distinct." } } }
+    },
+    "Mixed provenance includes %lld stem edit(s) and reviewed fixed contracts; a stem edit is not full-question authorship." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La provenance mixte associe des énoncés modifiés (%lld) à des définitions fixes examinées. Modifier un énoncé ne revient pas à rédiger toute la question." } } }
+    },
+    "The package records mixed authored and reviewed fixed content." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le dossier contient à la fois du contenu rédigé et du contenu fixe examiné." } } }
+    },
+    "The package records built-in or unreviewed content, not reviewed originality." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le dossier contient du contenu intégré ou non examiné, sans validation de son originalité." } } }
+    },
+    "Authoring provenance is unknown." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La provenance de la rédaction est inconnue." } } }
+    },
+    "Model download cancelled." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Téléchargement du modèle annulé." } } }
+    },
+    "Ollama stopped the model download (exit code %@). Check Ollama, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama a interrompu le téléchargement du modèle (code de sortie %@). Vérifiez Ollama, puis réessayez." } } }
+    },
+    "Try Again" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réessayer" } } }
+    },
+    "PDF unavailable" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "PDF indisponible" } } }
+    },
+    "Choose This PDF…" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisir ce PDF…" } } }
+    },
+    "Couldn't complete the PDF action" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible d’effectuer cette action sur le PDF" } } }
+    },
+    "This PDF is no longer at its saved location." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce PDF ne se trouve plus à l’emplacement enregistré." } } }
+    },
+    "Keldin can't read this PDF. Choose the same file to allow access." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin ne peut pas lire ce PDF. Choisissez le même fichier pour autoriser l’accès." } } }
+    },
+    "This PDF couldn't be read. Check the file, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire ce PDF. Vérifiez le fichier, puis réessayez." } } }
+    },
+    "This file couldn't be opened as a PDF." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce fichier n’a pas pu être ouvert en tant que PDF." } } }
+    },
+    "This PDF is locked. Unlock it outside Keldin, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce PDF est verrouillé. Déverrouillez-le en dehors de Keldin, puis réessayez." } } }
+    },
+    "Choose the same PDF shown in History. Other files won't replace it." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisissez le PDF indiqué dans Historique. Aucun autre fichier ne le remplacera." } } }
+    },
+    "Access to this PDF couldn't be saved. Choose the file again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "L’autorisation d’accès à ce PDF n’a pas pu être enregistrée. Choisissez à nouveau le fichier." } } }
+    },
+    "Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certains anciens éléments de l’historique n’ont pas pu être supprimés. Ils restent affichés. Keldin réessaiera lors du prochain enregistrement de l’historique ou au redémarrage." } } }
+    },
+    "Some older history items couldn't be removed. They remain listed in History until cleanup succeeds." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certains anciens éléments de l’historique n’ont pas pu être supprimés. Ils restent affichés dans Historique tant que leur suppression échoue." } } }
+    },
+    "Couldn't remove this history item. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de supprimer cet élément de l’historique. %@" } } }
+    },
+    "Couldn't load generation history. %@" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de charger l’historique de création. %@" } } }
+    },
+    "The API key couldn't be read from Keychain. Check Keychain access and try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez." } } }
+    },
+    "The API key couldn't be saved in Keychain. Check Keychain access and try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible d’enregistrer la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez." } } }
+    },
+    "The API key couldn't be fully removed from Keychain. Retry to finish removing the saved entries." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La clé API n’a pas pu être entièrement supprimée du trousseau. Réessayez pour supprimer les entrées restantes." } } }
+    },
+    "The saved API key couldn't be read. Replace it in Settings." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire la clé API enregistrée. Remplacez-la dans Réglages." } } }
+    },
     "Not checked" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non vérifié" } } }
     },
@@ -97,10 +526,10 @@
 
     },
     "%@. %lld samples. Latest %@ %@. Range %@ to %@ %@." : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@. %lld échantillons. Dernière valeur %@ %@. De %@ à %@ %@." } } }
     },
     "%@. No samples." : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@. Aucun échantillon." } } }
     },
     "%@ for %@ is not available yet." : {
       "localizations" : {
@@ -136,7 +565,7 @@
       }
     },
     "A time-series chart summarised by its latest, minimum and maximum values." : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Graphique chronologique résumé par sa dernière valeur, son minimum et son maximum." } } }
     },
     "AI" : {
       "localizations" : {
@@ -909,7 +1338,7 @@
       }
     },
     "Preview" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aperçu" } } }
     },
     "Preview Mode" : {
       "localizations" : {
