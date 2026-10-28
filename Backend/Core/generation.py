@@ -21,6 +21,12 @@ from pathlib import Path
 from typing import Any
 
 from Backend.Core.ai_assessment import ASSESSMENT_REVIEW_VERSION
+from Backend.Core.assessment_checkpoints import (
+    CheckpointBusy,
+    checkpoint_job_lease,
+    checkpoint_receipt,
+    retire_checkpoint,
+)
 from Backend.Core.assessment_package import validate_assessment_package
 from Backend.Core.assessment_quality import validate_package_novelty
 from Backend.Core.events import (
@@ -83,23 +89,46 @@ def handle_generate(args: argparse.Namespace) -> int:
                 progress=0.04,
             )
         checkpoint_path = checkpoint_path_for_job(args, output_dir)
-        generated = _invoke_plugin(
-            capability,
-            args,
-            staging_dir,
-            checkpoint_path=checkpoint_path,
-        )
-        published = finalize_generated_documents(
-            args=args,
-            capability=capability,
-            staging_dir=staging_dir,
-            output_dir=output_dir,
-            paths=generated,
-        )
-        emit_generated_files(published)
-        # Only successful publication retires the checkpoint; failed jobs can resume.
-        checkpoint_path.unlink(missing_ok=True)
+        with checkpoint_job_lease(checkpoint_path):
+            generated = _invoke_plugin(
+                capability,
+                args,
+                staging_dir,
+                checkpoint_path=checkpoint_path,
+            )
+            checkpoint_used = capability.uses_ai and not args.dry_run
+            receipt_available = False
+            receipt = None
+            if checkpoint_used:
+                try:
+                    receipt = checkpoint_receipt(checkpoint_path)
+                    receipt_available = True
+                except OSError:
+                    pass
+            published = finalize_generated_documents(
+                args=args,
+                capability=capability,
+                staging_dir=staging_dir,
+                output_dir=output_dir,
+                paths=generated,
+            )
+            emit_generated_files(published)
+            # Publication has committed. Maintenance cannot turn that successful
+            # run into an error or delete accepted work written after our receipt.
+            if checkpoint_used:
+                try:
+                    retired = receipt_available and retire_checkpoint(checkpoint_path, receipt)
+                except (OSError, GenerationCancelled):
+                    retired = False
+                if not retired:
+                    emit_progress(
+                        "The paper was saved. Recovery checkpoint cleanup could not be confirmed.",
+                        stage="checkpoint_cleanup",
+                    )
         return 0
+    except CheckpointBusy as error:
+        emit("error", message=str(error), code="checkpoint_busy")
+        return 1
     except GenerationCancelled:
         emit_progress("Creation cancelled", stage="cancel", progress=0.0)
         return 130

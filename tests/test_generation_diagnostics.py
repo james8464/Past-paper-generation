@@ -57,7 +57,8 @@ def test_failed_solution_survives_staging_cleanup(tmp_path, monkeypatch, capsys)
     assert "private-api-key" not in path.read_text()
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
     assert stat.S_IMODE(path.parent.stat().st_mode) == 0o700
-    assert list(tmp_path.iterdir()) == [path.parent]
+    assert set(tmp_path.iterdir()) == {path.parent, tmp_path / ".keldin-checkpoints"}
+    assert {entry.suffix for entry in (tmp_path / ".keldin-checkpoints").iterdir()} == {".lock"}
 
 
 def test_diagnostics_are_bounded_redacted_and_do_not_follow_symlinks(tmp_path):

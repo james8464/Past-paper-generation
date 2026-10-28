@@ -627,7 +627,8 @@ def test_backend_crash_is_structured_and_removes_staging_output(
     events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
     assert events[-1]["code"] == "generation_failed"
     assert "renderer process stopped unexpectedly" in events[-1]["message"]
-    assert not list(tmp_path.glob(".keldin-*"))
+    assert list(tmp_path.glob(".keldin-*")) == [tmp_path / ".keldin-checkpoints"]
+    assert {entry.suffix for entry in (tmp_path / ".keldin-checkpoints").iterdir()} == {".lock"}
 
 
 def test_benchmark_emits_samples_and_verdict(tmp_path: Path) -> None:
