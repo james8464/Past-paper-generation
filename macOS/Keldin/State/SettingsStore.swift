@@ -14,11 +14,13 @@ final class SettingsStore {
     var dryRun: Bool
     var notificationsEnabled: Bool
     var historyRetentionLimit: Int
-    var openAIAPIKey: String
-    var anthropicAPIKey: String
+    var openAIAPIKey = ""
+    var anthropicAPIKey = ""
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let secrets: SecretStoring
+    @ObservationIgnored private var savedCredentials: [String: String] = [:]
+    private var credentialFailures: [String: SecretStoreError] = [:]
 
     init(
         defaults: UserDefaults = .standard,
@@ -43,11 +45,12 @@ final class SettingsStore {
         ) as? Bool ?? true
         let retention = defaults.integer(forKey: AppStorageKey.historyRetentionLimit)
         historyRetentionLimit = retention > 0 ? retention : 60
-        openAIAPIKey = secrets.read(SecretAccount.openAIAPIKey)
-        anthropicAPIKey = secrets.read(SecretAccount.anthropicAPIKey)
+        openAIAPIKey = loadCredential(SecretAccount.openAIAPIKey)
+        anthropicAPIKey = loadCredential(SecretAccount.anthropicAPIKey)
     }
 
-    func save() {
+    @discardableResult
+    func save(includeCredentials: Bool = true) -> Bool {
         historyRetentionLimit = min(500, max(1, historyRetentionLimit))
         defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
         defaults.set(ollamaModel, forKey: AppStorageKey.ollamaModel)
@@ -60,7 +63,62 @@ final class SettingsStore {
             historyRetentionLimit,
             forKey: AppStorageKey.historyRetentionLimit
         )
-        secrets.save(openAIAPIKey, account: SecretAccount.openAIAPIKey)
-        secrets.save(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
+        if includeCredentials {
+            saveCredential(openAIAPIKey, account: SecretAccount.openAIAPIKey)
+            saveCredential(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
+        }
+        return credentialFailures.isEmpty
+    }
+
+    var secretFailureMessage: String? {
+        secretFailureMessage(language: "system")
+    }
+
+    func secretFailureMessage(language: String) -> String? {
+        for account in [SecretAccount.openAIAPIKey, SecretAccount.anthropicAPIKey] {
+            if let error = credentialFailures[account] { return error.message(language: language) }
+        }
+        return nil
+    }
+
+    func credentialFailure(for account: String) -> SecretStoreError? {
+        credentialFailures[account]
+    }
+
+    private func loadCredential(_ account: String) -> String {
+        do {
+            let value = try secrets.read(account)
+            savedCredentials[account] = value
+            credentialFailures.removeValue(forKey: account)
+            return value
+        } catch {
+            credentialFailures[account] = (error as? SecretStoreError) ?? .unexpected(operation: .read)
+            return ""
+        }
+    }
+
+    private func saveCredential(_ value: String, account: String) {
+        // A failed read leaves no known baseline. Its empty UI placeholder is
+        // not an instruction to erase an inaccessible credential.
+        guard let saved = savedCredentials[account] else {
+            if !value.isEmpty { writeCredential(value, account: account) }
+            return
+        }
+        // A failed clear can already have replaced the current item with an
+        // empty marker. Reverting the field still needs a confirmed write.
+        guard saved != value || credentialFailures[account] != nil else { return }
+        writeCredential(value, account: account)
+    }
+
+    private func writeCredential(_ value: String, account: String) {
+        do {
+            try secrets.save(value, account: account)
+            savedCredentials[account] = value
+            credentialFailures.removeValue(forKey: account)
+        } catch {
+            // Injected stores can throw arbitrary errors. Expose only the safe
+            // typed operation, never their description or credential data.
+            credentialFailures[account] = (error as? SecretStoreError) ?? .unexpected(operation: .write)
+        }
     }
 }

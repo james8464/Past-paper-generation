@@ -132,9 +132,11 @@ final class ApplicationCoordinator: ObservableObject {
             return nil
         case .openAI:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
+            if openAIAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.openAIAPIKey) { return error.message(language: presentationLanguage) }
             return openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an OpenAI API key in Settings." : nil
         case .anthropic:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
+            if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return error.message(language: presentationLanguage) }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         case .apple:
             return nil
@@ -190,7 +192,10 @@ final class ApplicationCoordinator: ObservableObject {
         defaults: UserDefaults = .standard,
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
-        backend: any BackendRunning = BackendClient()
+        backend: any BackendRunning = BackendClient(),
+        historyRecordRemover: @escaping (URL) throws -> Void = { url in
+            try FileManager.default.removeItem(at: url)
+        }
     ) {
         self.defaults = defaults
         self.backend = backend
@@ -198,7 +203,8 @@ final class ApplicationCoordinator: ObservableObject {
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
             retentionLimit: settings.historyRetentionLimit,
-            defaults: defaults
+            defaults: defaults,
+            recordRemover: historyRecordRemover
         )
         settingsStore = settings
         catalogStore = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
@@ -242,6 +248,7 @@ final class ApplicationCoordinator: ObservableObject {
         // Invalid saved usage stays untouched; the creation action reports it.
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = outputFolder
+        if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
     }
 
     func refreshOllama() {
@@ -619,7 +626,12 @@ final class ApplicationCoordinator: ObservableObject {
             status = "Apple MLX setup required"
             return
         }
-        persistSettings()
+        let settingsSaved = persistSettings(
+            includeCredentials: !dryRun && selectedBoard.usesAI && aiProvider.sendsPromptsOffDevice
+        )
+        if !settingsSaved, !dryRun, selectedBoard.usesAI,
+           let account = activeSecretAccount,
+           settingsStore.credentialFailure(for: account) != nil { return }
 
         progressEntries.removeAll()
         lastQualityReport = nil
@@ -902,6 +914,20 @@ final class ApplicationCoordinator: ObservableObject {
         persistRecentDocuments()
     }
 
+    func removeHistory(_ record: GenerationJobRecord) {
+        do {
+            try recentDocumentStore.remove(record)
+        } catch {
+            setError(InterfaceText.resolve("Couldn't remove this history item. \(error.localizedDescription)", language: presentationLanguage))
+        }
+    }
+
+    func setHistoryRetentionLimit(_ value: Int) {
+        settingsStore.historyRetentionLimit = max(1, value)
+        _ = saveSettingsAndReportSecretFailure()
+        recentDocumentStore.updateRetentionLimit(value)
+    }
+
     func dismissWelcome() {
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
         showWelcome = false
@@ -969,7 +995,7 @@ final class ApplicationCoordinator: ObservableObject {
     func setNotificationsEnabled(_ enabled: Bool) {
         notificationsEnabled = enabled
         settingsStore.notificationsEnabled = enabled
-        settingsStore.save()
+        saveSettingsAndReportSecretFailure()
         if enabled {
             requestNotificationAuthorization()
         }
@@ -979,7 +1005,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning else { return }
         dryRun = enabled
         settingsStore.dryRun = enabled
-        settingsStore.save()
+        saveSettingsAndReportSecretFailure()
     }
 
     func startBenchmark() {
@@ -996,7 +1022,8 @@ final class ApplicationCoordinator: ObservableObject {
         benchmarkCoordinator.cancel()
     }
 
-    private func persistSettings() {
+    @discardableResult
+    private func persistSettings(includeCredentials: Bool = true) -> Bool {
         settingsStore.provider = aiProvider
         settingsStore.ollamaModel = selectedModel
         settingsStore.openAIModel = openAIModel
@@ -1006,8 +1033,24 @@ final class ApplicationCoordinator: ObservableObject {
         settingsStore.notificationsEnabled = notificationsEnabled
         settingsStore.openAIAPIKey = openAIAPIKey
         settingsStore.anthropicAPIKey = anthropicAPIKey
-        settingsStore.save()
+        let saved = saveSettingsAndReportSecretFailure(includeCredentials: includeCredentials)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
+        return saved
+    }
+
+    @discardableResult
+    func saveSettingsAndReportSecretFailure(includeCredentials: Bool = false) -> Bool {
+        let saved = settingsStore.save(includeCredentials: includeCredentials)
+        if !saved, let message = settingsStore.secretFailureMessage(language: presentationLanguage) { setError(message) }
+        return saved
+    }
+
+    private var activeSecretAccount: String? {
+        switch aiProvider {
+        case .openAI: SecretAccount.openAIAPIKey
+        case .anthropic: SecretAccount.anthropicAPIKey
+        case .ollama, .apple: nil
+        }
     }
 
     private static let generationDateFormatter: DateFormatter = {
@@ -1285,31 +1328,35 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
 
-        try FileManager.default.createDirectory(
-            at: destinationFolder,
-            withIntermediateDirectories: true
-        )
-        generatedFiles = try generatedFiles.map { file in
-            guard currentGenerationFileIDs.contains(file.id),
-                  file.url.deletingLastPathComponent().standardizedFileURL == workingFolder else {
-                return file
-            }
-            let destination = destinationFolder.appendingPathComponent(file.url.lastPathComponent)
-            try Data(contentsOf: file.url, options: .mappedIfSafe)
-                .write(to: destination, options: .atomic)
-            return GeneratedFile(
-                id: file.id,
-                role: file.role,
-                url: destination,
-                createdAt: file.createdAt,
-                subject: file.subject,
-                paper: file.paper
-            )
+        try publishUKGeneratedFiles(from: workingFolder, to: destinationFolder)
+    }
+
+    func publishUKGeneratedFiles(
+        from workingFolder: URL,
+        to destinationFolder: URL,
+        publisher: UKArtifactPublisher = UKArtifactPublisher()
+    ) throws {
+        let files = currentGenerationFiles
+        guard !files.isEmpty else { return }
+        guard files.allSatisfy({
+            $0.url.deletingLastPathComponent().standardizedFileURL == workingFolder.standardizedFileURL
+        }) else {
+            throw CocoaError(.fileReadInvalidFileName)
+        }
+        let published = try publisher.publish(files, to: destinationFolder)
+        let byID = Dictionary(uniqueKeysWithValues: published.map { ($0.id, $0) })
+        generatedFiles = generatedFiles.map { file in
+            byID[file.id] ?? file
         }
     }
 
     private func restoreRecentDocuments() {
-        try? recentDocumentStore.load()
+        do {
+            try recentDocumentStore.load()
+        } catch {
+            setError(InterfaceText.resolve("Couldn't load generation history. \(error.localizedDescription)", language: presentationLanguage))
+            return
+        }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
         if !jobArtifacts.isEmpty {
             generatedFiles = latestDocumentVersions(jobArtifacts)

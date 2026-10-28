@@ -276,17 +276,16 @@ private struct OutputSettingsTab: View {
                     "Keep \(application.settingsStore.historyRetentionLimit) jobs",
                     value: Binding(
                         get: { application.settingsStore.historyRetentionLimit },
-                        set: { value in
-                            application.settingsStore.historyRetentionLimit = value
-                            application.settingsStore.save()
-                            application.recentDocumentStore.retentionLimit = value
-                        }
+                        set: { application.setHistoryRetentionLimit($0) }
                     ),
                     in: 10 ... 500,
                     step: 10
                 )
                 Text("History stores configuration and provenance. Generated PDFs remain in the folder you chose.")
                     .foregroundStyle(.secondary)
+                if !application.recentDocumentStore.retentionFailureIDs.isEmpty {
+                    Label("Some older history items couldn't be removed. They remain listed in History until cleanup succeeds.", systemImage: "exclamationmark.triangle")
+                }
             }
         }
         .formStyle(.grouped)

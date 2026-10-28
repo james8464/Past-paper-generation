@@ -73,13 +73,14 @@ final class HistoryStorageTests: XCTestCase {
         var rewrites: [GenerationJobRecord] = []
         let store = RecentDocumentStore(
             directory: directory, retentionLimit: 10,
-            clock: HistoryStorageClock(now: now), defaults: defaults
-        ) { data, url in
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
-            rewrites.append(try decoder.decode(GenerationJobRecord.self, from: data))
-            try data.write(to: url, options: [.atomic])
-        }
+            clock: HistoryStorageClock(now: now), defaults: defaults,
+            recordWriter: { data, url in
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
+                rewrites.append(try decoder.decode(GenerationJobRecord.self, from: data))
+                try data.write(to: url, options: [.atomic])
+            }
+        )
 
         try store.load()
 
@@ -145,10 +146,10 @@ final class HistoryStorageTests: XCTestCase {
         let existing = record()
         try encoded(existing).write(to: recordURL(existing))
         var writeAttempts = 0
-        let store = RecentDocumentStore(directory: directory, retentionLimit: 10, defaults: defaults ?? isolatedDefaults()) { _, _ in
+        let store = RecentDocumentStore(directory: directory, retentionLimit: 10, defaults: defaults ?? isolatedDefaults(), recordWriter: { _, _ in
             writeAttempts += 1
             throw InjectedHistoryFailure.write
-        }
+        })
         try store.load()
         let previousRecords = store.records
         let original = try encoded(failing)

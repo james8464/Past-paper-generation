@@ -1,0 +1,58 @@
+import Foundation
+
+struct UKArtifactPublisher {
+    private let copyFile: (URL, URL) throws -> Void
+    private let commitDirectory: (URL, URL) throws -> Void
+
+    init(
+        copyFile: @escaping (URL, URL) throws -> Void = { source, destination in
+            try FileManager.default.copyItem(at: source, to: destination)
+        },
+        commitDirectory: @escaping (URL, URL) throws -> Void = { source, destination in
+            try FileManager.default.moveItem(at: source, to: destination)
+        }
+    ) {
+        self.copyFile = copyFile
+        self.commitDirectory = commitDirectory
+    }
+
+    func publish(_ files: [GeneratedFile], to output: URL) throws -> [GeneratedFile] {
+        guard !files.isEmpty else { return [] }
+        let manager = FileManager.default
+        guard Set(files.map(\.id)).count == files.count,
+              Set(files.map { $0.url.lastPathComponent }).count == files.count else {
+            throw CocoaError(.fileReadInvalidFileName)
+        }
+        for file in files {
+            guard file.url.isFileURL else { throw CocoaError(.fileReadInvalidFileName) }
+            let values = try file.url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey])
+            guard values.isRegularFile == true, values.isSymbolicLink != true else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+        }
+
+        try manager.createDirectory(at: output, withIntermediateDirectories: true)
+        let transaction = UUID().uuidString
+        let staging = output.appendingPathComponent(".keldin-export-\(transaction)", isDirectory: true)
+        let destination = output.appendingPathComponent("Keldin-\(transaction)", isDirectory: true)
+        guard !manager.fileExists(atPath: destination.path) else {
+            throw CocoaError(.fileWriteFileExists)
+        }
+        try manager.createDirectory(at: staging, withIntermediateDirectories: false)
+        defer { try? manager.removeItem(at: staging) }
+        for file in files {
+            try copyFile(file.url, staging.appendingPathComponent(file.url.lastPathComponent))
+        }
+        // Both directories share their parent and volume. Publish the whole run
+        // with one rename; existing papers and relative manifest paths stay intact.
+        try commitDirectory(staging, destination)
+        return files.map { relocated($0, to: destination.appendingPathComponent($0.url.lastPathComponent)) }
+    }
+
+    private func relocated(_ file: GeneratedFile, to destination: URL) -> GeneratedFile {
+        GeneratedFile(
+            id: file.id, role: file.role, url: destination,
+            createdAt: file.createdAt, subject: file.subject, paper: file.paper
+        )
+    }
+}
