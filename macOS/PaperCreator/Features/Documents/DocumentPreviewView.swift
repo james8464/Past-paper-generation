@@ -10,8 +10,7 @@ struct DocumentPreviewView: View {
     let files: [GeneratedFile]
     let selectedID: GeneratedFile.ID?
     @State private var selection: GeneratedFile.ID?
-    @State private var exportError: String?
-    @StateObject private var quickLook = QuickLookCoordinator()
+    @StateObject private var documentActions = DocumentActionController()
 
     init(files: [GeneratedFile], selectedID: GeneratedFile.ID? = nil) {
         self.files = files.filter { $0.url.pathExtension.lowercased() == "pdf" }
@@ -55,35 +54,38 @@ struct DocumentPreviewView: View {
             }
         }
         .navigationTitle("Documents")
+        .focusedSceneObject(documentActions)
+        .onChange(of: selectedFile, initial: true) {
+            documentActions.update(file: selectedFile, provenance: provenanceRecord)
+        }
+        .onChange(of: provenanceRecord) {
+            documentActions.update(file: selectedFile, provenance: provenanceRecord)
+        }
         .onChange(of: selectedID) {
             selection = selectedID
         }
         .toolbar {
             ToolbarItemGroup {
-                Button("Quick Look", systemImage: "eye") {
-                    if let file = selectedFile { quickLook.present(file.url) }
-                }
-                .disabled(selectedFile?.exists != true)
+                Button("Quick Look", systemImage: "eye", action: documentActions.quickLookSelected)
+                    .disabled(!documentActions.canAccessDocument)
 
-                Button("Print…", systemImage: "printer", action: printSelected)
-                    .disabled(selectedFile?.exists != true)
+                Button("Print…", systemImage: "printer", action: documentActions.printSelected)
+                    .disabled(!documentActions.canAccessDocument)
 
-                Button("Export…", systemImage: "square.and.arrow.up", action: exportSelected)
-                    .disabled(selectedFile?.exists != true)
+                Button("Export…", systemImage: "square.and.arrow.up", action: documentActions.exportSelected)
+                    .disabled(!documentActions.canAccessDocument)
 
-                Button("Copy Provenance", systemImage: "doc.on.clipboard", action: copyProvenance)
-                    .disabled(provenanceRecord == nil)
+                Button("Copy Provenance", systemImage: "doc.on.clipboard", action: documentActions.copyProvenance)
+                    .disabled(documentActions.provenance == nil)
 
-                Button("Reveal in Finder", systemImage: "folder") {
-                    if let file = selectedFile { application.revealGeneratedFile(file) }
-                }
-                .disabled(selectedFile?.exists != true)
+                Button("Reveal in Finder", systemImage: "folder", action: documentActions.revealSelected)
+                    .disabled(!documentActions.canAccessDocument)
             }
         }
         .alert("The PDF could not be exported", isPresented: exportAlertBinding) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(exportError ?? "Try another destination.")
+            Text(documentActions.exportError ?? "Try another destination.")
         }
     }
 
@@ -105,20 +107,45 @@ struct DocumentPreviewView: View {
 
     private var exportAlertBinding: Binding<Bool> {
         Binding(
-            get: { exportError != nil },
-            set: { if !$0 { exportError = nil } }
+            get: { documentActions.exportError != nil },
+            set: { if !$0 { documentActions.exportError = nil } }
         )
     }
+}
 
-    private func printSelected() {
-        guard let file = selectedFile,
+@MainActor
+final class DocumentActionController: ObservableObject {
+    @Published private(set) var selectedFile: GeneratedFile?
+    @Published private(set) var provenance: GenerationJobRecord?
+    @Published var exportError: String?
+    private let quickLook = QuickLookCoordinator()
+
+    var canAccessDocument: Bool { selectedFile?.exists == true }
+
+    func update(file: GeneratedFile?, provenance: GenerationJobRecord?) {
+        selectedFile = file
+        self.provenance = provenance
+    }
+
+    func quickLookSelected() {
+        guard canAccessDocument, let file = selectedFile else { return }
+        quickLook.present(file.url)
+    }
+
+    func revealSelected() {
+        guard canAccessDocument, let file = selectedFile else { return }
+        NSWorkspace.shared.activateFileViewerSelecting([file.url])
+    }
+
+    func printSelected() {
+        guard canAccessDocument, let file = selectedFile,
               let operation = PDFDocumentActions.printOperation(for: file.url)
         else { return }
         operation.run()
     }
 
-    private func exportSelected() {
-        guard let file = selectedFile else { return }
+    func exportSelected() {
+        guard canAccessDocument, let file = selectedFile else { return }
         let panel = NSSavePanel()
         panel.nameFieldStringValue = file.url.lastPathComponent
         panel.allowedContentTypes = [.pdf]
@@ -130,11 +157,11 @@ struct DocumentPreviewView: View {
         }
     }
 
-    private func copyProvenance() {
-        guard let provenanceRecord else { return }
+    func copyProvenance() {
+        guard let provenance else { return }
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
-        pasteboard.setString(provenanceRecord.provenanceSummary, forType: .string)
+        pasteboard.setString(provenance.provenanceSummary, forType: .string)
     }
 }
 

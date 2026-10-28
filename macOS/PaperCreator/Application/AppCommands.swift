@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AppCommands: Commands {
     @ObservedObject var application: ApplicationCoordinator
+    @FocusedObject private var documentActions: DocumentActionController?
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
@@ -19,7 +20,29 @@ struct AppCommands: Commands {
             Divider()
         }
 
+        CommandGroup(replacing: .printItem) {
+            Button("Print…") { documentActions?.printSelected() }
+                .keyboardShortcut("p", modifiers: [.command])
+                .disabled(documentActions?.canAccessDocument != true)
+        }
+
         CommandGroup(after: .saveItem) {
+            Button("Export…") { documentActions?.exportSelected() }
+                .keyboardShortcut("e", modifiers: [.command, .shift])
+                .disabled(documentActions?.canAccessDocument != true)
+
+            Button("Quick Look") { documentActions?.quickLookSelected() }
+                .keyboardShortcut("y", modifiers: [.command])
+                .disabled(documentActions?.canAccessDocument != true)
+
+            Button("Reveal in Finder") { documentActions?.revealSelected() }
+                .disabled(documentActions?.canAccessDocument != true)
+
+            Button("Copy Provenance") { documentActions?.copyProvenance() }
+                .disabled(documentActions?.provenance == nil)
+
+            Divider()
+
             Button("Open Output Folder", action: application.openOutputFolder)
                 .keyboardShortcut("o", modifiers: [.command, .option])
 
