@@ -1,4 +1,4 @@
-"""Keep visible French authoring claims aligned with the V32 runtime."""
+"""Keep visible French authoring claims aligned with the V34 runtime."""
 
 import json
 from pathlib import Path
@@ -25,9 +25,9 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "Three paper families are available. The app blocks repeats.",
+        "Four paper families are available. The app selects an unused family and blocks repeats.",
         "This catalogue runs locally without an AI model or Ollama. It does not test model quality.",
-        "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.",
+        "Official sources are downloaded with your permission. V34 builds papers on this Mac without model prompts or cloud generation.",
     ):
         assert f'Text("{key}")' in workspace
         unit = catalog[key]["localizations"]["fr"]["stringUnit"]
@@ -43,12 +43,12 @@ def test_french_help_does_not_claim_ollama_authors_current_papers():
         "private var", 1
     )[0]
     assert (
-        "V32 uses finite app-authored cases, not model-generated questions." in french
+        "V34 uses finite app-authored cases, not model-generated questions." in french
     )
     assert "Ollama generation uses" not in french
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     key = (
-        "V32 uses finite app-authored cases, not model-generated questions. "
+        "V34 uses finite app-authored cases, not model-generated questions. "
         "No AI model or Ollama installation is needed; papers are built locally without cloud generation."
     )
     assert key in french

@@ -200,8 +200,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1793018550.6858895,
-    "ast_hash": "dda453db193cc368ab96e0a2db983d94",
+    "mtime": 1793168448.339676,
+    "ast_hash": "01d7aedebf1f59fdc8aa567b09cb6106",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -1325,8 +1325,8 @@
     "semantic_hash": "541013ecd6198a450de9fe129a6889af"
   },
   "macOS/PaperCreator/Domain/FrenchAssessmentRequest.swift": {
-    "mtime": 1793041508.41906,
-    "ast_hash": "1af9c61a866f8d01dd3e9bc2688dc855",
+    "mtime": 1793168672.8245504,
+    "ast_hash": "b513f5854c69667c6cb28bf6c2b4ceac",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1355,8 +1355,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1793147187.3715417,
-    "ast_hash": "5889fdf0d5c78d5a2ee9756d8503be63",
+    "mtime": 1793169276.1242719,
+    "ast_hash": "04e598748abad9f5dcdab36653c256f1",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
@@ -1370,8 +1370,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1793145959.1782804,
-    "ast_hash": "9d04240cfceddf4aac6ea95b05957565",
+    "mtime": 1793169276.1245427,
+    "ast_hash": "73ade996553637561569bd625f0e6cf7",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793140335.1788933,
-    "ast_hash": "cd8426308675e1530f3f8cc162889d11",
+    "mtime": 1793168810.5910017,
+    "ast_hash": "6d52741af08b52d7a87e58c0b9d9c9ea",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1420,9 +1420,9 @@
     "semantic_hash": "2e4c820130cd66d3bb487e2cdc05b15a"
   },
   "macOS/PaperCreator/State/GenerationCoordinator.swift": {
-    "mtime": 1791129181.5886364,
-    "ast_hash": "979bd7b4d6f3f3381db17ed5e3a11471",
-    "semantic_hash": "979bd7b4d6f3f3381db17ed5e3a11471"
+    "mtime": 1793168672.8248637,
+    "ast_hash": "c6d7536d4444f976251eaf3af4a290d3",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/State/ModelCoordinator.swift": {
     "mtime": 1791129181.588713,
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793138699.8146172,
-    "ast_hash": "c9fd4da5cf18aa6983eed1992882ec24",
+    "mtime": 1793168810.5924916,
+    "ast_hash": "fda853ccadd4d50bd52f927532d9b3a9",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -1680,8 +1680,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_runtime.py": {
-    "mtime": 1793018594.16849,
-    "ast_hash": "d5564cfff2e580ed0ee24592f457b326",
+    "mtime": 1793168373.3862317,
+    "ast_hash": "8a32bed407d43ff067beae0b6d2c9bba",
     "semantic_hash": ""
   },
   "tests/test_generation_date.py": {
@@ -3600,8 +3600,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_ui_provenance.py": {
-    "mtime": 1793147177.7370455,
-    "ast_hash": "3c868b31fa78273625d833ad47124701",
+    "mtime": 1793169276.1247225,
+    "ast_hash": "5d22a062d8224da015d570adb5cd8df9",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_benchmark.py": {
@@ -3645,8 +3645,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationPresentation.swift": {
-    "mtime": 1793136239.3284698,
-    "ast_hash": "9329ed277d88e34f2e55bad2f98037d5",
+    "mtime": 1793168810.5901804,
+    "ast_hash": "2a5584eafd892740e803574e2f22fd6b",
     "semantic_hash": ""
   },
   "Backend/Core/shared_source_scope.py": {

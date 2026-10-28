@@ -1027,7 +1027,58 @@ def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatc
     manifest = json.loads((bundle / "manifest.json").read_text())
     assert manifest["model_used"] is False
     assert manifest["identity"]["provider"] == "application-owned"
-    assert manifest["identity"]["model"] == "app-owned-v32"
+    assert manifest["identity"]["model"] == "app-owned-v34"
+
+
+@pytest.mark.parametrize("large_print", [False, True])
+def test_public_v34_uses_each_family_and_records_selected_seed(
+    tmp_path, monkeypatch, capsys, large_print
+):
+    import json
+
+    from Backend.Core.cli import build_parser
+    from Backend.Core.france import runtime
+    from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+    from tests.test_nsi_pipeline import make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    output = tmp_path / "output"
+
+    def forbidden(*args, **kwargs):
+        pytest.fail("The public French route must not call a model or network")
+
+    monkeypatch.setattr(runtime, "model_identity", forbidden)
+    monkeypatch.setattr(runtime, "FrenchOllamaClient", forbidden)
+    monkeypatch.setattr(runtime, "validate_endpoint", forbidden)
+    argv = [
+        "generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027",
+        "--reference-index", str(index), "--output", str(output),
+        "--seed", "270100",
+    ] + (["--large-print"] if large_print else [])
+    for seed in range(270100, 270104):
+        args = build_parser().parse_args(argv)
+        assert args.handler(args) == 0
+        (bundle,) = output.glob(f"nsi-2027-{seed}-*")
+        package = json.loads((bundle / "assessment.json").read_text())
+        manifest = json.loads((bundle / "manifest.json").read_text())
+        assert package["identity"]["seed"] == seed
+        assert manifest["identity"] == package["identity"]
+        assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v34"
+        assert package["identity"]["print_policy"] == "fr-nsi-v34-internal-review-v1"
+        assert manifest["generation_origin"] == "application_owned"
+        assert manifest["model_used"] is False
+        checkpoint = output / ".papercreator-checkpoints" / f"{args.assessment}-{seed}.json"
+        assert checkpoint.is_file()
+        validate_whole_case_pdf(bundle / "sujet.pdf", package, correction=False)
+        validate_whole_case_pdf(bundle / "corrige.pdf", package, correction=True)
+    before = {path: path.read_bytes() for path in output.rglob("*") if path.is_file()}
+    assert build_parser().parse_args(argv).handler(build_parser().parse_args(argv)) == 1
+    after = {path: path.read_bytes() for path in output.rglob("*") if path.is_file()}
+    assert before == after
+    events = capsys.readouterr().out
+    assert "quatre familles" in events
+    assert "Relecture par un enseignant requise" not in events
 
 
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])

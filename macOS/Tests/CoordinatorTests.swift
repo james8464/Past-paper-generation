@@ -36,8 +36,21 @@ final class CoordinatorTests: XCTestCase {
         let model = isolatedApplication(defaults: defaults)
         model.apply(.progress(stage: "generation", message: "Refining AI item 01 after an automated quality check: context check failed", progress: 0.1))
         XCTAssertEqual(model.status, "Nouvelle vérification de la question 01")
+        model.apply(.done(message: "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."))
+        XCTAssertEqual(model.status, "Sujet d’entraînement créé. Barème indicatif, difficulté et durée non calibrées.")
         model.apply(.error(message: "AI could not produce a valid, second-pass reviewed item for question 01: rejected", code: "generation_failed"))
         XCTAssertTrue(model.errorMessage.hasPrefix("Ce modèle n'a pas pu créer une épreuve"))
+    }
+
+    @MainActor
+    func testFrenchCompletionAndExhaustionHonorEnglishInterfaceLanguage() {
+        let defaults = isolatedDefaults()
+        defaults.set("en", forKey: "interfaceLanguage")
+        let model = isolatedApplication(defaults: defaults)
+        model.apply(.done(message: "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."))
+        XCTAssertEqual(model.status, "Practice paper created. Marking guidance is indicative; difficulty and timing are uncalibrated.")
+        model.apply(.error(message: "Les quatre familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé.", code: "french_generation_failed"))
+        XCTAssertEqual(model.errorMessage, "None of the four paper families is sufficiently different from your saved papers. No new paper was created.")
     }
 
     private var temporaryDirectory: URL!
@@ -88,6 +101,52 @@ final class CoordinatorTests: XCTestCase {
         try Data("PDF fixture".utf8).write(to: exported.url)
         try coordinator.complete(artifacts: [exported])
         XCTAssertEqual(store.records.first?.artifacts.map(\.url), [exported.url])
+    }
+
+    @MainActor
+    func testFrenchCompletionRecordsThePublishedSeed() throws {
+        let store = RecentDocumentStore(directory: temporaryDirectory, retentionLimit: 10)
+        let coordinator = GenerationCoordinator(history: store)
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: "fr-national-nsi", paperID: "written-2027",
+                provider: "application-owned", model: "app-owned-v34", seed: 270100,
+                dryRun: false, educationSystem: "fr-national",
+                assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR"
+            ),
+            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v34"),
+            state: .pending, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        let manifest = temporaryDirectory.appendingPathComponent("manifest.json")
+        try coordinator.begin(record)
+        XCTAssertThrowsError(try coordinator.complete())
+        XCTAssertEqual(store.records.first?.state, .running)
+        let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v34","seed":270101,"prompt_version":"fr-nsi-written-2027-v34","print_policy":"fr-nsi-v34-internal-review-v1"}}"#
+        try Data(payload.utf8).write(to: manifest)
+        let original = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(payload.utf8)) as? [String: Any])
+        for (key, value) in ["seed": true, "print_policy": "approved", "model": "app-owned-v32"] as [String: Any] {
+            var changed = original
+            var identity = try XCTUnwrap(changed["identity"] as? [String: Any])
+            identity[key] = value
+            changed["identity"] = identity
+            try JSONSerialization.data(withJSONObject: changed).write(to: manifest)
+            XCTAssertThrowsError(try FrenchAssessmentRequest.publishedSeed(from: manifest))
+        }
+        for (key, value) in ["teacher_review": "passed", "empirical_calibration": "passed", "status": "approved"] {
+            var changed = original
+            changed[key] = value
+            try JSONSerialization.data(withJSONObject: changed).write(to: manifest)
+            XCTAssertThrowsError(try FrenchAssessmentRequest.publishedSeed(from: manifest))
+        }
+        try Data(payload.utf8).write(to: manifest)
+        let file = GeneratedFile(role: "package_manifest", url: manifest)
+        try coordinator.complete(artifacts: [file])
+        XCTAssertEqual(store.records.first?.id, record.id)
+        XCTAssertEqual(store.records.first?.configuration.seed, 270101)
+        XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v34")
+        XCTAssertEqual(store.records.first?.qualification, record.qualification)
+        XCTAssertEqual(store.records.first?.state, .completed)
     }
 
     @MainActor
