@@ -45,3 +45,19 @@ Three new boundary tests failed before configuration. They check the finite
 excluded file. Their red log is `tmp/formatter-boundaries-red.log`. This batch
 changes configuration, tests and this review only, not executable application
 source or historical catalogue bytes.
+
+## Mechanical application after the coordinated freeze
+
+The parent applied Ruff to the maintained scope after the prompt, checkpoint,
+tooling and compatible naming work was committed. The retained proof compares
+535 tracked Python files before and after the operation. Exactly 230 changed;
+every compared syntax tree and literal-value sequence is identical, and all 29
+excluded catalogue files are byte-identical. The proof is retained at
+`tmp/formatter-preservation-20261028.json`; its baseline is recorded inside it.
+
+The formatter check and lint both pass for Backend, Resources, tools, tests,
+bridge.py and conftest.py. These checks establish mechanical preservation, not a
+semantic review of every file or a performance improvement. Final combined tests,
+packaging, replay and protected checks are still required. The consolidation
+rebase changed no Backend, Resources, tools, tests, macOS, CI or Ruff bytes from
+the formatting commit. Generated metadata will be refreshed separately.
