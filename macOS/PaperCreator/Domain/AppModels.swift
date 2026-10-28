@@ -979,7 +979,7 @@ enum GenerationQualityPolicy {
                 "Originality (\(originalityState.title)): \(originalityDetail)",
                 "Reference demand: \(referenceDetail)",
                 "Candidate paths: \(pathDetail)",
-                "Legal paths: \(report.candidatePathCount.map(String.init) ?? "Unknown"); candidate marks: \(report.candidateMarkRange.map { $0.map(String.init).joined(separator: "–") } ?? "Unknown"); printed marks: \(report.printedMarks.map(String.init) ?? "Unknown"). Timing is allocated, not observed.",
+                "Valid paper routes: \(report.candidatePathCount.map(String.init) ?? "Unknown"); candidate marks: \(report.candidateMarkRange.map { $0.map(String.init).joined(separator: " to ") } ?? "Unknown"); printed marks: \(report.printedMarks.map(String.init) ?? "Unknown"). Times are estimates; no learner timings are recorded.",
             ]
         )
     }

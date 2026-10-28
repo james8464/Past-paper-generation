@@ -1,4 +1,42 @@
-# macOS interaction and HIG compliance
+# macOS interaction and HIG review
+
+## 28 October 2026 review
+
+This is an engineering review, not Apple certification or a claim that every
+HIG recommendation has been verified. The current review used Safari to read
+Apple's [Designing for macOS](https://developer.apple.com/design/human-interface-guidelines/designing-for-macos),
+[Layout](https://developer.apple.com/design/human-interface-guidelines/layout),
+[Color](https://developer.apple.com/design/human-interface-guidelines/color),
+[Writing](https://developer.apple.com/design/human-interface-guidelines/writing),
+[Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility),
+[Buttons](https://developer.apple.com/design/human-interface-guidelines/buttons),
+and [Alerts](https://developer.apple.com/design/human-interface-guidelines/alerts)
+guidance. These pages do not cover the entire HIG.
+
+The resulting changes shorten the French workspace guidance, use plain
+punctuation in native app copy, localize model recommendations and mark ranges,
+and add ellipses to actions that open a panel or need more input. Brand colours
+do not replace semantic system colours for status or controls.
+
+Live computer-control testing found that switching the interface language
+changed two assessment values visually but left their combined accessibility
+text in the previous language. Recreating just those two stateless rows now
+refreshes the accessibility values. The rebuilt Release app was switched from
+English to French and back to System without relaunching; both the visible and
+accessibility representations followed the selected language.
+
+The output-folder picker opened, and Cancel preserved the Downloads
+destination. The optional review sheet opened with its rubric controls and a
+disabled Save action while required fields were empty; Cancel left no review
+record. No teacher identity or review was fabricated. The user's internal
+paper-evaluation workflow must remain distinct from this optional teacher
+record.
+
+Remaining verification includes the rest of the applicable HIG, a complete
+button/state matrix, actual VoiceOver output, enlarged text, keyboard-only
+operation, contrast measurements and the signed distribution build. Earlier
+checks below retain their original dates and are not evidence that those
+checks were repeated on this build.
 
 ## Information architecture
 
@@ -58,8 +96,9 @@ and a later retry starts from clean recovery state.
 - Status never relies on colour alone; each state includes a symbol and text.
 - Unavailable catalogue choices show the visible “Coming soon” status in
   addition to the clock symbol.
-- Controls use native macOS hit regions, meeting the platform's recommended
-  target sizes without invisible custom overlays.
+- Controls use native macOS hit regions without invisible custom overlays.
+  Native controls alone do not establish that every target size and spacing
+  meets the guidance; the distribution review must measure them.
 
 ## Settings
 

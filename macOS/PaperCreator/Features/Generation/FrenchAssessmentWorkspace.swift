@@ -80,17 +80,21 @@ struct FrenchAssessmentWorkspace: View {
             Section {
                 Text("NSI written practice")
                     .font(.title2.weight(.semibold))
-                Text("Original, non-official drafts for teachers to review before classroom use.")
+                Text("Original, non-official practice papers. Review the questions and proposed answers before use.")
                     .foregroundStyle(.secondary)
-                Text("French NSI has three app-authored case families. The originality check refuses repeated families.")
+                Text("Three paper families are available. The app blocks repeats.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
-                    Text(localizedValue("2027 · 3 h 30 · 3 independent exercises"))
+                    Text("2027 · 3 h 30 · 3 independent exercises")
                 }
+                // These rows have no input state. Fresh identities refresh the
+                // cached accessibility values when the interface language changes.
+                .id("written-exam-\(interfaceLanguage)")
                 LabeledContent("Indicative credit") {
-                    Text(localizedValue("18 technical + 2 French language = 20"))
+                    Text("18 technical + 2 French language = 20")
                 }
+                .id("indicative-credit-\(interfaceLanguage)")
             }
             Section("Create a draft") {
                 if presentation.showsPrepareReferences {
@@ -103,7 +107,7 @@ struct FrenchAssessmentWorkspace: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
-                Text("No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.")
+                Text("This catalogue runs locally without an AI model or Ollama. It does not test model quality.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 Toggle("Enlarged print", isOn: $largePrint)
@@ -116,13 +120,13 @@ struct FrenchAssessmentWorkspace: View {
                     }
                     .disabled(application.isRunning)
                     LabeledContent("Save to", value: application.outputFolder.lastPathComponent)
-                    Button("Choose output folder", action: application.chooseOutputFolder)
+                    Button("Choose output folder…", action: application.chooseOutputFolder)
                         .disabled(application.isRunning)
                 }
             }
             Section("Review and guidance") {
-                Text("Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher.")
-                Button("Record a teacher review") { showTeacherReview = true }
+                Text("Read both PDFs and the validation record. Check the difficulty and timing before use. Automated checks do not establish classroom suitability.")
+                Button("Record a teacher review…") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
                     Text("Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.")
@@ -225,7 +229,7 @@ private struct FrenchTeacherReviewSheet: View {
                 Button("Cancel") { dismiss() }
                     .keyboardShortcut(.cancelAction)
                 Spacer()
-                Button("Choose Reviewed Bundle and Record") {
+                Button("Save review…") {
                     let outcome = application.recordFrenchReview(
                         reviewer: reviewer,
                         decision: decision,

@@ -1,6 +1,26 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ (recommended)" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (recommandé)"
+          }
+        }
+      }
+    },
+    "%lld to %lld" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld à %lld"
+          }
+        }
+      }
+    },
     "" : {
 
     },
@@ -20,12 +40,12 @@
         }
       }
     },
-    "%@ — %@" : {
+    "%@ · %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "new",
-            "value" : "%1$@ — %2$@"
+            "value" : "%1$@ · %2$@"
           }
         }
       }
@@ -120,11 +140,15 @@
     "Choose the subject and paper. AI-assisted families also let you choose a model; constrained families run without one." : {
 
     },
-    "Choose..." : {
-
-    },
     "Choose…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir…"
+          }
+        }
+      }
     },
     "Coming soon" : {
       "localizations" : {
@@ -477,8 +501,15 @@
     "Preview of %@" : {
 
     },
-    "Print" : {
-
+    "Print…" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Imprimer…"
+          }
+        }
+      }
     },
     "Privacy" : {
 
@@ -731,8 +762,15 @@
     "seconds" : {
 
     },
-    "—" : {
-
+    "Not available" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indisponible"
+          }
+        }
+      }
     },
     "French written-paper prototype" : {
       "localizations" : {
@@ -944,12 +982,12 @@
         }
       }
     },
-    "French NSI has three app-authored case families. The originality check refuses repeated families." : {
+    "Three paper families are available. The app blocks repeats." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La NSI française propose trois familles de cas rédigées dans l’application. Le contrôle d’originalité refuse les familles déjà utilisées."
+            "value" : "Trois familles de sujets sont disponibles. L’application bloque les répétitions."
           }
         }
       }
@@ -964,12 +1002,12 @@
         }
       }
     },
-    "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model." : {
+    "This catalogue runs locally without an AI model or Ollama. It does not test model quality." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aucun modèle d’IA ni installation d’Ollama n’est nécessaire pour V32. Ces sujets ne qualifient pas un modèle d’IA."
+            "value" : "Ce catalogue fonctionne sur ce Mac, sans modèle d’IA ni Ollama. Il n’évalue pas la qualité des modèles."
           }
         }
       }
@@ -1024,12 +1062,12 @@
         }
       }
     },
-    "Choose output folder" : {
+    "Choose output folder…" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisir le dossier de sortie"
+            "value" : "Choisir le dossier de sortie…"
           }
         }
       }
@@ -1154,12 +1192,12 @@
         }
       }
     },
-    "Record a teacher review" : {
+    "Record a teacher review…" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Enregistrer l’avis d’un enseignant"
+            "value" : "Enregistrer l’avis d’un enseignant…"
           }
         }
       }
@@ -1434,12 +1472,12 @@
         }
       }
     },
-    "Choose Reviewed Bundle and Record" : {
+    "Save review…" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisir le dossier relu et enregistrer"
+            "value" : "Enregistrer la relecture…"
           }
         }
       }
@@ -1734,12 +1772,12 @@
         }
       }
     },
-    "Original, non-official drafts for teachers to review before classroom use." : {
+    "Original, non-official practice papers. Review the questions and proposed answers before use." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sujets inédits et non officiels, à relire par un enseignant avant utilisation en classe."
+            "value" : "Sujets d’entraînement originaux et non officiels. Relisez les questions et les réponses proposées avant utilisation."
           }
         }
       }
@@ -1834,12 +1872,12 @@
         }
       }
     },
-    "Check both PDFs, the validation record, difficulty and timing. Automated checks do not replace an NSI teacher." : {
+    "Read both PDFs and the validation record. Check the difficulty and timing before use. Automated checks do not establish classroom suitability." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vérifiez les deux PDF, les contrôles, la difficulté et la durée. Un contrôle automatisé ne remplace pas la relecture d’un enseignant de NSI."
+            "value" : "Lisez les deux PDF et le rapport de contrôle. Vérifiez la difficulté et la durée avant utilisation. Les contrôles automatisés ne suffisent pas à valider un usage en classe."
           }
         }
       }

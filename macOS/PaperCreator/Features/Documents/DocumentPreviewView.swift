@@ -65,7 +65,7 @@ struct DocumentPreviewView: View {
                 }
                 .disabled(selectedFile?.exists != true)
 
-                Button("Print", systemImage: "printer", action: printSelected)
+                Button("Print…", systemImage: "printer", action: printSelected)
                     .disabled(selectedFile?.exists != true)
 
                 Button("Export…", systemImage: "square.and.arrow.up", action: exportSelected)

@@ -9,6 +9,35 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "macOS/PaperCreator"
 
 
+def test_native_app_copy_uses_plain_punctuation():
+    offenders = [
+        str(path.relative_to(ROOT))
+        for path in APP.rglob("*.swift")
+        if re.search("[\u2013\u2014]", path.read_text())
+    ]
+    assert not offenders, offenders
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())
+    for key, entry in catalog["strings"].items():
+        assert not re.search("[\u2013\u2014]", key), key
+        for language, localization in entry.get("localizations", {}).items():
+            value = localization.get("stringUnit", {}).get("value", "")
+            assert not re.search("[\u2013\u2014]", value), (key, language)
+
+
+def test_panel_actions_signal_that_more_input_is_needed():
+    for source, label in (
+        ("Features/Generation/FrenchAssessmentWorkspace.swift", "Choose output folder…"),
+        ("Features/Generation/FrenchAssessmentWorkspace.swift", "Record a teacher review…"),
+        ("Features/Generation/FrenchAssessmentWorkspace.swift", "Save review…"),
+        ("Features/Documents/DocumentPreviewView.swift", "Print…"),
+        ("Features/Settings/SettingsPane.swift", "Choose…"),
+    ):
+        assert f'Button("{label}"' in (APP / source).read_text(), (source, label)
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    assert catalog["%@ (recommended)"]["localizations"]["fr"]["stringUnit"]["value"] == "%@ (recommandé)"
+    assert catalog["%lld to %lld"]["localizations"]["fr"]["stringUnit"]["value"] == "%lld à %lld"
+
+
 def test_display_name_is_keldin_without_changing_bundle_identity():
     info = plistlib.loads((APP / "Info.plist").read_bytes())
     assert info["CFBundleDisplayName"] == "Keldin"

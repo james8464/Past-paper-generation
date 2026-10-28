@@ -374,14 +374,14 @@ private struct HelpTopicPage: View {
         HelpSection(
             title: "Commands",
             rows: [
-                "Command-Return — Create Paper",
-                "Command-Period — Cancel Generation",
-                "Option-Command-O — Open Output Folder",
-                "Shift-Command-B — Show Benchmark",
-                "Shift-Command-D — Show Documents",
-                "Shift-Command-Y — Show History",
-                "Shift-Command-H — Keldin Help",
-                "Command-Comma — Settings",
+                "Command-Return: Create Paper",
+                "Command-Period: Cancel Generation",
+                "Option-Command-O: Open Output Folder",
+                "Shift-Command-B: Show Benchmark",
+                "Shift-Command-D: Show Documents",
+                "Shift-Command-Y: Show History",
+                "Shift-Command-H: Keldin Help",
+                "Command-Comma: Settings",
             ]
         )
     }
