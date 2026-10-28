@@ -32,6 +32,22 @@ def test_creation_commands_do_not_run_behind_guidance_sheets():
     assert "application.showWelcome || application.showHelp" in source
 
 
+def test_document_commands_do_not_target_the_document_behind_a_guide():
+    source = (APP / "Application/AppCommands.swift").read_text()
+    access = source.split("private var canAccessDocument: Bool", 1)[1].split("private", 1)[0]
+    assert "!application.showWelcome" in access
+    assert "!application.showHelp" in access
+    assert "documentActions?.canAccessDocument == true" in access
+    assert source.count(".disabled(!canAccessDocument)") == 4
+    assert source.count("guard canAccessDocument else { return }") == 4
+    provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split("private", 1)[0]
+    assert "!application.showWelcome" in provenance
+    assert "!application.showHelp" in provenance
+    assert "documentActions?.provenance != nil" in provenance
+    assert ".disabled(!canCopyProvenance)" in source
+    assert "guard canCopyProvenance else { return }" in source
+
+
 def test_help_containers_keep_localisable_resources_and_stable_identity():
     source = (APP / "Features/Onboarding/WelcomeHelpViews.swift").read_text()
     assert "let rows: [LocalizedStringResource]" in source

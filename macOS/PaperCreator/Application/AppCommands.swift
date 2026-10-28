@@ -33,6 +33,16 @@ struct AppCommands: Commands {
         }
     }
 
+    private var canAccessDocument: Bool {
+        !application.showWelcome && !application.showHelp
+            && documentActions?.canAccessDocument == true
+    }
+
+    private var canCopyProvenance: Bool {
+        !application.showWelcome && !application.showHelp
+            && documentActions?.provenance != nil
+    }
+
     private func localized(_ resource: LocalizedStringResource) -> String {
         InterfaceText.resolve(resource, language: interfaceLanguage)
     }
@@ -54,25 +64,40 @@ struct AppCommands: Commands {
         }
 
         CommandGroup(replacing: .printItem) {
-            Button(localized("Print…")) { documentActions?.printSelected() }
+            Button(localized("Print…")) {
+                guard canAccessDocument else { return }
+                documentActions?.printSelected()
+            }
                 .keyboardShortcut("p", modifiers: [.command])
-                .disabled(documentActions?.canAccessDocument != true)
+                .disabled(!canAccessDocument)
         }
 
         CommandGroup(after: .saveItem) {
-            Button(localized("Export…")) { documentActions?.exportSelected() }
+            Button(localized("Export…")) {
+                guard canAccessDocument else { return }
+                documentActions?.exportSelected()
+            }
                 .keyboardShortcut("e", modifiers: [.command, .shift])
-                .disabled(documentActions?.canAccessDocument != true)
+                .disabled(!canAccessDocument)
 
-            Button(localized("Quick Look")) { documentActions?.quickLookSelected() }
+            Button(localized("Quick Look")) {
+                guard canAccessDocument else { return }
+                documentActions?.quickLookSelected()
+            }
                 .keyboardShortcut("y", modifiers: [.command])
-                .disabled(documentActions?.canAccessDocument != true)
+                .disabled(!canAccessDocument)
 
-            Button(localized("Reveal in Finder")) { documentActions?.revealSelected() }
-                .disabled(documentActions?.canAccessDocument != true)
+            Button(localized("Reveal in Finder")) {
+                guard canAccessDocument else { return }
+                documentActions?.revealSelected()
+            }
+                .disabled(!canAccessDocument)
 
-            Button(localized("Copy Provenance")) { documentActions?.copyProvenance() }
-                .disabled(documentActions?.provenance == nil)
+            Button(localized("Copy Provenance")) {
+                guard canCopyProvenance else { return }
+                documentActions?.copyProvenance()
+            }
+                .disabled(!canCopyProvenance)
 
             Divider()
 

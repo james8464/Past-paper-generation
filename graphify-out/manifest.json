@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793188651.2159662,
+    "mtime": 1793189428.582824,
     "ast_hash": "969283c73284990b33cc3cd18de14bf1",
     "semantic_hash": ""
   },
@@ -1265,8 +1265,8 @@
     "semantic_hash": "0468f7ebe38f92198b3a5b0b1a0afe79"
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
-    "mtime": 1793186965.2246122,
-    "ast_hash": "74b825d2df15dc1aa3702d4d6ddfb9f4",
+    "mtime": 1793189456.186803,
+    "ast_hash": "01d111a8adc86d2214c52461a6c60f73",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
@@ -3390,7 +3390,7 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793188665.3367295,
+    "mtime": 1793189085.9220695,
     "ast_hash": "0def42de4b10f23bd80ad63788f2e861",
     "semantic_hash": ""
   },
@@ -3735,8 +3735,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_interface_copy.py": {
-    "mtime": 1793187791.1179047,
-    "ast_hash": "22b071d1a6a9ab800690fc85f97b57d8",
+    "mtime": 1793189455.9558182,
+    "ast_hash": "c933bc103d3fa57d5012a6421e6ce5df",
     "semantic_hash": ""
   }
 }
