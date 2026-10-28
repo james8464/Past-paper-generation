@@ -3738,5 +3738,45 @@
     "mtime": 1793189455.9558182,
     "ast_hash": "c933bc103d3fa57d5012a6421e6ce5df",
     "semantic_hash": ""
+  },
+  "Backend/Core/france/allocation_case.py": {
+    "mtime": 1793188175.1167936,
+    "ast_hash": "0c46f4e002db02d4c7d412f3f857c824",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/channel_case.py": {
+    "mtime": 1793188201.5756829,
+    "ast_hash": "09fd5e7d75cef397bd380193ed3cde81",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/directory_case.py": {
+    "mtime": 1793188128.4678874,
+    "ast_hash": "8558ec39bc59841fabc078efdc358182",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/directory_exercise.py": {
+    "mtime": 1793188327.2072697,
+    "ast_hash": "706c3bab0426755ebc0469f4e939aa42",
+    "semantic_hash": ""
+  },
+  "tests/test_french_allocation_case.py": {
+    "mtime": 1793188175.11731,
+    "ast_hash": "134e730a865184ffd901d7f4bc123aad",
+    "semantic_hash": ""
+  },
+  "tests/test_french_channel_case.py": {
+    "mtime": 1793188189.5909252,
+    "ast_hash": "ef6ad15ed9190c311f6742fd5d54f9fd",
+    "semantic_hash": ""
+  },
+  "tests/test_french_directory_case.py": {
+    "mtime": 1793188128.4682841,
+    "ast_hash": "c9bab2a0915b3fff43efe6b746534344",
+    "semantic_hash": ""
+  },
+  "tests/test_french_directory_exercise.py": {
+    "mtime": 1793188227.5790021,
+    "ast_hash": "bc51071bb98f1a378dd14b09aa07d927",
+    "semantic_hash": ""
   }
 }
