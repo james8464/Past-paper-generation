@@ -2780,6 +2780,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-operation-ownership-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-run-isolation-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",

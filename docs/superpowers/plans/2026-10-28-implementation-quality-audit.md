@@ -203,3 +203,29 @@ separate from completing these defect-specific packages.
 The combined coverage/parity/hygiene check passes 25 tests (15 coverage, four
 parity and six hygiene). Ruff passes. These results do not replace the final
 native suite or fixed-source release checks.
+
+### N8 operation ownership follow-up: partial
+
+The native follow-up at `d488fad` fixes concrete ownership defects without completing
+the planned coordinator extraction. A benchmark result no longer releases its
+process slot before exit. Model-download and MLX confirmations refuse to replace
+running work. Model-download completion and cancellation have operation-specific
+handling that cannot finish or cancel an unrelated generation history record.
+
+Six new controlled regressions cover these boundaries. The final targeted
+isolation run passes 21 tests. No model was downloaded and no user history was
+changed by those tests. Read-only review found no additional actionable defect
+in the scoped diff. See
+`docs/quality/native-operation-ownership-review-2026-10-28.md` for the red/green
+logs and exact scope.
+
+N8 remains partial and is still counted among unfinished packages. State-owner
+consolidation and architectural extraction remain planned. Keychain operations
+remain synchronous; no performance improvement is claimed without measurements.
+The earlier 189-test gate and Store PDF-recovery observations certify their
+stated prior source only. The new ownership changes still require their final
+combined native gate, signed builds and protected publication.
+
+At this follow-up, coverage lists 845 tracked files (640 pending, 205 excluded).
+The 25 coverage/parity/hygiene checks and Ruff pass; these do not mark any file's
+semantic review complete.
