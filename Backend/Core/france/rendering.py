@@ -705,6 +705,7 @@ def render_assessment(
                 "database_case_contract",
                 "loan_case_contract",
                 "curriculum_database_case_contract",
+                "allocation_case_contract",
             }
             for question in exercise.questions
         )
