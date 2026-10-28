@@ -2417,6 +2417,11 @@ def handle_generate_assessment(args) -> int:
         # Explicit Ollama mode remains available for historical diagnostic labels.
         # The public CLI defaults to app-owned authoring with no model dependency.
         application_owned = getattr(args, "provider", "ollama") == "application-owned"
+        excluded_families = getattr(args, "exclude_family", [])
+        if excluded_families and not application_owned:
+            raise ValueError(
+                "Saved-family exclusions require application-owned generation"
+            )
         if application_owned:
             client = ApplicationOwnedFrenchClient()
             identity = client.model_digest
@@ -2434,7 +2439,9 @@ def handle_generate_assessment(args) -> int:
         history = load_originality_history(output)
         run_implementation = implementation_identity() if application_owned else None
         selected_seed = (
-            choose_fresh_seed(args.seed, previous_texts=history)
+            choose_fresh_seed(
+                args.seed, previous_texts=history, excluded_families=excluded_families
+            )
             if application_owned
             else args.seed
         )
@@ -2456,14 +2463,20 @@ def handle_generate_assessment(args) -> int:
             contract_authoring_version="v35" if application_owned else "v32",
         )
         validate_package(package)
-        if application_owned and package["identity"]["implementation_sha256"] != run_implementation:
-            raise ValueError("Le programme a changé pendant la génération; publication refusée")
+        if (
+            application_owned
+            and package["identity"]["implementation_sha256"] != run_implementation
+        ):
+            raise ValueError(
+                "Le programme a changé pendant la génération; publication refusée"
+            )
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        whole_case = (
-            package["identity"]["prompt_version"]
-            in {CONTROLLED_WHOLE_CASE_PROMPT_VERSION, EXTENDED_VERSION, EXPANDED_VERSION}
-        )
+        whole_case = package["identity"]["prompt_version"] in {
+            CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
+            EXTENDED_VERSION,
+            EXPANDED_VERSION,
+        }
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -2709,7 +2722,8 @@ def handle_generate_assessment(args) -> int:
             "done",
             message=(
                 "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."
-                if package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION}
+                if package["identity"]["prompt_version"]
+                in {EXTENDED_VERSION, EXPANDED_VERSION}
                 else "Brouillon créé. Relecture par un enseignant requise."
             ),
         )

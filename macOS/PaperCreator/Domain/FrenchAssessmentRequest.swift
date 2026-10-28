@@ -3,10 +3,36 @@ import Foundation
 struct FrenchAssessmentRequest {
     static let assessmentID = "fr-bac-general-nsi-written-2027"
     static let modelID = "app-owned-v35"
+    static let familyIDs = [
+        "rank-sensors-routing", "expression-bookings-locks",
+        "prefix-stock-delivery", "postfix-loans-scheduling",
+        "directories-eligibility-channel",
+    ]
     let referenceIndex: URL
     let output: URL
     let seed: Int
     let largePrint: Bool
+    var excludedFamilies: [Int] = []
+
+    static func savedFamilies(in records: [GenerationJobRecord]) throws -> [Int] {
+        var families = Set<Int>()
+        for record in records {
+            let configuration = record.configuration
+            guard [.completed, .missingArtifacts].contains(record.state),
+                  !configuration.dryRun,
+                  configuration.assessmentID == assessmentID,
+                  configuration.provider == "application-owned" else { continue }
+            let count: Int
+            switch configuration.model {
+            case "app-owned-v34": count = 4
+            case modelID: count = 5
+            default: continue
+            }
+            guard let seed = configuration.seed else { throw CocoaError(.fileReadCorruptFile) }
+            families.insert((seed % count + count) % count)
+        }
+        return families.sorted()
+    }
 
     var arguments: [String] {
         var result = [
@@ -15,6 +41,7 @@ struct FrenchAssessmentRequest {
             "--provider", "application-owned", "--seed", String(seed),
         ]
         if largePrint { result.append("--large-print") }
+        for family in excludedFamilies { result += ["--exclude-family", String(family)] }
         return result
     }
 

@@ -63,6 +63,41 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testFrenchSavedFamiliesSurviveOutputFolderChangesAndMissingFiles() throws {
+        func record(model: String, seed: Int?, state: GenerationJobState = .completed, dryRun: Bool = false) -> GenerationJobRecord {
+            GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned", model: model, seed: seed, dryRun: dryRun, assessmentID: FrenchAssessmentRequest.assessmentID),
+                provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: model),
+                state: state, artifacts: [], qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+            )
+        }
+        let jobs = (0..<5).map { record(model: "app-owned-v35", seed: $0, state: $0 == 4 ? .missingArtifacts : .completed) }
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: jobs), [0,1,2,3,4])
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v34", seed: 7), record(model: "app-owned-v35", seed: -1)]), [3,4])
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v35", seed: 2, state: .failed), record(model: "app-owned-v35", seed: 2, dryRun: true)]), [])
+        XCTAssertThrowsError(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v35", seed: nil)]))
+        let request = FrenchAssessmentRequest(referenceIndex: URL(fileURLWithPath: "/references.sqlite"), output: URL(fileURLWithPath: "/new-folder"), seed: 270100, largePrint: false, excludedFamilies: [0,1,2,3,4])
+        XCTAssertEqual(Array(request.arguments.suffix(10)), ["--exclude-family","0","--exclude-family","1","--exclude-family","2","--exclude-family","3","--exclude-family","4"])
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = isolatedApplication(defaults: defaults)
+        for job in jobs { try application.recentDocumentStore.save(job) }
+        XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
+        for job in jobs { try application.recentDocumentStore.remove(job) }
+        XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
+        application.outputFolder = temporaryDirectory.appendingPathComponent("another-output")
+        application.generateFrenchPaper(largePrint: false)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertTrue(application.showError)
+        XCTAssertEqual(application.status, "Erreur")
+        XCTAssertTrue(application.errorMessage.hasPrefix("Aucune des cinq familles"))
+        XCTAssertEqual(application.recentDocumentStore.records.count, 0)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: application.outputFolder.path))
+        defaults.set(["unknown-family"], forKey: AppStorageKey.frenchSavedFamilyIDs)
+        XCTAssertThrowsError(try application.savedFrenchFamilies())
+    }
+
+    @MainActor
     func testFrenchPreparationProgressUsesTheSelectedLanguage() {
         let message = "Construction des exercices vérifiés, sans appel à un modèle."
         XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), "Preparing the practice paper.")

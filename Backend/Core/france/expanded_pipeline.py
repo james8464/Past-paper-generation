@@ -83,14 +83,25 @@ def _task(exercise, family):
     return task
 
 
-def choose_fresh_seed(seed, *, previous_texts=None):
+def choose_fresh_seed(seed, *, previous_texts=None, excluded_families=()):
     from Backend.Core.france.originality import SimilarityRejected, screen_originality
     from Backend.Core.france.pipeline import exercise_candidate_text
 
     candidates = _family_seeds(seed)
+    if (
+        type(excluded_families) not in (list, tuple)
+        or len(excluded_families) > FAMILY_COUNT
+        or any(
+            type(family) is not int or not 0 <= family < FAMILY_COUNT
+            for family in excluded_families
+        )
+    ):
+        raise ValueError("Invalid saved V35 family exclusions")
     history = [] if previous_texts is None else previous_texts
     retained._validate_history(history)
     for candidate in candidates:
+        if candidate % FAMILY_COUNT in excluded_families:
+            continue
         try:
             for raw in _source(candidate)[2]:
                 screen_originality(

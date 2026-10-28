@@ -10,6 +10,42 @@ from Backend.Core.france.pipeline import digest, exercise_candidate_text
 from tests.test_nsi_pipeline import make_index
 
 
+def test_saved_family_exclusions_apply_before_output_folder_history():
+    from Backend.Core.france.expanded_pipeline import (
+        FamilyCatalogueExhausted,
+        choose_fresh_seed,
+    )
+
+    assert choose_fresh_seed(270100, excluded_families=[0, 1, 2, 3]) == 270104
+    with pytest.raises(FamilyCatalogueExhausted):
+        choose_fresh_seed(270100, excluded_families=list(range(5)))
+
+
+@pytest.mark.parametrize("excluded", [[True], [-1], [5], ["1"], "1", [0] * 6])
+def test_invalid_saved_family_exclusions_are_rejected(excluded):
+    from Backend.Core.france.expanded_pipeline import choose_fresh_seed
+
+    with pytest.raises(ValueError):
+        choose_fresh_seed(270100, excluded_families=excluded)
+
+
+def test_saved_family_exclusions_do_not_bypass_local_text_screening():
+    from Backend.Core.france.expanded_pipeline import (
+        FamilyCatalogueExhausted,
+        _source,
+        choose_fresh_seed,
+    )
+
+    history = [
+        exercise_candidate_text(NSIExercise.model_validate(raw))
+        for raw in _source(270104)[2]
+    ]
+    with pytest.raises(FamilyCatalogueExhausted):
+        choose_fresh_seed(
+            270100, previous_texts=history, excluded_families=[0, 1, 2, 3]
+        )
+
+
 def generate(root, seed=270104, history=None):
     from Backend.Core.france.expanded_pipeline import generate
 

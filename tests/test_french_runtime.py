@@ -1084,6 +1084,30 @@ def test_public_v35_uses_each_family_and_records_selected_seed(
     assert "Relecture par un enseignant requise" not in events
 
 
+def test_saved_families_are_excluded_in_a_fresh_output_folder(tmp_path):
+    import json
+
+    from Backend.Core.cli import build_parser
+    from tests.test_nsi_pipeline import make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    output = tmp_path / "new-output"
+    argv = ["generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027", "--reference-index", str(index), "--output", str(output), "--seed", "270100"]
+    exclusions = [arg for family in range(4) for arg in ("--exclude-family", str(family))]
+    args = build_parser().parse_args(argv + exclusions)
+    assert args.handler(args) == 0
+    (bundle,) = output.glob("nsi-*")
+    assert json.loads((bundle / "manifest.json").read_text())["identity"]["seed"] == 270104
+    other = tmp_path / "another-output"
+    argv[argv.index(str(output))] = str(other)
+    args = build_parser().parse_args(argv + exclusions + ["--exclude-family", "4"])
+    assert args.handler(args) == 1
+    assert not list(other.rglob("*.pdf"))
+    assert not list(other.rglob("assessment.json"))
+    assert not (other / ".papercreator-checkpoints").exists()
+
+
 def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp_path):
     import json
 
