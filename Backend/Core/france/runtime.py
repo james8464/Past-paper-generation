@@ -36,6 +36,12 @@ from Backend.Core.france.database_reconciliation_contract import (
 from Backend.Core.france.database_reconciliation_prose import (
     database_reconciliation_working_materials,
 )
+from Backend.Core.france.extended_pipeline import (
+    VERSION as EXTENDED_VERSION,
+)
+from Backend.Core.france.extended_pipeline import (
+    choose_fresh_seed,
+)
 from Backend.Core.france.graph_resilience_contract import (
     GraphResilienceContract,
     build_graph_resilience_contract,
@@ -2303,6 +2309,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == EXTENDED_VERSION:
+        return "v34"
     if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
         return "v32"
     if prompt_version == CONTROLLED_ROUTE_FAMILIES_PROMPT_VERSION:
@@ -2343,6 +2351,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == EXTENDED_VERSION:
+        return "v34"
     if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
         return "v32"
     if prompt_version in {
@@ -2414,26 +2424,32 @@ def handle_generate_assessment(args) -> int:
             client.model_digest = identity
         output = Path(args.output).expanduser().absolute()
         output.mkdir(parents=True, exist_ok=True)
+        history = load_originality_history(output)
+        selected_seed = (
+            choose_fresh_seed(args.seed, previous_texts=history)
+            if application_owned
+            else args.seed
+        )
         checkpoint = (
-            output / ".papercreator-checkpoints" / f"{definition.id}-{args.seed}.json"
+            output / ".papercreator-checkpoints" / f"{definition.id}-{selected_seed}.json"
         )
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(
             index_path=args.reference_index,
             client=client,
-            seed=args.seed,
+            seed=selected_seed,
             checkpoint=checkpoint,
             progress=lambda message: emit_progress(message, stage="french_generation"),
-            previous_texts=load_originality_history(output),
+            previous_texts=history,
             contract_graph_tree=True,
-            contract_authoring_version="v32",
+            contract_authoring_version="v34" if application_owned else "v32",
         )
         validate_package(package)
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
         whole_case = (
             package["identity"]["prompt_version"]
-            == CONTROLLED_WHOLE_CASE_PROMPT_VERSION
+            in {CONTROLLED_WHOLE_CASE_PROMPT_VERSION, EXTENDED_VERSION}
         )
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
@@ -2504,6 +2520,7 @@ def handle_generate_assessment(args) -> int:
             "v30",
             "v31",
             "v32",
+            "v34",
         }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
@@ -2536,7 +2553,9 @@ def handle_generate_assessment(args) -> int:
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
                     coherent_material_flow=network_pdf_version
-                    in {"v28", "v29", "v30", "v31", "v32"},
+                    in {"v28", "v29", "v30", "v31", "v32", "v34"},
+                    compact_correction=network_pdf_version == "v34",
+                    print_policy=package["identity"].get("print_policy"),
                 ),
                 role=role,
                 language="fr-FR",
@@ -2663,7 +2682,7 @@ def handle_generate_assessment(args) -> int:
             raise ValueError(
                 "Les références ont changé pendant la génération; publication refusée"
             )
-        destination = output / f"nsi-2027-{args.seed}-{digest(artifacts)[:12]}"
+        destination = output / f"nsi-2027-{selected_seed}-{digest(artifacts)[:12]}"
         if destination.exists():
             raise ValueError(
                 "Ce dossier existe déjà; aucun document existant n'a été remplacé"
@@ -2672,7 +2691,14 @@ def handle_generate_assessment(args) -> int:
         staging = None
         for role, path in paths.items():
             emit("file", role=role, path=str(destination / path.name))
-        emit("done", message="Brouillon créé. Relecture par un enseignant requise.")
+        emit(
+            "done",
+            message=(
+                "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."
+                if package["identity"]["prompt_version"] == EXTENDED_VERSION
+                else "Brouillon créé. Relecture par un enseignant requise."
+            ),
+        )
         return 0
     except InterruptedError as error:
         emit("error", message=str(error), code="cancelled")

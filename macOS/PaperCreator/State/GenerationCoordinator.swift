@@ -55,6 +55,27 @@ final class GenerationCoordinator {
     func complete(artifacts: [GeneratedFile]? = nil) throws {
         guard var job = activeJob else { return }
         if let artifacts { generatedFiles = artifacts }
+        if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
+           job.configuration.model == FrenchAssessmentRequest.modelID {
+            guard let manifest = generatedFiles.first(where: { $0.role == "package_manifest" }) else {
+                throw CocoaError(.fileReadNoSuchFile)
+            }
+            let seed = try FrenchAssessmentRequest.publishedSeed(from: manifest.url)
+            let configuration = job.configuration
+            job = GenerationJobRecord(
+                schemaVersion: job.schemaVersion, id: job.id,
+                configuration: GenerationConfiguration(
+                    boardID: configuration.boardID, paperID: configuration.paperID,
+                    provider: configuration.provider, model: configuration.model,
+                    seed: seed, dryRun: configuration.dryRun,
+                    educationSystem: configuration.educationSystem,
+                    assessmentID: configuration.assessmentID,
+                    documentLanguage: configuration.documentLanguage
+                ),
+                provenance: job.provenance, state: job.state, artifacts: job.artifacts,
+                qualification: job.qualification, createdAt: job.createdAt, updatedAt: job.updatedAt
+            )
+        }
         job.state = .completed
         job.artifacts = generatedFiles
         job.updatedAt = clock.now

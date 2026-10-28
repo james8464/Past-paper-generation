@@ -982,22 +982,52 @@
         }
       }
     },
-    "Three paper families are available. The app blocks repeats." : {
+    "Four paper families are available. The app selects an unused family and blocks repeats." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trois familles de sujets sont disponibles. L’application bloque les répétitions."
+            "value" : "Quatre familles de sujets sont disponibles. L’application choisit une famille inutilisée et bloque les répétitions."
           }
         }
       }
     },
-    "V32 uses finite app-authored cases, not model-generated questions. No AI model or Ollama installation is needed; papers are built locally without cloud generation." : {
+    "Practice paper created. Marking guidance is indicative; difficulty and timing are uncalibrated." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "V32 utilise un ensemble limité de cas rédigés dans l’application, et non des questions générées par un modèle. Aucun modèle d’IA ni installation d’Ollama n’est nécessaire ; les sujets sont construits localement, sans génération dans le cloud."
+            "value" : "Sujet d’entraînement créé. Barème indicatif, difficulté et durée non calibrées."
+          }
+        }
+      }
+    },
+    "None of the four paper families is sufficiently different from your saved papers. No new paper was created." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune des quatre familles n’est suffisamment différente de vos sujets enregistrés. Aucun nouveau sujet n’a été créé."
+          }
+        }
+      }
+    },
+    "V34 uses finite app-authored cases, not model-generated questions. No AI model or Ollama installation is needed; papers are built locally without cloud generation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "V34 utilise un catalogue limité de cas rédigés dans l’application, et non des questions produites par un modèle. Aucun modèle d’IA ni installation d’Ollama n’est nécessaire ; les sujets sont construits localement, sans génération dans le cloud."
+          }
+        }
+      }
+    },
+    "The paper was created, but its history could not be saved or verified." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sujet a été créé, mais son historique n’a pas pu être enregistré ou vérifié."
           }
         }
       }
@@ -1832,12 +1862,12 @@
         }
       }
     },
-    "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation." : {
+    "Official sources are downloaded with your permission. V34 builds papers on this Mac without model prompts or cloud generation." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Les sources officielles sont téléchargées avec votre accord. V32 construit les sujets sur ce Mac, sans requête à un modèle ni génération dans le cloud."
+            "value" : "Les sources officielles sont téléchargées avec votre accord. V34 construit les sujets sur ce Mac, sans requête à un modèle ni génération dans le cloud."
           }
         }
       }
@@ -1902,12 +1932,12 @@
         }
       }
     },
-    "Create a non-official draft for teacher review." : {
+    "Create a non-official practice paper with indicative marking guidance." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Créer un sujet non officiel à faire relire par un enseignant."
+            "value" : "Créer un sujet d'entraînement non officiel avec un barème indicatif."
           }
         }
       }

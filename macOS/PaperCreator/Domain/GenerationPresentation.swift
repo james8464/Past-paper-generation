@@ -18,10 +18,20 @@ enum GenerationPresentation {
     }
 
     static func error(_ message: String, language: String = "system") -> String {
+        if message.hasPrefix("Les quatre familles disponibles sont trop proches des sujets précédents.") {
+            return localized("None of the four paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
+        }
         guard message.hasPrefix("AI could not produce a valid, second-pass reviewed item for question ") else {
             return message
         }
         return localized("This model couldn't create a paper that passed the quality checks. No new paper was published. Try another model. You can copy diagnostics from Tools.", language: language)
+    }
+
+    static func completion(_ message: String, language: String = "system") -> String {
+        guard message == "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées." else {
+            return message
+        }
+        return localized("Practice paper created. Marking guidance is indicative; difficulty and timing are uncalibrated.", language: language)
     }
 
     private static func localized(_ resource: LocalizedStringResource, language: String) -> String {

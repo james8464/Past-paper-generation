@@ -351,13 +351,13 @@ final class ApplicationCoordinator: ObservableObject {
                 try generationCoordinator.begin(GenerationJobRecord(
                     configuration: GenerationConfiguration(
                         boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned",
-                        model: "app-owned-v32", seed: seed, dryRun: false,
+                        model: FrenchAssessmentRequest.modelID, seed: seed, dryRun: false,
                         educationSystem: "fr-national", assessmentID: FrenchAssessmentRequest.assessmentID,
                         documentLanguage: "fr-FR"
                     ),
                     provenance: GenerationProvenance(
                         appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
-                        provider: "application-owned", model: "app-owned-v32"
+                        provider: "application-owned", model: FrenchAssessmentRequest.modelID
                     ), state: .pending, artifacts: [],
                     qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
                 ))
@@ -1006,7 +1006,7 @@ final class ApplicationCoordinator: ObservableObject {
                 lastQualityReport = GenerationQualityReport.load(from: file.url)
             }
         case let .done(message):
-            status = message
+            status = GenerationPresentation.completion(message, language: presentationLanguage)
             generationProgress = 1.0
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: "done", message: message))
@@ -1079,8 +1079,17 @@ final class ApplicationCoordinator: ObservableObject {
                 status = status == "Starting" ? "Done" : status
                 generationProgress = 1.0
                 generationEstimate = nil
+                do {
+                    try generationCoordinator.complete(artifacts: currentGenerationFiles)
+                } catch {
+                    let message = String(localized: "The paper was created, but its history could not be saved or verified.")
+                    setError(message)
+                    notifyFailure(for: operation, message: message)
+                    try? generationCoordinator.fail(message: message)
+                    pendingGenerationSeed = nil
+                    return
+                }
                 persistRecentDocuments()
-                try? generationCoordinator.complete(artifacts: currentGenerationFiles)
                 if let questionPaper = currentGenerationFiles.first(where: { $0.role == "question_paper" }) {
                     previewedFileID = questionPaper.id
                     sidebarSelection = .documents
