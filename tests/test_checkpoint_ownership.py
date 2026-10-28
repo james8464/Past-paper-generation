@@ -248,6 +248,45 @@ def test_serialization_failure_cleans_only_own_temp(tmp_path):
     assert not list(tmp_path.glob("*.tmp"))
 
 
+def test_successful_replace_does_not_attempt_a_second_temporary_unlink(
+    tmp_path, monkeypatch
+):
+    path = tmp_path / "job.json"
+    store = AssessmentCheckpointStore(path, identity())
+    store.save_payload("accepted", {"value": 1})
+    original_replace = checkpoints.os.replace
+    original_unlink = Path.unlink
+    committed = False
+    cleanup_attempts = []
+
+    def replace(source, destination):
+        nonlocal committed
+        original_replace(source, destination)
+        committed = True
+
+    def unlink(temporary, *args, **kwargs):
+        if committed and temporary.suffix == ".tmp":
+            cleanup_attempts.append(temporary)
+            raise PermissionError(errno.EACCES, "post-replacement cleanup denied")
+        return original_unlink(temporary, *args, **kwargs)
+
+    monkeypatch.setattr(checkpoints.os, "replace", replace)
+    monkeypatch.setattr(Path, "unlink", unlink)
+    failure = None
+    try:
+        store.save_payload("later", {"value": 2})
+    except OSError as error:
+        failure = error
+
+    assert committed
+    assert json.loads(path.read_text())["items"] == {
+        "accepted": {"value": 1}, "later": {"value": 2}
+    }
+    assert not list(tmp_path.glob("*.tmp"))
+    assert failure is None
+    assert cleanup_attempts == []
+
+
 def test_file_sync_failure_preserves_previous_checkpoint(tmp_path, monkeypatch):
     path = tmp_path / "job.json"
     store = AssessmentCheckpointStore(path, identity())

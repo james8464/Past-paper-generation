@@ -16,7 +16,7 @@ Each write uses its own temporary sibling, flushes and syncs its contents, repla
 
 `clear()` checks the complete stored identity without rebinding a different blueprint. Normal reads retain the existing blueprint-revision migration and subsequent item-revalidation behaviour.
 
-After authoring, the CLI takes a digest receipt under the transaction lock. Once publication succeeds, cleanup deletes the checkpoint only if its bytes still match that receipt. A later direct-store write therefore survives retirement. An absent file is harmless. Failed or unconfirmed cleanup produces a maintenance progress notice and keeps the published run successful. Publication failure retains the checkpoint.
+After authoring, the CLI takes a digest receipt under the transaction lock. Once publication succeeds, cleanup deletes the checkpoint only if its bytes still match that receipt. A later direct-store write therefore survives retirement. An absent file is harmless. Storage failure or cancellation raised by the retirement call produces a maintenance progress notice without failing the published run. Publication failure retains the checkpoint.
 
 Preview and non-AI generation do not consume or retire AI checkpoints. Preview and live jobs retain their existing path calculation, so a successful preview cannot discard accepted work from a live run.
 
@@ -36,8 +36,14 @@ The follow-up tests first recorded six failures in `tmp/checkpoint-ownership-rev
 
 After the fixes and final lint adjustment, the same targeted gate passed 95 tests in 25.51 seconds. The fixed-source log is `tmp/checkpoint-ownership-reviewed-fixed-source-green.log`; Ruff and the whitespace diff check passed. This is a targeted result, not the full release suite.
 
-Terminal-event review found that a cleanup notice could follow the backend's `done` event and overwrite the native completion status. Seven cases now capture actual JSON events around fixture publication. Five failed before the fix. Files commit first, checkpoint maintenance and any notice follow, and file/completion events are emitted last. Changed receipts, receipt/read failures, retirement and directory-sync failures, and cancellation during cleanup all keep the published file and return success with `done` last. Pre-publication cancellation still returns 130 without file or completion events.
+Terminal-event review found that a cleanup notice could follow the backend's `done` event and overwrite the native completion status. Seven cases now capture actual JSON events around fixture publication. Five failed before the fix. Files commit first, checkpoint maintenance and any notice follow, and file/completion events are emitted last. Changed receipts, receipt/read failures, retirement and directory-sync failures, and cancellation raised by retirement all keep the published file and return success with `done` last. Pre-publication cancellation still returns 130 without file or completion events.
 
 The revised targeted gate passed 102 tests in 23.91 seconds. Logs are `tmp/checkpoint-terminal-protocol-red.log` and `tmp/checkpoint-terminal-protocol-targeted-green.log`. Ruff and the whitespace diff check passed. The earlier full-suite/Store results precede this terminal-event change; a fresh final-source release gate is required.
+
+A separate root-agent review found an unnecessary unlink after successful checkpoint replacement. A regression first confirmed that the new JSON had committed and no temporary file remained, then reproduced a false save failure when that extra unlink returned EACCES. The author removed the success-path unlink; exception cleanup still removes only the writer's own temporary file and preserves its original failure. The red log is `tmp/checkpoint-success-cleanup-red.log`.
+
+The resulting targeted gate passed 103 tests in 27.21 seconds, recorded in `tmp/checkpoint-success-cleanup-targeted-green.log`. Its first run exposed a stale synthetic diagnostic fixture: trusted authoring requests require a task ID and authoring context before reaching the provider. The fixture now supplies a valid three-part ID and empty unlocked context; its original question number, provider failure and evidence-preservation assertion remain unchanged. No production request validation was relaxed.
+
+Cancellation coverage is retirement-call scoped. A later signal during maintenance-notice emission, file/completion-event emission or lease exit can still reach the existing cancellation handler. This patch makes no unconditional post-commit success guarantee and does not blanket-catch unrelated post-commit errors.
 
 No model requests, teacher reviews or learner timing studies were performed for this storage change. No historical checkpoint or retained paper artifact was edited. Implementation fingerprints will change with Core source; release acceptance must use the final source identity.

@@ -224,9 +224,6 @@ class AssessmentCheckpointStore:
             with suppress(OSError):
                 temporary.unlink(missing_ok=True)
             raise
-        else:
-            # Never clean another writer's temporary file or persistent lock.
-            temporary.unlink(missing_ok=True)
 
     def _read_document(
         self, *, allow_blueprint_revision: bool = True
