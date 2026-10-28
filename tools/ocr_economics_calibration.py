@@ -1,4 +1,4 @@
-# Compare OCR economics item allocations with reference-paper evidence.
+# compare OCR economics item allocations with reference-paper evidence
 
 from __future__ import annotations
 

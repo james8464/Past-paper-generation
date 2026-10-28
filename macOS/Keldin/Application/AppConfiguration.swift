@@ -1,4 +1,4 @@
-// Keep app defaults and persistence keys in one place.
+// keep app defaults and persistence keys in one place
 
 import Foundation
 
@@ -29,7 +29,7 @@ enum AppDefaults {
         return fileManager.homeDirectoryForCurrentUser
     }
 
-    // Startup migration imports accessible files before this new working folder is used.
+    // Startup migration imports accessible files before this new working folder is used
     static func appStoreWorkingFolder() -> URL {
         let fileManager = FileManager.default
         let home = fileManager.homeDirectoryForCurrentUser
@@ -46,7 +46,7 @@ enum AppDefaults {
             .appendingPathComponent("Keldin/Generated papers", isDirectory: true)
     }
 
-    // Models and job history share the Keldin Application Support root.
+    // Models and job history share the Keldin Application Support root
     static func mlxCacheFolder() -> URL {
         let fileManager = FileManager.default
         let applicationSupport = fileManager.urls(

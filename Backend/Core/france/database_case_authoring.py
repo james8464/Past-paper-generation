@@ -1,7 +1,5 @@
-# Versioned deterministic E2 authoring, explicitly separate from model evidence.
-#
-# V32 uses app-owned whole cases. The surrounding assessment may use a model, but
-# this adapter does not call it or fabricate an accepted response/repair history.
+# deterministic V32 E2 authoring over app-owned whole cases; no model calls or invented
+# response/repair history, even when the surrounding assessment uses a model
 
 import json
 from hashlib import sha256
@@ -61,7 +59,7 @@ def _build(task, references, run_identity):
 
 def replay_case(task, references, evidence, *, run_identity):
     raw, expected = _build(task, references, run_identity)
-    # JSON hashing distinguishes false from 0, and catches unexpected fields.
+    # JSON hashing distinguishes false from 0, and catches unexpected fields
     if not isinstance(evidence, dict) or _hash(evidence) != _hash(expected):
         raise ValueError("Whole database replay evidence mismatch")
     return raw

@@ -1,4 +1,4 @@
-// Exercise file and preference imports with isolated data, never a user's installed app.
+// Exercise file and preference imports with isolated data, never a user's installed app
 
 import Foundation
 import XCTest

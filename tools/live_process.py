@@ -1,4 +1,4 @@
-# Run a qualification backend with durable progress and bounded cleanup.
+# run a qualification backend with durable progress and bounded cleanup
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ class BackendRun:
     peak_backend_rss_bytes: int | None
 
 
-# Route SIGTERM through the same cleanup as a keyboard interrupt.
+# Route SIGTERM through the same cleanup as a keyboard interrupt
 @contextmanager
 def _handle_termination():
     if threading.current_thread() is not threading.main_thread():
@@ -40,10 +40,10 @@ def _handle_termination():
         signal.signal(signal.SIGTERM, previous)
 
 
-# Stream directly to files; wait4 measures this child, not earlier jobs.
+# Stream directly to files; wait4 measures this child, not earlier jobs
 #
-# The memory figure is backend peak resident memory, not Ollama's separate
-# server/GPU allocation. A separate process group permits timeout cleanup.
+# the memory figure is backend peak resident memory, not Ollama's separate
+# server/GPU allocation. A separate process group permits timeout cleanup
 def run_backend(
     command: list[str], *, cwd: Path, run_dir: Path, timeout_seconds: float
 ) -> BackendRun:
@@ -87,7 +87,7 @@ def run_backend(
                             os.killpg(process.pid, signal.SIGKILL)
                     time.sleep(0.05)
             except BaseException:
-                # Ctrl-C must not leave a live backend consuming the local model.
+                # Ctrl-C must not leave a live backend consuming the local model
                 with suppress(ProcessLookupError):
                     os.killpg(process.pid, signal.SIGKILL)
                 process.wait()

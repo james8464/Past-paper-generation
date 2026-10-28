@@ -1,4 +1,4 @@
-# One instance supplies the paper's source, credit, solver and review views.
+# one instance supplies the paper's source, credit, solver and review views
 
 from __future__ import annotations
 
@@ -15,15 +15,15 @@ from Backend.Core.subjects.economics_contracts import (
     calculation_prompt,
     calculation_working,
 )
-from pastpapergen.credit_contracts import (
+from keldin_edexcel.credit_contracts import (
     TOPIC_CHAINS,
     drawing_contract,
     extended_credit,
     short_credit,
 )
-from pastpapergen.extended_scenarios import concrete_fallback
-from pastpapergen.selection_contracts import selection_contract
-from pastpapergen.stimulus_data import LINE_CHART_SERIES, TABLE_ROWS, line_chart_data
+from keldin_edexcel.extended_scenarios import concrete_fallback
+from keldin_edexcel.selection_contracts import selection_contract
+from keldin_edexcel.stimulus_data import LINE_CHART_SERIES, TABLE_ROWS, line_chart_data
 
 
 def source_instance(question, seed: int) -> EconomicsSource:
@@ -168,7 +168,7 @@ def source_instance(question, seed: int) -> EconomicsSource:
                 v + offset if kind != "current_account_line_chart" else v - offset
                 for v in values
             ]
-            # Vary extrema and endpoint differences as well as the origin.
+            # Vary extrema and endpoint differences and the origin
             position = (
                 values.index(max(values))
                 if kind == "household_savings_line_chart"
@@ -243,7 +243,7 @@ def objective_budget(marks: int, command: str) -> dict[str, int]:
     if command == "mcq":
         return {
             "AO2": 1
-        }  # Generated contextual selection; this is not official MCQ metadata.
+        }  # generated contextual selection; this is not official MCQ metadata
     if command == "calculate":
         return {"AO2": 2} if marks == 2 else {"AO1": 2, "AO2": 2}
     if command == "draw":
@@ -464,7 +464,7 @@ def bind_question(question, seed: int):
 
 def validate_assessment_contract(question, item):
     if question.source_instance is None:
-        return  # Legacy in-memory callers; persisted generation has a new version.
+        return  # Legacy in-memory callers; persisted generation has a new version
     contract = item.assessment_contract
     expected = {
         "version": ECONOMICS_CONTRACT_VERSION,

@@ -1,6 +1,6 @@
-# Immutable application-owned facts for the V18 NSI written network case.
+# Immutable application-owned facts for the V18 NSI written network case
 #
-# The six-question V15-V17 contract remains untouched so saved packages replay.
+# the six-question V15-V17 contract remains untouched so saved packages replay
 
 from __future__ import annotations
 

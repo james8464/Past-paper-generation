@@ -1,4 +1,4 @@
-# Complete E1 case demand, rubric alignment and closed-content integrity.
+# complete E1 case demand, rubric alignment and closed-content integrity
 
 from copy import deepcopy
 from decimal import Decimal
@@ -27,7 +27,7 @@ def test_rank_debugging_source_and_marking_agree_on_actual_trace():
     source = re.search(r"```python\n(.*?)\n```", question["prompt"], re.S)
     assert source, "The candidate must inspect the actual faulty program"
     namespace = {}
-    # Fixed app-owned teaching code only, never model output.
+    # fixed app-owned teaching code only, never model output
     exec(compile(source[1], "<app-owned-faulty-count>", "exec"), namespace)
     visited = []
 
@@ -105,7 +105,7 @@ def test_printed_algorithm_solutions_execute_against_case_truth(seed):
         source = re.search(
             r"```python\n(.*?)\n```", raw["questions"][index]["answer"], re.S
         )[1]
-        # Only fixed application-owned correction code, never model output.
+        # only fixed application-owned correction code, never model output
         exec(compile(source, "<application-tree-solution>", "exec"), namespace)
     if case["family"] == "rank":
         assert namespace["count_below"](nodes, "r", case["public"]["limit"]) == 5

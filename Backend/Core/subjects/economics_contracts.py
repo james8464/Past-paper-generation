@@ -1,4 +1,4 @@
-# Candidate data and bounded Edexcel calculations, never draft answer keys.
+# candidate data and bounded Edexcel calculations, never draft answer keys
 
 from __future__ import annotations
 
@@ -101,7 +101,7 @@ SUPPORTED_CALCULATIONS = {
 }
 
 # Deliberately latent: no candidate-visible denominator, scale, time series or
-# before/after geometry. Listing a template does not make it answerable.
+# before/after geometry. Listing a template doesn't make it answerable
 UNSUPPORTED_CALCULATIONS = {
     ("ped_data_table", 4): "missing price change and selected age group",
     ("market_share_bar_chart", 4): "missing market sales value and currency scale",
@@ -126,7 +126,7 @@ UNSUPPORTED_CALCULATIONS = {
 }
 
 
-# Code-owned requested operation, not a draft/model-provided instruction.
+# Code-owned requested operation, not a draft/model-provided instruction
 def calculation_prompt(source: EconomicsSource, marks: int) -> str:
     kind = source.kind
     if (kind, marks) not in SUPPORTED_CALCULATIONS:
@@ -173,8 +173,8 @@ def calculation_prompt(source: EconomicsSource, marks: int) -> str:
 
 
 def _validate_calculation_source(source: EconomicsSource) -> None:
-    # These are semantic input selectors, not answer constants. A numeric cell
-    # in the same position under a different heading is a different quantity.
+    # these are semantic input selectors, not answer constants. A numeric cell
+    # in the same position under a different heading is a different quantity
     role_cells = {
         "pes_data_table": {(0, 1): "PES coefficient", (2, 0): "Rural"},
         "elasticity_data_table": {(0, 1): "PED", (2, 0): "Cinema"},
@@ -310,7 +310,7 @@ def _three_largest_shares(source: EconomicsSource) -> list[Decimal]:
     return sorted(shares, reverse=True)[:3]
 
 
-# Show substituted inputs without inventing unchecked intermediate outputs.
+# Show substituted inputs without inventing unchecked intermediate outputs
 def calculation_working(source: EconomicsSource, marks: int) -> str:
     c, v, kind = source.cell, source.values, source.kind
     if kind == "household_savings_line_chart":

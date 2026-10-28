@@ -1,4 +1,4 @@
-# V29 complete recursive construction over the immutable printed E1 tree.
+# V29 complete recursive construction over the immutable printed E1 tree
 
 import json
 from copy import deepcopy
@@ -57,7 +57,7 @@ def tree_blueprint(blueprint: list[dict]) -> list[dict]:
     return result
 
 
-# Independent flat-key oracle, distinct from the recursive solution.
+# independent flat-key oracle, distinct from the recursive solution
 def tree_construction_expected(data: dict) -> dict:
     keys = sorted(
         [row[0] for row in data["tree"]["rows"]] + [data["tree"]["insert_key"]]

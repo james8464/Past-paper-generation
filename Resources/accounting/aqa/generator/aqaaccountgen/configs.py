@@ -1,4 +1,4 @@
-# Define AQA Accounting paper structure, marks and question rules.
+# Define AQA Accounting paper structure, marks and question rules
 
 from __future__ import annotations
 
@@ -46,7 +46,7 @@ def mcqs() -> list[QuestionRule]:
 
 # June 2025 official schemes, P1 pp9-25 / P2 pp9-27; see
 # docs/quality/assessment-objective-reference.md. Familiar Section A techniques
-# are AO1, contextual Section B application is AO2, decisions include AO3 evaluation.
+# are AO1, contextual Section B application is AO2, decisions include AO3 evaluation
 RULES = {
     "paper_1": PaperRule(
         id="paper_1",

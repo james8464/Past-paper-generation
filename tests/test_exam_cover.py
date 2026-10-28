@@ -159,7 +159,7 @@ def test_aqa_economics_scheme_cover_rules_follow_its_compact_title_grid(
         )
 
 
-# Frame padding must not displace the identity block or candidate grid.
+# Frame padding must not displace the identity block or candidate grid
 @pytest.mark.parametrize(
     "candidate_fields,left,title_baseline", [(True, 41.04, 311.2), (False, 48.0, 150.0)]
 )
@@ -228,7 +228,7 @@ def test_economics_booklet_cover_has_source_rules_and_readable_footer_code(
         assert any(s["text"] == profile.subject_label for s in spans)
         code = next(s for s in spans if s["text"] == f"7136/{paper_number}")
         assert code["size"] == pytest.approx(20.04, abs=0.1)
-        # Replacement font descenders need 1.2pt more clearance than the source.
+        # Replacement font descenders need 1.2pt more clearance than the source
         assert code["origin"][1] == pytest.approx(823.2, abs=0.2)
         assert max(s["bbox"][3] for s in spans) <= page.rect.height - 5 * 72 / 25.4
         rules = [

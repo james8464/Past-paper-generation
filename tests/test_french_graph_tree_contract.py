@@ -1,4 +1,4 @@
-# Contract facts must be reproducible and independently checkable.
+# Contract facts must be reproducible and independently checkable
 
 from copy import deepcopy
 

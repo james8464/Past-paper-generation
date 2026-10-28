@@ -1,8 +1,6 @@
-# P3 credit built from the selected source's roles, not legacy example text.
-#
-# Numeric roles are extracted once from the owned candidate prose into its typed
-# source. Each branch below supplies the actual reference and uses that role;
-# non-numeric mechanisms are tied to observations in that same source template.
+# P3 credit from the selected source's roles; extract numeric roles once into typed
+# source data, then use the actual reference for each branch. Tie non-numeric mechanisms
+# to the same source template's observations
 
 import re
 

@@ -1,4 +1,4 @@
-// Estimate generation effort from the selected paper and runtime measurements.
+// Estimate generation effort from the selected paper and runtime measurements
 
 import Foundation
 

@@ -41,7 +41,7 @@ def test_complete_postfix_exercise_and_printed_algorithms(seed):
         source = re.search(
             r"```python\n(.*?)\n```", raw["questions"][index]["answer"], re.S
         )[1]
-        # Fixed app-owned reference solutions only, never model-authored code.
+        # fixed app-owned reference solutions only, never model-authored code
         exec(compile(source, "<postfix-reference>", "exec"), namespace)
     assert namespace["compiler"](nodes, "n0") == program
     assert namespace["calculer"](program) == execute(program)["answer"]

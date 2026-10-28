@@ -1,4 +1,4 @@
-# Closed numeric output contracts, distinct from examiner credit metadata.
+# closed numeric output contracts, distinct from examiner credit metadata
 
 from __future__ import annotations
 
@@ -91,11 +91,9 @@ def numeric_result(
     }
 
 
-# Accept only the contract's unit and the current templates' result endings.
-#
-# A regex-selected numeric prefix is not a complete quantity: ``27.90e6`` and
-# ``£27.90 million`` must not inherit approval for ``£27.90/unit``. Unknown
-# quantity notation fails closed, including uncontracted currency words.
+# require the contract's full unit and supported result ending; ``27.90e6`` or ``£27.90
+# million`` cannot pass for ``£27.90/unit``. Reject unknown notation, including
+# undeclared currency words
 def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
     suffix = suffix.lstrip(" \t")
     if check.unit == "GBPm":
@@ -117,7 +115,7 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         elif check.unit in {"GBPm", "%", "bytes", "percentage points", "index points", "consumer units"}:
             return False
         # GBP rates can get their denominator from the explicitly selected
-        # row heading. An explicit contradictory denominator is never ignored.
+        # row heading. An explicit contradictory denominator is never ignored
     if check.unit == "1" and suffix.startswith("(accept "):
         alternative = re.match(rf"\(accept ({NUMBER}) without :1\)", suffix)
         if not alternative or Decimal(alternative.group(1)) != rounded(
@@ -133,11 +131,9 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
     return re.fullmatch(check.scheme_ending, suffix.strip(), re.IGNORECASE) is not None
 
 
-# Match each asserted result to its role in the published working.
-#
-# Patterns are code-owned field selectors, not expected answer strings. Some
-# printed intermediate units are supplied by their row/column heading; final
-# canonical answers always include the full unit.
+# match each result to its published role; patterns select code-owned fields, not answer
+# strings. Intermediate units may come from headings; final canonical answers need full
+# units
 def check_published_outputs(
     checks: list[CheckedNumericOutput], text: str | list[str]
 ) -> list[str]:
@@ -184,11 +180,9 @@ def check_published_outputs(
     return errors
 
 
-# Unconditional alternatives need a unique role and a complete quantity.
-#
-# A single selected point can supply the role. Multi-output/general alternatives
-# must name it explicitly. Conditional own-figure credit belongs in its separate
-# follow-through field, never in this unconditional acceptance list.
+# unconditional alternatives need a complete quantity and unique role; one selected
+# point can supply the role, multi-output/general alternatives must name it. Keep
+# conditional own-figure credit in follow-through
 def check_numeric_alternatives(
     checks: list[CheckedNumericOutput | CheckedTextOutput], alternatives: list[str]
 ) -> list[str]:
@@ -209,11 +203,11 @@ def check_numeric_alternatives(
     return errors
 
 
-# Small explicit grammar: GBP/pence, declared denominator, percent, ratio.
+# small explicit grammar: GBP/pence, declared denominator, percent, ratio
 def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quantity: str) -> bool:
     if isinstance(check, CheckedTextOutput):
         # Encoded results preserve their complete width/order; only case and
-        # terminal punctuation vary. Never accept a prefix or an extra claim.
+        # terminal punctuation vary. Never accept a prefix or an extra claim
         return quantity.removesuffix(".").strip().casefold() == check.value.casefold()
     expected = rounded(Decimal(check.value), check.decimal_places)
     if check.unit.startswith("GBP"):
@@ -261,7 +255,7 @@ def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quanti
     return actual == expected
 
 
-# Candidate chart endpoints and the requested one-decimal percentage output.
+# candidate chart endpoints and the requested one-decimal percentage output
 def percentage_change_context(start: float, end: float) -> dict[str, Any]:
     return {
         "preserve_prompt": True,

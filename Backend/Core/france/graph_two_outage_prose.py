@@ -1,4 +1,4 @@
-# Finite V25 French wording for a sustained two-outage graph case.
+# finite V25 French wording for a sustained two-outage graph case
 
 from __future__ import annotations
 

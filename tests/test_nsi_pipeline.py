@@ -116,7 +116,7 @@ def test_graph_tree_binding_rejects_a_missing_graph_edge():
         _bind_graph_tree_contract(raw, contract)
 
 
-# A correct structured claim cannot license a contradictory printed fact.
+# a correct structured claim cannot license a contradictory printed fact
 def test_graph_tree_binding_rejects_false_weight_for_an_existing_edge():
     from Backend.Core.france.graph_tree_binding import canonical_answer
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract
@@ -526,7 +526,7 @@ class ContractFrenchClient(FrenchClient):
         return super().generate_json(prompt)
 
 
-# Only the external model response is faked; package validation is real.
+# only the external model response is faked; package validation is real
 class ClosedProseFrenchClient(FrenchClient):
 
     def generate_json(self, prompt):
@@ -1677,7 +1677,7 @@ def test_v11_contract_package_rejects_stale_digest_and_printed_graph(tmp_path):
         validate_package(changed)
 
 
-# Generate fixture content against the actual pre-v7 question blueprint.
+# generate fixture content against the actual pre-v7 question blueprint
 def make_legacy_structural_package(tmp_path, monkeypatch):
     from copy import deepcopy
 

@@ -1,4 +1,4 @@
-# Launch Keldin's backend CLI; keep exports used by existing callers available.
+# Launch Keldin's backend CLI; keep exports used by existing callers available
 
 from __future__ import annotations
 

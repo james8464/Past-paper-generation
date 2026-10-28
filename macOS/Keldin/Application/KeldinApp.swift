@@ -1,4 +1,4 @@
-// Create Keldin's scenes and connect shared application state to the interface.
+// create Keldin's scenes and connect shared application state to the interface
 
 import SwiftUI
 import TipKit
@@ -19,7 +19,7 @@ enum AppLaunchPolicy {
             }
             return application
         }
-        // XCTest launches the app before individual test fixtures are created.
+        // XCTest launches the app before individual test fixtures are created
         let suite = "Keldin.TestHost.\(UUID().uuidString)"
         return ApplicationCoordinator(
             defaults: UserDefaults(suiteName: suite)!,

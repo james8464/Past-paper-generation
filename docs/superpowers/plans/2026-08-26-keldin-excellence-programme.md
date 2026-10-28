@@ -264,7 +264,7 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Modify: `macOS/Keldin/Components/NativeVisualStyle.swift`
 - Create: `macOS/Keldin/Features/Documents/DocumentPreviewView.swift`
 - Create: `macOS/Keldin/Features/Documents/JobHistoryView.swift`
-- Create: `macOS/Keldin/Features/Onboarding/PaperCreationTips.swift`
+- Create: `macOS/Keldin/Features/Onboarding/KeldinCreationTips.swift`
 - Create: `macOS/Keldin/Localizable.xcstrings`
 - Modify: `macOS/Tests/AppTests.swift`
 - Create: `macOS/Tests/AccessibilityTests.swift`

@@ -1,4 +1,4 @@
-# Check item data and compare completed papers for repeated content.
+# check item data and compare completed papers for repeated content
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ NUMBER_PATTERN = re.compile(
 WORD_PATTERN = re.compile(r"[a-z0-9]+(?:'[a-z]+)?")
 
 
-# Return a stable comparison form without conflating visible output text.
+# return a stable comparison form without conflating visible output text
 def normalise_item_text(value: str, *, abstract_numbers: bool = True) -> str:
 
     text = unicodedata.normalize("NFKC", value).casefold()
@@ -31,7 +31,7 @@ def normalise_item_text(value: str, *, abstract_numbers: bool = True) -> str:
     return " ".join(WORD_PATTERN.findall(text))
 
 
-# Extract quantities exactly enough to catch broken data/source rewrites.
+# extract quantities exactly enough to catch broken data/source rewrites
 def numeric_tokens(value: str) -> tuple[str, ...]:
 
     return tuple(
@@ -40,7 +40,7 @@ def numeric_tokens(value: str) -> tuple[str, ...]:
     )
 
 
-# Validate candidate quantities against their declared semantic roles.
+# validate candidate quantities against their declared semantic roles
 def validate_candidate_contract(
     original: str,
     candidate: str,
@@ -104,7 +104,7 @@ def validate_candidate_contract(
             f"{contract.item_id} changed ordered immutable numeric data"
         )
 
-# Reject common exchange-rate reversals before model review.
+# reject common exchange-rate reversals before model review
 def validate_economics_causal_direction(value: str) -> None:
 
     text = " ".join(value.casefold().split())
@@ -199,7 +199,7 @@ def item_fingerprint(value: str) -> str:
     return hashlib.sha256(normalised.encode("utf-8")).hexdigest()
 
 
-# Weighted token-shingle Jaccard similarity in the closed interval 0...1.
+# weighted token-shingle Jaccard similarity in the closed interval 0...1
 def content_similarity(left: str, right: str, *, width: int = 3) -> float:
 
     left_counter = _shingles(normalise_item_text(left), width=width)
@@ -233,7 +233,7 @@ def assert_distinct_items(
                 )
 
 
-# Compare a completed assessment package with earlier published packages.
+# compare a completed assessment package with earlier published packages
 def validate_package_novelty(
     package_path: Path,
     *,

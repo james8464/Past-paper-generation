@@ -1,4 +1,4 @@
-# Hash-bound finite V25 two-outage selection and replay.
+# Hash-bound finite V25 two-outage selection and replay
 
 from __future__ import annotations
 

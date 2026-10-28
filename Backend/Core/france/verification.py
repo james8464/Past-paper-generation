@@ -1,4 +1,4 @@
-# Small, bounded verification contracts. Never execute model-supplied Python.
+# small, bounded verification contracts. Never execute model-supplied Python
 
 import ast
 import heapq
@@ -143,8 +143,8 @@ def _sql(contract):
     ):
         raise ValueError("Requête hors limites")
     with sqlite3.connect(":memory:") as db:
-        # Some Python builds omit extension loading altogether. The authorizer
-        # below independently denies load_extension even when SQLite exposes it.
+        # some Python builds omit extension loading altogether. The authorizer
+        # below independently denies load_extension even when SQLite exposes it
         disable_extensions = getattr(db, "enable_load_extension", None)
         if disable_extensions is not None:
             disable_extensions(False)
@@ -251,7 +251,7 @@ def _shortest_path(contract):
     raise ValueError("Aucun chemin")
 
 
-# Compare evidence recursively without Python's bool/int/float coercion.
+# compare evidence recursively without Python's bool/int/float coercion
 def _same_typed_value(actual, expected) -> bool:
     if type(actual) is not type(expected):
         return False

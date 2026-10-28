@@ -1,4 +1,4 @@
-# V32 whole-case foundations: SQL and independent list-based evidence.
+# V32 whole-case foundations: SQL and independent list-based evidence
 
 from copy import deepcopy
 
@@ -35,17 +35,17 @@ def test_three_cases_require_different_relational_and_algorithmic_reasoning():
         "bookings",
         "stock",
     ]
-    # Invalid observations do not enter extrema; unobserved sensors remain explicit.
+    # invalid observations don't enter extrema; unobserved sensors remain explicit
     offset = 270100 % 5
     assert sensor["expected"]["result"] == [
         [1, 18 + offset, 24 + offset],
         [2, 12 + offset, 16 + offset],
         [3, None, None],
     ]
-    # Count seats rather than reservation rows, and retain the empty session.
+    # count seats instead of reservation rows, and retain the empty session
     assert booking["expected"]["result"] == [[1, -1], [2, 2], [3, 5]]
     assert booking["expected"]["overbooked"] == [1]
-    # A positive closing balance does not prove that every prefix was feasible.
+    # a positive closing balance doesn't prove that every prefix was feasible
     assert stock["expected"]["first_invalid"] == 11
     assert stock["expected"]["result"][0] == [1, 2]
     assert stock["expected"]["prefix_balances"][0][1] == -2

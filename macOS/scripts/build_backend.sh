@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Package and sign the Keldin backend helper used by the native app.
+# Package and sign the Keldin backend helper used by the native app
 
 set -euo pipefail
 
@@ -17,7 +17,7 @@ if [[ ! -x "$PYTHON" ]]; then
 fi
 
 # Xcode invokes this script from macOS/, so make the repository packages
-# importable for registry discovery as well as for PyInstaller itself.
+# importable for registry discovery and for PyInstaller itself
 export PYTHONPATH="$ROOT_DIR${PYTHONPATH:+:$PYTHONPATH}"
 
 if ! "$PYTHON" -c 'import PyInstaller' 2>/dev/null; then
@@ -40,7 +40,7 @@ build_fingerprint() {
     "$PYTHON" --version
     "$PYTHON" -c 'import PyInstaller; print(PyInstaller.__version__)'
     # Requirement ranges can resolve to newer installed versions without any
-    # source change. Include their metadata so the cached helper cannot stay stale.
+    # source change. Include their metadata so the cached helper cannot stay stale
     "$PYTHON" -c '
 import importlib.metadata
 import json
@@ -141,7 +141,7 @@ PYINSTALLER_ARGS=(
 )
 
 # Printed solutions inspect the tested algorithms; catalogue identities hash
-# their source modules. Keep those sources, without caches or local evidence.
+# their source modules. Keep those sources, without caches or local evidence
 while IFS= read -r -d '' french_source; do
   PYINSTALLER_ARGS+=(--add-data "$french_source:Backend/Core/france")
 done < <(find "$ROOT_DIR/Backend/Core/france" -maxdepth 1 -type f -name '*.py' -print0 | sort -z)
@@ -208,7 +208,7 @@ find "$BACKEND_DIR" -type f -print0 |
         --timestamp=none
       )
       # Harden distribution helpers. Ad-hoc direct builds cannot satisfy
-      # hardened-runtime library validation for PyInstaller's nested dylibs.
+      # hardened-runtime library validation for PyInstaller's nested dylibs
       if [[ "${DISTRIBUTION_MODE:-direct}" == "app-store" || "$SIGN_IDENTITY" != "-" ]]; then
         codesign_args+=(--options runtime)
       fi

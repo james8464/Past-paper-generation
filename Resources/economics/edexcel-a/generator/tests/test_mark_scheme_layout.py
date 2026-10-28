@@ -2,9 +2,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import (
     MS_MAX_ROW_HEIGHT,
     _mark_scheme_rows,
     _ms_row_height,
@@ -12,7 +12,7 @@ from pastpapergen.render_pdf import (
     _source_backed_mark_scheme_lines,
     render_mark_scheme,
 )
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
@@ -310,8 +310,8 @@ def test_contract_scheme_pagination_preserves_all_credit_without_filler(tmp_path
 def _assert_complete_contract_scheme(output, blueprint):
     import pymupdf as fitz
     with fitz.open(output) as document:
-        # Reference publications may contain deliberately empty diagram pages.
-        # These original contracts do not: never pad a new scheme to that count.
+        # Reference publications may contain deliberately empty diagram pages
+        # these original contracts do not: never pad a new scheme to that count
         assert all(page.get_text().strip() for page in document)
         text = " ".join(" ".join(page.get_text() for page in document).split())
     for question in blueprint.questions:
@@ -439,7 +439,7 @@ def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
 
 def _blueprint_with_section_a_calculation(config, syllabus, stimulus_kind: str):
     # Select the requested valid variant directly. Unrelated latent templates
-    # deliberately fail closed rather than supply missing numeric inputs.
+    # deliberately fail closed instead of supply missing numeric inputs
     config.sections[0].stimulus_slots[0] = [stimulus_kind]
     for seed in range(1000):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)

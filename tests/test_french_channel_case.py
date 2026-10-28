@@ -1,4 +1,4 @@
-# Explicit blocking, retry and EOF traces for a one-slot teaching model.
+# Explicit blocking, retry and EOF traces for a one-slot teaching model
 
 import pytest
 

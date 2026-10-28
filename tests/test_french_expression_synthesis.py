@@ -1,4 +1,4 @@
-# Structural variety must be real, reproducible and independently checkable.
+# Structural variety must be real, reproducible and independently checkable
 
 from copy import deepcopy
 

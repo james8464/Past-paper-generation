@@ -1,7 +1,7 @@
-# Graphify's own project-scoped skill is tooling, not application architecture.
+# Graphify's own project-scoped skill is tooling, not application architecture
 .codex/
 
-# Generated or machine-local artifacts.
+# generated or machine-local artifacts
 graphify-out/
 Reference Corpus/
 output/
@@ -10,5 +10,5 @@ macOS/build/
 .venv/
 .venv.broken-*/
 
-# Captured audit evidence is documented separately.
+# Captured audit evidence is documented separately
 docs/project-analysis/screenshots/

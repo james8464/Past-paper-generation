@@ -31,7 +31,7 @@ def test_mark_scheme_typography_matches_reference_scale() -> None:
     assert STYLES["scheme_small"].leading == 13
 
 
-# Generic examiner rules belong in front matter, not every table row.
+# Generic examiner rules belong in front matter, not every table row
 def test_mark_scheme_prints_shared_credit_rules_once(tmp_path: Path) -> None:
     paper = build_paper(RULES["paper_1"], SYLLABUS, 42)
     output = tmp_path / "mark-scheme.pdf"
@@ -59,7 +59,7 @@ def test_mark_scheme_prints_shared_credit_rules_once(tmp_path: Path) -> None:
     ) == 1
 
 
-# Consolidation must not erase per-question AO or marker instructions.
+# Consolidation must not erase per-question AO or marker instructions
 def test_mark_scheme_retains_question_assessment_guidance(tmp_path: Path) -> None:
     paper = build_paper(RULES["paper_1"], SYLLABUS, 42)
     output = tmp_path / "mark-scheme.pdf"

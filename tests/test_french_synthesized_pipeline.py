@@ -1,4 +1,4 @@
-# Experimental V33 must use complete-content checks and exact package replay.
+# experimental V33 must use complete-content checks and exact package replay
 
 from copy import deepcopy
 
@@ -206,7 +206,7 @@ def test_originality_failure_is_retained_without_retries(tmp_path):
     previous = [
         exercise_candidate_text(NSIExercise.model_validate(package["exercises"][0]))
     ]
-    # Same family, fresh checkpoint: screening, not checkpoint mismatch, must fail.
+    # Same family, fresh checkpoint: screening, not checkpoint mismatch, must fail
     with pytest.raises(ValueError):
         generate(tmp_path, 270102, previous_texts=previous)
     state = json.loads((tmp_path / "checkpoint-270102.json").read_text())

@@ -1,4 +1,4 @@
-// Decode backend records and represent the selections shown by the app.
+// Decode backend records and represent the selections shown by the app
 
 import Foundation
 

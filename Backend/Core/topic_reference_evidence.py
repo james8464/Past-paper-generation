@@ -1,8 +1,6 @@
-# Reviewed feature-only AQA topic subsets, never topic AO targets.
-#
-# Admission is fixed before generation: exact topic, actual operation and response
-# mode; tasks with clear evidence of mixed operations remain mixed. Context-incomplete records are excluded.
-# Source audit expanded 28 September 2026. No source prose retained.
+# reviewed feature-only AQA topic subsets, never AO targets. Fix admission before
+# generation by exact topic, operation and response mode; retain clearly mixed tasks,
+# exclude incomplete context. Source audit: 28 September 2026; no source prose retained
 
 from __future__ import annotations
 
@@ -34,7 +32,7 @@ TOPIC_STYLE_IDS = {
         "functional_extended",
     },
 }
-# QP/MS SHA256; all are June releases; 2023 P1 QP is the CR edition.
+# QP/MS SHA256; all are June releases; 2023 P1 QP is the CR edition
 DOCUMENT_HASHES = {
     (2020, 1): (
         "000673a60b361c19c01cdbaed46725580a07e35181859f1b215da8ee324cd342",
@@ -90,7 +88,7 @@ SPECIFICATION_SHA256 = (
 )
 
 # year, item, marks, AO1/AO2/AO3, operation, response mode, QP pages,
-# MS pages, specification basis. Separate rows are separate marked leaves.
+# MS pages, specification basis. Separate rows are separate marked leaves
 CORE = {
     "4.2": [
         (2025, "01.1", 1, (1, 0, 0), "explain", "prose", "2", "6", "4.2.6"),
@@ -250,8 +248,8 @@ GAPS = {
     ],
 }
 
-# These content families have been reviewed individually. Empty means
-# no content-level qualification: a generic operation match is diagnostic only.
+# these content families have been reviewed individually. Empty means
+# no content-level qualification: a generic operation match is diagnostic only
 SOURCE_FOCUS = {
     "75171-2025-01.1": "hash-performance", "75171-2025-01.2": "hash-insertion",
     "75171-2025-01.3": "hash-performance", "75171-2025-03.2": "tree-properties",
@@ -298,7 +296,7 @@ STYLE_FOCUS = {
 }
 
 
-# Conservative semantic selectors for reviewed bank tasks; hints cannot override prose.
+# conservative semantic selectors for reviewed bank tasks; hints cannot override prose
 def task_content_focus(item: dict[str, Any]) -> str | None:
     prompt = str(item.get("prompt", "")).casefold()
     rules = {
@@ -348,11 +346,9 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
     return None
 
 
-# Conservative dependencies for the reviewed bank forms, not a language solver.
-#
-# Presence of an introductory stem is not presence of its data. Applied tasks
-# must retain the named definitions/schema/relationships that make them
-# answerable. New forms need reviewed selectors; metadata alone cannot qualify them.
+# reviewed bank dependencies, not a language solver; applied tasks need their named
+# definitions, schema and relationships, not just an introductory stem. New forms need
+# reviewed selectors; metadata alone can't qualify them
 def task_context_complete(item: dict[str, Any], focus: str | None) -> bool:
     raw = item.get("context") or []
     context = "\n".join(raw).casefold() if isinstance(raw, list) and all(isinstance(v, str) for v in raw) else ""
@@ -441,11 +437,9 @@ def reviewed_topic_records(topic: str) -> list[dict[str, Any]]:
     return result
 
 
-# Require task/context membership and an evidenced response form.
-#
-# A stimulus table is not an answer table; multiple answer slots are not a
-# trace table. Broad authoring operations may be refined only by an actual
-# response instruction/contract, never an incidental noun in prose.
+# require task/context membership and a supported response form; stimulus tables aren't
+# answer tables, multiple slots aren't trace tables. Refine broad operations only from
+# actual instructions/contracts, never incidental nouns
 def task_features(item: dict[str, Any]) -> dict[str, Any]:
     raw_contract = item.get("reference_task_contract")
     if not isinstance(raw_contract, dict):
@@ -514,7 +508,7 @@ def audit_topic_bank(
 ) -> dict[str, Any]:
     inventory_valid = topic in TOPIC_STYLE_IDS and records == reviewed_topic_records(topic)
     # Treat the committed, source-reviewed inventory as an allowlist. Schema-valid
-    # synthetic hashes, changed tariffs and fabricated anchors are not evidence.
+    # synthetic hashes, changed tariffs and fabricated anchors are not evidence
     records = records if inventory_valid else []
     def compared_sources(item):
         focus = task_content_focus(item)

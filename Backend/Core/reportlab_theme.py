@@ -1,4 +1,4 @@
-# Keep table fonts and answer rules consistent across ReportLab renderers.
+# keep table fonts and answer rules consistent across ReportLab renderers
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from reportlab.lib.units import mm
 from reportlab.platypus import Flowable, TableStyle
 
 
-# Return a Table subclass whose raw string cells use the controlled font.
+# return a Table subclass whose raw string cells use the controlled font
 #
 # ReportLab otherwise silently draws raw table values in built-in Helvetica,
-# even when every Paragraph and canvas operation uses the board font.
+# even when every Paragraph and canvas operation uses the board font
 def themed_table_class[TableType](
     base: type[TableType], font_name: str
 ) -> type[TableType]:
@@ -26,7 +26,7 @@ def themed_table_class[TableType](
     return ThemedTable
 
 
-# Shared, measured answer-line primitive used by every board renderer.
+# shared, measured answer-line primitive used by every board renderer
 class AnswerLineFlowable(Flowable):
 
     def __init__(
@@ -81,12 +81,9 @@ class AQACompactAnswerLines(AnswerLineFlowable):
         super().__init__(count, width_mm=165, spacing_mm=6.2, colour="#666666")
 
 
-# OCR dotted writing rules inside the existing allocated answer area.
-#
-# Reviewed 2024 H446/02 p29 and H460/01 p17 use Arial 11 full stops,
-# #231f20 ink and 26.004pt baseline pitch, not pale dashed vector strokes.
-# Legacy count/spacing still determines the area, so matching the printed
-# ruling pitch does not move questions or create extra pages.
+# OCR rules within the existing answer area; reviewed H446/02 p29 and H460/01 p17
+# (2024): Arial 11 full stops, #231f20, 26.004 pt pitch. Keep legacy count/spacing for
+# the area; matching pitch mustn't move questions or add pages
 class OCRAnswerLines(AnswerLineFlowable):
 
     def __init__(self, count: int, *, spacing_mm: float = 6.0, width_mm: float = 167) -> None:

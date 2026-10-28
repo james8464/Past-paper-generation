@@ -1,4 +1,4 @@
-# Finite, original French wording for the V17 graph/tree depth case.
+# finite, original French wording for the V17 graph/tree depth case
 
 from __future__ import annotations
 

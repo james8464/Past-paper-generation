@@ -93,7 +93,7 @@ to French validation before any UK objective policy is requested.
 - `Resources/computer-science/ocr/generator/ocrcsgen/cli.py`
 - `Resources/configured-generators/generator/configuredgen/cli.py`
 - `Resources/economics/aqa/generator/aqaecongen/cli.py`
-- `Resources/economics/edexcel-a/generator/pastpapergen/cli.py`
+- `Resources/economics/edexcel-a/generator/keldin_edexcel/cli.py`
 - `Resources/economics/ocr/generator/ocregen/cli.py`
 - `tests/test_generator_render_transactions.py`
 - `tests/test_shared_numeric_integrity.py`

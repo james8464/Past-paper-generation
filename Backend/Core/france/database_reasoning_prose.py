@@ -1,4 +1,4 @@
-# V19 finite French reasoning over the unchanged V2 incident facts.
+# V19 finite French reasoning over the unchanged V2 incident facts
 
 from __future__ import annotations
 

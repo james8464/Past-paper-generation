@@ -1,4 +1,4 @@
-# Candidate-visible tables and answers for the controlled network exercise.
+# candidate-visible tables and answers for the controlled network exercise
 
 from __future__ import annotations
 

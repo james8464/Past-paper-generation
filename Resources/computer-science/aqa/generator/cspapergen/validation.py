@@ -1,4 +1,4 @@
-# Validate the AQA Computer Science blueprint before publishing its artifacts.
+# validate the AQA Computer Science blueprint before publishing its artifacts
 
 from __future__ import annotations
 
@@ -147,8 +147,8 @@ def _validate_verified_question_contract(question) -> None:
     if question.style_id == "sql_normalisation":
         required = {"SELECT", "INSERT", "UPDATE", "DELETE", "ERROR"}
         tokens = set(prompts.upper().replace(".", " ").split())
-        # Asking for two errors is still explicit error analysis. Keep every
-        # required SQL operation; normalise only this ordinary grammatical plural.
+        # asking for two errors is still explicit error analysis. Keep every
+        # required SQL operation; normalise only this ordinary grammatical plural
         if "ERRORS" in tokens:
             tokens.add("ERROR")
         missing = required - tokens

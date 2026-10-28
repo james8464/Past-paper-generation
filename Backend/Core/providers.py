@@ -1,4 +1,4 @@
-# Adapt model providers to the shared JSON response and validation interface.
+# Adapt model providers to the shared JSON response and validation interface
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ class HostedLLMClient:
         self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
 
-    # Whether independent prompts may safely share this client.
+    # Whether independent prompts may safely share this client
     @property
     def supports_parallel_generation(self) -> bool:
 
@@ -172,7 +172,7 @@ class HostedLLMClient:
         source_prompt = prompt
         schema = _ollama_json_schema(prompt)
         if schema.get("required"):
-            # Keep the format visible to the model as well as the token decoder.
+            # keep the format visible to the model and the token decoder
             prompt += "\n\nReturn JSON only, following OUTPUT_SCHEMA=" + json.dumps(
                 schema, separators=(",", ":")
             )
@@ -185,7 +185,7 @@ class HostedLLMClient:
             ) from None
         # MLX model loading is expensive and can consume several gigabytes. Keep one
         # model per generation client, and serialize use because mlx-lm generation
-        # mutates shared inference state.
+        # mutates shared inference state
         with self._apple_lock:
             if self._apple_model is None or self._apple_tokenizer is None:
                 local_model = resolve_local_mlx_model(self.model)
@@ -205,7 +205,7 @@ class HostedLLMClient:
                     verbose=False,
                 )
         if schema.get("required"):
-            # Never salvage a truncated constrained response or duplicate fields.
+            # never salvage a truncated constrained response or duplicate fields
             if len(response.encode("utf-8")) > 1_048_576:
                 raise ValueError("Model response exceeded the 1 MB JSON limit.")
             parsed = json.loads(response, object_pairs_hook=_unique_json_fields)
@@ -239,7 +239,7 @@ class HostedLLMClient:
                     )
         return parsed
 
-    # Constrain syntax, public option values and batch IDs; validate correctness separately.
+    # Constrain syntax, public option values and batch IDs; validate correctness separately
     def _mlx_structured_response(self, prompt: str, schema: dict) -> str:
 
         try:
@@ -256,13 +256,13 @@ class HostedLLMClient:
             self._apple_structured_model = outlines.from_mlxlm(
                 self._apple_model, self._apple_tokenizer
             )
-            # Outlines 1.3.3 otherwise applies the default thinking template.
+            # Outlines 1.3.3 otherwise applies the default thinking template
             # Own formatting here so JSON starts in the model's answer channel,
-            # with exactly one chat template and no mutation of its tokenizer.
+            # with exactly one chat template and no mutation of its tokenizer
             self._apple_structured_model.type_adapter.has_chat_template = False
-        # A fresh decoder per call avoids carrying accepted tokens into repairs.
+        # a fresh decoder per call avoids carrying accepted tokens into repairs
         # llguidance avoids the large finite-state compilation cost of bounded
-        # strings/arrays in the default Outlines backend (see retained timings).
+        # strings/arrays in the default Outlines backend (see retained timings)
         decoder_schema = _mlx_decoder_schema(schema)
         grammar = llguidance.grammar_from("json_schema", json.dumps(decoder_schema))
         grammar_error = llguidance.LLMatcher.validate_grammar(grammar)
@@ -358,7 +358,7 @@ class HostedLLMClient:
         return parse_json_object(text)
 
 
-# Standalone subject generators use the same transport as the app.
+# Standalone subject generators use the same transport as the app
 class OllamaClient(HostedLLMClient):
 
     def __init__(self, base_url: str, model: str) -> None:
@@ -481,7 +481,7 @@ def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
     return value
 
 
-# Keep hybrid-model reasoning tags outside the JSON-only response channel.
+# keep hybrid-model reasoning tags outside the JSON-only response channel
 def _mlx_json_prompt(tokenizer: Any, prompt: str) -> str:
 
     if not getattr(tokenizer, "has_chat_template", False):
@@ -494,7 +494,7 @@ def _mlx_json_prompt(tokenizer: Any, prompt: str) -> str:
     )
 
 
-# Defer only array uniqueness to validation; reject other unsupported rules.
+# defer only array uniqueness to validation; reject other unsupported rules
 def _mlx_decoder_schema(schema: dict) -> dict:
 
     result = {key: value for key, value in schema.items() if key != "uniqueItems"}
@@ -512,7 +512,7 @@ def _mlx_decoder_schema(schema: dict) -> dict:
     return result
 
 
-# Return a bounded top-level schema while leaving subject fields extensible.
+# return a bounded top-level schema while leaving subject fields extensible
 def _ollama_json_schema(prompt: str) -> dict[str, object]:
 
     short_text = {"type": "string", "maxLength": 240}
@@ -583,16 +583,16 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             and choices
             and all(isinstance(choice, str) and choice.strip() for choice in choices)
         ):
-            # Constrain the format to public options, never to the private key.
-            # Reconciliation still rejects a wrong answer or contradictory point.
+            # Constrain the format to public options, never to the private key
+            # Reconciliation still rejects a wrong answer or contradictory point
             option = {"type": "string", "enum": choices}
             properties["answer"] = option
             properties["mark_points"] = {
                 "type": "array", "items": option, "minItems": 1, "maxItems": 1,
             }
             if solver_item.get("marks") == 1:
-                # One selected option earns the single mark. Other options are
-                # distractors, not alternative correct answers to invent.
+                # one selected option earns the single mark. Other options are
+                # distractors, not alternative correct answers to invent
                 properties["alternatives"] = {**text_list, "maxItems": 0}
         required = list(properties)
     elif "`questions` array" in prompt or "a `questions` array" in prompt:
@@ -910,7 +910,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
 
 def _prompt_batch_items(prompt: str) -> list[object]:
     # Real batch declarations start a line. A quoted candidate may contain a
-    # different marker; it must not override the enclosing review's identifiers.
+    # different marker; it must not override the enclosing review's identifiers
     marker = re.search(r"(?m)^(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
     if marker is None:
         marker = re.search(r"(?:BLUEPRINT_DATA|REVIEW_DATA)=\s*", prompt)
@@ -946,13 +946,9 @@ def _batch_identifier_schema(prompt: str) -> dict[str, object]:
     return result
 
 
-# Derive the exact batch cardinality already declared in prompt data.
-#
-# Ollama's grammar follows the supplied schema literally. Leaving a broad
-# one-to-six range let otherwise capable local models stop after the first
-# object in a multi-item batch, wasting several minutes on retries. The
-# blueprint identifiers are generated by this process and occur once per
-# requested item, so they give the required batch size.
+# use the batch size already declared by generated blueprint IDs, one per item. Ollama
+# follows the schema literally; a broad one-to-six range lets models stop after one
+# object and wastes minutes on retries
 def _prompt_item_count(prompt: str) -> int:
 
     count = len(_prompt_item_identifiers(prompt))

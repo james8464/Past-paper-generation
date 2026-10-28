@@ -1,4 +1,4 @@
-# Check pseudocode and Boolean outputs for computer-science items.
+# check pseudocode and Boolean outputs for computer-science items
 
 from __future__ import annotations
 

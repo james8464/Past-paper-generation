@@ -1,4 +1,4 @@
-# Write the supporting files and on-screen exam documents for AQA Computer Science Paper 1.
+# write the supporting files and on-screen exam documents for AQA Computer Science Paper 1
 
 from __future__ import annotations
 

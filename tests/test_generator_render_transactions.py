@@ -12,7 +12,7 @@ CLI_PATHS = [
     ROOT / "Resources/computer-science/aqa/generator/cspapergen/cli.py",
     ROOT / "Resources/computer-science/ocr/generator/ocrcsgen/cli.py",
     ROOT / "Resources/economics/aqa/generator/aqaecongen/cli.py",
-    ROOT / "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
+    ROOT / "Resources/economics/edexcel-a/generator/keldin_edexcel/cli.py",
     ROOT / "Resources/economics/ocr/generator/ocregen/cli.py",
 ]
 RENDERERS = {

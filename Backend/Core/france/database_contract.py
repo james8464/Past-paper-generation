@@ -1,7 +1,7 @@
-# Application-owned relational facts for a French NSI written exercise.
+# Application-owned relational facts for a French NSI written exercise
 #
-# All SQL and Python shown to learners is fixed here. Only validated, seeded
-# data varies; no model-authored statement or code is executed.
+# all SQL and Python shown to learners is fixed here. Only validated, seeded
+# data varies; no model-authored statement or code is executed
 
 from __future__ import annotations
 
@@ -132,7 +132,7 @@ def _expected(rows: dict[str, list[list]], update_sql: str) -> dict:
         connection.close()
 
 
-# Canonical, immutable JSON with recomputed expected results.
+# Canonical, immutable JSON with recomputed expected results
 @dataclass(frozen=True)
 class DatabaseContract:
 

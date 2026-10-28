@@ -1,4 +1,4 @@
-# Hash-bound, selection-only V18 French network authoring and replay.
+# Hash-bound, selection-only V18 French network authoring and replay
 
 from __future__ import annotations
 

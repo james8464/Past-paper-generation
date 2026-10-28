@@ -1,4 +1,4 @@
-# Connect Edexcel Economics generation to the shared backend workflow.
+# Connect Edexcel Economics generation to the shared backend workflow
 
 from __future__ import annotations
 
@@ -14,20 +14,20 @@ from Backend.Core.family_adapter import (
     run_family_adapter,
 )
 from Backend.Core.model_recommendations import default_ollama_model
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.ollama_client import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.ollama_client import (
     OllamaClient,
     generate_questions_with_ollama,
     review_blueprint_difficulty,
 )
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import (
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import (
     render_mark_scheme,
     render_question_paper,
     render_source_booklet,
 )
-from pastpapergen.syllabus import load_syllabus
-from pastpapergen.validation import validate_blueprint
+from keldin_edexcel.syllabus import load_syllabus
+from keldin_edexcel.validation import validate_blueprint
 
 
 def _load_rule(paper: str):

@@ -1,11 +1,11 @@
-# Load the Edexcel Economics syllabus records used to select topics.
+# load the Edexcel Economics syllabus records used to select topics
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from pastpapergen.models import Syllabus
+from keldin_edexcel.models import Syllabus
 
 
 def load_syllabus(path: Path) -> Syllabus:

@@ -1,4 +1,4 @@
-# Build the maintained Prix Occitanie 2026 application evidence documents.
+# build the maintained Prix Occitanie 2026 application evidence documents
 
 from __future__ import annotations
 
@@ -158,7 +158,7 @@ def configure_document(
         run.font.color.rgb = RGBColor(85, 85, 85)
 
 
-# Use an explicit portable face instead of Word's serif theme fallback.
+# use an explicit portable face instead of Word's serif theme fallback
 def finalize_fonts(doc: Document) -> None:
     paragraphs = list(doc.paragraphs)
     for paragraph in doc.paragraphs:
@@ -663,7 +663,7 @@ def build_mathematical_analysis() -> Path:
         ],
         [4.0, 4.0, 8.8],
     )
-    # This four-row comparison should remain readable as one unit.
+    # this four-row comparison should remain readable as one unit
     for row in sample_table.rows[:-1]:
         for cell in row.cells:
             for paragraph in cell.paragraphs:

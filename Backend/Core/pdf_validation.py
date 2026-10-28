@@ -1,4 +1,4 @@
-# Inspect PDF content, typography and print geometry against release checks.
+# Inspect PDF content, typography and print geometry against release checks
 
 from __future__ import annotations
 
@@ -69,12 +69,12 @@ MARGIN_FURNITURE = re.compile(
 )
 INTENTIONAL_BLANK_PAGE_CONTRACTS = {
     # Pearson's Paper 2 mark scheme ends on a deliberately blank page. Keeping
-    # that final leaf preserves the measured 36-page reference pagination.
+    # that final leaf preserves the measured 36-page reference pagination
     ("economics", "2", "mark_scheme"): frozenset({36}),
 }
 
 
-# A compact, serialisable sample of one rendered PDF glyph.
+# a compact, serialisable sample of one rendered PDF glyph
 @dataclass(frozen=True)
 class GlyphMetric:
 
@@ -86,11 +86,11 @@ class GlyphMetric:
     line_height: float
 
 
-# Extract print and accessibility evidence without retaining source prose.
+# extract print and accessibility evidence without retaining source prose
 #
 # Glyph characters are deliberately omitted. Geometry remains useful for
-# regression comparisons while examination content does not leak into audit
-# reports.
+# regression comparisons while examination content doesn't leak into audit
+# reports
 def extract_pdf_evidence(
     path: Path,
     *,
@@ -128,7 +128,7 @@ def extract_pdf_evidence(
     }
 
 
-# Compare typography and print geometry on a stable zero-to-one scale.
+# compare typography and print geometry on a stable zero-to-one scale
 def compare_page_evidence(
     generated: dict[str, Any],
     reference: dict[str, Any],
@@ -387,7 +387,7 @@ def _union_rects(rects: list[fitz.Rect]) -> fitz.Rect | None:
     return result
 
 
-# Return whether an image is a full-bleed background rather than content.
+# return whether an image is a full-bleed background instead of content
 def _is_decorative_bleed(bounds: fitz.Rect, page_bounds: fitz.Rect) -> bool:
     if bounds.is_empty or page_bounds.is_empty:
         return False
@@ -401,7 +401,7 @@ def _is_decorative_bleed(bounds: fitz.Rect, page_bounds: fitz.Rect) -> bool:
     return touches_edge and coverage >= 0.9
 
 
-# Exclude repeated non-answerable printer furniture from the safety box.
+# Exclude repeated non-answerable printer furniture from the safety box
 def _is_margin_furniture(
     text: str,
     bounds: fitz.Rect,
@@ -594,7 +594,7 @@ def _count_score(first: int, second: int) -> float:
     return round(min(first, second) / max(first, second), 4)
 
 
-# Fail closed on malformed, substituted, annotated, or low-resolution PDFs.
+# Fail closed on malformed, substituted, annotated, or low-resolution PDFs
 def validate_pdf_for_release(
     path: Path,
     *,
@@ -849,8 +849,8 @@ def _layout_profiles() -> dict[tuple[str, str], dict[str, Any]]:
 def _normalise_font(value: str) -> str:
     name = value.rsplit("+", 1)[-1].casefold()
     # Open Sans static instances use either OpenSans or OpenSansRoman as the
-    # PostScript family stem. Weight/style suffixes do not create new families;
-    # keep condensed faces distinct instead of broadly prefix-matching them.
+    # PostScript family stem. Weight/style suffixes don't create new families;
+    # keep condensed faces distinct instead of broadly prefix-matching them
     compact = re.sub(r"[\s,_-]", "", name)
     if re.fullmatch(
         r"opensans(?:roman)?(?:light|regular|medium|semibold|bold|extrabold)?(?:italic)?",

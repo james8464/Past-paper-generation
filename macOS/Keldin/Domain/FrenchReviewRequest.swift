@@ -1,4 +1,4 @@
-// Build the backend arguments for a French teacher-review request.
+// build the backend arguments for a French teacher-review request
 
 import Foundation
 

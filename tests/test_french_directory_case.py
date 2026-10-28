@@ -1,4 +1,4 @@
-# Independent expected traces for a shared, cyclic directory-object graph.
+# independent expected traces for a shared, cyclic directory-object graph
 
 from copy import deepcopy
 

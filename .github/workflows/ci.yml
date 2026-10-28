@@ -15,8 +15,8 @@ permissions:
 jobs:
   backend:
     name: Backend tests
-    # PDF typography checks use the same system fonts as the supported Mac app.
-    # Running them on Linux substitutes fonts and tests a different layout.
+    # PDF typography checks use the same system fonts as the supported Mac app
+    # Running them on Linux substitutes fonts and tests a different layout
     runs-on: macos-15
     timeout-minutes: 20
     steps:

@@ -1,4 +1,4 @@
-# V21 selection is finite, source-bound, and isolated from old packages.
+# V21 selection is finite, source-bound, and isolated from old packages
 
 from __future__ import annotations
 

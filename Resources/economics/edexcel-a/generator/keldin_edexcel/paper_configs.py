@@ -1,10 +1,10 @@
-# Define Edexcel Economics paper sections, tariffs and question rules.
+# Define Edexcel Economics paper sections, tariffs and question rules
 
 from __future__ import annotations
 
 from copy import deepcopy
 
-from pastpapergen.models import PaperConfig, SectionConfig
+from keldin_edexcel.models import PaperConfig, SectionConfig
 
 _BUILTIN_CONFIGS: dict[str, PaperConfig] = {
     "paper_1": PaperConfig(

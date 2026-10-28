@@ -1,4 +1,4 @@
-# V19 database questions must ask for the facts their credits reward.
+# V19 database questions must ask for the facts their credits reward
 
 from copy import deepcopy
 from decimal import Decimal

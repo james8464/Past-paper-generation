@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.syllabus import load_syllabus
 
 
 def test_blueprint_is_deterministic_for_seed():
@@ -48,7 +48,7 @@ def test_blueprint_contains_structured_mcq_and_mark_scheme_content():
 
     assert first.stimulus_kind.endswith("_table")
     assert first.source_reference == "Table 1"
-    assert first.mark_breakdown == ""  # Parent credit must not duplicate its parts.
+    assert first.mark_breakdown == ""  # Parent credit must not duplicate its parts
     assert first.parts[0].assessment_objectives == {"AO1": 2, "AO2": 1, "AO3": 1}
     assert len(mcq_part.options) == 4
     assert mcq_part.correct_option == "A"

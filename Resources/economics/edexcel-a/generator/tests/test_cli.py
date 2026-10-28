@@ -4,7 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from pastpapergen.cli import generate_package
+from keldin_edexcel.cli import generate_package
 
 
 def test_cli_dry_run_creates_paper_package(tmp_path):
@@ -12,7 +12,7 @@ def test_cli_dry_run_creates_paper_package(tmp_path):
         [
             sys.executable,
             "-m",
-            "pastpapergen",
+            "keldin_edexcel",
             "--paper",
             "1",
             "--seed",
@@ -37,7 +37,7 @@ def test_cli_dry_run_creates_paper_package(tmp_path):
 
 
 def test_generate_package_without_seed_does_not_write_audit(tmp_path, monkeypatch):
-    monkeypatch.setattr("pastpapergen.cli.secrets.randbits", lambda bits: 123456789)
+    monkeypatch.setattr("keldin_edexcel.cli.secrets.randbits", lambda bits: 123456789)
 
     paths = generate_package(
         paper="1",

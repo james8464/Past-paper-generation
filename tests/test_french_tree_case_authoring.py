@@ -1,4 +1,4 @@
-# Whole E1 checkpoint ownership and strict deterministic verification.
+# Whole E1 checkpoint ownership and strict deterministic verification
 
 import json
 from copy import deepcopy

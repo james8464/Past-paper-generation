@@ -1,4 +1,4 @@
-# Behavioral checks for the isolated V22 before/after route case.
+# Behavioral checks for the isolated V22 before/after route case
 
 from __future__ import annotations
 

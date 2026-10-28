@@ -975,7 +975,7 @@ def test_runtime_publishes_v32_even_if_caller_requests_older_contract(
         allow_remote=False,
         large_print=large_print,
     )
-    args.contract_authoring_version = "v17"  # Caller cannot downgrade new publication.
+    args.contract_authoring_version = "v17"  # Caller cannot downgrade new publication
     assert runtime.handle_generate_assessment(args) == 0
     (bundle,) = (tmp_path / "output").glob("nsi-*")
     package = json.loads((bundle / "assessment.json").read_text())
@@ -1492,7 +1492,7 @@ def test_publication_is_complete_or_absent(tmp_path, monkeypatch, failure, large
             assert "Réponse attendue" not in question_text
         with pymupdf.open(bundles[0] / "corrige.pdf") as pdf:
             # Structured resources add space, but every exercise remains present
-            # with its final marking entry and no empty trailing page.
+            # with its final marking entry and no empty trailing page
             assert 5 <= len(pdf) <= (13 if large_print else 10)
             last_page = pdf[-1].get_text()
             assert "3e." in last_page and "3f." in last_page

@@ -1,4 +1,4 @@
-# V32 app-owned E2 checkpointing must not invent model-generation evidence.
+# V32 app-owned E2 checkpointing must not invent model-generation evidence
 
 from copy import deepcopy
 
@@ -122,7 +122,7 @@ def test_three_cases_pass_pipeline_checks_with_preserved_history(tmp_path):
         )
         _originality(exercise, references, history)
         history.append(exercise_candidate_text(exercise))
-        # A successful family must not turn off duplicate protection.
+        # a successful family must not turn off duplicate protection
         with pytest.raises(ValueError):
             _originality(exercise, references, history)
     assert len(history) == 3

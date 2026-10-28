@@ -1,7 +1,7 @@
-# Closed, versioned French text for one immutable NSI graph/tree contract.
+# closed, versioned French text for one immutable NSI graph/tree contract
 #
-# Only finite IDs cross the model boundary. Printed facts come from the contract;
-# the catalogue itself is part of the checkpoint/package identity.
+# only finite IDs cross the model boundary. Printed facts come from the contract;
+# the catalogue itself is part of the checkpoint/package identity
 
 from __future__ import annotations
 

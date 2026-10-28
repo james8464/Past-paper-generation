@@ -1,4 +1,4 @@
-# Independent tests for V30 route filtering and complete selection.
+# independent tests for V30 route filtering and complete selection
 
 from copy import deepcopy
 from itertools import pairwise, permutations

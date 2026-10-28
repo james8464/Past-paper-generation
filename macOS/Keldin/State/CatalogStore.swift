@@ -1,4 +1,4 @@
-// Load available papers and keep the selected catalogue route consistent.
+// load available papers and keep the selected catalogue route consistent
 
 import Foundation
 import Observation

@@ -1,4 +1,4 @@
-# V19 selection must bind finite wording and retain failed attempts.
+# V19 selection must bind finite wording and retain failed attempts
 
 from copy import deepcopy
 

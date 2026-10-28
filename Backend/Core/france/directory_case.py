@@ -1,12 +1,12 @@
-# Object identity and graph traversal for the French practice catalogue.
+# Object identity and graph traversal for the French practice catalogue
 #
-# Links represent shortcuts between directories, not filesystem containment.
-# Two distinct directories may have the same displayed name.
+# Links represent shortcuts between directories, not filesystem containment
+# two distinct directories may have the same displayed name
 
 from collections import deque
 
 
-# These solutions retain short lines for enlarged-print code listings.
+# these solutions retain short lines for enlarged-print code listings
 # fmt: off
 class Dossier:
     def __init__(self, identifiant, nom):
@@ -22,7 +22,7 @@ class Dossier:
         self.enfants.append(autre)
 
 
-# Record identifiers before following links, including back edges.
+# record identifiers before following links, including back edges
 def explorer(depart, vus):
     if depart.identifiant not in vus:
         vus.append(depart.identifiant)
@@ -30,7 +30,7 @@ def explorer(depart, vus):
             explorer(enfant, vus)
 
 
-# Return the fewest directed links, or None for an unreachable identifier.
+# return the fewest directed links, or None for an unreachable identifier
 def distance_minimale(depart, cible):
     attente = deque([(depart, 0)])
     vus = {depart.identifiant}
@@ -49,7 +49,7 @@ def distance_minimale(depart, cible):
 
 
 # fmt: on
-# Allocate each object once so shared links preserve object identity.
+# Allocate each object once so shared links preserve object identity
 def build_objects(case):
     dossiers = {
         identifiant: Dossier(identifiant, nom)
@@ -60,7 +60,7 @@ def build_objects(case):
     return dossiers
 
 
-# Return one fixed family; changing its seed does not create novelty.
+# return one fixed family; changing its seed doesn't create novelty
 def build_case(seed):
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("A signed 64-bit integer seed is required")

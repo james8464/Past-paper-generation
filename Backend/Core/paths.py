@@ -1,11 +1,11 @@
-# Locate repository resources and expand user-selected paths.
+# Locate repository resources and expand user-selected paths
 
 from __future__ import annotations
 
 from pathlib import Path
 
 
-# Expand a user path without resolving sandbox-approved symlinks.
+# expand a user path without resolving sandbox-approved symlinks
 def absolute_user_path(value: str | Path) -> Path:
     return Path(value).expanduser().absolute()
 

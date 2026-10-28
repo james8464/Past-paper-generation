@@ -1,4 +1,4 @@
-# Generate and review draft items, resuming only accepted checkpoint content.
+# generate and review draft items, resuming only accepted checkpoint content
 
 from __future__ import annotations
 
@@ -83,7 +83,7 @@ class GenerationPolicy:
     require_difficulty_review: bool = False
 
 
-# A checked answer does not establish stem or distractor quality.
+# a checked answer doesn't establish stem or distractor quality
 def _requires_model_review(
     question: GeneratedQuestion,
     policy: GenerationPolicy,
@@ -104,7 +104,7 @@ class _Task:
         return "/".join(str(part) for part in self.key)
 
 
-# Replace draft items while keeping the authoritative assessment blueprint frozen.
+# Replace draft items while keeping the authoritative assessment blueprint frozen
 def generate_unique_paper(
     paper: GeneratedPaper,
     *,
@@ -501,7 +501,7 @@ def _validate_checkpoint_item(
         )
 
 
-# Adopt a newly added layout budget without weakening item validation.
+# Adopt a newly added layout budget without weakening item validation
 def _upgrade_checkpoint_metadata(
     task: _Task,
     candidate: GeneratedQuestion,
@@ -744,10 +744,10 @@ def _independently_validate_candidate(
     }
     if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
         raise ValueError(f"question {candidate.number} changed immutable numeric source contract")
-    contract_for_question(candidate)  # Retain full contract validation before model use.
-    # The option may contain planning extracts that its specialist renderer
-    # never prints (e.g. Accounting 14.2 uses the company-statement case).
-    # A blind solver must see the same public evidence as the writer/reviewer.
+    contract_for_question(candidate)  # retain full contract validation before model use
+    # the option may contain planning extracts that its specialist renderer
+    # never prints (e.g. Accounting 14.2 uses the company-statement case)
+    # a blind solver must see the same public evidence as the writer/reviewer
     sources = [
         EvidenceRecord.model_validate(source)
         for source in _task_source(task).get("evidence", [])
@@ -766,7 +766,7 @@ def _independently_validate_candidate(
     return solution
 
 
-# Permit a reviewed local blueprint stem only for formatting-only drift.
+# permit a reviewed local blueprint stem only for formatting-only drift
 def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
 
     return provider.casefold() in {"ollama", "apple"} and any(
@@ -781,7 +781,7 @@ def _seeded_fallback_allowed(*, provider: str, failure: str) -> bool:
     )
 
 
-# Keep local structured responses below practical context/output limits.
+# keep local structured responses below practical context/output limits
 def _effective_batch_size(
     client: AssessmentLLMClient,
     policy: GenerationPolicy,
@@ -991,9 +991,9 @@ def _candidate_question(
 
     if original.kind == "multiple_choice":
         if has_selected_response_contract:
-            # The choices and answer key are projections of public, deterministic
+            # the choices and answer key are projections of public, deterministic
             # source data. A language model may improve the stem, but must not
-            # alter a unit, precision, distractor or key owned by that contract.
+            # alter a unit, precision, distractor or key owned by that contract
             rendered_choices = list(original.choices)
             correct_choice = original.correct_choice
         else:
@@ -1045,8 +1045,8 @@ def _candidate_question(
         }
     )
     if has_selected_response_contract:
-        # Reject invalid public stems inside the repair loop, before review or
-        # checkpointing, even when optional independent model solving is off.
+        # reject invalid public stems inside the repair loop, before review or
+        # checkpointing, even when optional independent model solving is off
         solve_selected_response(candidate.model_dump(mode="json"))
     _validate_release_mark_scheme(candidate)
     return candidate
@@ -1086,7 +1086,7 @@ def _normalise_calculation_guidance(
     ]
 
 
-# Apply the package quality gate before an item can be checkpointed.
+# Apply the package quality gate before an item can be checkpointed
 def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
 
     raw = question.model_dump(mode="json")
@@ -1123,7 +1123,7 @@ def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
     )
 
 
-# Make the selected answer explicit when a model uses only a shorthand label.
+# make the selected answer explicit when a model uses only a shorthand label
 def _normalise_multiple_choice_answer(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
@@ -1227,11 +1227,8 @@ def _is_examiner_meta_guidance(text: str) -> bool:
     )
 
 
-# Use blueprint AO totals when building levels-based schemes.
-#
-# Levels-based schemes separate AO accounting, band descriptors and indicative
-# content. Local models often blur those roles, so retain their substantive
-# material as guidance while creating neutral, exact AO allocation rows.
+# models can mix AO accounting, band descriptors and indicative content; keep their
+# substantive guidance and rebuild exact AO rows from the blueprint
 def _normalise_level_allocations(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
@@ -1539,7 +1536,7 @@ def _generation_prompt(
     )
 
 
-# Describe the exact awarded rows a model must author for one item.
+# describe the exact awarded rows a model must author for one item
 def _required_awarded_entries(
     question: GeneratedQuestion, *, subject: str = ""
 ) -> list[dict[str, object]]:
@@ -1655,7 +1652,7 @@ _SEMANTIC_STOPWORDS = frozenset(
 )
 
 
-# Reduce planning prose to semantic anchors without inviting a paraphrase.
+# Reduce planning prose to semantic anchors without inviting a paraphrase
 def _semantic_task_contract(task: _Task) -> dict[str, object]:
 
     question = task.question
@@ -1760,7 +1757,7 @@ def _review_prompt(
     )
 
 
-# Add an unambiguous human-facing key without changing stored item data.
+# add an unambiguous human-facing key without changing stored item data
 def _review_question_payload(candidate: GeneratedQuestion) -> dict[str, object]:
 
     payload = candidate.model_dump(mode="json")
@@ -1788,9 +1785,9 @@ def _bounded_text(value: Any, *, name: str, limit: int) -> str:
 
 def _task_source(task: _Task) -> dict[str, object]:
     context = task.question.authoring_context
-    # These adapters publish question-owned source contracts instead of the
+    # these adapters publish question-owned source contracts instead of the
     # generic option extracts. Authoring metadata (word budgets, AO labels)
-    # must not hide a case that the question actually asks the candidate to use.
+    # must not hide a case that the question actually asks the candidate to use
     owns_source = owns_shared_source(task.question.model_dump(mode="json"))
     if context:
         source: dict[str, object] = {
@@ -1827,8 +1824,8 @@ def _task_source(task: _Task) -> dict[str, object]:
                 if index <= len(task.question.source_references)
                 else f"stimulus-{index}"
             )
-            # Both sources claim the same printed evidence ID. Reject a conflict
-            # rather than hiding printed text from any of the reviewers.
+            # both sources claim the same printed evidence ID. Reject a conflict
+            # instead of hiding printed text from any of the reviewers
             if identifier in known:
                 if known[identifier].text != text:
                     raise ValueError(
@@ -1883,7 +1880,7 @@ def _demand_item(task: _Task) -> dict[str, object]:
     value = task.question.model_dump(mode="json")
     source = _task_source(task)
     # Target the material actually supplied to review, not an unrelated option's
-    # planning case. Explicit evidence remains contextual even in a short stem.
+    # planning case. Explicit evidence remains contextual even in a short stem
     value["context"] = (
         [source]
         if shared_source_requires_context(value, task.option.model_dump(mode="json"))
@@ -1901,8 +1898,8 @@ def _difficulty_candidate(
         question=candidate,
         option=task.option,
     )
-    # Keep the full parent identity for conservative checkpoint invalidation;
-    # only the model-visible view excludes unprinted planning material.
+    # keep the full parent identity for conservative checkpoint invalidation;
+    # only the model-visible view excludes unprinted planning material
     return projection.model_copy(
         update={
             "review_content": {
@@ -1924,14 +1921,10 @@ def _difficulty_specification(task: _Task) -> dict[str, object]:
     }
 
 
-# Return whether the shared option material is evidence for this item.
-#
-# A section can contain independent short questions alongside a later case study.
-# Passing that case study to every item lets an assessment reviewer mistake an
-# unrelated figure for a contradiction in a self-contained stem. Explicit source
-# references and specific material cues take priority; topic nouns such as
-# 'source of finance' and 'data structure' do not refer to an extract. Otherwise
-# only written questions that name the option inherit its material.
+# shared-source scope: explicit references and material cues first; 'source of finance'
+# and 'data structure' aren't extract references. Otherwise inherit material only for
+# written questions naming the option. Independent questions can share a section with an
+# unrelated case; its figures can mislead their reviewers
 def _question_uses_option_source(task: _Task) -> bool:
 
     return uses_shared_option_source(
@@ -1939,7 +1932,7 @@ def _question_uses_option_source(task: _Task) -> bool:
     )
 
 
-# Remove model-added presentation labels that the renderer already owns.
+# remove model-added presentation labels that the renderer already owns
 def _clean_generated_prompt(
     value: str,
     *,
@@ -1995,7 +1988,7 @@ def _contains_command_word(prompt: str, command_word: str) -> bool:
     return bool(words & expected)
 
 
-# Replace only a leading alternative exam command with the blueprint command.
+# Replace only a leading alternative exam command with the blueprint command
 def _normalise_command_word(prompt: str, command_word: str) -> str:
 
     if _contains_command_word(prompt, command_word):

@@ -1,7 +1,5 @@
-# Original V32 whole E2 sequences; not yet connected to the publication route.
-#
-# Each case progresses from relational interpretation to an independently checked
-# algorithm and a discriminating boundary test. No generated solution is executed.
+# V32 E2 sequences: relational interpretation, independently checked algorithm, then a
+# boundary test. Never execute generated solutions
 
 import ast
 import inspect
@@ -21,7 +19,7 @@ VERSION = "fr-nsi-database-case-prose-v1"
 _MINUTES = (3, 4, 5, 6, 5, 7, 6, 12, 6, 7, 5, 4)
 
 
-# Keep correction code identical to the tested application algorithm.
+# keep correction code identical to the tested application algorithm
 def _solution(function):
     source = inspect.getsource(function)
     tree = ast.parse(source)
@@ -399,8 +397,8 @@ def _stock(case):
 
 
 def _marking(criteria, index, total):
-    # Lower allocations combine adjacent warm-up criteria, never discard them.
-    # Higher allocations add credit to construction and causal-state reasoning.
+    # lower allocations combine adjacent warm-up criteria, never discard them
+    # higher allocations add credit to construction and causal-state reasoning
     if total == "5.5" and index in (1, 3):
         return [dict(points="0.25", criterion=" ".join(criteria))]
     return [
@@ -530,7 +528,7 @@ def case_task(seed, total="6"):
     )
 
 
-# Closed app-owned content binding; never accept altered marking or sources.
+# closed app-owned content binding; never accept altered marking or sources
 def verify_candidate(candidate, seed, *, total="6"):
     try:
         return json.dumps(candidate, ensure_ascii=False, sort_keys=True) == json.dumps(

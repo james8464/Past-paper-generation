@@ -5,16 +5,16 @@ from pathlib import Path
 
 import pymupdf
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.ollama_client import _question_solver_item, _review_specification
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.ollama_client import _question_solver_item, _review_specification
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import (
     _draw_paper_3_source_page,
     _draw_stimulus,
     _mark_scheme_rows,
     candidate_stimulus_data,
 )
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.syllabus import load_syllabus
 from reportlab.pdfgen.canvas import Canvas
 
 from Backend.Core.independent_solver import (
@@ -157,7 +157,7 @@ def test_review_does_not_claim_hidden_context_is_printed():
 
 
 def test_candidate_context_renderer_never_silently_elides_source_ending():
-    from pastpapergen.render_pdf import _draw_context_box, _draw_inline_context
+    from keldin_edexcel.render_pdf import _draw_context_box, _draw_inline_context
 
     text = (
         " ".join(["A producer has spare capacity and delayed contracts."] * 8)
@@ -177,7 +177,7 @@ def test_candidate_context_renderer_never_silently_elides_source_ending():
 
 
 def test_section_heading_and_instructions_clear_the_answer_frame():
-    from pastpapergen.render_pdf import (
+    from keldin_edexcel.render_pdf import (
         ANSWER_FRAME_H,
         ANSWER_FRAME_Y,
         _draw_section_intro,
@@ -387,7 +387,7 @@ def test_generated_scheme_pagination_checks_content_not_official_page_count(
 ):
     import json
 
-    from pastpapergen.render_pdf import render_mark_scheme
+    from keldin_edexcel.render_pdf import render_mark_scheme
 
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.layout_conformance import conform_generated_documents
@@ -436,7 +436,7 @@ def test_content_driven_scheme_policy_rejects_missing_printed_assessment(
 ):
     import json
 
-    from pastpapergen.render_pdf import render_mark_scheme
+    from keldin_edexcel.render_pdf import render_mark_scheme
 
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.layout_conformance import conform_generated_documents
@@ -532,7 +532,7 @@ def test_paper_three_figure_prints_its_source_values_not_hash_noise():
     ["source_instance", "assessment_objectives", "assessment_contract", "scheme_mode"],
 )
 def test_resume_guards_new_source_and_credit_fields(field):
-    from pastpapergen.ollama_client import _validate_ai_question
+    from keldin_edexcel.ollama_client import _validate_ai_question
 
     q = paper(2, 1).questions[5]
     change = None if field == "source_instance" else {}
@@ -549,7 +549,7 @@ def test_resume_guards_new_source_and_credit_fields(field):
 def test_fixed_review_uses_printed_multipart_projection_and_truthful_provenance(
     monkeypatch,
 ):
-    from pastpapergen import ollama_client
+    from keldin_edexcel import ollama_client
 
     full = paper(2, 26083122)
     q = full.questions[0].model_copy(
@@ -619,7 +619,7 @@ def test_complete_declared_numeric_operations_have_literal_answers(
 
 
 def test_declared_calculation_inventory_is_exhaustive_and_latent_gaps_fail_closed():
-    from pastpapergen.generator import _STIMULUS_PART_PROMPTS
+    from keldin_edexcel.generator import _STIMULUS_PART_PROMPTS
 
     from Backend.Core.subjects.economics_contracts import (
         SUPPORTED_CALCULATIONS,

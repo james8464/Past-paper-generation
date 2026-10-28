@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Prepare the app and start a user-selected screen recording for the Occitanie demo.
+# Prepare the app and start a user-selected screen recording for the Occitanie demo
 
 set -euo pipefail
 

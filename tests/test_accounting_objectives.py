@@ -56,7 +56,7 @@ def paper_for(number="1"):
     ],
 )
 def test_accounting_uses_official_item_budgets_and_component_totals(number, section_b):
-    # Regression: generic fallback classified familiar techniques as AO2 and invented AO4.
+    # Regression: generic fallback classified familiar techniques as AO2 and invented AO4
     paper = paper_for(number)
     questions = [q for s in paper.sections for o in s.options for q in o.questions]
     assert [
@@ -78,7 +78,7 @@ def test_accounting_uses_official_item_budgets_and_component_totals(number, sect
     for question in paper.sections[-1].options[0].questions:
         assert question.assessment_objectives == {"AO2": 5, "AO3": 20}
         awarded = [p for p in question.structured_mark_scheme if p.marks]
-        assert len(awarded) == 2  # Best-fit budgets do not assign marks repeatedly to indicative content.
+        assert len(awarded) == 2  # Best-fit budgets don't assign marks repeatedly to indicative content
         assert all(p.credit_type == "level" for p in awarded)
 
 
@@ -131,7 +131,7 @@ def test_authoring_and_editor_prompts_use_accounting_objective_semantics():
     assert "AO4" not in prompt
     review = _review_prompt([task], [task.question], subject="Accounting")
     assert "AO3" in review and "evaluation" in review.lower()
-    assert "familiar" in prompt.lower()  # Familiar calculation techniques may assess AO1.
+    assert "familiar" in prompt.lower()  # Familiar calculation techniques may assess AO1
 
 
 def test_accounting_ao3_short_analysis_does_not_imply_judgement():
@@ -238,7 +238,7 @@ def test_printed_accounting_scheme_has_three_objectives_and_actual_item_budgets(
     assert "Analysis and evaluation" in text
     assert "AO2: 5" in text and "AO3: 20" in text
     if number == "2":
-        # Budget rows must not suppress the substantive best-fit scheme.
+        # Budget rows must not suppress the substantive best-fit scheme
         assert "Cheaper material could be lower quality" in text
         assert "Level 5" in text
 
@@ -380,8 +380,8 @@ def test_exported_quality_totals_follow_accounting_credit(tmp_path, number):
 def test_activity_cost_working_uses_exact_rates_not_rounded_display_values():
     from aqaaccountgen.generator import _management_calculation
 
-    # Hand-derived: 660000/890*28 = 20764.04; 460000/2040*44 = 9921.57
-    # to two decimals. Using 741.57 and 225.49 instead gives different totals.
+    # hand-derived: 660000/890*28 = 20764.04; 460000/2040*44 = 9921.57
+    # to two decimals. Using 741.57 and 225.49 instead gives different totals
     _, scheme, context = _management_calculation(
         "costing_1", "Cedar Components", [89.0, 102.0, 115.0, 112.0, 110.0]
     )
@@ -440,8 +440,8 @@ def test_rendered_award_cells_distinguish_guidance_from_zero_level(
         for page in document:
             for text in expected_cells:
                 for rect in page.search_for(text):
-                    # Read the actual PDF's right-hand award cell on this row,
-                    # not a table object's private cells or all occurrences of 0.
+                    # read the actual PDF's right-hand award cell on this row,
+                    # not a table object's private cells or all occurrences of 0
                     words = page.get_text("words")
                     cell = [
                         word[4]

@@ -1,7 +1,5 @@
-# Bounded, candidate-grounded SQL verification for the declared AQA tasks.
-#
-# This module parses a deliberately small SELECT/INSERT subset.  It never executes
-# SQL and does not claim that unsupported syntax is invalid in every SQL dialect.
+# bounded AQA SQL checks from candidate data; parse only the declared SELECT/INSERT
+# subset. Never execute SQL or treat unsupported syntax as invalid in every dialect
 from __future__ import annotations
 
 import hashlib
@@ -174,7 +172,7 @@ class SQLValidationResult(_Frozen):
     findings: list[SQLValidationFinding] = Field(default_factory=list)
 
 
-# Fail closed when the public declaration leaves the bounded v2 task.
+# Fail closed when the public declaration leaves the bounded v2 task
 def _validate_supported_select_intent(
     intent: SQLSelectIntent,
     tables: dict[str, SQLTableContract],
@@ -213,7 +211,7 @@ def _validate_supported_select_intent(
         )
 
 
-# Return the public schema and the two declared construction intents.
+# return the public schema and the two declared construction intents
 def fitness_centre_sql_contract() -> SQLSourceContract:
     return SQLSourceContract(
         source_id="aqa-7517-fitness-centre-schema-v1",
@@ -277,7 +275,7 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
     )
 
 
-# Render only public schema facts; no worked query is present.
+# render only public schema facts; no worked query is present
 def render_sql_schema(contract: SQLSourceContract) -> str:
     lines = []
     for table in contract.tables:
@@ -322,7 +320,7 @@ def render_sql_schema(contract: SQLSourceContract) -> str:
     return "\n".join(lines)
 
 
-# Render the candidate instruction represented by a supported intent.
+# render the candidate instruction represented by a supported intent
 def render_sql_intent_prompt(intent: SQLSelectIntent | SQLInsertIntent) -> str:
     if isinstance(intent, SQLSelectIntent):
         if (
@@ -375,7 +373,7 @@ def sql_source_intent_sha256(contract: SQLSourceContract, intent_id: str) -> str
     ).hexdigest()
 
 
-# Public solver projection derived from the candidate's one declaration.
+# public solver projection derived from the candidate's one declaration
 def selected_sql_answer_contract(
     contract: SQLSourceContract, intent_id: str
 ) -> dict[str, object]:
@@ -392,7 +390,7 @@ def selected_sql_answer_contract(
     }
 
 
-# Validate the answer and every model-presented full statement separately.
+# validate the answer and every model-presented full statement separately
 def validate_sql_response(
     answer: str,
     mark_points: list[str],
@@ -509,7 +507,7 @@ _SQL_STATEMENT_SHAPES = (
 )
 
 
-# Recognise executable shapes without extracting a statement substring.
+# Recognise executable shapes without extracting a statement substring
 def _has_sql_statement_shape(text: str) -> bool:
     return any(re.search(pattern, text, re.IGNORECASE) for pattern in _SQL_STATEMENT_SHAPES)
 

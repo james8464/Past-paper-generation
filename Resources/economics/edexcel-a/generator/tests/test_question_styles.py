@@ -1,12 +1,12 @@
 import random
 from pathlib import Path
 
-from pastpapergen.generator import _build_part, build_paper_blueprint
-from pastpapergen.models import SyllabusTopic
-from pastpapergen.ollama_client import _merge_question_text
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.stimulus_data import line_chart_data, review_table_rows
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.generator import _build_part, build_paper_blueprint
+from keldin_edexcel.models import SyllabusTopic
+from keldin_edexcel.ollama_client import _merge_question_text
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.stimulus_data import line_chart_data, review_table_rows
+from keldin_edexcel.syllabus import load_syllabus
 
 
 def test_paper_1_uses_edexcel_command_word_pattern():
@@ -1217,7 +1217,7 @@ def test_section_a_draw_questions_use_diagram_suitable_topics():
 
 
 def test_ollama_accepts_new_extract_d_section_b_15_marker_style():
-    from pastpapergen.ollama_client import _matches_expected_question_style
+    from keldin_edexcel.ollama_client import _matches_expected_question_style
 
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")

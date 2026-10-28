@@ -1,4 +1,4 @@
-# Original linked E3 reasoning sequences and indicative marking, draft V32.
+# original linked E3 reasoning sequences and indicative marking, draft V32
 
 import json
 from decimal import Decimal
@@ -11,7 +11,7 @@ VERSION = "fr-nsi-system-case-prose-v2"
 MINUTES = (4, 5, 6, 8, 7, 6, 7, 6, 5, 5, 5, 6)
 
 
-# Short lines are intentional: these functions are printed in corrections.
+# short lines are intentional: these functions are printed in corrections
 # fmt: off
 def tour(voisins, ancien, destination):
     nouveau = {}

@@ -1,4 +1,4 @@
-# Define AQA Business paper structure, marks and question rules.
+# Define AQA Business paper structure, marks and question rules
 
 from __future__ import annotations
 

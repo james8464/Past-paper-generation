@@ -33,8 +33,8 @@ class CaptureSolverClient:
 
 
 def solver_prompt(task):
-    # Stop at the external-model boundary; source projection and blind-key
-    # removal both execute normally.
+    # stop at the external-model boundary; source projection and blind-key
+    # removal both execute normally
     with pytest.raises(CapturedSolverPrompt) as captured:
         _independently_validate_candidate(
             task, task.question, client=CaptureSolverClient()
@@ -158,11 +158,11 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
         text = json.dumps(source)
         assert "19%" not in text
         assert "710000" not in text
-        assert "6789600" in text  # Printed revenue needed to recompute profit.
+        assert "6789600" in text  # Printed revenue needed to recompute profit
         assert '"supplier_invoice": 3059' in text
         assert '"trade_receivable": 186714' in text
-    # The open-response solver receives a code-derived calculation from the
-    # public inputs, never the private worked answer or marking points.
+    # the open-response solver receives a code-derived calculation from the
+    # public inputs, never the private worked answer or marking points
     derived = payload["item"]["authoring_context"][
         "independently_derived_context"
     ]

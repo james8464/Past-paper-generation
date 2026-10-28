@@ -1,4 +1,4 @@
-# Candidate-source, selected-credit and printed-source integrity regressions.
+# candidate-source, selected-credit and printed-source integrity regressions
 
 import ast
 import json
@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pymupdf
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.ollama_client import _question_solver_item
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.ollama_client import _question_solver_item
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import (
     candidate_stimulus_data,
     render_mark_scheme,
     render_question_paper,
 )
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.assessment_package import _extract_items
 from Backend.Core.independent_solver import IndependentSolver

@@ -1,11 +1,9 @@
-# Original tasks supporting the inferred OCR item budgets.
-#
-# AO2 rows analyse an actual implementation or constraint. They are not generic
-# recall with a business name appended. AO3 coding rows specify observable code
-# features; the separate discussion tasks retain best-fit evaluation.
+# original tasks for inferred OCR budgets; AO2 analyses actual
+# implementations/constraints, not recall with a business name. AO3 coding specifies
+# observable features; discussion tasks retain best-fit evaluation
 from __future__ import annotations
 
-# Keys are (component, group, part); marks and syllabus coverage live in configs.
+# Keys are (component, group, part); marks and syllabus coverage live in configs
 TASKS: dict[tuple[int, str, int], tuple[str, list[str]]] = {
     (1, "1", 1): (
         "Explain the separate roles of the address, data and control buses in reading a value from memory, including how the processor indicates that a read is required.",

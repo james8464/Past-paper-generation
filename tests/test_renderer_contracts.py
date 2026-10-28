@@ -18,7 +18,7 @@ FAMILIES = (
     ("Resources/economics/aqa/generator", "aqaecongen.render_pdf", "aqa"),
     (
         "Resources/economics/edexcel-a/generator",
-        "pastpapergen.render_pdf",
+        "keldin_edexcel.render_pdf",
         "pearson-edexcel",
     ),
     ("Resources/economics/ocr/generator", "ocregen.render_pdf", "ocr"),

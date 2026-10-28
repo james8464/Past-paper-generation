@@ -1,4 +1,4 @@
-# Private, bounded evidence for rejected generation; never approved checkpoints.
+# private, bounded evidence for rejected generation; never approved checkpoints
 
 from __future__ import annotations
 
@@ -40,10 +40,10 @@ def _bounded(value: Any, secrets: tuple[str, ...], depth: int = 0) -> Any:
     return text[:2048]
 
 
-# Save only explicitly supplied evidence, not arbitrary errors or prompts.
+# save only explicitly supplied evidence, not arbitrary errors or prompts
 #
 # Failure to save must never mask the original generation failure. Directory
-# descriptors prevent a replaced/symlinked report folder redirecting writes.
+# descriptors prevent a replaced/symlinked report folder redirecting writes
 def save_failure_diagnostic(
     output_dir: Path,
     error: BaseException,

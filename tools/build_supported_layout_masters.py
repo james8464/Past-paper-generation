@@ -1,4 +1,4 @@
-# Build layout masters for the configured supported paper families.
+# build layout masters for the configured supported paper families
 
 from __future__ import annotations
 

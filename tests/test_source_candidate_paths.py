@@ -10,7 +10,7 @@ def module():
     return importlib.import_module("tools.source_candidate_paths")
 
 
-# Original synthetic text, with the audited editions' page/mark structure.
+# original synthetic text, with the audited editions' page/mark structure
 def _fixture_pdf(path, pages):
     path.parent.mkdir(parents=True, exist_ok=True)
     pdf = canvas.Canvas(str(path))
@@ -27,7 +27,7 @@ def _fixture_pdf(path, pages):
 @pytest.fixture
 def source_corpus(tmp_path, monkeypatch):
     # Exercise actual PDF discovery, extraction and path enumeration without
-    # relying on the ignored, copyrighted local Reference Corpus directory.
+    # relying on the ignored, copyrighted local Reference Corpus directory
     from tools import reference_demand_profiles as profiles
 
     families = tuple(replace(f, root=tmp_path / f.family_id / "question-papers")
@@ -58,7 +58,7 @@ def source_corpus(tmp_path, monkeypatch):
     edexcel = roots["pearson-edexcel/economics-a-2015"]
 
     def short(marks, label="a"):
-        # A neighbouring imperative must not leak into a selected subpart.
+        # a neighbouring imperative must not leak into a selected subpart
         task = f"({label}) Explain a mechanism.\n({marks})"
         if marks == 1:
             task += "\nA First choice\nB Second choice\nC Third choice\nD Fourth choice"
@@ -71,7 +71,7 @@ def source_corpus(tmp_path, monkeypatch):
         6: short(4) + "\n" + short(1, "b"),
         7: short(4) + "\n" + short(1, "b"),
         8: short(4), 9: short(1, "b"), 12: section_b, 26: section_c,
-        10: section_b,  # Repeated answer-page tariffs must be ignored.
+        10: section_b,  # Repeated answer-page tariffs must be ignored
     }
     _fixture_pdf(edexcel / "9ec0-01-que-20240516.pdf", paper1)
     _fixture_pdf(edexcel / "9ec0-02-que-20240521.pdf", {

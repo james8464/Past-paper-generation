@@ -1,8 +1,6 @@
-# Experimental V33 whole-assessment path; V32 remains the public default.
-#
-# Every package is reconstructed from app-owned source, including complete
-# questions, rubrics and provenance. This is not model authoring, publication
-# approval, or educational calibration. Originality remains an independent gate.
+# experimental V33 path; reconstruct full questions, rubrics and provenance from
+# app-owned source. No model-authoring, publication-approval or calibration claim;
+# originality checked separately
 
 import json
 import re
@@ -76,7 +74,7 @@ def _references(groups):
 
 
 def _build(seed, references, history):
-    # Late import keeps the legacy pipeline independent of this experimental path.
+    # late import keeps the legacy pipeline independent of this experimental path
     from Backend.Core.france.pipeline import (
         _check_exercise_plan,
         _originality,

@@ -2,9 +2,9 @@ import re
 from pathlib import Path
 
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import (
     ANSWER_FRAME_H,
     ANSWER_FRAME_Y,
     ANSWER_LINE_GAP_PT,
@@ -22,7 +22,7 @@ from pastpapergen.render_pdf import (
     _table_rows,
     render_question_paper,
 )
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text, pdf_font_names
@@ -676,9 +676,9 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     prompt_text = _normalised(question.parts[0].prompt)
     page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
 
-    # Check the response area reaches the safe footer with the heading inside
+    # check the response area reaches the safe footer with the heading inside
     # the frame. A crossed title can leave room for two extra rules, so line
-    # count alone would accept an invalid layout.
+    # count alone would accept an invalid layout
     assert _answer_rule_count(output, page_number) >= 10
     with pymupdf.open(output) as document:
         page = document[page_number - 1]

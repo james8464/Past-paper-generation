@@ -1,4 +1,4 @@
-# Check rendered content and pagination against the selected layout policy.
+# check rendered content and pagination against the selected layout policy
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ AQA_CS_SCHEME_PAGINATION = "generated-aqa-cs-paper2-mark-scheme-content-v1"
 AQA_CS_PAPER1_SCHEME_PAGINATION = "generated-aqa-cs-paper1-mark-scheme-content-v1"
 
 
-# Generated-content policy is not an observed reference-count range.
+# generated-content policy is not an observed reference-count range
 def runtime_page_count_policy(
     family: str, role: str, reference_count: int, *, paper: str | None = None
 ) -> dict:
@@ -43,7 +43,7 @@ def runtime_page_count_policy(
     return {"kind": "exact", "minimum": reference_count, "maximum": reference_count}
 
 
-# Content-driven pagination must preserve every published marking statement.
+# Content-driven pagination must preserve every published marking statement
 def _aqa_cs_printed_credit(
     pdf_path: Path, assessment_path: Path | None, reference_count: int, *, paper: str = "2"
 ) -> dict:
@@ -80,17 +80,16 @@ def _aqa_cs_printed_credit(
         return re.sub(r"\s+", "", text)
 
     def contains_credit(text: str, point: str) -> bool:
-        # Keep the extracted word boundaries: removing all whitespace lets
+        # keep the extracted word boundaries: removing all whitespace lets
         # "8;" match "18;". Optional internal spacing still accommodates line
         # wrapping and separately drawn mathematical symbols in the PDF.
         characters = normalise(point)
         if not characters:
             return False
         if re.fullmatch(r"[+\-−]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?(?:/[+\-]?\d+(?:\.\d*)?)?[;.]?", characters):
-            # A bare numerical answer is a whole printed statement, not a
-            # suffix of a signed value, decimal, fraction or expression. Keep
-            # physical lines so a preceding row heading does not become part
-            # of the number, while A./R. prefixes remain valid guidance.
+            # match a whole numeric statement, never a
+            # signed/decimal/fraction/expression suffix. Preserve lines so row headings
+            # don't join the number; A./R. guidance prefixes remain valid
             return any(
                 normalise(re.sub(r"^[AR]\.\s*", "", line.strip())) == characters
                 for line in text.splitlines()
@@ -106,9 +105,9 @@ def _aqa_cs_printed_credit(
     appendix_started = False
     with fitz.open(pdf_path) as document:
         actual_count = len(document)
-        # The five front-matter pages are followed by the renderer's Qu / Pt /
+        # the five front-matter pages are followed by the renderer's Qu / Pt /
         # guidance columns. Use those columns, not standalone digits in answers
-        # or page furniture, to recover the owner of each credit statement.
+        # or page furniture, to recover the owner of each credit statement
         for page_number in range(5, actual_count):
             page = document[page_number]
             words = page.get_text("words", sort=False)
@@ -129,9 +128,9 @@ def _aqa_cs_printed_credit(
                         or text.count("Example Python 3 solution") != 1
                         or len(text.splitlines()) < 10):
                     raise LayoutConformanceError("Content-driven CS scheme has blank or duplicate appendix padding")
-                # Read only the monospaced code, not a matching heading or prose.
-                # Preserve line order, operators and literal values; whitespace
-                # around a line is immaterial to this printed-content check.
+                # read only the monospaced code, not a matching heading or prose
+                # preserve line order, operators and literal values; whitespace
+                # around a line is immaterial to this printed-content check
                 code_lines = []
                 for block in page.get_text("dict")["blocks"]:
                     for line in block.get("lines", []):
@@ -266,12 +265,12 @@ def _edexcel_printed_credit(
             raise LayoutConformanceError(
                 f"Content-driven scheme has blank padding on page {page_number}"
             )
-        # The first three pages are the existing cover and general guidance.
+        # the first three pages are the existing cover and general guidance
         colophon = (
             normalise(text)
             in {
                 "Keldin. Independent practice material. Not produced, endorsed or approved by any examination board.",
-                # Retained packages keep their original publisher label.
+                # Retained packages keep their original publisher label
                 f"{LEGACY_PUBLISHER}. Independent practice material. Not produced, endorsed or approved by any examination board.",
             }
         )
@@ -345,7 +344,7 @@ def conform_generated_documents(
                 reference_count=int(master["page_count"]),
             )
             # Overflow retains the landscape marking grid, not the reference's
-            # portrait colophon simply because its fixed page index was reached.
+            # portrait colophon simply because its fixed page index was reached
             measured = master["page_boxes"]
             landscape = next(box for box in measured if box["media"][2] > box["media"][3])
             with fitz.open(generated_path) as document:

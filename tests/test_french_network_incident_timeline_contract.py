@@ -1,4 +1,4 @@
-# V26 adds an independently checkable second deadline to the incident.
+# V26 adds an independently checkable second deadline to the incident
 
 from copy import deepcopy
 

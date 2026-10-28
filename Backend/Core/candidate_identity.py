@@ -1,4 +1,4 @@
-# Canonical, evidence-free identity for difficulty-review candidates.
+# Canonical, evidence-free identity for difficulty-review candidates
 
 from __future__ import annotations
 
@@ -11,10 +11,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 CANDIDATE_PROJECTION_VERSION = "difficulty-candidate-v1"
 
-# Exclude review results and host-computed identities from candidate content.
-# Every other field, including authoring_context contracts,
-# remains identity-bearing. The overloaded ``provenance`` key is handled by its
-# candidate-source role below.
+# review results and host-computed IDs aren't candidate content; all other fields,
+# including authoring_context, affect identity. Handle overloaded ``provenance`` by its
+# candidate-source role below
 EVIDENCE_FREE_EXCLUDED_FIELDS = frozenset(
     {
         "candidate_content_identity",
@@ -27,13 +26,13 @@ EVIDENCE_FREE_EXCLUDED_FIELDS = frozenset(
 )
 
 # ``provenance`` is overloaded: question/authoring provenance is review metadata,
-# while these typed candidate-source containers use it as public source content.
+# while these typed candidate-source containers use it as public source content
 _SOURCE_PROVENANCE_ROLES = frozenset(
     {"rendered_stimulus", "source_instance", "stimulus"}
 )
 
 
-# Host projection with separate model-visible and identity-bearing views.
+# Host projection with separate model-visible and identity-bearing views
 class DifficultyCandidateProjection(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True)
@@ -70,7 +69,7 @@ def difficulty_candidate_projection(
     )
 
 
-# Project a shared-route item with its candidate-visible parent source.
+# project a shared-route item with its candidate-visible parent source
 def shared_difficulty_candidate_projection(
     *,
     question: Any,
@@ -89,7 +88,7 @@ def shared_difficulty_candidate_projection(
     )
 
 
-# Bind Edexcel source and selected part without duplicate parent credit.
+# bind Edexcel source and selected part without duplicate parent credit
 def edexcel_difficulty_candidate_projection(
     *,
     question: Any,

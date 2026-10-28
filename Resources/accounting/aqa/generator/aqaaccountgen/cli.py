@@ -1,4 +1,4 @@
-# Connect AQA Accounting generation to the shared backend workflow.
+# Connect AQA Accounting generation to the shared backend workflow
 
 from __future__ import annotations
 

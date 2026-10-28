@@ -1,4 +1,4 @@
-# Publish French assessments using shared providers, events and render transactions.
+# Publish French assessments using shared providers, events and render transactions
 
 import json
 import os
@@ -200,7 +200,7 @@ def validate_pdf(path: Path):
             raise ValueError("Crédits ou statut du document manquants")
 
 
-# Compare extracted printed facts with the locked first-exercise contract.
+# compare extracted printed facts with the locked first-exercise contract
 def validate_contract_pdf(
     path: Path,
     contract: GraphTreeContract,
@@ -289,7 +289,7 @@ def validate_contract_pdf(
                     raise ValueError(f"Barème {question.id} révélé dans le sujet")
 
 
-# Check every printed V17 graph/tree fact, question and credit.
+# check every printed V17 graph/tree fact, question and credit
 def validate_graph_tree_depth_contract_pdf(
     path: Path,
     contract: GraphTreeDepthContract,
@@ -391,7 +391,7 @@ def validate_graph_tree_depth_contract_pdf(
                 )
 
 
-# Fail closed on V20 printed facts, staging, answers and exact credit.
+# Fail closed on V20 printed facts, staging, answers and exact credit
 def validate_graph_resilience_pdf(
     path: Path,
     contract: GraphResilienceContract,
@@ -513,7 +513,7 @@ def validate_graph_resilience_pdf(
                 raise ValueError(f"Graph resilience rubric {question.id} leaked")
 
 
-# Bind every V22 printed stage and credit to its immutable route facts.
+# bind every V22 printed stage and credit to its immutable route facts
 def validate_graph_route_trace_pdf(
     path: Path,
     contract: GraphRouteTraceContract,
@@ -644,7 +644,7 @@ def validate_graph_route_trace_pdf(
                 raise ValueError(f"Route trace rubric {question.id} leaked")
 
 
-# Bind V30's public catalogue/helper and all answer/credit phases.
+# bind V30's public catalogue/helper and all answer/credit phases
 def _validate_route_selection_pdf(
     path, data, exercise, *, correction, coherent_material_flow
 ):
@@ -806,7 +806,7 @@ def _validate_route_selection_pdf(
         raise ValueError("Route selection solution code leaked")
 
 
-# Bind V25's two ordered outages, working surfaces, answers and credit.
+# bind V25's two ordered outages, working surfaces, answers and credit
 def validate_graph_two_outage_pdf(
     path: Path,
     contract: GraphTwoOutageContract,
@@ -1024,7 +1024,7 @@ def validate_graph_two_outage_pdf(
                 raise ValueError(f"Two-outage rubric {question.id} leaked")
 
 
-# Check that both PDF roles print the exact locked database exercise.
+# check that both PDF roles print the exact locked database exercise
 def validate_database_contract_pdf(
     path: Path,
     contract: DatabaseContract,
@@ -1107,7 +1107,7 @@ def validate_database_contract_pdf(
                 raise ValueError(f"Database rubric {question.id} leaked into paper")
 
 
-# Fail closed on missing V2 facts, ten tasks, answers or rubric credits.
+# Fail closed on missing V2 facts, ten tasks, answers or rubric credits
 def validate_database_depth_contract_pdf(
     path: Path,
     contract: DatabaseDepthContract,
@@ -1184,7 +1184,7 @@ def validate_database_depth_contract_pdf(
                 )
 
 
-# Require V2 facts and each V19 reasoning phase in its intended role.
+# require V2 facts and each V19 reasoning phase in its intended role
 def validate_database_reasoning_pdf(
     path: Path,
     contract: DatabaseDepthContract,
@@ -1208,9 +1208,9 @@ def validate_database_reasoning_pdf(
         if update_sql in flat:
             raise ValueError("Database reasoning update answer leaked")
         for question in exercise.questions:
-            # The old whole-answer check cannot see a leaked result or trace step.
-            # These finite V19 answer-value patterns do not occur in the source
-            # tables or prompts, so each is a safe candidate-facing rejection.
+            # the old whole-answer check cannot see a leaked result or trace step
+            # these finite V19 answer-value patterns don't occur in the source
+            # tables or prompts, so each is a safe candidate-facing rejection
             answer = " ".join(question.answer.split())
             fragments = re.findall(
                 r"\b(?:10[1-9]\s*:\s*[A-Za-zÀ-ÿ]+(?:\s*\(id_cat\s*=\s*\d+\))?"
@@ -1261,7 +1261,7 @@ def validate_database_reasoning_pdf(
                     )
 
 
-# Bind V24 printed facts, staged working surfaces and exact correction credit.
+# bind V24 printed facts, staged working surfaces and exact correction credit
 def validate_database_reconciliation_pdf(
     path: Path,
     contract: DatabaseReconciliationContract,
@@ -1415,7 +1415,7 @@ def validate_database_reconciliation_pdf(
                 previous_credit = at
 
 
-# Bind V21 printed incident facts, staged working tables and exact credit.
+# bind V21 printed incident facts, staged working tables and exact credit
 def validate_database_audit_pdf(
     path: Path,
     contract: DatabaseAuditContract,
@@ -1595,7 +1595,7 @@ def validate_database_audit_pdf(
             raise ValueError(f"Incident-audit answer {question.id} leaked")
 
 
-# Require exact app-owned network evidence in each published PDF role.
+# require exact app-owned network evidence in each published PDF role
 def validate_network_contract_pdf(
     path: Path,
     contract: NetworkContract,
@@ -1674,7 +1674,7 @@ def validate_network_contract_pdf(
                 raise ValueError(f"Network rubric {question.id} leaked into paper")
 
 
-# Fail closed if a v15 PDF omits locked facts or exposes an answer.
+# Fail closed if a v15 PDF omits locked facts or exposes an answer
 def validate_network_depth_contract_pdf(
     path: Path,
     contract: NetworkDepthContract,
@@ -1801,7 +1801,7 @@ def validate_network_depth_contract_pdf(
                 raise ValueError(f"Network depth rubric {question.id} leaked")
 
 
-# Reject V18 PDFs whose case facts or per-question roles do not print.
+# reject V18 PDFs whose case facts or per-question roles don't print
 def validate_network_reasoning_contract_pdf(
     path: Path,
     contract: NetworkReasoningContract,
@@ -1941,7 +1941,7 @@ def validate_network_reasoning_contract_pdf(
                 raise ValueError(f"Network reasoning rubric {question.id} leaked")
 
 
-# Bind V23's three displayed incident stages and answer/credit roles.
+# bind V23's three displayed incident stages and answer/credit roles
 def validate_network_incident_pdf(
     path: Path,
     contract: NetworkIncidentContract,
@@ -2120,7 +2120,7 @@ def validate_network_incident_pdf(
                 raise ValueError(f"Network incident credit {question.id} missing")
 
 
-# Bind V26's printed chronology, questions and correction credits.
+# bind V26's printed chronology, questions and correction credits
 def validate_network_incident_timeline_pdf(
     path: Path,
     contract: NetworkIncidentTimelineContract,
@@ -2264,7 +2264,7 @@ def validate_network_incident_timeline_pdf(
                 )
 
 
-# Read recent, valid local candidate text, independently of seed ordering.
+# read recent, valid local candidate text, independently of seed ordering
 def load_originality_history(output: Path) -> list[str]:
     history: list[str] = []
     if not output.is_dir():
@@ -2286,7 +2286,7 @@ def load_originality_history(output: Path) -> list[str]:
             continue
     for _, _, assessment in sorted(candidates, reverse=True):
         try:
-            # Recheck links in case a bundle changed while the list was built.
+            # Recheck links in case a bundle changed while the list was built
             if assessment.is_symlink() or assessment.parent.is_symlink():
                 continue
             package = json.loads(assessment.read_text(encoding="utf-8"))
@@ -2297,8 +2297,8 @@ def load_originality_history(output: Path) -> list[str]:
                 or not isinstance(package.get("exercises"), list)
             ):
                 continue
-            # Validate the entire bundle before taking any text from it. A bad
-            # later exercise must not leave partial history behind.
+            # validate the entire bundle before taking any text from it. A bad
+            # later exercise must not leave partial history behind
             texts = [
                 exercise_candidate_text(NSIExercise.model_validate(raw))
                 for raw in package["exercises"]
@@ -2311,7 +2311,7 @@ def load_originality_history(output: Path) -> list[str]:
     return history
 
 
-# Never silently render an unknown French package with an older validator.
+# never silently render an unknown French package with an older validator
 def network_pdf_contract_version(prompt_version: str) -> str:
     if prompt_version == EXPANDED_VERSION:
         return "v35"
@@ -2415,8 +2415,8 @@ def handle_generate_assessment(args) -> int:
                 "Le catalogue de références manque. Préparez les sources françaises avant de créer un sujet."
             )
         reference_index_sha256 = sha256(args.reference_index.read_bytes()).hexdigest()
-        # Explicit Ollama mode remains available for historical diagnostic labels.
-        # The public CLI defaults to app-owned authoring with no model dependency.
+        # Explicit Ollama mode remains available for historical diagnostic labels
+        # the public CLI defaults to app-owned authoring with no model dependency
         application_owned = getattr(args, "provider", "ollama") == "application-owned"
         excluded_families = getattr(args, "exclude_family", [])
         if excluded_families and not application_owned:

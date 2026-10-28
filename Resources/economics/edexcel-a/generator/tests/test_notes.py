@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pastpapergen.notes import (
+from keldin_edexcel.notes import (
     note_context_for_topic,
     note_file_for_topic,
     note_points_for_topic,

@@ -1,4 +1,4 @@
-# French NSI authoring records and prompts, written for the French curriculum.
+# French NSI authoring records and prompts, written for the French curriculum
 
 import json
 from decimal import Decimal
@@ -20,7 +20,7 @@ TOPICS = frozenset(
 
 # Capability identifiers are a compact, product-owned transcription of the
 # official Terminale NSI programme. They keep each generated question tied to
-# an assessable capability instead of treating a broad chapter name as proof.
+# an assessable capability instead of treating a broad chapter name as proof
 CURRICULUM_OBJECTIVES = {
     "SD-INTERFACE": (
         "structures-donnees",
@@ -137,8 +137,8 @@ LANGUAGE_RUBRIC_2027 = {
         {"id": "satisfaisant", "label": "Satisfaisant"},
         {"id": "tres_satisfaisant", "label": "Très satisfaisant"},
     ],
-    # The official annex defines observables, not a numerical conversion. This
-    # holistic conversion is deliberately labelled as a product proposal.
+    # the official annex defines observables, not a numerical conversion. This
+    # holistic conversion is deliberately labelled as a product proposal
     "indicative_points": {
         "tres_insuffisant": "0",
         "insuffisant": "0.5",
@@ -345,7 +345,7 @@ class NSIExercise(BaseModel):
 AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
 
 
-# Require generation-only fields without changing legacy package readers.
+# require generation-only fields without changing legacy package readers
 def authoring_schema() -> dict:
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
@@ -355,7 +355,7 @@ def authoring_schema() -> dict:
     return schema
 
 
-# Reject omitted generation fields before legacy-compatible defaults apply.
+# reject omitted generation fields before legacy-compatible defaults apply
 def require_authoring_fields(candidate: dict) -> None:
     if (
         not isinstance(candidate, dict)

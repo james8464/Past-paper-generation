@@ -1,4 +1,4 @@
-# Keldin build targets and signing identities; prior local data is imported at startup.
+# Keldin build targets and signing identities; prior local data is imported at startup
 
 name: Keldin
 options:

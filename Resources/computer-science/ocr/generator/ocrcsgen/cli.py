@@ -1,4 +1,4 @@
-# Connect OCR Computer Science generation to the shared backend workflow.
+# Connect OCR Computer Science generation to the shared backend workflow
 
 from __future__ import annotations
 

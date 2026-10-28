@@ -1,1 +1,1 @@
-# French assessment policies; deliberately separate from UK AO conventions.
+# French assessment policies; deliberately separate from UK AO conventions

@@ -1,4 +1,4 @@
-# Record artifact hashes, runtime identities and the evidence behind qualification gates.
+# record artifact hashes, runtime identities and the evidence behind qualification gates
 
 from __future__ import annotations
 

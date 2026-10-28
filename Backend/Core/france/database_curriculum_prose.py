@@ -1,6 +1,6 @@
-# V34 SQL stays within the core Terminale clauses; Python builds the reports.
+# V34 SQL stays within the core Terminale clauses; Python builds the reports
 #
-# The historical V32 catalogue and its replay hashes are left unchanged.
+# the historical V32 catalogue and its replay hashes are left unchanged
 
 import sqlite3
 
@@ -29,7 +29,7 @@ ORDER BY a.reference, m.instant;""",
 }
 
 
-# Execute only the fixed query for this app-authored source family.
+# execute only the fixed query for this app-authored source family
 def source_rows(seed):
     case = build_case(seed)
     with sqlite3.connect(":memory:") as database:

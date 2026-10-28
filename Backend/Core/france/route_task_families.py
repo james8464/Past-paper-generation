@@ -1,4 +1,4 @@
-# Task-family building blocks checked independently without running candidate code.
+# Task-family building blocks checked independently without running candidate code
 
 import json
 from copy import deepcopy
@@ -179,7 +179,7 @@ def family_for_seed(seed):
     return FAMILIES[(seed - 270100) % len(FAMILIES)]
 
 
-# Derive public cases with edge-set operations independently of the solution algorithms.
+# derive public cases with edge-set operations independently of the solution algorithms
 def family_expected(data):
     facts = route_selection_expected(data)
     family = family_for_seed(data["seed"])
@@ -190,7 +190,7 @@ def family_expected(data):
         i for i, route in enumerate(edges) if route.isdisjoint(map(frozenset, closed))
     ]
     # Inclusive boundary appears in the actual case; a second valid but more
-    # expensive route is excluded when present. No hidden numerical input.
+    # expensive route is excluded when present. No hidden numerical input
     budget = min(costs[i] for i in available)
     selected = min(available, key=lambda i: costs[i])
     third = routes[selected][-2:]

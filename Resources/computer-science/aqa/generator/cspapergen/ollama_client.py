@@ -1,4 +1,4 @@
-# Author and review AQA Computer Science items through the shared model interface.
+# Author and review AQA Computer Science items through the shared model interface
 
 from __future__ import annotations
 
@@ -262,7 +262,7 @@ def _difficulty_candidate(question: Question, part: QuestionPart) -> object:
     )
 
 
-# Keep independent work for demand review, never its private CPU contract.
+# keep independent work for demand review, never its private CPU contract
 def _difficulty_solution(solution: object) -> dict[str, object]:
     public_solution = solution.model_dump(mode="json")
     public_solution.pop("open_credit_contract", None)
@@ -506,7 +506,7 @@ def _sql_attempt_audit(
     )
 
 
-# A bounded SQL correction failed, retaining both private attempts.
+# a bounded SQL correction failed, retaining both private attempts
 class SQLProgramValidationError(ValueError):
 
     def __init__(
@@ -546,7 +546,7 @@ def _uses_scenario_only_generation(question: Question) -> bool:
     return authoring_route(question.model_dump(mode="json")) == "scenario-only"
 
 
-# Keep all source-coupled tasks immutable, without claiming authorship.
+# keep all source-coupled tasks immutable, without claiming authorship
 def _uses_review_only_generation(question: Question) -> bool:
     return authoring_route(question.model_dump(mode="json")) == "reviewed-fixed"
 

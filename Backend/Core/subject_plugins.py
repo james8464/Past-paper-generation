@@ -1,4 +1,4 @@
-# Register and discover the supported subject validation engines.
+# Register and discover the supported subject validation engines
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from Backend.Core.subject_contracts import SubjectPlugin as SubjectPlugin
 from Backend.Core.subject_contracts import SubjectValidation as SubjectValidation
 
 
-# Safe baseline plugin for families with validation in their own contracts.
+# Safe baseline plugin for families with validation in their own contracts
 @dataclass(frozen=True)
 class ContractSubjectPlugin:
 
@@ -93,7 +93,7 @@ def _normalise_identifier(identifier: str) -> str:
     return normalized
 
 
-# Subject engines depend only on subject_contracts, never on this registry.
+# subject engines depend only on subject_contracts, never on this registry
 from Backend.Core.subjects.biology import BiologyPlugin  # noqa: E402
 from Backend.Core.subjects.chemistry import ChemistryPlugin  # noqa: E402
 from Backend.Core.subjects.computer_science import ComputerSciencePlugin  # noqa: E402

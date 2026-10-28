@@ -1,4 +1,4 @@
-# Build and package the Keldin application and its standalone backend.
+# build and package the Keldin application and its standalone backend
 
 APP_NAME := Keldin
 APP_PROJECT := Keldin.xcodeproj
@@ -11,7 +11,7 @@ APP_SANDBOX_ENABLED ?= NO
 CODE_SIGN_ENTITLEMENTS_FILE ?= Keldin/KeldinDirect.entitlements
 CODE_SIGN_INJECT_BASE_ENTITLEMENTS ?= YES
 # Leave Xcode's normal signing selection intact unless a release operator supplies
-# an identity and team. The backend build uses Xcode's expanded identity as well.
+# an identity and team. The backend build uses Xcode's expanded identity as well
 SIGNING_IDENTITY ?=
 SIGNING_TEAM ?=
 SIGNING_STYLE ?=

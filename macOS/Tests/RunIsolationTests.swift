@@ -19,8 +19,8 @@ final class RunIsolationTests: XCTestCase {
                     to: historyURL.deletingLastPathComponent().appendingPathComponent("preserved-history")
                 )
             }
-            // A regular file at the directory path fails reliably, including for
-            // privileged test runners, without changing filesystem permissions.
+            // a regular file at the directory path fails reliably, including for
+            // privileged test runners, without changing filesystem permissions
             try Data("not a directory".utf8).write(to: historyURL)
             let previousJob = coordinator.activeJob
             let previousStatus = coordinator.status
@@ -402,8 +402,8 @@ final class RunIsolationTests: XCTestCase {
     }
 }
 
-// Each instance is driven synchronously by one main-actor test. Captured callbacks
-// retain the production main-actor contract without launching a helper or model.
+// each instance is driven synchronously by one main-actor test. Captured callbacks
+// retain the production main-actor contract without launching a helper or model
 private final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     struct Request {
         let onEvent: @Sendable @MainActor (BackendEvent) -> Void
@@ -429,7 +429,7 @@ private final class ControlledProcess: Process, @unchecked Sendable {
 }
 
 // Continuations may be installed on a background executor. Protect their queue
-// while tests drive the public refresh and generation actions on the main actor.
+// while tests drive the public refresh and generation actions on the main actor
 private final class DeferredRefreshBackend: BackendRunning, @unchecked Sendable {
     let runs = ControlledRunBackend()
     let statusStarted = XCTestExpectation(description: "Ollama status collection started")

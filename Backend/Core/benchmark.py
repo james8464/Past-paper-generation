@@ -1,4 +1,4 @@
-# Measure local performance and emit benchmark events for the app.
+# Measure local performance and emit benchmark events for the app
 
 from __future__ import annotations
 
@@ -235,7 +235,7 @@ def cpu_probe(payload: bytes) -> float:
 
 
 def disk_probe(output_dir: Path, payload: bytes) -> tuple[float, float, float, float]:
-    fd, raw_path = tempfile.mkstemp(prefix="past-paper-benchmark-", suffix=".bin", dir=output_dir)
+    fd, raw_path = tempfile.mkstemp(prefix="keldin-benchmark-", suffix=".bin", dir=output_dir)
     path = Path(raw_path)
     try:
         with os.fdopen(fd, "wb", closefd=True) as handle:
@@ -262,7 +262,7 @@ def small_file_latency_ms(output_dir: Path) -> float:
     count = 12
     started = time.perf_counter()
     for index in range(count):
-        path = output_dir / f".past-paper-small-{os.getpid()}-{index}.tmp"
+        path = output_dir / f".keldin-small-{os.getpid()}-{index}.tmp"
         try:
             path.write_bytes(payload)
             _ = path.read_bytes()
@@ -444,7 +444,7 @@ def power_status() -> tuple[str, float | None, float]:
 
 
 def pdf_probe(output_dir: Path) -> float:
-    fd, raw_path = tempfile.mkstemp(prefix="past-paper-pdf-benchmark-", suffix=".pdf", dir=output_dir)
+    fd, raw_path = tempfile.mkstemp(prefix="keldin-pdf-benchmark-", suffix=".pdf", dir=output_dir)
     os.close(fd)
     path = Path(raw_path)
     pages = 4

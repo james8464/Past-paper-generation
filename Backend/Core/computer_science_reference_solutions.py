@@ -1,4 +1,4 @@
-# Shared reference snippets used by the renderer and publication integrity gate.
+# shared reference snippets used by the renderer and publication integrity gate
 
 from __future__ import annotations
 

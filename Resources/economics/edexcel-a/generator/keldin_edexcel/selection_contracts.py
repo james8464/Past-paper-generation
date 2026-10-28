@@ -1,4 +1,4 @@
-# Repair source-reading tasks without setting a general selected-response demand policy.
+# Repair source-reading tasks without setting a general selected-response demand policy
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ def selection_contract(part, source):
             "Every plotted reading is below zero, so the balance is never positive.",
         ]
     elif kind == "opportunity_cost_ppc_table":
-        # Read the transposed table by the requested capital-output labels.
+        # read the transposed table by the requested capital-output labels
         initial = next(i for i, c in enumerate(source.rows[1]) if c.number == 20)
         final = next(i for i, c in enumerate(source.rows[1]) if c.number == 40)
         cost = source.cell(0, initial, "units") - source.cell(0, final, "units")

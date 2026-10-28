@@ -1,4 +1,4 @@
-# Define PDF dimensions, style tokens and renderer-independent document records.
+# Define PDF dimensions, style tokens and renderer-independent document records
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 
 
-# A measured distance stored in PDF points.
+# a measured distance stored in PDF points
 @dataclass(frozen=True, order=True)
 class Length:
 
@@ -182,7 +182,7 @@ class RenderEvidence:
     warnings: tuple[str, ...] = ()
 
 
-# Versioned capabilities declared by a family renderer.
+# versioned capabilities declared by a family renderer
 @dataclass(frozen=True)
 class RendererContract:
 

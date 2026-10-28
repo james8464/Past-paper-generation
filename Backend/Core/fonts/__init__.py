@@ -1,4 +1,4 @@
-# Register bundled font faces and use controlled fallbacks when a face is unavailable.
+# Register bundled font faces and use controlled fallbacks when a face is unavailable
 
 from __future__ import annotations
 
@@ -106,7 +106,7 @@ def register_font(font_name: str, fallback: str = "Helvetica") -> str:
             except Exception:
                 continue
     # Standard PDF fonts are face names, not TTF file paths. Register an alias
-    # so renderers can keep using their semantic font name on non-macOS hosts.
+    # so renderers can keep using their semantic font name on non-macOS hosts
     fallback_name = _standard_fallback(font_name, fallback)
     pdfmetrics.registerFont(pdfmetrics.Font(font_name, fallback_name, "WinAnsiEncoding"))
     return font_name

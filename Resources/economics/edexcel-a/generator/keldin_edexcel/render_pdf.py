@@ -1,6 +1,6 @@
-# Render Edexcel Economics papers and marking guidance using the shared PDF components.
+# render Edexcel Economics papers and marking guidance using the shared PDF components
 
-# The project-root bootstrap must precede imports from the shared backend.
+# the project-root bootstrap must precede imports from the shared backend
 
 from __future__ import annotations
 
@@ -51,11 +51,16 @@ from Backend.Core.overlay.graphs import (
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
 from Backend.Core.subjects.economics_contracts import EconomicsSource
-from pastpapergen.exam_dates import economics_exam_schedule
-from pastpapergen.models import GraphParams, PaperBlueprint, QuestionBlueprint, Syllabus
-from pastpapergen.notes import note_points_for_topic
-from pastpapergen.source_cases import GENERIC_SOURCE_ATTRIBUTION
-from pastpapergen.stimulus_data import line_chart_data, table_rows
+from keldin_edexcel.exam_dates import economics_exam_schedule
+from keldin_edexcel.models import (
+    GraphParams,
+    PaperBlueprint,
+    QuestionBlueprint,
+    Syllabus,
+)
+from keldin_edexcel.notes import note_points_for_topic
+from keldin_edexcel.source_cases import GENERIC_SOURCE_ATTRIBUTION
+from keldin_edexcel.stimulus_data import line_chart_data, table_rows
 
 ANSWER_LINE_GAP_PT = L.answer_line_gap
 ANSWER_LINE_COLOR_HEX = L.answer_line_color
@@ -202,7 +207,7 @@ def _count_pages(blueprint: PaperBlueprint) -> int:
         buf.close()
 
 
-# Match Pearson question-paper bleed and crop boxes without changing A4 content.
+# match Pearson question-paper bleed and crop boxes without changing A4 content
 def _apply_edexcel_page_boxes(output_path: Path) -> None:
     try:
         import pymupdf as fitz
@@ -758,7 +763,7 @@ def _draw_paper_3_source_page(
     )
 
 
-# Draw figures from source cells so the chart matches the printed data.
+# draw figures from source cells so the chart matches the printed data
 def _draw_case_source_figure(pdf, x, y, number, source):
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(x, y, f"Figure {number}: illustrative case information")
@@ -1386,8 +1391,8 @@ def _draw_section_intro(
     y: float,
 ) -> float:
     width, _ = A4
-    # Section titles need a full heading inset, not the writing-line origin.
-    # Keep continuation-page writing space and bottom-safe geometry unchanged.
+    # Section titles need a full heading inset, not the writing-line origin
+    # keep continuation-page writing space and bottom-safe geometry unchanged
     y = min(y, ANSWER_FRAME_Y + ANSWER_FRAME_H - 42)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawCentredString(width / 2, y, f"SECTION {section}")
@@ -1529,8 +1534,8 @@ def _draw_section_a_question(
     y: float,
 ) -> tuple[int, float]:
     width, _ = A4
-    # Source-page stems need clearance from the rounded frame. Do not change
-    # the starting point of blank answer pages or their available writing space.
+    # source-page stems need clearance from the rounded frame. don't change
+    # the starting point of blank answer pages or their available writing space
     y = min(y, 787.0)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawString(x, y, question.number)
@@ -1611,15 +1616,15 @@ def _draw_section_a_question(
         mcq_height = _estimate_mcq_height(second_part) - 18
         # Longer generated source text and MCQ options can otherwise force a
         # whole extra page. Preserve eleven rules when possible, with nine as
-        # the minimum on-page response space for this four-mark part.
+        # the minimum on-page response space for this four-mark part
         for candidate_count in (11, 10, 9):
             projected_y = y - prompt_rows * BODY_LEADING_PT - 24 - candidate_count * ANSWER_LINE_GAP_PT - 10
             if projected_y - 2 - mcq_height >= SECTION_A_FOOTER_SAFE_Y:
                 written_count = candidate_count
                 break
         y = _draw_written_part_with_line_count(pdf, first_part, x, y, count=written_count)
-        # The estimate includes an extra 18pt reserve. Here the total is drawn
-        # above the returned baseline, so use the actual MCQ content height.
+        # the estimate includes an extra 18pt reserve. Here the total is drawn
+        # above the returned baseline, so use the actual MCQ content height
         if y - 2 - mcq_height < SECTION_A_FOOTER_SAFE_Y:
             _draw_question_footer(pdf, blueprint, page_number)
             pdf.showPage()
@@ -1638,10 +1643,9 @@ def _draw_section_a_question(
         pdf.showPage()
         page_number += 1
         y = _prepare_answer_page(pdf, blueprint, page_number)
-        # The official three-part response page starts below the frame header and
-        # uses the full writable height: 11 rules for working, then 9 for the
-        # explanation. Preserve that measured rhythm even when the generated
-        # calculation stem is one line shorter than the reference example.
+        # measured three-part response area below the header: 11 working rules, then 9
+        # explanation rules. Keep the full writable height even when the generated stem
+        # is one line shorter
         y -= 63
         for index, part in enumerate(question.parts[1:]):
             part_y = y - 4 if index == 0 else y + 6
@@ -1739,8 +1743,8 @@ def _draw_draw_part_with_axes(
     axis_width = min(BLANK_AXIS_WIDTH_PT, width - x - 78)
     target_height = min(BLANK_AXIS_HEIGHT_PT, max_axis_height or BLANK_AXIS_HEIGHT_PT)
     axis_height = min(target_height, max(180, y - (SECTION_A_FOOTER_SAFE_Y + 35)))
-    # The x-axis caption sits 14 points below the axis. Reserve its descent
-    # and a gap before the next prompt's right-aligned mark annotation.
+    # the x-axis caption sits 14 points below the axis. Reserve its descent
+    # and a gap before the next prompt's right-aligned mark annotation
     return _draw_blank_answer_axes(pdf, x + 34, y, axis_width, axis_height, x_label=x_label, y_label=y_label) - 30
 
 
@@ -2010,7 +2014,7 @@ _GRAPH_FUNCS: dict[str, object] = {
 }
 
 
-# Expose the same source values and dispatch rules used to draw a figure.
+# expose the same source values and dispatch rules used to draw a figure
 def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
     if question.source_instance:
         source = question.source_instance
@@ -2197,7 +2201,7 @@ def _table_rows(kind: str) -> list[list[str]]:
     return table_rows(kind)
 
 
-# Actual numeric ordinate mapping, with exact data readings and time labels.
+# Actual numeric ordinate mapping, with exact data readings and time labels
 def _draw_instance_chart(pdf: canvas.Canvas, x: float, y: float, source: EconomicsSource) -> float:
     values = [float(value) for value in source.values]
     width, height = 408, 126
@@ -2237,7 +2241,7 @@ def _draw_instance_chart(pdf: canvas.Canvas, x: float, y: float, source: Economi
         pdf.circle(px, py, 1.5, stroke=1, fill=1)
         pdf.drawCentredString(px, py + 5, format(source.values[i], "f"))
         label = source.labels[i]
-        # Full identifiers remain visible, split across two lines if necessary.
+        # full identifiers remain visible, split across two lines if necessary
         pieces = label.rsplit(" ", 1)
         pdf.drawCentredString(px, bottom - 12, pieces[0])
         if len(pieces) == 2:
@@ -2618,8 +2622,8 @@ def render_mark_scheme(
     _draw_mark_scheme_qualification_page(pdf, blueprint, 57, height)
     pdf.showPage()
 
-    # This follows the left text column in the published reference material,
-    # while keeping the content and identity unmistakably independent.
+    # this follows the left text column in the published reference material,
+    # while keeping the content and identity unmistakably independent
     guidance_margin = 84
     pdf.setFont(MS_FONT_BOLD, 14)
     pdf.drawString(guidance_margin, height - 155, "General Marking Guidance")
@@ -2671,7 +2675,7 @@ def render_mark_scheme(
     _cleanup_graph_cache()
 
 
-# Attach stable, searchable metadata to every released PDF role.
+# attach stable, searchable metadata to every released PDF role
 def _set_pdf_metadata(
     pdf: canvas.Canvas,
     blueprint: PaperBlueprint,
@@ -2914,7 +2918,7 @@ def _mark_scheme_rows(blueprint: PaperBlueprint, syllabus: Syllabus) -> list[dic
     return rows
 
 
-# Render each contract criterion as a discrete, visible examiner point.
+# render each contract criterion as a discrete, visible examiner point
 def _source_backed_mark_scheme_lines(item) -> list[str]:
     criteria = []
     for point in item.mark_scheme:
@@ -2942,7 +2946,7 @@ def _source_backed_mark_scheme_lines(item) -> list[str]:
     ]
 
 
-# Keep the two-mark calculation on its reference-matched single page.
+# keep the two-mark calculation on its reference-matched single page
 def _paper_two_short_calculation_lines(question, part, topic) -> list[str]:
 
     return [
@@ -2962,7 +2966,7 @@ def _paper_two_short_calculation_lines(question, part, topic) -> list[str]:
     ]
 
 
-# Match the three-page knowledge, analysis and evaluation structure.
+# match the three-page knowledge, analysis and evaluation structure
 def _paper_one_fifteen_mark_scheme_lines(question, topic) -> list[str]:
 
     indicative = _scheme_bullets(
@@ -3016,7 +3020,7 @@ def _paper_one_five_mark_diagram_lines(question, topic) -> list[str]:
     ]
 
 
-# Keep four-mark short answers concise enough for the measured page rhythm.
+# keep four-mark short answers concise enough for the measured page rhythm
 def _paper_one_section_a_mark_scheme_lines(question, part, topic) -> list[str]:
 
     if part.command_word == "draw":
@@ -3046,7 +3050,7 @@ def _paper_one_section_a_mark_scheme_lines(question, part, topic) -> list[str]:
     ]
 
 
-# Use the four-page analysis/evaluation rhythm of the current Paper 2 scheme.
+# use the four-page analysis/evaluation rhythm of the current Paper 2 scheme
 def _paper_two_extended_mark_scheme_lines(question, topic) -> list[str]:
 
     indicative = _scheme_bullets(

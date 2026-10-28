@@ -1,4 +1,4 @@
-# Render OCR Computer Science papers and marking guidance using the shared PDF components.
+# render OCR Computer Science papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -96,8 +96,8 @@ BLANK_QUESTION_PAGES = {
     ("paper_2", "7"),
 }
 
-# Each tuple is (top-level question index, part index, segment, segment count).
-# The plans reproduce the June 2024 mark-scheme question boundaries page for page.
+# each tuple is (top-level question index, part index, segment, segment count)
+# the plans reproduce the June 2024 mark-scheme question boundaries page for page
 MARK_SCHEME_PAGE_PLANS = {
     "paper_1": [
         [(0, 0, 1, 1), (0, 1, 1, 1), (0, 2, 1, 1)],
@@ -391,8 +391,8 @@ def _scheme_page_table(
         )
         for row in rows[1:]
     ]
-    # Use the actual landscape frame, leaving its padding and table header.
-    # When complete credit exceeds it, the caller creates a continuation page.
+    # use the actual landscape frame, leaving its padding and table header
+    # When complete credit exceeds it, the caller creates a continuation page
     maximum_body = OCR_MARK_SCHEME_LANDSCAPE_SIZE[1] - 37 * mm - 12 - 8 * mm
     body_height = max(body_height, sum(needed))
     if body_height > maximum_body:
@@ -431,16 +431,16 @@ def _scheme_answer(
 ) -> Paragraph:
     points = _credited_scheme_points(question)
     if question.authoring_context.get("cs_input_contract"):
-        # Closed outputs are exhaustive, not illustrative bullets: truncating a
-        # trace or conversion can remove the only published final answer.
+        # closed outputs are exhaustive, not illustrative bullets: truncating a
+        # trace or conversion can remove the only published final answer
         selected = _observable_credit_points(question) or points
     elif segment_count > 1:
         chunk_size = max(1, math.ceil(len(points) / segment_count))
         start = (segment - 1) * chunk_size
         selected = points[start : start + chunk_size]
     else:
-        # Specific credited features are not an indicative sample: a prose or
-        # programming rubric must be as complete as a closed numeric answer.
+        # specific credited features are not an indicative sample: a prose or
+        # programming rubric must be as complete as a closed numeric answer
         selected = _observable_credit_points(question) or points
     prompt = (
         escape(question.prompt)
@@ -448,8 +448,8 @@ def _scheme_answer(
         else "<b>Indicative content continued</b>"
     )
     if item_count > 1 or question.authoring_context.get("cs_input_contract"):
-        # The candidate has the full source. A scheme's closed answer must not
-        # be squeezed out by repeating that source/question in every row.
+        # the candidate has the full source. A scheme's closed answer must not
+        # be squeezed out by repeating that source/question in every row
         prompt = ""
     bullets = "<br/>".join(f"• {escape(point)}" for point in selected)
     return Paragraph(
@@ -476,7 +476,7 @@ def _scheme_guidance(
     return "<br/>".join(escape(point) for point in guidance)
 
 
-# Keep credit-bearing content in the answer column, once and in full.
+# keep credit-bearing content in the answer column, once and in full
 def _credited_scheme_points(question: GeneratedQuestion) -> list[str]:
     points = [
         point.text
@@ -486,7 +486,7 @@ def _credited_scheme_points(question: GeneratedQuestion) -> list[str]:
     return points or question.mark_scheme
 
 
-# Keep a closed answer exhaustive while excluding examiner-only notes.
+# keep a closed answer exhaustive while excluding examiner-only notes
 def _observable_credit_points(question: GeneratedQuestion) -> list[str]:
     observed = question.authoring_context.get("observable_mark_points") or []
     guidance = {
@@ -504,12 +504,12 @@ def _is_shared_guidance(text: str) -> bool:
     )
 
 
-# Keep an AO allocation beside its question while defining it once up front.
+# keep an AO allocation beside its question while defining it once up front
 def _assessment_objective_label(text: str) -> str:
     return text.partition(":")[0] if text.casefold().startswith("ao") else text
 
 
-# Collect the authoritative AO definitions used by this paper in first-use order.
+# Collect the authoritative AO definitions used by this paper in first-use order
 def _assessment_objective_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     seen: set[str] = set()
     definitions: list[str] = []
@@ -527,7 +527,7 @@ def _assessment_objective_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     return tuple(definitions)
 
 
-# Move repeated scenario-specific instructions to the scheme introduction.
+# move repeated scenario-specific instructions to the scheme introduction
 def _repeated_case_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     counts: dict[str, int] = {}
     order: list[str] = []
@@ -548,7 +548,7 @@ def _repeated_case_guidance(paper: GeneratedPaper) -> tuple[str, ...]:
     return tuple(point for point in order if counts[point] > 1)
 
 
-# Provide the same compact fallback for direct table-level consumers.
+# provide the same compact fallback for direct table-level consumers
 def _repeated_guidance_from_items(
     items: list[tuple[GeneratedQuestion, int, int]],
 ) -> tuple[str, ...]:

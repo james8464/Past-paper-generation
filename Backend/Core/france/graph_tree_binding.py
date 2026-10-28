@@ -1,4 +1,4 @@
-# Bind authored French questions to locked graph/tree facts.
+# bind authored French questions to locked graph/tree facts
 
 from __future__ import annotations
 
@@ -80,7 +80,7 @@ def canonical_answer(task_id: str, result: dict) -> str:
     raise ValueError("Tâche de contrat inconnue")
 
 
-# Provide a text alternative whose endpoint/weight pairs can be checked.
+# provide a text alternative whose endpoint/weight pairs can be checked
 def graph_edge_manifest(graph: dict) -> str:
     edges = " ; ".join(
         f"{start}-{end} : {weight}" for start, end, weight in graph["edges"]
@@ -88,7 +88,7 @@ def graph_edge_manifest(graph: dict) -> str:
     return "Arêtes du réseau (non orientées) : " + edges + "."
 
 
-# Assemble locked materials without erasing the model's raw evidence.
+# Assemble locked materials without erasing the model's raw evidence
 def bind_graph_tree_contract(
     raw: dict, contract: GraphTreeContract, *, closed_prose: bool = False
 ) -> tuple[dict, dict]:

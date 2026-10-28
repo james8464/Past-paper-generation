@@ -1,4 +1,4 @@
-// Edit generation preferences, provider settings and output-folder access.
+// Edit generation preferences, provider settings and output-folder access
 
 import AppKit
 import SwiftUI

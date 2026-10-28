@@ -1,4 +1,4 @@
-# Compare AQA business item allocations with reference-paper evidence.
+# compare AQA business item allocations with reference-paper evidence
 
 from __future__ import annotations
 

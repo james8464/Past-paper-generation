@@ -1,4 +1,4 @@
-# Compare generated PDFs with reference geometry, typography and page roles.
+# compare generated PDFs with reference geometry, typography and page roles
 
 from __future__ import annotations
 
@@ -113,10 +113,10 @@ for (subject, paper), (
     }
 
 
-# Return same-paper documents from different sessions, newest first.
+# return same-paper documents from different sessions, newest first
 #
 # Board archives use unrelated naming schemes, so matching is intentionally
-# conservative. A false peer is worse than a smaller evidence range.
+# conservative. A false peer is worse than a smaller evidence range
 def _reference_peers(reference: Path, *, maximum: int = 3) -> list[Path]:
 
     if maximum < 1:
@@ -325,7 +325,7 @@ def _role_matches(
         ]
 
     # Reserve scarce semantic roles before pages without a same-role reference
-    # are allowed to use geometry-only fallback matches.
+    # are allowed to use geometry-only fallback matches
     for page in generated:
         if not available:
             break
@@ -458,7 +458,7 @@ def _geometry_page(
     }
 
 
-# Render static paper content and reject unknown MuPDF diagnostics.
+# render static paper content and reject unknown MuPDF diagnostics
 def _render_page_pixmap(
     page: fitz.Page,
     width: float,
@@ -763,11 +763,8 @@ def compare(generated: dict[str, Any], reference: dict[str, Any]) -> dict[str, A
     }
 
 
-# Keep report JSON useful without serialising page raster grids.
-#
-# Embedding six raster grids per page can make the supported matrix report
-# several gigabytes long. Keep geometry in memory during comparison and
-# save only compact page scores and document summaries.
+# keep raster grids in memory; six per page can make the matrix report several
+# gigabytes. Save only compact page scores and document summaries
 def _compact_profile(value: dict[str, Any]) -> dict[str, Any]:
 
     return {key: item for key, item in value.items() if key != "geometry"}
@@ -841,7 +838,7 @@ def _page_comparisons(
     return sorted(result, key=lambda item: int(item["page"]))
 
 
-# Classify stable page furniture without retaining source-paper text.
+# Classify stable page furniture without retaining source-paper text
 def classify_page_role(
     text: str,
     *,
@@ -1008,7 +1005,7 @@ def _translated(
     return translated
 
 
-# Find a small whole-page translation without deforming either page.
+# find a small whole-page translation without deforming either page
 def _registration_shift(
     reference: Image.Image,
     generated: Image.Image,
@@ -1098,7 +1095,7 @@ def _block_mask(
     return mask
 
 
-# Mask question-specific prose while keeping matching boilerplate visible.
+# Mask question-specific prose while keeping matching boilerplate visible
 def _unstable_blocks(
     first: list[dict[str, Any]],
     second: list[dict[str, Any]],
@@ -1213,8 +1210,8 @@ def _registered_page_comparison(
         comparison_mask,
         ImageChops.multiply(reference_variable, generated_variable),
     )
-    # Ignore the sliver introduced by registration rather than treating it as
-    # missing design content.
+    # Ignore the sliver introduced by registration instead of treating it as
+    # missing design content
     valid_area = Image.new("L", reference.size, 255)
     valid_area = _translated(
         valid_area,
@@ -1684,7 +1681,7 @@ def _generated_document(
     return direct
 
 
-# Return stable, human-readable release-gate failures.
+# return stable, human-readable release-gate failures
 def validate_thresholds(
     report: dict[str, Any],
     thresholds: dict[str, Any],
@@ -2026,7 +2023,7 @@ img { width: 300px; height: auto; border: 1px solid #aaa; }
     (output_dir / "index.html").write_text(page, encoding="utf-8")
 
 
-# Write compact first-page comparisons spanning the full support matrix.
+# write compact first-page comparisons spanning the full support matrix
 def write_overview_sheets(
     report: dict[str, Any],
     output_dir: Path,
@@ -2095,7 +2092,7 @@ def write_overview_sheets(
     return outputs
 
 
-# Write the weakest page from every primary document on compact sheets.
+# write the weakest page from every primary document on compact sheets
 def write_worst_page_sheets(
     report: dict[str, Any],
     output_dir: Path,

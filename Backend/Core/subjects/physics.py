@@ -1,4 +1,4 @@
-# Compare physical answers with their expected values, units and precision.
+# compare physical answers with their expected values, units and precision
 
 from __future__ import annotations
 

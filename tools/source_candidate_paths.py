@@ -1,8 +1,6 @@
-# Edition-bound, feature-only reference paths (H/F primary-source audits).
-#
-# No student-time, reasoning-step or facility measurement is inferred. Tariff/
-# command demand bands remain declared engineering proxies. Unknown editions or
-# unreconciled leaf inventories are quarantined rather than treated as all-items.
+# edition-bound reference features from H/F audits; infer no learner time, reasoning
+# steps or facility. Tariff/command bands are engineering proxies. Quarantine unknown
+# editions and unreconciled leaf inventories; never assume all-items
 
 from __future__ import annotations
 
@@ -224,9 +222,9 @@ def form_from_items(
 def _source_text(path: Path, *, family: str, paper: str) -> str:
     with pymupdf.open(path) as document:
         if family == "pearson-edexcel/economics-a-2015":
-            # Exact audited 2024 editions: use original question overview once,
+            # exact audited 2024 editions: use original question overview once,
             # exclude repeated answer-space copies; C's standalone tariff is in
-            # its total line rather than a second parent+part mark.
+            # its total line instead of a second parent+part mark
             pages = {
                 "1": [2, 3, 4, 5, 6, 7, 8, 9, 12, 26],
                 "2": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 30],
@@ -239,10 +237,10 @@ def _source_text(path: Path, *, family: str, paper: str) -> str:
         return "\n".join(p.get_text(sort=True) for p in document)
 
 
-# Audited 2024 subparts, bounded by their own stem/tariff/options.
+# Audited 2024 subparts, bounded by their own stem/tariff/options
 #
 # Operations are task inferences (numerical transformation, conceptual/data
-# application or recall), not AO or learner-difficulty classifications.
+# application or recall), not AO or learner-difficulty classifications
 def _edexcel_selected_features(rows, path: Path, paper: str):
     if paper not in {"1", "2"}:
         return
@@ -329,8 +327,8 @@ def _selected_features(rows, text, *, family, paper, year, root):
         window = text[
             matches[index - 1].end() if index else 0 : matches[index].start()
         ].casefold()
-        # These are transparent inference rules over required operations, not
-        # empirical difficulty or claims that any scenario number means AO2.
+        # these are transparent inference rules over required operations, not
+        # empirical difficulty or claims that any scenario number means AO2
         numeric_task = (
             bool(
                 re.search(
@@ -422,8 +420,8 @@ def source_forms(family_id: str, paper: str) -> list[dict[str, Any]]:
             continue
         text = _source_text(path, family=family_id, paper=paper)
         if family.board == "pearson-edexcel":
-            # Literal tariff lines from the audited page set; do not count
-            # numeric parentheses in surrounding data as extra items.
+            # Literal tariff lines from the audited page set; don't count
+            # numeric parentheses in surrounding data as extra items
             text = re.sub(r"\((\d{1,2})\)", r"\n(\1)\n", text)
         rows = extract_reference_items(
             text,

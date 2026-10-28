@@ -1,4 +1,4 @@
-# Choose the exam-season dates printed on AQA Computer Science papers.
+# choose the exam-season dates printed on AQA Computer Science papers
 
 from __future__ import annotations
 

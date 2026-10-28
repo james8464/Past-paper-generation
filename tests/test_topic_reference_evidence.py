@@ -47,7 +47,7 @@ def test_same_operation_in_different_structure_does_not_support_a_task():
     items = bank_items("4.2")
     item = items[0]
     item.update(prompt="Describe the insertion process for a hash table.")
-    # A serialised queue contract must not turn unrelated hash content into queue evidence.
+    # a serialised queue contract must not turn unrelated hash content into queue evidence
     report = module().audit_topic_bank(items, "4.2", module().reviewed_topic_records("4.2"))
     assert report["passed"] is False
     assert item["id"] in report["coverage"]["unmatched_item_ids"]
@@ -97,7 +97,7 @@ def test_preview_seed_database_bank_preserves_required_sql_error_analysis():
     syllabus = load_syllabus(Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json"))
     bank = build_topic_question_bank(syllabus, topic_id="4.10", seed=26092851)
     validate_blueprint(bank, syllabus)
-    # Deletion construction alone must not substitute for the error-analysis task.
+    # Deletion construction alone must not substitute for the error-analysis task
     bank.questions[0].parts[3].prompt = "Write a DELETE statement for BOOKING."
     with pytest.raises(ValueError, match=r"missing required SQL work.*ERROR"):
         validate_blueprint(bank, syllabus)
@@ -320,7 +320,7 @@ def test_topic_contract_rejects_cross_topic_prompt_even_when_metadata_agrees():
     assert module().task_features(item)["topic_id"] is None
 
 
-# A serialised hint must never override the question that will be printed.
+# a serialised hint must never override the question that will be printed
 def test_topic_contract_cannot_relabel_the_question_operation_or_response_form():
     item = {
         "topic_id": "4.2",
@@ -344,7 +344,7 @@ def test_topic_contract_cannot_relabel_the_question_operation_or_response_form()
     }
 
 
-# Only the versioned contract may establish a reference comparison.
+# only the versioned contract may establish a reference comparison
 def test_topic_contract_rejects_unknown_serialised_fields():
     item = {
         "topic_id": "4.2",

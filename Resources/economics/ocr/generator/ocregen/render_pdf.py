@@ -1,4 +1,4 @@
-# Render OCR Economics papers and marking guidance using the shared PDF components.
+# render OCR Economics papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -1712,7 +1712,7 @@ def _answer_mark(question: GeneratedQuestion) -> Table:
     )
 
 
-# Carry the visible question label into an in-row continuation.
+# Carry the visible question label into an in-row continuation
 class _CreditTable(Table):
 
     @staticmethod
@@ -1748,8 +1748,8 @@ class _CreditTable(Table):
 
 
 def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
-    # One visible labelled row per complete marking statement. The paginator
-    # can continue rows; no point budgets, clipping or target-page padding.
+    # one visible labelled row per complete marking statement. The paginator
+    # can continue rows; no point budgets, clipping or target-page padding
     style = STYLES["scheme"]
 
     def cell(text: str) -> Paragraph:

@@ -1,4 +1,4 @@
-# App-owned E1 whole cases: no fabricated model authoring evidence.
+# App-owned E1 whole cases: no fabricated model authoring evidence
 
 import json
 from hashlib import sha256

@@ -1,4 +1,4 @@
-# Parse backend commands and dispatch generation, model and reference operations.
+# parse backend commands and dispatch generation, model and reference operations
 
 from __future__ import annotations
 
@@ -169,7 +169,7 @@ def handle_french_review(args: argparse.Namespace) -> int:
     return handle_record_review(args)
 
 
-# Check dynamic UK imports and render every public French case family.
+# check dynamic UK imports and render every public French case family
 def handle_bundle_check(_args: argparse.Namespace) -> int:
     loaded: list[str] = []
     errors: list[str] = []
@@ -211,7 +211,7 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
         from Backend.Core.france.tree_case_prose import render_case as render_tree
 
         # Import success alone cannot detect missing correction source in a
-        # frozen helper. Render all three families without touching user data.
+        # frozen helper. Render all three families without touching user data
         for seed in range(270100, 270103):
             render_tree(seed)
             render_case(seed)

@@ -1,4 +1,4 @@
-# Origin-preserving open credit rules; never promote model advice to authority.
+# Origin-preserving open credit rules; never promote model advice to authority
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ PERMISSIONS = {
 }
 
 
-# Only known host-authored permissions can bypass answer-value checking.
+# only known host-authored permissions can bypass answer-value checking
 def alternative_permission(permission_id: str) -> dict[str, Any]:
     return {
         "valid_alternatives": [PERMISSIONS[permission_id]],
@@ -137,11 +137,9 @@ def collect_credit_rules(
     return rules, warnings
 
 
-# Preserve the numerical caps and dependencies described by the credit rules.
-#
-# Explicit structured rules are preferred. A scored point with the exact
-# condition is also a valid legacy representation of a simple score boundary.
-# This is structural comparison, not a semantic entailment claim.
+# preserve numeric caps and dependencies; prefer structured rules. For legacy simple
+# score boundaries, accept a scored point with the exact condition. Structural
+# comparison only, not semantic entailment
 def declared_rule_metadata_present(rule: CreditRule, raw: dict, points: list) -> bool:
     if rule.score is None and rule.cap is None and not rule.dependencies:
         return True

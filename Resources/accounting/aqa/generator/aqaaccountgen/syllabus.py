@@ -1,4 +1,4 @@
-# Load the AQA Accounting syllabus records used to select topics.
+# load the AQA Accounting syllabus records used to select topics
 
 from __future__ import annotations
 

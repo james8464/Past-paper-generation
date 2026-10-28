@@ -1,4 +1,4 @@
-# Define OCR Economics paper structure, marks and question rules.
+# Define OCR Economics paper structure, marks and question rules
 
 from __future__ import annotations
 

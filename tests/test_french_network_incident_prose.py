@@ -1,4 +1,4 @@
-# The new case must print linked premises and award each requested step.
+# the new case must print linked premises and award each requested step
 
 from copy import deepcopy
 from decimal import Decimal

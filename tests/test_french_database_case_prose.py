@@ -1,4 +1,4 @@
-# Whole E2 cases must differ in reasoning, not just names or numbers.
+# Whole E2 cases must differ in reasoning, not just names or numbers
 
 from decimal import Decimal
 
@@ -155,7 +155,7 @@ def test_solutions_are_derived_from_tested_application_algorithms():
         answer = render_case(seed)["questions"][7]["answer"]
         code = answer.split("```python\n", 1)[1].split("```", 1)[0]
         namespace = {}
-        # Only deterministic application-owned solution text; never model output.
+        # only deterministic application-owned solution text; never model output
         exec(compile(code, "<application-solution>", "exec"), namespace)
         assert namespace[function.__name__](*args) == function(*args)
 
@@ -180,7 +180,7 @@ def test_printed_sql_queries_and_state_transitions_execute_as_described(seed):
             )
 
         def sql(index):
-            # Only fixed app-owned corrections, never arbitrary model SQL.
+            # only fixed app-owned corrections, never arbitrary model SQL.
             return re.search(
                 r"```sql\n(.*?)\n```", exercise["questions"][index]["answer"], re.S
             )[1]

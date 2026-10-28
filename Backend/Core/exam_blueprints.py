@@ -1,4 +1,4 @@
-# Define paper rules and generated question records shared by the subject families.
+# Define paper rules and generated question records shared by the subject families
 
 from __future__ import annotations
 
@@ -487,7 +487,7 @@ def _hydrate_assessment_metadata(
         question.structured_mark_scheme = _structured_scheme(question)
 
 
-# Return the immutable rules for one printed option (one-based).
+# return the immutable rules for one printed option (one-based)
 def resolve_question_rules(
     section: SectionRule,
     option_index: int,

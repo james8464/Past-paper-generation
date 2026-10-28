@@ -1,4 +1,4 @@
-# Run subject-family hooks through shared authoring, validation and rendering steps.
+# run subject-family hooks through shared authoring, validation and rendering steps
 
 from __future__ import annotations
 
@@ -101,7 +101,7 @@ def run_family_adapter(
     else:
         assessment, context = built, None
 
-    # Preview uses the seeded blueprint and makes no authoring requests.
+    # Preview uses the seeded blueprint and makes no authoring requests
     question_client = client
     if dry_run:
         emit(adapter.preview_message)
@@ -109,7 +109,7 @@ def run_family_adapter(
         emit(f"Generating and independently reviewing questions with {model}")
         factory = adapter.client_factory or _hosted_client
         question_client = question_client or factory(model, ollama_url)
-        # Resumed items must match the family blueprint, provider and review versions.
+        # Resumed items must match the family blueprint, provider and review versions
         identity_payload = (
             adapter.checkpoint_identity(assessment, rule, paper)
             if adapter.checkpoint_identity
@@ -176,7 +176,7 @@ def run_family_adapter(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: dict[str, Path] = {}
-    # Validate each temporary PDF before replacing a file at its destination.
+    # validate each temporary PDF before replacing a file at its destination
     for artifact in adapter.artifacts(assessment, context, syllabus, paper):
         destination = output_dir / artifact.filename
         emit(artifact.progress_message)
@@ -206,7 +206,7 @@ def run_family_adapter(
             if role in paths
         } | {role: path for role, path in paths.items() if role not in adapter.output_order}
 
-    # Keep the machine-readable assessment beside the PDFs for later inspection.
+    # keep the machine-readable assessment beside the PDFs for later inspection
     assessment_path = output_dir / f"{adapter.stem(rule, paper)}-assessment.json"
     write_assessment_package(
         assessment,

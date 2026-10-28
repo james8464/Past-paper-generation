@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Discover and download registered board reference documents with acquisition records.
+# Discover and download registered board reference documents with acquisition records
 
 from __future__ import annotations
 
@@ -62,8 +62,8 @@ PEARSON_SPEC_PATTERN = re.compile(
     re.IGNORECASE,
 )
 PEARSON_SPEC_ALIASES = {
-    # The Mathematics course page uses this presentation code, while its
-    # Algolia records use the specification facet below.
+    # the Mathematics course page uses this presentation code, while its
+    # Algolia records use the specification facet below
     "al17-maths": "maths-2017-as-al",
 }
 
@@ -457,7 +457,7 @@ def download_manifest(
             item = futures[future]
             try:
                 changed = future.result()
-            except Exception as error:  # Continue through stale/gated index records.
+            except Exception as error:  # Continue through stale/gated index records
                 failures.append(
                     {
                         "id": str(item["id"]),

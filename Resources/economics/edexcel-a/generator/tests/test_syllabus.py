@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.syllabus import load_syllabus
 
 
 def test_load_seed_syllabus_has_theme_topics():

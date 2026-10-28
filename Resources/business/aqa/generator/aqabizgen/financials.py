@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 
-# Shared Paper 1 financial-statement figures.
+# shared Paper 1 financial-statement figures
 @dataclass(frozen=True)
 class FinancialPosition:
 
@@ -77,7 +77,7 @@ class FinancialPosition:
         return self.capital_employed * 0.12
 
 
-# Format an exam answer without meaningless trailing zeroes.
+# format an exam answer without meaningless trailing zeroes
 def format_number(value: float) -> str:
 
     return f"{value:.2f}".rstrip("0").rstrip(".")

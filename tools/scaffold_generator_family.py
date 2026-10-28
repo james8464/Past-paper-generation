@@ -1,4 +1,4 @@
-# Create the resource and source files for a new configured generator family.
+# create the resource and source files for a new configured generator family
 
 from __future__ import annotations
 
@@ -98,7 +98,7 @@ def scaffold_family(request: ScaffoldRequest) -> Path:
         encoding="utf-8",
     )
     (package_root / "__init__.py").write_text(
-        '# Generated family adapter; not advertised until qualification passes.\n',
+        '# family adapter; advertise only after qualification\n',
         encoding="utf-8",
     )
     (package_root / "cli.py").write_text(_cli_template(), encoding="utf-8")
@@ -129,7 +129,7 @@ def generate_package(
     dry_run: bool,
     **_kwargs: Any,
 ) -> dict[str, Path]:
-    # Fail closed until this family has real contracts and renderers.
+    # fail closed until contracts and renderers are ready
 
     raise RuntimeError(
         f"Paper {paper} is scaffolded but not qualified for generation."

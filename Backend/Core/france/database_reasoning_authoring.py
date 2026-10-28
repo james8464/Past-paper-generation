@@ -1,4 +1,4 @@
-# Hash-bound finite V19 database wording selection; V16-V18 remain immutable.
+# Hash-bound finite V19 database wording selection; V16-V18 remain immutable
 
 from __future__ import annotations
 

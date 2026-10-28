@@ -1,4 +1,4 @@
-// Track model discovery, downloads and local runtime setup.
+// Track model discovery, downloads and local runtime setup
 
 import Foundation
 import Observation

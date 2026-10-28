@@ -1,4 +1,4 @@
-# Measure document components and delegate their drawing to a renderer.
+# Measure document components and delegate their drawing to a renderer
 
 from __future__ import annotations
 

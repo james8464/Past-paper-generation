@@ -1,4 +1,4 @@
-# Define the structured records used by the Edexcel Economics generator.
+# Define the structured records used by the Edexcel Economics generator
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# The richer written database case is immutable and independently checkable.
+# the richer written database case is immutable and independently checkable
 
 from copy import deepcopy
 

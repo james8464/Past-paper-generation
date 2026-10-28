@@ -1,4 +1,4 @@
-// Explain setup and supported workflows in the welcome and help views.
+// Explain setup and supported workflows in the welcome and help views
 
 import AppKit
 import Foundation
@@ -125,7 +125,7 @@ private struct HelpTopicPage: View {
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     let topic: HelpTopic
 
-    // Format dynamic values in the selected language, even when macOS uses another locale.
+    // format dynamic values in the selected language, even when macOS uses another locale
     private var selectedLocale: Locale {
         interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage)
     }

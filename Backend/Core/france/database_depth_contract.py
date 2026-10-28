@@ -1,6 +1,6 @@
-# Immutable, application-owned facts for a deeper French NSI database case.
+# Immutable, application-owned facts for a deeper French NSI database case
 #
-# V2 is separate from V1 so saved V13-V15 packages retain their source identity.
+# V2 is separate from V1 so saved V13-V15 packages retain their source identity
 
 from __future__ import annotations
 
@@ -153,7 +153,7 @@ def _expected(rows: dict[str, list[list]]) -> dict:
         connection.close()
 
 
-# Canonical JSON with every expected result recomputed from locked data.
+# Canonical JSON with every expected result recomputed from locked data
 @dataclass(frozen=True)
 class DatabaseDepthContract:
 

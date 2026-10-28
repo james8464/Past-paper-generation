@@ -1,4 +1,4 @@
-# Renaming storage must preserve prior files without reviving stale settings.
+# Renaming storage must preserve prior files without reviving stale settings
 
 
 from hashlib import sha256

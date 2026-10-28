@@ -1,4 +1,4 @@
-# Independent checks for the complete V29 recursive construction task.
+# independent checks for the complete V29 recursive construction task
 
 from copy import deepcopy
 from decimal import Decimal
@@ -11,7 +11,7 @@ def test_interval_reference_handles_boundaries_empty_trees_and_pruning():
     from Backend.Core.france.tree_construction_authoring import INTERVAL_CODE
 
     namespace = {}
-    exec(INTERVAL_CODE, namespace)  # Fixed app-owned source, never model output.
+    exec(INTERVAL_CODE, namespace)  # fixed app-owned source, never model output
     count = namespace["compter_intervalle"]
 
     def node(value, left=None, right=None):

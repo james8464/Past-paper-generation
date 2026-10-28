@@ -43,8 +43,8 @@ struct UKArtifactPublisher {
         for file in files {
             try copyFile(file.url, staging.appendingPathComponent(file.url.lastPathComponent))
         }
-        // Both directories share their parent and volume. Publish the whole run
-        // with one rename; existing papers and relative manifest paths stay intact.
+        // both directories share their parent and volume. Publish the whole run
+        // with one rename; existing papers and relative manifest paths stay intact
         try commitDirectory(staging, destination)
         return files.map { relocated($0, to: destination.appendingPathComponent($0.url.lastPathComponent)) }
     }

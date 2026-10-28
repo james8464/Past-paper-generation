@@ -1,4 +1,4 @@
-# Content-preserving pagination checks for OCR Economics marking tables.
+# Content-preserving pagination checks for OCR Economics marking tables
 
 from __future__ import annotations
 
@@ -157,9 +157,9 @@ def verify_ocr_scheme_content(
                 for word in words:
                     if 114 <= word[0] < 775 and anchor[1] - 1 <= word[1] < bottom:
                         lines.setdefault(word[5:7], []).append(word)
-                # Level descriptors span the answer, tariff and guidance columns.
-                # Preserve those complete lines, but never treat a tariff-only
-                # line as a numeric answer credit.
+                # Level descriptors span the answer, tariff and guidance columns
+                # preserve those complete lines, but never treat a tariff-only
+                # line as a numeric answer credit
                 credit_lines = [
                     " ".join(word[4] for word in line)
                     for line in lines.values()
@@ -168,9 +168,9 @@ def verify_ocr_scheme_content(
                 by_question[anchor[4]].append("\n".join(credit_lines))
     for identifier, points in expected.items():
         text = "\n".join(by_question[identifier])
-        # The first answer-column row repeats the prompt for examiner context.
-        # Remove that occurrence, preserving an independently printed answer even
-        # when it happens to use exactly the same words as the question.
+        # the first answer-column row repeats the prompt for examiner context
+        # remove that occurrence, preserving an independently printed answer even
+        # when it happens to use exactly the same words as the question
         prompt = _normalise(prompts[identifier])
         if prompt:
             pattern = r"\s*".join(map(re.escape, prompt))

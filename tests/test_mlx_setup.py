@@ -28,8 +28,8 @@ from Backend.Core.mlx_setup import (
 
 @pytest.fixture
 def supported_mlx_environment(monkeypatch):
-    # Handler behavior must not depend on the CI host's CPU, Python or disk.
-    # Keep the real validation, with explicit supported environment inputs.
+    # Handler behavior must not depend on the CI host's CPU, Python or disk
+    # keep the real validation, with explicit supported environment inputs
     monkeypatch.setattr(
         "Backend.Core.mlx_setup.validate_mlx_setup_environment",
         partial(

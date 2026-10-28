@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Run resumable French NSI checks against the local reference catalogue.
+# run resumable French NSI checks against the local reference catalogue
 
 set -euo pipefail
 

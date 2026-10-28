@@ -1,4 +1,4 @@
-# Original relational/interval reasoning for an experimental fourth family.
+# original relational/interval reasoning for an experimental fourth family
 
 from Backend.Core.france.database_case_prose import _solution
 from Backend.Core.france.loan_case import ACTIVE_LOANS_QUERY, build_case
@@ -8,7 +8,7 @@ VERSION = "fr-nsi-loan-exercise-v1"
 MINUTES = (4, 5, 6, 7, 4, 8, 6, 6, 9, 6, 4, 5)
 
 
-# These tested functions are also printed at 16 pt. Keep their lines short.
+# these tested functions are also printed at 16 pt. Keep their lines short
 # fmt: off
 def actifs(exemplaires, emprunts, instant):
     resultat = {}

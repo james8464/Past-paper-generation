@@ -20,7 +20,7 @@ from Backend.Core.providers import (
 
 
 @pytest.mark.parametrize(
-    "module", ["cspapergen.ollama_client", "pastpapergen.ollama_client"]
+    "module", ["cspapergen.ollama_client", "keldin_edexcel.ollama_client"]
 )
 def test_standalone_ollama_uses_shared_schema_and_repair(module, monkeypatch):
     from importlib import import_module

@@ -1,8 +1,6 @@
-# Experimental structural synthesis for the next French authoring contract.
-#
-# Not selected by the public generator. Structural diversity is not evidence of
-# original wording, calibrated demand, or educational equivalence. Publication
-# still requires the complete authoring, originality and PDF gates.
+# experimental structural synthesis outside the public generator; variety doesn't
+# establish original wording, calibrated demand or educational equivalence. Publication
+# still needs full authoring, originality and PDF checks
 
 import json
 from copy import deepcopy
@@ -52,11 +50,9 @@ def _invalidated(rows, leaf):
     return path
 
 
-# Build bounded arithmetic cases with two causally effective revisions.
-#
-# Tree shape, operation placement, leaf data and mutation targets vary. The
-# existing recursive solution is checked against bottom-up dependency
-# evaluation at every state; no generated code is executed.
+# bounded arithmetic cases with two effective revisions; vary tree shape, operators,
+# leaves and mutation targets. Check recursive results against bottom-up evaluation at
+# every state; never run generated code
 def build_case(seed):
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("Expression synthesis requires a signed 64-bit integer seed")
@@ -99,8 +95,8 @@ def build_case(seed):
                 row[2], row[3] = row[3], row[2]
         reversed_subtraction = _evaluate(faulty, "expression")
         if reversed_subtraction["answer"] == states[0]["answer"]:
-            # A masked or absent fault is not a useful debugging task. Do not
-            # claim this case demonstrates an error that it cannot reveal.
+            # a masked or absent fault is not a useful debugging task. Do not
+            # claim this case demonstrates an error that it cannot reveal
             continue
         if any(abs(value) > 10000 for value in reversed_subtraction["values"].values()):
             continue
@@ -126,7 +122,7 @@ def build_case(seed):
     raise ValueError("No bounded, causally effective expression case found")
 
 
-# Reject modified source or answers even if their outer hash was replaced.
+# reject modified source or answers even if their outer hash was replaced
 def verify_case(case):
     try:
         return isinstance(case, dict) and _canonical(case) == _canonical(

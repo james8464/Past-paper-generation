@@ -1,4 +1,4 @@
-# Fetch explicitly registered public French PDFs; never infer redistribution rights.
+# Fetch explicitly registered public French PDFs; never infer redistribution rights
 
 import argparse
 import json
@@ -58,10 +58,10 @@ def check_download(url: str, content: bytes):
         raise ValueError("Source response is not a bounded PDF document")
 
 
-# Use macOS certificate trust when bundled Python cannot reach an official PDF.
+# use macOS certificate trust when bundled Python cannot reach an official PDF.
 #
 # Redirects are deliberately disabled: only a registered canonical URL may be
-# fetched by this fallback. TLS verification is never disabled.
+# fetched by this fallback. TLS verification is never disabled
 def download_with_system_trust(url: str) -> bytes:
     check_url(url)
     with tempfile.TemporaryDirectory(prefix="keldin-reference-") as folder:
@@ -135,7 +135,7 @@ def discover_links(html: str, base_url: str) -> list[str]:
     return sorted(parser.urls)
 
 
-# Freeze this result before authoring; one in five papers per session held out.
+# freeze this result before authoring; one in five papers per session held out
 def assign_splits(entries: list[dict]) -> dict[str, str]:
     groups = defaultdict(list)
     result = {entry["id"]: "reference" for entry in entries}
@@ -156,11 +156,9 @@ def _identifier_part(value: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", plain.casefold()).strip("-")
 
 
-# Turn a captured official archive index into a frozen acquisition register.
-#
-# The split is assigned from metadata before any new paper content is read. Only
-# the standard representation becomes a candidate source; enlarged-print and
-# braille links remain in the manifest as non-retrieval aliases.
+# frozen acquisition register from the official archive index; assign splits from
+# metadata before reading new papers. Only standard copies enter retrieval; keep
+# enlarged-print and braille links as manifest aliases
 def reconcile_archive_discovery(
     discovery: dict, foundational_documents: list[dict]
 ) -> dict:
@@ -276,7 +274,7 @@ def reconcile_archive_discovery(
     }
 
 
-# Pin successfully acquired bytes without concealing gaps or duplicates.
+# Pin successfully acquired bytes without concealing gaps or duplicates
 def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
     if manifest.get("failures") or not manifest.get("complete_archive"):
         raise ValueError("Cannot pin an incomplete French archive acquisition")
@@ -304,10 +302,10 @@ def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
     return pinned
 
 
-# Choose one indexed identity per byte-identical group.
+# choose one indexed identity per byte-identical group
 #
 # When an identical file crosses the holdout boundary, the holdout identity is
-# retained so the same bytes can never re-enter retrieval through an alias.
+# retained so the same bytes can never re-enter retrieval through an alias
 def duplicate_index_policy(documents: list[dict]) -> list[dict]:
     by_digest = defaultdict(list)
     for document in documents:
@@ -414,7 +412,7 @@ def ingest(register: Path, output: Path) -> dict:
                         }
                         for number, page in enumerate(pdf)
                     ]
-                # A previously ingested source retains its acquisition date.
+                # a previously ingested source retains its acquisition date
                 previous = index.connection.execute(
                     "SELECT metadata FROM sources WHERE id=?", (entry["id"],)
                 ).fetchone()

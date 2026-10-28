@@ -1,4 +1,4 @@
-# V24 prompts and working tables must express the locked incident chain.
+# V24 prompts and working tables must express the locked incident chain
 
 from __future__ import annotations
 

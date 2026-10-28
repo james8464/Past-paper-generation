@@ -1,4 +1,4 @@
-# Define AQA Economics paper structure, marks and question rules.
+# Define AQA Economics paper structure, marks and question rules
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-# V32 integration: whole E1/E2 cases, honest provenance and strict replay.
+# V32 integration: whole E1/E2 cases, honest provenance and strict replay
 
 from copy import deepcopy
 from decimal import Decimal
@@ -156,7 +156,7 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
     for field in ("prompt", "answer", "points"):
         altered = deepcopy(package)
         altered["exercises"][1]["questions"][7][field] = "altered"
-        # Re-signing the outer data must not bypass closed-content replay.
+        # Re-signing the outer data must not bypass closed-content replay
         altered["evidence"][1]["exercise_sha256"] = digest(altered["exercises"][1])
         altered["evidence"][1]["candidate_sha256"] = digest(altered["exercises"][1])
         with pytest.raises(ValueError):
@@ -175,7 +175,7 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
         with pytest.raises(ValueError):
             validate_package(altered)
 
-    # A saved checkpoint resumes exactly, without another model call.
+    # a saved checkpoint resumes exactly, without another model call
     class NoCalls:
         provider = ControlledTwoOutageFrenchClient.provider
         model = ControlledTwoOutageFrenchClient.model
@@ -193,7 +193,7 @@ def test_v32_package_replays_whole_case_and_rejects_mutations(
         contract_authoring_version="v32",
     )
     assert resumed == package
-    # The fresh V32 path is deterministic app authoring too, not a live model run.
+    # the fresh V32 path is deterministic app authoring too, not a live model run
     fresh = generate_assessment(
         index_path=index,
         client=NoCalls(),

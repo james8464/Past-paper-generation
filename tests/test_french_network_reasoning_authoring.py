@@ -1,4 +1,4 @@
-# Finite V18 wording and replay tests for the deeper written network case.
+# finite V18 wording and replay tests for the deeper written network case
 
 from copy import deepcopy
 from decimal import Decimal

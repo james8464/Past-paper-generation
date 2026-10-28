@@ -30,7 +30,7 @@ from Backend.Core.subject_plugins import (
 def test_subject_import_order_preserves_discovery(
     module: str, class_name: str, identifier: str, registry_first: bool
 ) -> None:
-    # A clean interpreter prevents pytest's collection order from hiding cycles.
+    # a clean interpreter prevents pytest's collection order from hiding cycles
     result = subprocess.run(
         [
             sys.executable,

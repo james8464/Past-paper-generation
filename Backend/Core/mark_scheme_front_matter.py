@@ -1,4 +1,4 @@
-# Build the shared introductory guidance for AQA mark schemes.
+# build the shared introductory guidance for AQA mark schemes
 
 from __future__ import annotations
 

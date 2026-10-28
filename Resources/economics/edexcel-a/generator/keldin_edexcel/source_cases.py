@@ -1,4 +1,4 @@
-# Supply Edexcel Economics case data used by questions and their marking guidance.
+# Supply Edexcel Economics case data used by questions and their marking guidance
 
 from __future__ import annotations
 

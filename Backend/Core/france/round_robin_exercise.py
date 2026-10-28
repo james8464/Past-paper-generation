@@ -1,7 +1,7 @@
-# Original scheduling questions for an experimental fourth paper family.
+# original scheduling questions for an experimental fourth paper family
 #
-# The public V32 route is unchanged. Proposed answers use a separately tested
-# scheduling model; they are not learner-calibrated or an official mark scheme.
+# the public V32 route is unchanged. Proposed answers use a separately tested
+# scheduling model; they are not learner-calibrated or an official mark scheme
 
 from decimal import Decimal
 

@@ -1,4 +1,4 @@
-# Synthesized cases must produce complete, bound questions, not data alone.
+# Synthesized cases must produce complete, bound questions, not data alone
 
 from copy import deepcopy
 from decimal import Decimal
@@ -29,8 +29,8 @@ def test_new_tree_data_does_not_claim_original_question_variety(seed):
     previous = exercise_candidate_text(NSIExercise.model_validate(render_case(713)))
     candidate = exercise_candidate_text(NSIExercise.model_validate(render_case(seed)))
     assert build_case(seed)["sha256"] != build_case(713)["sha256"]
-    # Different checked data is not evidence of a different reasoning task.
-    # Keep this experimental exercise behind the production originality gate.
+    # Different checked data is not evidence of a different reasoning task
+    # keep this experimental exercise behind the production originality gate
     with pytest.raises(ValueError, match="génération précédente"):
         screen_originality(candidate, [], previous_texts=[previous])
 
@@ -71,7 +71,7 @@ def test_printed_debug_program_reproduces_the_stated_fault():
             r"```python\n(.*?)\n```", raw["questions"][3]["prompt"], re.S
         )[1]
         namespace = {}
-        # Fixed app-owned listing only; never run model-authored source.
+        # fixed app-owned listing only; never run model-authored source
         exec(compile(source, "<expression-debug-listing>", "exec"), namespace)
         nodes = {row[0]: tuple(row[1:]) for row in case["public"]["rows"]}
         before = deepcopy(nodes)

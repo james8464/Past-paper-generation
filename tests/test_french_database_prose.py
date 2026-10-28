@@ -1,4 +1,4 @@
-# Finite French wording cannot alter the relational facts or credits.
+# finite French wording cannot alter the relational facts or credits
 
 from copy import deepcopy
 from decimal import Decimal

@@ -1,4 +1,4 @@
-// Browse saved generation jobs and open their associated documents.
+// Browse saved generation jobs and open their associated documents
 
 import SwiftUI
 

@@ -1,4 +1,4 @@
-# Run the configured generation matrix and retain per-job qualification evidence.
+# run the configured generation matrix and retain per-job qualification evidence
 
 from __future__ import annotations
 

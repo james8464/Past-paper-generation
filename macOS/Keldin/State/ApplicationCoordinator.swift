@@ -1,4 +1,4 @@
-// Coordinate user actions across catalogue, model, generation and document state.
+// Coordinate user actions across catalogue, model, generation and document state
 
 import AppKit
 import Combine
@@ -245,7 +245,7 @@ final class ApplicationCoordinator: ObservableObject {
             defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         }
         restoreRecentDocuments()
-        // Invalid saved usage stays untouched; the creation action reports it.
+        // invalid saved usage stays untouched; the creation action reports it
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = outputFolder
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
@@ -791,7 +791,7 @@ final class ApplicationCoordinator: ObservableObject {
         try? generationCoordinator.cancel()
         mlxRecoveryState.cancel()
         // MLX setup keeps ownership until its helper exits. Other operations can
-        // release the UI immediately, but their queued callbacks no longer own it.
+        // release the UI immediately, but their queued callbacks no longer own it
         if activeOperation != .mlxSetup {
             activeRunSession = nil
             activeFrameworkID = nil
@@ -1111,8 +1111,8 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     private func beginRunSession() -> BackendRunSession {
-        // A discovery request started before this operation must remain obsolete
-        // even if the operation finishes before that request returns.
+        // a discovery request started before this operation must remain obsolete
+        // even if the operation finishes before that request returns
         ollamaRefreshRevision = UUID()
         let session = BackendRunSession()
         activeRunSession = session
@@ -1145,7 +1145,7 @@ final class ApplicationCoordinator: ObservableObject {
                 paper: activeFrameworkID == nil ? selectedPaper.title : "Partie écrite · 2027"
             )
             // UK exports can replace an existing filename. Give each new
-            // revision a fresh identity so previews reload the actual output.
+            // revision a fresh identity so previews reload the actual output
             generatedFiles.removeAll { $0.url == file.url }
             generatedFiles.insert(file, at: 0)
             generatedFiles = Array(generatedFiles.prefix(60))
@@ -1302,8 +1302,8 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func moveGeneratedFilesToOutputFolderIfNeeded() throws {
         guard distributionMode == .appStore else { return }
-        // Save review records beside the user-selected manifest so they stay
-        // with that assessment instead of the app's temporary working files.
+        // save review records beside the user-selected manifest so they stay
+        // with that assessment instead of the app's temporary working files
         guard currentGenerationFiles.contains(where: { $0.role != "teacher_review" }) else { return }
         let workingFolder = AppDefaults.appStoreWorkingFolder().standardizedFileURL
         let destinationFolder = outputFolder.standardizedFileURL

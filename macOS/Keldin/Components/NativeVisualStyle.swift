@@ -1,4 +1,4 @@
-// Share native appearance and status styling across the app.
+// Share native appearance and status styling across the app
 
 import SwiftUI
 

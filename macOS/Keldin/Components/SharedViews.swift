@@ -1,4 +1,4 @@
-// Reusable controls and status views for the workspace and settings.
+// Reusable controls and status views for the workspace and settings
 
 import SwiftUI
 

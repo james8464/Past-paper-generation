@@ -1,4 +1,4 @@
-# V28 construction must be executable, independent of row order and replay-bound.
+# V28 construction must be executable, independent of row order and replay-bound
 
 import itertools
 from copy import deepcopy
@@ -11,7 +11,7 @@ def test_construction_solution_matches_independent_counts():
     from Backend.Core.france.database_construction_authoring import CONSTRUCTION_CODE
 
     namespace = {}
-    exec(CONSTRUCTION_CODE, namespace)  # App-owned source, never model output.
+    exec(CONSTRUCTION_CODE, namespace)  # App-owned source, never model output
     count = namespace["repartition_clos"]
     rows = [
         {"id_agent": 2, "id_cat": 1, "statut": "clos"},
@@ -59,8 +59,8 @@ def test_v28_package_has_construction_credit_and_replays(tmp_path, seed):
     assert verification["construction_version"] == "v28"
     assert verification["expected"]["construction"]["s0_counts"] == [1, 0, 2, 1, 0]
     assert verify_contract(verification)["passed"]
-    # Python considers True == 1 and 0.0 == 0, even inside nested lists.
-    # Verification evidence must retain the exact integer counts.
+    # Python considers True == 1 and 0.0 == 0, even inside nested lists
+    # Verification evidence must retain the exact integer counts
     for replacement in (True, 1.0):
         changed = deepcopy(verification)
         changed["expected"]["construction"]["s0_counts"][0] = replacement

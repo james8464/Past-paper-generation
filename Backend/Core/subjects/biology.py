@@ -1,4 +1,4 @@
-# Validate biology items through the shared subject-contract interface.
+# validate biology items through the shared subject-contract interface
 
 from __future__ import annotations
 

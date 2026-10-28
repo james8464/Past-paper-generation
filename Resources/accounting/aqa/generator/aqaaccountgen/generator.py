@@ -1,4 +1,4 @@
-# Build seeded AQA Accounting paper content and its marking guidance.
+# build seeded AQA Accounting paper content and its marking guidance
 
 from __future__ import annotations
 
@@ -40,8 +40,8 @@ BUSINESSES = [
     "Harbour Textiles",
 ]
 
-# Each task carries its own topic so changing a component bank cannot leave a
-# separate topic list pointing at an unrelated question.
+# each task carries its own topic so changing a component bank cannot leave a
+# separate topic list pointing at an unrelated question
 MCQ_TASKS = {
     "paper_1": [
         ("accounting-3", "Which book of prime entry records credit purchases of inventory?", "Purchases journal", ["Sales journal", "Cash book", "General journal"]),
@@ -93,7 +93,7 @@ DECISIONS = [
 ]
 
 
-# Format whole-pound values in the style used by AQA accounting papers.
+# format whole-pound values in the style used by AQA accounting papers
 def _gbp(value: int) -> str:
 
     sign = "−" if value < 0 else ""
@@ -228,7 +228,7 @@ def build_paper(
     return paper
 
 
-# Best-fit AO budgets are not marks awarded repeatedly to indicative examples.
+# Best-fit AO budgets are not marks awarded repeatedly to indicative examples
 def _level_credit(question: GeneratedQuestion) -> list[MarkSchemePoint]:
     return [
         *[
@@ -611,8 +611,8 @@ def _written(
         )
         scheme = _levels(topic, point, case_id)
     if rule.id in {"variance_3", "variance_4"}:
-        # The candidate sees these same inputs in 14.1, not the adverse labour
-        # variances in 14.2. Carry that dependency into independent review/solving.
+        # the candidate sees these same inputs in 14.1, not the adverse labour
+        # variances in 14.2. Carry that dependency into independent review/solving
         _, _, price_context = _management_calculation("variance_1", business, values)
         authoring_context.update({
             "source_question": "14.1",
@@ -631,7 +631,7 @@ def _written(
     )
 
 
-# Build a complete, internally solved data contract for each numeric task.
+# build a complete, internally solved data contract for each numeric task
 def _management_calculation(
     rule_id: str,
     business: str,

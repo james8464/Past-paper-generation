@@ -1,4 +1,4 @@
-# Reconcile the captured official NSI archive before reference ingestion.
+# Reconcile the captured official NSI archive before reference ingestion
 
 from __future__ import annotations
 

@@ -1,7 +1,5 @@
-# Bounded candidate-answerable paths; printed alternatives remain reviewable.
-#
-# Topology is data, never parsed from candidate-facing instructions. Item IDs are
-# the export's leaf paths, so parent summaries cannot silently duplicate marks.
+# bounded answerable paths; review all printed alternatives. Topology comes from data,
+# never instructions. Export leaf IDs prevent duplicate parent marks
 
 from __future__ import annotations
 
@@ -16,8 +14,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 PATH_POLICY_ID = "candidate-paths-v1"
 MAX_PATHS = 256
-# These generation policies were established by the E/F/H1 audits. They do
-# not infer annual board totals or tolerances from student performance.
+# these generation policies were established by the E/F/H1 audits. They do
+# not infer annual board totals or tolerances from student performance
 GENERATED_OBJECTIVE_POLICIES = {
     ("aqa/economics", "1"): (15, 22, 25, 18),
     ("aqa/economics", "2"): (15, 22, 25, 18),
@@ -226,7 +224,7 @@ def topology_from_blueprint(
                 if question.get("choice_selection_context") != expected_context:
                     raise ValueError("Edexcel saved selection context is stale")
                 keys = members(f"questions.{i}.")
-                # Standalone question's own path has no trailing dot.
+                # Standalone question's own path has no trailing dot
                 keys += [
                     item["id"]
                     for item in items
@@ -353,9 +351,9 @@ def audit_candidate_paths(
         audit = audit_form_demand(selected, profile)
         metrics = path_metrics(selected)
         failed = list(audit["failed_checks"])
-        # A source comparison must pass as one correlated vector, not choose a
+        # a source comparison must pass as one correlated vector, not choose a
         # different reference for each coordinate. Equal-path averaging below
-        # is descriptive only and is never used as a rescue gate.
+        # is descriptive only and is never used as a rescue gate
         comparisons = []
         if qualified_source:
             for form in profile.reference_forms:
@@ -432,9 +430,9 @@ def audit_candidate_paths(
                 section_metrics["allocated_minutes"] - expected_minutes
             ) > 0.02 * len(path.sections[name]):
                 failed.append(f"section_timing_budget:{name}")
-        # Pick one complete vector by its worst tolerance-normalised deviation.
-        # This selection is diagnostic; the gate above still requires all
-        # coordinates of the same source path to pass together.
+        # pick one complete vector by its worst tolerance-normalised deviation
+        # this selection is diagnostic; the gate above still requires all
+        # coordinates of the same source path to pass together
         closest = (
             min(
                 comparisons,

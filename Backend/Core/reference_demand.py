@@ -1,4 +1,4 @@
-# Build item demand targets from validated reference profiles.
+# build item demand targets from validated reference profiles
 
 from __future__ import annotations
 
@@ -189,7 +189,7 @@ def profile_for(
     raise ValueError(f"no reference demand profile for {family_id} paper {paper_id}")
 
 
-# Return the stable content identity used by the checked-in source record.
+# return the stable content identity used by the checked-in source record
 def _profile_fingerprint(payload: Any) -> str:
     canonical = json.dumps(
         payload,
@@ -201,7 +201,7 @@ def _profile_fingerprint(payload: Any) -> str:
     return hashlib.sha256(canonical.encode()).hexdigest()
 
 
-# Read the authoritative profile record without retaining mutable authority.
+# read the authoritative profile record without retaining mutable authority
 def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
     try:
         payload = json.loads(PROFILES_PATH.read_text(encoding="utf-8"))
@@ -216,7 +216,7 @@ def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
     return _profile_fingerprint(record)
 
 
-# Accept only content that exactly matches the checked-in source record.
+# accept only content that exactly matches the checked-in source record
 def _is_checked_in_reference_profile(profile: Any) -> bool:
     if not isinstance(profile, ReferenceDemandProfile):
         return False
@@ -229,7 +229,7 @@ def _is_checked_in_reference_profile(profile: Any) -> bool:
         return False
 
 
-# Load a source-backed profile for the internal generation path.
+# load a source-backed profile for the internal generation path
 def verified_reference_profile(
     family_id: str,
     paper_id: str,
@@ -240,7 +240,7 @@ def verified_reference_profile(
     return profile
 
 
-# Validate a profile context against its current checked-in source record.
+# validate a profile context against its current checked-in source record
 def profile_for_verified_context(context: Any) -> ReferenceDemandProfile:
     if not _is_checked_in_reference_profile(context):
         raise ValueError("canonical reference evidence context is required")
@@ -296,11 +296,9 @@ def build_item_demand_target(
         "high": min(8, minimum_steps + 3),
     }[demand]
     if calculation:
-        # A multi-stage calculation can legitimately expose roughly one
-        # independently checkable operation per mark. A demand-band-only cap
-        # misclassifies complete accounts and longer numerical proofs as too
-        # difficult even when their tariff and official-paper role require
-        # those stages.
+        # multi-stage calculations may need about one checkable operation per mark. A
+        # demand-band cap alone misclassifies complete accounts and long numerical
+        # proofs whose tariff and reference-paper role require those stages
         maximum_steps = max(maximum_steps, min(12, marks))
 
     requires_analysis, requires_judgement = objective_policy.operations(
@@ -378,7 +376,7 @@ def build_item_demand_target(
         if task_operation == "analyse" and response_mode != "selected-response":
             # Longer analytical tariffs can reward several linked causal
             # stages. Allow roughly one independently creditable stage for
-            # every two marks while retaining the bounded review ceiling.
+            # every two marks while retaining the bounded review ceiling
             maximum_steps = max(maximum_steps, min(12, (marks + 1) // 2))
         maximum_steps = max(maximum_steps, len(operations))
     if objective_policy.computational:
@@ -407,20 +405,20 @@ def build_item_demand_target(
         elif task_operation in {"describe", "explain"}:
             # Descriptive/explanatory tariffs may allocate one independently
             # creditable conceptual stage per mark without becoming a harder
-            # operation type. Preserve that legitimate ceiling.
+            # operation type. Preserve that legitimate ceiling
             maximum_steps = max(maximum_steps, min(12, marks))
         elif marks <= 2:
             minimum_steps, maximum_steps = 1, 3
-    # A target cannot require more distinct cognitive operations than the
+    # a target cannot require more distinct cognitive operations than the
     # reviewer permits reasoning steps. This matters for short applied
     # calculations whose tariff bundles presentation and transformation into
-    # the same award point.
+    # the same award point
     maximum_steps = max(maximum_steps, len(operations))
     expected_minutes = float(raw.get("expected_minutes") or max(1.0, marks * 1.2))
     policy_fingerprint = objective_policy.fingerprint(objectives, command, kind)
     if objective_policy.computational:
         # Time and task operation are review obligations even if the demand band
-        # and broad reasoning bounds happen to remain unchanged.
+        # and broad reasoning bounds happen to remain unchanged
         import hashlib
 
         policy_fingerprint = hashlib.sha256(
@@ -670,7 +668,7 @@ def _response_mode(*, marks: int, command: str, kind: str, calculation: bool) ->
     return "constructed-response"
 
 
-# Shared generated/source semantics for non-computational written tasks.
+# shared generated/source semantics for non-computational written tasks
 def operation_response_mode(operation: str, marks: int) -> str:
     return {
         "retrieve": "recall",

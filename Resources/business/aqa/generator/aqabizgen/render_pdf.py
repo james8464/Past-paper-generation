@@ -1,4 +1,4 @@
-# Render AQA Business papers and marking guidance using the shared PDF components.
+# render AQA Business papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -1250,7 +1250,7 @@ def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
     return drawing
 
 
-# Render the opening Paper 2 appendix in its reference-style dual series.
+# render the opening Paper 2 appendix in its reference-style dual series
 def _paper_two_grouped_bar_chart(option: GeneratedOption) -> Drawing:
 
     drawing = Drawing(165 * mm, 64 * mm)

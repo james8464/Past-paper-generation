@@ -1,4 +1,4 @@
-# V30 replaces repeated route traces with filtering and selection construction.
+# V30 replaces repeated route traces with filtering and selection construction
 
 import itertools
 import json
@@ -72,7 +72,7 @@ def route_blueprint(blueprint):
     return result
 
 
-# Enumerate simple paths independently of the trusted selector.
+# enumerate simple paths independently of the trusted selector
 def route_selection_expected(data):
     adjacency = {node: [] for node in data["graph"]["nodes"]}
     weights = {}

@@ -1,4 +1,4 @@
-# Connect AQA Business generation to the shared backend workflow.
+# Connect AQA Business generation to the shared backend workflow
 
 from __future__ import annotations
 

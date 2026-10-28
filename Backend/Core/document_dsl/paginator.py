@@ -1,4 +1,4 @@
-# Place measured components into pages and reject impossible layouts.
+# Place measured components into pages and reject impossible layouts
 
 from __future__ import annotations
 

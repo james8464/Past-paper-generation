@@ -1,4 +1,4 @@
-# Find the local Ollama service and report model status or download progress.
+# find the local Ollama service and report model status or download progress
 
 from __future__ import annotations
 

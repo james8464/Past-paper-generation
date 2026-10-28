@@ -1,4 +1,4 @@
-# Check vector connections, not just the text labels of a printed NSI graph.
+# check vector connections, not just the text labels of a printed NSI graph
 
 from math import atan2, cos, hypot, sin
 
@@ -38,11 +38,9 @@ def _centres(page, nodes, drawings):
     return positions
 
 
-# Require one figure with the exact edge stream and destination arrows.
-#
-# The current vector renderer draws 16-point-radius node circles. Position
-# and page placement may change; connections are checked using their actual
-# labelled centres. This does not certify raster visibility or accessibility.
+# one figure with exact edges and destination arrows; match connections against labelled
+# node centres despite layout changes. Renderer circles have radius 16 pt; this check
+# doesn't certify raster visibility or accessibility
 def validate_graph(pdf, material):
     figures = []
     for page in pdf:

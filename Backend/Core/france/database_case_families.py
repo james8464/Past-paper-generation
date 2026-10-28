@@ -1,7 +1,5 @@
-# V32 original relational cases with separate public sources and private oracles.
-#
-# Not yet a publication path: authoring and whole-package integration are separate.
-# Only fixed application SQL executes. Model-provided SQL/code is never executed.
+# V32 relational cases with separate public sources and private oracles; only fixed app
+# SQL runs. Never execute model SQL/code
 
 import json
 import sqlite3
@@ -20,10 +18,10 @@ def _table(name, columns, rows):
     return {"name": name, "columns": columns, "rows": rows}
 
 
-# Single pass over (sensor, temperature, valid); unknown IDs are invalid inputs.
+# single pass over (sensor, temperature, valid); unknown IDs are invalid inputs
 #
-# Sensor IDs are unique. None represents no valid observation, not zero degrees.
-# Inputs are not mutated; observations may be a one-shot iterator.
+# Sensor IDs are unique. None represents no valid observation, not zero degrees
+# Inputs are not mutated; observations may be a one-shot iterator
 def sensor_extrema(sensor_ids, observations):
     result = dict.fromkeys(sensor_ids)
     for sensor, value, valid in observations:
@@ -40,9 +38,9 @@ def sensor_extrema(sensor_ids, observations):
     return result
 
 
-# Subtract confirmed group sizes; negative availability remains an alert.
+# subtract confirmed group sizes; negative availability remains an alert
 #
-# Reservations are (session, positive seats, confirmed), with known session IDs.
+# Reservations are (session, positive seats, confirmed), with known session IDs
 def remaining_places(capacities, reservations):
     result = capacities.copy()
     for session, seats, valid in reservations:
@@ -51,10 +49,10 @@ def remaining_places(capacities, reservations):
     return result
 
 
-# Return first failing movement ID, not final balance or list position.
+# return first failing movement ID, not final balance or list position
 #
 # Precondition: initial >= 0; (ID, signed delta) rows already chronologically
-# ordered for one article. A balance of exactly zero is permitted.
+# ordered for one article. A balance of exactly zero is permitted
 def first_stock_deficit(initial, movements):
     balance = initial
     for identifier, delta in movements:
@@ -242,7 +240,7 @@ _BAD_INSERTS = {
 }
 
 
-# Fixed application-owned actions, used in the correction and SQL oracle.
+# fixed application-owned actions, used in the correction and SQL oracle
 def linked_sql(family, public):
     if family == "sensors":
         corrected = public["tables"][1]["rows"][0][3] + 3
@@ -265,7 +263,7 @@ def linked_sql(family, public):
     raise ValueError("Unknown database case family")
 
 
-# Transform lists directly, independently of SQL statement interpretation.
+# transform lists directly, independently of SQL statement interpretation
 def _independent_states(family, public):
     current = deepcopy(public)
     states = [deepcopy(current)]
@@ -308,8 +306,8 @@ def _state_evidence(connection, family, public):
             rows = [list(row) for row in connection.execute(_QUERIES[family])]
             if rows != expected["result"]:
                 raise ValueError("Linked SQL and independent state disagree")
-            # Check the entire source, not only aggregate totals that could hide
-            # a wrong row mutation or a chronology error.
+            # check the entire source, not only aggregate totals that could hide
+            # a wrong row mutation or a chronology error
             for table in state["tables"]:
                 actual = [
                     list(row)
@@ -349,8 +347,8 @@ def _independent(family, public):
         [key, initial + sum(r[3] for r in events if r[1] == key)]
         for key, _label, initial in parents
     ]
-    # Independent prefix-sum oracle for article 1. The candidate algorithm will
-    # scan incrementally; this oracle sums each prefix afresh.
+    # independent prefix-sum oracle for article 1. The candidate algorithm will
+    # scan incrementally; this oracle sums each prefix afresh
     selected = sorted((r for r in events if r[1] == 1), key=lambda r: r[2])
     initial = next(r[2] for r in parents if r[0] == 1)
     prefixes = [

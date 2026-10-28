@@ -1,10 +1,10 @@
 from pathlib import Path
 
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.syllabus import load_syllabus
-from pastpapergen.validation import validate_blueprint
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.syllabus import load_syllabus
+from keldin_edexcel.validation import validate_blueprint
 
 
 def test_validate_blueprint_accepts_generated_paper():

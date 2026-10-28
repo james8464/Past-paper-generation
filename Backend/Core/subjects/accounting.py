@@ -1,4 +1,4 @@
-# Derive accounting answers from the figures supplied to the candidate.
+# derive accounting answers from the figures supplied to the candidate
 
 from __future__ import annotations
 
@@ -8,11 +8,9 @@ from typing import Any
 from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput, numeric_result
 
 
-# Recompute known closed accounting contracts from candidate-visible data.
-#
-# No renderer, draft mark scheme, or verified-answer field is consulted. The
-# normal model content and difficulty reviews still run after this arithmetic
-# pass. Unrecognised closed calculations fail on the shared solver boundary.
+# derive closed accounting answers from visible data only; no renderer, draft scheme or
+# verified-answer field. Content and difficulty reviews still follow. Reject unsupported
+# closed calculations at the shared solver boundary
 def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
     context = item.get("authoring_context")
     if not isinstance(context, dict) or not (
@@ -72,10 +70,10 @@ def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
     return solution
 
 
-# Derive prior-question figures for an open response from public inputs.
+# derive prior-question figures for an open response from public inputs
 #
-# This deliberately calls the same source-only arithmetic used for closed
-# accounting tasks. It never reads a draft scheme or ``verified_answers``.
+# this deliberately calls the same source-only arithmetic used for closed
+# accounting tasks. It never reads a draft scheme or ``verified_answers``
 def derive_accounting_open_response_context(
     item: dict[str, Any],
 ) -> dict[str, Any] | None:
@@ -183,7 +181,7 @@ def management_input_contract(rule: str, source: dict[str, Any]) -> dict[str, An
     }
 
 
-# Code-owned role selectors. They contain no solved numbers or draft keys.
+# Code-owned role selectors. They contain no solved numbers or draft keys
 def accounting_outputs(rule: str, context: dict[str, Any]) -> list[NumericOutput]:
     patterns: dict[str, str] = {}
     units: dict[str, str] = {}
@@ -339,10 +337,10 @@ def accounting_outputs(rule: str, context: dict[str, Any]) -> list[NumericOutput
     ]
 
 
-# Complete code-owned row continuations; never a free suffix wildcard.
+# complete code-owned row continuations; never a free suffix wildcard
 #
-# Other computed quantities on the same row have their own output checks.
-# Given quantities in working remain source inputs, not accepted alternatives.
+# Other computed quantities on the same row have their own output checks
+# Given quantities in working remain source inputs, not accepted alternatives
 def _accounting_endings(rule: str) -> dict[str, str]:
     money = rf"[−+\-]?£{NUMBER}"
     second = rf"; second period {money}\."

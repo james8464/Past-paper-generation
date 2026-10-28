@@ -1,4 +1,4 @@
-# Public identity changes must not orphan existing documents or credentials.
+# public identity changes must not orphan existing documents or credentials
 
 import json
 import plistlib
@@ -129,7 +129,7 @@ def test_warm_accent_has_hig_appearance_and_contrast_variants():
 
 
 def test_active_code_and_build_names_only_use_legacy_identity_in_migration_readers():
-    legacy = re.compile(r"paper[ _-]?creator", re.IGNORECASE)
+    legacy = re.compile(r"paper[ _-]?creat(?:or|ion)|pastpapergen", re.IGNORECASE)
     exceptions = {
         "Backend/Core/legacy_migration.py",
         "macOS/Keldin/Application/KeldinMigration.swift",

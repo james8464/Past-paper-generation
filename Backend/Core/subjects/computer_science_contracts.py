@@ -1,7 +1,5 @@
-# Bounded CS source templates. Inputs are candidate data, never answer keys.
-#
-# No generated program is executed. Each declared template has fixed semantics;
-# the independent solver derives every requested output from these typed inputs.
+# bounded CS templates with fixed semantics; inputs are candidate data, never keys
+# independent solver derives every output; no generated program runs
 from __future__ import annotations
 
 import re

@@ -1,8 +1,6 @@
-# Compare complete printed French exercises with their verified package.
-#
-# This is a content-integrity gate, not educational or visual calibration. It
-# checks the entire exercise stream in order, so finding a few keywords is
-# not enough. Whitespace and Markdown fences are presentation, not source facts.
+# compare complete printed exercises with the verified package, in order; keywords alone
+# aren't enough. Ignore presentation whitespace and Markdown fences. Content integrity
+# only, not educational or visual calibration
 
 import re
 import unicodedata
@@ -140,7 +138,7 @@ def _expected(
                 continue
             if not isinstance(material, NSITableMaterial):
                 raise ValueError("Type de document V32 non pris en charge")
-            # The V32 publication layout suppresses internal E1/E3 identifiers.
+            # the V32 publication layout suppresses internal E1/E3 identifiers
             label = material.title
             if (
                 exercise.id == "2"
@@ -176,7 +174,7 @@ def _expected(
     return _compact("\n".join(parts))
 
 
-# Reject altered source, missing/extra content, or a swapped PDF role.
+# reject altered source, missing/extra content, or a swapped PDF role
 def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> None:
     if type(correction) is not bool:
         raise ValueError("Rôle du PDF invalide")
@@ -188,7 +186,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         EXPANDED_VERSION,
     }:
         raise ValueError("Ce contrôle exige un sujet complet V32, V33, V34 ou V35")
-    # Late import permits runtime to select this validator without a cycle.
+    # late import permits runtime to select this validator without a cycle
     from Backend.Core.france.runtime import validate_pdf
 
     validate_pdf(path)

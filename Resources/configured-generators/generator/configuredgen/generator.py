@@ -1,4 +1,4 @@
-# Build seeded configured-family paper content and its marking guidance.
+# build seeded configured-family paper content and its marking guidance
 
 from __future__ import annotations
 

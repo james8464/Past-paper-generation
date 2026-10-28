@@ -1,5 +1,5 @@
 [project]
-name = "pastpapergen"
+name = "keldin-edexcel"
 version = "0.2.0"
 description = "Unofficial Pearson Edexcel A-Level Economics A practice paper generator."
 requires-python = ">=3.11"
@@ -16,10 +16,10 @@ dev = [
 ]
 
 [project.scripts]
-pastpapergen = "pastpapergen.cli:main"
+keldin-edexcel = "keldin_edexcel.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["pastpapergen*"]
+include = ["keldin_edexcel*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,1 +1,1 @@
-# Data-driven generator for newly onboarded assessment families.
+# Data-driven generator for newly onboarded assessment families

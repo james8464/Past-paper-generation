@@ -1,7 +1,7 @@
-# Seeded, student-visible facts for the French NSI graph/tree exercise.
+# Seeded, student-visible facts for the French NSI graph/tree exercise
 #
-# The model can write prose around these fixed facts but cannot change them.
-# No model-generated code is executed here.
+# the model can write prose around these fixed facts but cannot change them
+# no model-generated code is executed here
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ _FAULTY_BFS = (
 _CORRECTED_BFS = _FAULTY_BFS.replace("if visin not in visites:", "if voisin not in visites:")
 
 
-# Execute only the two fixed, application-owned snippets, never model code.
+# execute only the two fixed, application-owned snippets, never model code
 def _run_trusted_bfs(source: str, graph: dict[str, list[str]]) -> list[str]:
     if source not in {_FAULTY_BFS, _CORRECTED_BFS}:
         raise ValueError("Unknown trusted debugging code")
@@ -222,7 +222,7 @@ def _expected(graph: dict, tree: dict, debug_case: dict) -> dict:
     }
 
 
-# Immutable canonical JSON; callers receive fresh copies of its data.
+# Immutable canonical JSON; callers receive fresh copies of its data
 @dataclass(frozen=True)
 class GraphTreeContract:
 
@@ -273,7 +273,7 @@ class GraphTreeContract:
         )
 
 
-# Make one small, connected graph and a separate valid BST for a seed.
+# make one small, connected graph and a separate valid BST for a seed
 def build_graph_tree_contract(seed: int, exercise_id: str) -> GraphTreeContract:
     if type(seed) is not int or exercise_id != "1":
         raise ValueError("Unsupported graph/tree seed or exercise")

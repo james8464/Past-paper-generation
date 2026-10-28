@@ -1,4 +1,4 @@
-// Connect the sidebar selection to the appropriate workspace and shared panels.
+// Connect the sidebar selection to the appropriate workspace and shared panels
 
 import SwiftUI
 

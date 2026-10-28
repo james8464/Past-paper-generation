@@ -107,8 +107,8 @@ External examiner and learner evidence remains a separate, unpassed gate.
 **Files:**
 - Modify: `Resources/computer-science/aqa/generator/cspapergen/models.py`
 - Modify: `Resources/computer-science/aqa/generator/cspapergen/ollama_client.py`
-- Modify: `Resources/economics/edexcel-a/generator/pastpapergen/models.py`
-- Modify: `Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py`
+- Modify: `Resources/economics/edexcel-a/generator/keldin_edexcel/models.py`
+- Modify: `Resources/economics/edexcel-a/generator/keldin_edexcel/ollama_client.py`
 - Test: specialist generator test suites.
 
 **Interfaces:**

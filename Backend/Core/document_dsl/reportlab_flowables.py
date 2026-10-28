@@ -1,4 +1,4 @@
-# Build reusable ReportLab page and question furniture.
+# build reusable ReportLab page and question furniture
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ class SectionHeaderData(Protocol):
     instructions: str
 
 
-# Flatten explicit pages while preserving the leading-break contract.
+# Flatten explicit pages while preserving the leading-break contract
 def page_sequence(pages: Iterable[Sequence[Flowable]]) -> list[Flowable]:
 
     result: list[Flowable] = []
@@ -34,7 +34,7 @@ def page_sequence(pages: Iterable[Sequence[Flowable]]) -> list[Flowable]:
     return result
 
 
-# Build the measured AQA section heading shared by AQA families.
+# build the measured AQA section heading shared by AQA families
 def aqa_section_intro(
     section: SectionHeaderData,
     *,
@@ -63,7 +63,7 @@ def aqa_section_intro(
     ]
 
 
-# Return the neutral-branding page shared by AQA mark schemes.
+# return the neutral-branding page shared by AQA mark schemes
 def independent_practice_page(
     *,
     styles: Mapping[str, ParagraphStyle],
@@ -81,7 +81,7 @@ def independent_practice_page(
     ]
 
 
-# Return the measured AQA option-selection lozenge.
+# return the measured AQA option-selection lozenge
 def aqa_lozenge(ink: Color) -> Drawing:
 
     drawing = Drawing(25, 15)
@@ -92,7 +92,7 @@ def aqa_lozenge(ink: Color) -> Drawing:
     return drawing
 
 
-# Pair a family-profiled question header with measured trailing space.
+# pair a family-profiled question header with measured trailing space
 def flowable_question_block(
     question: QuestionHeaderData,
     *,
@@ -103,7 +103,7 @@ def flowable_question_block(
     return [question_table(question), Spacer(1, spacing_mm * mm)]
 
 
-# Measured AQA question-number, prompt, and tariff flowables.
+# Measured AQA question-number, prompt, and tariff flowables
 @dataclass(frozen=True)
 class AQAQuestionHeaderFactory:
 
@@ -159,7 +159,7 @@ class AQAQuestionHeaderFactory:
         )
 
 
-# Measured OCR question-number, prompt, and tariff flowables.
+# Measured OCR question-number, prompt, and tariff flowables
 @dataclass(frozen=True)
 class OCRQuestionHeaderFactory:
 
@@ -205,7 +205,7 @@ class OCRQuestionHeaderFactory:
         )
 
 
-# Create measured section banners and information panels.
+# create measured section banners and information panels
 @dataclass(frozen=True)
 class SingleCellPanelFactory:
 

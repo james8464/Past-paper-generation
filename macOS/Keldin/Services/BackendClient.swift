@@ -1,4 +1,4 @@
-// Launch the backend helper and decode its streamed events.
+// Launch the backend helper and decode its streamed events
 
 @preconcurrency import Foundation
 
@@ -52,8 +52,8 @@ struct BackendEventLineBuffer {
     }
 
     private func decode(_ data: Data) -> String {
-        // A pipe read may split a character. Decode only complete lines; invalid
-        // UTF-8 becomes an unreadable event, never silently discarded content.
+        // a pipe read may split a character. Decode only complete lines; invalid
+        // UTF-8 becomes an unreadable event, never silently discarded content
         String(data: data, encoding: .utf8) ?? "\u{FFFD}"
     }
 }
@@ -149,7 +149,7 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             try process.run()
 
             // Drain both pipes while the helper is running. Reading them one after
-            // another can deadlock if the helper fills stderr before stdout closes.
+            // another can deadlock if the helper fills stderr before stdout closes
             let outputTask = Task.detached {
                 pipe.fileHandleForReading.readDataToEndOfFile()
             }
@@ -189,8 +189,8 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             )
         }
 
-        // Store builds must use their signed, bundled service. A local checkout
-        // or environment override is only a development convenience.
+        // store builds must use their signed, bundled service. A local checkout
+        // or environment override is only a development convenience
         guard distributionMode == .direct else { throw BackendClientError.backendMissing }
 
         let root = try repositoryRoot()

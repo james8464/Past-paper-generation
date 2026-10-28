@@ -1,7 +1,6 @@
-# Original, source-comparable topic-bank tasks. Full-paper templates are untouched.
-#
-# Tariffs/AOs describe the actual work, not a scaled whole-paper target. Source
-# comparability is independently checked by Backend.Core.topic_reference_evidence.
+# source-comparable topic-bank tasks; full-paper templates unchanged. Tariffs/AOs
+# reflect actual work, not scaled full-paper targets
+# Backend.Core.topic_reference_evidence checks comparability independently
 from __future__ import annotations
 
 import random
@@ -57,8 +56,8 @@ def build_reference_bank_questions(topic: str, rng: random.Random) -> list[Quest
         ]
     if topic == "4.10":
         from cspapergen.question_bank import QUESTION_STYLES, build_question
-        # Keep the independently executable SELECT/INSERT intents and original
-        # scenario, but put the previously unsupported DELETE into error analysis.
+        # keep the independently executable SELECT/INSERT intents and original
+        # scenario, but put the previously unsupported DELETE into error analysis
         style = next(s for s in QUESTION_STYLES if s.id == "sql_normalisation")
         sql = build_question(style, 1, 12, rng)
         selected = sql.parts[1].model_copy(deep=True)

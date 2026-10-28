@@ -1,4 +1,4 @@
-# Bounded, checkpointed French graph/tree authoring over immutable facts.
+# bounded, checkpointed French graph/tree authoring over immutable facts
 
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ def _save(path: Path, payload: dict) -> None:
         Path(name).unlink(missing_ok=True)
 
 
-# Exact Ollama format for one two-question response.
+# exact Ollama format for one two-question response
 def part_response_schema(part: str) -> dict:
     if part not in "ABC" or len(part) != 1:
         raise ValueError("Partie NSI inconnue")
@@ -219,7 +219,7 @@ def _check_part(part: str, response: dict, request: dict) -> None:
         )
 
 
-# Persist each accepted part; resume only against identical inputs.
+# persist each accepted part; resume only against identical inputs
 def author_graph_tree_parts(
     client,
     task: dict,
@@ -294,7 +294,7 @@ def author_graph_tree_parts(
     return raw, deepcopy(draft)
 
 
-# Rebuild a candidate only from the three hash-linked accepted responses.
+# rebuild a candidate only from the three hash-linked accepted responses
 def replay_graph_tree_parts(
     task: dict,
     contract: GraphTreeContract,
@@ -346,7 +346,7 @@ def replay_graph_tree_parts(
     return raw
 
 
-# Only prompt, answer, marking and verification can change.
+# only prompt, answer, marking and verification can change
 def apply_graph_tree_repair(
     raw: dict, question_id: str, replacement: dict, contract: GraphTreeContract
 ) -> tuple[dict, dict]:
@@ -382,7 +382,7 @@ def apply_graph_tree_repair(
     }
 
 
-# Selection-only v12 schema; v11's prose schema remains unchanged.
+# Selection-only v12 schema; v11's prose schema remains unchanged
 def part_selection_schema(part: str) -> dict:
     return selection_schema(part)
 
@@ -553,7 +553,7 @@ def _check_closed_saved_part(
     validate_selection(part, saved["response"], task, contract)
 
 
-# Persist validated finite selections and every rejected raw attempt.
+# persist validated finite selections and every rejected raw attempt
 def author_closed_prose_parts(
     client,
     task: dict,
@@ -672,7 +672,7 @@ def replay_closed_prose_parts(
     )
 
 
-# Change only one finite question choice, preserving scene and peers.
+# change only one finite question choice, preserving scene and peers
 def apply_closed_prose_repair(
     selections: list[dict],
     question_id: str,

@@ -1,4 +1,4 @@
-# Load the AQA Computer Science syllabus records used to select topics.
+# load the AQA Computer Science syllabus records used to select topics
 
 from __future__ import annotations
 

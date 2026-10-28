@@ -1,4 +1,4 @@
-# Answer-free, item-level review of French NSI curriculum alignment.
+# Answer-free, item-level review of French NSI curriculum alignment
 
 import json
 
@@ -12,7 +12,7 @@ from Backend.Core.france.graph_tree_prose import render_graph_tree_candidate
 from Backend.Core.france.nsi import CURRICULUM_OBJECTIVES, NSIExercise
 
 
-# Ask a separate reviewer to check whether the question supports its claimed label.
+# Ask a separate reviewer to check whether the question supports its claimed label
 def alignment_prompt(exercise: NSIExercise, task: dict, references: list[dict]) -> str:
     blueprint = task["question_blueprint"]
     objectives = {
@@ -45,14 +45,14 @@ def alignment_prompt(exercise: NSIExercise, task: dict, references: list[dict]) 
     )
 
 
-# Incomplete or contradictory model evidence never authorises a question.
+# Incomplete or contradictory model evidence never authorises a question
 def check_question_alignment(exercise: NSIExercise, task: dict, review: dict) -> None:
     failures = alignment_failures(exercise, task, review)
     if failures:
         raise ValueError(f"Question {failures[0]} : alignement non établi")
 
 
-# Return specifically rejected items; malformed review is not repair evidence.
+# return specifically rejected items; malformed review is not repair evidence
 def alignment_failures(exercise: NSIExercise, task: dict, review: dict) -> list[str]:
     items = review.get("questions") if isinstance(review, dict) else None
     blueprint = task["question_blueprint"]
@@ -77,7 +77,7 @@ def alignment_failures(exercise: NSIExercise, task: dict, review: dict) -> list[
     return failures
 
 
-# Keep the scenario and peer questions fixed while revising one draft.
+# keep the scenario and peer questions fixed while revising one draft
 def repair_question_prompt(
     exercise: NSIExercise,
     task: dict,
@@ -109,7 +109,7 @@ def repair_question_prompt(
     )
 
 
-# Repair an invalid allocation without permitting a change of task or answer.
+# Repair an invalid allocation without permitting a change of task or answer
 def repair_marking_prompt(authored_question: dict, planned: dict) -> str:
     return (
         "Répare uniquement le barème de cette question NSI Terminale. "
@@ -126,7 +126,7 @@ def repair_marking_prompt(authored_question: dict, planned: dict) -> str:
     )
 
 
-# Expose only the one question, its plan and immutable part facts.
+# expose only the one question, its plan and immutable part facts
 def graph_tree_repair_prompt(
     raw: dict,
     task: dict,
@@ -163,7 +163,7 @@ def graph_tree_repair_prompt(
     )
 
 
-# Ask for one finite choice change, never a replacement sentence.
+# Ask for one finite choice change, never a replacement sentence
 def closed_prose_repair_prompt(
     selections: list[dict],
     task: dict,

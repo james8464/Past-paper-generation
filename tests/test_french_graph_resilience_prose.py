@@ -1,4 +1,4 @@
-# V20 wording and marks are finite and match the requested evidence.
+# V20 wording and marks are finite and match the requested evidence
 
 from copy import deepcopy
 from decimal import Decimal

@@ -1,4 +1,4 @@
-# Read pre-Keldin settings and copy local data without replacing newer files.
+# read pre-Keldin settings and copy local data without replacing newer files
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from collections.abc import Mapping
 from contextlib import suppress
 from pathlib import Path
 
-# These spellings are read-only compatibility inputs. New jobs use Keldin names.
+# these spellings are read-only compatibility inputs. New jobs use Keldin names
 LEGACY_ENVIRONMENT_PREFIX = "PAPER_CREATOR_"
 LEGACY_OUTPUT_DIRECTORIES = {
     ".keldin-checkpoints": ".papercreator-checkpoints",
@@ -21,7 +21,7 @@ LEGACY_V32_ORIGIN = f"{LEGACY_PUBLISHER} application-owned French cases v32".enc
 LEGACY_FRENCH_FOOTER = f"{LEGACY_PUBLISHER} — entraînement non officiel — non relu"
 
 
-# Prefer a Keldin setting, including an explicitly empty value, over its alias.
+# prefer a Keldin setting, including an explicitly empty value, over its alias
 def environment_value(
     name: str,
     default: str | None = "",
@@ -35,7 +35,7 @@ def environment_value(
     return values.get(legacy, default)
 
 
-# Copy ordinary files only; leave both the originals and newer data intact.
+# Copy ordinary files only; leave both the originals and newer data intact
 def copy_missing_tree(source: Path, destination: Path) -> None:
     if source.is_symlink() or not source.is_dir():
         return
@@ -52,7 +52,7 @@ def copy_missing_tree(source: Path, destination: Path) -> None:
             if not target.exists() or target.is_dir():
                 copy_missing_tree(child, target)
         elif child.is_file() and not target.exists():
-            # Publish a complete copy without replacing a concurrent writer's file.
+            # Publish a complete copy without replacing a concurrent writer's file
             with tempfile.NamedTemporaryFile(dir=destination, prefix=".keldin-import-", delete=False) as copied:
                 temporary = Path(copied.name)
                 try:
@@ -66,7 +66,7 @@ def copy_missing_tree(source: Path, destination: Path) -> None:
                     temporary.unlink(missing_ok=True)
 
 
-# Import old checkpoints or diagnostics before returning their current folder.
+# Import old checkpoints or diagnostics before returning their current folder
 def output_directory(parent: Path, name: str) -> Path:
     target = parent / name
     legacy = LEGACY_OUTPUT_DIRECTORIES.get(name)
@@ -75,7 +75,7 @@ def output_directory(parent: Path, name: str) -> Path:
         source = parent / legacy
         if source.is_dir() and not source.is_symlink():
             copy_missing_tree(source, target)
-            # A retired checkpoint must not reappear from its preserved original.
+            # a retired checkpoint must not reappear from its preserved original
             with suppress(FileExistsError), marker.open("xb"):
                 pass
     return target

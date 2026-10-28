@@ -1,11 +1,11 @@
-# Validate the Edexcel Economics blueprint before publishing its artifacts.
+# validate the Edexcel Economics blueprint before publishing its artifacts
 
 from __future__ import annotations
 
 import re
 
-from pastpapergen.assessment_contracts import validate_assessment_contract
-from pastpapergen.models import PaperBlueprint, PaperConfig, Syllabus
+from keldin_edexcel.assessment_contracts import validate_assessment_contract
+from keldin_edexcel.models import PaperBlueprint, PaperConfig, Syllabus
 
 
 def validate_blueprint(

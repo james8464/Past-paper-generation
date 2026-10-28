@@ -1,5 +1,5 @@
-from pastpapergen.models import QuestionBlueprint, SyllabusTopic
-from pastpapergen.ollama_client import build_question_prompt
+from keldin_edexcel.models import QuestionBlueprint, SyllabusTopic
+from keldin_edexcel.ollama_client import build_question_prompt
 
 
 def test_ollama_prompt_limits_generation_to_syllabus_topic():

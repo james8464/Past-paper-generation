@@ -1,4 +1,4 @@
-# Add question-specific marking guidance to generated papers.
+# add question-specific marking guidance to generated papers
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from Backend.Core.exam_blueprints import (
 )
 
 
-# Remove generator artefacts and add indicative marking guidance.
+# remove generator artefacts and add indicative marking guidance
 def enrich_paper(
     paper: GeneratedPaper,
     topics: Iterable[Any],
@@ -53,7 +53,7 @@ def enrich_paper(
                 option.model_copy(
                     update={
                         "title": _clean_text(option.title),
-                        # Indentation is source syntax, not cosmetic whitespace.
+                        # Indentation is source syntax, not cosmetic whitespace
                         "stimulus": [text if subject == "computer science" and "\n" in text
                                      else _clean_text(text) for text in option.stimulus],
                         "questions": questions,
@@ -194,7 +194,7 @@ def _objective_guidance(
 ) -> list[str]:
     if subject in {"accounting", "computer science"}:
         # Accounting credit is item-specific. Topic revision notes are not extra
-        # award points, and familiar technique marks must not become AO2 by default.
+        # award points, and familiar technique marks must not become AO2 by default
         policy = objective_policy_for(subject)
         return [
             f"{ao}: {policy.meanings[ao]}. Apply only to the work required by this item."

@@ -1,15 +1,15 @@
-// Define Keldin's menu actions and route them through the application coordinator.
+// Define Keldin's menu actions and route them through the application coordinator
 
 import SwiftUI
 
-private struct PaperCreationContextKey: FocusedValueKey {
-    typealias Value = PaperCreationContext
+private struct KeldinCreationContextKey: FocusedValueKey {
+    typealias Value = KeldinCreationContext
 }
 
 extension FocusedValues {
-    var paperCreationContext: PaperCreationContext? {
-        get { self[PaperCreationContextKey.self] }
-        set { self[PaperCreationContextKey.self] = newValue }
+    var keldinCreationContext: KeldinCreationContext? {
+        get { self[KeldinCreationContextKey.self] }
+        set { self[KeldinCreationContextKey.self] = newValue }
     }
 }
 
@@ -17,7 +17,7 @@ struct AppCommands: Commands {
     @ObservedObject var application: ApplicationCoordinator
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @FocusedObject private var documentActions: DocumentActionController?
-    @FocusedValue(\.paperCreationContext) private var creationContext
+    @FocusedValue(\.keldinCreationContext) private var creationContext
 
     private var canCreate: Bool {
         creationContext?.canCreate(

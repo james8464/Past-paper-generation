@@ -1,4 +1,4 @@
-# Extract PDF text and font names using the bundled Python PDF library.
+# extract PDF text and font names using the bundled Python PDF library
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from pathlib import Path
 import pymupdf as fitz
 
 
-# Extract stable reading-order text without a Poppler CLI dependency.
+# extract stable reading-order text without a Poppler CLI dependency
 def extract_pdf_text(
     path: Path,
     *,
@@ -30,7 +30,7 @@ def extract_pdf_text(
         document.close()
 
 
-# Return the font families actually used by visible text spans.
+# return the font families actually used by visible text spans
 def pdf_font_names(path: Path) -> set[str]:
 
     document = fitz.open(path)

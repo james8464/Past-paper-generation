@@ -1,4 +1,4 @@
-# Persist accepted items with the blueprint identity needed to resume them safely.
+# persist accepted items with the blueprint identity needed to resume them safely
 
 from __future__ import annotations
 
@@ -72,7 +72,7 @@ def identity_for_blueprint(
     )
 
 
-# Persist independently accepted questions without partial JSON writes.
+# persist independently accepted questions without partial JSON writes
 class AssessmentCheckpointStore:
 
     def __init__(self, path: Path, identity: CheckpointIdentity) -> None:
@@ -139,11 +139,11 @@ class AssessmentCheckpointStore:
                 ensure_ascii=False,
             )
             handle.write("\n")
-            # Flush file contents before replacing the previous accepted checkpoint.
+            # Flush file contents before replacing the previous accepted checkpoint
             handle.flush()
             os.fsync(handle.fileno())
         temporary.replace(self.path)
-        # Sync the directory too, so the replacement survives a crash.
+        # Sync the directory too, so the replacement survives a crash
         directory = os.open(self.path.parent, os.O_RDONLY)
         try:
             os.fsync(directory)
@@ -180,9 +180,9 @@ class AssessmentCheckpointStore:
             != getattr(self.identity, field_name)
         ]
         if mismatches == ["blueprint_sha256"]:
-            # Retain expensive accepted items across a blueprint revision. Every
+            # retain expensive accepted items across a blueprint revision. Every
             # caller revalidates each payload against the current immutable item
-            # contract before it is allowed back into the paper.
+            # contract before it is allowed back into the paper
             document["identity"] = self.identity.model_dump(mode="json")
             self._write_document(document)
         elif mismatches:

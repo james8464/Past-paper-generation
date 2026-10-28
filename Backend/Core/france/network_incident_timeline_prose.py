@@ -1,4 +1,4 @@
-# Versioned V26 recovery chronology layered on replayable V23 prose.
+# versioned V26 recovery chronology layered on replayable V23 prose
 
 from __future__ import annotations
 
@@ -244,7 +244,7 @@ def render_network_incident_timeline_candidate(
     return raw
 
 
-# Reject altered timeline premises, working tables, answers and credits.
+# reject altered timeline premises, working tables, answers and credits
 def validate_network_incident_timeline_exercise(
     contract: NetworkIncidentTimelineContract,
     exercise,

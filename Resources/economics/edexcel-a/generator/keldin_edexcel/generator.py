@@ -1,4 +1,4 @@
-# Build seeded Edexcel Economics paper content and its marking guidance.
+# build seeded Edexcel Economics paper content and its marking guidance
 
 from __future__ import annotations
 
@@ -6,8 +6,8 @@ import math
 import random
 import re
 
-from pastpapergen.assessment_contracts import bind_question
-from pastpapergen.models import (
+from keldin_edexcel.assessment_contracts import bind_question
+from keldin_edexcel.models import (
     MultipleChoiceOption,
     PaperBlueprint,
     PaperConfig,
@@ -16,8 +16,8 @@ from pastpapergen.models import (
     Syllabus,
     SyllabusTopic,
 )
-from pastpapergen.notes import essay_capable_topic_ids, note_points_for_topic
-from pastpapergen.source_cases import data_response_extract, section_c_extract
+from keldin_edexcel.notes import essay_capable_topic_ids, note_points_for_topic
+from keldin_edexcel.source_cases import data_response_extract, section_c_extract
 
 
 def build_paper_blueprint(
@@ -215,7 +215,7 @@ def _choice_lookup(choice_groups: list[list[int]]) -> dict[int, int]:
     return lookup
 
 
-# Add standardisation metadata omitted by a bespoke indicative scheme.
+# add standardisation metadata omitted by a bespoke indicative scheme
 def _complete_extended_guidance(
     points: list[str],
     marks: int,

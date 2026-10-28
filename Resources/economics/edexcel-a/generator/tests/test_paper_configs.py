@@ -1,4 +1,4 @@
-from pastpapergen.paper_configs import load_builtin_paper_config
+from keldin_edexcel.paper_configs import load_builtin_paper_config
 
 
 def test_paper_1_matches_core_edexcel_structure():

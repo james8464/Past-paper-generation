@@ -1,4 +1,4 @@
-# Build AQA Computer Science question templates with matching source data and answers.
+# build AQA Computer Science question templates with matching source data and answers
 
 from __future__ import annotations
 
@@ -291,7 +291,7 @@ def _data_structures_tree_question(
         tree_answers[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
         tree_answers[f"node-{value}-side"] = [side]
     parts[0].set_closed_answers(tree_answers)
-    # Slot IDs refer only to supplied values, never to the answer's tree shape.
+    # Slot IDs refer only to supplied values, never to the answer's tree shape
     parts[1].set_closed_answers({f"visit-{i}": [str(value)] for i, value in enumerate(traversal_values, 1)})
     return _question(style, number, "Binary search trees", "The values shown are inserted into an initially empty binary search tree.", stimulus, _fit_parts(parts, total))
 
@@ -989,7 +989,7 @@ def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.R
         ("4", 4, "Explain how increasing the sampling rate and sample resolution can affect the stored sound.", ["Increasing sampling rate captures the waveform more frequently;", "Increasing sample resolution increases the number of possible amplitude values;", "Both can improve accuracy/quality;", "Both increase file size/storage requirement;"], "", 7),
     ])
     parts[0].response_slots = ["result"]
-    # The PDF preprints MiB beside the answer line; bare values use that unit.
+    # the PDF preprints MiB beside the answer line; bare values use that unit
     parts[0].marking.closed_answers = {"result": [f"{size_mib:.2f} MiB", f"{size_mib} MiB", f"{size_mib:.2f}", str(size_mib)]}
     parts[1].response_slots = ["result"]
     parts[1].marking.closed_answers = {"result": ["36 kHz", "36000 Hz", "36 000 Hz", "36000", "36 000"]}

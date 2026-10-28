@@ -69,7 +69,7 @@ def test_aqa_additional_page_matches_measured_response_grid(tmp_path: Path) -> N
         document.close()
 
 
-# Catch inherited grey strokes and small type on the shared answer shell.
+# Catch inherited grey strokes and small type on the shared answer shell
 def test_aqa_answer_grid_prints_black_with_full_size_header(tmp_path: Path) -> None:
     document = _render(
         tmp_path,
@@ -100,7 +100,7 @@ def test_aqa_answer_grid_prints_black_with_full_size_header(tmp_path: Path) -> N
         document.close()
 
 
-# A legal note must not shorten the diagonal or move the central warning.
+# a legal note must not shorten the diagonal or move the central warning
 @pytest.mark.parametrize(
     "module_name", ["aqaaccountgen.render_pdf", "aqabizgen.render_pdf"]
 )
@@ -156,7 +156,7 @@ def test_accounting_first_mcq_page_explains_selection_and_correction_before_ques
         )
         corners = [item for item in panel["items"] if item[0] == "c"]
         assert len(corners) == 4
-        # Source radius is 26.125pt, not a square or token-size corner.
+        # source radius is 26.125pt, not a square or token-size corner
         assert abs(corners[0][-1].x - corners[0][1].x) == pytest.approx(26.125, abs=0.2)
         prompt = paper.sections[0].options[0].questions[0].prompt
         assert 295 < page.search_for(prompt)[0].y0 < 330
@@ -240,8 +240,8 @@ def test_aqa_additional_page_visually_clears_existing_family_chrome(
     try:
         page = document[0]
         pixmap = page.get_pixmap(matrix=fitz.Matrix(2, 2), alpha=False)
-        # The old left rail is under the white clearing layer. A tolerance is
-        # used because the rasteriser anti-aliases the edge of the old stroke.
+        # the old left rail is under the white clearing layer. A tolerance is
+        # used because the rasteriser anti-aliases the edge of the old stroke
         red, green, blue = pixmap.pixel(80, 600)
         assert red > 245 and green > 245 and blue > 245
         red, green, blue = pixmap.pixel(400, 84)

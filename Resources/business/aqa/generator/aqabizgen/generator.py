@@ -1,4 +1,4 @@
-# Build seeded AQA Business paper content and its marking guidance.
+# build seeded AQA Business paper content and its marking guidance
 
 from __future__ import annotations
 

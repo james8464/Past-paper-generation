@@ -1,4 +1,4 @@
-# Subject meaning for AO labels, independent of item tariffs and renderers.
+# subject meaning for AO labels, independent of item tariffs and renderers
 
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ class ObjectivePolicy:
             "the allocated objective, not merely that totals add up. "
         )
 
-    # Reject unsupported labels in new or persisted qualified contracts.
+    # reject unsupported labels in new or persisted qualified contracts
     def validate(self, value: Any) -> None:
         if not self.explicit_allocations:
             return
@@ -86,14 +86,14 @@ class ObjectivePolicy:
         payload = [self.version, self.meanings, objectives, command, kind]
         return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
-    # CS tasks are not classified from their tariff or AO3 label alone.
+    # CS tasks are not classified from their tariff or AO3 label alone
     def task_operation(self, raw: dict[str, Any], command: str, kind: str) -> str:
         explicit = raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation")
         if explicit:
             return str(explicit)
         prompt = " ".join(str(raw.get("prompt", "")).casefold().split())
         objectives = raw.get("assessment_objectives") or {}
-        # Reference tasks may request artefacts without an imperative verb.
+        # Reference tasks may request artefacts without an imperative verb
         if "program source code" in prompt:
             return "program"
         if "screen capture" in prompt and "test" in prompt:
@@ -175,12 +175,12 @@ COMPUTER_SCIENCE_OBJECTIVES = ObjectivePolicy(
 )
 
 
-# Resolve family IDs, subject names or qualification codes.
+# resolve family IDs, subject names or qualification codes
 def objective_policy_for(*identifiers: str) -> ObjectivePolicy:
     identity = " ".join(identifiers).casefold()
     # Explicit board identities precede subject aliases. Cambridge 9618 is an
     # unqualified configured preview. Its placeholder policy still needs review;
-    # it cannot validate the AQA/OCR policy or its old AO4 allocation.
+    # it cannot validate the AQA/OCR policy or its old AO4 allocation
     if "cambridge" in identity or "9618" in identity:
         return GENERAL_OBJECTIVES
     if "accounting" in identity or "7127" in identity:

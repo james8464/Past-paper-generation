@@ -1,4 +1,4 @@
-# Deterministic selected responses derived only from candidate-visible inputs.
+# deterministic selected responses derived only from candidate-visible inputs
 
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ class SelectedResponseContract(BaseModel):
     decimal_places: int = Field(ge=0, le=4)
 
 
-# Build a contract from the one operation-owned output format policy.
+# build a contract from the one operation-owned output format policy
 def selected_response_contract(
     operation: SelectedOperation,
     *,
@@ -90,7 +90,7 @@ def selected_response_contract(
     ).model_dump(mode="json")
 
 
-# Return a one-choice solution for a supported public-input contract.
+# return a one-choice solution for a supported public-input contract
 def solve_selected_response(item: dict[str, Any]) -> dict[str, Any] | None:
     context = item.get("authoring_context")
     raw_contract = (

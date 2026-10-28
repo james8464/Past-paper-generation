@@ -1,4 +1,4 @@
-# Render AQA Accounting papers and marking guidance using the shared PDF components.
+# render AQA Accounting papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -471,7 +471,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             "a mark for every part and reconcile the question and paper totals.",
         ),
     ]
-    # General instructions belong once, before the specialised guidance.
+    # General instructions belong once, before the specialised guidance
     pages[0].append(Spacer(1, 7 * mm))
     for heading, text in narrative:
         pages[0].extend(
@@ -944,7 +944,7 @@ def _levels_scheme_page(
     ]
 
 
-# Preserve declared objectives; row position is not assessment evidence.
+# preserve declared objectives; row position is not assessment evidence
 def _indicative_objective(point: str) -> str:
     objective_policy_for("accounting").validate(point)
     prefix, separator, _ = point.partition(":")
@@ -1029,9 +1029,9 @@ def _extended_indicative_content_page(
     question: GeneratedQuestion,
     title: str,
 ) -> list[Flowable]:
-    # The generator also carries reusable level descriptors and marker checks.
-    # Those are printed on the preceding page; this page mirrors the concise
-    # question-specific indicative-content page used in the reference scheme.
+    # the generator also carries reusable level descriptors and marker checks
+    # those are printed on the preceding page; this page mirrors the concise
+    # question-specific indicative-content page used in the reference scheme
     shareholder_source = question.authoring_context.get("candidate_source")
     if (
         isinstance(shareholder_source, dict)

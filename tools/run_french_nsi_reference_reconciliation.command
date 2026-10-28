@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Reconcile the registered French NSI references before using them for generation.
+# Reconcile the registered French NSI references before using them for generation
 
 set -euo pipefail
 

@@ -1,4 +1,4 @@
-# Finite original French wording for the V18 written network exercise.
+# finite original French wording for the V18 written network exercise
 
 from __future__ import annotations
 

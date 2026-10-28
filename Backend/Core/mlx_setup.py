@@ -1,4 +1,4 @@
-# Prepare local MLX models and report setup failures the app can act on.
+# Prepare local MLX models and report setup failures the app can act on
 
 from __future__ import annotations
 
@@ -25,8 +25,8 @@ MLX_PACKAGE_SPECS = (
     "outlines==1.3.3",
     "llguidance==1.9.1",
 )
-# Only model data may be downloaded. Architecture and tokenizer implementation
-# must come from the packaged runtime, never from a model repository's Python.
+# only model data may be downloaded. Architecture and tokenizer implementation
+# must come from the packaged runtime, never from a model repository's Python
 MLX_MODEL_PATTERNS = [
     "*.json",
     "model*.safetensors",
@@ -42,17 +42,17 @@ SUPPORTED_PYTHON_MIN = (3, 10)
 SUPPORTED_PYTHON_MAX = (3, 13)
 
 
-# A recoverable Apple MLX setup failure suitable for the app UI.
+# a recoverable Apple MLX setup failure suitable for the app UI.
 class MLXSetupError(RuntimeError):
     pass
 
 
-# Apple MLX setup was cancelled by the user.
+# Apple MLX setup was cancelled by the user
 class MLXSetupCancelled(MLXSetupError):
     pass
 
 
-# The selected model no longer has a complete local snapshot.
+# the selected model no longer has a complete local snapshot
 class MLXModelSetupRequired(MLXSetupError):
     pass
 
@@ -63,7 +63,7 @@ class MLXSetupResult:
     model_ready: bool
 
 
-# Fail before download when the local MLX environment cannot succeed.
+# Fail before download when the local MLX environment cannot succeed
 def validate_mlx_setup_environment(
     *,
     python_version: tuple[int, int] | None = None,
@@ -100,7 +100,7 @@ def _available_cache_bytes() -> int:
     return shutil.disk_usage(probe).free
 
 
-# Exercise the packaged runtime instead of merely checking module metadata.
+# Exercise the packaged runtime instead of merely checking module metadata
 def mlx_runtime_available() -> bool:
 
     try:
@@ -131,7 +131,7 @@ def mlx_runtime_available() -> bool:
         return False
 
 
-# Only permit package installation inside the repository-owned virtualenv.
+# only permit package installation inside the repository-owned virtualenv
 def is_managed_development_environment() -> bool:
 
     prefix = Path(sys.prefix).resolve()
@@ -200,7 +200,7 @@ def install_mlx_runtime(
     return return_code == 0 and mlx_runtime_available()
 
 
-# Return a complete local model path without allowing a network download.
+# return a complete local model path without allowing a network download
 def resolve_local_mlx_model(
     model: str,
     *,
@@ -263,7 +263,7 @@ def load_mlx_model(
         ) from error
 
 
-# Install a development runtime if needed, then prepare the chosen model.
+# Install a development runtime if needed, then prepare the chosen model
 def ensure_mlx_ready(
     model: str,
     *,

@@ -102,7 +102,7 @@ final class PDFDocumentAccess {
         }
     }
 
-    // The last view can disappear without another selection update.
+    // the last view can disappear without another selection update
     deinit { scopedURL?.stopAccessingSecurityScopedResource() }
 
     private var bookmarks: [String: Data] {

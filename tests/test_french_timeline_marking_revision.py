@@ -1,4 +1,4 @@
-# V27 credits every requested security limit without changing historical V26.
+# V27 credits every requested security limit without changing historical V26
 
 from decimal import Decimal
 

@@ -1,4 +1,4 @@
-# V17 graph/tree wording and credit are finite, locked, and replayable.
+# V17 graph/tree wording and credit are finite, locked, and replayable
 
 from copy import deepcopy
 from decimal import Decimal

@@ -1,4 +1,4 @@
-# Eligibility joins and a greedy counterexample for French practice.
+# Eligibility joins and a greedy counterexample for French practice
 
 
 def candidate_query():
@@ -10,7 +10,7 @@ WHERE Equipe.active = 1
 ORDER BY Tache.priorite, Tache.id, Equipe.id"""
 
 
-# These solutions retain short lines for enlarged-print code listings.
+# these solutions retain short lines for enlarged-print code listings
 # fmt: off
 def glouton(taches, candidats):
     sortie = []
@@ -31,7 +31,7 @@ def glouton(taches, candidats):
     return sortie
 
 
-# Backtrack on assignments; failed branches leave no shared state.
+# Backtrack on assignments; failed branches leave no shared state
 def affecter(taches, candidats):
     def chercher(rang, choix, prises):
         if rang == len(taches):
@@ -54,7 +54,7 @@ def affecter(taches, candidats):
 
 
 # fmt: on
-# One structural family, with an inactive decoy and shared eligibility.
+# one structural family, with an inactive decoy and shared eligibility
 def build_case(seed):
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("A signed 64-bit integer seed is required")

@@ -1,4 +1,4 @@
-// Present French NSI generation, reference and teacher-review actions.
+// Present French NSI generation, reference and teacher-review actions
 
 import SwiftUI
 
@@ -40,7 +40,7 @@ struct FrenchAssessmentWorkspace: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle("Baccalauréat · NSI")
-        .focusedSceneValue(\.paperCreationContext, .french(largePrint: largePrint))
+        .focusedSceneValue(\.keldinCreationContext, .french(largePrint: largePrint))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if application.isRunning {
@@ -91,8 +91,8 @@ struct FrenchAssessmentWorkspace: View {
                 LabeledContent("Written exam") {
                     Text("2027 · 3 h 30 · 3 independent exercises")
                 }
-                // These rows have no input state. Fresh identities refresh the
-                // cached accessibility values when the interface language changes.
+                // these rows have no input state. Fresh identities refresh the
+                // cached accessibility values when the interface language changes
                 .id("written-exam-\(interfaceLanguage)")
                 LabeledContent("Indicative credit") {
                     Text("18 technical + 2 French language = 20")
@@ -159,7 +159,7 @@ struct FrenchAssessmentWorkspace: View {
     }
 
     private var canGenerate: Bool {
-        PaperCreationContext.french(largePrint: largePrint).canCreate(
+        KeldinCreationContext.french(largePrint: largePrint).canCreate(
             boardCanGenerate: false,
             hasFrenchReferences: application.hasFrenchReferences,
             isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome

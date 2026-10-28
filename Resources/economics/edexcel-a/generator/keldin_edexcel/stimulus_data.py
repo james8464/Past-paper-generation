@@ -1,4 +1,4 @@
-# Supply Edexcel Economics source data for the candidate booklet.
+# Supply Edexcel Economics source data for the candidate booklet
 
 from __future__ import annotations
 

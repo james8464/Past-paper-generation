@@ -1,4 +1,4 @@
-# Whole tree cases: different reasoning, independent oracles, linked states.
+# Whole tree cases: different reasoning, independent oracles, linked states
 
 from copy import deepcopy
 from itertools import product
@@ -140,7 +140,7 @@ def test_tree_shape_rejects_global_order_cycles_shared_and_unreachable_nodes():
     original = build_case(270100)["public"]["rows"]
     bad = []
     rows = deepcopy(original)
-    rows[4][1] = rows[0][1] + 1  # Locally > parent, globally invalid left subtree.
+    rows[4][1] = rows[0][1] + 1  # Locally > parent, globally invalid left subtree
     bad.append(rows)
     rows = deepcopy(original)
     rows[3][2] = "r"

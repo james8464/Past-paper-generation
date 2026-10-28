@@ -1,4 +1,4 @@
-# Explicit French transport policy; UK prompt detection remains unchanged.
+# Explicit French transport policy; UK prompt detection remains unchanged
 
 import json
 from hashlib import sha256
@@ -59,12 +59,12 @@ from Backend.Core.legacy_migration import LEGACY_V32_ORIGIN
 from Backend.Core.providers import HostedLLMClient
 
 
-# Explicit no-transport identity for the verified V32 case authoring path.
+# Explicit no-transport identity for the verified V32 case authoring path
 class ApplicationOwnedFrenchClient:
 
     provider = "application-owned"
     model = "app-owned-v32"
-    # V32's recorded identity does not change when the app is renamed.
+    # V32's recorded identity doesn't change when the app is renamed
     model_digest = sha256(LEGACY_V32_ORIGIN).hexdigest()
 
     def generate_json(self, *args, **kwargs):

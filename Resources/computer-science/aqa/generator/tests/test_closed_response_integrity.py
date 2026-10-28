@@ -65,7 +65,7 @@ def test_classification_slot_contract_reaches_solver_without_answers():
     assert "Application software" not in captured[0]
     assert "Utility software" not in captured[0]
     require_solution_matches_scheme(solution, question.parts[0].marking.model_dump())
-    # The production Ollama path must allow both mapping-valued fields.
+    # the production Ollama path must allow both mapping-valued fields
     schema = _ollama_json_schema(captured[0])
     assert schema["properties"]["answer"]["required"] == ["1", "2"]
 
@@ -124,7 +124,7 @@ def test_authoring_merge_preserves_closed_key_through_final_solver(raw_parts):
             )
 
     # Exercise the real final-review solver and reconciliation before the unrelated
-    # demand-model call; losing the key makes this raise ValueError instead.
+    # demand-model call; losing the key makes this raise ValueError instead
     with pytest.raises(ReachedDemandReview):
         review_blueprint_difficulty(Client(), blueprint, load_syllabus())
     assert merged.parts[0].marking.closed_answers == {
@@ -202,7 +202,7 @@ def test_old_figure_review_is_not_current_evidence(tmp_path, old_version):
     ],
 )
 def test_sound_slot_accepts_documented_exact_and_rounded_results(answer):
-    # 48000 samples/s * 180 s * 24 bits * 1 channel / 8 / 1024**2.
+    # 48000 samples/s * 180 s * 24 bits * 1 channel / 8 / 1024**2
     question = build_paper2_blueprint(load_syllabus(), seed=26083031).questions[1]
 
     class Client:

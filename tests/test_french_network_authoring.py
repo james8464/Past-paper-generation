@@ -1,4 +1,4 @@
-# A bounded Exercise 3 selection is checkpointed and exactly replayable.
+# a bounded Exercise 3 selection is checkpointed and exactly replayable
 
 from copy import deepcopy
 

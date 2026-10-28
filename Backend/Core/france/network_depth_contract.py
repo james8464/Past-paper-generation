@@ -1,7 +1,7 @@
-# Version-two app-owned facts for the French written network exercise.
+# Version-two app-owned facts for the French written network exercise
 #
-# This module is deliberately separate from the v14 contract: saved v14 papers
-# must continue to replay against their original facts and digest.
+# this module is deliberately separate from the v14 contract: saved v14 papers
+# must continue to replay against their original facts and digest
 
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ _SECURITY = {
 }
 
 
-# Recompute an auditable Dijkstra trace; reject ambiguous best routes.
+# recompute an auditable Dijkstra trace; reject ambiguous best routes
 def _route(links: list[list]) -> dict:
     neighbours: dict[str, list[tuple[str, int]]] = {node: [] for node in _NODES}
     for left, right, cost in links:

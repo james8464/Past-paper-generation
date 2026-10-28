@@ -1,4 +1,4 @@
-# Draw question-paper and mark-scheme covers using measured board layouts.
+# draw question-paper and mark-scheme covers using measured board layouts
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ class CoverProfile:
             raise ValueError("Cover section marks must be positive and sum to the paper total without duplicate sections.")
 
 
-# Fixed-grid, board-shaped front page without copying protected artwork.
+# fixed-grid, board-shaped front page without copying protected artwork
 class QuestionPaperCover(Flowable):
 
     def __init__(
@@ -62,7 +62,7 @@ class QuestionPaperCover(Flowable):
         self.width = 167 * mm
         self.height = 235 * mm
 
-    # Return the renderer-neutral representation used for qualification.
+    # return the renderer-neutral representation used for qualification
     @property
     def component(self) -> Cover:
         return Cover(
@@ -79,7 +79,7 @@ class QuestionPaperCover(Flowable):
 
     def drawOn(self, canv: object, x: float, y: float, _sW: float = 0) -> None:
         # Board covers have a page grid, not a position relative to the body
-        # frame (whose padding differs between the specialist renderers).
+        # frame (whose padding differs between the specialist renderers)
         page_width, page_height = canv._pagesize
         canv.saveState()
         canv.setFillColor(colors.white)
@@ -103,8 +103,8 @@ class QuestionPaperCover(Flowable):
         pdf.setFillColor(colors.HexColor("#141414"))
         self._wordmark(0, top - 1 * mm, PDF_WORDMARK, PDF_WORDMARK_DETAIL)
         if booklet:
-            # The 2025 Economics booklet has no candidate form or barcode.
-            # Keep its separator rails independent of the branding artwork.
+            # the 2025 Economics booklet has no candidate form or barcode
+            # keep its separator rails independent of the branding artwork
             pdf.setLineWidth(0.96)
             pdf.line(-5.4, top - 65.52, 499.2, top - 65.52)
 
@@ -137,7 +137,7 @@ class QuestionPaperCover(Flowable):
         if self.profile.mark_rows:
             self._examiner_table(y)
         y = self._sections(y)
-        # The cover's content origin is not the page's footer origin.
+        # the cover's content origin is not the page's footer origin
         frame_bottom = pdf._pagesize[1] - self.height - 54.0
         if booklet:
             pdf.setStrokeColor(colors.HexColor("#b3b3b3"))
@@ -145,7 +145,7 @@ class QuestionPaperCover(Flowable):
             pdf.line(-2.85, top + 54 - 762.35, 498.85, top + 54 - 762.35)
             pdf.setFont(self.bold_font, 20.04)
             # Arial's descenders extend below the source Open Sans metrics;
-            # keep the complete footer inside the 5mm printable region.
+            # keep the complete footer inside the 5mm printable region
             pdf.drawRightString(499.2, top + 54 - 823.2, self.profile.code)
             pdf.setFont(self.font, 6.96)
             pdf.drawString(8.88, top + 54 - 825.36, "Independent unofficial practice")
@@ -191,7 +191,7 @@ class QuestionPaperCover(Flowable):
         self._barcode(top - 320, x=378)
 
         # OCR uses a two-name, no-signature identity panel. Sharing the AQA
-        # signature form changed both its geometry and its required fields.
+        # signature form changed both its geometry and its required fields
         pdf.roundRect(left, top - 467.8, right - left, 130.4, 12, stroke=1, fill=0)
         pdf.setFont(self.font, 11)
         pdf.drawString(103.13, top - 359.11, "Please write clearly in black ink.")
@@ -387,7 +387,7 @@ class MarkSchemeCover(Flowable):
         )
 
     def draw(self) -> None:
-        # ``drawOn`` deliberately works in page coordinates.
+        # ``drawOn`` deliberately works in page coordinates
         return None
 
 
@@ -440,7 +440,7 @@ def _draw_aqa_mark_scheme_cover(
     pdf.setLineWidth(0.5)
     pdf.line(41.9, height - 147.6, 552.9, height - 147.6)
 
-    # June 2025 source baselines, not font-dependent extraction bounding boxes.
+    # June 2025 source baselines, not font-dependent extraction bounding boxes
     baselines = (190.28, 227.84, 265.94, 294.56, 323.60, 349.82, 377.12)
     if profile.subject.lower() == "economics":
         baselines = (

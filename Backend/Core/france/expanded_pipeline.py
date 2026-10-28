@@ -1,7 +1,7 @@
-# Five whole-paper families with immutable V34 source reuse.
+# five whole-paper families with immutable V34 source reuse
 #
 # Reconstruction certifies source integrity and retained-history screening,
-# not difficulty or learner timing.
+# not difficulty or learner timing
 
 import json
 from copy import deepcopy
@@ -36,8 +36,8 @@ def _family_seeds(seed):
     for offset in range(FAMILY_COUNT):
         family = (seed % FAMILY_COUNT + offset) % FAMILY_COUNT
         candidate = seed + (family - seed % FAMILY_COUNT) % FAMILY_COUNT
-        # Five does not divide the signed range. Wrapping modulo 2**64 would
-        # repeat a family near the boundary instead of trying all five once.
+        # five doesn't divide the signed range. Wrapping modulo 2**64 would
+        # repeat a family near the boundary instead of trying all five once
         if candidate >= 2**63:
             candidate -= FAMILY_COUNT
         candidates.append(candidate)

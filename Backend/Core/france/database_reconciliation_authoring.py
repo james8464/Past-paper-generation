@@ -1,4 +1,4 @@
-# Hash-bound finite V24 incident-reconciliation wording selection and replay.
+# Hash-bound finite V24 incident-reconciliation wording selection and replay
 
 from __future__ import annotations
 

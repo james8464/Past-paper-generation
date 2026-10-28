@@ -147,7 +147,7 @@ def test_backend_bundle_includes_declarative_profile_resources() -> None:
 
 def test_backend_bundle_includes_pymupdf_runtime_data() -> None:
     script = (REPO_ROOT / "macOS" / "scripts" / "build_backend.sh").read_text()
-    # Layout-enabled PyMuPDF imports load YAML/model resources before bundle-check.
+    # Layout-enabled PyMuPDF imports load YAML/model resources before bundle-check
     assert "--collect-data pymupdf" in script
 
 

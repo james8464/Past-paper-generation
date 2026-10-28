@@ -1,4 +1,4 @@
-# Hash-bound, selection-only authoring for the deeper French network case.
+# Hash-bound, selection-only authoring for the deeper French network case
 
 from __future__ import annotations
 

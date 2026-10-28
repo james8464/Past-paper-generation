@@ -56,7 +56,7 @@ def test_independent_solver_recomputes_arithmetic_without_the_draft_scheme() -> 
     assert any(issue.field == "answer" for issue in reconciliation.issues)
 
 
-# Numeric workings support an MCQ key; they do not make it a free response.
+# numeric workings support an MCQ key; they don't make it a free response
 def test_numeric_selected_response_does_not_require_free_entry_output_slots() -> None:
 
     choices = [
@@ -445,7 +445,7 @@ def test_open_response_solver_examples_are_not_treated_as_exhaustive() -> None:
 
     assert not solution.mark_points_exhaustive
     assert result.passed, result.issues
-# Specialist schemes can encode keyed letters instead of full option text.
+# Specialist schemes can encode keyed letters instead of full option text
 def test_specialist_reconciliation_rejects_a_different_keyed_option() -> None:
     from Backend.Core.independent_solver import require_solution_matches_scheme
 

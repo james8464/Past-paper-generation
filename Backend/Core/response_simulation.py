@@ -1,4 +1,4 @@
-# Generate diagnostic candidate responses without sharing the draft mark scheme.
+# generate diagnostic candidate responses without sharing the draft mark scheme
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ class CandidateResponse(BaseModel):
     available_mark_points: int = Field(default=0, ge=0)
 
 
-# Create diagnostic responses without exposing a drafted mark scheme.
+# create diagnostic responses without exposing a drafted mark scheme
 class ResponseSimulator:
 
     def __init__(self, client: SimulationClient | None = None) -> None:

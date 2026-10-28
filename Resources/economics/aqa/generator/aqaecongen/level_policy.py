@@ -1,4 +1,4 @@
-# Provide AQA Economics response bands for the supported question tariffs.
+# provide AQA Economics response bands for the supported question tariffs
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ class LevelRow:
 _ZERO = LevelRow(0, "0", "No creditworthy material.")
 
 
-# Return the AQA Economics response bands for a supported tariff.
+# return the AQA Economics response bands for a supported tariff
 def level_rows(marks: int) -> tuple[LevelRow, ...]:
     if marks == 9:
         return (

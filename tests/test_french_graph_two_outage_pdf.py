@@ -1,4 +1,4 @@
-# V25 printed facts must be bound to the two-outage contract.
+# V25 printed facts must be bound to the two-outage contract
 
 import pytest
 

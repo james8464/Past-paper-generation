@@ -1,4 +1,4 @@
-# V28 app-owned construction task layered over immutable V24 incident facts.
+# V28 app-owned construction task layered over immutable V24 incident facts
 
 import json
 from copy import deepcopy
@@ -96,7 +96,7 @@ def database_construction_catalogue_digest() -> str:
 
 def construction_blueprint(blueprint: list[dict]) -> list[dict]:
     result = deepcopy(blueprint)
-    # Move credit/time from repeated table tracing to independent construction.
+    # move credit/time from repeated table tracing to independent construction
     for index in (2, 5):
         result[index]["points"] = str(
             Decimal(result[index]["points"]) - Decimal("0.25")
@@ -110,7 +110,7 @@ def construction_blueprint(blueprint: list[dict]) -> list[dict]:
     return result
 
 
-# Count canonical source rows independently; never execute candidate code.
+# count canonical source rows independently; never execute candidate code
 def construction_expected(data: dict) -> dict:
     rows = data["tables"]["incident"]["rows"]
     categories = [1, 2, 3, 4, 5]

@@ -1,4 +1,4 @@
-# Extract reference-paper task features and build demand profiles.
+# extract reference-paper task features and build demand profiles
 
 from __future__ import annotations
 
@@ -262,7 +262,7 @@ def extract_reference_features(
     }
 
 
-# Pair each tariff with its nearest local command, retaining no prose.
+# pair each tariff with its nearest local command, retaining no prose
 def extract_reference_items(
     text: str,
     *,
@@ -275,7 +275,7 @@ def extract_reference_items(
     policy = objective_policy_for(family_id or "")
     if policy.computational:
         # Layout extraction can put thousands of padding spaces between a task
-        # and its tariff. Count source content, not invisible page geometry.
+        # and its tariff. Count source content, not invisible page geometry
         text = "\n".join(" ".join(line.split()) for line in text.splitlines())
     matches = list(_mark_pattern(board).finditer(text))
     mcq_count = MCQ_BLOCKS.get((family_id or "", str(paper_id or "")), 0)
@@ -296,8 +296,8 @@ def extract_reference_items(
         operation = _reference_operation(command)
         response_mode = _reference_response_mode(marks, command)
         if policy.computational:
-            # Prefer the actual imperative at a part boundary, not incidental
-            # verbs in the scenario, table rows or 'show your working' reminders.
+            # prefer the actual imperative at a part boundary, not incidental
+            # verbs in the scenario, table rows or 'show your working' reminders
             task_matches = list(
                 re.finditer(
                     r"(?im)^(?:\([a-zivx]+\)[ \t]+){0,2}(?:\d(?:[ \t]+\d)?(?:[ \t]*\.[ \t]*\d+)?[ \t]+)?"
@@ -334,7 +334,7 @@ def extract_reference_items(
         )
     if source_name == "AQA-75171-QP-JUN25.PDF" and family_id == "aqa/computer-science":
         # June 2025 MS PDF14 explicitly discounts Q06.4. Preserve its tariff in
-        # structural totals, but never use it as positive cognitive-demand evidence.
+        # structural totals, but never use it as positive cognitive-demand evidence
         if (
             len(items) != 39
             or sum(item["marks"] for item in items) != 100
@@ -602,7 +602,7 @@ def build_document() -> ReferenceDemandDocument:
         if eligible:
             # Identical convention on both sides: each path has one feature
             # vector. Within a year paths are equally weighted descriptively;
-            # years then receive equal weight (not extra candidate samples).
+            # years then receive equal weight (not extra candidate samples)
             for name in (
                 "mark_band_distribution",
                 "command_word_distribution",

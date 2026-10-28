@@ -1,4 +1,4 @@
-# Build seeded OCR Economics paper content and its marking guidance.
+# build seeded OCR Economics paper content and its marking guidance
 
 from __future__ import annotations
 

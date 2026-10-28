@@ -1,7 +1,7 @@
-# Authored scenarios and credit routes for extended-response tasks.
+# Authored scenarios and credit routes for extended-response tasks
 #
-# Each record is a task, two candidate facts, two causal routes and two limits.
-# The facts are illustrative assumptions, not unattributed national statistics.
+# each record is a task, two candidate facts, two causal routes and two limits
+# the facts are illustrative assumptions, not unattributed national statistics
 
 from __future__ import annotations
 
@@ -510,7 +510,7 @@ SOURCE_DETAILS = {
 }
 
 
-# Replace only a task whose old credit was generated topic-note boilerplate.
+# Replace only a task whose old credit was generated topic-note boilerplate
 def concrete_fallback(question):
     if question.parts or not any(
         "Correctly identifies or defines" in p or "syllabus alignment" in p
@@ -576,7 +576,7 @@ def concrete_fallback(question):
     context += " " + " ".join(details[i] for i in indices)
     if question.section == "C":
         # Essay choices have short stimulus extracts, not a full article that
-        # overflows the shared question page. Both facts are printed in full.
+        # overflows the shared question page. Both facts are printed in full
         context = " ".join(scenario.facts)
     points = [scenario.concept, *scenario.facts, *scenario.routes]
     if question.marks >= 8:

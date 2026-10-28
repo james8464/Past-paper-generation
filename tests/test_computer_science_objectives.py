@@ -189,8 +189,8 @@ def test_aqa_reachable_trace_defines_initial_state_and_complete_execution():
     assert ast.literal_eval(call.args[1]) == 6
     assert isinstance(call.args[2], ast.Call) and call.args[2].func.id == "set" and not call.args[2].args
     adjacency = ast.literal_eval(source.body[0].value)
-    # Independent bounded DFS over literal candidate data, not execution of a
-    # generated program or use of the private expected answer.
+    # independent bounded DFS over literal candidate data, not execution of a
+    # generated program or use of the private expected answer
     calls, additions = [], []
     def visit(current):
         calls.append(current)
@@ -255,7 +255,7 @@ def test_ocr_all_ten_closed_items_are_independently_solvable(seed):
         assert solution.response_slots
         result = reconcile_solution(solution, question)
         assert result.passed, (question.number, result.issues)
-        # Missing or corrupt published answers must not pass via draft expectations.
+        # missing or corrupt published answers must not pass via draft expectations
         corrupt = question.model_copy(deep=True)
         corrupt.mark_scheme = ["No result is supplied."]
         corrupt.structured_mark_scheme = []
@@ -328,7 +328,7 @@ def test_ocr_trace_candidate_source_and_rendered_rows_agree(seed):
         response = _response_space(question, 6)
         assert len(response[0]._cellvalues) == count + 1
         assert response[0]._cellvalues[0] == ["Iteration", "total after iteration"]
-        # The source array must be on the candidate page, not solely in JSON.
+        # the source array must be on the candidate page, not solely in JSON.
         story = _question_group_pages(paper.paper_id, paper.paper_code, option, include_section_page=True)
         tables = [f for f in story if hasattr(f, "_cellvalues")]
         assert any(t._cellvalues[-1] == ["Value", *map(str, source["values"])] for t in tables)
@@ -380,7 +380,7 @@ def test_classification_pdf_edges_are_orthogonal_and_labels_readable():
     canvas.save()
     document = pymupdf.open(stream=buffer.getvalue(), filetype="pdf")
     segments = [item for drawing in document[0].get_drawings() for item in drawing["items"] if item[0] == "l"]
-    # Main connectors use axis-aligned segments; short arrowheads may be diagonal.
+    # Main connectors use axis-aligned segments; short arrowheads may be diagonal
     assert all(abs(a.x-b.x) < .1 or abs(a.y-b.y) < .1 for _, a, b in segments if abs(a-b) > 8)
     labels = [span for block in document[0].get_text("dict")["blocks"] for line in block.get("lines", []) for span in line["spans"]]
     assert min(span["size"] for span in labels) >= 9
@@ -505,13 +505,13 @@ def test_discounted_2025_item_is_not_reference_demand_evidence(tmp_path, mutatio
 
     from tools.reference_demand_profiles import _pdf_text, extract_reference_items
 
-    # Original synthetic questions exercise the edition-bound discount rule;
-    # the copyrighted reference PDF is intentionally not a CI dependency.
+    # original synthetic questions exercise the edition-bound discount rule;
+    # the copyrighted reference PDF is intentionally not a CI dependency
     marks = [3] * 22 + [1] + [2] * 15 + [3]
     if mutation == "missing-item":
         marks.pop()
     elif mutation == "changed-discount-tariff":
-        marks[22], marks[23] = 2, 1  # Preserve 100 marks, corrupt the discounted leaf.
+        marks[22], marks[23] = 2, 1  # preserve 100 marks, corrupt the discounted leaf
     path = tmp_path / "AQA-75171-QP-JUN25.PDF"
     pdf = canvas.Canvas(str(path))
     for offset in range(0, len(marks), 13):

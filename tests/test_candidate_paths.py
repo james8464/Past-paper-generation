@@ -167,9 +167,9 @@ def test_real_shared_rules_survive_generation(
 def test_edexcel_leaf_only_marks_and_choice_groups(paper_id, count, printed):
     from pathlib import Path
 
-    import pastpapergen.generator as generator
-    from pastpapergen.paper_configs import load_builtin_paper_config
-    from pastpapergen.syllabus import load_syllabus
+    import keldin_edexcel.generator as generator
+    from keldin_edexcel.paper_configs import load_builtin_paper_config
+    from keldin_edexcel.syllabus import load_syllabus
 
     from Backend.Core.assessment_package import _extract_items
 
@@ -348,7 +348,7 @@ def test_correlated_source_vectors_cannot_pass_by_coordinatewise_bounds():
         {"AO4": 10},
         {"AO1": 7, "AO2": 2, "AO4": 1},
     ]
-    # P3 target 22/24/19/15, with each ten-mark leaf reconciled.
+    # P3 target 22/24/19/15, with each ten-mark leaf reconciled
     data = [
         {
             "id": str(n),

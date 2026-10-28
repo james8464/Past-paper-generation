@@ -1,4 +1,4 @@
-# V26 printed recovery chronology stays bound to its contract.
+# V26 printed recovery chronology stays bound to its contract
 
 from copy import deepcopy
 

@@ -17,7 +17,7 @@ def _round_pounds(value: Decimal) -> int:
     return int(value.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
 
-# Candidate-visible source for the bookkeeping-system decision.
+# candidate-visible source for the bookkeeping-system decision
 @dataclass(frozen=True)
 class AccountingSystemCase:
 
@@ -181,7 +181,7 @@ class CostingCase:
         }
 
 
-# Candidate-visible source contract for the Paper 1 shareholder decision.
+# candidate-visible source contract for the Paper 1 shareholder decision
 @dataclass(frozen=True)
 class ShareholderCase:
 
@@ -242,7 +242,7 @@ class ShareholderCase:
             comparator_total_equity_thousands=round(values[3] * 78),
         )
 
-    # Rehydrate the renderer's case only from the published source data.
+    # Rehydrate the renderer's case only from the published source data
     @classmethod
     def from_candidate_source(cls, source: dict[str, object]) -> ShareholderCase:
 
@@ -369,7 +369,7 @@ class ShareholderCase:
             1,
         )
 
-    # Return only facts and units printed on the candidate source page.
+    # return only facts and units printed on the candidate source page
     def candidate_source(self) -> dict[str, object]:
 
         return {
@@ -464,7 +464,7 @@ class ShareholderCase:
         ]
 
 
-# Complete, internally consistent source for the Paper 1 company statement.
+# complete, internally consistent source for the Paper 1 company statement
 @dataclass(frozen=True)
 class IncomeStatementCase:
 
@@ -568,7 +568,7 @@ class IncomeStatementCase:
     def profit_for_year(self) -> int:
         return self.profit_before_tax - self.current_tax_charge
 
-    # Return one exact, independently checkable award point per mark.
+    # return one exact, independently checkable award point per mark
     def mark_scheme_points(self) -> list[str]:
         gross_profit = self.revenue - self.adjusted_cost_of_sales
         new_interest = self.new_debenture_interest
@@ -686,7 +686,7 @@ class IncomeStatementCase:
         }
 
 
-# Complete retirement and appropriation data for Paper 1 Question 15.
+# complete retirement and appropriation data for Paper 1 Question 15
 @dataclass(frozen=True)
 class PartnershipCase:
 
@@ -710,7 +710,7 @@ class PartnershipCase:
             "Riley": _nearest_hundred(values[2] * 210),
         }
         # Divisibility by both profit-sharing ratios keeps the goodwill
-        # accounts exact in whole pounds.
+        # accounts exact in whole pounds
         goodwill = round(values[4]) * 300
         goodwill_credit = {
             "Alex": goodwill * 3 // 6,
@@ -739,8 +739,8 @@ class PartnershipCase:
             first_period_drawings_interest={"Alex": 140, "Morgan": 130, "Riley": 150},
             second_period_drawings_interest={"Alex": 10, "Morgan": 14},
         )
-        # Keep both residual-profit allocations exact rather than silently
-        # losing a pound by truncating each partner's share.
+        # keep both residual-profit allocations exact instead of silently
+        # losing a pound by truncating each partner's share
         for offset in sorted(range(-45, 46, 3), key=abs):
             candidate = replace(case, profit_for_year=case.profit_for_year + offset)
             periods = candidate.appropriation_by_period()
@@ -1203,11 +1203,11 @@ class NonCurrentAssetCase:
         }
 
 
-# Shared figures for the Paper 1 sales-ledger case.
+# shared figures for the Paper 1 sales-ledger case
 #
-# The question paper, AI authoring contract and mark scheme all consume this
+# the question paper, AI authoring contract and mark scheme all consume this
 # object so every amount remains present, sufficient and arithmetically
-# consistent.
+# consistent
 @dataclass(frozen=True)
 class SalesLedgerCase:
 

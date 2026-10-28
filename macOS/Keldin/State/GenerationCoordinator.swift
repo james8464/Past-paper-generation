@@ -1,4 +1,4 @@
-// Track generation requests and their streamed progress or failure state.
+// Track generation requests and their streamed progress or failure state
 
 import Foundation
 import Observation
@@ -27,7 +27,7 @@ final class GenerationCoordinator {
         var running = job
         running.state = .running
         running.updatedAt = clock.now
-        // Keep the current session until the new history record has been saved.
+        // keep the current session until the new history record has been saved
         try history.save(running)
         activeJob = running
         status = "Starting"

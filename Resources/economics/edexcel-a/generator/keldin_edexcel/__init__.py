@@ -1,4 +1,4 @@
-# A-Level Economics A practice paper generator.
+# a-Level Economics A practice paper generator
 
 __all__ = ["__version__"]
 

@@ -1,7 +1,7 @@
-# Exact experimental exercise replay before production integration.
+# exact experimental exercise replay before production integration
 #
-# This does not grant publication: scoped reference validation, originality,
-# whole-assessment validation and printed-PDF checks remain separate gates.
+# this doesn't grant publication: scoped reference validation, originality,
+# whole-assessment validation and printed-PDF checks remain separate gates
 
 from hashlib import sha256
 from pathlib import Path
@@ -73,7 +73,7 @@ def blueprint(family, seed, *, total="6"):
     )
 
 
-# Generate a complete checked exercise and deterministic provenance.
+# generate a complete checked exercise and deterministic provenance
 def author(family, seed, *, references, total="6", task=None):
     if type(family) is not str or family not in FAMILIES:
         raise ValueError("Unknown synthesized exercise family")
@@ -106,7 +106,7 @@ def author(family, seed, *, references, total="6", task=None):
     return raw, evidence
 
 
-# Recompute from source; an attacker-rehashed candidate is still refused.
+# recompute from source; an attacker-rehashed candidate is still refused
 def replay(family, seed, references, candidate, evidence, *, total="6", task=None):
     raw, expected = author(family, seed, references=references, total=total, task=task)
     try:
@@ -123,11 +123,9 @@ def replay(family, seed, references, candidate, evidence, *, total="6", task=Non
     return raw
 
 
-# Check the entire question against reconstructed, checked case content.
-#
-# This is not an educational judgement or a material/reference check. The
-# containing exercise must still pass full replay, originality and PDF gates.
-# Do not substitute metadata-only verify_contract for this full-content check.
+# compare the whole question with reconstructed case content; metadata-only
+# verify_contract isn't enough. This doesn't judge education or references; the exercise
+# still needs replay, originality and PDF checks
 def verify_question(question, family, seed, *, total="6"):
     scope = "canonical_question_replay"
     try:

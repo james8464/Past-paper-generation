@@ -499,8 +499,8 @@ Relevant current Apple guidance:
 9. **Non-atomic package creation.** Multi-file output needs a job manifest and
    final atomic publication so a cancellation cannot look complete.
 10. **Packaging fragility.** A clean backend environment exposed automatic
-    discovery of both `data` and `pastpapergen` in the Edexcel package. The local
-    fix explicitly limits setuptools discovery to `pastpapergen*`.
+    discovery of both `data` and `keldin_edexcel` in the Edexcel package. The local
+    fix explicitly limits setuptools discovery to `keldin_edexcel*`.
 
 ## Graphify project map
 

@@ -1,7 +1,6 @@
-# AQA CS source-coupled review identity, shared by authoring/resume/export.
-#
-# This is content-integrity evidence, not a cryptographic attestation of model work.
-# The projection excludes only review metadata and separately checked difficulty.
+# AQA CS source-bound review identity shared by authoring, resume and export; exclude
+# only review metadata and separately checked difficulty. Content integrity, not
+# cryptographic proof of model work
 from __future__ import annotations
 
 import hashlib
@@ -55,7 +54,7 @@ def question_content_sha256(question: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps({"credit_policy": CREDIT_POLICY_VERSION, "sql_validation": sql_version, "content": content}, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()).hexdigest()
 
 
-# Bind one AQA part review to the complete evidence-free parent question.
+# bind one AQA part review to the complete evidence-free parent question
 def aqa_cs_difficulty_candidate(
     question: dict[str, Any],
     part: dict[str, Any],
@@ -83,11 +82,9 @@ def aqa_cs_difficulty_candidate(
     )
 
 
-# One adapter/reuse projection; caller supplies candidate-visible figure data.
-#
-# The scoped CPU contract has no figure. Its saved review is rebuilt from the
-# same projection here, which other review paths can also reuse.
-# Private marking remains available for reconciliation; the solver removes it.
+# shared adapter/reuse projection; caller supplies visible figures. The scoped CPU
+# contract has none, so rebuild its saved review here too. Keep private marking for
+# reconciliation; the solver removes it
 def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]) -> dict[str, Any]:
     authoring_context: dict[str, Any] = {
         "open_credit_contract": part.get("open_credit_contract", {}),
@@ -199,8 +196,8 @@ def validate_aqa_cs_reviews(blueprint: dict[str, Any], *, required: bool = False
                     if required or part.get("difficulty_evidence") or part.get("open_credit_review"):
                         validate_open_credit_review(item, part.get("open_credit_review"))
                     elif question.get("provenance", "built-in") == "built-in" and part.get("marking", {}).get("points") != CPU_POINTS:
-                        # Exact registered-template integrity only. Paraphrases
+                        # exact registered-template integrity only. Paraphrases
                         # require the later semantic review; equality is not a
-                        # substitute for entailment on model-authored prose.
+                        # substitute for entailment on model-authored prose
                         raise ValueError("built-in CPU credit differs from its registered source template")
             validate_question_review(question, required=required)

@@ -1,2 +1,2 @@
-# Independent AQA 7127 practice-paper generator.
+# independent AQA 7127 practice-paper generator
 

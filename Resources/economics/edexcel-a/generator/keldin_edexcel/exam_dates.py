@@ -1,4 +1,4 @@
-# Choose the exam-season dates printed on Edexcel Economics papers.
+# choose the exam-season dates printed on Edexcel Economics papers
 
 from __future__ import annotations
 

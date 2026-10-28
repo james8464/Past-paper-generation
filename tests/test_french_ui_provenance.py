@@ -1,4 +1,4 @@
-# Keep visible French authoring claims aligned with the current catalogue.
+# keep visible French authoring claims aligned with the current catalogue
 
 import json
 from pathlib import Path

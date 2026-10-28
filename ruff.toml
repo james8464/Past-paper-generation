@@ -14,4 +14,4 @@ ignore = ["RUF001"] # Publication copy intentionally uses typographic and maths 
 [lint.per-file-ignores]
 "tests/**" = ["B018"]
 "Resources/**/tests/**" = ["B018"]
-"Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py" = ["E402"]
+"Resources/economics/edexcel-a/generator/keldin_edexcel/render_pdf.py" = ["E402"]

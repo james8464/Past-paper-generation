@@ -1,4 +1,4 @@
-// Store current credentials under Keldin and import accessible legacy entries on demand.
+// store current credentials under Keldin and import accessible legacy entries on demand
 
 import Foundation
 import Security
@@ -60,8 +60,8 @@ struct SystemKeychainAccess: KeychainAccessing {
 
 enum SecretStore {
     static func read(_ account: String, keychain: any KeychainAccessing = SystemKeychainAccess()) throws -> String {
-        // An empty current item records a clear that still needs cleanup. Never
-        // treat it, an access denial, or malformed data as a missing credential.
+        // an empty current item records a clear that still needs cleanup. Never
+        // treat it, an access denial, or malformed data as a missing credential
         if let current = try value(account, service: "Keldin", keychain: keychain) { return current }
         guard let legacy = try value(account, service: KeldinMigration.legacyKeychainService, keychain: keychain) else { return "" }
         try writeCurrent(legacy, account: account, keychain: keychain)
@@ -70,8 +70,8 @@ enum SecretStore {
 
     static func save(_ value: String, account: String, keychain: any KeychainAccessing = SystemKeychainAccess()) throws {
         if value.isEmpty {
-            // A partial deletion must not make the preserved legacy key reappear.
-            // Keep this empty marker until both removal operations have succeeded.
+            // a partial deletion must not make the preserved legacy key reappear
+            // keep this empty marker until both removal operations have succeeded
             try writeCurrent("", account: account, keychain: keychain)
             for service in [KeldinMigration.legacyKeychainService, "Keldin"] {
                 let status = keychain.delete(baseQuery(account, service: service))
@@ -82,8 +82,8 @@ enum SecretStore {
             return
         }
         try writeCurrent(value, account: account, keychain: keychain)
-        // Retain the original credential so a recoverable older installation still works.
-        // Only an explicit clear above removes both copies.
+        // retain the original credential so a recoverable older installation still works
+        // only an explicit clear above removes both copies
     }
 
     private static func writeCurrent(_ value: String, account: String, keychain: any KeychainAccessing) throws {
@@ -97,7 +97,7 @@ enum SecretStore {
         if status == errSecItemNotFound {
             status = keychain.add(query.merging(attributes) { _, new in new })
             if status == errSecDuplicateItem {
-                // Another writer created the item after the initial lookup.
+                // Another writer created the item after the initial lookup
                 status = keychain.update(query, attributes: attributes)
             }
         }

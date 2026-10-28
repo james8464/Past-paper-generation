@@ -1,7 +1,7 @@
-# Experimental complete exercise over synthesized expression cases.
+# experimental complete exercise over synthesized expression cases
 #
 # Not a public generation route or originality qualification. Exact replay binds
-# all prose and marking to checked case data; pedagogical timing is indicative.
+# all prose and marking to checked case data; pedagogical timing is indicative
 
 import json
 from decimal import Decimal
@@ -55,8 +55,8 @@ def render_case(seed, *, total="6"):
             else f"({expression(left)} {value} {expression(right)})"
         )
 
-    # A monospaced outline gives an explicit solution to the drawing task.
-    # G/D labels preserve child orientation even for asymmetric tree shapes.
+    # a monospaced outline gives an explicit solution to the drawing task
+    # G/D labels preserve child orientation even for asymmetric tree shapes
     outline = [f"n0 ({rows['n0'][0]})"]
 
     def branches(node, prefix=""):

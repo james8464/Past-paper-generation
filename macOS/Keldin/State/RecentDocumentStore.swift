@@ -1,4 +1,4 @@
-// Persist job history and resolve the document artifacts attached to each job.
+// persist job history and resolve the document artifacts attached to each job
 
 import Foundation
 import Observation
@@ -173,8 +173,8 @@ final class RecentDocumentStore {
         var loaded: [GenerationJobRecord] = []
         quarantinedRecordCount = 0
         for url in urls {
-            // Access failures do not make a record corrupt. Keep reads and
-            // migration writes outside the structural-validation catch.
+            // Access failures don't make a record corrupt. Keep reads and
+            // migration writes outside the structural-validation catch
             let data = try Data(contentsOf: url)
             var record: GenerationJobRecord
             do {
@@ -288,7 +288,7 @@ final class RecentDocumentStore {
             }
         }
         // Saving a new record has already committed. Cleanup failures must not
-        // turn that successful save into a failed generation start.
+        // turn that successful save into a failed generation start
         records.removeAll { removed.contains($0.id) }
     }
 
@@ -296,7 +296,7 @@ final class RecentDocumentStore {
         do {
             try recordRemover(fileURL(for: id))
         } catch let error as CocoaError where error.code == .fileNoSuchFile {
-            // Another process or the user may already have removed the item.
+            // Another process or the user may already have removed the item
         }
     }
 

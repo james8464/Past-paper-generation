@@ -1,4 +1,4 @@
-# V24 selection is finite, hash-bound, and version-isolated.
+# V24 selection is finite, hash-bound, and version-isolated
 
 from __future__ import annotations
 

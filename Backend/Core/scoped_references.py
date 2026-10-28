@@ -1,4 +1,4 @@
-# Filter local references by scope before ranking their text; never fall back.
+# Filter local references by scope before ranking their text; never fall back
 
 import json
 import re
@@ -23,7 +23,7 @@ CATEGORIES = frozenset(
 )
 
 
-# No eligible source supports a requested reference query.
+# no eligible source supports a requested reference query
 class EvidenceGap(ValueError):
     pass
 
@@ -177,7 +177,7 @@ class ReferenceIndex:
         if not tokens:
             raise EvidenceGap("La recherche ne contient aucun terme exploitable.")
         # Populate the full-text index only with eligible chunks. A global FTS
-        # query followed by filtering can rank/leak unrelated curriculum content.
+        # query followed by filtering can rank/leak unrelated curriculum content
         eligible = self.connection.execute(
             f"SELECT c.id,c.page,c.text,s.metadata FROM chunks c JOIN sources s ON s.id=c.source_id WHERE s.scope=? AND s.curriculum=? AND s.split='reference' AND s.category IN ({','.join('?' for _ in categories)})",
             (self._json(context.to_dict()), curriculum, *categories),

@@ -1,4 +1,4 @@
-# V25 candidate wording binds each closure to answerable graph work.
+# V25 candidate wording binds each closure to answerable graph work
 
 from __future__ import annotations
 

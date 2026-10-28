@@ -1,4 +1,4 @@
-# Experimental compilation/stack exercise; not a public generation route.
+# experimental compilation/stack exercise; not a public generation route
 
 from decimal import Decimal
 

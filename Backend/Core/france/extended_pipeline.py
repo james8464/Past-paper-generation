@@ -1,8 +1,6 @@
-# Experimental V34: three retained families and one structurally new paper.
-#
-# Source reconstruction binds complete prompts, answers, credit and materials.
-# This checks integrity, not educational equivalence or learner timing. The
-# public route stays on V32 until the new paper passes its release checks.
+# V34: three retained families plus one new paper structure. Reconstruct prompts,
+# answers, credit and materials from source; integrity checks don't establish
+# educational equivalence or learner timing. Release checks still required
 
 import json
 from copy import deepcopy
@@ -35,7 +33,7 @@ FAMILIES = (
 )
 
 
-# No complete family passes the retained-history screen.
+# no complete family passes the retained-history screen
 class FamilyCatalogueExhausted(ValueError):
     pass
 
@@ -52,10 +50,10 @@ def _validate_history(history):
         raise ValueError("Invalid originality history")
 
 
-# Try each whole family once; publication still checks its references.
+# try each whole family once; publication still checks its references
 #
-# The returned signed seed belongs in the generated package and checkpoint.
-# This preselection writes nothing and never removes or relaxes history.
+# the returned signed seed belongs in the generated package and checkpoint
+# this preselection writes nothing and never removes or relaxes history
 def choose_fresh_seed(seed, *, previous_texts=None):
     from Backend.Core.france.originality import SimilarityRejected, screen_originality
     from Backend.Core.france.pipeline import exercise_candidate_text

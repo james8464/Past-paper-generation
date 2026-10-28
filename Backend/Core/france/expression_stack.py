@@ -1,7 +1,7 @@
-# Bounded data-only postfix semantics for experimental French task synthesis.
+# bounded data-only postfix semantics for experimental French task synthesis
 #
-# No Python or model-authored code is executed. This is independent of the tree
-# oracle and does not change historical cases or the public generation route.
+# no Python or model-authored code is executed. This is independent of the tree
+# oracle and doesn't change historical cases or the public generation route
 
 LIMIT = 127
 MAX_VALUE = 1_000_000
@@ -12,7 +12,7 @@ def _integer(value):
     return type(value) is int and abs(value) <= MAX_VALUE
 
 
-# Return the stack after each instruction, with the top at the right.
+# return the stack after each instruction, with the top at the right
 def execute(program):
     if type(program) is not list or not 1 <= len(program) <= LIMIT:
         raise ValueError("Postfix program must be a bounded nonempty list")
@@ -41,10 +41,10 @@ def execute(program):
     return dict(answer=stack[0], trace=trace, peak_depth=max(map(len, trace)))
 
 
-# Compile a strict full binary tree using an iterative postorder walk.
+# compile a strict full binary tree using an iterative postorder walk
 #
-# Reject shared children, cycles, disconnected nodes and ambiguous rows.
-# Validated inputs are never modified; traversal is bounded by node count.
+# reject shared children, cycles, disconnected nodes and ambiguous rows
+# Validated inputs are never modified; traversal is bounded by node count
 def compile_tree(rows, root):
     if type(rows) is not list or not 1 <= len(rows) <= LIMIT or type(root) is not str:
         raise ValueError("Invalid bounded expression tree")

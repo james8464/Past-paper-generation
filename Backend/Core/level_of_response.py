@@ -1,4 +1,4 @@
-# Load response bands and record marking decisions against board policies.
+# load response bands and record marking decisions against board policies
 
 from __future__ import annotations
 

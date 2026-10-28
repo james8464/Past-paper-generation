@@ -1,4 +1,4 @@
-# Original object-graph construction sequence with source-bound solutions.
+# original object-graph construction sequence with source-bound solutions
 
 import hashlib
 import json

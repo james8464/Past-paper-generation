@@ -1,4 +1,4 @@
-# Apply measured page geometry and reject text that cannot fit its assigned slot.
+# Apply measured page geometry and reject text that cannot fit its assigned slot
 
 from __future__ import annotations
 
@@ -184,9 +184,9 @@ def wrap_text(text: str, font_name: str, font_size: float, width: float) -> list
     return lines
 
 
-# Draw in a PyMuPDF-style top-origin slot on a ReportLab canvas.
+# draw in a PyMuPDF-style top-origin slot on a ReportLab canvas
 #
-# Returns the font size used. Text is never clipped: an impossible fit raises.
+# returns the font size used. Text is never clipped: an impossible fit raises
 def draw_text_slot(pdf: Any, page_height: float, slot: TextSlot, text: str) -> float:
 
     minimum = slot.minimum_font_size or slot.font_size
@@ -311,7 +311,7 @@ def _page_matches_box_set(
     )
 
 
-# Apply measured page boxes without importing any reference artwork or text.
+# Apply measured page boxes without importing any reference artwork or text
 def conform_pdf_page_boxes(
     pdf_path: Path,
     master: PaperMaster,
@@ -385,10 +385,10 @@ def conform_pdf_page_boxes(
     os.replace(temporary, pdf_path)
 
 
-# Apply measured box sets without importing reference artwork or text.
+# Apply measured box sets without importing reference artwork or text
 #
-# A single mapping is repeated. A list follows the reference page sequence;
-# generated overflow pages use the final measured box set.
+# a single mapping is repeated. A list follows the reference page sequence;
+# generated overflow pages use the final measured box set
 def conform_pdf_to_box_template(
     pdf_path: Path,
     boxes: dict[str, Iterable[float]] | list[dict[str, Iterable[float]]],

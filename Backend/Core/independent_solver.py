@@ -1,4 +1,4 @@
-# Solve from candidate-visible inputs, then reconcile answers with the draft scheme.
+# Solve from candidate-visible inputs, then reconcile answers with the draft scheme
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ from Backend.Core.subjects.selected_response import solve_selected_response
 from Backend.Core.subjects.sql_contracts import SQLValidationResult
 
 
-# Private durable record of one model-presented SQL attempt.
+# private durable record of one model-presented SQL attempt
 class SQLProgramAttemptAudit(BaseModel):
 
     model_config = ConfigDict(frozen=True)
@@ -63,7 +63,7 @@ class SolverClient(Protocol):
     def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
-# Exact raw-provider shape; semantic validation remains item-specific below.
+# exact raw-provider shape; semantic validation remains item-specific below
 class SolverResponseEnvelope(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True)
@@ -126,7 +126,7 @@ class ReconciliationResult(BaseModel):
     issues: list[ReconciliationIssue] = Field(default_factory=list)
 
 
-# Solve an item in a context that deliberately excludes its draft scheme.
+# Solve an item in a context that deliberately excludes its draft scheme
 class IndependentSolver:
 
     def __init__(self, client: SolverClient | None = None) -> None:
@@ -454,9 +454,9 @@ class IndependentSolver:
 
 def _without_answer_key(value: Any) -> Any:
     hidden = {
-        # Private instance credit must not enter the blind model context.
-        # Keep candidate input contracts and ordinary source fields (including
-        # a source's own "credit" column) intact for independent derivation.
+        # private instance credit must not enter the blind model context
+        # keep candidate input contracts and ordinary source fields (including
+        # a source's own "credit" column) intact for independent derivation
         "assessment_contract",
         "open_credit_contract",
         "open_credit_review",
@@ -493,7 +493,7 @@ def _without_answer_key(value: Any) -> Any:
     return value
 
 
-# Retain finite route evidence, but fingerprint open text instead of logging it.
+# retain finite route evidence, but fingerprint open text instead of logging it
 def solution_failure_evidence(
     solution: CanonicalSolution, issues: Sequence[ReconciliationIssue]
 ) -> dict[str, Any]:
@@ -667,8 +667,8 @@ def reconcile_solution(
                         message=f"numeric result disagrees at role {check.role}",
                     )
                 )
-        # Check both representations when supplied: neither a stale structured
-        # scheme nor the published prose may hide behind the other.
+        # check both representations when supplied: neither a stale structured
+        # scheme nor the published prose may hide behind the other
         checked_outputs = [*solution.numeric_checks, *solution.text_checks]
         alternative_groups = [
             (checked_outputs, raw.get("alternatives", [])),
@@ -945,7 +945,7 @@ def _requires_numeric_contract(item: dict[str, Any]) -> bool:
     )
 
 
-# Parse route notation without discarding vertex identity, order or count.
+# parse route notation without discarding vertex identity, order or count
 def _route_vertices(value: str) -> tuple[str, ...] | None:
     value = value.strip().rstrip(".;").rstrip()
     vertices: object
@@ -972,8 +972,8 @@ def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
         left_cells = _matrix_vector(left)
         return left_cells is not None and left_cells == _matrix_vector(right)
     if re.fullmatch(r"node--?\d+-side", slot):
-        # The root is neither a left nor a right child. Both encodings describe
-        # that same absence of a parent edge; other child sides stay exact.
+        # the root is neither a left nor a right child. Both encodings describe
+        # that same absence of a parent edge; other child sides stay exact
         root_sides = {"root", "none", "no side", "neither", "n/a"}
         if _closed_normalise(left) in root_sides and _closed_normalise(right) in root_sides:
             return True
@@ -989,7 +989,7 @@ def _matrix_vector(value: str) -> tuple[str, ...] | None:
 
 
 def _closed_normalise(value: str) -> str:
-    # No fuzzy overlap: preserve signs, decimal points, order and logical operators.
+    # no fuzzy overlap: preserve signs, decimal points, order and logical operators
     normalised = " ".join(value.casefold().split()).rstrip(".;")
     normalised = re.sub(r"\s*,\s*", ",", normalised)
     return re.sub(r"(?<=\d)\s+(?=[a-z%])", "", normalised)

@@ -1,4 +1,4 @@
-# Finite French wording and exact credit for the V2 written database case.
+# finite French wording and exact credit for the V2 written database case
 
 from __future__ import annotations
 

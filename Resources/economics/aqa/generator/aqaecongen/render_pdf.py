@@ -1,4 +1,4 @@
-# Render AQA Economics papers and marking guidance using the shared PDF components.
+# render AQA Economics papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -664,7 +664,7 @@ def _scheme_question_page(
     return flowables
 
 
-# Keep awarded and item-specific rows; common guidance is printed once up front.
+# keep awarded and item-specific rows; common guidance is printed once up front
 def _visible_scheme_points(question: GeneratedQuestion) -> list[str]:
 
     if not question.structured_mark_scheme:

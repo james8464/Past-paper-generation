@@ -45,6 +45,13 @@ macOS may ask permission to read an earlier credential. A changed signing identi
 can also prevent access. Re-enter the key in Keldin if the import is denied; the
 migration does not bypass Keychain access controls.
 
+## Generator imports
+
+The Edexcel Economics package is `keldin_edexcel`; its standalone command is
+`keldin-edexcel`. Update developer scripts and reinstall editable generator
+packages after switching to this branch. Assessment IDs and saved data formats
+are unchanged.
+
 ## Backend jobs and retained papers
 
 New backend settings use `KELDIN_` environment variables. Python commands accept

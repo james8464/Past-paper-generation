@@ -1,4 +1,4 @@
-# Versioned network selections preserve failures and replay only exact identities.
+# versioned network selections preserve failures and replay only exact identities
 
 from copy import deepcopy
 

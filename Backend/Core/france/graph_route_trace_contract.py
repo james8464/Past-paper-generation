@@ -1,4 +1,4 @@
-# Immutable V22 graph route traces; earlier French packages remain unchanged.
+# Immutable V22 graph route traces; earlier French packages remain unchanged
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def _canonical(data: dict) -> str:
     return json.dumps(data, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-# Enumerate simple paths as an oracle separate from Dijkstra's trace.
+# enumerate simple paths as an oracle separate from Dijkstra's trace
 def _independent_shortest(edges: list[list]) -> dict:
     adjacent: dict[str, list[tuple[str, int]]] = {node: [] for node in "ABCDEF"}
     for left, right, weight in edges:

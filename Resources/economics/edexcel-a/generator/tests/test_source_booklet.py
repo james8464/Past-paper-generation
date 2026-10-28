@@ -1,10 +1,10 @@
 import re
 from pathlib import Path
 
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.render_pdf import render_source_booklet
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.render_pdf import render_source_booklet
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.pdf_text import extract_pdf_text
@@ -52,7 +52,7 @@ def test_source_booklet_extracts_have_reference_style_line_numbers(tmp_path):
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
     # Exercise the tenth-line formatter with a deliberately long extract;
-    # original generated source lengths are content-dependent.
+    # original generated source lengths are content-dependent
     sources = [q.source_text for q in blueprint.questions if q.section == "B"]
     blueprint.questions[5].source_text = " ".join(sources[:2])
     output = tmp_path / "source.pdf"

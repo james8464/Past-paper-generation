@@ -1,4 +1,4 @@
-# Education-system identity, independent of interface locale and UK board models.
+# Education-system identity, independent of interface locale and UK board models
 
 import re
 from dataclasses import asdict, dataclass
@@ -29,7 +29,7 @@ class EducationContext:
         return asdict(self)
 
 
-# Read exact, non-negative decimal credit from a JSON string.
+# read exact, non-negative decimal credit from a JSON string
 def points(value: str) -> Decimal:
     if not isinstance(value, str) or not re.fullmatch(r"\d{1,6}(?:\.\d{1,4})?", value):
         raise ValueError("Points must be a non-negative decimal string")

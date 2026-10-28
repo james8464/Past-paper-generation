@@ -1,4 +1,4 @@
-# Attach page-level reading-order structure without changing PDF geometry.
+# attach page-level reading-order structure without changing PDF geometry
 
 from __future__ import annotations
 
@@ -9,11 +9,8 @@ from pathlib import Path
 import pymupdf as fitz
 
 
-# Attach a deterministic page-level structure tree and marked content.
-#
-# Each page is one ordered ``Sect`` element associated with an MCID. This
-# preserves the renderer's deliberate content-stream order for assistive
-# technology while leaving page geometry untouched.
+# page-level reading order: one ordered ``Sect`` per page, linked to an MCID. Preserve
+# renderer content-stream order for assistive technology; leave page geometry unchanged
 def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
 
     path = Path(path)
@@ -77,7 +74,7 @@ def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
         staged.unlink(missing_ok=True)
 
 
-# Return whether a page is linked to marked content in a structure tree.
+# return whether a page is linked to marked content in a structure tree
 def has_logical_page_order(document: fitz.Document, page: fitz.Page) -> bool:
 
     if not _has_structure_tree(document, document.pdf_catalog()):

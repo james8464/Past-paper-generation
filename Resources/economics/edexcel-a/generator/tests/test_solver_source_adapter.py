@@ -1,4 +1,4 @@
-# Edexcel's public-source and selected-answer handoff to the shared solver.
+# Edexcel's public-source and selected-answer handoff to the shared solver
 
 from __future__ import annotations
 
@@ -6,12 +6,12 @@ import copy
 import json
 from pathlib import Path
 
-import pastpapergen.ollama_client as subject
+import keldin_edexcel.ollama_client as subject
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.models import QuestionBlueprint
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.models import QuestionBlueprint
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_package import _extract_items

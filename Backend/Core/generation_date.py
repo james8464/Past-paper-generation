@@ -1,4 +1,4 @@
-# Use the supplied generation date when labelling covers and mark schemes.
+# use the supplied generation date when labelling covers and mark schemes
 
 from __future__ import annotations
 
@@ -26,6 +26,6 @@ def formatted_generation_date() -> str:
     return f"{value:%A} {value.day} {value:%B %Y}"
 
 
-# Return the month/year form used on mark-scheme covers.
+# return the month/year form used on mark-scheme covers
 def formatted_generation_series() -> str:
     return generation_date().strftime("%B %Y")

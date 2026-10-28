@@ -1,6 +1,6 @@
-# Self-attested human reviews whose hashes identify the reviewed content.
+# Self-attested human reviews whose hashes identify the reviewed content
 #
-# The hashes do not verify reviewer credentials.
+# the hashes don't verify reviewer credentials
 
 import json
 import os
@@ -83,7 +83,7 @@ def review_status(manifest: Path, record: dict) -> str:
             "identity"
         ) != artifact_identity(manifest):
             return "stale"
-        # Reapply the same substantive gates; a JSON edit must not bypass them.
+        # reapply the same substantive gates; a JSON edit must not bypass them
         checked = record_review(
             manifest,
             reviewer=record["reviewer"],

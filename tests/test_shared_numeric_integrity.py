@@ -50,7 +50,7 @@ def test_shared_validation_never_qualifies_given_97_as_three_variances():
             task, task.question, client=GivenRateClient()
         )
     except ValueError:
-        return  # Rejection is safe; source-only deterministic recomputation is too.
+        return  # Rejection is safe; source-only deterministic recomputation is too
     assert solution.answer != "£97", (
         "Given input falsely approved as three outputs; copied draft points: "
         f"{solution.mark_points}"
@@ -169,7 +169,7 @@ def test_unsupported_calculation_is_not_silently_semantic():
 def test_priority_is_a_requested_closed_output_not_unchecked_prose():
     task = next(t for t in accounting_tasks() if t.question.rule_id == "costing_3")
     solution = IndependentSolver(GivenRateClient()).solve(task.question, [])
-    # Candidate inputs: Product A 118/29, Product B 118/34; A has priority.
+    # candidate inputs: Product A 118/29, Product B 118/34; A has priority
     assert solution.answer_slots["ranked_first"] == "Product A"
     raw = task.question.model_dump(mode="json")
     raw["mark_scheme"] = [

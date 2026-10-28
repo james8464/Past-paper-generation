@@ -1,6 +1,6 @@
 from datetime import date
 
-from pastpapergen.exam_dates import (
+from keldin_edexcel.exam_dates import (
     economics_exam_schedule,
     formatted_economics_exam_date,
 )

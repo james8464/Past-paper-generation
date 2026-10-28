@@ -1,4 +1,4 @@
-# Share answer-rule and barcode drawing between board renderers.
+# Share answer-rule and barcode drawing between board renderers
 
 from __future__ import annotations
 
@@ -44,7 +44,7 @@ class CanvasBarcodeStyle:
     color: Color = colors.black
 
 
-# Draw a fixed number of solid response rules and return the next baseline.
+# draw a fixed number of solid response rules and return the next baseline
 def draw_solid_answer_rules(
     pdf: Canvas,
     *,
@@ -62,7 +62,7 @@ def draw_solid_answer_rules(
     return first_y - count * style.gap
 
 
-# Draw selectable glyph-based response rules and return the next baseline.
+# draw selectable glyph-based response rules and return the next baseline
 def draw_glyph_answer_rules(
     pdf: Canvas,
     *,
@@ -82,7 +82,7 @@ def draw_glyph_answer_rules(
     return first_y - count * style.gap
 
 
-# Draw a repeatable practice-paper barcode and its caption.
+# draw a repeatable practice-paper barcode and its caption
 def draw_barcode(
     pdf: Canvas,
     *,

@@ -113,7 +113,7 @@ def test_ocr_scheme_checks_credit_per_question_not_reference_page_count(
         pdf.drawString(48, y, identifier)
         pdf.drawString(122, y, text)
         if mutation == "missing" and index == 1:
-            pdf.drawString(435, y, "8")  # A tariff is not an answer credit.
+            pdf.drawString(435, y, "8")  # a tariff is not an answer credit
     pdf.drawString(48, 265, "1(b)")
     pdf.drawString(122, 265, questions[1]["mark_scheme"][2])
     pdf.drawString(48, 215, "1(b)")

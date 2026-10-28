@@ -1,4 +1,4 @@
-# Render AQA Computer Science papers and marking guidance using the shared PDF components.
+# render AQA Computer Science papers and marking guidance using the shared PDF components
 
 from __future__ import annotations
 
@@ -598,8 +598,8 @@ def _draw_intentionally_blank_page(
     do_not_write: bool = False,
 ) -> None:
     if state.blueprint.delivery_mode == "on-screen":
-        # The on-screen header already contains its folio and footer. Unlike
-        # the written-paper shell, this leaf has no candidate border to repaint.
+        # the on-screen header already contains its folio and footer. Unlike
+        # the written-paper shell, this leaf has no candidate border to repaint
         pdf.setFont(FONT, 11.04)
         pdf.drawCentredString(291.5, 430, "There are no questions printed on this page")
         state.y = 380
@@ -775,8 +775,8 @@ def _render_paper2_mark_scheme_pages(
     page = 6
     y = _mark_scheme_table_header(pdf, page, blueprint)
     for question in blueprint.questions:
-        # Match the board's typography and table geometry, not an unrelated
-        # paper's page count. Padding that count repeats already awarded points.
+        # match the board's typography and table geometry, not an unrelated
+        # paper's page count. Padding that count repeats already awarded points
         for part in question.parts:
             needed = _mark_scheme_part_height(part)
             if y - needed < 70:
@@ -965,8 +965,8 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
         x=52,
         y=17,
         caption=f"PRACTICE{blueprint.paper_code.replace('/', '')}01",
-        # The source cover spreads its readable caption below the bars.
-        # Keep our practice-paper code below the bars so the caption stays readable.
+        # the source cover spreads its readable caption below the bars
+        # keep our practice-paper code below the bars so the caption stays readable
         style=replace(AQA_CS_FOOTER_BARCODE, spread_caption=True),
     )
     pdf.setFont(FONT, 9)
@@ -1177,7 +1177,7 @@ def _render_part(
     return state
 
 
-# Describe visible figure content for text-only independent solvers.
+# describe visible figure content for text-only independent solvers
 def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
     if stimulus is None:
         return {}
@@ -2135,7 +2135,7 @@ def _wrap(text: str, width: int) -> list[str]:
     return lines or [""]
 
 
-# Wrap 11 pt guidance to the measured 400 pt printable column.
+# Wrap 11 pt guidance to the measured 400 pt printable column
 def _wrap_scheme_text(text: str) -> list[str]:
     lines: list[str] = []
     current = ""
@@ -2162,10 +2162,10 @@ def _wrap_scheme_text(text: str) -> list[str]:
     return lines or [""]
 
 
-# Original vector Boolean glyphs, with accessible Unicode ActualText.
+# original vector Boolean glyphs, with accessible Unicode ActualText
 #
-# Bundled Arial-compatible fonts do not contain these three operators. Keep
-# the symbols and their meaning instead of silently painting .notdef blanks.
+# Bundled Arial-compatible fonts don't contain these three operators. Keep
+# the symbols and their meaning instead of silently painting .notdef blanks
 def _draw_scheme_text(pdf: canvas.Canvas, x: float, y: float, text: str) -> None:
     for chunk in re.split(r"([⊕⊼⊽])", text):
         if chunk not in {"⊕", "⊼", "⊽"}:
@@ -2175,7 +2175,7 @@ def _draw_scheme_text(pdf: canvas.Canvas, x: float, y: float, text: str) -> None
         width, size = 9.0, 7.0
         pdf.saveState()
         pdf.addLiteral(f"/Span << /ActualText <FEFF{ord(chunk):04X}> >> BDC")
-        # The space supplies a selectable text box; the vectors supply the ink.
+        # the space supplies a selectable text box; the vectors supply the ink
         pdf.drawString(x, y, "  ")
         pdf.setLineWidth(0.7)
         if chunk == "⊕":

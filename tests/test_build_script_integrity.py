@@ -56,8 +56,8 @@ def fingerprint_environment(tmp_path: Path) -> dict[str, str]:
     )
     (root / "PyInstaller.py").write_text("__version__ = '6.17.0'\n", encoding="utf-8")
     python = tmp_path / "fixture-python"
-    # Run the real fingerprint with controlled distribution metadata. No package
-    # installation, application packaging or signing occurs in these tests.
+    # run the real fingerprint with controlled distribution metadata. No package
+    # installation, application packaging or signing occurs in these tests
     interpreter_stub = (
         "import importlib.metadata, json, os, sys\n"
         "from types import SimpleNamespace\n"

@@ -1,4 +1,4 @@
-# Relational rows and exhaustive assignment oracles for the new case.
+# Relational rows and exhaustive assignment oracles for the new case
 
 import sqlite3
 from copy import deepcopy

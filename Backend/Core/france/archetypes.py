@@ -1,4 +1,4 @@
-# Coherent, original exercise briefs for the French NSI written route.
+# Coherent, original exercise briefs for the French NSI written route
 
 from dataclasses import dataclass, replace
 
@@ -235,7 +235,7 @@ ARCHETYPES = (
 )
 
 
-# Vary the scenario brief while retaining each exercise's learning sequence.
+# Vary the scenario brief while retaining each exercise's learning sequence
 def archetype_for_seed(seed: int) -> tuple[ExerciseArchetype, ...]:
     return tuple(
         replace(

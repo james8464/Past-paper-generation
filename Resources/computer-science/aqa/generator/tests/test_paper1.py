@@ -131,7 +131,7 @@ def test_paper1_finite_state_question_includes_diagram_and_table(tmp_path) -> No
         assert "Figure 6" in text
         assert "Current state" in text
         assert "S0" in text and "S1" in text and "S2" in text
-        # Count the actual FSM nodes, not unrelated footer barcode strokes.
+        # count the actual FSM nodes, not unrelated footer barcode strokes
         circles = [
             d["rect"]
             for d in page.get_drawings()

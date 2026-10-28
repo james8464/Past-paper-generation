@@ -1,4 +1,4 @@
-# Find local AQA Computer Science notes and cache their extracted text for topic context.
+# find local AQA Computer Science notes and cache their extracted text for topic context
 
 from __future__ import annotations
 

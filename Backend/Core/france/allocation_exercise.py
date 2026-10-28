@@ -1,4 +1,4 @@
-# Relational eligibility followed by a constrained recursive assignment.
+# Relational eligibility followed by a constrained recursive assignment
 
 import hashlib
 import json

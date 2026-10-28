@@ -1,4 +1,4 @@
-# Immutable V24 French NSI incident-reconciliation facts and independent oracles.
+# Immutable V24 French NSI incident-reconciliation facts and independent oracles
 
 from __future__ import annotations
 
@@ -192,7 +192,7 @@ def _expected(tables: dict) -> dict:
         connection.close()
 
 
-# Canonical V4 facts, including deterministic independently checked results.
+# Canonical V4 facts, including deterministic independently checked results
 @dataclass(frozen=True)
 class DatabaseReconciliationContract:
 

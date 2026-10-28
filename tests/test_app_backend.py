@@ -182,7 +182,7 @@ def test_bundle_check_rejects_unrenderable_french_corrections(monkeypatch, capsy
         raise OSError("could not get source code")
 
     # Import the consumer before patching so its module-level alias cannot retain
-    # this fake renderer after the test restores the original function.
+    # this fake renderer after the test restores the original function
     importlib.import_module("Backend.Core.france.database_case_authoring")
     monkeypatch.setattr(database_case_prose, "render_case", missing_source)
     assert handle_bundle_check(Namespace()) == 1
@@ -208,7 +208,7 @@ def test_bundle_check_rejects_missing_marking_policy(monkeypatch, capsys):
 
 
 def test_economics_dry_run_generates_expected_files(tmp_path: Path) -> None:
-    # This seed previously placed the next MCQ mark over a diagram axis label.
+    # this seed previously placed the next MCQ mark over a diagram axis label
     events = run_bridge(
         "generate",
         "--subject",

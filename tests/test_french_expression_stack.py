@@ -1,4 +1,4 @@
-# Independent stack semantics for synthesized expression reasoning tasks.
+# independent stack semantics for synthesized expression reasoning tasks
 
 from copy import deepcopy
 

@@ -1,4 +1,4 @@
-# Load board-specific policy and normalise the supported board identifiers.
+# load board-specific policy and normalise the supported board identifiers
 
 from __future__ import annotations
 

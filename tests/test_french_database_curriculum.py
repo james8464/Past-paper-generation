@@ -1,4 +1,4 @@
-# The new edition must not require SQL excluded from the Terminale programme.
+# the new edition must not require SQL excluded from the Terminale programme
 
 import re
 

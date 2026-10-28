@@ -40,7 +40,7 @@ def scheme():
 
 
 def test_captured_duplicate_partial_points_cannot_pass_closed_classification():
-    # Minimal captured live response: wrong answer plus duplicate partial credit.
+    # minimal captured live response: wrong answer plus duplicate partial credit
     client = ResponseClient(
         {
             "answer": "System software, Application software",
@@ -333,7 +333,7 @@ def test_tree_root_has_no_child_side(root_side):
     expected = {key: [value] for key, value in values.items()}
     expected["node-40-side"] = ["root"]
     assert reconcile_solution(solution, {"closed_answers": expected}).passed
-    # No-side notation cannot turn a missing child edge or wrong root into a pass.
+    # no-side notation cannot turn a missing child edge or wrong root into a pass
     expected["node-20-side"] = ["right"]
     assert not reconcile_solution(solution, {"closed_answers": expected}).passed
     expected["node-40-side"] = ["left"]

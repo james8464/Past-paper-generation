@@ -1,4 +1,4 @@
-// Persist user preferences and manage access to the selected output folder.
+// persist user preferences and manage access to the selected output folder
 
 import Foundation
 import Observation
@@ -98,14 +98,14 @@ final class SettingsStore {
     }
 
     private func saveCredential(_ value: String, account: String) {
-        // A failed read leaves no known baseline. Its empty UI placeholder is
-        // not an instruction to erase an inaccessible credential.
+        // a failed read leaves no known baseline. Its empty UI placeholder is
+        // not an instruction to erase an inaccessible credential
         guard let saved = savedCredentials[account] else {
             if !value.isEmpty { writeCredential(value, account: account) }
             return
         }
-        // A failed clear can already have replaced the current item with an
-        // empty marker. Reverting the field still needs a confirmed write.
+        // a failed clear can already have replaced the current item with an
+        // empty marker. Reverting the field still needs a confirmed write
         guard saved != value || credentialFailures[account] != nil else { return }
         writeCredential(value, account: account)
     }
@@ -117,7 +117,7 @@ final class SettingsStore {
             credentialFailures.removeValue(forKey: account)
         } catch {
             // Injected stores can throw arbitrary errors. Expose only the safe
-            // typed operation, never their description or credential data.
+            // typed operation, never their description or credential data
             credentialFailures[account] = (error as? SecretStoreError) ?? .unexpected(operation: .write)
         }
     }

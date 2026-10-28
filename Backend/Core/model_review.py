@@ -1,4 +1,4 @@
-# Collect independent content and demand reviews and validate their saved evidence.
+# Collect independent content and demand reviews and validate their saved evidence
 
 from __future__ import annotations
 
@@ -87,7 +87,7 @@ CANONICAL_COGNITIVE_OPERATIONS: tuple[CanonicalCognitiveOperation, ...] = (
 )
 
 
-# Deterministic operation evidence bound only to the public candidate task.
+# deterministic operation evidence bound only to the public candidate task
 class PublicTaskOperationEvidence(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True)
@@ -292,7 +292,7 @@ def require_difficulty_review(
     )
 
 
-# Recheck persisted evidence without another model request or permissive defaults.
+# Recheck persisted evidence without another model request or permissive defaults
 def validate_saved_difficulty_evidence(
     evidence: Any,
     target: Any,
@@ -589,7 +589,7 @@ def difficulty_review(
     return result
 
 
-# Classify only the bounded public SQL-construction instruction.
+# Classify only the bounded public SQL-construction instruction
 def _candidate_task_facts(candidate: Any) -> dict[str, object]:
     evidence = _public_task_operation_evidence(candidate)
     return {
@@ -600,7 +600,7 @@ def _candidate_task_facts(candidate: Any) -> dict[str, object]:
     }
 
 
-# Bind bounded verified operations to the exact public task projection.
+# bind bounded verified operations to the exact public task projection
 def _public_task_operation_evidence(candidate: Any) -> PublicTaskOperationEvidence:
     payload = candidate_review_content(candidate)
     task = payload.get("part", payload) if isinstance(payload, dict) else {}

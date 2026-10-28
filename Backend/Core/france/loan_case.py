@@ -1,7 +1,5 @@
-# Finite loan intervals with separate Python and fixed-SQL availability checks.
-#
-# An interval contains its start but not its return time. None means a loan has
-# not been returned. These sources belong to one new family, not unlimited variety.
+# finite loan intervals, checked separately in Python and fixed SQL; start inclusive,
+# return exclusive. None means unreturned. One new family, not unlimited variety
 
 import sqlite3
 
@@ -68,7 +66,7 @@ def _time(time):
         raise ValueError("Snapshot time must be an integer from zero to 100")
 
 
-# Set-based availability; order and previous returned loans do not matter.
+# set-based availability; order and previous returned loans don't matter
 def available(copies, loans, time):
     _validate(copies, loans)
     _time(time)
@@ -80,7 +78,7 @@ def available(copies, loans, time):
     return sorted(code for code, _ in copies if code not in occupied)
 
 
-# Run only the fixed application query; never accept a candidate SQL string.
+# run only the fixed application query; never accept a candidate SQL string
 def sql_available(copies, loans, time):
     _validate(copies, loans)
     _time(time)
@@ -96,11 +94,11 @@ def sql_available(copies, loans, time):
         return [row[0] for row in database.execute(AVAILABILITY_QUERY, (time, time))]
 
 
-# Find all overlapping pairs independently, including nested intervals.
+# find all overlapping pairs independently, including nested intervals
 def overlaps(loans):
     if type(loans) not in (list, tuple):
         raise ValueError("Loans must be a finite sequence")
-    # Reuse the field checks without requiring an external copy catalogue.
+    # reuse the field checks without requiring an external copy catalogue
     try:
         copies = [[code, "Copy"] for code in sorted({row[1] for row in loans})]
     except (TypeError, IndexError) as error:

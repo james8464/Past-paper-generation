@@ -1,4 +1,4 @@
-# Define the structured records used by the configured-family generator.
+# Define the structured records used by the configured-family generator
 
 from __future__ import annotations
 

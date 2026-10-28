@@ -1,13 +1,13 @@
-# Task-specific credit projections; examples never add to a tariff twice.
+# Task-specific credit projections; examples never add to a tariff twice
 
 from __future__ import annotations
 
 import re
 
-from pastpapergen.source_credit import source_bound_points
+from keldin_edexcel.source_credit import source_bound_points
 
-# Each scenario states a direction rather than asking about unspecified 'changes'.
-# The pair supplies an economic mechanism and its consequence, not revision notes.
+# each scenario states a direction instead of asking about unspecified 'changes'
+# the pair supplies an economic mechanism and its consequence, not revision notes
 TOPIC_CHAINS = {
     "1.1": (
         "Consumers compare extra benefit with extra cost.",
@@ -371,8 +371,8 @@ def short_credit(question, part, source) -> list[str]:
         return [f"AO1 (1 mark): {points[0]}", f"AO3 (1 mark): {points[1]}"]
     if not generic and part.marks == 4:
         points = clean_points(existing)
-        # Retain the source-specific theory, application and mechanism,
-        # but count the analysis chain within one budget to avoid duplicate marks.
+        # retain the source-specific theory, application and mechanism,
+        # but count the analysis chain within one budget to avoid duplicate marks
         return [
             f"AO1 (2 marks): {points[0]} Identify the relevant factor and explain its economic meaning.",
             f"AO2 (1 mark): {points[1]}",
@@ -532,8 +532,8 @@ def extended_credit(
         "Connects the analysis",
     )
     points = [p for p in points if not any(b in p for b in banned)]
-    # Existing explicitly source-authored extended routes supply contextual chains.
-    # No broad revision notes are used as indicative credit.
+    # existing explicitly source-authored extended routes supply contextual chains
+    # no broad revision notes are used as indicative credit
     if generic or len(points) < 3:
         cause, mechanism = TOPIC_CHAINS[question.topic_id]
         points = [

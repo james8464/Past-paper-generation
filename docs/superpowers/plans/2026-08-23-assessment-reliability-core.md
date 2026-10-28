@@ -447,7 +447,7 @@ git commit -m "Checkpoint accepted assessment items"
 - Modify: `Resources/computer-science/ocr/generator/ocrcsgen/cli.py`
 - Modify: `Resources/economics/aqa/generator/aqaecongen/cli.py`
 - Modify: `Resources/economics/ocr/generator/ocregen/cli.py`
-- Modify: `Resources/economics/edexcel-a/generator/pastpapergen/cli.py`
+- Modify: `Resources/economics/edexcel-a/generator/keldin_edexcel/cli.py`
 
 **Interfaces:**
 - Consumes: optional `checkpoint_store`, item-stage updates, existing JSON event protocol v2.

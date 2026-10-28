@@ -1,4 +1,4 @@
-# Exercise 3 must expose every premise and use only finite app wording.
+# Exercise 3 must expose every premise and use only finite app wording
 
 from copy import deepcopy
 from decimal import Decimal

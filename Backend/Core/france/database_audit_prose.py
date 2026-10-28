@@ -1,4 +1,4 @@
-# Finite French questions and working surfaces for the V21 incident audit.
+# finite French questions and working surfaces for the V21 incident audit
 
 from __future__ import annotations
 

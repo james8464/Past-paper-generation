@@ -2,8 +2,8 @@ import re
 from pathlib import Path
 
 import pytest
-from pastpapergen.generator import build_paper_blueprint
-from pastpapergen.ollama_client import (
+from keldin_edexcel.generator import build_paper_blueprint
+from keldin_edexcel.ollama_client import (
     _clean_prompt,
     _merge_question_text,
     _merge_source_text,
@@ -11,8 +11,8 @@ from pastpapergen.ollama_client import (
     generate_questions_with_ollama,
     review_blueprint_difficulty,
 )
-from pastpapergen.paper_configs import load_builtin_paper_config
-from pastpapergen.syllabus import load_syllabus
+from keldin_edexcel.paper_configs import load_builtin_paper_config
+from keldin_edexcel.syllabus import load_syllabus
 
 from Backend.Core.assessment_checkpoints import (
     AssessmentCheckpointStore,
@@ -87,7 +87,7 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
 
 @pytest.mark.parametrize("paper_id", ["paper_1", "paper_2", "paper_3"])
 def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
-    from pastpapergen.ollama_client import _question_demand_items
+    from keldin_edexcel.ollama_client import _question_demand_items
 
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.reference_demand import build_item_demand_target, profile_for
@@ -103,7 +103,7 @@ def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
 
 
 def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() -> None:
-    from pastpapergen.ollama_client import _question_solver_item
+    from keldin_edexcel.ollama_client import _question_solver_item
 
     from Backend.Core.independent_solver import IndependentSolver
 
@@ -130,13 +130,13 @@ def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() 
 
 @pytest.mark.parametrize("kind", ["line_graph", "index_number_chart", "market_share_bar_chart", "data_table"])
 def test_review_stimulus_uses_rendered_defaults(kind) -> None:
-    from pastpapergen.models import QuestionBlueprint
-    from pastpapergen.render_pdf import (
+    from keldin_edexcel.models import QuestionBlueprint
+    from keldin_edexcel.render_pdf import (
         _bar_chart_data,
         _table_rows,
         candidate_stimulus_data,
     )
-    from pastpapergen.stimulus_data import line_chart_data
+    from keldin_edexcel.stimulus_data import line_chart_data
 
     question = QuestionBlueprint(section="A", number="1", marks=1, command_word="mcq",
                                  topic_id="test", prompt="Read the figure.", stimulus_kind=kind)
@@ -422,7 +422,7 @@ def test_generated_stem_preserves_required_specification_scope() -> None:
         _validate_ai_question(policy_question, broadened)
 
 
-# An authored stem cannot narrow the immutable expansion task to one route.
+# an authored stem cannot narrow the immutable expansion task to one route
 def test_generated_stem_preserves_scenario_event_and_outcome_scope() -> None:
 
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))

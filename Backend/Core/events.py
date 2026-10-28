@@ -1,4 +1,4 @@
-# Send JSON-line progress events between backend tasks and the macOS app.
+# Send JSON-line progress events between backend tasks and the macOS app
 
 from __future__ import annotations
 

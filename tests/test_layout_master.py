@@ -36,7 +36,7 @@ def test_edexcel_compact_diagram_axis_label_clears_the_next_mark(tmp_path):
     from types import SimpleNamespace
 
     import pymupdf
-    from pastpapergen.render_pdf import _draw_draw_part_with_axes, _draw_mcq_part
+    from keldin_edexcel.render_pdf import _draw_draw_part_with_axes, _draw_mcq_part
 
     output = tmp_path / "diagram-followed-by-mcq.pdf"
     pdf = canvas.Canvas(str(output), pagesize=(595.2756, 841.8898))
@@ -185,8 +185,8 @@ def test_cs_credit_belongs_to_one_assessed_row_with_valid_levels_continuation(
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.layout_conformance import _aqa_cs_printed_credit
 
-    # Two assessed parts deliberately share a short answer. Global text presence
-    # cannot establish that both parts actually printed their credit.
+    # two assessed parts deliberately share a short answer. Global text presence
+    # cannot establish that both parts actually printed their credit
     blueprint = {
         "questions": [
             {

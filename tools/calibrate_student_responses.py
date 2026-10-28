@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Create calibration reports from response rows, with optional encrypted storage.
+# create calibration reports from response rows, with optional encrypted storage
 
 from __future__ import annotations
 

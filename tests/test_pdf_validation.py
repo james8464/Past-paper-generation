@@ -46,8 +46,8 @@ def test_measured_profile_accepts_genuine_open_sans_cover_faces():
         font_sizes=Counter({11.0: 10000, 27.0: 100, 7.0: 50}),
         filename="question-paper.pdf",
     )
-    # The stored dominant-eight profile contains Arial only. The two actual
-    # generated families are Arial and Open Sans, not three weight aliases.
+    # the stored dominant-eight profile contains Arial only. The two actual
+    # generated families are Arial and Open Sans, not three weight aliases
     assert result["font_family_overlap"] == 0.5
     assert result["uses_standard_pdf_fallback"] is False
 

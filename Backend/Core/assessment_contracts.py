@@ -1,4 +1,4 @@
-# Describe each item's data, numeric outputs and evidence in a shared contract.
+# describe each item's data, numeric outputs and evidence in a shared contract
 
 from __future__ import annotations
 
@@ -140,7 +140,7 @@ class AssessmentContract(BaseModel):
             )
 
 
-# Return an explicit item contract or hydrate one for a legacy blueprint.
+# return an explicit item contract or hydrate one for a legacy blueprint
 def contract_for_question(question: Any) -> AssessmentContract:
 
     explicit = getattr(question, "contract", None)

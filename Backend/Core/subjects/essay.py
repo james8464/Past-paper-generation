@@ -1,4 +1,4 @@
-# Check essay-item provenance through the shared subject interface.
+# check essay-item provenance through the shared subject interface
 
 from __future__ import annotations
 

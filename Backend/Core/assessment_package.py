@@ -1,4 +1,4 @@
-# Write, migrate and validate assessment packages independently of PDF rendering.
+# write, migrate and validate assessment packages independently of PDF rendering
 
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ from Backend.Core.subjects.sql_contracts import (
 )
 
 
-# The package cannot be upgraded safely by this application version.
+# the package cannot be upgraded safely by this application version
 class AssessmentPackageCompatibilityError(ValueError):
     pass
 
@@ -117,7 +117,7 @@ def _migrate_schema_zero(document: dict[str, Any]) -> dict[str, Any]:
     return migrated
 
 
-# Write the renderer-independent item record used by release validation.
+# write the renderer-independent item record used by release validation
 def write_assessment_package(
     paper: Any,
     path: Path,
@@ -378,7 +378,7 @@ def _reference_demand_audit(
         evidence_context=evidence_context,
     )
     # Whole printed-item review is separate from candidate selection. Never
-    # remove a failed/unreviewed alternative from the review denominator.
+    # remove a failed/unreviewed alternative from the review denominator
     review_failed = [
         name for name in report["failed_checks"] if name.startswith("item_")
     ]
@@ -420,7 +420,7 @@ def _reference_demand_audit(
         report["profile_fit_passed"] = topic["passed"]
         paths["evidence_state"] = topic["evidence_state"]
         # Insufficient calibration evidence cannot count as a pass. Structural,
-        # source/content, correctness and review checks still apply.
+        # source/content, correctness and review checks still apply
         structural_failures = [
             failure
             for row in paths["paths"]
@@ -658,8 +658,8 @@ def _extract_items(
         }
         if raw.get("_candidate_source_contract"):
             item["candidate_source_contract"] = raw["_candidate_source_contract"]
-        # Unrelated option extracts must not add context demand at export.
-        # Keep the complete parent in the immutable candidate identity.
+        # unrelated option extracts must not add context demand at export
+        # keep the complete parent in the immutable candidate identity
         if (
             scoped_shared_sources
             and isinstance(candidate_parent, dict)
@@ -889,7 +889,7 @@ def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-# Validate cross-item clues and return the paper's assessment balance.
+# validate cross-item clues and return the paper's assessment balance
 def validate_cross_paper_quality(items: list[dict[str, Any]]) -> dict[str, Any]:
 
     topics: Counter[str] = Counter()

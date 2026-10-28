@@ -1,4 +1,4 @@
-# Provisional French paper layout measured from the 2026 Métropole NSI paper.
+# Provisional French paper layout measured from the 2026 Métropole NSI paper
 
 import re
 from decimal import Decimal
@@ -56,16 +56,14 @@ WHOLE_CASE_KINDS = frozenset(
 )
 
 
-# Remove source Markdown delimiters without mutating replayable rubric data.
+# remove source Markdown delimiters without mutating replayable rubric data
 def printable_database_criterion(criterion: str) -> str:
     return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
 
 
-# Refer to blank scaffolds in the subject; retain every other code example.
-#
-# V34 corrections already print the complete solution below the prompt.
-# Repeating a long blank program separates that solution from its credits in
-# enlarged print. Faulty programs are evidence and must remain visible.
+# refer to blank scaffolds in the subject; keep all other examples. V34 already prints
+# the full solution below each prompt. Repeated blank programs separate it from
+# enlarged-print credit; faulty programs remain visible evidence
 def correction_prompt(text: str) -> str:
     def replace(match: re.Match[str]) -> str:
         if re.search(r"__[A-Z][A-Z0-9_]*__", match.group()):
@@ -75,7 +73,7 @@ def correction_prompt(text: str) -> str:
     return re.sub(r"```(?:python|sql)?[^`]*```", replace, text)
 
 
-# Escape prose and bind French punctuation, never executable listings.
+# Escape prose and bind French punctuation, never executable listings
 def french_prose_markup(text: str) -> str:
     text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
     text = re.sub(r"«[ \t]+", "«\u00a0", text)
@@ -121,8 +119,8 @@ def structured_material(
             else [available_width / len(material.columns)] * len(material.columns)
         )
         if balance_columns:
-            # Preserve identifiers at the requested font size. Equal columns
-            # otherwise split "temperature" despite ample room in ID columns.
+            # preserve identifiers at the requested font size. Equal columns
+            # otherwise split "temperature" despite ample room in ID columns
             minimums = [
                 max(
                     stringWidth(word, body.fontName, body.fontSize)
@@ -189,8 +187,8 @@ def structured_material(
         and {tuple(sorted((start, end))) for start, end, _ in material.edges}
         == app_graph_pairs
     ):
-        # The app-owned E1 graph is a ladder, not a cycle. Two rows keep all
-        # nine edges visible without the crossings produced by circular order.
+        # the app-owned E1 graph is a ladder, not a cycle. Two rows keep all
+        # nine edges visible without the crossings produced by circular order
         positions = {
             node: (width * x, height * y)
             for node, x, y in (
@@ -209,7 +207,7 @@ def structured_material(
         and {(start, end) for start, end, _ in material.edges}
         == {("r", "a"), ("r", "b"), ("a", "c"), ("b", "c"), ("c", "d"), ("d", "a")}
     ):
-        # Shared shortcuts form a diamond; the return arc runs above it.
+        # shared shortcuts form a diamond; the return arc runs above it
         positions = {
             node: (width * x, height * y)
             for node, x, y in (
@@ -286,7 +284,7 @@ def structured_material(
     return KeepTogether([title, Spacer(1, 4), drawing, Spacer(1, 10)])
 
 
-# Never rewrite executable text to make it fit a page.
+# never rewrite executable text to make it fit a page
 def code_listing(source: str, style: ParagraphStyle, available_width: float):
     if any(
         stringWidth(line, style.fontName, style.fontSize) > available_width
@@ -299,7 +297,7 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
-# New renders use Keldin; validators still recognise retained publisher labels.
+# new renders use Keldin; validators still recognise retained publisher labels
 class NumberedCanvas(Canvas):
     def __init__(self, *args, brand_name="Keldin", print_policy=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -329,7 +327,7 @@ class NumberedCanvas(Canvas):
         super().save()
 
 
-# Draw the cover from measured 2026 coordinates, with independent branding.
+# draw the cover from measured 2026 coordinates, with independent branding
 def draw_cover_page(
     canvas: Canvas,
     doc: SimpleDocTemplate,
@@ -348,7 +346,7 @@ def draw_cover_page(
 
     def centred(text: str, top: float, size: float, font: str) -> None:
         canvas.setFont(font, size * scale)
-        # The offset approximates the baseline used by the measured Arial source.
+        # the offset approximates the baseline used by the measured Arial source
         canvas.drawCentredString(width / 2, height - top - size * scale, text)
 
     centred("BACCALAURÉAT GÉNÉRAL", 79, 20, regular_font)
@@ -531,7 +529,7 @@ def render_assessment(
         author=brand_name,
         pageCompression=1,
     )
-    # Platypus frames reserve six points of padding on each side.
+    # Platypus frames reserve six points of padding on each side
     story = [Spacer(1, doc.height - 14), PageBreak()]
 
     def paragraph(text, style=body):
@@ -722,8 +720,8 @@ def render_assessment(
                 and not (coherent_material_flow and material.id.startswith("recon_")),
             )
             if flatten:
-                # Avoid nested KeepTogether blocks: the outer question group owns
-                # pagination, so its measured height must include real children.
+                # avoid nested KeepTogether blocks: the outer question group owns
+                # pagination, so its measured height must include real children
                 story.extend(material_block._content)
             else:
                 story.append(material_block)
@@ -946,13 +944,13 @@ def render_assessment(
                     }
                     and not whole_case_question
                 ):
-                    # Keep the complete construction, justification and credit
-                    # together when they fit, without dragging the prompt along.
+                    # keep the complete construction, justification and credit
+                    # together when they fit, without dragging the prompt along
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
                 if whole_case_question:
-                    # A single flat group keeps a prompt, its answer and credits
+                    # a single flat group keeps a prompt, its answer and credits
                     # together when they fit. Nested KeepTogether groups can
-                    # falsely consume a full page and strand the prompt.
+                    # falsely consume a full page and strand the prompt
                     start = material_start if coherent_material_flow else question_start
                     if (
                         compact_correction and question_index == 0
@@ -963,9 +961,9 @@ def render_assessment(
                         "curriculum_database_case_contract",
                         "round_robin_case_contract",
                     }:
-                        # Source tables must remain available beside the case
+                        # source tables must remain available beside the case
                         # introduction. Group only the worked question here;
-                        # including its table can push both onto the next page.
+                        # including its table can push both onto the next page
                         start = question_start
                     story[start:] = [KeepTogether(story[start:])]
                 elif (
@@ -975,8 +973,8 @@ def render_assessment(
                 ):
                     story[material_start:] = [KeepTogether(story[material_start:])]
                 elif (
-                    # The recursive construction owns an answer group above;
-                    # grouping its prompt too would leave the prior page sparse.
+                    # the recursive construction owns an answer group above;
+                    # grouping its prompt too would leave the prior page sparse
                     (
                         v18_paper
                         and question.verification.get("kind")
@@ -1010,7 +1008,7 @@ def render_assessment(
                     or question_index < len(exercise.questions) - 1
                 ):
                     # V34 starts the next exercise with PageBreak. A trailing
-                    # spacer can spill onto a fresh page and leave it empty.
+                    # spacer can spill onto a fresh page and leave it empty
                     story.append(Spacer(1, 2 if graph_depth_correction else 5))
 
     def cover_page(canvas, built_doc):

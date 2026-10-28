@@ -70,7 +70,7 @@
 **Files:**
 - Modify: `Resources/computer-science/aqa/generator/cspapergen/ollama_client.py`
 - Modify: `Resources/computer-science/aqa/generator/tests/test_ollama_client.py`
-- Modify: `Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py`
+- Modify: `Resources/economics/edexcel-a/generator/keldin_edexcel/ollama_client.py`
 - Modify: `Resources/economics/edexcel-a/generator/tests/test_ollama_client.py`
 
 1. Add failing tests showing both custom pipelines include a concrete demand target and require the separate judge for generated, review-only and fallback items.

@@ -1,4 +1,4 @@
-# Author and review Edexcel Economics items through the shared model interface.
+# Author and review Edexcel Economics items through the shared model interface
 
 from __future__ import annotations
 
@@ -26,8 +26,8 @@ from Backend.Core.model_review import (
 )
 from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
-from pastpapergen.extended_scenarios import SCENARIOS
-from pastpapergen.models import (
+from keldin_edexcel.extended_scenarios import SCENARIOS
+from keldin_edexcel.models import (
     MultipleChoiceOption,
     PaperBlueprint,
     QuestionBlueprint,
@@ -35,8 +35,8 @@ from pastpapergen.models import (
     Syllabus,
     SyllabusTopic,
 )
-from pastpapergen.notes import note_context_for_topic
-from pastpapergen.render_pdf import candidate_stimulus_data
+from keldin_edexcel.notes import note_context_for_topic
+from keldin_edexcel.render_pdf import candidate_stimulus_data
 
 
 def build_question_prompt(
@@ -149,7 +149,7 @@ def generate_questions_with_ollama(
     results_lock = Lock()
     # Ollama serves one generation sequence per loaded local model. Sending several
     # long exam prompts at once only queues work inside the server and makes the
-    # client-side requests time out. Hosted providers can still run concurrently.
+    # client-side requests time out. Hosted providers can still run concurrently
     supports_parallel = getattr(
         client,
         "supports_parallel_generation",
@@ -223,15 +223,15 @@ def generate_questions_with_ollama(
             question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
             source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
             source_reference = question.source_reference
-            # Source binding, answer data and AO allocation are immutable
-            # properties of the verified paper plan, not creative model output.
+            # source binding, answer data and AO allocation are immutable
+            # properties of the verified paper plan, not creative model output
             mark_breakdown = question.mark_breakdown
             indicative_content = question.indicative_content
             mark_scheme = question.mark_scheme
             parts = question.parts
-            # Diagram geometry and numerical parameters are assessment data.
-            # Keep the seeded blueprint values instead of accepting an unrelated
-            # chart type invented by the authoring model.
+            # Diagram geometry and numerical parameters are assessment data
+            # keep the seeded blueprint values instead of accepting an unrelated
+            # chart type invented by the authoring model
             graph_params = question.graph_params
             candidate = question.model_copy(
                 update={
@@ -322,7 +322,7 @@ def generate_questions_with_ollama(
     return blueprint.model_copy(update={"questions": questions})
 
 
-# Run an independent demand-only gate over every rendered question item.
+# run an independent demand-only gate over every rendered question item
 def review_blueprint_difficulty(
     client: object,
     blueprint: PaperBlueprint,
@@ -556,7 +556,7 @@ def _question_demand_items(question: QuestionBlueprint) -> list[dict[str, object
     ]
 
 
-# Keep a multipart review focused on the rendered part-level guidance.
+# keep a multipart review focused on the rendered part-level guidance
 def _multipart_review_view(question: QuestionBlueprint) -> QuestionBlueprint:
 
     if not question.parts:
@@ -899,7 +899,7 @@ def _merge_question_text(question: QuestionBlueprint, generated: str) -> str:
     return _restore_source_reference(cleaned, question.source_reference)
 
 
-# Keep calibrated Section A stimuli aligned with rendered assessment data.
+# keep calibrated Section A stimuli aligned with rendered assessment data
 def _uses_review_only_generation(question: QuestionBlueprint) -> bool:
     return question.section == "A" and bool(question.stimulus_kind)
 

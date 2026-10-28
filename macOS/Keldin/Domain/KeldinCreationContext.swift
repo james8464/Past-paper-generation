@@ -1,6 +1,6 @@
-// Describe the current paper selection for the creation interface.
+// Keldin generation context
 
-enum PaperCreationContext: Equatable {
+enum KeldinCreationContext: Equatable {
     case board
     case french(largePrint: Bool)
 

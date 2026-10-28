@@ -1,4 +1,4 @@
-// Present the selected UK paper, model settings and generation progress.
+// Present the selected UK paper, model settings and generation progress
 
 import SwiftUI
 import TipKit
@@ -22,7 +22,7 @@ struct GeneratorWorkspace: View {
             }
         }
         .navigationTitle("\(board.subjectTitle) · \(board.shortTitle)")
-        .focusedSceneValue(\.paperCreationContext, .board)
+        .focusedSceneValue(\.keldinCreationContext, .board)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {
@@ -37,7 +37,7 @@ struct GeneratorWorkspace: View {
                         Button(role: .cancel, action: application.cancelGeneration) {
                             Label("Cancel", systemImage: "xmark.circle")
                         }
-                        .help("Cancel paper creation")
+                        .help("Cancel generation")
                     } else {
                         Button(action: application.generate) {
                             Label(createButtonTitle, systemImage: "doc.badge.plus")
@@ -101,9 +101,9 @@ private struct PaperConfiguration: View {
             if board.usesAI,
                application.aiProvider == .ollama,
                !application.selectedModelIsRecommended {
-                TipView(PaperCreationTips.modelRecommendation)
+                TipView(KeldinCreationTips.modelRecommendation)
             } else if application.generatedFiles.isEmpty {
-                TipView(PaperCreationTips.preview)
+                TipView(KeldinCreationTips.preview)
             }
 
             Section("Assessment") {
@@ -260,7 +260,7 @@ private struct GenerationProgress: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Paper creation progress")
+        .accessibilityLabel("Generation progress")
         .accessibilityValue(accessibilityValue)
         .accessibilityAddTraits(.updatesFrequently)
     }
@@ -297,7 +297,7 @@ private struct RecentDocuments: View {
             .padding(.top, 14)
 
             if !application.generatedFiles.isEmpty {
-                TipView(PaperCreationTips.quality)
+                TipView(KeldinCreationTips.quality)
                     .padding(.horizontal, 20)
             }
 

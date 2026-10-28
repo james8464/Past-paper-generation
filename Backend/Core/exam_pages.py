@@ -1,4 +1,4 @@
-# Draw shared page borders, footers and answer-page furniture.
+# draw shared page borders, footers and answer-page furniture
 
 from __future__ import annotations
 
@@ -29,7 +29,7 @@ class ExamPageProfile:
     message: str = ""
 
 
-# A full-page shell that can also live inside a Platypus story.
+# a full-page shell that can also live inside a Platypus story
 class ExamPage(Flowable):
 
     def __init__(
@@ -50,7 +50,7 @@ class ExamPage(Flowable):
         self.width = 167 * mm
         self.height = 226 * mm
 
-    # Expose identical page intent to the renderer-neutral DSL.
+    # expose identical page intent to the renderer-neutral DSL.
     @property
     def component(self) -> BlankPage | ContinuationPage | RuleSet:
         if self.profile.variant == "blank":
@@ -79,7 +79,7 @@ class ExamPage(Flowable):
         )
 
     def draw(self) -> None:
-        # ``drawOn`` deliberately works in page coordinates.
+        # ``drawOn`` deliberately works in page coordinates
         return None
 
 
@@ -96,8 +96,8 @@ def draw_exam_page(
 ) -> None:
     pdf.saveState()
     pdf.setFillColor(colors.white)
-    # Preserve the template's folio. Repainting it would leave a second hidden
-    # text layer in extraction even when the visual background is opaque.
+    # preserve the template's folio. Repainting it would leave a second hidden
+    # text layer in extraction even when the visual background is opaque
     pdf.rect(0, 0, width, height - 30, stroke=0, fill=1)
     pdf.restoreState()
     pdf.saveState()

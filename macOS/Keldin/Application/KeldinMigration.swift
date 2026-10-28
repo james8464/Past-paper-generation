@@ -1,9 +1,9 @@
-// Import earlier installations once, without deleting their files or overwriting Keldin data.
+// Import earlier installations once, without deleting their files or overwriting Keldin data
 
 import Foundation
 
 enum KeldinMigration {
-    // Legacy spellings belong here so new storage and launch paths use Keldin throughout.
+    // Legacy spellings belong here so new storage and launch paths use Keldin throughout
     static let legacyBundleID = "com.jamesdurup.PaperCreator"
     static let legacyAppFolders = ["Paper creator", "Paper Creator"]
     static let legacyKeychainService = "Paper creator"
@@ -49,7 +49,7 @@ enum KeldinMigration {
                 }
             }
         }
-        // An unreadable sandbox container can be selected explicitly in Output Settings.
+        // an unreadable sandbox container can be selected explicitly in Output Settings
         if failures.isEmpty { defaults.set(migrationVersion, forKey: completionKey) }
         return failures
     }
@@ -74,7 +74,7 @@ enum KeldinMigration {
         guard let importedValue = values[familyKey] else { return }
         guard let imported = importedValue as? [String],
               let current = (defaults.object(forKey: familyKey) ?? [String]()) as? [String] else {
-            // Keep both original ledgers intact. Never treat an unreadable import as unused families.
+            // keep both original ledgers intact. Never treat an unreadable import as unused families
             defaults.set(true, forKey: frenchFamilyImportFailedKey)
             return
         }
@@ -89,7 +89,7 @@ enum KeldinMigration {
         try copyMissingTree(from: source, to: destination, fileManager: fileManager)
         registerArtifactRoot(source, destination: destination, defaults: defaults)
         // Selecting the former app's Application Support folder grants access to its files,
-        // not to a separate preferences or Keychain domain. Those imports remain independent.
+        // not to a separate preferences or Keychain domain. Those imports remain independent
         importPreferences(defaults.persistentDomain(forName: legacyBundleID) ?? [:], into: defaults)
     }
 
@@ -107,7 +107,7 @@ enum KeldinMigration {
             let relative = String(path.dropFirst(source.count + 1))
             let url = URL(fileURLWithPath: destination).appendingPathComponent(relative)
             guard FileManager.default.fileExists(atPath: url.path) else { continue }
-            // Change only the history pointer. Assessment packages and PDF bytes keep their hashes.
+            // change only the history pointer. Assessment packages and PDF bytes keep their hashes
             return GeneratedFile(id: file.id, role: file.role, url: url, createdAt: file.createdAt, subject: file.subject, paper: file.paper)
         }
         return file
@@ -132,7 +132,7 @@ enum KeldinMigration {
             let target = destination.appendingPathComponent(child.lastPathComponent)
             let values = try child.resourceValues(forKeys: [.isDirectoryKey, .isSymbolicLinkKey])
             if values.isSymbolicLink == true {
-                // Model snapshots use relative links to blob files. Copy the link itself.
+                // Model snapshots use relative links to blob files. Copy the link itself
                 if !fileManager.fileExists(atPath: target.path),
                    (try? target.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) != true {
                     try copyMissingItem(from: child, to: target, fileManager: fileManager)
@@ -151,7 +151,7 @@ enum KeldinMigration {
         defer { try? fileManager.removeItem(at: temporary) }
         try fileManager.copyItem(at: source, to: temporary)
         do {
-            // Renaming a complete sibling copy keeps interrupted imports out of history.
+            // Renaming a complete sibling copy keeps interrupted imports out of history
             try fileManager.moveItem(at: temporary, to: destination)
         } catch {
             if !fileManager.fileExists(atPath: destination.path) { throw error }

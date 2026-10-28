@@ -108,7 +108,7 @@ final class SecretStoreTests: XCTestCase {
             keychain.calls.removeAll()
             XCTAssertEqual(try SecretStore.read(account, keychain: keychain), "")
             XCTAssertEqual(keychain.calls.map(\.service), ["Keldin"])
-            // Retrying the explicit clear can finish cleanup without reviving data.
+            // Retrying the explicit clear can finish cleanup without reviving data
             try SecretStore.save("", account: account, keychain: keychain)
             XCTAssertNil(keychain.value(account, service: "Keldin"))
             XCTAssertNil(keychain.value(account, service: KeldinMigration.legacyKeychainService))
@@ -379,7 +379,7 @@ private enum PrivateCredentialError: LocalizedError {
     var errorDescription: String? { "PRIVATE_VALUE_SENTINEL must never be shown." }
 }
 
-// Test calls are synchronous on the main actor; no helper or Keychain is launched.
+// Test calls are synchronous on the main actor; no helper or Keychain is launched
 private final class CredentialTestBackend: BackendRunning, @unchecked Sendable {
     private(set) var runCount = 0
     func run(arguments: [String], environment: [String: String], onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void, onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void) throws -> Process {

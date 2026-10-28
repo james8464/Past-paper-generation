@@ -1,4 +1,4 @@
-# Hash-bound, selection-only authoring for the V17 French graph/tree case.
+# Hash-bound, selection-only authoring for the V17 French graph/tree case
 
 from __future__ import annotations
 

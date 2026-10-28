@@ -1,8 +1,6 @@
-# Allocate AQA 7517 assessment objectives from the work each task requires.
-#
-# Full-paper design budgets match the locally verified June 2025 totals
-# (20/30/50 and 56/40/4). The source's discounted P1 item is not used as a
-# difficulty anchor. Focused banks deliberately have their own task-led budgets.
+# task-led AQA 7517 AO allocations; full-paper budgets match checked June 2025 totals
+# (20/30/50 and 56/40/4). Exclude the discounted P1 item as a difficulty anchor; focused
+# banks keep their own task-led budgets
 from __future__ import annotations
 
 from Backend.Core.assessment_objectives import objective_policy_for
@@ -17,7 +15,7 @@ from cspapergen.models import (
     ReferenceTaskContract,
 )
 
-# Each tuple gives AO1/AO2/AO3 marks for one actual part, not qualification shares.
+# each tuple gives AO1/AO2/AO3 marks for one actual part, not qualification shares
 PAPER2 = {
     "software_classification": [(2,0,0),(2,0,0),(4,0,0)],
     "sound_sampling": [(0,2,0),(1,1,0),(2,0,0),(2,0,0)],
@@ -88,7 +86,7 @@ def calibrate_blueprint(paper: PaperBlueprint) -> PaperBlueprint:
             if allocations is None:
                 objective = part.marking.ao
                 # General hashing knowledge is AO1; executing the supplied
-                # recursive function is AO2 even when the command is "State".
+                # recursive function is AO2 even when the command is "State"
                 objective = {
                     (1, "2"): "AO1", (1, "3"): "AO1",
                     (5, "1"): "AO2", (6, "7"): "AO1",

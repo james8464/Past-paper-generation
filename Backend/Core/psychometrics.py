@@ -1,4 +1,4 @@
-# Validate response data and compute calibration evidence under an explicit policy.
+# validate response data and compute calibration evidence under an explicit policy
 
 from __future__ import annotations
 
@@ -134,7 +134,7 @@ class Response:
         return self.score / self.max_score
 
 
-# Load anonymised long-form response data with strict range validation.
+# load anonymised long-form response data with strict range validation
 def load_responses(path: Path) -> list[Response]:
 
     with path.open(newline="", encoding="utf-8-sig") as stream:
@@ -151,10 +151,10 @@ def load_responses(path: Path) -> list[Response]:
     return responses
 
 
-# Produce conservative, auditable item and form evidence.
+# Produce conservative, auditable item and form evidence
 #
 # Multiple marker rows for one candidate/item are averaged for attainment
-# statistics and retained separately for inter-rater agreement.
+# statistics and retained separately for inter-rater agreement
 def calibrate_responses(
     responses: Iterable[Response],
     *,

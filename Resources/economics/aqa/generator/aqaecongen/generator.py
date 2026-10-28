@@ -1,4 +1,4 @@
-# Build seeded AQA Economics paper content and its marking guidance.
+# build seeded AQA Economics paper content and its marking guidance
 
 from __future__ import annotations
 
@@ -957,7 +957,7 @@ def _applied_mcq(
     )
 
 
-# Project one typed source into candidate text, options and checked key.
+# project one typed source into candidate text, options and checked key
 def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
     values = source.model_dump(mode="json", exclude={"operation"})
     contract = selected_response_contract(source.operation, inputs=values)
@@ -1044,8 +1044,8 @@ def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
         "authoring_context": {"selected_response_contract": contract},
     }
     if isinstance(source, OpportunityCostSource):
-        # The model can reword the task, but these names also identify the
-        # immutable choices. Renaming only the stem makes them ambiguous.
+        # the model can reword the task, but these names also identify the
+        # immutable choices. Renaming only the stem makes them ambiguous
         item["authoring_context"]["required_prompt_terms"] = ["product X", "product Y"]
     solution = solve_selected_response(item)
     if solution is None or solution["answer"] not in choices:

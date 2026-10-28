@@ -1,4 +1,4 @@
-// Preview generated PDFs and handle their export and printing actions.
+// Preview generated PDFs and handle their export and printing actions
 
 import AppKit
 import Combine
@@ -158,7 +158,7 @@ final class DocumentActionController: ObservableObject {
         }
         switch access.load(selectedFile.url) {
         case .success(let pdf):
-            // Keep PDFView's page and zoom when validation reads the same bytes.
+            // keep PDFView's page and zoom when validation reads the same bytes
             if loadedPDF?.bytes != pdf.bytes { loadedPDF = pdf }
         case .failure(let failure):
             loadedPDF = nil
@@ -247,15 +247,15 @@ enum PDFDocumentActions {
         let matches = records.filter { record in
             record.artifacts.contains { $0.id == file.id }
         }
-        // Old history may have copied a library artifact into several jobs.
-        // A reused filename is not proof of provenance for this revision.
+        // old history may have copied a library artifact into several jobs
+        // a reused filename is not proof of provenance for this revision
         return matches.count == 1 ? matches.first : nil
     }
 
     @MainActor
     static func printOperation(for url: URL) -> NSPrintOperation? {
         guard let document = PDFDocument(url: url) else { return nil }
-        // A zero-sized PDFView cannot print the whole paper.
+        // a zero-sized PDFView cannot print the whole paper
         return document.printOperation(
             for: NSPrintInfo.shared,
             scalingMode: .pageScaleToFit,
@@ -265,8 +265,8 @@ enum PDFDocumentActions {
 
     static func export(from source: URL, to destination: URL) throws {
         if source.standardizedFileURL == destination.standardizedFileURL { return }
-        // Read before replacing anything. Atomic writing keeps an existing
-        // export intact if the source is missing or writing cannot finish.
+        // read before replacing anything. Atomic writing keeps an existing
+        // export intact if the source is missing or writing cannot finish
         try Data(contentsOf: source, options: .mappedIfSafe).write(to: destination, options: .atomic)
     }
 }

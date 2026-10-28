@@ -1,4 +1,4 @@
-# Hash-bound, selection-only authoring for the V2 French database case.
+# Hash-bound, selection-only authoring for the V2 French database case
 
 from __future__ import annotations
 

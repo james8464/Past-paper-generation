@@ -1,4 +1,4 @@
-# Whole E3 sequences: distinct reasoning, aligned credits and bound facts.
+# Whole E3 sequences: distinct reasoning, aligned credits and bound facts
 
 from copy import deepcopy
 from decimal import Decimal
@@ -74,7 +74,7 @@ def test_printed_system_algorithm_runs_and_preserves_inputs(seed):
     answer = render_case(seed)["questions"][3]["answer"]
     code = re.search(r"```python\n(.*?)\n```", answer, re.S)[1]
     namespace = {}
-    # Fixed application-owned correction only, never model-supplied code.
+    # fixed application-owned correction only, never model-supplied code
     exec(compile(code, "<application-system-solution>", "exec"), namespace)
     public = deepcopy(case["public"])
     if case["family"] == "routing":

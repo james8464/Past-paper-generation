@@ -11,7 +11,7 @@ ADVICE = {
 }
 ADVICE_TEXT = ADVICE["description"]
 # Verbatim solver response from the exploratory (not commit-qualified)
-# tmp/task7e-cpu-live-probe.json. Frozen here so tests need no private QA files.
+# tmp/task7e-cpu-live-probe.json. Frozen here so tests need no private QA files
 CAPTURED_CPU_RESPONSE = {
     "steps": [
         "Identify the core definition of the 'stored program' concept within computer architecture.",
@@ -35,9 +35,9 @@ CAPTURED_CPU_RESPONSE = {
     "follow_through_rules": [],
 }
 
-# Verbatim semantic response shape from the frozen seed-26083134 live capture.
-# The semantic content is retained as evidence, but the missing ordered
-# ``criteria`` envelope must remain invalid rather than being repaired.
+# Verbatim semantic response shape from the frozen seed-26083134 live capture
+# the semantic content is retained as evidence, but the missing ordered
+# ``criteria`` envelope must remain invalid instead of being repaired
 FLATTENED_LIVE_SEMANTIC_RESPONSE = {
     "instructions-main-memory": {
         "decision": "supported",
@@ -59,7 +59,7 @@ FLATTENED_LIVE_SEMANTIC_RESPONSE = {
 
 # Verbatim answer and semantic response from the source-verified round-2 live
 # transaction in tmp/task7j2-cpu-live-probe-0901.json. The model's supported
-# decision for the second criterion is the false positive under regression.
+# decision for the second criterion is the false positive under regression
 ROUND2_LIVE_ANSWER = (
     "The stored program concept is the principle where both program instructions "
     "and data are stored in the same memory space. Because they are stored "
@@ -819,7 +819,7 @@ def test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semanti
     for row in response["criteria"]:
         index = 1 if row["criterion_id"] == "instructions-main-memory" else 0
         row.update(point_index=index, scheme_quote=item["marking"]["points"][index])
-    # Re-solve after the candidate scheme mutation: the blind answer is unchanged.
+    # Re-solve after the candidate scheme mutation: the blind answer is unchanged
     solution = IndependentSolver(ReplaySolver()).solve(item, [])
     assert (
         review_open_credit(ReplaySolver(exact_response=response), item, solution)[

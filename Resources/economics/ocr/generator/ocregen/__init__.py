@@ -1,2 +1,2 @@
-# Independent OCR H460-aligned A-level Economics practice-paper generator.
+# independent OCR H460-aligned A-level Economics practice-paper generator
 

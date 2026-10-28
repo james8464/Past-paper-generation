@@ -1,8 +1,5 @@
-# Original E3 systems cases for the unreleased V32 assessment.
-#
-# These are explicit teaching models, not simulations of complete Internet
-# protocols. Application algorithms are cross-checked against separate bounded
-# walk, reachability and prefix-history oracles. No model code is executed.
+# E3 teaching models, not complete Internet protocols; check app algorithms against
+# separate bounded-walk, reachability and prefix-history oracles. Never run model code
 
 import json
 from copy import deepcopy
@@ -36,11 +33,9 @@ def _adjacency(links, nodes):
     return adjacent
 
 
-# One synchronous distance-vector round; None means unreachable.
-#
-# All neighbours advertise the previous round, including obsolete estimates.
-# This deliberately omits split horizon and poison reverse. Positive integer
-# costs are supplied. The destination advertises zero every round.
+# one synchronous distance-vector round; None means unreachable. Neighbours advertise
+# the previous round, including stale estimates. No split horizon or poison reverse;
+# costs are positive integers, destination always advertises zero
 def distance_round(links, previous, destination):
     if destination not in previous or previous[destination] != 0:
         raise ValueError("Missing destination")
@@ -58,11 +53,9 @@ def distance_round(links, previous, destination):
     return result
 
 
-# Return cycle members, not processes merely blocked behind a cycle.
-#
-# Each resource has one owner; each process requests at most one resource.
-# A process cannot acquire a resource it already owns (non-reentrant locks).
-# A missing owner means a free resource, so that request has no wait edge.
+# cycle members only, excluding processes blocked behind them; one owner per resource,
+# at most one request per process. Locks aren't reentrant. Unowned resources are free
+# and create no wait edge
 def deadlocked_processes(owners, waiting):
     cycles = set()
     for process in waiting:
@@ -79,11 +72,9 @@ def deadlocked_processes(owners, waiting):
     return sorted(cycles)
 
 
-# Application reassembly of positive numbered messages, beginning at 1.
-#
-# Events are [nonnegative time, positive sequence, string payload], sorted by
-# time; equal times retain input order. Identical duplicates are ignored even
-# after delivery. Conflicting duplicates are rejected. This is not TCP.
+# application-level reassembly, numbered from 1; events are [nonnegative time, positive
+# sequence, string payload], sorted by time with stable ties. Ignore identical
+# duplicates even after delivery; reject conflicts. Not TCP
 def delivery_trace(events):
     seen, buffer, trace = {}, {}, []
     next_number, last_time = 1, -1
@@ -120,7 +111,7 @@ def delivery_trace(events):
     return trace
 
 
-# One non-preemptive consumer; [arrival, identifier, duration] in FIFO order.
+# one non-preemptive consumer; [arrival, identifier, duration] in FIFO order
 def fifo_jobs(arrivals):
     clock, last_arrival, result = 0, -1, []
     for arrival, identifier, duration in arrivals:
@@ -139,7 +130,7 @@ def fifo_jobs(arrivals):
     return result
 
 
-# Tick-by-tick server, independent of the max/start recurrence.
+# Tick-by-tick server, independent of the max/start recurrence
 def _fifo_oracle(arrivals):
     pending = list(arrivals)
     result, time, queue = [], 0, []
@@ -166,10 +157,10 @@ def _checked_jobs(arrivals):
     return jobs
 
 
-# Expand walks of exactly r edges, stopping at destination immediately.
+# expand walks of exactly r edges, stopping at destination immediately
 #
-# A walk's final node supplies its initial advertisement. Keeping obsolete
-# endpoint values is intentional: a transient route is not a shortest path.
+# a walk's final node supplies its initial advertisement. Keeping obsolete
+# endpoint values is intentional: a transient route is not a shortest path
 def _walk_oracle(links, initial, destination, rounds):
     result = {}
     for start in initial:
@@ -194,7 +185,7 @@ def _walk_oracle(links, initial, destination, rounds):
     return result
 
 
-# Transitive closure: a process belongs to a cycle iff it reaches itself.
+# Transitive closure: a process belongs to a cycle iff it reaches itself
 def _cycle_oracle(owners, waiting):
     nodes = sorted(set(waiting) | set(owners.values()))
     reach = {
@@ -210,7 +201,7 @@ def _cycle_oracle(owners, waiting):
     return sorted(p for p in nodes if (p, p) in reach)
 
 
-# Recompute the available prefix from every complete event-history slice.
+# recompute the available prefix from every complete event-history slice
 def _delivery_oracle(events):
     output = []
     previous_prefix = 0
@@ -244,7 +235,7 @@ def _routing():
         if current != _walk_oracle(surviving, baseline, "D", count):
             raise ValueError("Routing oracle disagreement")
         states.append(dict(round=count, distances=dict(current)))
-    # Enumerate all simple paths independently for the converged cost.
+    # enumerate all simple paths independently for the converged cost
     costs = []
     pending = [("A", ["A"], 0)]
     while pending:
@@ -333,7 +324,7 @@ def _delivery():
     states = delivery_trace(events)
     if states != _delivery_oracle(events):
         raise ValueError("Delivery oracle disagreement")
-    # One non-preemptive FIFO consumer, two time units per emitted message.
+    # one non-preemptive FIFO consumer, two time units per emitted message
     jobs = _checked_jobs(
         [
             [state["time"], message, 2]

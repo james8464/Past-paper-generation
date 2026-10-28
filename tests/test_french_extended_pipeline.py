@@ -1,4 +1,4 @@
-# Four real whole-paper families must replay and retain originality refusal.
+# four real whole-paper families must replay and retain originality refusal
 
 from copy import deepcopy
 
@@ -179,7 +179,7 @@ def test_all_four_families_have_complete_printed_content(
         (seed, exercise)
         for seed in range(270100, 270104)
         for exercise in range(3)
-        # Postfix starts with an inline calculation, before the tree is needed.
+        # Postfix starts with an inline calculation, before the tree is needed
         if (seed, exercise) != (270103, 0)
     ],
 )
@@ -198,7 +198,7 @@ def test_enlarged_correction_keeps_source_table_with_introduction(
             page for page in pdf if page.search_for(f"Exercice {exercise + 1} (6 points)")
         ]
         assert len(introduction) == 1
-        # A case heading alone gives the reader no data to work with.
+        # a case heading alone gives the reader no data to work with
         source_title = package["exercises"][exercise]["materials"][0]["title"]
         assert " ".join(source_title.split()) in " ".join(
             introduction[0].get_text().split()
