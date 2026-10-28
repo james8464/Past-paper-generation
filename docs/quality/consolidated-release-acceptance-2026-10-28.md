@@ -82,6 +82,17 @@ No new permission or credential access is authorized by this record.
 
 ## Live model and publication gates
 
+The final frozen helper probe exposed a missing acceptance check: its healthy
+result covered only the three historical French families. The fix at `6ced2de`
+retains those legacy render/catalogue checks and also validates all five current
+V35 source families, typed exercises and their catalogue. The diagnostic reports
+the current prompt version and family count. Five regressions failed before the
+fix; seven probe tests and 55 related registry/pipeline tests pass. Evidence:
+`tmp/bundle-public-family-{red,green,related-green}.log`.
+No immutable French exercise source was changed. This CLI edit changes the Core
+implementation identity, so the a93ecb86 source acceptance above remains a
+historical checkpoint rather than acceptance of the new final identity.
+
 Fresh complete-paper Ollama/MLX acceptance for this frozen pipeline is NOT RUN
 at this checkpoint. Earlier V10 Accounting automation success remains a historical
 manual HOLD and is not relabelled as V11 acceptance. Final frozen helper

@@ -303,6 +303,8 @@ The next consolidated branch includes these separately reviewed changes:
 - P5: a shared minimal JSON-client protocol and typed client factories replace
   duplicated interfaces. Heterogeneous family model hooks still use explicit
   Any; no repository-wide static checker or complete generic migration is claimed.
+  The original static-check acceptance criterion remains deferred. Runtime tests
+  do not satisfy it, so P5 is only partially accepted.
 - P6: prompt builders, known private-key filtering and named deterministic
   dispatch have separate owners. Seven complete prompt/request snapshots remain
   byte-identical. Targeted final gate: 1,305 passed, two skipped.
@@ -335,3 +337,13 @@ dispositions without changing frozen source during identity-bearing tests.
 Neither inventory, formatting nor this checkpoint establishes whole-project
 semantic review, observed learner timing, complete HIG compliance or official
 paper equivalence. Distribution credentials and third-party rights stay external.
+
+The ledger can now retain explicit file-review records (`2363e08`). Each record
+requires the exact source hash, tracked Markdown evidence path and hash, and a
+nonempty review scope/reason. Regeneration preserves valid records, resets a
+changed source to pending and refuses malformed or changed evidence. Tests cover
+unknown fields, untracked evidence and escaping or looping symlinks. The final
+focused gate passed 32 tests after 11 initial and three additional edge-case
+regressions failed. No real file was automatically marked reviewed. These
+records bind evidence to bytes; they do not authenticate a reviewer or establish
+that an attestation is true. Full file-level semantic review remains unfinished.
