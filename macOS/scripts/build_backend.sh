@@ -39,6 +39,19 @@ build_fingerprint() {
       "deployment=${MACOSX_DEPLOYMENT_TARGET:-unknown}"
     "$PYTHON" --version
     "$PYTHON" -c 'import PyInstaller; print(PyInstaller.__version__)'
+    # Requirement ranges can resolve to newer installed versions without any
+    # source change. Include their metadata so the cached helper cannot stay stale.
+    "$PYTHON" -c '
+import importlib.metadata
+import json
+import re
+
+distributions = sorted(
+    (re.sub(r"[-_.]+", "-", item.metadata["Name"]).casefold(), item.version)
+    for item in importlib.metadata.distributions()
+)
+print(json.dumps(distributions, ensure_ascii=True, separators=(",", ":")))
+' || return
     shasum \
       "$ROOT_DIR/bridge.py" \
       "$ROOT_DIR/requirements-build.txt" \

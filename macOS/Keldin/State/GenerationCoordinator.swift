@@ -27,12 +27,13 @@ final class GenerationCoordinator {
         var running = job
         running.state = .running
         running.updatedAt = clock.now
+        // Keep the current session until the new history record has been saved.
+        try history.save(running)
         activeJob = running
         status = "Starting"
         progress = 0
         progressEntries.removeAll()
         generatedFiles.removeAll()
-        try history.save(running)
     }
 
     func receive(_ event: BackendEvent) {

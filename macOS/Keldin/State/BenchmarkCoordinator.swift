@@ -14,16 +14,19 @@ final class BenchmarkCoordinator {
     private(set) var errorMessage: String?
     var outputFolder = AppDefaults.defaultOutputFolder()
 
-    @ObservationIgnored private let backend: BackendClient
+    @ObservationIgnored private let backend: any BackendRunning
     @ObservationIgnored private var process: Process?
+    @ObservationIgnored private var activeRunSession: RunSession?
 
-    init(backend: BackendClient = BackendClient()) {
+    init(backend: any BackendRunning = BackendClient()) {
         self.backend = backend
     }
 
     func start(generationIsRunning: Bool) {
         guard !generationIsRunning, !isRunning else { return }
         begin()
+        let session = RunSession()
+        activeRunSession = session
         do {
             process = try backend.run(arguments: [
                 "benchmark",
@@ -31,12 +34,16 @@ final class BenchmarkCoordinator {
                 String(Int(AppDefaults.benchmarkDurationSeconds)),
                 "--output",
                 outputFolder.path,
-            ]) { [weak self] event in
-                self?.receive(event)
+            ], environment: [:]) { [weak self] event in
+                guard let self, self.activeRunSession == session else { return }
+                self.receive(event)
             } onFinish: { [weak self] result in
-                self?.finish(result)
+                guard let self, self.activeRunSession == session else { return }
+                self.activeRunSession = nil
+                self.finish(result)
             }
         } catch {
+            activeRunSession = nil
             finish(.failure(error))
         }
     }
@@ -69,6 +76,7 @@ final class BenchmarkCoordinator {
     }
 
     func cancel() {
+        activeRunSession = nil
         process?.terminate()
         process = nil
         isRunning = false
@@ -87,5 +95,9 @@ final class BenchmarkCoordinator {
         default:
             break
         }
+    }
+
+    private struct RunSession: Equatable, Sendable {
+        let id = UUID()
     }
 }

@@ -139,17 +139,25 @@ final class RecentDocumentStore {
     @ObservationIgnored private let directory: URL
     @ObservationIgnored private let fileManager: FileManager
     @ObservationIgnored private let clock: AppClock
+    @ObservationIgnored private let defaults: UserDefaults
+    @ObservationIgnored private let recordWriter: (Data, URL) throws -> Void
 
     init(
         directory: URL,
         retentionLimit: Int,
         fileManager: FileManager = .default,
-        clock: AppClock = SystemAppClock()
+        clock: AppClock = SystemAppClock(),
+        defaults: UserDefaults = .standard,
+        recordWriter: @escaping (Data, URL) throws -> Void = { data, url in
+            try data.write(to: url, options: [.atomic])
+        }
     ) {
         self.directory = directory
         self.retentionLimit = max(1, retentionLimit)
         self.fileManager = fileManager
         self.clock = clock
+        self.defaults = defaults
+        self.recordWriter = recordWriter
     }
 
     func load() throws {
@@ -161,43 +169,50 @@ final class RecentDocumentStore {
         var loaded: [GenerationJobRecord] = []
         quarantinedRecordCount = 0
         for url in urls {
+            // Access failures do not make a record corrupt. Keep reads and
+            // migration writes outside the structural-validation catch.
+            let data = try Data(contentsOf: url)
+            var record: GenerationJobRecord
             do {
-                var record = try JSONDecoder.keldin.decode(
-                    GenerationJobRecord.self,
-                    from: Data(contentsOf: url)
-                )
-                let relocated = record.artifacts.map { KeldinMigration.relocatedArtifact($0) }
-                let changedArtifactPaths = relocated != record.artifacts
-                record.artifacts = relocated
-                if record.schemaVersion == 0 {
-                    record = GenerationJobRecord(
-                        id: record.id,
-                        configuration: record.configuration,
-                        provenance: record.provenance,
-                        state: record.state,
-                        artifacts: record.artifacts,
-                        qualification: record.qualification,
-                        createdAt: record.createdAt,
-                        updatedAt: record.updatedAt
-                    )
-                    try write(record)
-                } else if record.schemaVersion != GenerationJobRecord.currentSchemaVersion {
+                record = try JSONDecoder.keldin.decode(GenerationJobRecord.self, from: data)
+                if record.schemaVersion != 0,
+                   record.schemaVersion != GenerationJobRecord.currentSchemaVersion {
                     throw RecentDocumentStoreError.unsupportedSchema(record.schemaVersion)
                 }
-                if record.state == .running {
-                    record.state = .interrupted
-                    record.updatedAt = clock.now
-                    try write(record)
-                } else if record.state == .completed, record.missingArtifactCount > 0 {
-                    record.state = .missingArtifacts
-                    record.updatedAt = clock.now
-                    try write(record)
-                }
-                if changedArtifactPaths { try write(record) }
-                loaded.append(record)
-            } catch {
+            } catch is DecodingError {
                 try quarantine(url)
+                continue
+            } catch RecentDocumentStoreError.unsupportedSchema(_) {
+                try quarantine(url)
+                continue
             }
+            let relocated = record.artifacts.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) }
+            var needsWrite = relocated != record.artifacts
+            record.artifacts = relocated
+            if record.schemaVersion == 0 {
+                record = GenerationJobRecord(
+                    id: record.id,
+                    configuration: record.configuration,
+                    provenance: record.provenance,
+                    state: record.state,
+                    artifacts: record.artifacts,
+                    qualification: record.qualification,
+                    createdAt: record.createdAt,
+                    updatedAt: record.updatedAt
+                )
+                needsWrite = true
+            }
+            if record.state == .running {
+                record.state = .interrupted
+                record.updatedAt = clock.now
+                needsWrite = true
+            } else if record.state == .completed, record.missingArtifactCount > 0 {
+                record.state = .missingArtifacts
+                record.updatedAt = clock.now
+                needsWrite = true
+            }
+            if needsWrite { try write(record) }
+            loaded.append(record)
         }
         records = loaded.sorted(by: Self.newestFirst)
         try enforceRetention()
@@ -247,7 +262,7 @@ final class RecentDocumentStore {
 
     private func write(_ record: GenerationJobRecord) throws {
         let data = try JSONEncoder.keldin.encode(record)
-        try data.write(to: fileURL(for: record.id), options: [.atomic])
+        try recordWriter(data, fileURL(for: record.id))
     }
 
     private func enforceRetention() throws {
