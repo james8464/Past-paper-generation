@@ -40,6 +40,7 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.status, "Sujet d’entraînement créé. Barème indicatif, difficulté et durée non calibrées.")
         model.apply(.error(message: "AI could not produce a valid, second-pass reviewed item for question 01: rejected", code: "generation_failed"))
         XCTAssertTrue(model.errorMessage.hasPrefix("Ce modèle n'a pas pu créer une épreuve"))
+        XCTAssertEqual(model.status, "Erreur")
     }
 
     @MainActor
@@ -51,6 +52,7 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.status, "Practice paper created. Marking guidance is indicative; difficulty and timing are uncalibrated.")
         model.apply(.error(message: "Les quatre familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé.", code: "french_generation_failed"))
         XCTAssertEqual(model.errorMessage, "None of the four paper families is sufficiently different from your saved papers. No new paper was created.")
+        XCTAssertEqual(model.status, "Error")
     }
 
     @MainActor

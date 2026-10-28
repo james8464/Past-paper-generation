@@ -1231,7 +1231,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func setError(_ message: String) {
         errorMessage = GenerationPresentation.error(message, language: presentationLanguage)
         showError = true
-        status = "Error"
+        status = InterfaceText.resolve("Error", language: presentationLanguage)
         generationProgress = nil
         if activeOperation == .generation {
             generationEstimate = nil

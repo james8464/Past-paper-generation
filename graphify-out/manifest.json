@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793193031.146295,
-    "ast_hash": "ecd1e58713be72a2faeb6b87286292b5",
+    "mtime": 1793195065.1731105,
+    "ast_hash": "c110c8bcbb3b9edd317c19de5ef5a303",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793168810.5910017,
-    "ast_hash": "6d52741af08b52d7a87e58c0b9d9c9ea",
+    "mtime": 1793195322.840988,
+    "ast_hash": "0b3f56064c6b35e162ef60ea8fd5c886",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -1450,8 +1450,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793192854.1979823,
-    "ast_hash": "688a7faaae4d16c1d2e9e5ea15064667",
+    "mtime": 1793195290.7567146,
+    "ast_hash": "159e030099c71bdcee58d4134e8b6af2",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3822,6 +3822,11 @@
   "tests/test_french_expanded_pdf.py": {
     "mtime": 1793191589.4996305,
     "ast_hash": "951e0bbe8061dad6b6d6033d83d358bd",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v35-expanded-practice-review-2026-10-28.md": {
+    "mtime": 1793195516.7004893,
+    "ast_hash": "82f395f251cc775009d90eaa4368fe92",
     "semantic_hash": ""
   }
 }
