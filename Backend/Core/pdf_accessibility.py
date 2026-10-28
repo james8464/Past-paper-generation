@@ -1,3 +1,5 @@
+# Attach page-level reading-order structure without changing PDF geometry.
+
 from __future__ import annotations
 
 import os

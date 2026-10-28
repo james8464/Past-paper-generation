@@ -1,3 +1,5 @@
+# Use the supplied generation date when labelling covers and mark schemes.
+
 from __future__ import annotations
 
 import os

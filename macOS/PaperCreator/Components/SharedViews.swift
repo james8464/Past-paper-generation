@@ -1,3 +1,5 @@
+// Reusable controls and status views for the workspace and settings.
+
 import SwiftUI
 
 struct GeneratedFilesTable: View {

@@ -1,3 +1,5 @@
+// Keep paper-creation tips with the interface that presents them.
+
 import SwiftUI
 import TipKit
 

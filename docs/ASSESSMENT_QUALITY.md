@@ -268,7 +268,7 @@ differences, and local artifact locations are recorded in
 `docs/qualification/2026-08-current-family-review.md`.
 
 No rendering defect was found in that matrix. Differences caused by independently
-authored questions remain expected, and the neutral Paper Creator identity is
+authored questions remain expected, and the neutral Keldin identity is
 deliberately used instead of exam-board logos or copyrighted footer material.
 The score is therefore a regression boundary, not a claim that the documents
 are official or pixel-identical.
@@ -287,7 +287,7 @@ The completed 18-paper run records a PDF structure tree and embedded fonts for
 every primary document. It has no safe-print, monochrome-contrast, minimum-rule,
 or reading-order failure at either the 4.2 mm CI boundary or the 5 mm
 qualification boundary. Role-aware matching prevents ruled answer pages from
-being compared with graph/data pages. Neutral Paper Creator covers and end-page
+being compared with graph/data pages. Neutral Keldin covers and end-page
 notices remain visibly distinct from protected exam-board branding, so their
 lower calibrated role scores are expected and are not represented as official
 or pixel-identical output.

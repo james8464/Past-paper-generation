@@ -1,3 +1,5 @@
+# Define PDF dimensions, style tokens and renderer-independent document records.
+
 from __future__ import annotations
 
 from collections.abc import Mapping

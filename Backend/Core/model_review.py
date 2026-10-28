@@ -1,3 +1,5 @@
+# Collect independent content and demand reviews and validate their saved evidence.
+
 from __future__ import annotations
 
 import hashlib

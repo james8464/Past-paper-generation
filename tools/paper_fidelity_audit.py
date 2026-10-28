@@ -1,3 +1,5 @@
+# Compare generated PDFs with reference geometry, typography and page roles.
+
 from __future__ import annotations
 
 import argparse
@@ -765,9 +767,9 @@ def compare(generated: dict[str, Any], reference: dict[str, Any]) -> dict[str, A
 def _compact_profile(value: dict[str, Any]) -> dict[str, Any]:
     """Keep report JSON useful without serialising page raster grids.
 
-    The former report embedded six grids per page and reached multiple
-    gigabytes for the supported matrix. Geometry remains in memory while
-    comparing, then only compact page scores and document summaries are saved.
+    Embedding six raster grids per page can make the supported matrix report
+    several gigabytes long. Keep geometry in memory during comparison and
+    save only compact page scores and document summaries.
     """
 
     return {key: item for key, item in value.items() if key != "geometry"}

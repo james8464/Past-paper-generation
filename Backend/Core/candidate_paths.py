@@ -17,8 +17,8 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 PATH_POLICY_ID = "candidate-paths-v1"
 MAX_PATHS = 256
-# Intended generated policies already established by E/F/H1, not inferred
-# annual board totals or a tolerance learned from student performance.
+# These generation policies were established by the E/F/H1 audits. They do
+# not infer annual board totals or tolerances from student performance.
 GENERATED_OBJECTIVE_POLICIES = {
     ("aqa/economics", "1"): (15, 22, 25, 18),
     ("aqa/economics", "2"): (15, 22, 25, 18),

@@ -1,3 +1,5 @@
+# Dispatch generation jobs and validate their outputs before reporting completion.
+
 from __future__ import annotations
 
 import argparse
@@ -63,6 +65,7 @@ def handle_generate(args: argparse.Namespace) -> int:
         emit("error", message=validation_error, code="invalid_request")
         return 2
 
+    # Keep incomplete artifacts out of the destination until final checks pass.
     staging_dir = Path(
         tempfile.mkdtemp(
             prefix=f".papercreator-{args.subject}-{args.paper}-",
@@ -93,6 +96,7 @@ def handle_generate(args: argparse.Namespace) -> int:
             paths=generated,
         )
         emit_generated_files(published)
+        # Only successful publication retires the checkpoint; failed jobs can resume.
         checkpoint_path.unlink(missing_ok=True)
         return 0
     except GenerationCancelled:
@@ -123,6 +127,7 @@ def handle_generate(args: argparse.Namespace) -> int:
         emit("error", message=message, code="generation_failed", **diagnostic_fields)
         return 1
     finally:
+        # Restore process signal handling even when generation is interrupted.
         signal.signal(signal.SIGTERM, previous_signal_handler)
         shutil.rmtree(staging_dir, ignore_errors=True)
 

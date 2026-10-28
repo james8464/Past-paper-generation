@@ -1,3 +1,5 @@
+# Derive accounting answers from the figures supplied to the candidate.
+
 from __future__ import annotations
 
 from decimal import ROUND_HALF_UP, Decimal

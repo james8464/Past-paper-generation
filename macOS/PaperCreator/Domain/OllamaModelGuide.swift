@@ -1,3 +1,5 @@
+// Read the bundled model recommendations used by setup and generation.
+
 import Foundation
 
 struct OllamaModelRecommendation: Identifiable, Hashable, Decodable {

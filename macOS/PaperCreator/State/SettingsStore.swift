@@ -1,3 +1,5 @@
+// Persist user preferences and manage access to the selected output folder.
+
 import Foundation
 import Observation
 

@@ -1,3 +1,5 @@
+// Decode backend records and represent the selections shown by the app.
+
 import Foundation
 
 enum BoardStatus: String, Equatable {

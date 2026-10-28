@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://papercreator.local/schemas/backend-protocol-v2.json",
-  "title": "Paper creator backend event",
+  "title": "Keldin backend event",
   "type": "object",
   "required": ["protocol", "type", "event_id", "timestamp", "job_id"],
   "properties": {

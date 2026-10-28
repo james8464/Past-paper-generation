@@ -280,6 +280,8 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
+# The default publisher label belongs to historical layouts. Current whole-case
+# generation supplies Keldin explicitly so saved layout contracts can still replay.
 class NumberedCanvas(Canvas):
     def __init__(self, *args, brand_name="Paper Creator", print_policy=None, **kwargs):
         super().__init__(*args, **kwargs)

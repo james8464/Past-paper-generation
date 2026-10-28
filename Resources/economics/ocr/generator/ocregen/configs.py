@@ -1,3 +1,5 @@
+# Define OCR Economics paper structure, marks and question rules.
+
 from __future__ import annotations
 
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule

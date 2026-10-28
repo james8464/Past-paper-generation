@@ -1,4 +1,4 @@
-"""Bind resumable work to the executable implementation, not merely a version label."""
+"""Bind resumable work to its implementation so a version label alone cannot validate it."""
 
 import sys
 from hashlib import sha256
@@ -13,6 +13,7 @@ def implementation_identity() -> str:
         files = [Path(sys.executable)]
     else:
         files = sorted((REPO_ROOT / "Backend" / "Core").rglob("*.py"))
+    # Hash source bytes, including comments, so even prose edits change this identity.
     files += sorted((REPO_ROOT / "Resources" / "france").rglob("*.json"))
     result = sha256()
     for path in files:

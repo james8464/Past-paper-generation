@@ -1,3 +1,5 @@
+# Draw document-model components with ReportLab.
+
 from __future__ import annotations
 
 import hashlib

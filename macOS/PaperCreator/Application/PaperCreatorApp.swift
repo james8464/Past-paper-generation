@@ -1,3 +1,5 @@
+// Create Keldin's scenes and connect shared application state to the interface.
+
 import SwiftUI
 import TipKit
 

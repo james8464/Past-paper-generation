@@ -1,3 +1,5 @@
+// Share native appearance and status styling across the app.
+
 import SwiftUI
 
 enum WorkspaceLayoutMode: Equatable {

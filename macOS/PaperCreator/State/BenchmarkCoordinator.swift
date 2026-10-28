@@ -1,3 +1,5 @@
+// Track benchmark events and retain the resulting performance measurements.
+
 import Foundation
 import Observation
 

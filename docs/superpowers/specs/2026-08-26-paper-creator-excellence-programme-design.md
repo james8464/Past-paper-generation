@@ -1,11 +1,11 @@
-# Paper Creator Excellence Programme Design
+# Keldin Excellence Programme Design
 
 **Date:** 2026-08-26
 **Status:** Approved for planning; implementation not yet started
 
 ## Purpose
 
-Paper Creator will generate original A-level question papers, supporting materials, and examiner-usable mark schemes. The generated assessment must follow the selected board and specification closely in structure, typography, geometry, demand, mark allocation, assessment-objective coverage, question variety, and marking logic, while remaining clearly unofficial and never copying protected questions or board logos.
+Keldin will generate original A-level question papers, supporting materials, and examiner-usable mark schemes. The generated assessment must follow the selected board and specification closely in structure, typography, geometry, demand, mark allocation, assessment-objective coverage, question variety, and marking logic, while remaining clearly unofficial and never copying protected questions or board logos.
 
 This programme brings the existing contract-first generation work, measured rendering work, macOS product experience, empirical assessment calibration, extensibility, and release engineering into one definition of completion.
 

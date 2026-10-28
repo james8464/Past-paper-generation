@@ -1,3 +1,5 @@
+# Draw shared page borders, footers and answer-page furniture.
+
 from __future__ import annotations
 
 import hashlib

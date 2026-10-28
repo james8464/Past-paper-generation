@@ -1,3 +1,5 @@
+# Validate response data and compute calibration evidence under an explicit policy.
+
 from __future__ import annotations
 
 import csv

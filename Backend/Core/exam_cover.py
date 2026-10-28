@@ -1,3 +1,5 @@
+# Draw question-paper and mark-scheme covers using measured board layouts.
+
 from __future__ import annotations
 
 import hashlib

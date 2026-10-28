@@ -1,3 +1,5 @@
+# Check item data and compare completed papers for repeated content.
+
 from __future__ import annotations
 
 import hashlib

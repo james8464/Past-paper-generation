@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# The helper keeps its installed executable name so existing launch paths still work.
+
 set -euo pipefail
 
 ROOT_DIR="$(cd "$SRCROOT/.." && pwd)"

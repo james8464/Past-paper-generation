@@ -1,3 +1,5 @@
+# Build names refer to the existing Xcode target; the app displays Keldin.
+
 APP_NAME := PaperCreator
 APP_PROJECT := PaperCreator.xcodeproj
 APP_WORKSPACE := PaperCreator.xcworkspace

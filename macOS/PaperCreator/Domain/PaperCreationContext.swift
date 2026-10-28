@@ -1,3 +1,5 @@
+// Describe the current paper selection for the creation interface.
+
 enum PaperCreationContext: Equatable {
     case board
     case french(largePrint: Bool)

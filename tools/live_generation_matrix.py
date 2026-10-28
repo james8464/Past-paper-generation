@@ -1,3 +1,5 @@
+# Run the configured generation matrix and retain per-job qualification evidence.
+
 from __future__ import annotations
 
 import argparse

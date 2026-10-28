@@ -1,3 +1,5 @@
+// Present the selected UK paper, model settings and generation progress.
+
 import SwiftUI
 import TipKit
 

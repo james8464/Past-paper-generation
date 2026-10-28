@@ -1,3 +1,5 @@
+# Read the supported generator families and their declared qualification evidence.
+
 from __future__ import annotations
 
 import json

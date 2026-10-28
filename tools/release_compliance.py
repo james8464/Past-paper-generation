@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Check repository metadata and dependencies required for release.
+
 from __future__ import annotations
 
 import argparse

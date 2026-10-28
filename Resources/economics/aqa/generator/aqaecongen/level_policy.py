@@ -1,3 +1,5 @@
+# Provide AQA Economics response bands for the supported question tariffs.
+
 from __future__ import annotations
 
 from dataclasses import dataclass

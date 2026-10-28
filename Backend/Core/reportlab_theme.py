@@ -1,3 +1,5 @@
+# Keep table fonts and answer rules consistent across ReportLab renderers.
+
 from __future__ import annotations
 
 from typing import Any

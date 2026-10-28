@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://papercreator.local/schemas/generator-capability-v1.json",
-  "title": "Paper Creator generator family capability",
+  "title": "Keldin generator family capability",
   "type": "object",
   "required": [
     "manifest_version", "id", "board", "subject", "app_subject", "app_board",

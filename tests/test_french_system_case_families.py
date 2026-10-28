@@ -1,4 +1,4 @@
-"""Independent answer checks for substantive E3 families, not renamed incidents."""
+"""Check the distinct E3 reasoning tasks against independently derived answers."""
 
 from copy import deepcopy
 

@@ -2,7 +2,7 @@
 
 ## Intent
 
-Make PaperCreator's default macOS journey feel calm and direct: choose an available paper, create a non-official draft, then inspect the output and its qualification limits. Preserve every existing route, saved selection, package format and generation rule. This is a usability increment, not a claim that the app meets every HIG criterion or that all papers match official examinations.
+Make Keldin's default macOS journey feel calm and direct: choose an available paper, create a non-official draft, then inspect the output and its qualification limits. Preserve every existing route, saved selection, package format and generation rule. This is a usability increment, not a claim that the app meets every HIG criterion or that all papers match official examinations.
 
 ## Navigation
 

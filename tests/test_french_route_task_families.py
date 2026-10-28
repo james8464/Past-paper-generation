@@ -1,4 +1,4 @@
-"""Different algorithms, independent truth, boundaries and preserved inputs."""
+"""Check route algorithms against independent results, including boundaries and input preservation."""
 
 from copy import deepcopy
 from itertools import pairwise, permutations

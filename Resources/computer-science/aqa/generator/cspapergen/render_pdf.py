@@ -1,3 +1,5 @@
+# Render AQA Computer Science papers and marking guidance using the shared PDF components.
+
 from __future__ import annotations
 
 import math
@@ -964,7 +966,7 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
         y=17,
         caption=f"PRACTICE{blueprint.paper_code.replace('/', '')}01",
         # The source cover spreads its readable caption below the bars.
-        # Keep our independent code there, not overprinted through the ink.
+        # Keep our practice-paper code below the bars so the caption stays readable.
         style=replace(AQA_CS_FOOTER_BARCODE, spread_caption=True),
     )
     pdf.setFont(FONT, 9)

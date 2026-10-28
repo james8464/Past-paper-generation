@@ -42,7 +42,7 @@ def _facts(seed: int) -> tuple[list[list], dict]:
 
 
 def _paths(links: list[list]) -> dict:
-    """Enumerate simple paths rather than trusting a stored shortest-path answer."""
+    """Enumerate simple paths to check the stored shortest-path answer."""
     adjacent: dict[str, list[tuple[str, int]]] = {}
     for left, right, cost in links:
         adjacent.setdefault(left, []).append((right, cost))

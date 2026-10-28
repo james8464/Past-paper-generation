@@ -1,3 +1,5 @@
+// Connect the sidebar selection to the appropriate workspace and shared panels.
+
 import SwiftUI
 
 struct ContentView: View {

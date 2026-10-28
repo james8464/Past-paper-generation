@@ -1,3 +1,5 @@
+# Keep build and signing identities stable; Info.plist supplies the Keldin display name.
+
 name: PaperCreator
 options:
   deploymentTarget:

@@ -1,3 +1,5 @@
+# Create the resource and source files for a new configured generator family.
+
 from __future__ import annotations
 
 import argparse

@@ -1,3 +1,5 @@
+// Launch the backend helper and decode its streamed events.
+
 @preconcurrency import Foundation
 
 enum BackendClientError: LocalizedError {

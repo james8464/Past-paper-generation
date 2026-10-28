@@ -676,9 +676,9 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     prompt_text = _normalised(question.parts[0].prompt)
     page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
 
-    # The heading now sits inside the frame. Check the available response area
-    # reaches the unchanged safe footer, rather than rewarding a crossed title
-    # merely because that invalid geometry made room for two extra rules.
+    # Check the response area reaches the safe footer with the heading inside
+    # the frame. A crossed title can leave room for two extra rules, so line
+    # count alone would accept an invalid layout.
     assert _answer_rule_count(output, page_number) >= 10
     with pymupdf.open(output) as document:
         page = document[page_number - 1]

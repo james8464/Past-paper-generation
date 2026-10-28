@@ -1,3 +1,5 @@
+# Build seeded AQA Economics paper content and its marking guidance.
+
 from __future__ import annotations
 
 import random

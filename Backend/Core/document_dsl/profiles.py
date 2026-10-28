@@ -1,3 +1,5 @@
+# Provide board-specific page geometry, fonts and renderer capabilities.
+
 from __future__ import annotations
 
 from functools import cache

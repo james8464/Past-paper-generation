@@ -42,7 +42,7 @@ def test_three_cases_require_different_relational_and_algorithmic_reasoning():
         [2, 12 + offset, 16 + offset],
         [3, None, None],
     ]
-    # Count of reservation rows differs from number of seats; empty session retained.
+    # Count seats rather than reservation rows, and retain the empty session.
     assert booking["expected"]["result"] == [[1, -1], [2, 2], [3, 5]]
     assert booking["expected"]["overbooked"] == [1]
     # A positive closing balance does not prove that every prefix was feasible.

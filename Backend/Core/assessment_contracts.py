@@ -1,3 +1,5 @@
+# Describe each item's data, numeric outputs and evidence in a shared contract.
+
 from __future__ import annotations
 
 import re

@@ -1,3 +1,5 @@
+// Wrap the clock, workspace and credential store so tests can supply replacements.
+
 import AppKit
 import Foundation
 

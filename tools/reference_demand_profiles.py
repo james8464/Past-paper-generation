@@ -1,3 +1,5 @@
+# Extract reference-paper task features and build demand profiles.
+
 from __future__ import annotations
 
 import argparse

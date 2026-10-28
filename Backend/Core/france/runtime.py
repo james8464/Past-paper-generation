@@ -1,4 +1,4 @@
-"""Framework-specific publication, sharing providers/events/render transactions."""
+"""Publish French assessments using shared providers, events and render transactions."""
 
 import json
 import os

@@ -1,3 +1,5 @@
+# Load the OCR Computer Science syllabus records used to select topics.
+
 from __future__ import annotations
 
 import json

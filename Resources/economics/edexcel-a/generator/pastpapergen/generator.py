@@ -1,3 +1,5 @@
+# Build seeded Edexcel Economics paper content and its marking guidance.
+
 from __future__ import annotations
 
 import math

@@ -1,3 +1,5 @@
+// Persist job history and resolve the document artifacts attached to each job.
+
 import Foundation
 import Observation
 

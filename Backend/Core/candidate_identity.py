@@ -11,8 +11,8 @@ from pydantic import BaseModel, ConfigDict, Field
 
 CANDIDATE_PROJECTION_VERSION = "difficulty-candidate-v1"
 
-# Review results and host-computed identities are evidence about content, not
-# candidate content. Every other field, including authoring_context contracts,
+# Exclude review results and host-computed identities from candidate content.
+# Every other field, including authoring_context contracts,
 # remains identity-bearing. The overloaded ``provenance`` key is handled by its
 # candidate-source role below.
 EVIDENCE_FREE_EXCLUDED_FIELDS = frozenset(

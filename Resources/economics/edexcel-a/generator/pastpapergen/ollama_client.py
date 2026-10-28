@@ -1,3 +1,5 @@
+# Author and review Edexcel Economics items through the shared model interface.
+
 from __future__ import annotations
 
 import json

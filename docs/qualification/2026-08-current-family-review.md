@@ -68,7 +68,7 @@ answer-space, table/graph, and scheme layouts were moved onto the measured
 shared profiles. AQA Economics footers were subsequently moved inside the 5 mm
 qualification margin and the complete 600-DPI matrix was rerun.
 
-The largest remaining visual differences are intentional: Paper Creator uses
+The largest remaining visual differences are intentional: Keldin uses
 neutral branding and omits protected exam-board logos, legal notices, and
 candidate-identifying material. OCR end pages and some scheme covers therefore
 score lower than content pages. These differences are recorded in the

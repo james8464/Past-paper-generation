@@ -1,3 +1,5 @@
+# Generate diagnostic candidate responses without sharing the draft mark scheme.
+
 from __future__ import annotations
 
 import json

@@ -1,8 +1,8 @@
 """Compare complete V32 printed exercise content with its verified package.
 
 This is a content-integrity gate, not educational or visual calibration. It
-checks the entire ordered exercise stream, not just the presence of a few
-keywords. Whitespace and Markdown fences are presentation, not source facts.
+checks the entire exercise stream in order, so finding a few keywords is
+not enough. Whitespace and Markdown fences are presentation, not source facts.
 """
 
 import re

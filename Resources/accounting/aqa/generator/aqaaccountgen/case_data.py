@@ -1205,7 +1205,7 @@ class NonCurrentAssetCase:
 
 @dataclass(frozen=True)
 class SalesLedgerCase:
-    """Single source of truth for the Paper 1 sales-ledger case.
+    """Shared figures for the Paper 1 sales-ledger case.
 
     The question paper, AI authoring contract and mark scheme all consume this
     object so every amount remains present, sufficient and arithmetically

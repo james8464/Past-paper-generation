@@ -1,4 +1,6 @@
 #!/bin/zsh
+# Run resumable French NSI checks against the local reference catalogue.
+
 set -euo pipefail
 
 SCRIPT_DIR=${0:A:h}

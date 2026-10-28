@@ -1,3 +1,5 @@
+# Define Edexcel Economics paper sections, tariffs and question rules.
+
 from __future__ import annotations
 
 from copy import deepcopy

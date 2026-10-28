@@ -1,3 +1,5 @@
+// Preview generated PDFs and handle their export and printing actions.
+
 import AppKit
 import Combine
 import PDFKit
@@ -178,7 +180,7 @@ enum PDFDocumentActions {
     @MainActor
     static func printOperation(for url: URL) -> NSPrintOperation? {
         guard let document = PDFDocument(url: url) else { return nil }
-        // Printing a zero-sized PDFView prints the view, not the whole paper.
+        // A zero-sized PDFView cannot print the whole paper.
         return document.printOperation(
             for: NSPrintInfo.shared,
             scalingMode: .pageScaleToFit,

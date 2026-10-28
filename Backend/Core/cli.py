@@ -1,3 +1,5 @@
+# Parse backend commands and dispatch generation, model and reference operations.
+
 from __future__ import annotations
 
 import argparse

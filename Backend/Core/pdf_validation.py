@@ -1,3 +1,5 @@
+# Inspect PDF content, typography and print geometry against release checks.
+
 from __future__ import annotations
 
 import json

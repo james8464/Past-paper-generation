@@ -88,8 +88,8 @@ def aqa_cs_solver_item(question: dict[str, Any], part: dict[str, Any], stimulus:
     """One adapter/reuse projection; caller supplies candidate-visible figure data.
 
     The scoped CPU contract has no figure. Its saved review is rebuilt from the
-    same projection here; H can reuse this instead of inventing another identity.
-    Private marking remains available for reconciliation, removed by the solver.
+    same projection here, which other review paths can also reuse.
+    Private marking remains available for reconciliation; the solver removes it.
     """
     authoring_context: dict[str, Any] = {
         "open_credit_contract": part.get("open_credit_contract", {}),

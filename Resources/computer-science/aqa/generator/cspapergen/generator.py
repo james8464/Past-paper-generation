@@ -1,3 +1,5 @@
+# Build seeded AQA Computer Science paper content and its marking guidance.
+
 from __future__ import annotations
 
 import random
@@ -44,7 +46,7 @@ PAPER2_QUESTION_PLAN = [
 Paper2Standardisation = tuple[tuple[str, ...], tuple[str, ...]]
 
 # These notes play the same role as question-specific standardisation guidance in
-# an awarding-body mark scheme.  They are deliberately attached here, after the
+# an awarding-body mark scheme.  Attach them here, after the
 # Paper 2 repartitioning step, because the source question-bank items can be used
 # with different part structures and mark totals elsewhere in the application.
 PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {

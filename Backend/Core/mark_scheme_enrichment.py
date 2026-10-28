@@ -1,3 +1,5 @@
+# Add question-specific marking guidance to generated papers.
+
 from __future__ import annotations
 
 import re
@@ -20,7 +22,7 @@ def enrich_paper(
     *,
     subject: str,
 ) -> GeneratedPaper:
-    """Remove generator artefacts and add examiner-grade indicative guidance."""
+    """Remove generator artefacts and add indicative marking guidance."""
     topic_by_id = {topic.id: topic for topic in topics}
     compact_ocr_programming = (
         subject == "computer science" and paper.paper_code == "H446/02"

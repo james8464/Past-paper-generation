@@ -1,3 +1,5 @@
+# Register and discover the supported subject validation engines.
+
 from __future__ import annotations
 
 from dataclasses import dataclass

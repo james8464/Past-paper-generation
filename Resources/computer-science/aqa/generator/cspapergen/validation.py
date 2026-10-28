@@ -1,3 +1,5 @@
+# Validate the AQA Computer Science blueprint before publishing its artifacts.
+
 from __future__ import annotations
 
 from collections import Counter

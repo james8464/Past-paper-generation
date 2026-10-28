@@ -1,3 +1,5 @@
+# Write, migrate and validate assessment packages independently of PDF rendering.
+
 from __future__ import annotations
 
 import hashlib
@@ -416,8 +418,8 @@ def _reference_demand_audit(
         report["evidence_state"] = topic["evidence_state"]
         report["profile_fit_passed"] = topic["passed"]
         paths["evidence_state"] = topic["evidence_state"]
-        # Controller ruling: insufficiency is not a calibration pass nor an
-        # exemption from structural, source/content, correctness or review gates.
+        # Insufficient calibration evidence cannot count as a pass. Structural,
+        # source/content, correctness and review checks still apply.
         structural_failures = [
             failure
             for row in paths["paths"]

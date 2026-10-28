@@ -1,3 +1,5 @@
+# Author and review AQA Computer Science items through the shared model interface.
+
 from __future__ import annotations
 
 import json

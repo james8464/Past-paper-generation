@@ -1,3 +1,5 @@
+// Keep app defaults and persistence keys in one place.
+
 import Foundation
 
 enum AppDefaults {
@@ -27,6 +29,7 @@ enum AppDefaults {
         return fileManager.homeDirectoryForCurrentUser
     }
 
+    // Keep the original folder and bundle names so existing installations find their files.
     static func appStoreWorkingFolder() -> URL {
         let fileManager = FileManager.default
         let home = fileManager.homeDirectoryForCurrentUser
@@ -43,6 +46,7 @@ enum AppDefaults {
             .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
     }
 
+    // The model cache and job history keep the same storage root across app renames.
     static func mlxCacheFolder() -> URL {
         let fileManager = FileManager.default
         let applicationSupport = fileManager.urls(

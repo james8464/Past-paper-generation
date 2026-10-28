@@ -1,3 +1,5 @@
+// Show benchmark progress and the measurements reported by the backend.
+
 import Charts
 import SwiftUI
 

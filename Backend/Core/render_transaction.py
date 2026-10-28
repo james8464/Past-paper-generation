@@ -1,3 +1,5 @@
+# Render into a temporary file and replace the destination only after validation.
+
 from __future__ import annotations
 
 import os
@@ -53,6 +55,7 @@ def render_pdf_atomically(
 
     destination = Path(destination)
     destination.parent.mkdir(parents=True, exist_ok=True)
+    # A sibling temporary file keeps the final replacement on the same filesystem.
     descriptor, temporary_name = tempfile.mkstemp(
         dir=destination.parent,
         prefix=f".{destination.name}.",
@@ -67,6 +70,7 @@ def render_pdf_atomically(
             renderer(temporary)
             _readable_page_count(temporary, role)
             add_page_structure_tree(temporary, language=language)
+        # Accessibility rewriting must leave a readable PDF before publication.
         pages = _readable_page_count(temporary, role)
         _sync_file(temporary)
         os.replace(temporary, destination)
@@ -108,6 +112,7 @@ class _render_deadline:
         signal.setitimer(signal.ITIMER_REAL, 0)
         if self._previous_handler is not None:
             signal.signal(signal.SIGALRM, self._previous_handler)
+        # Resume any outer deadline with the time spent rendering subtracted.
         remaining, interval = self._previous_timer
         if remaining > 0:
             elapsed = time.monotonic() - self._started

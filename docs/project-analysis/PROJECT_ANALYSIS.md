@@ -1,10 +1,10 @@
-# Paper creator: deep project analysis
+# Keldin: deep project analysis
 
 Date: 29 July 2026
 
 ## Executive assessment
 
-Paper creator is a native macOS front end over a Python document-generation
+Keldin is a native macOS front end over a Python document-generation
 platform. Its core product promise is not merely “ask an LLM for questions”; it
 is to produce a coordinated assessment package whose structure, typography,
 pagination, source material, mark allocation, and marking guidance resemble a
@@ -440,7 +440,7 @@ cancel action are sufficient.
 5. The fixed minimum window size and sidebar minimum reduce graceful collapse at
    narrow widths.
 6. Settings has three tabs but a generic “Settings” navigation title. A custom
-   settings window should identify the active pane or use “Paper creator
+   settings window should identify the active pane or use “Keldin
    Settings,” remember the last pane, and avoid enabled minimize/zoom controls.
 7. AI settings uses an explicit Save button, while several other settings persist
    immediately. The transaction model is inconsistent.

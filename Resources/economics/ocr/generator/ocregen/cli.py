@@ -1,3 +1,5 @@
+# Connect OCR Economics generation to the shared backend workflow.
+
 from __future__ import annotations
 
 from collections.abc import Callable

@@ -1,3 +1,5 @@
+# Load the AQA Business syllabus records used to select topics.
+
 from __future__ import annotations
 
 import json

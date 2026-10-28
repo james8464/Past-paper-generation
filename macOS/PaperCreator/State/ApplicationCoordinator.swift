@@ -1,3 +1,5 @@
+// Coordinate user actions across catalogue, model, generation and document state.
+
 import AppKit
 import Combine
 import Foundation
@@ -1150,8 +1152,8 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func moveGeneratedFilesToOutputFolderIfNeeded() throws {
         guard distributionMode == .appStore else { return }
-        // Review records are written beside the user-selected manifest, not
-        // generated into the sandbox working folder for subsequent export.
+        // Save review records beside the user-selected manifest so they stay
+        // with that assessment instead of the app's temporary working files.
         guard currentGenerationFiles.contains(where: { $0.role != "teacher_review" }) else { return }
         let workingFolder = AppDefaults.appStoreWorkingFolder().standardizedFileURL
         let destinationFolder = outputFolder.standardizedFileURL

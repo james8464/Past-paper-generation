@@ -137,7 +137,7 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
 def check_published_outputs(
     checks: list[CheckedNumericOutput], text: str | list[str]
 ) -> list[str]:
-    """Bind each asserted result to its role in the published working, never a number bag.
+    """Match each asserted result to its role in the published working.
 
     Patterns are code-owned field selectors, not expected answer strings. Some
     printed intermediate units are supplied by their row/column heading; final

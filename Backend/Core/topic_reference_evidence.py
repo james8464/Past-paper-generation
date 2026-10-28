@@ -1,7 +1,7 @@
 """Reviewed feature-only AQA topic subsets, never topic AO targets.
 
 Admission is fixed before generation: exact topic, actual operation and response
-mode; robust mixed tasks remain mixed. Context-incomplete records are excluded.
+mode; tasks with clear evidence of mixed operations remain mixed. Context-incomplete records are excluded.
 Source audit expanded 28 September 2026. No source prose retained.
 """
 
@@ -251,7 +251,7 @@ GAPS = {
     ],
 }
 
-# Reviewed content families, not keyword-derived source annotations. Empty means
+# These content families have been reviewed individually. Empty means
 # no content-level qualification: a generic operation match is diagnostic only.
 SOURCE_FOCUS = {
     "75171-2025-01.1": "hash-performance", "75171-2025-01.2": "hash-insertion",
@@ -354,7 +354,7 @@ def task_context_complete(item: dict[str, Any], focus: str | None) -> bool:
 
     Presence of an introductory stem is not presence of its data. Applied tasks
     must retain the named definitions/schema/relationships that make them
-    answerable. New forms need reviewed selectors rather than a metadata escape.
+    answerable. New forms need reviewed selectors; metadata alone cannot qualify them.
     """
     raw = item.get("context") or []
     context = "\n".join(raw).casefold() if isinstance(raw, list) and all(isinstance(v, str) for v in raw) else ""

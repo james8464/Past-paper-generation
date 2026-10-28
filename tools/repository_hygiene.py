@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# Classify tracked files and reject generated output or unapproved artifacts.
+
 from __future__ import annotations
 
 import argparse

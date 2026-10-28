@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class FinancialPosition:
-    """The single source of truth for Paper 1 financial-statement figures."""
+    """Shared Paper 1 financial-statement figures."""
 
     inventories: int
     receivables: int

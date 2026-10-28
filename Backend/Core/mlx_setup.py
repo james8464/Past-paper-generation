@@ -1,3 +1,5 @@
+# Prepare local MLX models and report setup failures the app can act on.
+
 from __future__ import annotations
 
 import argparse

@@ -1,3 +1,5 @@
+# Load board-specific policy and normalise the supported board identifiers.
+
 from __future__ import annotations
 
 import json

@@ -1,3 +1,5 @@
+// Build the backend arguments for a French assessment request.
+
 import Foundation
 
 struct FrenchAssessmentRequest {

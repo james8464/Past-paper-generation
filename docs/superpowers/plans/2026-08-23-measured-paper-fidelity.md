@@ -129,7 +129,7 @@ Commit message: `Match OCR response page geometry`
 
 **Interfaces:**
 - Consumes: existing `CoverProfile` and `MarkSchemeCover`
-- Produces: one neutral two-line Paper Creator wordmark with board-specific title baselines, rules, barcode, folio, and footer
+- Produces: one neutral two-line Keldin wordmark with board-specific title baselines, rules, barcode, folio, and footer
 
 - [x] **Step 1: Add failing cover bbox tests for AQA and OCR**
 

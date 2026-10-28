@@ -1,3 +1,5 @@
+# Share answer-rule and barcode drawing between board renderers.
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -88,7 +90,7 @@ def draw_barcode(
     caption: str,
     style: CanvasBarcodeStyle,
 ) -> None:
-    """Draw a deterministic neutral-practice barcode and its caption."""
+    """Draw a repeatable practice-paper barcode and its caption."""
 
     pdf.setFillColor(style.color)
     cursor = x

@@ -13,7 +13,7 @@ from Backend.Core.france.nsi import CURRICULUM_OBJECTIVES, NSIExercise
 
 
 def alignment_prompt(exercise: NSIExercise, task: dict, references: list[dict]) -> str:
-    """Ask a separate reviewer to judge the question, not its claimed label."""
+    """Ask a separate reviewer to check whether the question supports its claimed label."""
     blueprint = task["question_blueprint"]
     objectives = {
         plan["required_curriculum_code"]: CURRICULUM_OBJECTIVES[

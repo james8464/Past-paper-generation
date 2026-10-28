@@ -179,8 +179,8 @@ def objective_policy_for(*identifiers: str) -> ObjectivePolicy:
     """Resolve family IDs, subject names or qualification codes."""
     identity = " ".join(identifiers).casefold()
     # Explicit board identities precede subject aliases. Cambridge 9618 is an
-    # unqualified configured preview; its placeholder policy is Task 9 debt,
-    # not evidence that the AQA/OCR policy or its old AO4 allocation is valid.
+    # unqualified configured preview. Its placeholder policy still needs review;
+    # it cannot validate the AQA/OCR policy or its old AO4 allocation.
     if "cambridge" in identity or "9618" in identity:
         return GENERAL_OBJECTIVES
     if "accounting" in identity or "7127" in identity:

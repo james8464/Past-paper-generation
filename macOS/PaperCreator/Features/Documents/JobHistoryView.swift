@@ -1,3 +1,5 @@
+// Browse saved generation jobs and open their associated documents.
+
 import SwiftUI
 
 struct JobHistoryView: View {

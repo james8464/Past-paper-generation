@@ -1,3 +1,5 @@
+# Render OCR Computer Science papers and marking guidance using the shared PDF components.
+
 from __future__ import annotations
 
 import math

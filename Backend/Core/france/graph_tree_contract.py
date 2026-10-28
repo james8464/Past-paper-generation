@@ -1,6 +1,6 @@
 """Seeded, student-visible facts for the French NSI graph/tree exercise.
 
-The model may author prose around these facts, but it cannot author the facts.
+The model can write prose around these fixed facts but cannot change them.
 No model-generated code is executed here.
 """
 

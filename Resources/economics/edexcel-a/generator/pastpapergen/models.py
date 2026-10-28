@@ -1,3 +1,5 @@
+# Define the structured records used by the Edexcel Economics generator.
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

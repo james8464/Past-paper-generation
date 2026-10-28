@@ -1,3 +1,5 @@
+// Define Keldin's menu actions and route them through the application coordinator.
+
 import SwiftUI
 
 private struct PaperCreationContextKey: FocusedValueKey {

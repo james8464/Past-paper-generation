@@ -1,3 +1,5 @@
+# Define the structured records used by the AQA Computer Science generator.
+
 from __future__ import annotations
 
 from typing import Literal

@@ -1,3 +1,5 @@
+# Connect AQA Computer Science generation to the shared backend workflow.
+
 from __future__ import annotations
 
 import argparse

@@ -1,3 +1,5 @@
+# Check migrated generators against shared content and layout requirements.
+
 from __future__ import annotations
 
 import argparse

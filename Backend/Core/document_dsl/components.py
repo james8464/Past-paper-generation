@@ -1,3 +1,5 @@
+# Measure document components and delegate their drawing to a renderer.
+
 from __future__ import annotations
 
 import math

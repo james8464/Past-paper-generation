@@ -388,7 +388,7 @@ def ingest(register: Path, output: Path) -> dict:
                         with opener.open(
                             Request(
                                 entry["url"],
-                                headers={"User-Agent": "PaperCreator-ReferenceAudit/1"},
+                                headers={"User-Agent": "Keldin-ReferenceAudit/1"},
                             ),
                             timeout=45,
                         ) as response:

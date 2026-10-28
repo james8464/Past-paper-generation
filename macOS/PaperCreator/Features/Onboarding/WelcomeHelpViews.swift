@@ -1,3 +1,5 @@
+// Explain setup and supported workflows in the welcome and help views.
+
 import AppKit
 import Foundation
 import SwiftUI

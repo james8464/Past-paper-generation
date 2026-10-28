@@ -1,3 +1,5 @@
+// Estimate generation effort from the selected paper and runtime measurements.
+
 import Foundation
 
 private enum EstimateTuning {

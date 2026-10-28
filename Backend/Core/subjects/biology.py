@@ -1,3 +1,5 @@
+# Validate biology items through the shared subject-contract interface.
+
 from __future__ import annotations
 
 from typing import Any

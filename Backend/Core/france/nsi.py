@@ -1,4 +1,4 @@
-"""Native French NSI authoring records and prompts, not translated A-level items."""
+"""French NSI authoring records and prompts, written for the French curriculum."""
 
 import json
 from decimal import Decimal

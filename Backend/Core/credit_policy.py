@@ -138,7 +138,7 @@ def collect_credit_rules(
 
 
 def declared_rule_metadata_present(rule: CreditRule, raw: dict, points: list) -> bool:
-    """Preserve numerical caps/dependencies, not just their descriptive prose.
+    """Preserve the numerical caps and dependencies described by the credit rules.
 
     Explicit structured rules are preferred. A scored point with the exact
     condition is also a valid legacy representation of a simple score boundary.

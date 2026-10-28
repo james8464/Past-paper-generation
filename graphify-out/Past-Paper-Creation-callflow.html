@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 9746 nodes, 27804 edges, 371 communities. Commit: 83867da</p>
+<p class="subtitle">Generated from graphify knowledge graph: 9746 nodes, 27804 edges, 370 communities. Commit: 46b8f8b</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -90,9 +90,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>89 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1305 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1488 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>701 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>700 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>90 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
@@ -104,7 +104,7 @@ flowchart LR
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>5905 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>5720 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     DOCUMENT_DSL_INIT_PY_34020C9A("document_dsl/__init__.py<br/><small>149 nodes</small>")
     class DOCUMENT_DSL_INIT_PY_34020C9A module;
@@ -116,20 +116,20 @@ flowchart LR
     class CODINGKEYS_2CCF71B7 module;
     CODINGKEYS_DFEF23_FF5CBE38("CodingKeys<br/><small>44 nodes</small>")
     class CODINGKEYS_DFEF23_FF5CBE38 module;
-    OTHER_D0941E68("Other<br/><small>884 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>887 nodes</small>")
     class OTHER_D0941E68 module;
-    TESTS_FIXTURES_B84B1DCC -->|references x425| ANALYSIS_CLUSTERING_C79796DA
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x287| TESTS_FIXTURES_B84B1DCC
-    BUILD_GRAPH_321CBB04 -->|calls x253| TESTS_FIXTURES_B84B1DCC
-    OTHER_D0941E68 -->|contains x120| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x90| OTHER_D0941E68
-    TESTS_FIXTURES_B84B1DCC -->|calls x87| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|calls x471| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x389| ANALYSIS_CLUSTERING_C79796DA
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x288| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x191| BUILD_GRAPH_321CBB04
+    OTHER_D0941E68 -->|contains x114| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x91| OTHER_D0941E68
     STRING_ECB25204 -->|references x68| TESTS_FIXTURES_B84B1DCC
-    CLI_SKILLS_9964CBB8 -->|calls x64| TESTS_FIXTURES_B84B1DCC
+    CLI_SKILLS_9964CBB8 -->|calls x63| TESTS_FIXTURES_B84B1DCC
+    BUILD_GRAPH_321CBB04 -->|references x52| ANALYSIS_CLUSTERING_C79796DA
     TESTS_FIXTURES_B84B1DCC -->|references x39| INGEST_CACHE_UPDATE_FF457338
     EXTRACT_PIPELINE_5F350230 -->|calls x36| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|calls x32| SERVE_API_35EC8E86
-    OTHER_D0941E68 -->|contains x31| ANALYSIS_CLUSTERING_C79796DA
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,19 +146,19 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>89</td><td><code>81, 299, 309, 158, 198, 296, 344</code></td></tr><tr><td>Graph Build</td><td>1305</td><td><code>76, 25, 114, 60, 62, 40, 48, 73, 127, 129, 21, 93, 98, 104, 109, 101, 116, 354, 118, 113, 319, 298, 78, 115, 122, 136, 139, 142, 143, 274, 149, 151, 152, 153, 160, 178, 111, 154, 131, 161, 163, 166, 168, 175, 174, 188, 141, 180, 181, 182, 187, 189, 217, 338, 351, 192, 194, 196, 343, 361, 266, 297, 333, 208, 278, 280, 366, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>701</td><td><code>6, 16, 20, 34, 8, 26, 55, 77, 61, 58, 68, 65, 165, 100, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>90</td><td><code>261, 316, 347, 183, 199</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>120, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>49</code></td></tr><tr><td>Serving API</td><td>104</td><td><code>102, 35, 263, 265, 332, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>5905</td><td><code>0, 37, 1, 51, 3, 132, 14, 5, 7, 125, 83, 12, 67, 29, 52, 53, 2, 23, 173, 15, 70, 201, 66, 33, 88, 9, 150, 292, 11, 22, 36, 179, 185, 79, 204, 38, 64, 257, 28, 341, 57, 157, 17, 82, 56, 18, 39, 41, 147, 43, 50, 148, 159, 80, 340, 24, 27, 95, 19, 30, 106, 171, 349, 138, 305, 31, 42, 75, 133, 206, 45, 54, 72, 13, 302, 74, 99, 103, 89, 87, 107, 359, 85, 134, 32, 169, 91, 135, 94, 155, 260, 279, 329, 350, 352, 92, 59, 86, 105, 146, 177, 315, 44, 190, 84, 110, 117, 119, 301, 362, 137, 144, 289, 130, 327, 364, 162, 348, 308, 286, 167, 170, 176, 325, 323, 346, 375, 291, 330, 357, 191, 203, 293, 311, 96, 356, 370</code></td></tr><tr><td>document_dsl/__init__.py</td><td>149</td><td><code>63</code></td></tr><tr><td>Text</td><td>111</td><td><code>10</code></td></tr><tr><td>String</td><td>109</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>65</td><td><code>46</code></td></tr><tr><td>CodingKeys</td><td>44</td><td><code>97</code></td></tr><tr><td>Other</td><td>884</td><td><code>126, 368, 108, 90, 123, 112, 251, 164, 371, 69, 172, 214, 288, 124, 193, 195, 197, 205, 244, 256, 156, 215, 128, 220, 246, 247, 310, 335, 365, 290, 322, 47, 250, 252, 253, 254, 255, 140, 200, 249, 259, 262, 294, 295, 300, 313, 324, 328, 334, 363, 248, 303, 304, 331, 339, 342, 360, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 337, 353, 186, 267, 314, 355, 207, 276, 209, 210, 211, 202, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 336, 345, 358, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>89</td><td><code>81, 299, 309, 158, 198, 296, 344</code></td></tr><tr><td>Graph Build</td><td>1488</td><td><code>76, 83, 25, 62, 114, 60, 56, 40, 48, 73, 98, 127, 21, 93, 104, 101, 109, 178, 116, 354, 118, 129, 298, 113, 319, 78, 115, 122, 136, 139, 142, 143, 274, 149, 151, 152, 153, 160, 111, 154, 131, 161, 163, 166, 168, 175, 174, 188, 141, 180, 181, 182, 187, 189, 217, 351, 192, 194, 196, 343, 361, 266, 297, 333, 208, 278, 280, 366, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>700</td><td><code>6, 16, 20, 34, 8, 26, 55, 77, 61, 58, 68, 65, 165, 100, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>90</td><td><code>261, 316, 347, 183, 199</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>37</td><td><code>120, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>145</td><td><code>49</code></td></tr><tr><td>Serving API</td><td>104</td><td><code>102, 35, 263, 265, 332, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>5720</td><td><code>0, 37, 51, 1, 14, 3, 132, 5, 7, 125, 12, 52, 67, 29, 2, 23, 173, 15, 70, 53, 201, 66, 33, 88, 292, 9, 11, 150, 22, 36, 179, 185, 80, 79, 204, 38, 257, 341, 57, 28, 157, 64, 82, 17, 39, 41, 147, 43, 86, 50, 148, 159, 340, 24, 27, 95, 19, 30, 106, 171, 349, 138, 305, 31, 42, 75, 133, 45, 54, 72, 302, 99, 103, 89, 107, 74, 87, 359, 85, 32, 134, 169, 91, 135, 94, 155, 260, 279, 329, 350, 352, 92, 18, 59, 105, 146, 177, 315, 44, 190, 84, 110, 117, 119, 301, 362, 137, 144, 289, 130, 327, 364, 13, 162, 348, 308, 286, 167, 170, 176, 325, 323, 346, 375, 291, 330, 357, 191, 203, 293, 311, 96, 356, 370</code></td></tr><tr><td>document_dsl/__init__.py</td><td>149</td><td><code>63</code></td></tr><tr><td>Text</td><td>111</td><td><code>10</code></td></tr><tr><td>String</td><td>109</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>65</td><td><code>46</code></td></tr><tr><td>CodingKeys</td><td>44</td><td><code>97</code></td></tr><tr><td>Other</td><td>887</td><td><code>126, 368, 108, 90, 123, 112, 251, 371, 164, 69, 172, 214, 288, 124, 193, 195, 197, 205, 244, 256, 156, 215, 128, 220, 246, 247, 310, 335, 365, 250, 290, 322, 47, 252, 253, 254, 255, 140, 200, 249, 259, 262, 294, 295, 300, 313, 324, 328, 334, 363, 248, 303, 304, 331, 339, 342, 360, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 337, 353, 186, 267, 314, 355, 207, 276, 206, 209, 210, 211, 202, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 336, 345, 358, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Security &amp; Global Graph -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Other -&gt; Text -&gt; Ingestion &amp; Updates</div>
+    <div class="arrow-chain">Security &amp; Global Graph -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Other -&gt; Graph Build -&gt; document_dsl/__init__.py</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>9746 nodes · 27804 edges · 371 communities (333 shown, 38 thin omitted)</li>
+      <li>9746 nodes · 27804 edges · 370 communities (331 shown, 39 thin omitted)</li>
       <li>Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 1405 edges (avg confidence: 0.63)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `NSIExercise` - 239 edges</li>
@@ -528,79 +528,75 @@ flowchart LR
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1305 nodes and 1917 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1488 nodes and 2492 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (1305 nodes, 1917 edges)
-    subgraph build_graph_Core_france_graph_resilience_contrac_f4a0590a["Core/france/graph_resilience_contract.py"]
-        backend_core_france_graph_resilience_contract_bu_0e61cd63("graph resilience contract()<br/><small>Core/france/graph_resilience_contract.py</small>")
-        backend_core_france_graph_resilience_contract_gr_94673bf7("GraphResilienceContract<br/><small>Core/france/graph_resilience_contract.py</small>")
-        backend_core_france_graph_resilience_contract_ca_11475aa8("_canonical()<br/><small>Core/france/graph_resilience_contract.py</small>")
-        backend_core_france_graph_resilience_contract_gr_2f181cdd("from_dict()<br/><small>Core/france/graph_resilience_contract.py</small>")
-        backend_core_france_graph_resilience_contract_fa_66f7910a("_facts()<br/><small>Core/france/graph_resilience_contract.py</small>")
+    %% Section: Graph Build (1488 nodes, 2492 edges)
+    subgraph build_graph_Backend_Core_assessment_checkpoints_8687368b["Backend/Core/assessment_checkpoints.py"]
+        backend_core_assessment_checkpoints_assessmentch_09725f66("AssessmentCheckpointStore<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_checkpointmi_4a5929f2("CheckpointMismatch<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_6ec69952("_read_document()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_checkpointco_7b181738("CheckpointCorrupt<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_624a45eb("discard_item()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_d9672f52("load_item()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_ccf5229a("load_payload()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_f5006a94("save_payload()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
+        backend_core_assessment_checkpoints_assessmentch_596f21d6("clear()<br/><small>Backend/Core/assessment_checkpoints.py</small>")
     end
-    subgraph build_graph_Core_france_graph_resilience_authori_5166d6aa["Core/france/graph_resilience_authoring.py"]
-        backend_core_france_graph_resilience_authoring_i_e66be7ba("_identity()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_a_b8578979("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_r_1b497a24("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_g_5820d0e7("resilience selection prompt()<br/><small>Core/france/graph_resilience_authoring.py</small>")
+    subgraph build_graph_tests_test_assessment_checkpoints_py_3bbdf61a["tests/test_assessment_checkpoints.py"]
+        tests_test_assessment_checkpoints_test_checkpoin_32e71154("outside the question()<br/><small>tests/test_assessment_checkpoints.py</small>")
+        tests_test_assessment_checkpoints_test_generate_311b49e0("another model call()<br/><small>tests/test_assessment_checkpoints.py</small>")
+        tests_test_assessment_checkpoints_test_v4_operat_cd942e0e("save and resume()<br/><small>tests/test_assessment_checkpoints.py</small>")
     end
-    subgraph build_graph_Core_france_graph_resilience_prose_p_6a09beb3["Core/france/graph_resilience_prose.py"]
-        backend_core_france_graph_resilience_prose_graph_0322b989("resilience catalogue digest()<br/><small>Core/france/graph_resilience_prose.py</small>")
-        backend_core_france_graph_resilience_prose_graph_b8cb6153("resilience selection schema()<br/><small>Core/france/graph_resilience_prose.py</small>")
-        backend_core_france_graph_resilience_prose_rende_1dacb99f("graph resilience candidate()<br/><small>Core/france/graph_resilience_prose.py</small>")
-        backend_core_france_graph_resilience_prose_valid_1a611f60("graph resilience selection()<br/><small>Core/france/graph_resilience_prose.py</small>")
-    end
-    subgraph build_graph_Core_subjects_sql_contracts_py_8ef62bf4["Core/subjects/sql_contracts.py"]
-        backend_core_subjects_sql_contracts_sqlproblem_550d5cb0("_SQLProblem<br/><small>Core/subjects/sql_contracts.py</small>")
-        backend_core_subjects_sql_contracts_tokenstream_9fa6719c("_TokenStream<br/><small>Core/subjects/sql_contracts.py</small>")
-    end
-    backend_core_france_graph_tree_authoring_hash_3406937b("_hash()<br/><small>Core/france/graph_tree_authoring.py</small>")
-    tests_test_french_graph_resilience_authoring_tes_b1927ac5("every selection fact()<br/><small>tests/test_french_graph_resilience_authoring.py</small>")
-    tools_validate_generator_migration_migrationvali_c3582b0a("MigrationValidator<br/><small>tools/validate_generator_migration.py</small>")
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_prose_graph_0322b989
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_prose_graph_b8cb6153
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| backend_core_france_graph_resilience_prose_rende_1dacb99f
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| backend_core_france_graph_resilience_prose_valid_1a611f60
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_authoring_a_b8578979 -->|calls| backend_core_france_graph_resilience_prose_rende_1dacb99f
-    backend_core_france_graph_resilience_authoring_a_b8578979 -->|calls| backend_core_france_graph_resilience_prose_valid_1a611f60
-    backend_core_france_graph_resilience_authoring_a_b8578979 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_contract_ca_11475aa8 -->|calls| backend_core_france_graph_resilience_contract_gr_2f181cdd
-    backend_core_france_graph_resilience_contract_fa_66f7910a -->|calls| backend_core_france_graph_resilience_contract_bu_0e61cd63
-    backend_core_france_graph_resilience_contract_fa_66f7910a -->|calls| backend_core_france_graph_resilience_contract_gr_2f181cdd
-    backend_core_france_graph_resilience_contract_gr_2f181cdd -->|calls| backend_core_france_graph_resilience_contract_bu_0e61cd63
-    backend_core_france_graph_resilience_contract_bu_0e61cd63 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_prose_graph_b8cb6153 -->|calls| backend_core_france_graph_resilience_prose_valid_1a611f60
-    backend_core_france_graph_resilience_prose_graph_b8cb6153 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_prose_valid_1a611f60 -->|calls| backend_core_france_graph_resilience_prose_rende_1dacb99f
-    %% Omitted for readability: 1287 nodes, 0 edges
+    backend_core_ai_assessment_generate_unique_paper_d2b631c9("generate_unique_paper()<br/><small>Backend/Core/ai_assessment.py</small>")
+    backend_core_exam_blueprints_questionrule_a9d17b7a("QuestionRule<br/><small>Backend/Core/exam_blueprints.py</small>")
+    backend_core_france_graph_resilience_contract_bu_0e61cd63("graph resilience contract()<br/><small>Core/france/graph_resilience_contract.py</small>")
+    backend_core_france_graph_tree_binding_canonical_3269e732("canonical_answer()<br/><small>Core/france/graph_tree_binding.py</small>")
+    backend_core_france_graph_tree_contract_build_gr_d5a539f0("build_graph_tree_contract()<br/><small>Core/france/graph_tree_contract.py</small>")
+    backend_core_subjects_sql_contracts_sqlproblem_550d5cb0("_SQLProblem<br/><small>Core/subjects/sql_contracts.py</small>")
+    backend_core_ai_assessment_generate_unique_paper_d2b631c9 -->|calls| tests_test_assessment_checkpoints_test_checkpoin_32e71154
+    backend_core_ai_assessment_generate_unique_paper_d2b631c9 -->|calls| tests_test_assessment_checkpoints_test_generate_311b49e0
+    backend_core_ai_assessment_generate_unique_paper_d2b631c9 -->|calls| tests_test_assessment_checkpoints_test_v4_operat_cd942e0e
+    backend_core_assessment_checkpoints_checkpointmi_4a5929f2 -->|calls| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    backend_core_assessment_checkpoints_checkpointco_7b181738 -->|calls| backend_core_assessment_checkpoints_assessmentch_624a45eb
+    backend_core_assessment_checkpoints_checkpointco_7b181738 -->|calls| backend_core_assessment_checkpoints_assessmentch_d9672f52
+    backend_core_assessment_checkpoints_checkpointco_7b181738 -->|calls| backend_core_assessment_checkpoints_assessmentch_ccf5229a
+    backend_core_assessment_checkpoints_checkpointco_7b181738 -->|calls| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    backend_core_assessment_checkpoints_checkpointco_7b181738 -->|calls| backend_core_assessment_checkpoints_assessmentch_f5006a94
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_596f21d6
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_624a45eb
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_d9672f52
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_ccf5229a
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|method| backend_core_assessment_checkpoints_assessmentch_f5006a94
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|calls| tests_test_assessment_checkpoints_test_checkpoin_32e71154
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|calls| tests_test_assessment_checkpoints_test_generate_311b49e0
+    backend_core_assessment_checkpoints_assessmentch_09725f66 -->|calls| tests_test_assessment_checkpoints_test_v4_operat_cd942e0e
+    backend_core_assessment_checkpoints_assessmentch_d9672f52 -->|calls| backend_core_assessment_checkpoints_assessmentch_ccf5229a
+    backend_core_assessment_checkpoints_assessmentch_ccf5229a -->|calls| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    backend_core_assessment_checkpoints_assessmentch_f5006a94 -->|calls| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    backend_core_assessment_checkpoints_assessmentch_624a45eb -->|calls| backend_core_assessment_checkpoints_assessmentch_6ec69952
+    %% Omitted for readability: 1470 nodes, 0 edges
+    class backend_core_assessment_checkpoints_assessmentch_09725f66 async;
+    class backend_core_assessment_checkpoints_checkpointmi_4a5929f2 klass;
+    class backend_core_assessment_checkpoints_assessmentch_6ec69952 function;
+    class backend_core_assessment_checkpoints_checkpointco_7b181738 klass;
+    class backend_core_assessment_checkpoints_assessmentch_624a45eb function;
+    class backend_core_assessment_checkpoints_assessmentch_d9672f52 function;
+    class backend_core_assessment_checkpoints_assessmentch_ccf5229a function;
+    class backend_core_assessment_checkpoints_assessmentch_f5006a94 function;
+    class backend_core_assessment_checkpoints_assessmentch_596f21d6 function;
+    class tests_test_assessment_checkpoints_test_checkpoin_32e71154 test;
+    class tests_test_assessment_checkpoints_test_generate_311b49e0 test;
+    class tests_test_assessment_checkpoints_test_v4_operat_cd942e0e test;
+    class backend_core_ai_assessment_generate_unique_paper_d2b631c9 function;
+    class backend_core_exam_blueprints_questionrule_a9d17b7a klass;
     class backend_core_france_graph_resilience_contract_bu_0e61cd63 function;
-    class backend_core_france_graph_resilience_contract_gr_94673bf7 klass;
-    class backend_core_france_graph_resilience_contract_ca_11475aa8 function;
-    class backend_core_france_graph_resilience_contract_gr_2f181cdd function;
-    class backend_core_france_graph_resilience_contract_fa_66f7910a function;
-    class backend_core_france_graph_resilience_authoring_i_e66be7ba function;
-    class backend_core_france_graph_resilience_authoring_a_b8578979 function;
-    class backend_core_france_graph_resilience_authoring_r_1b497a24 function;
-    class backend_core_france_graph_resilience_authoring_g_5820d0e7 function;
-    class backend_core_france_graph_resilience_prose_graph_0322b989 function;
-    class backend_core_france_graph_resilience_prose_graph_b8cb6153 function;
-    class backend_core_france_graph_resilience_prose_rende_1dacb99f function;
-    class backend_core_france_graph_resilience_prose_valid_1a611f60 function;
+    class backend_core_france_graph_tree_binding_canonical_3269e732 function;
+    class backend_core_france_graph_tree_contract_build_gr_d5a539f0 function;
     class backend_core_subjects_sql_contracts_sqlproblem_550d5cb0 function;
-    class backend_core_subjects_sql_contracts_tokenstream_9fa6719c async;
-    class backend_core_france_graph_tree_authoring_hash_3406937b function;
-    class tests_test_french_graph_resilience_authoring_tes_b1927ac5 test;
-    class tools_validate_generator_migration_migrationvali_c3582b0a klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -651,7 +647,7 @@ flowchart LR
   <td><code>replay_graph_resilience_selection()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_authoring.py</small><br><code>resilience selection prompt()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_authoring.py</small></td>
-  <td><code>every selection fact()</code><br><small style="color:var(--muted)">tests/test_french_graph_resilience_authoring.py</small><br><code>graph resilience candidate()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_prose.py</small><br><code>graph resilience selection()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_authoring.py</small><br>+1 more</td>
+  <td><code>every selection fact()</code><br><small style="color:var(--muted)">tests/test_french_graph_resilience_authoring.py</small><br><code>graph resilience candidate()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_prose.py</small><br><code>graph resilience selection()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_prose.py</small><br>+1 more</td>
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
@@ -875,25 +871,25 @@ flowchart LR
 <tr><td><code>Resources/qualification-schema.json</code></td><td>97 nodes</td></tr>
 <tr><td><code>Resources/backend-protocol.schema.json</code></td><td>70 nodes</td></tr>
 <tr><td><code>Core/subjects/sql_contracts.py</code></td><td>54 nodes</td></tr>
-<tr><td><code>Core/france/graph_tree_authoring.py</code></td><td>30 nodes</td></tr>
-<tr><td><code>tools/validate_generator_migration.py</code></td><td>17 nodes</td></tr>
+<tr><td><code>Core/france/graph_tree_authoring.py</code></td><td>31 nodes</td></tr>
+<tr><td><code>generator/aqaecongen/generator.py</code></td><td>21 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x969, calls x342, extends x284, references x167. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1069, calls x542, extends x284, references x238. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around resources, generator, render, aqa, mostly in generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py, generator/aqaaccountgen/render_pdf.py. This section covers 701 nodes and 2084 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around resources, generator, render, aqa, mostly in generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py, generator/aqaaccountgen/render_pdf.py. This section covers 700 nodes and 2083 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (701 nodes, 2084 edges)
+    %% Section: Analysis &amp; Clustering (700 nodes, 2083 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -933,7 +929,7 @@ flowchart LR
     resources_accounting_aqa_generator_aqaaccountgen_f52ccec2 -->|calls| resources_accounting_aqa_generator_aqaaccountgen_a29172b2
     resources_computer_science_aqa_generator_cspaper_e688065e -->|imports| resources_computer_science_aqa_generator_cspaper_93d2977e
     resources_computer_science_aqa_generator_cspaper_e688065e -->|imports| resources_computer_science_aqa_generator_cspaper_622dfe12
-    %% Omitted for readability: 683 nodes, 0 edges
+    %% Omitted for readability: 682 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -1232,7 +1228,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x691, references x511, contains x499, imports x64. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x690, references x511, contains x499, imports x64. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1253,9 +1249,9 @@ flowchart LR
         backend_core_document_dsl_reportlab_canvas_draw_c4b9924f("draw_glyph_answer_rules()<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
         backend_core_document_dsl_reportlab_canvas_glyph_ecae2660("GlyphRuleStyle<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
         backend_core_document_dsl_reportlab_canvas_3958627d("reportlab_canvas.py")
-        backend_core_document_dsl_reportlab_canvas_ratio_2680cd95("Draw a deterministic neutral-practice b...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
-        backend_core_document_dsl_reportlab_canvas_ratio_ef7b6e34("Draw a fixed number of solid response r...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
-        backend_core_document_dsl_reportlab_canvas_ratio_881973c4("Draw selectable glyph-based response ru...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
+        backend_core_document_dsl_reportlab_canvas_ratio_5c6c333f("Draw a fixed number of solid response r...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
+        backend_core_document_dsl_reportlab_canvas_ratio_5050f511("Draw a repeatable practice-paper barcod...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
+        backend_core_document_dsl_reportlab_canvas_ratio_783e617f("Draw selectable glyph-based response ru...<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
     end
     subgraph outputs_docs_tests_test_canvas_furniture_py_ff330407["tests/test_canvas_furniture.py"]
         tests_test_canvas_furniture_test_canvas_furnitur_4944b788("renderer state contract()<br/><small>tests/test_canvas_furniture.py</small>")
@@ -1298,9 +1294,9 @@ flowchart LR
     class backend_core_document_dsl_reportlab_canvas_draw_c4b9924f function;
     class backend_core_document_dsl_reportlab_canvas_glyph_ecae2660 klass;
     class backend_core_document_dsl_reportlab_canvas_3958627d module;
-    class backend_core_document_dsl_reportlab_canvas_ratio_2680cd95 concept;
-    class backend_core_document_dsl_reportlab_canvas_ratio_ef7b6e34 concept;
-    class backend_core_document_dsl_reportlab_canvas_ratio_881973c4 concept;
+    class backend_core_document_dsl_reportlab_canvas_ratio_5c6c333f concept;
+    class backend_core_document_dsl_reportlab_canvas_ratio_5050f511 concept;
+    class backend_core_document_dsl_reportlab_canvas_ratio_783e617f concept;
     class tests_test_canvas_furniture_test_canvas_furnitur_4944b788 test;
     class tests_test_canvas_furniture_test_solid_answer_ru_825cc135 test;
     class tests_test_canvas_furniture_test_glyph_answer_ru_045027fd test;
@@ -1564,11 +1560,11 @@ flowchart LR
 </tr>
 <tr>
   <td>30</td>
-  <td><code>HIG_COMPLIANCE.md</code><br><small style="color:var(--muted)">docs/HIG_COMPLIANCE.md</small></td>
+  <td><code>french-baccalaureat.md</code><br><small style="color:var(--muted)">docs/french-baccalaureat.md</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Documentation node describing HIG_COMPLIANCE.md.</td>
+  <td>Documentation node describing french-baccalaureat.md.</td>
 </tr>
 </table>
 
@@ -2783,12 +2779,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, Core/france/pipeline.py, tools/paper_fidelity_audit.py. This section covers 5905 nodes and 18579 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, Core/france/pipeline.py, tools/paper_fidelity_audit.py. This section covers 5720 nodes and 17599 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (5905 nodes, 18579 edges)
+    %% Section: Tests &amp; Fixtures (5720 nodes, 17599 edges)
     subgraph tests_fixtures_Backend_Core_ai_assessment_py_93891410["Backend/Core/ai_assessment.py"]
         backend_core_ai_assessment_assessmentllmclient_af77fd0e("AssessmentLLMClient<br/><small>Backend/Core/ai_assessment.py</small>")
         backend_core_ai_assessment_assessmentllmclient_g_314242c3("generate_json()<br/><small>Backend/Core/ai_assessment.py</small>")
@@ -2826,7 +2822,7 @@ flowchart LR
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| backend_core_ai_assessment_review_batch_87a73a37
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| tests_test_ai_assessment_test_content_approval_c_22a3fa7b
     backend_core_independent_solver_independentsolve_ca9b7e1f -->|calls| backend_core_independent_solver_reconcile_soluti_03e71447
-    %% Omitted for readability: 5887 nodes, 0 edges
+    %% Omitted for readability: 5702 nodes, 0 edges
     class backend_core_ai_assessment_assessmentllmclient_af77fd0e entry;
     class backend_core_ai_assessment_assessmentllmclient_g_314242c3 function;
     class backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9 function;
@@ -2879,7 +2875,7 @@ flowchart LR
   <td><code>_tasks_for_seed_v17()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_tasks_for_seed_v16()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_route_trace_prose.py</small><br><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_prose.py</small><br><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+7 more</td>
+  <td><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_prose.py</small><br><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_route_trace_prose.py</small><br><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+7 more</td>
   <td>_tasks_for_seed_v17() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
@@ -2958,7 +2954,7 @@ flowchart LR
   <td>12</td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_review()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+58 more</td>
+  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_review()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+56 more</td>
   <td><code>alignment_failures()</code><br><small style="color:var(--muted)">Core/france/question_review.py</small><br><code>alignment_prompt()</code><br><small style="color:var(--muted)">Core/france/question_review.py</small><br><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+105 more</td>
   <td>generate_assessment() node in Core/france/pipeline.py.</td>
 </tr>
@@ -2966,7 +2962,7 @@ flowchart LR
   <td>13</td>
   <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_review()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+62 more</td>
+  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_review()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+60 more</td>
   <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+68 more</td>
   <td>validate_package() node in Core/france/pipeline.py.</td>
 </tr>
@@ -3113,19 +3109,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tests/test_nsi_pipeline.py</code></td><td>133 nodes</td></tr>
-<tr><td><code>Core/france/pipeline.py</code></td><td>81 nodes</td></tr>
+      <tr><td><code>tests/test_nsi_pipeline.py</code></td><td>124 nodes</td></tr>
+<tr><td><code>Core/france/pipeline.py</code></td><td>80 nodes</td></tr>
 <tr><td><code>tools/paper_fidelity_audit.py</code></td><td>69 nodes</td></tr>
 <tr><td><code>generator/pastpapergen/render_pdf.py</code></td><td>68 nodes</td></tr>
-<tr><td><code>generator/tests/test_question_styles.py</code></td><td>62 nodes</td></tr>
-<tr><td><code>Backend/Core/ai_assessment.py</code></td><td>59 nodes</td></tr>
+<tr><td><code>generator/tests/test_question_styles.py</code></td><td>63 nodes</td></tr>
+<tr><td><code>Backend/Core/ai_assessment.py</code></td><td>57 nodes</td></tr>
 <tr><td><code>tests/test_ai_assessment.py</code></td><td>55 nodes</td></tr>
 <tr><td><code>generator/tests/test_render_pdf.py</code></td><td>52 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x7422, contains x3690, references x2382, imports x2147. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x7150, contains x3560, references x2241, imports x1989. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3594,7 +3590,7 @@ flowchart LR
   <td><code>PanelEmptyState</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Components/SharedViews.swift</small></td>
   <td>PanelEmptyState node in PaperCreator/Components/SharedViews.swift.</td>
 </tr>
 <tr>
@@ -4860,12 +4856,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, 2026, french, superpowers, mostly in generator/pastpapergen/render_pdf.py, generator/aqaaccountgen/case_data.py, docs/project-analysis/PROJECT_ANALYSIS.md. This section covers 884 nodes and 1040 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around docs, 2026, french, superpowers, mostly in generator/pastpapergen/render_pdf.py, generator/aqaaccountgen/case_data.py, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md. This section covers 887 nodes and 1042 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (884 nodes, 1040 edges)
+    %% Section: Other (887 nodes, 1042 edges)
     subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
         backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
         backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
@@ -4901,7 +4897,7 @@ flowchart LR
     backend_core_candidate_paths_identity_a56de8ff -->|calls| backend_core_candidate_paths_candidatetopology_f_7824a796
     backend_core_candidate_paths_identity_a56de8ff -->|calls| backend_core_reference_demand_referencedemandpro_0dd3902c
     backend_core_candidate_paths_identity_a56de8ff -->|calls| backend_core_topic_reference_evidence_audit_topi_68450840
-    %% Omitted for readability: 866 nodes, 0 edges
+    %% Omitted for readability: 869 nodes, 0 edges
     class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
     class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
     class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
@@ -5190,7 +5186,7 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>generator/pastpapergen/render_pdf.py</code></td><td>57 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/case_data.py</code></td><td>47 nodes</td></tr>
-<tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
+<tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-paper-creator-excellence-programme.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>Core/overlay/graphs.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
@@ -5200,7 +5196,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x621, calls x208, method x69, references x66. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x621, calls x208, method x69, references x68. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5214,7 +5210,7 @@ flowchart LR
       <tr><td>Nodes</td><td>9746</td></tr>
       <tr><td>Edges</td><td>27804</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>371</td></tr>
+      <tr><td>Communities</td><td>370</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
@@ -5230,7 +5226,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-10-28 12:17 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-28 14:06 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

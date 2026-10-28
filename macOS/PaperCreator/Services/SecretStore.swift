@@ -1,3 +1,5 @@
+// Read and update provider credentials in the macOS Keychain.
+
 import Foundation
 import Security
 
@@ -44,6 +46,7 @@ enum SecretStore {
         SecItemAdd(addQuery as CFDictionary, nil)
     }
 
+    // This service name identifies existing credentials; changing it would hide saved API keys.
     private static func baseQuery(_ account: String) -> [String: Any] {
         [
             kSecClass as String: kSecClassGenericPassword,

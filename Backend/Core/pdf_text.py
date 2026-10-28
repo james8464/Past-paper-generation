@@ -1,3 +1,5 @@
+# Extract PDF text and font names using the bundled Python PDF library.
+
 from __future__ import annotations
 
 from pathlib import Path

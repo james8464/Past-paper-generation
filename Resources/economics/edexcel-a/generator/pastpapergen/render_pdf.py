@@ -1,3 +1,5 @@
+# Render Edexcel Economics papers and marking guidance using the shared PDF components.
+
 # The project-root bootstrap must precede imports from the shared backend.
 
 from __future__ import annotations
@@ -757,7 +759,7 @@ def _draw_paper_3_source_page(
 
 
 def _draw_case_source_figure(pdf, x, y, number, source):
-    """A figure is a view of source cells, never a random hash illustration."""
+    """Draw figures from source cells so the chart matches the printed data."""
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawString(x, y, f"Figure {number}: illustrative case information")
     y -= 20

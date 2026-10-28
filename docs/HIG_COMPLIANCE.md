@@ -57,7 +57,7 @@ custom cards or web-style navigation.
 - `⌘↩`: create when the current configuration is valid.
 - `⌘.`: cancel the active operation.
 - `⌘,`: open the standard Settings scene.
-- `⇧⌘H`: open Paper creator Help without colliding with macOS Help search.
+- `⇧⌘H`: open Keldin Help without colliding with macOS Help search.
 - Sidebar and quality-inspector visibility are standard toolbar commands.
 - The primary action occupies the primary toolbar position.
 - Task blockers appear beside the affected controls and state the recovery

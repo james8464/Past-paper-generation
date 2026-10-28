@@ -1,3 +1,5 @@
+# Represent subject diagrams and tables as document components.
+
 from __future__ import annotations
 
 from dataclasses import dataclass

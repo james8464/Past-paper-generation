@@ -1,3 +1,5 @@
+// Present navigation choices from the current catalogue and education context.
+
 import SwiftUI
 
 enum SidebarExpansionPolicy {

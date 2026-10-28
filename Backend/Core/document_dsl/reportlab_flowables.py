@@ -1,3 +1,5 @@
+# Build reusable ReportLab page and question furniture.
+
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Mapping, Sequence

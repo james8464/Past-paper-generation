@@ -1,3 +1,5 @@
+# Store calibration rows locally with caller-supplied encryption keys.
+
 from __future__ import annotations
 
 import csv

@@ -1,3 +1,5 @@
+// Track generation requests and their streamed progress or failure state.
+
 import Foundation
 import Observation
 

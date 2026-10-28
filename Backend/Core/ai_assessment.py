@@ -1,3 +1,5 @@
+# Generate and review draft items, resuming only accepted checkpoint content.
+
 from __future__ import annotations
 
 import json
@@ -1229,9 +1231,9 @@ def _normalise_level_allocations(
     question: GeneratedQuestion,
     points: list[MarkSchemePoint],
 ) -> list[MarkSchemePoint]:
-    """Make blueprint AO arithmetic authoritative for levels-based schemes.
+    """Use blueprint AO totals when building levels-based schemes.
 
-    Real levels schemes separate AO accounting, band descriptors and indicative
+    Levels-based schemes separate AO accounting, band descriptors and indicative
     content. Local models often blur those roles, so retain their substantive
     material as guidance while creating neutral, exact AO allocation rows.
     """
@@ -1788,7 +1790,7 @@ def _bounded_text(value: Any, *, name: str, limit: int) -> str:
 def _task_source(task: _Task) -> dict[str, object]:
     context = task.question.authoring_context
     # These adapters publish question-owned source contracts instead of the
-    # generic option extracts. Mere authoring metadata (word budgets, AO labels)
+    # generic option extracts. Authoring metadata (word budgets, AO labels)
     # must not hide a case that the question actually asks the candidate to use.
     owns_source = owns_shared_source(task.question.model_dump(mode="json"))
     if context:

@@ -1,3 +1,5 @@
+// Present French NSI generation, reference and teacher-review actions.
+
 import SwiftUI
 
 enum FrenchWorkspaceLayoutPolicy {

@@ -2,7 +2,7 @@
 
 ## Product boundary
 
-Paper Creator produces independently authored, unofficial A-level practice
+Keldin produces independently authored, unofficial A-level practice
 packages. It treats assessment design and visual composition as separate
 problems: an immutable paper blueprint controls what must be assessed, AI writes
 new content inside that blueprint, validators reject unsafe output, and

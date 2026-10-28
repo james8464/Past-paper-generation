@@ -1,3 +1,5 @@
+# Solve from candidate-visible inputs, then reconcile answers with the draft scheme.
+
 from __future__ import annotations
 
 import ast

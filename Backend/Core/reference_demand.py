@@ -1,3 +1,5 @@
+# Build item demand targets from validated reference profiles.
+
 from __future__ import annotations
 
 import hashlib

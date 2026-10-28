@@ -1,3 +1,5 @@
+# Compare AQA business item allocations with reference-paper evidence.
+
 from __future__ import annotations
 
 import argparse

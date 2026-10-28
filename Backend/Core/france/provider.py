@@ -64,6 +64,7 @@ class ApplicationOwnedFrenchClient:
     provider = "application-owned"
     model = "app-owned-v32"
     model_digest = sha256(
+        # This byte string is part of saved V32 identities; public copy uses Keldin.
         b"Paper Creator application-owned French cases v32"
     ).hexdigest()
 

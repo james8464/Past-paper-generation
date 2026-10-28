@@ -1,3 +1,5 @@
+# Check rendered content and pagination against the selected layout policy.
+
 from __future__ import annotations
 
 import json

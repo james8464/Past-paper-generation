@@ -1,3 +1,5 @@
+# Define paper rules and generated question records shared by the subject families.
+
 from __future__ import annotations
 
 from collections.abc import Iterable

@@ -1,3 +1,5 @@
+# Apply measured page geometry and reject text that cannot fit its assigned slot.
+
 from __future__ import annotations
 
 import json

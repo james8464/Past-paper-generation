@@ -1,3 +1,5 @@
+# Compare mathematical answers and apply the declared marking rules.
+
 from __future__ import annotations
 
 import re

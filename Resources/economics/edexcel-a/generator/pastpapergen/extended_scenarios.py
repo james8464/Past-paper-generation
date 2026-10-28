@@ -1,4 +1,4 @@
-"""Concrete authored scenarios for formerly topic-note-only extended tasks.
+"""Authored scenarios and credit routes for extended-response tasks.
 
 Each record is a task, two candidate facts, two causal routes and two limits.
 The facts are illustrative assumptions, not unattributed national statistics.
