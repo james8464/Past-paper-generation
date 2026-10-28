@@ -3,11 +3,11 @@
 Native macOS app and Python backend for generating unofficial A-level practice papers,
 with a French NSI extension in development.
 
-Public copy uses Keldin. The Xcode target, bundle identifier, environment keys
-and existing storage paths retain their original names so updates can still find
-saved papers, preferences and API keys. Historical PDF labels and source identities
-also stay intact for replay. These compatibility names are not the app's display name.
-The editable app icon is `macOS/PaperCreator/AppIcon.icon`, an Icon Composer
+The app, build targets, backend helper, bundle identifier and new storage paths
+use Keldin. Earlier settings and local files are imported without replacing newer
+Keldin data. See [migration notes](docs/keldin-migration.md) for sandbox and
+Keychain access limits and the manual import action.
+The editable app icon is `macOS/Keldin/AppIcon.icon`, an Icon Composer
 document with seven separate page shapes.
 
 ## French NSI / Occitanie prototype

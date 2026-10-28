@@ -280,10 +280,9 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
-# The default publisher label belongs to historical layouts. Current whole-case
-# generation supplies Keldin explicitly so saved layout contracts can still replay.
+# New renders use Keldin; validators still recognise retained publisher labels.
 class NumberedCanvas(Canvas):
-    def __init__(self, *args, brand_name="Paper Creator", print_policy=None, **kwargs):
+    def __init__(self, *args, brand_name="Keldin", print_policy=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._brand_name = brand_name
         self._print_policy = print_policy
@@ -320,7 +319,7 @@ def draw_cover_page(
     regular_font: str,
     bold_font: str,
     italic_font: str,
-    brand_name: str = "Paper Creator",
+    brand_name: str = "Keldin",
     print_policy: str | None = None,
 ) -> None:
     """Draw the cover from measured 2026 coordinates, with independent branding."""
@@ -427,17 +426,7 @@ def render_assessment(
 ):
     if print_policy not in (None, V34_PRINT_POLICY):
         raise ValueError("Unknown French print policy")
-    # Historical contracts keep their recorded identity; current whole cases use
-    # the public app name without changing their questions or indicative credit.
-    brand_name = (
-        "Keldin"
-        if any(
-            question.verification.get("kind") in WHOLE_CASE_KINDS
-            for exercise in exercises
-            for question in exercise.questions
-        )
-        else "Paper Creator"
-    )
+    brand_name = "Keldin"
     faces = register_fonts("ExamSans", "ExamSans-Bold", "ExamSans-Italic")
     regular = faces["ExamSans"]
     bold = faces["ExamSans-Bold"]

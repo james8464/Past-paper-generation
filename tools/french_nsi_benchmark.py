@@ -992,7 +992,7 @@ def run_plan(args: argparse.Namespace) -> int:
         artifact_root = output / "artifacts" / _slug(item.model) / digest[:12]
         checkpoint = (
             artifact_root
-            / ".papercreator-checkpoints"
+            / ".keldin-checkpoints"
             / f"{ASSESSMENT}-{item.seed}.json"
         )
         command = [

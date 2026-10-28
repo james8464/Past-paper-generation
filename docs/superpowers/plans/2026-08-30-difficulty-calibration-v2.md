@@ -143,8 +143,8 @@ External examiner and learner evidence remains a separate, unpassed gate.
 ### Task 6: macOS evidence presentation and guidance
 
 **Files:**
-- Modify: `macOS/PaperCreator/Domain/AppModels.swift`
-- Modify: `macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift`
+- Modify: `macOS/Keldin/Domain/AppModels.swift`
+- Modify: `macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift`
 - Modify: relevant Swift tests and help content.
 
 **Interfaces:**

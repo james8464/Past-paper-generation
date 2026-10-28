@@ -237,6 +237,13 @@ private struct OutputSettingsTab: View {
                 }
             }
 
+            Section("Previous app data") {
+                Button("Import previous app data…", action: application.importPreviousAppData)
+                    .disabled(application.isRunning)
+                Text("Use this if your earlier papers or history were not imported automatically. Choose the former app's Application Support folder. You may need to choose your output folder again or re-enter API keys.")
+                    .foregroundStyle(.secondary)
+            }
+
             Section("Preview Mode") {
                 Toggle(
                     "Create a layout preview",

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Python 3.11+, Pydantic 2, ReportLab, PyMuPDF, Pillow, pytest, Ruff, Swift 6, SwiftUI, AppKit/PDFKit/QuickLook/TipKit, XCTest, JSON Schema, XcodeGen, Graphify.
 
-**Spec:** `docs/superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md`
+**Spec:** `docs/superpowers/specs/2026-08-26-keldin-excellence-programme-design.md`
 
 ## Global Constraints
 
@@ -104,8 +104,8 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 - Modify: `tests/test_generator_registry.py`
 - Modify: `tests/test_coverage_matrix.py`
 - Modify: `tests/test_app_backend.py`
-- Modify: `macOS/PaperCreator/Domain/AppModels.swift`
-- Modify: `macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift`
+- Modify: `macOS/Keldin/Domain/AppModels.swift`
+- Modify: `macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift`
 - Modify: `macOS/Tests/AppTests.swift`
 
 **Interfaces:**
@@ -225,16 +225,16 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 ### Task 5: Split AppViewModel into Focused Coordinators
 
 **Files:**
-- Create: `macOS/PaperCreator/State/GenerationCoordinator.swift`
-- Create: `macOS/PaperCreator/State/ModelCoordinator.swift`
-- Create: `macOS/PaperCreator/State/SettingsStore.swift`
-- Create: `macOS/PaperCreator/State/RecentDocumentStore.swift`
-- Create: `macOS/PaperCreator/State/BenchmarkCoordinator.swift`
-- Create: `macOS/PaperCreator/State/CatalogStore.swift`
-- Modify: `macOS/PaperCreator/State/AppViewModel.swift`
-- Modify: `macOS/PaperCreator/Application/PaperCreatorApp.swift`
-- Modify: `macOS/PaperCreator/Application/AppCommands.swift`
-- Modify: `macOS/PaperCreator/Services/BackendClient.swift`
+- Create: `macOS/Keldin/State/GenerationCoordinator.swift`
+- Create: `macOS/Keldin/State/ModelCoordinator.swift`
+- Create: `macOS/Keldin/State/SettingsStore.swift`
+- Create: `macOS/Keldin/State/RecentDocumentStore.swift`
+- Create: `macOS/Keldin/State/BenchmarkCoordinator.swift`
+- Create: `macOS/Keldin/State/CatalogStore.swift`
+- Modify: `macOS/Keldin/State/AppViewModel.swift`
+- Modify: `macOS/Keldin/Application/KeldinApp.swift`
+- Modify: `macOS/Keldin/Application/AppCommands.swift`
+- Modify: `macOS/Keldin/Services/BackendClient.swift`
 - Modify: `macOS/Tests/AppTests.swift`
 
 **Interfaces:**
@@ -254,18 +254,18 @@ Tasks 2, 3, and 5 may proceed in parallel after Task 1. A phase gate is not sati
 ### Task 6: Deliver the Native macOS Workflow and Accessibility Pass
 
 **Files:**
-- Modify: `macOS/PaperCreator/Navigation/ContentView.swift`
-- Modify: `macOS/PaperCreator/Navigation/SidebarView.swift`
-- Modify: `macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift`
-- Modify: `macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift`
-- Modify: `macOS/PaperCreator/Features/Settings/SettingsPane.swift`
-- Modify: `macOS/PaperCreator/Features/Benchmark/BenchmarkView.swift`
-- Modify: `macOS/PaperCreator/Components/SharedViews.swift`
-- Modify: `macOS/PaperCreator/Components/NativeVisualStyle.swift`
-- Create: `macOS/PaperCreator/Features/Documents/DocumentPreviewView.swift`
-- Create: `macOS/PaperCreator/Features/Documents/JobHistoryView.swift`
-- Create: `macOS/PaperCreator/Features/Onboarding/PaperCreationTips.swift`
-- Create: `macOS/PaperCreator/Localizable.xcstrings`
+- Modify: `macOS/Keldin/Navigation/ContentView.swift`
+- Modify: `macOS/Keldin/Navigation/SidebarView.swift`
+- Modify: `macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift`
+- Modify: `macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift`
+- Modify: `macOS/Keldin/Features/Settings/SettingsPane.swift`
+- Modify: `macOS/Keldin/Features/Benchmark/BenchmarkView.swift`
+- Modify: `macOS/Keldin/Components/SharedViews.swift`
+- Modify: `macOS/Keldin/Components/NativeVisualStyle.swift`
+- Create: `macOS/Keldin/Features/Documents/DocumentPreviewView.swift`
+- Create: `macOS/Keldin/Features/Documents/JobHistoryView.swift`
+- Create: `macOS/Keldin/Features/Onboarding/PaperCreationTips.swift`
+- Create: `macOS/Keldin/Localizable.xcstrings`
 - Modify: `macOS/Tests/AppTests.swift`
 - Create: `macOS/Tests/AccessibilityTests.swift`
 
@@ -543,7 +543,7 @@ failed safely and must remain in the qualification record.
 - Modify: `.gitignore`
 - Modify: `.github/workflows/**`
 - Modify: `macOS/project.yml`
-- Modify: `macOS/PaperCreator/Info.plist`
+- Modify: `macOS/Keldin/Info.plist`
 - Modify: macOS entitlement and privacy files
 - Create: `tools/repository_inventory.py`
 - Create: `tests/test_repository_inventory.py`
@@ -562,9 +562,9 @@ failed safely and must remain in the qualification record.
 - [x] Run dependency/licence, secret, privacy-manifest, entitlement, hardened-runtime, helper-signing, sandbox, notarisation-ready, and App Store preflight checks.
 - [x] Run `.venv/bin/ruff check Backend Resources tools tests`, `.venv/bin/python -m pytest -q`, all family suites, `make -C macOS agent-verify`, and `make -C macOS preflight-app-store` from a clean clone-equivalent environment.
 - [ ] Generate every advertised paper twice with distinct seeds; require complete qualification manifests, no crashes/timeouts, no visual regressions, no scheme/solution failures, and no unreviewed manual defects.
-- [x] Run `graphify update .`, inspect `graphify query "What ships in the final Paper Creator release and how is each paper qualified?"`, and update architecture docs if the graph exposes a mismatch.
+- [x] Run `graphify update .`, inspect `graphify query "What ships in the final Keldin release and how is each paper qualified?"`, and update architecture docs if the graph exposes a mismatch.
 - [x] Confirm `git status --short` is empty, all changes are committed locally on `main`, and no push has occurred.
-- [ ] Commit final documentation/evidence metadata as `Qualify Paper Creator release candidate`.
+- [ ] Commit final documentation/evidence metadata as `Qualify Keldin release candidate`.
 
 ## Phase Completion Gates
 

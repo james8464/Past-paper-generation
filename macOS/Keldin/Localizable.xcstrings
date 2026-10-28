@@ -1,6 +1,56 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Previous app data imported. Restart Keldin to load imported settings.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les anciennes données ont été importées. Redémarrez Keldin pour charger les réglages importés."
+          }
+        }
+      }
+    },
+    "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez le dossier de l’ancienne application dans Library/Application Support. Les fichiers Keldin existants seront conservés."
+          }
+        }
+      }
+    },
+    "Use this if your earlier papers or history were not imported automatically. Choose the former app's Application Support folder. You may need to choose your output folder again or re-enter API keys.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si vos anciens sujets ou votre historique n’ont pas été importés automatiquement, choisissez le dossier Application Support de l’ancienne application. Vous devrez peut-être sélectionner à nouveau le dossier de sortie ou saisir vos clés API."
+          }
+        }
+      }
+    },
+    "Previous app data": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Données de l’ancienne application"
+          }
+        }
+      }
+    },
+    "Import previous app data…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importer les données de l’ancienne application…"
+          }
+        }
+      }
+    },
     "%@ (recommended)" : {
       "localizations" : {
         "fr" : {

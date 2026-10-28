@@ -95,8 +95,8 @@ flowchart LR
 
 ### 1. Catalogue and selection
 
-`macOS/PaperCreator/AppModels.swift` and the runtime resources load subject and
-board metadata. `macOS/PaperCreator/AppConfiguration.swift` joins the broad
+`macOS/Keldin/AppModels.swift` and the runtime resources load subject and
+board metadata. `macOS/Keldin/AppConfiguration.swift` joins the broad
 catalogue with `Resources/generator-registry.json`, so only advertised generator
 families are shown as ready.
 
@@ -107,7 +107,7 @@ reference is not the same as implementing or verifying a generator.
 
 ### 2. Swift state and command construction
 
-`macOS/PaperCreator/AppViewModel.swift` owns the selected board, paper, provider,
+`macOS/Keldin/AppViewModel.swift` owns the selected board, paper, provider,
 model, output location, consent state, generation progress, and output files.
 When generation starts it:
 
@@ -127,7 +127,7 @@ by other local tooling.
 
 ### 3. Process bridge and event protocol
 
-`macOS/PaperCreator/BackendClient.swift` launches either:
+`macOS/Keldin/BackendClient.swift` launches either:
 
 - the PyInstaller backend inside the app bundle; or
 - the development Python interpreter and `bridge.py`.
@@ -427,7 +427,7 @@ cancel action are sufficient.
 
 ### HIG-specific findings
 
-1. `PaperCreatorApp` disables state restoration. Apple recommends launching
+1. `KeldinApp` disables state restoration. Apple recommends launching
    quickly and restoring previous state where appropriate.
 2. Command-G is assigned to “Generate Paper,” but Command-G is the conventional
    “Find Next” shortcut. New-document behavior should use Command-N; cancellation

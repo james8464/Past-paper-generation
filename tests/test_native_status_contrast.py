@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1] / "macOS" / "PaperCreator"
+ROOT = Path(__file__).resolve().parents[1] / "macOS" / "Keldin"
 
 
 def test_model_status_labels_use_semantic_primary_text():

@@ -65,7 +65,7 @@ def download_with_system_trust(url: str) -> bytes:
     fetched by this fallback. TLS verification is never disabled.
     """
     check_url(url)
-    with tempfile.TemporaryDirectory(prefix="papercreator-reference-") as folder:
+    with tempfile.TemporaryDirectory(prefix="keldin-reference-") as folder:
         destination = Path(folder) / "source.pdf"
         subprocess.run(
             [

@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import itertools
 import json
-import os
 import re
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
+
+from Backend.Core.legacy_migration import environment_value
 
 PROTOCOL_VERSION = 2
 BACKEND_VERSION = "2.0.0"
@@ -40,7 +41,7 @@ def emit(event_type: str, **payload: Any) -> None:
         "type": event_type,
         "event_id": next(_EVENT_IDS),
         "timestamp": datetime.now(UTC).isoformat(),
-        "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
+        "job_id": environment_value("KELDIN_JOB_ID", ""),
         **payload,
     }
     print(json.dumps(envelope, ensure_ascii=False), flush=True)

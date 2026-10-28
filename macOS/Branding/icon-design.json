@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "concept": "An open folio of six curved glass leaves and one binding",
-  "source": "../PaperCreator/AppIcon.icon",
+  "source": "../Keldin/AppIcon.icon",
   "authored_with": "Apple Icon Composer",
   "palette_reference": "https://developer.apple.com/design/human-interface-guidelines/color",
   "palette_checked": "2026-10-26",

@@ -370,7 +370,7 @@ Fernet encryption, creates owner-only files, writes atomically, rejects direct
 identifier columns, unconsented pseudonyms, mixed specification versions,
 duplicate candidate/item/marker rows, and impossible marks or timings. The
 encryption key is supplied by Keychain-facing code or
-`PAPER_CREATOR_CALIBRATION_KEY`; it is never written into the store. Encrypted
+`KELDIN_CALIBRATION_KEY`; it is never written into the store. Encrypted
 datasets can be exported or deleted by dataset UUID. Aggregate reports conform
 to `Resources/empirical-calibration.schema.json` and never contain candidate or
 marker identifiers.

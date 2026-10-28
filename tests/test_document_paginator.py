@@ -21,7 +21,7 @@ def _document(*components: object) -> DocumentSpec:
         profile_id="aqa",
         role=DocumentRole.QUESTION_PAPER,
         pages=(PageSpec(role=PageRole.QUESTION, components=components),),
-        metadata=DocumentMetadata(title="Test", author="Paper Creator"),
+        metadata=DocumentMetadata(title="Test", author="Keldin"),
     )
 
 

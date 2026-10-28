@@ -1,7 +1,7 @@
 import AppKit
 import SwiftUI
 import XCTest
-@testable import PaperCreator
+@testable import Keldin
 
 final class AccessibilityTests: XCTestCase {
     @MainActor

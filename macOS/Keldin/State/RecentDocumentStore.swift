@@ -162,10 +162,13 @@ final class RecentDocumentStore {
         quarantinedRecordCount = 0
         for url in urls {
             do {
-                var record = try JSONDecoder.paperCreator.decode(
+                var record = try JSONDecoder.keldin.decode(
                     GenerationJobRecord.self,
                     from: Data(contentsOf: url)
                 )
+                let relocated = record.artifacts.map { KeldinMigration.relocatedArtifact($0) }
+                let changedArtifactPaths = relocated != record.artifacts
+                record.artifacts = relocated
                 if record.schemaVersion == 0 {
                     record = GenerationJobRecord(
                         id: record.id,
@@ -190,6 +193,7 @@ final class RecentDocumentStore {
                     record.updatedAt = clock.now
                     try write(record)
                 }
+                if changedArtifactPaths { try write(record) }
                 loaded.append(record)
             } catch {
                 try quarantine(url)
@@ -242,7 +246,7 @@ final class RecentDocumentStore {
     }
 
     private func write(_ record: GenerationJobRecord) throws {
-        let data = try JSONEncoder.paperCreator.encode(record)
+        let data = try JSONEncoder.keldin.encode(record)
         try data.write(to: fileURL(for: record.id), options: [.atomic])
     }
 
@@ -286,7 +290,7 @@ final class RecentDocumentStore {
 }
 
 private extension JSONEncoder {
-    static var paperCreator: JSONEncoder {
+    static var keldin: JSONEncoder {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
@@ -295,7 +299,7 @@ private extension JSONEncoder {
 }
 
 private extension JSONDecoder {
-    static var paperCreator: JSONDecoder {
+    static var keldin: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return decoder

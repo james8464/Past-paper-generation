@@ -109,7 +109,7 @@ def test_standard_pdf_font_is_recorded_as_controlled_ci_fallback() -> None:
 def _release_canvas(path: Path) -> canvas.Canvas:
     pdf = canvas.Canvas(str(path), pagesize=(200, 200))
     pdf.setTitle("Release artifact")
-    pdf.setAuthor("Paper Creator")
+    pdf.setAuthor("Keldin")
     pdf.setSubject("Independent practice material")
     return pdf
 

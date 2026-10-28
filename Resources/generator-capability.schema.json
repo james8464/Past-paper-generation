@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://papercreator.local/schemas/generator-capability-v1.json",
+  "$id": "https://keldin.local/schemas/generator-capability-v1.json",
   "title": "Keldin generator family capability",
   "type": "object",
   "required": [

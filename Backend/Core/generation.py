@@ -33,6 +33,7 @@ from Backend.Core.events import (
 from Backend.Core.generation_diagnostics import save_failure_diagnostic
 from Backend.Core.generator_registry import GeneratorCapability, generator_capability
 from Backend.Core.layout_conformance import conform_generated_documents
+from Backend.Core.legacy_migration import environment_value, output_directory
 from Backend.Core.mlx_setup import MLXModelSetupRequired
 from Backend.Core.paths import REPO_ROOT, absolute_user_path
 from Backend.Core.pdf_validation import validate_pdf_for_release
@@ -68,7 +69,7 @@ def handle_generate(args: argparse.Namespace) -> int:
     # Keep incomplete artifacts out of the destination until final checks pass.
     staging_dir = Path(
         tempfile.mkdtemp(
-            prefix=f".papercreator-{args.subject}-{args.paper}-",
+            prefix=f".keldin-{args.subject}-{args.paper}-",
             dir=output_dir,
         )
     )
@@ -122,7 +123,7 @@ def handle_generate(args: argparse.Namespace) -> int:
         message = str(error)
         if diagnostic_path:
             message += f"\nA private diagnostic report was saved to {diagnostic_path}"
-        if os.environ.get("PAPER_CREATOR_DEBUG") == "1":
+        if environment_value("KELDIN_DEBUG") == "1":
             message += f"\n{traceback.format_exc()}"
         emit("error", message=message, code="generation_failed", **diagnostic_fields)
         return 1
@@ -232,8 +233,7 @@ def checkpoint_path_for_job(
         )
     ).hexdigest()[:20]
     return (
-        output_dir
-        / ".papercreator-checkpoints"
+        output_directory(output_dir, ".keldin-checkpoints")
         / f"{args.subject}-paper-{args.paper}-{digest}.json"
     )
 
@@ -353,11 +353,11 @@ def _write_package_manifest(
     manifest = {
         "schema_version": 2,
         "created_at": datetime.now(UTC).isoformat(),
-        "job_id": os.environ.get("PAPER_CREATOR_JOB_ID", ""),
+        "job_id": environment_value("KELDIN_JOB_ID", ""),
         "protocol_version": PROTOCOL_VERSION,
         "app": {
-            "version": os.environ.get("PAPER_CREATOR_APP_VERSION"),
-            "build": os.environ.get("PAPER_CREATOR_APP_BUILD"),
+            "version": environment_value("KELDIN_APP_VERSION", None),
+            "build": environment_value("KELDIN_APP_BUILD", None),
         },
         "backend": {
             "version": BACKEND_VERSION,

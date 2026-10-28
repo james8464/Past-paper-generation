@@ -10,7 +10,15 @@ enum AppLaunchPolicy {
 
     @MainActor
     static func makeApplication(environment: [String: String] = ProcessInfo.processInfo.environment) -> ApplicationCoordinator {
-        guard !presentsMainWindow(environment: environment) else { return ApplicationCoordinator() }
+        if presentsMainWindow(environment: environment) {
+            let failures = KeldinMigration.prepare()
+            let application = ApplicationCoordinator()
+            if !failures.isEmpty {
+                application.errorMessage = "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."
+                application.showError = true
+            }
+            return application
+        }
         // XCTest launches the app before individual test fixtures are created.
         let suite = "Keldin.TestHost.\(UUID().uuidString)"
         return ApplicationCoordinator(
@@ -28,7 +36,7 @@ private final class TestHostSecrets: SecretStoring {
 }
 
 @main
-struct PaperCreator: App {
+struct Keldin: App {
     @StateObject private var application = AppLaunchPolicy.makeApplication()
 
     init() {

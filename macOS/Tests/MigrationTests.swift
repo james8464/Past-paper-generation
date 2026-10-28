@@ -1,0 +1,78 @@
+// Exercise file and preference imports with isolated data, never a user's installed app.
+
+import Foundation
+import XCTest
+@testable import Keldin
+
+final class MigrationTests: XCTestCase {
+    func testImportPreservesCurrentPreferencesAndIgnoresUnknownKeys() {
+        let defaults = isolatedDefaults()
+        defaults.set("current", forKey: AppStorageKey.ollamaModel)
+        KeldinMigration.importPreferences([
+            AppStorageKey.ollamaModel: "previous",
+            AppStorageKey.selectedBoardID: "economics_aqa",
+            "interfaceLanguage": "fr",
+            "unrelated": "ignored",
+        ], into: defaults)
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "current")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.selectedBoardID), "economics_aqa")
+        XCTAssertEqual(defaults.string(forKey: "interfaceLanguage"), "fr")
+        XCTAssertNil(defaults.object(forKey: "unrelated"))
+    }
+
+    func testImportMergesHistoryWithoutReplacingCurrentRecords() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old/Job History")
+        let new = root.appendingPathComponent("new/Job History")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+        try Data("old".utf8).write(to: old.appendingPathComponent("conflict.json"))
+        try Data("new".utf8).write(to: new.appendingPathComponent("conflict.json"))
+        try Data("accepted".utf8).write(to: old.appendingPathComponent("accepted.json"))
+        try KeldinMigration.copyMissingTree(from: root.appendingPathComponent("old"), to: root.appendingPathComponent("new"))
+        XCTAssertEqual(try String(contentsOf: new.appendingPathComponent("conflict.json"), encoding: .utf8), "new")
+        XCTAssertEqual(try String(contentsOf: new.appendingPathComponent("accepted.json"), encoding: .utf8), "accepted")
+        XCTAssertEqual(try String(contentsOf: old.appendingPathComponent("conflict.json"), encoding: .utf8), "old")
+        XCTAssertThrowsError(try KeldinMigration.copyMissingTree(from: old, to: old.appendingPathComponent("recursive")))
+    }
+
+    func testEnvironmentAliasDoesNotOverrideAnExplicitEmptyValue() {
+        XCTAssertEqual(KeldinMigration.environmentValue("KELDIN_ROOT", environment: ["PAPER_CREATOR_ROOT": "/old"]), "/old")
+        XCTAssertEqual(KeldinMigration.environmentValue("KELDIN_ROOT", environment: ["KELDIN_ROOT": "", "PAPER_CREATOR_ROOT": "/old"]), "")
+    }
+
+    func testModelSnapshotLinksAreCopiedWithoutFollowingThem() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old")
+        let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try Data("weights".utf8).write(to: old.appendingPathComponent("blob"))
+        try FileManager.default.createSymbolicLink(atPath: old.appendingPathComponent("snapshot").path, withDestinationPath: "blob")
+        try KeldinMigration.copyMissingTree(from: old, to: new)
+        XCTAssertEqual(try FileManager.default.destinationOfSymbolicLink(atPath: new.appendingPathComponent("snapshot").path), "blob")
+        XCTAssertEqual(try String(contentsOf: new.appendingPathComponent("snapshot"), encoding: .utf8), "weights")
+    }
+
+
+    func testImportedHistoryPointsToCopiedArtifactsWithoutChangingTheirIdentity() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old")
+        let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+        let target = new.appendingPathComponent("paper.pdf")
+        try Data("saved PDF".utf8).write(to: target)
+        let file = GeneratedFile(role: "question_paper", url: old.appendingPathComponent("paper.pdf"))
+        let defaults = isolatedDefaults()
+        defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+        let relocated = KeldinMigration.relocatedArtifact(file, defaults: defaults)
+        XCTAssertEqual(relocated.id, file.id)
+        XCTAssertEqual(relocated.url, target)
+        XCTAssertEqual(relocated.createdAt, file.createdAt)
+        let external = GeneratedFile(role: "question_paper", url: root.appendingPathComponent("elsewhere.pdf"))
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(external, defaults: defaults), external)
+    }
+
+}

@@ -85,9 +85,9 @@
 - Modify: `Resources/generator-capability.schema.json`
 - Modify: `Backend/Core/generator_registry.py`
 - Modify: `Backend/Core/generation.py`
-- Modify: `macOS/PaperCreator/Domain/AppModels.swift`
-- Modify: `macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift`
-- Modify: `macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift`
+- Modify: `macOS/Keldin/Domain/AppModels.swift`
+- Modify: `macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift`
+- Modify: `macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift`
 - Modify: relevant Python and Swift tests.
 
 1. Add failing registry and Swift tests for a required `reference_demand_profile` declaration and decoded package audit.

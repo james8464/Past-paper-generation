@@ -288,4 +288,4 @@ def test_runtime_does_not_publish_when_printed_content_gate_fails(
     assert "file" not in events and "done" not in events
     assert events[-1] == "error"
     assert not list(output.glob("nsi-*")) and not list(output.glob(".nsi-*"))
-    assert list((output / ".papercreator-checkpoints").glob("*.json"))
+    assert list((output / ".keldin-checkpoints").glob("*.json"))

@@ -12,6 +12,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from Backend.Core.legacy_migration import output_directory
+
 
 class GenerationEvidenceError(ValueError):
     def __init__(self, message: str, *, details: dict[str, Any]) -> None:
@@ -72,9 +74,10 @@ def save_failure_diagnostic(
     payload = json.dumps(record, ensure_ascii=True, indent=2).encode()
     if len(payload) > 32_768:
         return None
-    directory = output_dir / ".papercreator-diagnostics"
+    directory = output_dir / ".keldin-diagnostics"
     descriptor = None
     try:
+        output_directory(output_dir, ".keldin-diagnostics")
         directory.mkdir(mode=0o700, exist_ok=True)
         descriptor = os.open(directory, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
         os.fchmod(descriptor, 0o700)

@@ -29,24 +29,24 @@ enum AppDefaults {
         return fileManager.homeDirectoryForCurrentUser
     }
 
-    // Keep the original folder and bundle names so existing installations find their files.
+    // Startup migration imports accessible files before this new working folder is used.
     static func appStoreWorkingFolder() -> URL {
         let fileManager = FileManager.default
         let home = fileManager.homeDirectoryForCurrentUser
         if home.path.contains("/Library/Containers/"), home.path.hasSuffix("/Data") {
             return home
                 .appendingPathComponent("Library/Application Support", isDirectory: true)
-                .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
+                .appendingPathComponent("Keldin/Generated papers", isDirectory: true)
         }
-        let bundleID = Bundle.main.bundleIdentifier ?? "com.jamesdurup.PaperCreator"
+        let bundleID = Bundle.main.bundleIdentifier ?? "com.jamesdurup.Keldin"
         return home
             .appendingPathComponent("Library/Containers", isDirectory: true)
             .appendingPathComponent(bundleID, isDirectory: true)
             .appendingPathComponent("Data/Library/Application Support", isDirectory: true)
-            .appendingPathComponent("Paper creator/Generated papers", isDirectory: true)
+            .appendingPathComponent("Keldin/Generated papers", isDirectory: true)
     }
 
-    // The model cache and job history keep the same storage root across app renames.
+    // Models and job history share the Keldin Application Support root.
     static func mlxCacheFolder() -> URL {
         let fileManager = FileManager.default
         let applicationSupport = fileManager.urls(
@@ -54,7 +54,7 @@ enum AppDefaults {
             in: .userDomainMask
         ).first ?? fileManager.homeDirectoryForCurrentUser
         return applicationSupport
-            .appendingPathComponent("Paper creator", isDirectory: true)
+            .appendingPathComponent("Keldin", isDirectory: true)
             .appendingPathComponent("MLX Models", isDirectory: true)
     }
 
@@ -65,7 +65,7 @@ enum AppDefaults {
             in: .userDomainMask
         ).first ?? fileManager.homeDirectoryForCurrentUser
         return applicationSupport
-            .appendingPathComponent("Paper creator", isDirectory: true)
+            .appendingPathComponent("Keldin", isDirectory: true)
             .appendingPathComponent("Job History", isDirectory: true)
     }
 

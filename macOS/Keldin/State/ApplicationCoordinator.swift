@@ -254,10 +254,29 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
+    func importPreviousAppData() {
+        guard !isRunning else { return }
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.message = String(localized: "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.")
+        guard panel.runModal() == .OK, let source = panel.url else { return }
+        let scoped = source.startAccessingSecurityScopedResource()
+        defer { if scoped { source.stopAccessingSecurityScopedResource() } }
+        do {
+            try KeldinMigration.importData(from: source, defaults: defaults)
+            restoreRecentDocuments()
+            status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
+        } catch {
+            setError(error.localizedDescription)
+        }
+    }
+
     var frenchReferencesFolder: URL {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
-        return support.appendingPathComponent("Paper Creator/French References", isDirectory: true)
+        return support.appendingPathComponent("Keldin/French References", isDirectory: true)
     }
 
     var hasFrenchReferences: Bool {
@@ -620,12 +639,12 @@ final class ApplicationCoordinator: ObservableObject {
         ]
 
         var backendEnvironment = [
-            "PAPER_CREATOR_GENERATED_ON": Self.generationDateFormatter.string(from: Date()),
-            "PAPER_CREATOR_JOB_ID": UUID().uuidString,
-            "PAPER_CREATOR_APP_VERSION": Bundle.main.object(
+            "KELDIN_GENERATED_ON": Self.generationDateFormatter.string(from: Date()),
+            "KELDIN_JOB_ID": UUID().uuidString,
+            "KELDIN_APP_VERSION": Bundle.main.object(
                 forInfoDictionaryKey: "CFBundleShortVersionString"
             ) as? String ?? "development",
-            "PAPER_CREATOR_APP_BUILD": Bundle.main.object(
+            "KELDIN_APP_BUILD": Bundle.main.object(
                 forInfoDictionaryKey: "CFBundleVersion"
             ) as? String ?? "development",
         ]
@@ -636,9 +655,9 @@ final class ApplicationCoordinator: ObservableObject {
         case .ollama, .apple:
             break
         case .openAI:
-            backendEnvironment["PAPER_CREATOR_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            backendEnvironment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
         case .anthropic:
-            backendEnvironment["PAPER_CREATOR_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
+            backendEnvironment["KELDIN_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
         }
 
         if dryRun {
@@ -1215,7 +1234,7 @@ final class ApplicationCoordinator: ObservableObject {
               ) else {
             return
         }
-        generatedFiles = latestDocumentVersions(documents)
+        generatedFiles = latestDocumentVersions(documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) })
     }
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {

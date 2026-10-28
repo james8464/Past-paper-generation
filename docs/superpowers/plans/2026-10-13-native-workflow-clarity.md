@@ -29,7 +29,7 @@
 
 ### Task 1: Focus the catalog sidebar
 
-**Files:** `macOS/PaperCreator/State/CatalogStore.swift`, `macOS/Tests/CoordinatorTests.swift`
+**Files:** `macOS/Keldin/State/CatalogStore.swift`, `macOS/Tests/CoordinatorTests.swift`
 
 **Interfaces:** `filteredSubjects: [CatalogSubject]` keeps its existing API. Empty search selects ready boards; non-empty search retains matching planned boards.
 
@@ -40,7 +40,7 @@
 
 ### Task 2: Focus French creation
 
-**Files:** `macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift`, `macOS/Tests/AccessibilityTests.swift`
+**Files:** `macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift`, `macOS/Tests/AccessibilityTests.swift`
 
 **Interfaces:** Keep `FrenchAssessmentWorkspace` entry point, `generateFrenchPaper(largePrint:)`, reference preparation/deletion, teacher review and localization.
 

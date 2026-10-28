@@ -466,7 +466,7 @@ def test_progress_event_contains_stable_item_units() -> None:
 def test_generation_passes_checkpoint_outside_transaction_staging(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     captured = capture_plugin_arguments(monkeypatch)
     run_generation(tmp_path)
-    assert captured["checkpoint_path"].parent == tmp_path / ".papercreator-checkpoints"
+    assert captured["checkpoint_path"].parent == tmp_path / ".keldin-checkpoints"
 ```
 
 - [x] **Step 2: Run backend tests and confirm missing structured-update behavior**
@@ -496,7 +496,7 @@ Keep the string callback adapter for legacy generators, but all migrated AI path
 
 - [x] **Step 4: Create and pass a stable checkpoint path**
 
-Derive the filename from subject, paper, seed, provider, and model using a SHA-256 suffix. Store it under `<output>/.papercreator-checkpoints/`. Add `checkpoint_path` to `_invoke_plugin` candidate arguments and to each generator entry-point signature. Each family constructs `AssessmentCheckpointStore` using its fully built blueprint hash, then passes it to `generate_unique_paper`.
+Derive the filename from subject, paper, seed, provider, and model using a SHA-256 suffix. Store it under `<output>/.keldin-checkpoints/`. Add `checkpoint_path` to `_invoke_plugin` candidate arguments and to each generator entry-point signature. Each family constructs `AssessmentCheckpointStore` using its fully built blueprint hash, then passes it to `generate_unique_paper`.
 
 - [x] **Step 5: Preserve successful checkpoints on cancellation and remove them after publication**
 

@@ -14,6 +14,7 @@ from Backend.Core.layout_master import (
     PageCountPolicy,
     conform_pdf_to_box_template,
 )
+from Backend.Core.legacy_migration import LEGACY_PUBLISHER
 from Backend.Core.ocr_scheme_content import (
     OCR_ECONOMICS_SCHEME_PAGINATION,
     verify_ocr_scheme_content,
@@ -271,7 +272,7 @@ def _edexcel_printed_credit(
             in {
                 "Keldin. Independent practice material. Not produced, endorsed or approved by any examination board.",
                 # Retained packages keep their original publisher label.
-                "Paper Creator. Independent practice material. Not produced, endorsed or approved by any examination board.",
+                f"{LEGACY_PUBLISHER}. Independent practice material. Not produced, endorsed or approved by any examination board.",
             }
         )
         if (

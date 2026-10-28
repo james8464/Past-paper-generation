@@ -58,7 +58,7 @@ Resources/
       <package>/             family blueprint, renderer, and CLI
       data/                  syllabus and derived calibration data
 
-macOS/PaperCreator/
+macOS/Keldin/
   Application/              app entry point, commands, configuration
   Components/               reusable native views and view styles
   Domain/                   value types and generation estimates
@@ -132,7 +132,7 @@ flushes it to disk, then promotes it with `os.replace`. Timeouts, renderer
 exceptions, and malformed outputs remove the temporary artifact and cannot
 replace a previously valid destination.
 
-The checkpoint lives in `.papercreator-checkpoints` beside the selected output
+The checkpoint lives in `.keldin-checkpoints` beside the selected output
 folder, outside the disposable staging directory. Its identity includes the
 blueprint hash, seed, provider, model and prompt version. Successful publication
 removes it; cancellation or failure leaves it resumable.

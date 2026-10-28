@@ -1068,7 +1068,7 @@ def test_public_v34_uses_each_family_and_records_selected_seed(
         assert package["identity"]["print_policy"] == "fr-nsi-v34-internal-review-v1"
         assert manifest["generation_origin"] == "application_owned"
         assert manifest["model_used"] is False
-        checkpoint = output / ".papercreator-checkpoints" / f"{args.assessment}-{seed}.json"
+        checkpoint = output / ".keldin-checkpoints" / f"{args.assessment}-{seed}.json"
         assert checkpoint.is_file()
         validate_whole_case_pdf(bundle / "sujet.pdf", package, correction=False)
         validate_whole_case_pdf(bundle / "corrige.pdf", package, correction=True)

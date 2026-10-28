@@ -333,8 +333,8 @@ def test_ocr_cover_template_does_not_overlay_body_page_furniture(tmp_path, modul
     renderer = importlib.import_module(module_name)
     path = tmp_path / "chrome.pdf"
     pdf = Canvas(str(path), pagesize=A4)
-    pdf.drawString(95, 761, "PAPER CREATOR")
+    pdf.drawString(95, 761, "KELDIN")
     renderer._chrome(pdf, SimpleNamespace(page=1), "H446/02", "Question paper")
     pdf.save()
     with fitz.open(path) as document:
-        assert document[0].get_text().strip() == "PAPER CREATOR"
+        assert document[0].get_text().strip() == "KELDIN"

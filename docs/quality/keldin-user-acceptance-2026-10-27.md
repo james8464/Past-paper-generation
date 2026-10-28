@@ -394,7 +394,7 @@ Current UK outputs use Keldin. Existing PDFs and historical French render contra
 
 The earlier production-identity launch failure above is retained as historical
 evidence. A subsequent Xcode build successfully used the existing personal
-development identity with the original `com.jamesdurup.PaperCreator` bundle ID.
+development identity used before the full Keldin bundle migration.
 The build wrapper's isolated home hid Xcode's signing configuration. Selecting
 the normal signing home through `HOME_PATH`, together with `SIGNING_IDENTITY`
 and `SIGNING_TEAM`, resolved certificate selection. The Makefile now forwards

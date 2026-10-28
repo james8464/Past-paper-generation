@@ -695,7 +695,7 @@ def _write_qualification_manifest(
         reviewer_identity_class="automation",
         tool_versions={
             "live-generation-matrix": "2",
-            "paper-creator-backend": str(backend.get("version", BACKEND_VERSION)),
+            "keldin-backend": str(backend.get("version", BACKEND_VERSION)),
         },
         created_at=datetime.now(UTC),
     )
@@ -782,7 +782,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--backend-executable",
         type=Path,
-        help="Use a packaged PaperCreatorBackend instead of bridge.py.",
+        help="Use a packaged KeldinBackend instead of bridge.py.",
     )
     parser.add_argument(
         "--only",

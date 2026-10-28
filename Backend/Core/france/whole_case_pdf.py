@@ -26,6 +26,7 @@ from Backend.Core.france.print_policy import (
     V34_REVIEW_NOTICE,
 )
 from Backend.Core.france.synthesized_pipeline import VERSION as SYNTHESIZED_VERSION
+from Backend.Core.legacy_migration import LEGACY_FRENCH_FOOTER
 
 
 def _compact(text: str) -> str:
@@ -187,7 +188,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         {V34_FOOTER}
         if print_policy == V34_PRINT_POLICY
         else {
-            "Paper Creator — entraînement non officiel — non relu",
+            LEGACY_FRENCH_FOOTER,
             "Keldin — entraînement non officiel — non relu",
         }
     )

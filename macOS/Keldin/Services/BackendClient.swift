@@ -24,11 +24,11 @@ enum BackendClientError: LocalizedError {
 
 final class BackendClient: @unchecked Sendable {
     private enum BackendFile {
-        static let bundledExecutable = "Contents/Resources/PaperCreatorBackend/PaperCreatorBackend"
+        static let bundledExecutable = "Contents/Resources/KeldinBackend/KeldinBackend"
         static let bridgeScript = "bridge.py"
         static let localPython = ".venv/bin/python"
         static let localPythonConfig = ".venv/pyvenv.cfg"
-        static let rootOverrideEnvironmentKey = "PAPER_CREATOR_ROOT"
+        static let rootOverrideEnvironmentKey = "KELDIN_ROOT"
         static let bundleSearchDepth = 8
         static let pythonName = "python3"
         static let fallbackPythonDirectories = ["/usr/bin", "/opt/homebrew/bin", "/usr/local/bin"]
@@ -189,7 +189,7 @@ final class BackendClient: @unchecked Sendable {
             return developmentRoot
         }
         let environment = ProcessInfo.processInfo.environment
-        if let override = environment[BackendFile.rootOverrideEnvironmentKey] {
+        if let override = KeldinMigration.environmentValue(BackendFile.rootOverrideEnvironmentKey, environment: environment) {
             let url = URL(fileURLWithPath: override)
             if hasBackendScript(in: url) {
                 return url

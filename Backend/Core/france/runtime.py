@@ -125,6 +125,7 @@ from Backend.Core.france.rendering import (
 )
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.generator_registry import assessment_framework
+from Backend.Core.legacy_migration import LEGACY_PUBLISHER, output_directory
 from Backend.Core.render_transaction import render_pdf_atomically
 
 
@@ -211,7 +212,7 @@ def validate_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -302,7 +303,7 @@ def validate_graph_tree_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -404,7 +405,7 @@ def validate_graph_resilience_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -526,7 +527,7 @@ def validate_graph_route_trace_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     flat = " ".join(" ".join(lines).split())
@@ -666,7 +667,7 @@ def _validate_route_selection_pdf(
             [
                 line.strip()
                 for line in page.get_text().splitlines()
-                if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+                if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
             ]
             for page in pdf
         ]
@@ -840,7 +841,7 @@ def validate_graph_two_outage_pdf(
                 line.strip()
                 for line in page.get_text().splitlines()
                 if line.strip()
-                and not line.startswith("Paper Creator —")
+                and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
                 and not line.startswith("Page : ")
             ]
             for page in pdf
@@ -1040,7 +1041,7 @@ def validate_database_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1120,7 +1121,7 @@ def validate_database_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1279,7 +1280,7 @@ def validate_database_reconciliation_pdf(
         for page in pages
         for line in page.splitlines()
         if line.strip()
-        and not line.startswith("Paper Creator —")
+        and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
         and not line.startswith("Page : ")
     ]
     flat = " ".join(lines)
@@ -1429,7 +1430,7 @@ def validate_database_audit_pdf(
         line.strip()
         for line in raw.splitlines()
         if line.strip()
-        and not line.startswith("Paper Creator —")
+        and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
         and not line.startswith("Page : ")
     ]
     flat = " ".join(raw.split())
@@ -1611,7 +1612,7 @@ def validate_network_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1687,7 +1688,7 @@ def validate_network_depth_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -1814,7 +1815,7 @@ def validate_network_reasoning_contract_pdf(
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and not line.startswith("Paper Creator —")
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —"))
             and not line.startswith("Page : ")
         ]
     text = "\n".join(lines)
@@ -2029,7 +2030,7 @@ def validate_network_incident_pdf(
             line.strip()
             for page in pages
             for line in page.splitlines()
-            if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+            if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
         ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
@@ -2159,7 +2160,7 @@ def validate_network_incident_timeline_pdf(
         line.strip()
         for page in pages
         for line in page.splitlines()
-        if line.strip() and not line.startswith(("Paper Creator —", "Page : "))
+        if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
     ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
@@ -2431,7 +2432,7 @@ def handle_generate_assessment(args) -> int:
             else args.seed
         )
         checkpoint = (
-            output / ".papercreator-checkpoints" / f"{definition.id}-{selected_seed}.json"
+            output_directory(output, ".keldin-checkpoints") / f"{definition.id}-{selected_seed}.json"
         )
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(

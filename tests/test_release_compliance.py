@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_sandbox_allows_the_apps_print_command():
     payload = plistlib.loads(
-        (ROOT / "macOS/PaperCreator/PaperCreator.entitlements").read_bytes()
+        (ROOT / "macOS/Keldin/Keldin.entitlements").read_bytes()
     )
     assert payload.get("com.apple.security.print") is True
 

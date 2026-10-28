@@ -404,7 +404,7 @@ def build_technical_dossier() -> Path:
     )
     screenshot = (
         ROOT
-        / "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
+        / "macOS/Keldin/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png"
     )
     picture = doc.add_picture(str(screenshot), width=Cm(16.2))
     picture.height = Cm(12.3)

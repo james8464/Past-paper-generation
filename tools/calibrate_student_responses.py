@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 from pathlib import Path
 
 from Backend.Core.calibration_store import (
@@ -13,6 +12,7 @@ from Backend.Core.calibration_store import (
     CalibrationStore,
     ConsentRecord,
 )
+from Backend.Core.legacy_migration import environment_value
 from Backend.Core.psychometrics import (
     calibrate_responses,
     load_responses,
@@ -49,7 +49,7 @@ def main() -> int:
     parser.add_argument(
         "--key-file",
         type=Path,
-        help="Fernet key file; otherwise PAPER_CREATOR_CALIBRATION_KEY is used.",
+        help="Fernet key file; otherwise KELDIN_CALIBRATION_KEY is used.",
     )
     parser.add_argument("--metadata", type=Path)
     parser.add_argument("--consents", type=Path)
@@ -168,10 +168,10 @@ def _load_key(
 ) -> bytes:
     if key_file:
         return key_file.read_bytes().strip()
-    value = os.environ.get("PAPER_CREATOR_CALIBRATION_KEY", "").strip()
+    value = environment_value("KELDIN_CALIBRATION_KEY", "").strip()
     if not value:
         parser.error(
-            "secure storage needs --key-file or PAPER_CREATOR_CALIBRATION_KEY; "
+            "secure storage needs --key-file or KELDIN_CALIBRATION_KEY; "
             "the macOS app should keep this key in Keychain"
         )
     return value.encode("ascii")
