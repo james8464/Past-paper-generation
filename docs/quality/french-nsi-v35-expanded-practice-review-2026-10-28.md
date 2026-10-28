@@ -62,11 +62,11 @@ acceptance run.
 
 ## Source and PDF acceptance
 
-Final source commit at acceptance: `e558a6f`. Implementation SHA-256:
-`5e095e9e696cf63348fe5d6c2e3165147a2177555014950b99c48b10d9c27eb0`.
+Final source commit at acceptance: `1aa4953`. Implementation SHA-256:
+`6264f6ffb5dab61c9f055e15e3a3214d5150037e5a8c6e3d7e68c7f8a32ceda6`.
 Retained evidence root: `tmp/pdfs/french-v35-expanded-20261028/`.
 
-`run-2/summary.json` records every package, checkpoint and artifact hash from
+`run-3/summary.json` records every package, checkpoint and artifact hash from
 five normal and five enlarged public source generations using the actual local
 French reference index. Every package and PDF passed complete ordered-content,
 A4, footer, nonempty-body and source-integrity checks. Repeated preferred seed
@@ -81,6 +81,10 @@ run 1. Page counts did not change. Exact inheritance and observations are in
 `run-1/visual-review.json`, `run-2/wording-page-comparison.json` and
 `run-2/visual-review.json`.
 
+The cross-folder follow-up changed selection and bookkeeping, not printed
+exercises. All 341 run-3 pages are full-page pixel-identical at 100 dpi to the
+reviewed run-2 pages. `run-3/full-page-inheritance.json` records this comparison.
+
 No clipping, overlap, missing table, code, answer or body-empty page was found.
 Sparse tails remain, particularly where an enlarged code/question group is kept
 together. No padding or font reduction was added. Enlarged graph labels use the
@@ -88,8 +92,10 @@ together. No padding or font reduction was added. Enlarged graph labels use the
 arrow geometry; negative tests reject reversed or missing arrows that text-only
 checks had accepted.
 
-`frozen-run-1/summary.json` records five signed frozen-backend normal generations
-and sixth-request refusal. Every PDF is full-page pixel-identical at 100 dpi to
+`frozen-run-2/summary.json` records five signed frozen-backend normal generations
+in five separate output roots, using cumulative saved-family exclusions. A sixth
+request in another fresh root refuses without changing any existing file. Every
+PDF is full-page pixel-identical at 100 dpi to
 the corresponding reviewed source output. Frozen execution hashes the helper
 executable; source execution hashes Python sources. Both identities were kept
 unchanged. Cross-runtime checks independently rebuild content and compare all
@@ -120,10 +126,34 @@ failed on that label and passes after resolving it in the selected language.
 The original System language and Downloads output preferences were restored;
 the candidate was closed. No history, documents or teacher records were erased.
 
+A final Release check found that folder-local screening alone allowed a saved
+family to repeat after changing the destination. The native app now derives
+family exclusions from completed or missing-artifact V34/V35 records, persists
+stable family identifiers separately from the configurable history limit, and
+passes exclusions into backend selection. Failed jobs, previews and unrelated
+assessments are not counted. Unknown saved identifiers or missing seeds fail
+closed. Existing local text screening remains an independent additional gate.
+
+Red/green tests cover new output folders, V34/V35 modulo mapping, missing files,
+corrupt saved usage and usage retained after removing isolated test history rows.
+No user history was removed. Native computer control then confirmed English and
+French refusal with Downloads selected after all five families had been created
+elsewhere. The corrected French status reads « Erreur ». All 67 checked history
+and paper files stayed unchanged. System language and Downloads were restored.
+
+The restricted Store build also generated a remaining family, seed 1781703662,
+without repeating its prior family at seed 1473858048. Both exported packages,
+all artifact hashes and complete PDF contents passed checks. Their 55 pages are
+covered by 52 full-page raster matches and three freshly inspected changed pages.
+The earlier Store subject opened a nine-page native print preview, cancelled
+without printing. Original Store preferences were left unchanged and both
+candidate apps were closed. Evidence is in `v35-store-export-review.json` and
+`cross-folder-native-files-unchanged.json` under the validation log directory.
+
 ## Verification status
 
-Final fixed-source local suite: 3,838 passed, two skipped in 507.73 seconds.
-Final native unit suite: 100 passed. Focused tests
+Final fixed-source local suite: 3,847 passed, two skipped in 514.20 seconds.
+Final native unit suite: 101 passed. Focused tests
 after those changes: 93 passed. Logs are under `tmp/final-validation-20261028/`.
 Candidate Debug compilation passed. Packaged and native acceptance is scoped
 to the recorded tests, not a full interaction-coverage or HIG certification.

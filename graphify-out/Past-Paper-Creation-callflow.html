@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 9884 nodes, 28212 edges, 370 communities. Commit: 42046ee</p>
+<p class="subtitle">Generated from graphify knowledge graph: 9884 nodes, 28212 edges, 374 communities. Commit: 1aa4953</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -90,25 +90,25 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>109 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1719 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1867 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>1059 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>1025 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>90 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
-    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>42 nodes</small>")
+    CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>41 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
-    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>139 nodes</small>")
+    INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>141 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
     SERVE_API_35EC8E86("Serving API<br/><small>106 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>5490 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>5352 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     DOCUMENT_DSL_INIT_PY_34020C9A("document_dsl/__init__.py<br/><small>148 nodes</small>")
     class DOCUMENT_DSL_INIT_PY_34020C9A module;
-    STRING_ECB25204("String<br/><small>118 nodes</small>")
+    STRING_ECB25204("String<br/><small>117 nodes</small>")
     class STRING_ECB25204 module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>56 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
@@ -116,20 +116,20 @@ flowchart LR
     class CODINGKEYS_DFEF23_FF5CBE38 module;
     INDEPENDENT_SOLVER_PY_157AA9CD("independent_solver.py<br/><small>36 nodes</small>")
     class INDEPENDENT_SOLVER_PY_157AA9CD module;
-    OTHER_D0941E68("Other<br/><small>720 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>744 nodes</small>")
     class OTHER_D0941E68 module;
-    BUILD_GRAPH_321CBB04 -->|calls x532| TESTS_FIXTURES_B84B1DCC
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x528| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x477| ANALYSIS_CLUSTERING_C79796DA
-    TESTS_FIXTURES_B84B1DCC -->|imports x434| BUILD_GRAPH_321CBB04
-    STRING_ECB25204 -->|references x89| TESTS_FIXTURES_B84B1DCC
-    EXTRACT_PIPELINE_5F350230 -->|calls x66| TESTS_FIXTURES_B84B1DCC
+    BUILD_GRAPH_321CBB04 -->|calls x704| TESTS_FIXTURES_B84B1DCC
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x536| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x456| ANALYSIS_CLUSTERING_C79796DA
+    TESTS_FIXTURES_B84B1DCC -->|imports x431| BUILD_GRAPH_321CBB04
+    STRING_ECB25204 -->|references x77| TESTS_FIXTURES_B84B1DCC
     INDEPENDENT_SOLVER_PY_157AA9CD -->|imports x56| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|references x47| INGEST_CACHE_UPDATE_FF457338
-    EXTRACT_PIPELINE_5F350230 -->|imports x32| BUILD_GRAPH_321CBB04
-    INGEST_CACHE_UPDATE_FF457338 -->|references x28| TESTS_FIXTURES_B84B1DCC
+    EXTRACT_PIPELINE_5F350230 -->|calls x56| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|references x48| INGEST_CACHE_UPDATE_FF457338
+    EXTRACT_PIPELINE_5F350230 -->|imports x42| BUILD_GRAPH_321CBB04
+    TESTS_FIXTURES_B84B1DCC -->|imports x29| DOCUMENT_DSL_INIT_PY_34020C9A
     TESTS_FIXTURES_B84B1DCC -->|calls x27| INDEPENDENT_SOLVER_PY_157AA9CD
-    TESTS_FIXTURES_B84B1DCC -->|calls x27| CLI_SKILLS_9964CBB8
+    OTHER_D0941E68 -->|references x26| TESTS_FIXTURES_B84B1DCC
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,19 +146,19 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>109</td><td><code>81, 44, 299, 309, 158, 198, 296, 344</code></td></tr><tr><td>Graph Build</td><td>1719</td><td><code>13, 12, 288, 25, 60, 114, 10, 40, 48, 73, 37, 98, 127, 21, 93, 104, 101, 109, 116, 354, 118, 129, 360, 78, 175, 176, 115, 122, 136, 66, 139, 142, 143, 149, 151, 152, 153, 160, 178, 111, 154, 131, 161, 163, 166, 168, 274, 124, 174, 188, 141, 180, 181, 182, 187, 189, 217, 310, 192, 194, 196, 331, 366, 266, 297, 333, 208, 278, 280, 387, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>1059</td><td><code>337, 83, 6, 16, 298, 20, 8, 26, 34, 58, 123, 100, 77, 68, 107, 165, 319, 51, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>90</td><td><code>261, 316, 347, 183, 199</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>42</td><td><code>55, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>139</td><td><code>49</code></td></tr><tr><td>Serving API</td><td>106</td><td><code>102, 35, 263, 265, 332, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>5490</td><td><code>0, 1, 67, 14, 5, 29, 3, 305, 31, 125, 7, 80, 381, 185, 70, 15, 173, 30, 33, 52, 204, 9, 120, 61, 201, 257, 150, 22, 28, 132, 27, 11, 18, 53, 157, 88, 292, 82, 17, 38, 79, 41, 62, 24, 43, 50, 36, 74, 113, 148, 19, 95, 126, 171, 64, 302, 45, 138, 128, 133, 42, 54, 2, 65, 103, 99, 206, 251, 75, 89, 155, 87, 373, 84, 85, 169, 106, 162, 279, 32, 94, 134, 135, 156, 159, 352, 92, 361, 56, 59, 167, 177, 23, 369, 147, 91, 105, 117, 119, 146, 343, 329, 110, 137, 289, 364, 130, 144, 315, 340, 362, 57, 348, 76, 324, 86, 170, 325, 69, 323, 346, 375, 260, 308, 374, 286, 291, 301, 382, 191, 203, 293, 311, 356, 380, 96, 370</code></td></tr><tr><td>document_dsl/__init__.py</td><td>148</td><td><code>63</code></td></tr><tr><td>String</td><td>118</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>56</td><td><code>46</code></td></tr><tr><td>CodingKeys</td><td>44</td><td><code>97</code></td></tr><tr><td>independent_solver.py</td><td>36</td><td><code>39</code></td></tr><tr><td>Other</td><td>720</td><td><code>108, 90, 112, 164, 363, 371, 172, 214, 193, 195, 197, 205, 244, 256, 215, 179, 190, 220, 246, 247, 335, 365, 290, 47, 72, 250, 252, 253, 254, 255, 140, 200, 249, 259, 262, 294, 295, 300, 313, 322, 328, 334, 357, 248, 303, 304, 330, 339, 342, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 353, 186, 267, 314, 355, 207, 276, 209, 210, 211, 202, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 336, 345, 358, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>109</td><td><code>81, 44, 299, 309, 158, 198, 296, 344</code></td></tr><tr><td>Graph Build</td><td>1867</td><td><code>31, 288, 12, 13, 10, 25, 60, 114, 40, 48, 73, 37, 98, 127, 21, 93, 104, 101, 109, 116, 354, 118, 129, 360, 78, 176, 115, 122, 136, 66, 139, 142, 143, 119, 149, 151, 152, 153, 160, 178, 187, 111, 154, 131, 161, 163, 166, 168, 175, 274, 124, 174, 188, 141, 180, 181, 182, 189, 217, 310, 341, 192, 194, 196, 366, 266, 297, 333, 208, 278, 280, 387, 184, 212, 213, 216, 218, 219, 281, 282</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>1025</td><td><code>337, 83, 6, 16, 298, 20, 8, 26, 34, 58, 123, 100, 77, 68, 51, 165, 319, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>90</td><td><code>261, 316, 347, 183, 199</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>41</td><td><code>55, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>141</td><td><code>49</code></td></tr><tr><td>Serving API</td><td>106</td><td><code>102, 35, 263, 265, 332, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>5352</td><td><code>0, 1, 14, 67, 5, 29, 3, 201, 125, 7, 80, 70, 15, 305, 173, 30, 33, 52, 204, 9, 120, 61, 150, 22, 27, 185, 28, 132, 257, 88, 11, 18, 53, 157, 79, 107, 292, 82, 17, 38, 41, 62, 24, 36, 43, 50, 74, 113, 148, 126, 19, 95, 171, 64, 302, 45, 138, 133, 42, 54, 2, 65, 103, 99, 206, 251, 75, 89, 155, 87, 373, 84, 85, 169, 106, 162, 279, 32, 94, 134, 135, 156, 159, 23, 352, 92, 361, 381, 56, 59, 167, 177, 327, 369, 147, 91, 105, 117, 146, 343, 329, 110, 137, 289, 364, 130, 144, 315, 340, 362, 57, 348, 76, 324, 86, 170, 325, 331, 69, 323, 346, 375, 260, 308, 374, 286, 291, 301, 382, 191, 203, 293, 311, 349, 356, 380, 96, 370</code></td></tr><tr><td>document_dsl/__init__.py</td><td>148</td><td><code>63</code></td></tr><tr><td>String</td><td>117</td><td><code>4</code></td></tr><tr><td>CodingKeys</td><td>56</td><td><code>46</code></td></tr><tr><td>CodingKeys</td><td>44</td><td><code>97</code></td></tr><tr><td>independent_solver.py</td><td>36</td><td><code>39</code></td></tr><tr><td>Other</td><td>744</td><td><code>108, 90, 112, 164, 363, 371, 172, 214, 128, 193, 195, 197, 205, 244, 256, 215, 179, 190, 220, 246, 247, 335, 338, 365, 290, 47, 72, 250, 252, 253, 254, 255, 140, 200, 249, 259, 262, 294, 295, 300, 313, 322, 328, 334, 357, 248, 303, 304, 330, 339, 342, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 353, 186, 267, 314, 355, 207, 276, 209, 210, 211, 202, 221, 222, 223, 224, 225, 227, 228, 229, 230, 231, 232, 233, 283, 284, 285, 336, 345, 358, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243</code></td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Core Flow</h4>
-    <div class="arrow-chain">Security &amp; Global Graph -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Ingestion &amp; Updates -&gt; String -&gt; CodingKeys</div>
+    <div class="arrow-chain">Security &amp; Global Graph -&gt; Extraction Pipeline -&gt; Tests &amp; Fixtures -&gt; Analysis &amp; Clustering -&gt; Ingestion &amp; Updates -&gt; String -&gt; Other</div>
   </div>
 </div>
 <div class="grid">
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>9884 nodes · 28212 edges · 370 communities (335 shown, 35 thin omitted)</li>
+      <li>9884 nodes · 28212 edges · 374 communities (339 shown, 35 thin omitted)</li>
       <li>Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 1415 edges (avg confidence: 0.63)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `NSIExercise` - 263 edges</li>
@@ -526,36 +526,36 @@ flowchart LR
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around resources, backend, demand, reference, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1719 nodes and 3097 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around resources, backend, demand, reference, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1867 nodes and 3630 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (1719 nodes, 3097 edges)
-    subgraph build_graph_Backend_Core_education_context_py_8aba844e["Backend/Core/education_context.py"]
-        backend_core_education_context_points_cfad02d8("points()<br/><small>Backend/Core/education_context.py</small>")
-        backend_core_education_context_educationcontext_11fa9e93("EducationContext<br/><small>Backend/Core/education_context.py</small>")
-        backend_core_education_context_educationcontext_12478567("__post_init__()<br/><small>Backend/Core/education_context.py</small>")
-        backend_core_education_context_educationcontext_0f59185b("to_dict()<br/><small>Backend/Core/education_context.py</small>")
-        backend_core_education_context_assessmentdefinit_1c097995("validate_credit()<br/><small>Backend/Core/education_context.py</small>")
-    end
+    %% Section: Graph Build (1867 nodes, 3630 edges)
     subgraph build_graph_Core_france_nsi_py_cf5a5e23["Core/france/nsi.py"]
+        backend_core_france_nsi_nsiexercise_54ea3112("NSIExercise<br/><small>Core/france/nsi.py</small>")
         backend_core_france_nsi_credit_valid_points_e01b2ff3("valid_points()<br/><small>Core/france/nsi.py</small>")
         backend_core_france_nsi_nsiexercise_credit_57b719f3("credit()<br/><small>Core/france/nsi.py</small>")
         backend_core_france_nsi_nsiexercise_valid_target_a224c7d2("valid_target_points()<br/><small>Core/france/nsi.py</small>")
         backend_core_france_nsi_nsiexercise_validate_str_29c28265("validate_structure()<br/><small>Core/france/nsi.py</small>")
         backend_core_france_nsi_nsiquestion_credit_match_79dfe94a("credit_matches()<br/><small>Core/france/nsi.py</small>")
     end
+    subgraph build_graph_Backend_Core_education_context_py_8aba844e["Backend/Core/education_context.py"]
+        backend_core_education_context_educationcontext_11fa9e93("EducationContext<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_educationcontext_12478567("__post_init__()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_educationcontext_0f59185b("to_dict()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_points_cfad02d8("points()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_assessmentdefinit_1c097995("validate_credit()<br/><small>Backend/Core/education_context.py</small>")
+    end
     subgraph build_graph_Core_france_pipeline_py_7d0e119e["Core/france/pipeline.py"]
         backend_core_france_pipeline_assemble_planned_qu_22f42354("assemble_planned_question()<br/><small>Core/france/pipeline.py</small>")
         backend_core_france_pipeline_check_exercise_plan_8a18b336("_check_exercise_plan()<br/><small>Core/france/pipeline.py</small>")
-        backend_core_france_pipeline_invalid_marking_all_ceccd416("invalid marking allocation()<br/><small>Core/france/pipeline.py</small>")
     end
+    backend_core_france_database_depth_authoring_has_139e4966("_hash()<br/><small>Core/france/database_depth_authoring.py</small>")
+    backend_core_france_database_depth_contract_buil_8d28097a("database depth contract()<br/><small>Core/france/database_depth_contract.py</small>")
     backend_core_france_graph_resilience_contract_bu_0e61cd63("graph resilience contract()<br/><small>Core/france/graph_resilience_contract.py</small>")
-    backend_core_france_graph_route_trace_contract_b_71465e0d("route trace contract()<br/><small>Core/france/graph_route_trace_contract.py</small>")
     backend_core_france_network_incident_contract_bu_f38f220c("network incident contract()<br/><small>Core/france/network_incident_contract.py</small>")
-    backend_core_france_network_incident_timeline_co_6844d95c("incident timeline contract()<br/><small>Core/france/network_incident_timeline_contract.py</small>")
-    backend_core_subjects_sql_contracts_sqlproblem_550d5cb0("_SQLProblem<br/><small>Core/subjects/sql_contracts.py</small>")
+    backend_core_france_rendering_render_assessment_80618396("render_assessment()<br/><small>Core/france/rendering.py</small>")
     backend_core_education_context_educationcontext_11fa9e93 -->|method| backend_core_education_context_educationcontext_12478567
     backend_core_education_context_educationcontext_11fa9e93 -->|method| backend_core_education_context_educationcontext_0f59185b
     backend_core_education_context_points_cfad02d8 -->|calls| backend_core_education_context_assessmentdefinit_1c097995
@@ -566,27 +566,28 @@ flowchart LR
     backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_nsi_nsiquestion_credit_match_79dfe94a
     backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_assemble_planned_qu_22f42354
     backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_check_exercise_plan_8a18b336
-    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_invalid_marking_all_ceccd416
-    backend_core_france_pipeline_invalid_marking_all_ceccd416 -->|calls| backend_core_france_pipeline_assemble_planned_qu_22f42354
-    %% Omitted for readability: 1701 nodes, 0 edges
-    class backend_core_education_context_points_cfad02d8 function;
-    class backend_core_education_context_educationcontext_11fa9e93 klass;
-    class backend_core_education_context_educationcontext_12478567 function;
-    class backend_core_education_context_educationcontext_0f59185b function;
-    class backend_core_education_context_assessmentdefinit_1c097995 function;
+    backend_core_france_nsi_nsiexercise_54ea3112 -->|method| backend_core_france_nsi_nsiexercise_credit_57b719f3
+    backend_core_france_nsi_nsiexercise_54ea3112 -->|method| backend_core_france_nsi_nsiexercise_valid_target_a224c7d2
+    backend_core_france_nsi_nsiexercise_54ea3112 -->|method| backend_core_france_nsi_nsiexercise_validate_str_29c28265
+    %% Omitted for readability: 1849 nodes, 0 edges
+    class backend_core_france_nsi_nsiexercise_54ea3112 klass;
     class backend_core_france_nsi_credit_valid_points_e01b2ff3 function;
     class backend_core_france_nsi_nsiexercise_credit_57b719f3 function;
     class backend_core_france_nsi_nsiexercise_valid_target_a224c7d2 function;
     class backend_core_france_nsi_nsiexercise_validate_str_29c28265 function;
     class backend_core_france_nsi_nsiquestion_credit_match_79dfe94a function;
+    class backend_core_education_context_educationcontext_11fa9e93 klass;
+    class backend_core_education_context_educationcontext_12478567 function;
+    class backend_core_education_context_educationcontext_0f59185b function;
+    class backend_core_education_context_points_cfad02d8 function;
+    class backend_core_education_context_assessmentdefinit_1c097995 function;
     class backend_core_france_pipeline_assemble_planned_qu_22f42354 async;
     class backend_core_france_pipeline_check_exercise_plan_8a18b336 function;
-    class backend_core_france_pipeline_invalid_marking_all_ceccd416 function;
+    class backend_core_france_database_depth_authoring_has_139e4966 function;
+    class backend_core_france_database_depth_contract_buil_8d28097a function;
     class backend_core_france_graph_resilience_contract_bu_0e61cd63 function;
-    class backend_core_france_graph_route_trace_contract_b_71465e0d api;
     class backend_core_france_network_incident_contract_bu_f38f220c function;
-    class backend_core_france_network_incident_timeline_co_6844d95c function;
-    class backend_core_subjects_sql_contracts_sqlproblem_550d5cb0 function;
+    class backend_core_france_rendering_render_assessment_80618396 async;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -610,243 +611,243 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>education_context.py</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>Decimal</code><br><code>expanded_pipeline.py</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>extended_pipeline.py</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+4 more</td>
-  <td>Module file in Backend/Core/education_context.py.</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_save()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_validate_failures()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br>+9 more</td>
+  <td>Module file in Core/france/database_audit_authoring.py.</td>
 </tr>
 <tr>
   <td>2</td>
-  <td><code>EducationContext</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>__post_init__()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br><code>EvidenceGap</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>InvalidQuestionMarking</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+4 more</td>
-  <td>EducationContext node in Backend/Core/education_context.py.</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>audit catalogue digest()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br>+1 more</td>
+  <td>_identity() node in Core/france/database_audit_authoring.py.</td>
 </tr>
 <tr>
   <td>3</td>
-  <td><code>.__post_init__()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>database_audit_selection_prompt()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>EducationContext</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.__post_init__() node in Backend/Core/education_context.py.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>audit selection schema()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br>+1 more</td>
+  <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
   <td>4</td>
-  <td><code>.to_dict()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>replay_database_audit_selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>EducationContext</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.to_dict() node in Backend/Core/education_context.py.</td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>audit selection prompt()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_validate_failures()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>database audit candidate()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br>+3 more</td>
+  <td>replay_database_audit_selection() node in Core/france/database_audit_authoring.py.</td>
 </tr>
 <tr>
   <td>5</td>
-  <td><code>points()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>author_database_audit_selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>assemble_planned_question()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>credit()</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br>+10 more</td>
-  <td>points() node in Backend/Core/education_context.py.</td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>audit selection prompt()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_save()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_validate_failures()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br>+3 more</td>
+  <td>author_database_audit_selection() node in Core/france/database_audit_authoring.py.</td>
 </tr>
 <tr>
   <td>6</td>
-  <td><code>Decimal</code><br><small style="color:var(--muted)"></small></td>
+  <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>education_context.py</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Decimal node in project.</td>
+  <td>Path node in project.</td>
 </tr>
 <tr>
   <td>7</td>
-  <td><code>CurriculumVersion</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
+  <td><code>Hash-bound finite V21 incident-audit wording selection and replay.</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>CurriculumVersion node in Backend/Core/education_context.py.</td>
+  <td>Design note for Hash-bound finite V21 incident-audit wording selection and replay..</td>
 </tr>
 <tr>
   <td>8</td>
-  <td><code>AssessmentDefinition</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>validate_context()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br><code>validate_credit()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td>AssessmentDefinition node in Backend/Core/education_context.py.</td>
+  <td><code>database_audit_contract.py</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>database_audit_prose.py</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>provider.py</code><br><small style="color:var(--muted)">Core/france/provider.py</small><br>+2 more</td>
+  <td>Module file in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>9</td>
-  <td><code>.validate_context()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>_tables()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AssessmentDefinition</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.validate_context() node in Backend/Core/education_context.py.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>from_dict()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td>_tables() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>10</td>
-  <td><code>.validate_credit()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>_count()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>AssessmentDefinition</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br><code>points()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.validate_credit() node in Backend/Core/education_context.py.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_expected()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small><br><code>_parse_select()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>_count() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>11</td>
-  <td><code>Education-system identity, independent of interface locale and UK board models.</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
+  <td><code>Connection</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Design note for Education-system identity, independent of interface locale and UK board models..</td>
+  <td>Connection node in project.</td>
 </tr>
 <tr>
   <td>12</td>
-  <td><code>Read exact, non-negative decimal credit from a JSON string.</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Read exact, non-negative decimal credit from a JSON string..</td>
+  <td><code>_expected()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_count()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><code>from_dict()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td>_expected() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>13</td>
-  <td><code>expanded_pipeline.py</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td><code>education_context.py</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_references()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br>+10 more</td>
-  <td>Module file in Core/france/expanded_pipeline.py.</td>
+  <td><code>DatabaseAuditContract</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>ApplicationOwnedFrenchClient</code><br><small style="color:var(--muted)">Core/france/provider.py</small><br><code>database_audit_prose.py</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>digest()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small><br>+4 more</td>
+  <td>DatabaseAuditContract node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>14</td>
-  <td><code>_family_seeds()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
+  <td><code>.to_dict()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_source()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>choose_fresh_seed()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>each family once()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br>+1 more</td>
-  <td>_family_seeds() node in Core/france/expanded_pipeline.py.</td>
+  <td><code>DatabaseAuditContract</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.to_dict() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>15</td>
-  <td><code>_source()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
+  <td><code>.digest()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_family_seeds()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>choose_fresh_seed()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br>+2 more</td>
-  <td>_source() node in Core/france/expanded_pipeline.py.</td>
+  <td><code>DatabaseAuditContract</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.digest() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>16</td>
-  <td><code>_task()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
+  <td><code>.from_dict()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td>_task() node in Core/france/expanded_pipeline.py.</td>
+  <td><code>_expected()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small><br><code>_tables()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><code>response_policy()</code><br><small style="color:var(--muted)">Core/france/provider.py</small><br><code>verify_contract()</code><br><small style="color:var(--muted)">Core/france/verification.py</small></td>
+  <td>.from_dict() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
   <td>17</td>
-  <td><code>choose_fresh_seed()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_family_seeds()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_source()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>_validate_history()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>exclusions are rejected()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>FamilyCatalogueExhausted</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+7 more</td>
-  <td>choose_fresh_seed() node in Core/france/expanded_pipeline.py.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td>_catalogue() node in Core/france/expanded_pipeline.py.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_source()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_task()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_references()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br>+4 more</td>
-  <td>_build() node in Core/france/expanded_pipeline.py.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>validate()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>complete packages replay()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>exercise are rejected()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>fields remain refused()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br>+4 more</td>
-  <td>validate() node in Core/france/expanded_pipeline.py.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_source()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_task()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br>+1 more</td>
-  <td><code>_validate_history()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>atomic_json()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br>+6 more</td>
-  <td>generate() node in Core/france/expanded_pipeline.py.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Five whole-paper families with immutable V34 source reuse. Reconstruction…</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
+  <td><code>Immutable, app-owned incident-audit facts for French NSI V21. The V3 source is…</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
-  <td>Design note for Five whole-paper families with immutable V34 source reuse. Reconstruction….</td>
+  <td>Design note for Immutable, app-owned incident-audit facts for French NSI V21. The V3 source is….</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Canonical JSON, including deterministic, independently checked results.</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Canonical JSON, including deterministic, independently checked results..</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>database_audit_prose.py</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database_audit_contract.py</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small><br><code>DatabaseAuditContract</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
+  <td><code>nsi.py</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+3 more</td>
+  <td>Module file in Core/france/database_audit_prose.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>database_audit_catalogue_digest()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td>database_audit_catalogue_digest() node in Core/france/database_audit_prose.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>database_audit_selection_schema()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>audit selection prompt()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>provider.py</code><br><small style="color:var(--muted)">Core/france/provider.py</small><br><code>reference and run()</code><br><small style="color:var(--muted)">tests/test_french_database_audit_authoring.py</small><br>+2 more</td>
+  <td>database_audit_selection_schema() node in Core/france/database_audit_prose.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>validate_database_audit_selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>audit selection schema()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br>+1 more</td>
+  <td><code>database audit candidate()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td>validate_database_audit_selection() node in Core/france/database_audit_prose.py.</td>
 </tr>
 <tr>
   <td>23</td>
-  <td><code>extended_pipeline.py</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td><code>education_context.py</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br><code>expanded_pipeline.py</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_references()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br>+9 more</td>
-  <td>Module file in Core/france/extended_pipeline.py.</td>
+  <td><code>database_audit_working_materials()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>database audit candidate()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>database audit pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small><br><code>runtime.py</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
+  <td>database_audit_working_materials() node in Core/france/database_audit_prose.py.</td>
 </tr>
 <tr>
   <td>24</td>
-  <td><code>FamilyCatalogueExhausted</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>choose_fresh_seed()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small></td>
-  <td><code>SimilarityRejected</code><br><small style="color:var(--muted)">Core/france/originality.py</small></td>
-  <td>FamilyCatalogueExhausted node in Core/france/extended_pipeline.py.</td>
+  <td><code>_answer()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>database audit candidate()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td>_answer() node in Core/france/database_audit_prose.py.</td>
 </tr>
 <tr>
   <td>25</td>
-  <td><code>ValueError</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_validate_history()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+1 more</td>
-  <td>ValueError node in project.</td>
+  <td><code>render_database_audit_candidate()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_answer()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>audit working materials()</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>render_database_audit_candidate() node in Core/france/database_audit_prose.py.</td>
 </tr>
 <tr>
   <td>26</td>
-  <td><code>_validate_history()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>choose_fresh_seed()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br>+1 more</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td>_validate_history() node in Core/france/extended_pipeline.py.</td>
+  <td><code>Finite French questions and working surfaces for the V21 incident audit.</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for Finite French questions and working surfaces for the V21 incident audit..</td>
 </tr>
 <tr>
   <td>27</td>
-  <td><code>_task()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>generate()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td>_task() node in Core/france/extended_pipeline.py.</td>
+  <td><code>database_depth_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>database_audit_authoring.py</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small></td>
+  <td><code>database depth candidate()</code><br><small style="color:var(--muted)">Core/france/database_depth_prose.py</small><br><code>database depth selection()</code><br><small style="color:var(--muted)">Core/france/database_depth_prose.py</small><br><code>database_depth_contract.py</code><br><small style="color:var(--muted)">Core/france/database_depth_contract.py</small><br>+9 more</td>
+  <td>Module file in Core/france/database_depth_authoring.py.</td>
 </tr>
 <tr>
   <td>28</td>
-  <td><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
-  <td>_catalogue() node in Core/france/extended_pipeline.py.</td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>audit selection prompt()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br><code>database audit selection()</code><br><small style="color:var(--muted)">Core/france/database_audit_authoring.py</small><br>+2 more</td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/graph_route_trace_authoring.py</small><br><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>_identity()</code><br><small style="color:var(--muted)">Core/france/graph_resilience_authoring.py</small><br>+22 more</td>
+  <td>Caches analysis results or computes cache keys.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
+  <td><code>_identity()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_task()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_validate_history()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+1 more</td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_references()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br>+3 more</td>
-  <td>_build() node in Core/france/extended_pipeline.py.</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
+  <td><code>database depth selection()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>database depth selection()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
+  <td>_identity() node in Core/france/database_depth_authoring.py.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>validate()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small></td>
+  <td><code>database_depth_selection_prompt()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>ValueError</code></td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td>validate() node in Core/france/extended_pipeline.py.</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small></td>
+  <td><code>and fail closed()</code><br><small style="color:var(--muted)">tests/test_french_database_depth_authoring.py</small><br><code>database depth selection()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>database depth selection()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br>+2 more</td>
+  <td>Builds structured prompts for model calls.</td>
 </tr>
 </table>
 
@@ -860,26 +861,26 @@ flowchart LR
 <tr><td><code>Resources/generator-capability.schema.json</code></td><td>120 nodes</td></tr>
 <tr><td><code>Resources/qualification-schema.json</code></td><td>97 nodes</td></tr>
 <tr><td><code>Resources/backend-protocol.schema.json</code></td><td>70 nodes</td></tr>
+<tr><td><code>Core/france/pipeline.py</code></td><td>56 nodes</td></tr>
 <tr><td><code>Core/subjects/sql_contracts.py</code></td><td>51 nodes</td></tr>
-<tr><td><code>Core/france/pipeline.py</code></td><td>47 nodes</td></tr>
-<tr><td><code>Core/france/runtime.py</code></td><td>30 nodes</td></tr>
+<tr><td><code>Core/france/runtime.py</code></td><td>34 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1189, calls x753, extends x284, imports x260. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1276, calls x919, references x364, imports x359. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around resources, generator, aqa, render, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 1059 nodes and 3067 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around resources, generator, aqa, render, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 1025 nodes and 2986 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (1059 nodes, 3067 edges)
+    %% Section: Analysis &amp; Clustering (1025 nodes, 2986 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -893,13 +894,15 @@ flowchart LR
         backend_core_benchmark_pdf_probe_873c5756("pdf_probe()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_thermal_speed_limit_perce_0dc698c9("speed limit percent()<br/><small>Backend/Core/benchmark.py</small>")
     end
+    subgraph analysis_clustering_generator_aqaaccountgen_case_4e22e1aa["generator/aqaaccountgen/case_data.py"]
+        resources_accounting_aqa_generator_aqaaccountgen_1305a8f2("IncomeStatementCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
+        resources_accounting_aqa_generator_aqaaccountgen_7a9897d8("NonCurrentAssetCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
+    end
     subgraph analysis_clustering_generator_cspapergen_questio_313ef9d8["generator/cspapergen/question_bank.py"]
         resources_computer_science_aqa_generator_cspaper_e7e771a6("_parts()<br/><small>generator/cspapergen/question_bank.py</small>")
         resources_computer_science_aqa_generator_cspaper_e712bfa9("_fit_parts()<br/><small>generator/cspapergen/question_bank.py</small>")
     end
-    backend_core_exam_blueprints_validate_generated_223baf80("validate_generated_paper()<br/><small>Backend/Core/exam_blueprints.py</small>")
     backend_core_paths_absolute_user_path_a4a9742d("absolute_user_path()<br/><small>Backend/Core/paths.py</small>")
-    resources_accounting_aqa_generator_aqaaccountgen_1305a8f2("IncomeStatementCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
     resources_accounting_aqa_generator_aqaaccountgen_a29172b2("mark scheme pages()<br/><small>generator/aqaaccountgen/render_pdf.py</small>")
     resources_computer_science_aqa_generator_cspaper_93d2977e("Stimulus<br/><small>generator/cspapergen/models.py</small>")
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_cpu_load_percent_a21569b0
@@ -913,7 +916,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_pdf_probe_873c5756
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_paths_absolute_user_path_a4a9742d
-    %% Omitted for readability: 1041 nodes, 0 edges
+    %% Omitted for readability: 1007 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -925,11 +928,11 @@ flowchart LR
     class backend_core_benchmark_ollama_latency_ms_a87e19e0 function;
     class backend_core_benchmark_pdf_probe_873c5756 function;
     class backend_core_benchmark_thermal_speed_limit_perce_0dc698c9 function;
+    class resources_accounting_aqa_generator_aqaaccountgen_1305a8f2 klass;
+    class resources_accounting_aqa_generator_aqaaccountgen_7a9897d8 async;
     class resources_computer_science_aqa_generator_cspaper_e7e771a6 function;
     class resources_computer_science_aqa_generator_cspaper_e712bfa9 function;
-    class backend_core_exam_blueprints_validate_generated_223baf80 function;
     class backend_core_paths_absolute_user_path_a4a9742d function;
-    class resources_accounting_aqa_generator_aqaaccountgen_1305a8f2 klass;
     class resources_accounting_aqa_generator_aqaaccountgen_a29172b2 function;
     class resources_computer_science_aqa_generator_cspaper_93d2977e klass;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
@@ -1187,11 +1190,11 @@ flowchart LR
 </tr>
 <tr>
   <td>30</td>
-  <td><code>BenchmarkView.swift</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
+  <td><code>BenchmarkWorkspace</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>SwiftUI</code><br><small style="color:var(--muted)">macOS/Tests/AccessibilityTests.swift</small></td>
-  <td><code>Charts</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
-  <td>BenchmarkView.swift node in Features/Benchmark/BenchmarkView.swift.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">PaperCreator/Navigation/ContentView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Benchmark/BenchmarkView.swift</small></td>
+  <td>BenchmarkWorkspace node in Features/Benchmark/BenchmarkView.swift.</td>
 </tr>
 </table>
 
@@ -1212,7 +1215,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x931, references x728, contains x681, method x147. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x920, references x713, contains x663, method x142. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -1576,12 +1579,12 @@ flowchart LR
 
 <!-- ====== 6. CLI & Skill Installers ====== -->
 <h2 id="cli-skills">6. CLI &amp; Skill Installers</h2>
-<p>CLI &amp; Skill Installers groups implementation around reference, tools, demand, profilespy, mostly in tools/reference_demand_profiles.py, tools/source_candidate_paths.py, Backend/Core/reference_demand.py. This section covers 42 nodes and 89 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>CLI &amp; Skill Installers groups implementation around reference, tools, demand, profilespy, mostly in tools/reference_demand_profiles.py, tools/source_candidate_paths.py, Backend/Core/reference_demand.py. This section covers 41 nodes and 86 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: CLI &amp; Skill Installers (42 nodes, 89 edges)
+    %% Section: CLI &amp; Skill Installers (41 nodes, 86 edges)
     subgraph cli_skills_tools_reference_demand_profiles_py_872fc550["tools/reference_demand_profiles.py"]
         tools_reference_demand_profiles_build_document_1297d479("build_document()<br/><small>tools/reference_demand_profiles.py</small>")
         tools_reference_demand_profiles_extract_referenc_da578e4a("extract_reference_items()<br/><small>tools/reference_demand_profiles.py</small>")
@@ -1627,7 +1630,7 @@ flowchart LR
     tools_reference_demand_profiles_weighted_distrib_476a71fb -->|calls| tools_source_candidate_paths_feature_distributio_3bd56258
     tools_reference_demand_profiles_mark_band_3f4b16c8 -->|calls| tools_source_candidate_paths_feature_distributio_3bd56258
     tools_source_candidate_paths_selected_features_3c361dac -->|calls| tools_source_candidate_paths_source_forms_acdbe5b5
-    %% Omitted for readability: 24 nodes, 0 edges
+    %% Omitted for readability: 23 nodes, 0 edges
     class tools_reference_demand_profiles_build_document_1297d479 function;
     class tools_reference_demand_profiles_extract_referenc_da578e4a function;
     class tools_reference_demand_profiles_distribution_3421e2ab function;
@@ -1776,7 +1779,7 @@ flowchart LR
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>extract_reference_features()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>extract_reference_items()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
-  <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_fingerprint()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mark_band()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br>+8 more</td>
+  <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_fingerprint()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mark_band()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br>+7 more</td>
   <td>build_document() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
@@ -1797,14 +1800,6 @@ flowchart LR
 </tr>
 <tr>
   <td>17</td>
-  <td><code>_pdf_text()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>_pdf_text() node in tools/reference_demand_profiles.py.</td>
-</tr>
-<tr>
-  <td>18</td>
   <td><code>_fingerprint()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1812,7 +1807,7 @@ flowchart LR
   <td>_fingerprint() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>_question_bank_profiles()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1820,7 +1815,7 @@ flowchart LR
   <td>_question_bank_profiles() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>_mean_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_question_bank_profiles()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1828,7 +1823,7 @@ flowchart LR
   <td>_mean_distribution() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1836,7 +1831,7 @@ flowchart LR
   <td>_distribution() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>21</td>
   <td><code>_weighted_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1844,7 +1839,7 @@ flowchart LR
   <td>_weighted_distribution() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>22</td>
   <td><code>_metric_tolerances()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_question_bank_profiles()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1852,7 +1847,7 @@ flowchart LR
   <td>_metric_tolerances() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>23</td>
   <td><code>_renormalise()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mean_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_weighted_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1860,7 +1855,7 @@ flowchart LR
   <td>_renormalise() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>24</td>
   <td><code>_mark_band()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1868,7 +1863,7 @@ flowchart LR
   <td>_mark_band() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>25</td>
   <td><code>_mark_demand()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1876,7 +1871,7 @@ flowchart LR
   <td>_mark_demand() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>26</td>
   <td><code>render()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1884,7 +1879,7 @@ flowchart LR
   <td>render() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>27</td>
   <td><code>main()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>build_document()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>render()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
@@ -1892,7 +1887,7 @@ flowchart LR
   <td>main() node in tools/reference_demand_profiles.py.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>Pair each tariff with its nearest local command, retaining no prose.</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -1900,12 +1895,20 @@ flowchart LR
   <td>Design note for Pair each tariff with its nearest local command, retaining no prose..</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>source_candidate_paths.py</code><br><small style="color:var(--muted)">tools/source_candidate_paths.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mark_band()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mark_pattern()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br>+4 more</td>
   <td>No direct outbound edge</td>
   <td>Module file in tools/source_candidate_paths.py.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>feature_distribution()</code><br><small style="color:var(--muted)">tools/source_candidate_paths.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_mark_band()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br><code>_weighted_distribution()</code><br><small style="color:var(--muted)">tools/reference_demand_profiles.py</small><br>+1 more</td>
+  <td><code>form_from_items()</code><br><small style="color:var(--muted)">tools/source_candidate_paths.py</small></td>
+  <td>feature_distribution() node in tools/source_candidate_paths.py.</td>
 </tr>
 </table>
 
@@ -1914,7 +1917,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tools/reference_demand_profiles.py</code></td><td>24 nodes</td></tr>
+      <tr><td><code>tools/reference_demand_profiles.py</code></td><td>23 nodes</td></tr>
 <tr><td><code>tools/source_candidate_paths.py</code></td><td>9 nodes</td></tr>
 <tr><td><code>Backend/Core/reference_demand.py</code></td><td>2 nodes</td></tr>
 <tr><td><code>macOS/scripts/resolve_agent_name.sh</code></td><td>2 nodes</td></tr>
@@ -1922,19 +1925,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x37, contains x29, references x12, imports x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x36, contains x28, references x11, imports x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 7. Ingestion & Updates ====== -->
 <h2 id="ingest-cache-update">7. Ingestion &amp; Updates</h2>
-<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, PaperCreator/Application/AppConfiguration.swift, PaperCreator/Domain/AppModels.swift. This section covers 139 nodes and 276 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Ingestion &amp; Updates groups implementation around macos, papercreator, state, applicationcoordinatorswift, mostly in PaperCreator/State/ApplicationCoordinator.swift, PaperCreator/Application/AppConfiguration.swift, PaperCreator/Domain/AppModels.swift. This section covers 141 nodes and 280 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Ingestion &amp; Updates (139 nodes, 276 edges)
+    %% Section: Ingestion &amp; Updates (141 nodes, 280 edges)
     subgraph ingest_cache_update_PaperCreator_State_Applicati_1e579283["PaperCreator/State/ApplicationCoordinator.swift"]
         macos_papercreator_state_applicationcoordinator_ad9c77ae("ApplicationCoordinator<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
         macos_papercreator_state_applicationcoordinator_46e3fcab("generate()<br/><small>PaperCreator/State/ApplicationCoordinator.swift</small>")
@@ -1983,7 +1986,7 @@ flowchart LR
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_e46982ee
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_18f50178
     macos_papercreator_state_applicationcoordinator_ad9c77ae -->|method| macos_papercreator_state_applicationcoordinator_6da700d8
-    %% Omitted for readability: 121 nodes, 2 edges
+    %% Omitted for readability: 123 nodes, 2 edges
     class macos_papercreator_state_applicationcoordinator_ad9c77ae klass;
     class macos_papercreator_state_applicationcoordinator_46e3fcab function;
     class macos_papercreator_state_applicationcoordinator_80d6bdfb ui;
@@ -2236,7 +2239,7 @@ flowchart LR
   <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>defaultOutputFolder()</code><br><small style="color:var(--muted)">PaperCreator/Application/AppConfiguration.swift</small><br><code>MLXRecoveryState</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td><code>.activeModelName</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.canGenerate</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.currentGenerationFiles</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+81 more</td>
+  <td><code>.activeModelName</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.canGenerate</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>.currentGenerationFiles</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+83 more</td>
   <td>ApplicationCoordinator node in PaperCreator/State/ApplicationCoordinator.swift.</td>
 </tr>
 <tr>
@@ -2270,7 +2273,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>90 nodes</td></tr>
+      <tr><td><code>PaperCreator/State/ApplicationCoordinator.swift</code></td><td>92 nodes</td></tr>
 <tr><td><code>PaperCreator/Application/AppConfiguration.swift</code></td><td>12 nodes</td></tr>
 <tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>6 nodes</td></tr>
 <tr><td><code>macOS/Tests/AppTests.swift</code></td><td>4 nodes</td></tr>
@@ -2282,7 +2285,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: method x95, calls x80, references x55, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: method x97, calls x82, references x55, contains x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2772,12 +2775,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, PaperCreator/Domain/AppModels.swift, tools/paper_fidelity_audit.py. This section covers 5490 nodes and 16350 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, PaperCreator/Domain/AppModels.swift, tools/paper_fidelity_audit.py. This section covers 5352 nodes and 15678 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (5490 nodes, 16350 edges)
+    %% Section: Tests &amp; Fixtures (5352 nodes, 15678 edges)
     subgraph tests_fixtures_Backend_Core_ai_assessment_py_93891410["Backend/Core/ai_assessment.py"]
         backend_core_ai_assessment_assessmentllmclient_af77fd0e("AssessmentLLMClient<br/><small>Backend/Core/ai_assessment.py</small>")
         backend_core_ai_assessment_assessmentllmclient_g_314242c3("generate_json()<br/><small>Backend/Core/ai_assessment.py</small>")
@@ -2792,11 +2795,9 @@ flowchart LR
         tests_test_ai_assessment_test_content_approval_c_22a3fa7b("separate difficulty rejection()<br/><small>tests/test_ai_assessment.py</small>")
         tests_test_ai_assessment_test_generated_extended_173d9621("adds examiner guidance()<br/><small>tests/test_ai_assessment.py</small>")
     end
-    subgraph tests_fixtures_Backend_Core_independent_solver_p_683440ac["Backend/Core/independent_solver.py"]
-        backend_core_independent_solver_independentsolve_ca9b7e1f("IndependentSolver<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_reconcile_soluti_03e71447("reconcile_solution()<br/><small>Backend/Core/independent_solver.py</small>")
-    end
     backend_core_family_adapter_run_family_adapter_08fa9303("run_family_adapter()<br/><small>Backend/Core/family_adapter.py</small>")
+    backend_core_independent_solver_independentsolve_ca9b7e1f("IndependentSolver<br/><small>Backend/Core/independent_solver.py</small>")
+    backend_core_france_pipeline_generate_assessment_575a8c08("generate_assessment()<br/><small>Core/france/pipeline.py</small>")
     resources_computer_science_aqa_generator_cspaper_6d513fb8("load_syllabus()<br/><small>generator/cspapergen/syllabus.py</small>")
     resources_economics_edexcel_a_generator_pastpape_2f0be924("build_paper_blueprint()<br/><small>generator/pastpapergen/generator.py</small>")
     resources_economics_edexcel_a_generator_pastpape_7dfc6c7f("load_builtin_paper_config()<br/><small>generator/pastpapergen/paper_configs.py</small>")
@@ -2814,8 +2815,7 @@ flowchart LR
     backend_core_ai_assessment_generationpolicy_3659b550 -->|calls| tests_test_ai_assessment_test_generated_extended_173d9621
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| backend_core_ai_assessment_review_batch_87a73a37
     backend_core_ai_assessment_generate_item_transac_7b6ae53f -->|calls| tests_test_ai_assessment_test_content_approval_c_22a3fa7b
-    backend_core_independent_solver_independentsolve_ca9b7e1f -->|calls| backend_core_independent_solver_reconcile_soluti_03e71447
-    %% Omitted for readability: 5472 nodes, 0 edges
+    %% Omitted for readability: 5334 nodes, 0 edges
     class backend_core_ai_assessment_assessmentllmclient_af77fd0e entry;
     class backend_core_ai_assessment_assessmentllmclient_g_314242c3 function;
     class backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9 function;
@@ -2826,9 +2826,9 @@ flowchart LR
     class tests_test_ai_assessment_test_candidate_question_7f191d2a test;
     class tests_test_ai_assessment_test_content_approval_c_22a3fa7b test;
     class tests_test_ai_assessment_test_generated_extended_173d9621 test;
-    class backend_core_independent_solver_independentsolve_ca9b7e1f klass;
-    class backend_core_independent_solver_reconcile_soluti_03e71447 function;
     class backend_core_family_adapter_run_family_adapter_08fa9303 function;
+    class backend_core_independent_solver_independentsolve_ca9b7e1f klass;
+    class backend_core_france_pipeline_generate_assessment_575a8c08 async;
     class resources_computer_science_aqa_generator_cspaper_6d513fb8 function;
     class resources_economics_edexcel_a_generator_pastpape_2f0be924 function;
     class resources_economics_edexcel_a_generator_pastpape_7dfc6c7f function;
@@ -2859,8 +2859,8 @@ flowchart LR
   <td>1</td>
   <td><code>build_database_audit_contract()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_tables()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small><br><code>from_dict()</code><br><small style="color:var(--muted)">Core/france/database_audit_contract.py</small></td>
-  <td><code>_accepted_payload()</code><br><small style="color:var(--muted)">tools/french_nsi_benchmark.py</small><br><code>_passed_result()</code><br><small style="color:var(--muted)">tests/test_french_benchmark_runner.py</small><br><code>and working tables()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+14 more</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_accepted_payload()</code><br><small style="color:var(--muted)">tools/french_nsi_benchmark.py</small><br><code>_passed_result()</code><br><small style="color:var(--muted)">tests/test_french_benchmark_runner.py</small><br><code>and working tables()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+12 more</td>
   <td>build_database_audit_contract() node in Core/france/database_audit_contract.py.</td>
 </tr>
 <tr>
@@ -2873,18 +2873,18 @@ flowchart LR
 </tr>
 <tr>
   <td>3</td>
-  <td><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>allocation_exercise.py</code><br><small style="color:var(--muted)">Core/france/allocation_exercise.py</small><br><code>channel_exercise.py</code><br><small style="color:var(--muted)">Core/france/channel_exercise.py</small><br><code>database_audit_prose.py</code><br><small style="color:var(--muted)">Core/france/database_audit_prose.py</small><br>+8 more</td>
-  <td><code>_TextDocument</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>_TextPage</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>candidate_view()</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br>+56 more</td>
-  <td>NSIExercise node in Core/france/nsi.py.</td>
+  <td><code>_tasks_for_seed_v28()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>construction_blueprint()</code><br><small style="color:var(--muted)">Core/france/database_construction_authoring.py</small></td>
+  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td>_tasks_for_seed_v28() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
   <td>4</td>
   <td><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+23 more</td>
+  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br>+7 more</td>
+  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+28 more</td>
   <td>digest() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
@@ -2897,14 +2897,6 @@ flowchart LR
 </tr>
 <tr>
   <td>6</td>
-  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td>_assemble_planned_exercise() node in Core/france/pipeline.py.</td>
-</tr>
-<tr>
-  <td>7</td>
   <td><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -2912,7 +2904,7 @@ flowchart LR
   <td>_replay_targeted_repairs() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>7</td>
   <td><code>require_tree_complexity_premise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2920,31 +2912,31 @@ flowchart LR
   <td>require_tree_complexity_premise() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>8</td>
   <td><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>authoring_schema()</code><br><small style="color:var(--muted)">Core/france/nsi.py</small></td>
+  <td>External entry / no inbound edge</td>
   <td><code>all exercise checks()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and output budget()</code><br><small style="color:var(--muted)">tests/test_french_provider.py</small><br><code>balanced tree assumption()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+3 more</td>
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>9</td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
-  <td><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v15()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+32 more</td>
-  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and never accepts()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+99 more</td>
+  <td><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+28 more</td>
+  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and never accepts()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+97 more</td>
   <td>generate_assessment() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>10</td>
   <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+35 more</td>
-  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+66 more</td>
+  <td><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+29 more</td>
+  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+63 more</td>
   <td>validate_package() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>11</td>
   <td><code>Recover only links the model wrote verbatim, leaving vague references…</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2952,7 +2944,7 @@ flowchart LR
   <td>Design note for Recover only links the model wrote verbatim, leaving vague references….</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>12</td>
   <td><code>Bind a repaired candidate to its original and at most two raw replacements.</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2960,7 +2952,7 @@ flowchart LR
   <td>Design note for Bind a repaired candidate to its original and at most two raw replacements..</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>13</td>
   <td><code>Require an explicit current-question assumption for logarithmic BST claims.</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -2968,55 +2960,7 @@ flowchart LR
   <td>Design note for Require an explicit current-question assumption for logarithmic BST claims..</td>
 </tr>
 <tr>
-  <td>15</td>
-  <td><code>exercise_scope_text()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>test_french_framework.py</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small><br><code>titles and sentences()</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small></td>
-  <td>exercise_scope_text() node in Core/france/rendering.py.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>ParagraphStyle</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>code_listing()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>or change indentation()</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small><br><code>test_french_framework.py</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small></td>
-  <td>code_listing() node in Core/france/rendering.py.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>correction_prompt()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>exercise_scope_text()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>ParagraphStyle</code><br>+3 more</td>
-  <td><code>and credit readable()</code><br><small style="color:var(--muted)">tests/test_french_system_case_prose.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and marking legible()</code><br><small style="color:var(--muted)">tests/test_french_tree_case_prose.py</small><br>+47 more</td>
-  <td>render_assessment() node in Core/france/rendering.py.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Path node in project.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Never rewrite executable text to make it fit a page.</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Never rewrite executable text to make it fit a page..</td>
-</tr>
-<tr>
-  <td>21</td>
+  <td>14</td>
   <td><code>validate_endpoint()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
   <td><span class="tag tag-endpoint">API</span></td>
   <td>External entry / no inbound edge</td>
@@ -3024,47 +2968,31 @@ flowchart LR
   <td>validate_endpoint() node in Core/france/runtime.py.</td>
 </tr>
 <tr>
-  <td>22</td>
-  <td><code>validate_graph_two_outage_pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>and rejects mutations()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_pdf.py</small><br><code>answer and credit()</code><br><small style="color:var(--muted)">tests/test_french_route_task_families.py</small><br><code>catalogue and construction()</code><br><small style="color:var(--muted)">tests/test_french_route_selection.py</small><br>+5 more</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>23</td>
+  <td>15</td>
   <td><code>network_pdf_contract_version()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+5 more</td>
+  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+6 more</td>
   <td>network_pdf_contract_version() node in Core/france/runtime.py.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>16</td>
   <td><code>database_pdf_contract_version()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+7 more</td>
+  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+8 more</td>
   <td>database_pdf_contract_version() node in Core/france/runtime.py.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>17</td>
   <td><code>handle_generate_assessment()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
-  <td><code>ApplicationOwnedFrenchClient</code><br><small style="color:var(--muted)">Core/france/provider.py</small><br><code>build_database_contract()</code><br><small style="color:var(--muted)">Core/france/database_contract.py</small><br><code>build_graph_tree_contract()</code><br><small style="color:var(--muted)">Core/france/graph_tree_contract.py</small><br>+21 more</td>
-  <td><code>and validates pdf()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>assessment_framework()</code><br><small style="color:var(--muted)">Backend/Core/generator_registry.py</small><br><code>complete or absent()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+11 more</td>
+  <td><code>atomic_json()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>build_database_contract()</code><br><small style="color:var(--muted)">Core/france/database_contract.py</small><br><code>build_graph_tree_contract()</code><br><small style="color:var(--muted)">Core/france/graph_tree_contract.py</small><br>+19 more</td>
+  <td><code>and validates pdf()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>complete or absent()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>content gate fails()</code><br><small style="color:var(--muted)">tests/test_french_whole_case_pdf.py</small><br>+10 more</td>
   <td>handle_generate_assessment() node in Core/france/runtime.py.</td>
 </tr>
 <tr>
-  <td>26</td>
-  <td><code>Bind V25&#x27;s two ordered outages, working surfaces, answers and credit.</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Bind V25&#x27;s two ordered outages, working surfaces, answers and credit..</td>
-</tr>
-<tr>
-  <td>27</td>
+  <td>18</td>
   <td><code>Never silently render an unknown French package with an older validator.</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
   <td><span class="tag tag-func">Concept</span></td>
   <td>External entry / no inbound edge</td>
@@ -3072,28 +3000,100 @@ flowchart LR
   <td>Design note for Never silently render an unknown French package with an older validator..</td>
 </tr>
 <tr>
+  <td>19</td>
+  <td><code>SourceDocument</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>ingest()</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>OfficialRedirects</code><br><small style="color:var(--muted)">Core/france/corpus.py</small></td>
+  <td><code>ClosedProseFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>ContractFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>ControlledDatabaseAuditFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+17 more</td>
+  <td>SourceDocument node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>expanded_pipeline.py</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>extended_pipeline.py</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+8 more</td>
+  <td><code>__enter__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>__exit__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br>+28 more</td>
+  <td>ReferenceIndex node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.__enter__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.__enter__() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.__exit__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.__exit__() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>._json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><code>add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td>._json() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.add() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>test_french_database_construction.py</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
+  <td>Module file in tests/test_french_database_construction.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>test_construction_solution_matches_independent_counts()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>parametrize</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>parametrize node in project.</td>
+</tr>
+<tr>
   <td>28</td>
-  <td><code>assessment_framework()</code><br><small style="color:var(--muted)">Backend/Core/generator_registry.py</small></td>
-  <td><span class="tag tag-async">Async</span></td>
-  <td><code>handle_generate_assessment()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><code>a uk board()</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small><br><code>test_french_framework.py</code><br><small style="color:var(--muted)">tests/test_french_framework.py</small></td>
-  <td>assessment_framework() node in Backend/Core/generator_registry.py.</td>
+  <td><code>test_v28_package_has_construction_credit_and_replays()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
+  <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
   <td>29</td>
-  <td><code>National frameworks are not exam boards and never inherit UK AO policy.</code><br><small style="color:var(--muted)">Backend/Core/generator_registry.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for National frameworks are not exam boards and never inherit UK AO policy..</td>
+  <td><code>test_v28_working_tables_stay_with_questions()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
+  <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
   <td>30</td>
-  <td><code>render_pdf_atomically()</code><br><small style="color:var(--muted)">Backend/Core/render_transaction.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>family_adapter.py</code><br><small style="color:var(--muted)">Backend/Core/family_adapter.py</small><br><code>handle_generate_assessment()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small><br><code>RenderTransactionError</code><br><small style="color:var(--muted)">Backend/Core/render_transaction.py</small><br>+1 more</td>
-  <td><code>_readable_page_count()</code><br><small style="color:var(--muted)">Backend/Core/render_transaction.py</small><br><code>_render_deadline</code><br><small style="color:var(--muted)">Backend/Core/render_transaction.py</small><br><code>_sync_directory()</code><br><small style="color:var(--muted)">Backend/Core/render_transaction.py</small><br>+21 more</td>
-  <td>render_pdf_atomically() node in Backend/Core/render_transaction.py.</td>
+  <td><code>V28 construction must be executable, independent of row order and replay-bound.</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Design note for V28 construction must be executable, independent of row order and replay-bound..</td>
 </tr>
 </table>
 
@@ -3102,8 +3102,8 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>tests/test_nsi_pipeline.py</code></td><td>123 nodes</td></tr>
-<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>73 nodes</td></tr>
+      <tr><td><code>tests/test_nsi_pipeline.py</code></td><td>122 nodes</td></tr>
+<tr><td><code>PaperCreator/Domain/AppModels.swift</code></td><td>72 nodes</td></tr>
 <tr><td><code>tools/paper_fidelity_audit.py</code></td><td>69 nodes</td></tr>
 <tr><td><code>generator/tests/test_question_styles.py</code></td><td>62 nodes</td></tr>
 <tr><td><code>Backend/Core/ai_assessment.py</code></td><td>59 nodes</td></tr>
@@ -3114,7 +3114,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x6785, contains x3391, references x2122, imports x1705. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x6568, contains x3330, references x1953, imports x1550. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3474,12 +3474,12 @@ flowchart LR
 
 <!-- ====== 12. String ====== -->
 <h2 id="string">12. String</h2>
-<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/BenchmarkCoordinator.swift, macOS/Tests/AppTests.swift. This section covers 118 nodes and 228 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>String groups implementation around macos, papercreator, appmodelsswift, domain, mostly in PaperCreator/Domain/AppModels.swift, PaperCreator/State/BenchmarkCoordinator.swift, macOS/Tests/AppTests.swift. This section covers 117 nodes and 225 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: String (118 nodes, 228 edges)
+    %% Section: String (117 nodes, 225 edges)
     subgraph string_PaperCreator_Domain_AppModels_swift_efb5b8c1["PaperCreator/Domain/AppModels.swift"]
         macos_papercreator_domain_appmodels_benchmarksam_6a36f8ea("BenchmarkSample<br/><small>PaperCreator/Domain/AppModels.swift</small>")
         macos_papercreator_domain_appmodels_generatorcon_77b39f8f("GeneratorContentMode<br/><small>PaperCreator/Domain/AppModels.swift</small>")
@@ -3511,7 +3511,7 @@ flowchart LR
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_930a891b
     macos_papercreator_domain_appmodels_generatorcon_77b39f8f -->|method| macos_papercreator_domain_appmodels_generatorcon_da10daf6
     macos_papercreator_state_benchmarkcoordinator_be_b3e32779 -->|method| macos_papercreator_state_benchmarkcoordinator_be_0f3a6af0
-    %% Omitted for readability: 100 nodes, 0 edges
+    %% Omitted for readability: 99 nodes, 0 edges
     class macos_papercreator_domain_appmodels_benchmarksam_6a36f8ea klass;
     class macos_papercreator_domain_appmodels_generatorcon_77b39f8f klass;
     class macos_papercreator_domain_appmodels_benchmarkmet_b85bebab klass;
@@ -3657,14 +3657,6 @@ flowchart LR
 </tr>
 <tr>
   <td>14</td>
-  <td><code>Identifiable</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Identifiable node in project.</td>
-</tr>
-<tr>
-  <td>15</td>
   <td><code>.init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PaperOption</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3672,7 +3664,7 @@ flowchart LR
   <td>.init() node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>15</td>
   <td><code>QualificationReadiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3680,7 +3672,7 @@ flowchart LR
   <td>QualificationReadiness node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>16</td>
   <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3688,7 +3680,7 @@ flowchart LR
   <td>Bool node in project.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>17</td>
   <td><code>.highestLevelTitle</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>QualificationReadiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3696,7 +3688,7 @@ flowchart LR
   <td>.highestLevelTitle node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>18</td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3704,7 +3696,7 @@ flowchart LR
   <td>GeneratorContentMode node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>19</td>
   <td><code>deterministic</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3712,7 +3704,7 @@ flowchart LR
   <td>deterministic node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>20</td>
   <td><code>aiAssisted</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3720,7 +3712,7 @@ flowchart LR
   <td>aiAssisted node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>21</td>
   <td><code>.usesAI</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3728,7 +3720,7 @@ flowchart LR
   <td>.usesAI node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>22</td>
   <td><code>.title</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3736,7 +3728,7 @@ flowchart LR
   <td>.title node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>23</td>
   <td><code>.systemImage</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>GeneratorContentMode</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
@@ -3744,7 +3736,7 @@ flowchart LR
   <td>.systemImage node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>24</td>
   <td><code>CatalogDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3752,7 +3744,7 @@ flowchart LR
   <td>CatalogDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>25</td>
   <td><code>Decodable</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3760,7 +3752,7 @@ flowchart LR
   <td>Decodable node in project.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>26</td>
   <td><code>CatalogSubjectDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3768,7 +3760,7 @@ flowchart LR
   <td>CatalogSubjectDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>27</td>
   <td><code>CatalogBoardDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3776,7 +3768,7 @@ flowchart LR
   <td>CatalogBoardDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>28</td>
   <td><code>GeneratorRegistryDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -3784,12 +3776,20 @@ flowchart LR
   <td>GeneratorRegistryDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>GeneratorFamilyDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>GeneratorFamilyDocument node in PaperCreator/Domain/AppModels.swift.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>GeneratorPaperDocument</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.readiness</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small><br><code>init()</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
+  <td>GeneratorPaperDocument node in PaperCreator/Domain/AppModels.swift.</td>
 </tr>
 </table>
 
@@ -3808,7 +3808,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x87, case of x30, method x29, implements x28. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x87, case of x30, method x29, contains x26. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4843,12 +4843,12 @@ flowchart LR
 
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, 2026, french, nsi, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md, Core/overlay/graphs.py. This section covers 720 nodes and 757 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around docs, 2026, french, nsi, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-paper-creator-excellence-programme.md, Core/overlay/graphs.py. This section covers 744 nodes and 791 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (720 nodes, 757 edges)
+    %% Section: Other (744 nodes, 791 edges)
     subgraph other_Core_overlay_graphs_py_e43e7d49["Core/overlay/graphs.py"]
         backend_core_overlay_graphs_save_21119de2("_save()<br/><small>Core/overlay/graphs.py</small>")
         backend_core_overlay_graphs_ax_23f43dcb("_ax()<br/><small>Core/overlay/graphs.py</small>")
@@ -4895,7 +4895,7 @@ flowchart LR
     backend_core_overlay_graphs_gp_dfa943ef -->|calls| backend_core_overlay_graphs_ad_as_diagram_ebc8a099
     backend_core_overlay_graphs_gp_dfa943ef -->|calls| backend_core_overlay_graphs_consumer_producer_su_a919856d
     backend_core_overlay_graphs_gp_dfa943ef -->|calls| backend_core_overlay_graphs_demand_supply_diagra_90921e00
-    %% Omitted for readability: 702 nodes, 0 edges
+    %% Omitted for readability: 726 nodes, 0 edges
     class backend_core_overlay_graphs_save_21119de2 function;
     class backend_core_overlay_graphs_ax_23f43dcb function;
     class backend_core_overlay_graphs_arrow_axes_abe5018b function;
@@ -5194,7 +5194,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x547, calls x102, references x44, method x38. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x549, calls x103, references x66, method x46. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5208,7 +5208,7 @@ flowchart LR
       <tr><td>Nodes</td><td>9884</td></tr>
       <tr><td>Edges</td><td>28212</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>370</td></tr>
+      <tr><td>Communities</td><td>374</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
@@ -5224,7 +5224,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-10-28 14:16 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-28 14:33 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

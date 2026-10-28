@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793195540.5698698,
+    "mtime": 1793197036.0504901,
     "ast_hash": "c110c8bcbb3b9edd317c19de5ef5a303",
     "semantic_hash": ""
   },
@@ -1325,8 +1325,8 @@
     "semantic_hash": "541013ecd6198a450de9fe129a6889af"
   },
   "macOS/PaperCreator/Domain/FrenchAssessmentRequest.swift": {
-    "mtime": 1793196921.5039234,
-    "ast_hash": "8dd6002f0c50aa91178213f89c61d553",
+    "mtime": 1793197035.8359478,
+    "ast_hash": "582112a22b9620451b43298afe23833e",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/GenerationEstimator.swift": {
@@ -1400,8 +1400,8 @@
     "semantic_hash": "fa2da0fe1f71ed79ca4e7bd5ca6668f1"
   },
   "macOS/PaperCreator/State/ApplicationCoordinator.swift": {
-    "mtime": 1793196937.002336,
-    "ast_hash": "b71012bbc8276d061da64c6d31b611ad",
+    "mtime": 1793197035.8369837,
+    "ast_hash": "123fc63fec79af33d8097cef805b9375",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/State/BenchmarkCoordinator.swift": {
@@ -3825,8 +3825,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v35-expanded-practice-review-2026-10-28.md": {
-    "mtime": 1793195516.7004893,
-    "ast_hash": "82f395f251cc775009d90eaa4368fe92",
+    "mtime": 1793198007.4662826,
+    "ast_hash": "ace6096b64314bdc7a21be9b72ec69c6",
     "semantic_hash": ""
   }
 }
