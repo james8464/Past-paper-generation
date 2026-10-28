@@ -153,13 +153,13 @@ private struct AISettingsTab: View {
 
                 if application.selectedModelIsRecommended {
                     Label("Recommended model selected", systemImage: "checkmark.seal.fill")
-                        .foregroundStyle(.green)
+                        .foregroundStyle(.primary)
                 } else {
                     Label(
                         OllamaModelGuide.document.otherModelWarning,
                         systemImage: "exclamationmark.triangle.fill"
                     )
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
                 }
 
