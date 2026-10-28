@@ -659,10 +659,10 @@ def test_p1_computed_adjustments_are_individually_verified():
     )
     solution = IndependentSolver().solve(task.question, [])
     expected = {
-        "inventory_write_down": 28409,
-        "irrecoverable_debt": 196198,
-        "new_debenture_interest": 46242,
-        "earlier_debenture_interest": 97327,
+        "inventory_write_down": 22344,  # 53,200 - (38,304 - 7,448)
+        "irrecoverable_debt": 144877,  # 160,974 at 90%, nearest pound
+        "new_debenture_interest": 34146,  # 1,707,300 at 6% for four months
+        "earlier_debenture_interest": 61273,  # 919,100 at 8% for ten months
     }
     for role, value in expected.items():
         assert solution.numeric_results[role] == value

@@ -500,19 +500,19 @@
     "semantic_hash": "04b7823c5cfb75096731a0aac7b7ef89"
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/cli.py": {
-    "mtime": 1791129181.5151823,
-    "ast_hash": "8e1dbf71902e16d64a5cae8071c07055",
-    "semantic_hash": "8e1dbf71902e16d64a5cae8071c07055"
+    "mtime": 1793199662.1264687,
+    "ast_hash": "f8191053bfef301eef5e5042270b2fe2",
+    "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
-    "mtime": 1791129181.5152626,
-    "ast_hash": "3f9cb807c4b1664bceba6698e4f9b170",
-    "semantic_hash": "3f9cb807c4b1664bceba6698e4f9b170"
+    "mtime": 1793199515.0841956,
+    "ast_hash": "2beea46537b8b4a17b5aea3959e9e657",
+    "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1791129181.515375,
-    "ast_hash": "d8091400101c5c08f8a582ecf1867c7e",
-    "semantic_hash": "d8091400101c5c08f8a582ecf1867c7e"
+    "mtime": 1793199552.0285585,
+    "ast_hash": "e00d49062bf1e4d350fa1cb050539ebd",
+    "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
     "mtime": 1793142154.5425854,
@@ -540,8 +540,8 @@
     "semantic_hash": "92165e8cc71f4c8d9883cb5b4d2ac7c1"
   },
   "Resources/accounting/aqa/generator/tests/test_aqa_accounting.py": {
-    "mtime": 1793142154.54297,
-    "ast_hash": "98e522923bd8b938d1291761c9b51f4e",
+    "mtime": 1793199587.674383,
+    "ast_hash": "9d8975ad7b151999f97c19af48d2055a",
     "semantic_hash": ""
   },
   "Resources/backend-protocol.schema.json": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793197036.0504901,
-    "ast_hash": "c110c8bcbb3b9edd317c19de5ef5a303",
+    "mtime": 1793199779.3151681,
+    "ast_hash": "080b7d04151a8b2448203f33cc5c7e04",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1905,9 +1905,9 @@
     "semantic_hash": ""
   },
   "tests/test_shared_numeric_integrity.py": {
-    "mtime": 1791129181.6081357,
-    "ast_hash": "ef06396f42e3e9f63bca732da361bb58",
-    "semantic_hash": "ef06396f42e3e9f63bca732da361bb58"
+    "mtime": 1793199855.3248715,
+    "ast_hash": "2442cdb4a8acd4480e3aef5534c6864d",
+    "semantic_hash": ""
   },
   "tests/test_source_candidate_paths.py": {
     "mtime": 1791129181.6082249,
@@ -3827,6 +3827,16 @@
   "docs/quality/french-nsi-v35-expanded-practice-review-2026-10-28.md": {
     "mtime": 1793198007.4662826,
     "ast_hash": "ace6096b64314bdc7a21be9b72ec69c6",
+    "semantic_hash": ""
+  },
+  "Resources/accounting/aqa/generator/tests/test_component_scope.py": {
+    "mtime": 1793199609.549845,
+    "ast_hash": "1c3561d36337bf2df41bf30448bf94f6",
+    "semantic_hash": ""
+  },
+  "docs/quality/aqa-accounting-component-scope-review-2026-10-28.md": {
+    "mtime": 1793199855.3253186,
+    "ast_hash": "2e02de3cd1d048a8ef68db406f269424",
     "semantic_hash": ""
   }
 }
