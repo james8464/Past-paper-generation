@@ -408,7 +408,7 @@ def test_multi_seed_determinism_uniqueness_and_scope() -> None:
             for section in paper.sections
             for option in section.options
             for question in option.questions
-        } == rule.allowed_topic_ids
+        } <= rule.allowed_topic_ids
 
 
 def test_non_current_asset_question_and_scheme_share_verified_case_data() -> None:

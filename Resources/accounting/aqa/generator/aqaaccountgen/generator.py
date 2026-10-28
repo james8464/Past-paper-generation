@@ -38,18 +38,34 @@ BUSINESSES = [
     "Harbour Textiles",
 ]
 
-MCQ_FACTS = [
-    ("Which book of prime entry records credit purchases of inventory?", "Purchases journal", ["Sales journal", "Cash book", "General journal"]),
-    ("Which formula calculates gross profit margin?", "Gross profit ÷ revenue × 100", ["Profit for the year ÷ capital × 100", "Current assets ÷ current liabilities", "Revenue ÷ gross profit × 100"]),
-    ("Which concept records income when it is earned?", "Accruals", ["Prudence", "Materiality", "Business entity"]),
-    ("Which ratio measures short-term liquidity?", "Current ratio", ["Gearing", "Return on capital employed", "Asset turnover"]),
-    ("Which source of finance normally increases gearing?", "A long-term loan", ["A rights issue", "Retained earnings", "Ordinary share capital"]),
-    ("Where is carriage inwards normally included?", "Cost of sales", ["Finance costs", "Distribution costs", "Other income"]),
-    ("Which item is a current asset?", "Trade receivables", ["Share capital", "Bank loan repayable in ten years", "Trade payables"]),
-    ("What is the double entry for a credit sale?", "Debit receivables, credit sales", ["Debit sales, credit receivables", "Debit bank, credit sales", "Debit purchases, credit payables"]),
-    ("Which method discounts future cash flows?", "Net present value", ["Payback", "Contribution per unit", "Inventory turnover"]),
-    ("Which principle requires professional honesty?", "Integrity", ["Consistency", "Realisation", "Duality"]),
-]
+# Each task carries its own topic so changing a component bank cannot leave a
+# separate topic list pointing at an unrelated question.
+MCQ_TASKS = {
+    "paper_1": [
+        ("accounting-3", "Which book of prime entry records credit purchases of inventory?", "Purchases journal", ["Sales journal", "Cash book", "General journal"]),
+        ("accounting-8", "Which formula calculates gross profit margin?", "Gross profit ÷ revenue × 100", ["Profit for the year ÷ capital × 100", "Current assets ÷ current liabilities", "Revenue ÷ gross profit × 100"]),
+        ("accounting-5", "Which concept records income when it is earned?", "Accruals", ["Prudence", "Materiality", "Business entity"]),
+        ("accounting-8", "Which ratio measures short-term liquidity?", "Current ratio", ["Gearing", "Return on capital employed", "Asset turnover"]),
+        ("accounting-8", "Which source of finance normally increases gearing?", "A long-term loan", ["A rights issue", "Retained earnings", "Ordinary share capital"]),
+        ("accounting-6", "Where is carriage inwards normally included?", "Cost of sales", ["Finance costs", "Distribution costs", "Other income"]),
+        ("accounting-6", "Which item is a current asset?", "Trade receivables", ["Share capital", "Bank loan repayable in ten years", "Trade payables"]),
+        ("accounting-3", "What is the double entry for a credit sale?", "Debit receivables, credit sales", ["Debit sales, credit receivables", "Debit bank, credit sales", "Debit purchases, credit payables"]),
+        ("accounting-16", "A company issues ordinary shares above their nominal value. Where is the excess recorded?", "Share premium account", ["Revenue account", "Revaluation reserve", "Ordinary share capital account"]),
+        ("accounting-18", "Which principle requires professional honesty?", "Integrity", ["Consistency", "Realisation", "Duality"]),
+    ],
+    "paper_2": [
+        ("accounting-3", "What is the double entry for a credit sale?", "Debit receivables, credit sales", ["Debit sales, credit receivables", "Debit bank, credit sales", "Debit purchases, credit payables"]),
+        ("accounting-8", "Which formula calculates gross profit margin?", "Gross profit ÷ revenue × 100", ["Profit for the year ÷ capital × 100", "Current assets ÷ current liabilities", "Revenue ÷ gross profit × 100"]),
+        ("accounting-8", "Which ratio measures short-term liquidity?", "Current ratio", ["Gearing", "Return on capital employed", "Asset turnover"]),
+        ("accounting-9", "Which transaction reduces the closing balance in a cash budget when paid?", "Purchase of machinery", ["Depreciation charge", "Credit sale not yet collected", "Increase in an inventory valuation"]),
+        ("accounting-10", "Which formula calculates contribution per unit?", "Selling price per unit minus variable cost per unit", ["Selling price per unit minus fixed cost per unit", "Revenue minus total fixed costs", "Profit divided by units sold"]),
+        ("accounting-11", "A business buys a positive quantity of material below the standard price. What is the material price variance?", "Favourable", ["Adverse", "Zero", "Not measurable without the selling price"]),
+        ("accounting-12", "Which cost driver is most suitable for a purchase-order processing cost pool?", "Number of purchase orders", ["Number of employees in sales", "Value of finished goods sold", "Number of ordinary shareholders"]),
+        ("accounting-13", "Which method discounts future cash flows?", "Net present value", ["Payback", "Contribution per unit", "Inventory turnover"]),
+        ("accounting-2", "Which form of business can issue ordinary shares?", "Limited company", ["Sole trader", "Unincorporated partnership", "An individual trading under a business name"]),
+        ("accounting-18", "Which principle requires professional honesty?", "Integrity", ["Consistency", "Realisation", "Duality"]),
+    ],
+}
 
 CALCULATION_TASKS = {
     "statement_extract": "Prepare the requested extract from the statement of financial position",
@@ -87,19 +103,6 @@ def _gbp_decimal(value: float) -> str:
     return f"{sign}£{abs(value):,.2f}"
 
 
-MCQ_TOPIC_IDS = [
-    "accounting-3",
-    "accounting-8",
-    "accounting-5",
-    "accounting-8",
-    "accounting-16",
-    "accounting-6",
-    "accounting-6",
-    "accounting-3",
-    "accounting-13",
-    "accounting-18",
-]
-
 RULE_TOPIC_IDS = {
     ("paper_1", "explain_trade"): "accounting-3",
     ("paper_1", "statement_extract"): "accounting-6",
@@ -110,7 +113,7 @@ RULE_TOPIC_IDS = {
     ("paper_1", "partnership_1"): "accounting-15",
     ("paper_1", "partnership_2"): "accounting-15",
     ("paper_1", "partnership_3"): "accounting-15",
-    ("paper_1", "decision_1"): "accounting-14",
+    ("paper_1", "decision_1"): "accounting-1",
     ("paper_1", "decision_2"): "accounting-17",
     ("paper_2", "frc"): "accounting-1",
     ("paper_2", "contribution"): "accounting-10",
@@ -124,7 +127,7 @@ RULE_TOPIC_IDS = {
     ("paper_2", "costing_2"): "accounting-12",
     ("paper_2", "costing_3"): "accounting-10",
     ("paper_2", "costing_4"): "accounting-12",
-    ("paper_2", "decision_1"): "accounting-13",
+    ("paper_2", "decision_1"): "accounting-1",
     ("paper_2", "decision_2"): "accounting-17",
 }
 
@@ -138,7 +141,6 @@ def build_paper(
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
     topics_by_id = {topic.id: topic for topic in topics}
     rng.shuffle(topics)
-    cursor = 0
     sections: list[GeneratedSection] = []
     for section_rule in rule.sections:
         business = rng.choice(BUSINESSES)
@@ -146,15 +148,18 @@ def build_paper(
         values = _values(rng)
         questions: list[GeneratedQuestion] = []
         for index, question_rule in enumerate(section_rule.questions):
-            if question_rule.kind == "multiple_choice" and index < len(MCQ_TOPIC_IDS):
-                topic_id = MCQ_TOPIC_IDS[index]
+            if question_rule.kind == "multiple_choice":
+                topic_id = MCQ_TASKS[rule.id][index][0]
             else:
                 topic_id = RULE_TOPIC_IDS.get((rule.id, question_rule.id))
-            topic = topics_by_id.get(topic_id, topics[cursor % len(topics)])
-            cursor += 1
+            if topic_id not in topics_by_id:
+                raise ValueError(
+                    f"task {question_rule.id} requires unavailable topic {topic_id}"
+                )
+            topic = topics_by_id[topic_id]
             number = _number(rule.id, section_rule.id, index)
             if question_rule.kind == "multiple_choice":
-                question = _mcq(question_rule, number, index, topic, business, rng)
+                question = _mcq(rule.id, question_rule, number, index, topic, rng)
             else:
                 question = _written(
                     rule.id, question_rule, number, topic, business, case_id, values, rng
@@ -266,27 +271,58 @@ def _values(rng: random.Random) -> list[float]:
 
 
 def _mcq(
+    paper_id: str,
     rule: QuestionRule,
     number: str,
     index: int,
     topic: Topic,
-    business: str,
     rng: random.Random,
 ) -> GeneratedQuestion:
-    stem, correct, distractors = MCQ_FACTS[index]
-    if index in {6, 8}:
-        revenue = rng.randrange(80, 220, 5)
-        cost = rng.randrange(35, revenue - 10, 5)
-        correct = f"£{revenue - cost}000"
-        distractors = [
-            f"£{revenue + cost}000",
-            f"£{cost}000",
-            f"£{revenue}000",
-        ]
+    _, stem, correct, distractors = MCQ_TASKS[paper_id][index]
+    if (paper_id, index) == ("paper_1", 6):
+        revenue = rng.randrange(120, 220, 5) * 1_000
+        cost = rng.randrange(35, 55, 5) * 1_000
         stem = (
-            f"{business} has revenue of £{revenue}000 and cost of sales of "
-            f"£{cost}000. What is gross profit?"
+            f"Revenue is {_gbp(revenue)} and cost of sales is {_gbp(cost)}. "
+            "What is gross profit?"
         )
+        correct = _gbp(revenue - cost)
+        distractors = [_gbp(revenue + cost), _gbp(cost), _gbp(revenue)]
+    elif (paper_id, index) == ("paper_1", 8):
+        shares = rng.randrange(10, 50, 5) * 1_000
+        stem = (
+            f"A company issues {shares:,} ordinary shares with nominal value £1 "
+            "for £3 each. What amount is credited to the share premium account?"
+        )
+        correct = _gbp(shares * 2)
+        distractors = [_gbp(shares), _gbp(shares * 3), _gbp(shares * 4)]
+    elif (paper_id, index) == ("paper_2", 3):
+        opening = rng.randrange(10, 30, 5) * 1_000
+        receipts = rng.randrange(40, 80, 5) * 1_000
+        payments = rng.randrange(30, 40, 5) * 1_000
+        stem = (
+            f"A cash budget has an opening balance of {_gbp(opening)}, "
+            f"receipts of {_gbp(receipts)} and payments of {_gbp(payments)}. "
+            "What is the closing cash balance?"
+        )
+        correct = _gbp(opening + receipts - payments)
+        distractors = [
+            _gbp(receipts - payments), _gbp(opening + receipts),
+            _gbp(opening + receipts + payments),
+        ]
+    elif (paper_id, index) == ("paper_2", 4):
+        price = rng.randrange(30, 50, 5)
+        variable = rng.randrange(10, 20, 5)
+        fixed = 5
+        stem = (
+            f"Selling price is £{price} per unit, variable cost is £{variable} "
+            f"per unit and allocated fixed cost is £{fixed} per unit. "
+            "What is contribution per unit?"
+        )
+        correct = _gbp(price - variable)
+        distractors = [
+            _gbp(price - variable - fixed), _gbp(price + variable), _gbp(price),
+        ]
     choices = [correct, *distractors]
     rng.shuffle(choices)
     answer = choices.index(correct)
