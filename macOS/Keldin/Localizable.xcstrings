@@ -51,6 +51,16 @@
         }
       }
     },
+    "Error" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erreur"
+          }
+        }
+      }
+    },
     "%@ (recommended)" : {
       "localizations" : {
         "fr" : {
@@ -1595,6 +1605,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Modèle Ollama local"
+          }
+        }
+      }
+    },
+    "Preparing the practice paper." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparation du sujet d’entraînement."
+          }
+        }
+      }
+    },
+    "Five paper families are available. The app selects an unused family and blocks repeats." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinq familles de sujets sont disponibles. L’application choisit une famille inutilisée et bloque les répétitions."
+          }
+        }
+      }
+    },
+    "None of the five paper families is sufficiently different from your saved papers. No new paper was created." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune des cinq familles n’est suffisamment différente de vos sujets enregistrés. Aucun nouveau sujet n’a été créé."
+          }
+        }
+      }
+    },
+    "French papers are built locally from a fixed catalogue. No AI model, Ollama installation or cloud service is needed." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sujets français sont construits localement à partir d’un catalogue fixe. Aucun modèle d’IA, aucune installation d’Ollama ni aucun service cloud n’est nécessaire."
+          }
+        }
+      }
+    },
+    "Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sources officielles sont téléchargées avec votre accord. Les sujets sont construits sur ce Mac sans requêtes à un modèle ni génération dans le cloud."
           }
         }
       }

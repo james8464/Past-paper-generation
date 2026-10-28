@@ -101,6 +101,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")
+    assessment.add_argument(
+        "--exclude-family",
+        type=int,
+        choices=range(5),
+        action="append",
+        default=[],
+        help="Exclude a French practice family already saved in the app library",
+    )
     assessment.add_argument("--allow-remote", action="store_true")
     assessment.set_defaults(handler=handle_framework_generate)
     references = subparsers.add_parser(

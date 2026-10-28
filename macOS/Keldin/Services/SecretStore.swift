@@ -25,12 +25,12 @@ enum SecretStore {
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
         ]
-        var status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
+        let status = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         if status == errSecItemNotFound {
-            status = SecItemAdd(query.merging(attributes) { _, new in new } as CFDictionary, nil)
+            _ = SecItemAdd(query.merging(attributes) { _, new in new } as CFDictionary, nil)
         }
-        // A denied write leaves the legacy credential available for another attempt.
-        if status == errSecSuccess { SecItemDelete(legacyQuery as CFDictionary) }
+        // Retain the original credential so a recoverable older installation still works.
+        // Explicitly clearing a key above removes both copies to prevent resurrection.
     }
 
     private static func value(_ account: String, service: String) -> String? {

@@ -315,7 +315,7 @@ private struct HelpTopicPage: View {
                 title: "Local data and deletion",
                 rows: [
                     "French source PDFs and their search index stay in Application Support until you delete them from the French workspace.",
-                    "V34 uses finite app-authored cases, not model-generated questions. No AI model or Ollama installation is needed; papers are built locally without cloud generation.",
+                    "French papers are built locally from a fixed catalogue. No AI model, Ollama installation or cloud service is needed.",
                     "Generated bundles contain questions, corrections, provenance and validation evidence, but no student accounts or submitted answers.",
                 ]
             )

@@ -5,6 +5,44 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    func testIdentityMigrationRevisitsVersionOneForTheV35FamilyLedger() {
+        let defaults = isolatedDefaults()
+        defaults.set(1, forKey: KeldinMigration.completionKey)
+        XCTAssertTrue(KeldinMigration.needsImport(defaults: defaults))
+        defaults.set(2, forKey: KeldinMigration.completionKey)
+        XCTAssertFalse(KeldinMigration.needsImport(defaults: defaults))
+    }
+
+    @MainActor
+    func testImportRetainsFrenchFamilyUseAfterJobHistoryPruning() throws {
+        let defaults = isolatedDefaults()
+        let families = FrenchAssessmentRequest.familyIDs
+        KeldinMigration.importPreferences([AppStorageKey.frenchSavedFamilyIDs: families], into: defaults)
+        let application = isolatedApplication(defaults: defaults)
+        XCTAssertEqual(try application.savedFrenchFamilies(), Array(families.indices))
+    }
+
+    @MainActor
+    func testImportUnionsFrenchFamilyUseWithoutReplacingCurrentUse() throws {
+        let defaults = isolatedDefaults()
+        let families = FrenchAssessmentRequest.familyIDs
+        defaults.set([families[0]], forKey: AppStorageKey.frenchSavedFamilyIDs)
+        KeldinMigration.importPreferences([AppStorageKey.frenchSavedFamilyIDs: [families[4]]], into: defaults)
+        XCTAssertEqual(try isolatedApplication(defaults: defaults).savedFrenchFamilies(), [0, 4])
+    }
+
+    @MainActor
+    func testCorruptImportedFamilyLedgerBlocksGenerationWithoutDeletingCurrentUse() {
+        let defaults = isolatedDefaults()
+        let existing = [FrenchAssessmentRequest.familyIDs[0]]
+        defaults.set(existing, forKey: AppStorageKey.frenchSavedFamilyIDs)
+        KeldinMigration.importPreferences([AppStorageKey.frenchSavedFamilyIDs: "not an array"], into: defaults)
+        XCTAssertEqual(defaults.stringArray(forKey: AppStorageKey.frenchSavedFamilyIDs), existing)
+        XCTAssertThrowsError(try isolatedApplication(defaults: defaults).savedFrenchFamilies())
+        KeldinMigration.importPreferences([AppStorageKey.frenchSavedFamilyIDs: [FrenchAssessmentRequest.familyIDs[4]]], into: defaults)
+        XCTAssertEqual(try isolatedApplication(defaults: defaults).savedFrenchFamilies(), [0, 4])
+    }
+
     func testImportPreservesCurrentPreferencesAndIgnoresUnknownKeys() {
         let defaults = isolatedDefaults()
         defaults.set("current", forKey: AppStorageKey.ollamaModel)

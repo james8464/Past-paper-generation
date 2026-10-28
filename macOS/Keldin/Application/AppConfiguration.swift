@@ -100,6 +100,7 @@ enum AppStorageKey {
     static let outputFolderPath = "outputFolderPath"
     static let outputFolderBookmark = "outputFolderBookmark"
     static let recentDocuments = "recentDocuments"
+    static let frenchSavedFamilyIDs = "frenchSavedPracticeFamilyIDs"
     static let expandedSubjectIDs = "expandedSubjectIDs"
     static let settingsPane = "settingsPane"
     static let selectedBoardID = "selectedBoardID"

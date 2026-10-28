@@ -5,13 +5,14 @@ from __future__ import annotations
 from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
 
 PAPER_1_TOPICS = {
+    "accounting-1",
+    "accounting-2",
     "accounting-3",
     "accounting-4",
     "accounting-5",
     "accounting-6",
     "accounting-7",
     "accounting-8",
-    "accounting-13",
     "accounting-14",
     "accounting-15",
     "accounting-16",
@@ -21,16 +22,14 @@ PAPER_1_TOPICS = {
 
 PAPER_2_TOPICS = {
     "accounting-1",
+    "accounting-2",
     "accounting-3",
-    "accounting-5",
-    "accounting-6",
     "accounting-8",
     "accounting-9",
     "accounting-10",
     "accounting-11",
     "accounting-12",
     "accounting-13",
-    "accounting-16",
     "accounting-17",
     "accounting-18",
 }

@@ -70,6 +70,7 @@ def test_rebrand_uses_keldin_storage_and_imports_legacy_credentials():
     secrets = (APP / "Services/SecretStore.swift").read_text()
     assert 'baseQuery(account, service: "Keldin")' in secrets
     assert "KeldinMigration.legacyKeychainService" in secrets
+    assert "if status == errSecSuccess { SecItemDelete(legacyQuery as CFDictionary) }" not in secrets
     launch = (APP / "Application/KeldinApp.swift").read_text()
     assert "KeldinMigration.prepare()" in launch
 

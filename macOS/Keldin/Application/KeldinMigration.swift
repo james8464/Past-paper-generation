@@ -9,13 +9,19 @@ enum KeldinMigration {
     static let legacyKeychainService = "Paper creator"
     static let completionKey = "keldinIdentityMigrationVersion"
     static let artifactMappingsKey = "keldinImportedArtifactRoots"
+    static let frenchFamilyImportFailedKey = "keldinFrenchFamilyImportFailed"
+    private static let migrationVersion = 2
+
+    static func needsImport(defaults: UserDefaults) -> Bool {
+        defaults.integer(forKey: completionKey) < migrationVersion
+    }
 
     static func environmentValue(_ name: String, environment: [String: String]) -> String? {
         environment[name] ?? environment[name.replacingOccurrences(of: "KELDIN_", with: "PAPER_CREATOR_")]
     }
 
     static func prepare(defaults: UserDefaults = .standard, fileManager: FileManager = .default) -> [String] {
-        guard defaults.integer(forKey: completionKey) < 1 else { return [] }
+        guard needsImport(defaults: defaults) else { return [] }
         importPreferences(defaults.persistentDomain(forName: legacyBundleID) ?? [:], into: defaults)
         let localHome = fileManager.homeDirectoryForCurrentUser
         let accountHome = fileManager.homeDirectory(forUser: NSUserName()) ?? localHome
@@ -28,6 +34,9 @@ enum KeldinMigration {
             accountHome.appendingPathComponent("Library/Containers/\(legacyBundleID)/Data/Library/Application Support", isDirectory: true),
         ]
         var failures: [String] = []
+        if defaults.bool(forKey: frenchFamilyImportFailedKey) {
+            failures.append("Previous French practice history could not be imported. French generation remains blocked until the saved history is repaired.")
+        }
         for root in supportRoots {
             for name in legacyAppFolders {
                 let source = root.appendingPathComponent(name, isDirectory: true)
@@ -41,7 +50,7 @@ enum KeldinMigration {
             }
         }
         // An unreadable sandbox container can be selected explicitly in Output Settings.
-        if failures.isEmpty { defaults.set(1, forKey: completionKey) }
+        if failures.isEmpty { defaults.set(migrationVersion, forKey: completionKey) }
         return failures
     }
 
@@ -61,6 +70,16 @@ enum KeldinMigration {
         for key in keys where defaults.object(forKey: key) == nil {
             if let value = values[key] { defaults.set(value, forKey: key) }
         }
+        let familyKey = AppStorageKey.frenchSavedFamilyIDs
+        guard let importedValue = values[familyKey] else { return }
+        guard let imported = importedValue as? [String],
+              let current = (defaults.object(forKey: familyKey) ?? [String]()) as? [String] else {
+            // Keep both original ledgers intact. Never treat an unreadable import as unused families.
+            defaults.set(true, forKey: frenchFamilyImportFailedKey)
+            return
+        }
+        defaults.set(Array(Set(current + imported)).sorted(), forKey: familyKey)
+        defaults.removeObject(forKey: frenchFamilyImportFailedKey)
     }
 
     static func importData(from source: URL, defaults: UserDefaults = .standard, fileManager: FileManager = .default) throws {

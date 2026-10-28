@@ -40,6 +40,7 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.status, "Sujet d’entraînement créé. Barème indicatif, difficulté et durée non calibrées.")
         model.apply(.error(message: "AI could not produce a valid, second-pass reviewed item for question 01: rejected", code: "generation_failed"))
         XCTAssertTrue(model.errorMessage.hasPrefix("Ce modèle n'a pas pu créer une épreuve"))
+        XCTAssertEqual(model.status, "Erreur")
     }
 
     @MainActor
@@ -51,6 +52,56 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.status, "Practice paper created. Marking guidance is indicative; difficulty and timing are uncalibrated.")
         model.apply(.error(message: "Les quatre familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé.", code: "french_generation_failed"))
         XCTAssertEqual(model.errorMessage, "None of the four paper families is sufficiently different from your saved papers. No new paper was created.")
+        XCTAssertEqual(model.status, "Error")
+    }
+
+    @MainActor
+    func testFiveFamilyRefusalHasEnglishAndFrenchCopy() {
+        let message = "Les cinq familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé."
+        XCTAssertEqual(GenerationPresentation.error(message, language: "en"), "None of the five paper families is sufficiently different from your saved papers. No new paper was created.")
+        XCTAssertEqual(GenerationPresentation.error(message, language: "fr"), "Aucune des cinq familles n’est suffisamment différente de vos sujets enregistrés. Aucun nouveau sujet n’a été créé.")
+    }
+
+    @MainActor
+    func testFrenchSavedFamiliesSurviveOutputFolderChangesAndMissingFiles() throws {
+        func record(model: String, seed: Int?, state: GenerationJobState = .completed, dryRun: Bool = false) -> GenerationJobRecord {
+            GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned", model: model, seed: seed, dryRun: dryRun, assessmentID: FrenchAssessmentRequest.assessmentID),
+                provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: model),
+                state: state, artifacts: [], qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+            )
+        }
+        let jobs = (0..<5).map { record(model: "app-owned-v35", seed: $0, state: $0 == 4 ? .missingArtifacts : .completed) }
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: jobs), [0,1,2,3,4])
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v34", seed: 7), record(model: "app-owned-v35", seed: -1)]), [3,4])
+        XCTAssertEqual(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v35", seed: 2, state: .failed), record(model: "app-owned-v35", seed: 2, dryRun: true)]), [])
+        XCTAssertThrowsError(try FrenchAssessmentRequest.savedFamilies(in: [record(model: "app-owned-v35", seed: nil)]))
+        let request = FrenchAssessmentRequest(referenceIndex: URL(fileURLWithPath: "/references.sqlite"), output: URL(fileURLWithPath: "/new-folder"), seed: 270100, largePrint: false, excludedFamilies: [0,1,2,3,4])
+        XCTAssertEqual(Array(request.arguments.suffix(10)), ["--exclude-family","0","--exclude-family","1","--exclude-family","2","--exclude-family","3","--exclude-family","4"])
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = isolatedApplication(defaults: defaults)
+        for job in jobs { try application.recentDocumentStore.save(job) }
+        XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
+        for job in jobs { try application.recentDocumentStore.remove(job) }
+        XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
+        application.outputFolder = temporaryDirectory.appendingPathComponent("another-output")
+        application.generateFrenchPaper(largePrint: false)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertTrue(application.showError)
+        XCTAssertEqual(application.status, "Erreur")
+        XCTAssertTrue(application.errorMessage.hasPrefix("Aucune des cinq familles"))
+        XCTAssertEqual(application.recentDocumentStore.records.count, 0)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: application.outputFolder.path))
+        defaults.set(["unknown-family"], forKey: AppStorageKey.frenchSavedFamilyIDs)
+        XCTAssertThrowsError(try application.savedFrenchFamilies())
+    }
+
+    @MainActor
+    func testFrenchPreparationProgressUsesTheSelectedLanguage() {
+        let message = "Construction des exercices vérifiés, sans appel à un modèle."
+        XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), "Preparing the practice paper.")
+        XCTAssertEqual(GenerationPresentation.progress(message, language: "fr"), "Préparation du sujet d’entraînement.")
     }
 
     private var temporaryDirectory: URL!
@@ -110,11 +161,11 @@ final class CoordinatorTests: XCTestCase {
         let record = GenerationJobRecord(
             configuration: GenerationConfiguration(
                 boardID: "fr-national-nsi", paperID: "written-2027",
-                provider: "application-owned", model: "app-owned-v34", seed: 270100,
+                provider: "application-owned", model: "app-owned-v35", seed: 270100,
                 dryRun: false, educationSystem: "fr-national",
                 assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR"
             ),
-            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v34"),
+            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v35"),
             state: .pending, artifacts: [],
             qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
         )
@@ -122,7 +173,7 @@ final class CoordinatorTests: XCTestCase {
         try coordinator.begin(record)
         XCTAssertThrowsError(try coordinator.complete())
         XCTAssertEqual(store.records.first?.state, .running)
-        let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v34","seed":270101,"prompt_version":"fr-nsi-written-2027-v34","print_policy":"fr-nsi-v34-internal-review-v1"}}"#
+        let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v35","seed":270101,"prompt_version":"fr-nsi-written-2027-v35","print_policy":"fr-nsi-v35-internal-review-v1"}}"#
         try Data(payload.utf8).write(to: manifest)
         let original = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(payload.utf8)) as? [String: Any])
         for (key, value) in ["seed": true, "print_policy": "approved", "model": "app-owned-v32"] as [String: Any] {
@@ -144,7 +195,7 @@ final class CoordinatorTests: XCTestCase {
         try coordinator.complete(artifacts: [file])
         XCTAssertEqual(store.records.first?.id, record.id)
         XCTAssertEqual(store.records.first?.configuration.seed, 270101)
-        XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v34")
+        XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v35")
         XCTAssertEqual(store.records.first?.qualification, record.qualification)
         XCTAssertEqual(store.records.first?.state, .completed)
     }

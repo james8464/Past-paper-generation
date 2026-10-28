@@ -85,7 +85,7 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official practice papers. Review the questions and proposed answers before use.")
                     .foregroundStyle(.secondary)
-                Text("Four paper families are available. The app selects an unused family and blocks repeats.")
+                Text("Five paper families are available. The app selects an unused family and blocks repeats.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
@@ -132,7 +132,7 @@ struct FrenchAssessmentWorkspace: View {
                 Button("Record a teacher review…") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
-                    Text("Official sources are downloaded with your permission. V34 builds papers on this Mac without model prompts or cloud generation.")
+                    Text("Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation.")
                     if application.hasFrenchReferences {
                         Button("Delete downloaded French references", role: .destructive) {
                             showDeleteReferences = true

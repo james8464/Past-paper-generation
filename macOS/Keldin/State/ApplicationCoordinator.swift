@@ -234,6 +234,8 @@ final class ApplicationCoordinator: ObservableObject {
             defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         }
         restoreRecentDocuments()
+        // Invalid saved usage stays untouched; the creation action reports it.
+        _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = outputFolder
     }
 
@@ -304,14 +306,47 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func generateFrenchPaper(largePrint: Bool) {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        let excludedFamilies: [Int]
+        do {
+            excludedFamilies = try savedFrenchFamilies()
+        } catch {
+            setError(error.localizedDescription)
+            return
+        }
+        guard excludedFamilies.count < 5 else {
+            pendingGenerationSeed = nil
+            setError("Les cinq familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé.")
+            return
+        }
         let seed = pendingGenerationSeed ?? Int.random(in: 1 ... Int(Int32.max))
         pendingGenerationSeed = seed
         let request = FrenchAssessmentRequest(
             referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
             output: distributionMode == .appStore ? AppDefaults.appStoreWorkingFolder() : outputFolder,
-            seed: seed, largePrint: largePrint
+            seed: seed, largePrint: largePrint, excludedFamilies: excludedFamilies
         )
         startFrenchOperation(arguments: request.arguments, seed: seed)
+    }
+
+    /// Catalogue use survives the configurable job-history limit and output moves.
+    func savedFrenchFamilies() throws -> [Int] {
+        guard !defaults.bool(forKey: KeldinMigration.frenchFamilyImportFailedKey) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        let ids = FrenchAssessmentRequest.familyIDs
+        var remembered: [Int] = []
+        if let raw = defaults.object(forKey: AppStorageKey.frenchSavedFamilyIDs) {
+            guard let values = raw as? [String], values.count <= ids.count else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            remembered = values.compactMap { ids.firstIndex(of: $0) }
+            guard remembered.count == values.count else { throw CocoaError(.fileReadCorruptFile) }
+        }
+        let observed = try FrenchAssessmentRequest.savedFamilies(in: recentDocumentStore.records)
+        let families = Set(remembered + observed).sorted()
+        defaults.set(families.map { ids[$0] }, forKey: AppStorageKey.frenchSavedFamilyIDs)
+        return families
     }
 
     func recordFrenchReview(
@@ -1102,6 +1137,9 @@ final class ApplicationCoordinator: ObservableObject {
                 generationEstimate = nil
                 do {
                     try generationCoordinator.complete(artifacts: currentGenerationFiles)
+                    if activeFrameworkID == FrenchAssessmentRequest.assessmentID {
+                        _ = try savedFrenchFamilies()
+                    }
                 } catch {
                     let message = String(localized: "The paper was created, but its history could not be saved or verified.")
                     setError(message)
@@ -1252,7 +1290,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func setError(_ message: String) {
         errorMessage = GenerationPresentation.error(message, language: presentationLanguage)
         showError = true
-        status = "Error"
+        status = InterfaceText.resolve("Error", language: presentationLanguage)
         generationProgress = nil
         if activeOperation == .generation {
             generationEstimate = nil
