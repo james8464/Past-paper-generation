@@ -171,3 +171,68 @@ def test_all_four_families_have_complete_printed_content(
     path = tmp_path / "paper.pdf"
     render(path, package, correction, large_print)
     validate_whole_case_pdf(path, package, correction=correction)
+
+
+@pytest.mark.parametrize("exercise,source", [("2", "Atlas"), ("3", "Durée CPU")])
+def test_enlarged_new_correction_keeps_source_table_with_introduction(
+    tmp_path, exercise, source
+):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path)
+    path = tmp_path / "loan-correction.pdf"
+    render(path, package, True, large_print=True)
+    with pymupdf.open(path) as pdf:
+        introduction = [
+            page for page in pdf if page.search_for(f"Exercice {exercise} (6 points)")
+        ]
+        assert len(introduction) == 1
+        # A case heading alone gives the reader no data to work with.
+        assert source in introduction[0].get_text()
+
+
+def test_v34_correction_replaces_only_blank_code_with_subject_reference():
+    from Backend.Core.france.rendering import correction_prompt
+
+    prompt = (
+        "Compléter A.\n```python\nreturn __A__\n```\n"
+        "Corriger aussi ce programme :\n```python\nreturn 1 / 0\n```"
+    )
+    printed = correction_prompt(prompt)
+    assert "return __A__" not in printed
+    assert "return 1 / 0" in printed
+    assert "Compléter A." in printed
+    assert "Le code à compléter figure dans le sujet." in printed
+
+
+def test_v34_correction_keeps_filled_code_and_subject_keeps_blanks(tmp_path):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path)
+    subject, correction = tmp_path / "subject.pdf", tmp_path / "correction.pdf"
+    render(subject, package, False, large_print=True)
+    render(correction, package, True, large_print=True)
+    with pymupdf.open(subject) as pdf:
+        assert "__A__" in "".join(page.get_text() for page in pdf)
+    with pymupdf.open(correction) as pdf:
+        text = "".join(page.get_text() for page in pdf)
+        assert "return pile[0]" in text
+        assert "pile.append(__A__)" not in text
+
+
+def test_compact_correction_has_no_footer_only_page_between_exercises(tmp_path):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path, seed=270100)
+    path = tmp_path / "no-blank-page.pdf"
+    render(path, package, True)
+    with pymupdf.open(path) as pdf:
+        for page in pdf:
+            body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
+            assert body.strip(), f"Content-empty page {page.number + 1}"

@@ -51,6 +51,21 @@ def printable_database_criterion(criterion: str) -> str:
     return " ".join(re.sub(r"```(?:sql|python)?", " ", criterion).split())
 
 
+def correction_prompt(text: str) -> str:
+    """Refer to blank scaffolds in the subject; retain every other code example.
+
+    V34 corrections already print the complete solution below the prompt.
+    Repeating a long blank program separates that solution from its credits in
+    enlarged print. Faulty programs are evidence and must remain visible.
+    """
+    def replace(match: re.Match[str]) -> str:
+        if re.search(r"__[A-Z][A-Z0-9_]*__", match.group()):
+            return "Le code à compléter figure dans le sujet."
+        return match.group()
+
+    return re.sub(r"```(?:python|sql)?[^`]*```", replace, text)
+
+
 def french_prose_markup(text: str) -> str:
     """Escape prose and bind French punctuation, never executable listings."""
     text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
@@ -382,6 +397,7 @@ def render_assessment(
     large_print: bool = False,
     human_readable_graph_titles: bool = False,
     coherent_material_flow: bool = False,
+    compact_correction: bool = False,
 ):
     # Historical contracts keep their recorded identity; current whole cases use
     # the public app name without changing their questions or indicative credit.
@@ -695,6 +711,9 @@ def render_assessment(
                                 in {
                                     "expression_synthesis_contract",
                                     "postfix_synthesis_contract",
+                                    "loan_case_contract",
+                                    "curriculum_database_case_contract",
+                                    "round_robin_case_contract",
                                 }
                             )
                             and (
@@ -726,7 +745,12 @@ def render_assessment(
                 and question.verification.get("kind") == "network_depth_contract"
             ):
                 final_network_pair_start = question_start
-            question_content(question.id, question.prompt)
+            question_content(
+                question.id,
+                correction_prompt(question.prompt)
+                if correction and compact_correction
+                else question.prompt,
+            )
             if (
                 question.id == "3l"
                 and security_case_start is not None
@@ -891,6 +915,9 @@ def render_assessment(
                     if question.verification.get("kind") in {
                         "expression_synthesis_contract",
                         "postfix_synthesis_contract",
+                        "loan_case_contract",
+                        "curriculum_database_case_contract",
+                        "round_robin_case_contract",
                     }:
                         # A complete source table plus a worked tree can fill a
                         # page. Let the table remain with the case introduction;
@@ -935,9 +962,11 @@ def render_assessment(
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
-                    exercise_index < len(exercises) - 1
+                    (exercise_index < len(exercises) - 1 and not compact_correction)
                     or question_index < len(exercise.questions) - 1
                 ):
+                    # V34 starts the next exercise with PageBreak. A trailing
+                    # spacer can spill onto a fresh page and leave it empty.
                     story.append(Spacer(1, 2 if graph_depth_correction else 5))
 
     def cover_page(canvas, built_doc):
