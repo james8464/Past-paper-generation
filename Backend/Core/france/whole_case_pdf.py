@@ -18,6 +18,13 @@ from Backend.Core.france.pipeline import (
     CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
     validate_package,
 )
+from Backend.Core.france.print_policy import (
+    V34_CORRECTION_GUIDANCE,
+    V34_CREDIT_NOTICE,
+    V34_FOOTER,
+    V34_PRINT_POLICY,
+    V34_REVIEW_NOTICE,
+)
 from Backend.Core.france.synthesized_pipeline import VERSION as SYNTHESIZED_VERSION
 
 
@@ -34,7 +41,7 @@ def _heading(exercise: NSIExercise) -> str:
     return f"Exercice {exercise.id} ({points} points)"
 
 
-def _expected_preface(correction: bool) -> str:
+def _expected_preface(correction: bool, *, print_policy: str | None = None) -> str:
     parts = [
         "BACCALAURÉAT GÉNÉRAL",
         "ÉPREUVE D’ENSEIGNEMENT DE SPÉCIALITÉ",
@@ -42,7 +49,11 @@ def _expected_preface(correction: bool) -> str:
         "NUMÉRIQUE ET SCIENCES INFORMATIQUES",
         "CORRIGÉ PROPOSÉ ET BARÈME INDICATIF"
         if correction
-        else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL",
+        else (
+            "SUJET D’ENTRAÎNEMENT - NON OFFICIEL"
+            if print_policy == V34_PRINT_POLICY
+            else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL"
+        ),
         "Durée de l’épreuve : 3 heures 30",
         "Document de travail pour la relecture pédagogique."
         if correction
@@ -50,12 +61,18 @@ def _expected_preface(correction: bool) -> str:
         "Réponses et crédits à vérifier avant toute évaluation."
         if correction
         else "Dès que ce sujet vous est remis, assurez-vous qu’il est complet.",
-        "Ce document doit être relu par un enseignant avant toute utilisation.",
+        V34_REVIEW_NOTICE
+        if print_policy == V34_PRINT_POLICY
+        else "Ce document doit être relu par un enseignant avant toute utilisation.",
         "Évaluation : 18 points techniques et 2 points pour la maîtrise de la langue.",
         "Trois exercices indépendants - corrigé proposé."
         if correction
         else "Le sujet est composé de trois exercices indépendants.",
-        "Barème et variantes à confirmer par un enseignant."
+        (
+            V34_CREDIT_NOTICE
+            if print_policy == V34_PRINT_POLICY
+            else "Barème et variantes à confirmer par un enseignant."
+        )
         if correction
         else "Le candidat traite les trois exercices.",
     ]
@@ -70,7 +87,9 @@ def _expected_preface(correction: bool) -> str:
         parts.extend(
             [
                 "Consignes générales de correction",
-                "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative.",
+                V34_CORRECTION_GUIDANCE
+                if print_policy == V34_PRINT_POLICY
+                else "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative.",
                 "Maîtrise de la langue - 2 points sur l'ensemble de la copie",
                 "Apprécier l'orthographe, la syntaxe, la précision du vocabulaire et l'organisation du raisonnement conformément à la grille nationale. La répartition détaillée entre ces dimensions n'est pas présentée comme officielle. Cette application ne note pas les copies des élèves.",
                 "Appréciation globale",
@@ -163,6 +182,15 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
 
     validate_pdf(path)
     exercises = [NSIExercise.model_validate(raw) for raw in package["exercises"]]
+    print_policy = package["identity"].get("print_policy")
+    footers = (
+        {V34_FOOTER}
+        if print_policy == V34_PRINT_POLICY
+        else {
+            "Paper Creator — entraînement non officiel — non relu",
+            "Keldin — entraînement non officiel — non relu",
+        }
+    )
     with pymupdf.open(path) as pdf:
         if any(
             abs(page.rect.width - 595.276) > 0.5 or abs(page.rect.height - 841.89) > 0.5
@@ -175,10 +203,6 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
                 if not body.strip():
                     raise ValueError(f"Page {number} sans contenu dans le sujet V34")
             page_lines = [line.strip() for line in page.get_text().splitlines()]
-            footers = {
-                "Paper Creator — entraînement non officiel — non relu",
-                "Keldin — entraînement non officiel — non relu",
-            }
             if sum(line in footers for line in page_lines) != 1:
                 raise ValueError("Pied de page non officiel absent ou dupliqué")
             counters = [
@@ -193,8 +217,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
             for page in pdf
             for line in page.get_text().splitlines()
             if line.strip()
-            and line.strip() != "Paper Creator — entraînement non officiel — non relu"
-            and line.strip() != "Keldin — entraînement non officiel — non relu"
+            and line.strip() not in footers
             and not re.fullmatch(r"Page\s*:\s*\d+\s*/\s*\d+", line.strip())
         ]
     text = _compact("\n".join(lines))
@@ -204,7 +227,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
     positions = [text.index(heading) for heading in headings]
     if positions != sorted(positions):
         raise ValueError("Ordre des exercices V32 incorrect")
-    if text[: positions[0]] != _expected_preface(correction):
+    if text[: positions[0]] != _expected_preface(correction, print_policy=print_policy):
         raise ValueError(
             "Couverture ou consignes V32 incompatibles avec le rôle du PDF"
         )

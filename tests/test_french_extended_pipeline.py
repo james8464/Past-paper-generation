@@ -266,3 +266,71 @@ def test_compact_correction_has_no_footer_only_page_between_exercises(tmp_path):
         for page in pdf:
             body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
             assert body.strip(), f"Content-empty page {page.number + 1}"
+
+
+@pytest.mark.parametrize("correction", [False, True])
+@pytest.mark.parametrize("large_print", [False, True])
+def test_v34_print_policy_states_actual_review_limits(tmp_path, correction, large_print):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path)
+    assert package["identity"]["print_policy"] == "fr-nsi-v34-internal-review-v1"
+    assert package["teacher_review"] == {"state": "not_run"}
+    assert package["empirical_calibration"] == {"state": "not_run"}
+    path = tmp_path / "review-notice.pdf"
+    render(path, package, correction, large_print)
+    with pymupdf.open(path) as pdf:
+        cover = " ".join(pdf[0].get_text().split())
+        assert "Difficulté et durée non calibrées." in cover
+        assert "doit être relu par un enseignant" not in cover
+        assert "à confirmer par un enseignant" not in cover
+        assert "—" not in cover
+        if correction:
+            assert "Barème indicatif, sans validation enseignante." in cover
+            assert "sans validation enseignante ni calibration auprès d'élèves" in (
+                " ".join(pdf[1].get_text().split())
+            )
+        for page in pdf:
+            assert "Keldin - entraînement non officiel - non calibré" in page.get_text()
+
+
+def test_v34_print_policy_identity_cannot_be_relabelled(tmp_path):
+    package = generate(tmp_path)
+    package["identity"]["print_policy"] = "approved"
+    with pytest.raises(ValueError):
+        validate_package(package)
+
+
+def test_unknown_print_policy_is_rejected_before_writing(tmp_path):
+    from Backend.Core.france.rendering import render_assessment
+
+    path = tmp_path / "invalid.pdf"
+    with pytest.raises(ValueError, match="print policy"):
+        render_assessment(path, [], correction=False, print_policy="approved")
+    assert not path.exists()
+
+
+def test_v34_pdf_cannot_silently_use_historical_notices(tmp_path):
+    from Backend.Core.france.rendering import render_assessment
+    from Backend.Core.france.whole_case_pdf import validate_whole_case_pdf
+    from Backend.Core.render_transaction import render_pdf_atomically
+
+    package = generate(tmp_path)
+    path = tmp_path / "wrong-policy.pdf"
+    render_pdf_atomically(
+        path,
+        lambda destination: render_assessment(
+            destination,
+            [NSIExercise.model_validate(raw) for raw in package["exercises"]],
+            correction=False,
+            human_readable_graph_titles=True,
+            coherent_material_flow=True,
+            compact_correction=True,
+        ),
+        role="question_paper",
+        language="fr-FR",
+    )
+    with pytest.raises(ValueError, match="Pied de page"):
+        validate_whole_case_pdf(path, package, correction=False)

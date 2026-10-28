@@ -40,6 +40,7 @@ def render(path, package, correction, large_print=False):
             coherent_material_flow=True,
             compact_correction=package.get("identity", {}).get("prompt_version")
             == "fr-nsi-written-2027-v34",
+            print_policy=package.get("identity", {}).get("print_policy"),
         ),
         role="mark_scheme" if correction else "question_paper",
         language="fr-FR",
@@ -50,6 +51,8 @@ def test_whole_case_correction_keeps_prompt_with_answer(tmp_path, whole_package)
     path = tmp_path / "correction-flow.pdf"
     render(path, whole_package, True)
     with pymupdf.open(path) as pdf:
+        assert "print_policy" not in whole_package["identity"]
+        assert "doit être relu par un enseignant" in pdf[0].get_text()
         for exercise in whole_package["exercises"]:
             for question in exercise["questions"]:
                 identifier = question["id"]

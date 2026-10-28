@@ -21,6 +21,7 @@ from Backend.Core.france import (
     tree_case_prose,
 )
 from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027, NSIExercise
+from Backend.Core.france.print_policy import V34_PRINT_POLICY
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.synthesized_pipeline import _references
 from Backend.Core.scoped_references import ReferenceIndex
@@ -139,6 +140,7 @@ def _build(seed, references, history):
     identity = dict(
         assessment=asdict(NSI_2027),
         prompt_version=VERSION,
+        print_policy=V34_PRINT_POLICY,
         seed=seed,
         implementation_sha256=implementation_identity(),
         provider="application-owned",
