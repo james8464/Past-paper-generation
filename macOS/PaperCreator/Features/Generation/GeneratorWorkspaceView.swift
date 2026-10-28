@@ -20,6 +20,7 @@ struct GeneratorWorkspace: View {
             }
         }
         .navigationTitle("\(board.subjectTitle) · \(board.shortTitle)")
+        .focusedSceneValue(\.paperCreationContext, .board)
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {

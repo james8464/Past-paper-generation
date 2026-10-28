@@ -1,17 +1,45 @@
 import SwiftUI
 
+private struct PaperCreationContextKey: FocusedValueKey {
+    typealias Value = PaperCreationContext
+}
+
+extension FocusedValues {
+    var paperCreationContext: PaperCreationContext? {
+        get { self[PaperCreationContextKey.self] }
+        set { self[PaperCreationContextKey.self] = newValue }
+    }
+}
+
 struct AppCommands: Commands {
     @ObservedObject var application: ApplicationCoordinator
     @FocusedObject private var documentActions: DocumentActionController?
+    @FocusedValue(\.paperCreationContext) private var creationContext
+
+    private var canCreate: Bool {
+        creationContext?.canCreate(
+            boardCanGenerate: application.canGenerate,
+            hasFrenchReferences: application.hasFrenchReferences,
+            isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome
+        ) == true
+    }
+
+    private func createPaper() {
+        guard canCreate, let creationContext else { return }
+        switch creationContext {
+        case .board: application.generate()
+        case let .french(largePrint): application.generateFrenchPaper(largePrint: largePrint)
+        }
+    }
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button("New Paper", action: application.showCreationWorkspace)
                 .keyboardShortcut("n", modifiers: [.command])
 
-            Button("Create Paper", action: application.generate)
+            Button("Create Paper", action: createPaper)
                 .keyboardShortcut(.return, modifiers: [.command])
-                .disabled(!application.canGenerate)
+                .disabled(!canCreate)
 
             Button("Cancel Generation", action: application.cancelGeneration)
                 .keyboardShortcut(".", modifiers: [.command])

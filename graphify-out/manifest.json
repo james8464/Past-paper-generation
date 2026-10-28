@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793169847.8130481,
-    "ast_hash": "761ccce1889771e119ac2125c9e34037",
+    "mtime": 1793182973.9217994,
+    "ast_hash": "d69e852e98d3ab253b47809c5dd63956",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1265,8 +1265,8 @@
     "semantic_hash": "0468f7ebe38f92198b3a5b0b1a0afe79"
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
-    "mtime": 1793179563.3904798,
-    "ast_hash": "30e8b044e4980c7fef85cfda62088d1a",
+    "mtime": 1793182950.70637,
+    "ast_hash": "d6c2a75fe45fb65e2164d236d2988a22",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
@@ -1355,13 +1355,13 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1793169276.1242719,
-    "ast_hash": "04e598748abad9f5dcdab36653c256f1",
+    "mtime": 1793182950.7066846,
+    "ast_hash": "408d9d5fa438301a43fc19bb02c770b3",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1793146110.3884788,
-    "ast_hash": "9575672807816483bbc4a48fd6016785",
+    "mtime": 1793182950.7069478,
+    "ast_hash": "fd932911a66ef562a4b19d844fef6f84",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/PaperCreationTips.swift": {
@@ -1445,8 +1445,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793179502.1006076,
-    "ast_hash": "064fea5034ee780d72779a8c80759893",
+    "mtime": 1793182915.8723724,
+    "ast_hash": "d12b9a4f2e9e4095b92f20bfd1e916c9",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3717,6 +3717,11 @@
   "docs/quality/french-nsi-v34-public-flow-acceptance-2026-10-28.md": {
     "mtime": 1793169847.724219,
     "ast_hash": "4b40e4b8c3ccd7349ce8e2e6805ab6c1",
+    "semantic_hash": ""
+  },
+  "macOS/PaperCreator/Domain/PaperCreationContext.swift": {
+    "mtime": 1793182950.7057524,
+    "ast_hash": "0ccf8053bca06bfa67749313a459458f",
     "semantic_hash": ""
   }
 }
