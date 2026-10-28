@@ -1170,9 +1170,7 @@
       "mark-scheme": {
         "page_count": 26,
         "page_count_policy": {
-          "kind": "exact",
-          "minimum": 26,
-          "maximum": 26
+          "kind": "generated-aqa-accounting-paper1-credit-v1"
         },
         "page_boxes": [
           {

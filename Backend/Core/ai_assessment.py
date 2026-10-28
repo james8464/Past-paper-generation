@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import math
 import re
 from collections.abc import Callable, Iterable
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -81,6 +82,23 @@ class GenerationPolicy:
     require_model_review: bool = True
     require_independent_solution: bool = False
     require_difficulty_review: bool = False
+
+    def __post_init__(self) -> None:
+        for name in ("batch_size", "attempts", "max_workers"):
+            value = getattr(self, name)
+            if type(value) is not int or value < 1:
+                raise ValueError(f"{name} must be a positive integer, not a boolean")
+        # Similarity scores lie in 0...1. The inclusive comparison deliberately
+        # keeps zero maximally strict and one able to reject exact duplicates.
+        for name in ("draft_similarity_limit", "paper_similarity_limit"):
+            value = getattr(self, name)
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not 0 <= value <= 1
+                or not math.isfinite(value)
+            ):
+                raise ValueError(f"{name} must be a finite number between 0 and 1")
 
 
 # A checked answer does not establish stem or distractor quality.
@@ -740,7 +758,14 @@ def _independently_validate_candidate(
         raise ValueError(f"question {candidate.number} changed immutable numeric prompt")
     numeric_fields = {
         key for key in task.question.authoring_context
-        if key.startswith("calculation_") or key in {"cs_input_contract", "numeric_input_contract", "source_data", "opening_balances", "depreciation_policy", "transactions_at_start_of_year", "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries"}
+        if key.startswith("calculation_") or key in {
+            "cs_input_contract", "numeric_input_contract", "source_data", "candidate_source",
+            "selected_response_contract",
+            "accounting_source_content", "accounting_marking_policy", "grouped_level_policy",
+            "opening_balances", "depreciation_policy", "transactions_at_start_of_year",
+            "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries",
+            "referenced_question_data", "independent_solver_instructions",
+        }
     }
     if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
         raise ValueError(f"question {candidate.number} changed immutable numeric source contract")
@@ -1018,6 +1043,7 @@ def _candidate_question(
                     points,
                     rendered_choices[correct_choice],
                 )
+        _validate_mcq_prompt_options(original, prompt, rendered_choices)
     else:
         rendered_choices = []
         correct_choice = None
@@ -1121,6 +1147,37 @@ def _validate_release_mark_scheme(question: GeneratedQuestion) -> None:
             ),
         }
     )
+
+
+# Reject an option list that the renderer would print a second time.
+def _validate_mcq_prompt_options(
+    question: GeneratedQuestion, prompt: str, choices: list[str]
+) -> None:
+    # The renderer owns the option list. Match the actual four choices, rather
+    # than banning labels that could legitimately identify data in the stem.
+    labels = list(re.finditer(
+        r"(?<!\w)(?:\*\*|__)?\(?([A-D])(?:\*\*|__)?\s*[.):\-\u2013\u2014](?:\*\*|__)?\s+",
+        prompt,
+        re.IGNORECASE,
+    ))
+    choice_words = [re.findall(r"\w+", choice.casefold()) for choice in choices]
+    for start in range(len(labels) - 3):
+        group = labels[start : start + 4]
+        if [match.group(1).upper() for match in group] != list("ABCD"):
+            continue
+        duplicated = True
+        for index, match in enumerate(group):
+            end = group[index + 1].start() if index < 3 else len(prompt)
+            words = re.findall(r"\w+", prompt[match.end() : end].casefold())
+            expected = choice_words[index]
+            if not expected or words[: len(expected)] != expected:
+                duplicated = False
+                break
+        if duplicated:
+            raise ValueError(
+                f"question {question.number} embedded alternatives in its prompt; "
+                "provide options only in choices"
+            )
 
 
 # Make the selected answer explicit when a model uses only a shorthand label.
@@ -1529,7 +1586,8 @@ def _generation_prompt(
         "mark scheme by repeating the complete selected choice verbatim. The keyed "
         "choice must directly answer the stem's exact grammatical subject and scope; "
         "all four choices must use parallel grammar; and exactly one choice may be "
-        "fully correct. For all "
+        "fully correct. Put the alternatives only in `choices`, never as an "
+        "A-D list in the prompt. For all "
         "other kinds use an empty choices array and null "
         "`correct_choice`. Give concrete indicative content, acceptable "
         "alternatives, exclusions, dependencies, and error-carried-forward guidance "
@@ -1792,9 +1850,15 @@ def _task_source(task: _Task) -> dict[str, object]:
     # generic option extracts. Authoring metadata (word budgets, AO labels)
     # must not hide a case that the question actually asks the candidate to use.
     owns_source = owns_shared_source(task.question.model_dump(mode="json"))
+    source_title = task.option.title
+    owned_case = context.get("candidate_source")
+    if owns_source and isinstance(owned_case, dict):
+        title = owned_case.get("business", owned_case.get("label"))
+        if isinstance(title, str) and title.strip():
+            source_title = title
     if context:
         source: dict[str, object] = {
-            "title": task.option.title,
+            "title": source_title,
             "question_context": context,
             "source_references": task.question.source_references,
         }

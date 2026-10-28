@@ -1,6 +1,7 @@
 # Keep component topics attached to the tasks they actually assess.
 
 import re
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -77,13 +78,35 @@ def test_distinct_calculations_have_correct_keys_and_unique_distractors(paper_id
         paper = build_paper(RULES[paper_id], SYLLABUS, seed)
         questions = paper.sections[0].options[0].questions[:10]
         if paper_id == "paper_1":
-            gross_profit, premium = questions[6], questions[8]
-            revenue, cost = [
-                int(value.replace(",", ""))
-                for value in re.findall(r"£([\d,]+)", gross_profit.prompt)
+            # Independent public-input arithmetic, not the production resolver.
+            carriage, sale_return, journal, premium = questions[5:9]
+            values = [
+                {name: Decimal(value) for name, value in question.authoring_context[
+                    "selected_response_contract"
+                ]["inputs"].items()}
+                for question in (carriage, sale_return, journal, premium)
             ]
-            shares = int(re.search(r"issues ([\d,]+) ordinary", premium.prompt)[1].replace(",", ""))
-            expected = [(gross_profit, revenue - cost), (premium, shares * 2)]
+            c, s, j, p = values
+            gross_profit = c["revenue"] - (
+                c["opening_inventory"] + c["purchases"] - c["purchase_returns"]
+                + c["carriage_inwards"] - c["closing_inventory"]
+            )
+            restored_cost = s["sale_or_return_selling_price"] / (
+                1 + s["markup_percent_on_cost"] / 100
+            )
+            corrected_profit = s["revenue"] - s["sale_or_return_selling_price"] - (
+                s["opening_inventory"] + s["purchases"]
+                - s["closing_inventory_excluding_return"] - restored_cost
+            )
+            net_premium = p["shares_issued"] * (
+                p["issue_price_pence"] - p["nominal_value_pence"]
+            ) / 100 - p["issue_costs"]
+            amount = f"£{j['credit_sale']:,.0f}"
+            assert journal.choices[journal.correct_choice] == (
+                f"Debit trade receivables {amount}; credit cash {amount}"
+            )
+            assert len(set(journal.choices)) == 4
+            expected = [(carriage, gross_profit), (sale_return, corrected_profit), (premium, net_premium)]
         else:
             budget, contribution = questions[3], questions[4]
             opening, receipts, payments = [
@@ -98,7 +121,7 @@ def test_distinct_calculations_have_correct_keys_and_unique_distractors(paper_id
                 (contribution, price - variable),
             ]
         for question, answer in expected:
-            assert question.choices[question.correct_choice] == f"£{answer:,}"
+            assert question.choices[question.correct_choice] == f"£{answer:,.0f}"
             assert len(set(question.choices)) == 4
 
 

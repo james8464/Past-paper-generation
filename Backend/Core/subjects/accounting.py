@@ -112,6 +112,13 @@ def derive_accounting_open_response_context(
         "source": "deterministic-candidate-inputs",
         "numeric_results": calculation["numeric_results"],
         "steps": calculation["steps"],
+        "required_numeric_evidence": {
+            "profit_for_year": calculation["numeric_results"]["profit_for_year"],
+            "irrecoverable_debt": calculation["numeric_results"]["irrecoverable_debt"],
+            "supplier_invoice": float(
+                _number(public_context["adjustment_source_data"], "supplier_invoice")
+            ),
+        },
     }
 
 

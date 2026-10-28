@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -35,6 +36,52 @@ def identity(*, model: str = "gemma4:12b") -> CheckpointIdentity:
         blueprint_sha256="a" * 64,
         prompt_version="assessment-v1",
     )
+
+
+@pytest.mark.parametrize("seed", [True, False, "123", 123.0, None])
+def test_checkpoint_identity_rejects_coercible_seeds(seed) -> None:
+    data = identity().model_dump(mode="json")
+    data["seed"] = seed
+    with pytest.raises(ValueError):
+        CheckpointIdentity.model_validate(data)
+    with pytest.raises(ValueError, match="integer seed"):
+        identity_for_blueprint(
+            {"paper_id": "paper-1", "seed": seed},
+            provider="ollama",
+            model="gemma4:12b",
+            prompt_version="assessment-v1",
+        )
+
+
+@pytest.mark.parametrize("seed", [0, -1, -(2**63), 2**64 - 1])
+def test_checkpoint_identity_preserves_integer_seed_and_hash(seed: int) -> None:
+    blueprint = {"paper_id": "paper-1", "seed": seed}
+    result = identity_for_blueprint(
+        blueprint,
+        provider="ollama",
+        model="gemma4:12b",
+        prompt_version="assessment-v1",
+    )
+    assert result.seed == seed
+    assert CheckpointIdentity.model_validate_json(result.model_dump_json()) == result
+    assert result.blueprint_sha256 == hashlib.sha256(
+        json.dumps(
+            blueprint, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+        ).encode("utf-8")
+    ).hexdigest()
+
+
+def test_checkpoint_refuses_boolean_seed_without_rewriting_file(tmp_path: Path) -> None:
+    path = tmp_path / "job.json"
+    expected = identity().model_copy(update={"seed": 1})
+    AssessmentCheckpointStore(path, expected).save_item("0/0/0", question())
+    document = json.loads(path.read_text(encoding="utf-8"))
+    document["identity"]["seed"] = True
+    path.write_text(json.dumps(document), encoding="utf-8")
+    previous = path.read_bytes()
+    with pytest.raises(CheckpointCorrupt, match="identity is invalid"):
+        AssessmentCheckpointStore(path, expected)
+    assert path.read_bytes() == previous
 
 
 def question() -> GeneratedQuestion:

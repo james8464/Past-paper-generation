@@ -254,7 +254,8 @@ class IndependentSolver:
                     "worked query. SQL_VALIDATION_FINDINGS="
                     + json.dumps(list(correction_findings), ensure_ascii=False, sort_keys=True)
                 )
-            raw_result = self.client.generate_json(
+            raw_result = _generate_solver_response(
+                    self.client,
                     "Independently solve this UK A-level assessment item. Do not "
                     "infer or reproduce a draft mark scheme. Recompute every numeric "
                     "result and cite only the supplied evidence IDs; when sources is "
@@ -283,7 +284,9 @@ class IndependentSolver:
                             "sources": [source.model_dump() for source in sources],
                         },
                         ensure_ascii=False,
-                    )
+                    ),
+                    item_id=item_id,
+                    derived_context=derived_context,
                 )
             try:
                 envelope = SolverResponseEnvelope.model_validate(raw_result, strict=True)
@@ -452,6 +455,61 @@ class IndependentSolver:
         )
 
 
+# Repair missing public numeric evidence at the solver, not by rewriting the question.
+def _generate_solver_response(
+    client: SolverClient,
+    prompt: str,
+    *,
+    item_id: str,
+    derived_context: dict[str, Any] | None,
+) -> dict[str, object]:
+    required = (derived_context or {}).get("required_numeric_evidence", {})
+    attempts: list[dict[str, Any]] = []
+    correction = ""
+    for _ in range(2 if required else 1):
+        raw = client.generate_json(prompt + correction)
+        if not required:
+            return raw
+        try:
+            envelope = SolverResponseEnvelope.model_validate(raw, strict=True)
+        except ValidationError:
+            return raw  # Preserve the existing strict envelope rejection.
+        if not isinstance(envelope.answer, str):
+            return raw
+        # Only these fields reach the separate content reviewer. Mark points alone
+        # cannot complete an answer whose visible working omits the required facts.
+        visible = " ".join([envelope.answer, *envelope.steps])
+        numbers = _numbers(visible)
+        missing = [
+            role for role, value in required.items()
+            if not any(math.isclose(number, value, rel_tol=0, abs_tol=0.005) for number in numbers)
+        ]
+        if not missing:
+            return raw
+        attempts.append({
+            "missing_roles": missing,
+            "answer": envelope.answer,
+            "steps": envelope.steps,
+        })
+        correction = (
+            "\nThe prior independent answer omitted required public numeric evidence. "
+            "Use only the original public inputs and independently_derived_context. "
+            "Include the missing figures in answer or steps and explain their relevance "
+            "to the task. Do not change the question or infer a private marking key. "
+            "Return the complete seven-field response again. "
+            "PUBLIC_NUMERIC_EVIDENCE_FINDINGS="
+            + json.dumps(missing, ensure_ascii=False)
+        )
+    raise GenerationEvidenceError(
+        f"{item_id} independent answer omitted required public numeric evidence",
+        details={
+            "gate": "independent-solver-numeric-evidence",
+            "item_id": item_id,
+            "attempts": attempts,
+        },
+    )
+
+
 def _without_answer_key(value: Any) -> Any:
     hidden = {
         # Private instance credit must not enter the blind model context.
@@ -462,6 +520,9 @@ def _without_answer_key(value: Any) -> Any:
         "open_credit_review",
         "credit_allocations",
         "credit_review_item",
+        "accounting_source_content",
+        "accounting_marking_policy",
+        "grouped_level_policy",
         "mark_scheme",
         "structured_mark_scheme",
         "marking",

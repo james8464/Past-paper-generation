@@ -8,6 +8,11 @@ from pathlib import Path
 
 import pymupdf as fitz
 
+from Backend.Core.accounting_scheme_content import (
+    ACCOUNTING_SCHEME_PAGES,
+    ACCOUNTING_SCHEME_PAGINATION,
+    verify_accounting_scheme,
+)
 from Backend.Core.computer_science_reference_solutions import paper1_reference_code
 from Backend.Core.layout_master import (
     LayoutConformanceError,
@@ -31,6 +36,8 @@ AQA_CS_PAPER1_SCHEME_PAGINATION = "generated-aqa-cs-paper1-mark-scheme-content-v
 def runtime_page_count_policy(
     family: str, role: str, reference_count: int, *, paper: str | None = None
 ) -> dict:
+    if family == "aqa-accounting" and role == "mark-scheme" and paper == "1":
+        return {"kind": ACCOUNTING_SCHEME_PAGINATION}
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
     if family == "ocr-economics" and role == "mark-scheme":
@@ -337,6 +344,22 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if policy_payload and policy_payload.get("kind") == ACCOUNTING_SCHEME_PAGINATION:
+            if subject != "accounting_aqa" or paper != "1" or generated_role != "mark_scheme":
+                raise LayoutConformanceError("Accounting scheme policy cannot apply to this document")
+            content_report = verify_accounting_scheme(
+                generated_path, paths.get("assessment_package"), int(master["page_count"])
+            )
+            # Unmarked historical packages retain their exact measured template;
+            # only the explicit V11 credit contract selects the compact layout.
+            conform_pdf_to_box_template(
+                generated_path, master.get("page_boxes") or master["boxes"],
+                expected_page_count=ACCOUNTING_SCHEME_PAGES if content_report else master["page_count"],
+                strict_page_count=True,
+            )
+            if content_report:
+                results[generated_role] = content_report
+            continue
         if policy_payload and policy_payload.get("kind") == OCR_ECONOMICS_SCHEME_PAGINATION:
             if subject != "economics_ocr" or record.get("family") != "ocr-economics" or generated_role != "mark_scheme":
                 raise LayoutConformanceError("OCR scheme pagination policy cannot apply to this document")

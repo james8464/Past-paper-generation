@@ -123,7 +123,7 @@ native suite passes 128 tests. Personal-development-signed Store-mode preflight
 and direct Release builds pass; the direct bundle also passes strict signature
 verification. See
 `docs/quality/native-run-isolation-review-2026-10-28.md`. Scoped native cancellation
-checks pass; protected publication gates remain pending.
+checks pass. These native changes were published through protected PR109.
 
 N3/N4/T1/T2 are also implemented locally. The full native suite now passes
 138 tests and the build-script suite passes seven cases. Valid history stays out
@@ -132,9 +132,37 @@ failure refuses generation; installed dependency versions invalidate the helper
 cache; failed log capture fails the build. Personal-development-signed direct
 Release and Store-mode preflight builds pass. See
 `docs/quality/native-storage-build-integrity-review-2026-10-28.md` for red/green
-evidence and limits. Protected publication remains pending.
+evidence and limits. PR109 merged at
+`df7200bd30f76ad3024e2ac079c9db42cbd100b3` after Backend 16m07s and macOS 8m42s.
+The local main was fast-forwarded, squash-tree equality checked and the resolved
+topic deleted. The installed app's frontend/helper bytes and strict signatures
+match the tested direct Release. Its previous copy remains recoverable in Trash.
+The computer-control resolver still caches the former identifier for that
+installed path. Temporarily moving the same installed bundle to a fresh path
+allowed scoped History, Duplicate Configuration, Documents and Print/Cancel
+checks. The closed app was returned to its canonical path and all history hashes
+are unchanged. See the merged-native integrity acceptance record for that
+workaround and its limits; this is not every-button coverage.
 
-The remaining 17 work packages are planned. Record implemented commits, tests,
+P1, P3, T3 and T4 are implemented on the next integration branch:
+
+- P1 requires an actual integer seed at hashing and decoding boundaries. Four
+  coercion regressions failed before the fix; 21 checkpoint tests pass, retaining
+  valid signed and historical unsigned seeds and hashes.
+- P3 validates positive non-Boolean counts and finite similarity limits in the
+  existing range. Forty-four invalid inputs failed against the old policy.
+- T3 publishes retained matrix JSON with unique sibling temporary files and
+  atomic replacement. A real run-manifest interruption regression failed before
+  integration; 26 helper/matrix tests pass, including flush failure and overlapping
+  writers. This is not cross-writer merging or directory power-loss durability.
+- T4 bounds PDF tools at 30 seconds with document-specific errors. Thirty-three
+  boundary regressions failed before the fix; 48 helper/report tests pass.
+
+These four packages still need final integration and protected publication.
+Their scoped evidence is recorded in the checkpoint-seed, atomic-matrix and
+generation-policy/PDF-tool reviews under `docs/quality/`.
+
+The remaining 13 work packages are planned. Record implemented commits, tests,
 retained evidence and any justified deferrals here. The file-level coverage
 inventory must be completed before claiming a whole-project audit.
 App Store distribution credentials, third-party rights and observed learner

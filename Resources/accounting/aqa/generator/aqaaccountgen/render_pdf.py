@@ -32,6 +32,16 @@ from aqaaccountgen.case_data import (
     SalesLedgerCase,
     ShareholderCase,
 )
+from aqaaccountgen.marking_policy import (
+    EXPLICIT_RULES,
+    credit_total,
+    explicit_credit_points,
+    indicative_content,
+    printed_award_rows,
+    printed_level_rows,
+    printed_mcq_rows,
+    reason_level_rows,
+)
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
@@ -90,6 +100,11 @@ def render_mark_scheme(
     path: Path,
 ) -> None:
     objective_policy_for("accounting").validate(paper)
+    for section in paper.sections:
+        for option in section.options:
+            for question in option.questions:
+                if question.rule_id in EXPLICIT_RULES:
+                    explicit_credit_points(question)
     path.parent.mkdir(parents=True, exist_ok=True)
     doc = _document(path, paper, "Mark scheme")
     story: list[Flowable] = mark_scheme_cover(
@@ -99,7 +114,7 @@ def render_mark_scheme(
     )
     if paper.paper_id == "paper_1":
         pages = _paper_one_mark_scheme_pages(paper)
-        assert len(pages) == 25
+        assert len(pages) == 23
         for page in pages:
             story.append(PageBreak())
             story.extend(page)
@@ -156,10 +171,8 @@ def _paper_one_mark_scheme_pages(paper: GeneratedPaper) -> list[list[Flowable]]:
         ),
         _levels_scheme_page(questions["16"], "Improving the accounting records"),
         _extended_indicative_content_page(questions["16"], "Question 16"),
-        _extended_judgement_page(questions["16"], "Question 16"),
         _levels_scheme_page(questions["17"], "The shareholder's decision"),
         _extended_indicative_content_page(questions["17"], "Question 17"),
-        _extended_judgement_page(questions["17"], "Question 17"),
     ]
     return pages
 
@@ -215,11 +228,6 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 ]
             ),
             Spacer(1, 5 * mm),
-            Paragraph(
-                "The indicative content is not exhaustive. Reward other valid accounting "
-                "arguments when they are applied to the information in the question.",
-                STYLES["small"],
-            ),
         ],
         [
             Paragraph("Level of response marking", STYLES["kicker"]),
@@ -270,7 +278,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
             ),
             Spacer(1, 5 * mm),
             Paragraph(
-                "Extended responses should contain a supported judgement. The judgement "
+                "Where the command requires a judgement, the judgement "
                 "may appear anywhere in the response and need not be in a separate conclusion.",
                 STYLES["small"],
             ),
@@ -482,14 +490,12 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
                 Spacer(1, 4 * mm),
             ]
         )
+    pages[1].extend(_general_judgement_guidance())
     return pages
 
 
 def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable]:
-    rows = []
-    for question in questions:
-        answer = question.mark_scheme[0].removesuffix(".")
-        rows.append([question.number.lstrip("0") or "0", answer, "1"])
+    rows = printed_mcq_rows(questions)
     return [
         Paragraph("Section A", STYLES["kicker"]),
         Paragraph("Objective test answers", STYLES["heading"]),
@@ -507,34 +513,22 @@ def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable
 
 
 def _short_answer_scheme_page(question: GeneratedQuestion) -> list[Flowable]:
-    examples = [
-        "Encourage a larger order, increasing sales volume and the contribution earned.",
-        "Reward repeat purchases, strengthening customer loyalty and future revenue.",
-        "Attract a new customer who might otherwise buy from a competitor.",
-        "Reduce the unit selling price while preserving total profit through higher volume.",
-    ]
+    points = explicit_credit_points(question)
+    examples = indicative_content(question)
     return [
         _scheme_question_heading(question),
         Spacer(1, 3 * mm),
-        Paragraph("AO1 — 6 marks", STYLES["heading"]),
+        Paragraph(f"AO1 - {sum(point.marks for point in points)} marks", STYLES["heading"]),
         Paragraph(
-            "Apply the levels of response mark scheme to each reason. Award a maximum "
-            "of 3 marks for each reason.",
+            "Apply the levels separately to two distinct reasons. Award a maximum "
+            "of 3 marks for each reason. A definition alone is not a reason. "
+            "Do not credit the same reason twice.",
             STYLES["small"],
         ),
         Spacer(1, 4 * mm),
         _scheme_grid(
             ["Level", "Marks", "Descriptor"],
-            [
-                [
-                    "3",
-                    "3",
-                    "A clear and thorough explanation showing a benefit to the business.",
-                ],
-                ["2", "2", "A partial explanation showing a relevant benefit."],
-                ["1", "1", "A fragmented or identified point."],
-                ["0", "0", "Nothing worthy of credit."],
-            ],
+            reason_level_rows(question),
             [20 * mm, 25 * mm, 122 * mm],
         ),
         Spacer(1, 5 * mm),
@@ -550,6 +544,7 @@ def _statement_of_financial_position_scheme(
     option: GeneratedOption,
 ) -> list[Flowable]:
     case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
+    awards = printed_award_rows(question)
     rows = [
         [
             "Non-current assets",
@@ -559,25 +554,25 @@ def _statement_of_financial_position_scheme(
             "Marks",
         ],
         [
-            "Plant and machinery",
+            awards[0][0],
             f"{case.plant_cost_closing:,}",
             f"({case.plant_accumulated_depreciation_closing:,})",
             f"{case.plant_carrying_amount:,}",
-            "3",
+            awards[0][1],
         ],
         [
-            "Motor vehicles",
+            awards[1][0],
             f"{case.motor_cost_closing:,}",
             f"({case.motor_accumulated_depreciation_closing:,})",
             f"{case.motor_carrying_amount:,}",
-            "3",
+            awards[1][1],
         ],
         [
-            "Total non-current assets",
+            awards[2][0],
             "",
             "",
             f"{case.total_carrying_amount:,}",
-            "1 OF",
+            awards[2][1],
         ],
     ]
     return [
@@ -596,19 +591,19 @@ def _statement_of_financial_position_scheme(
                     "Plant cost: "
                     f"{case.plant_cost_opening:,} + {case.plant_purchase:,} "
                     f"= {case.plant_cost_closing:,}",
-                    "1",
+                    credit_total(question, 0),
                 ],
                 [
                     "Plant depreciation: "
                     f"{case.plant_cost_closing:,} × {case.plant_rate_percent}% "
                     f"= {case.plant_depreciation_charge:,}",
-                    "1",
+                    credit_total(question, 1),
                 ],
                 [
                     "Motor vehicles: remove cost and accumulated depreciation "
                     f"of {case.motor_disposal_cost:,} and "
                     f"{case.motor_disposal_accumulated_depreciation:,}",
-                    "1",
+                    credit_total(question, 3),
                 ],
                 [
                     "Motor-vehicle depreciation: "
@@ -616,15 +611,15 @@ def _statement_of_financial_position_scheme(
                     f"{case.motor_accumulated_depreciation_before_charge:,}) × "
                     f"{case.motor_rate_percent}% = "
                     f"{case.motor_depreciation_charge:,}",
-                    "1",
+                    credit_total(question, 4),
                 ],
             ],
             [145 * mm, 22 * mm],
         ),
         Spacer(1, 4 * mm),
         Paragraph(
-            "Award one mark for the correct presentation of cost and accumulated "
-            "depreciation. Accept the student's own figure for the total carrying amount.",
+            "These workings explain the seven marks above; they are not additional. "
+            "Accept the student's own figure for the total carrying amount.",
             STYLES["small"],
         ),
     ]
@@ -676,12 +671,16 @@ def _completed_ledger_scheme(
             data[0], data[1:], [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm]
         ),
         Spacer(1, 5 * mm),
-        Paragraph(
-            "One mark each for opening balance, credit sales, bank and returns/discount. "
-            "Award the final mark for a correctly balanced account (own figure).",
-            STYLES["small"],
-        ),
+        _explicit_credit_table(question),
     ]
+
+
+def _explicit_credit_table(question: GeneratedQuestion) -> Table:
+    return _scheme_grid(
+        ["Requirement", "Mark"],
+        printed_award_rows(question),
+        [145 * mm, 22 * mm],
+    )
 
 
 def _completed_sales_account_scheme(
@@ -711,17 +710,7 @@ def _completed_sales_account_scheme(
             [19 * mm, 38 * mm, 25 * mm, 19 * mm, 41 * mm, 25 * mm],
         ),
         Spacer(1, 7 * mm),
-        _scheme_grid(
-            ["Mark", "Requirement"],
-            [
-                ["1", "Credit sales entered on the credit side."],
-                [
-                    "1",
-                    "Sales returns deducted and net sales transferred to the income statement.",
-                ],
-            ],
-            [25 * mm, 142 * mm],
-        ),
+        _explicit_credit_table(question),
     ]
 
 
@@ -730,22 +719,23 @@ def _completed_income_statement_scheme(
     option: GeneratedOption,
 ) -> list[Flowable]:
     case = IncomeStatementCase.from_chart_values(option.title, option.chart_values)
+    awards = printed_award_rows(question)
     rows = [
-        ["Revenue", f"{case.revenue:,}", "", "1"],
-        ["Cost of sales", f"({case.adjusted_cost_of_sales:,})", "", "2"],
-        ["Gross profit", "", f"{case.revenue - case.adjusted_cost_of_sales:,}", "1 OF"],
+        [awards[0][0], f"{case.revenue:,}", "", awards[0][1]],
+        [awards[1][0], f"({case.adjusted_cost_of_sales:,})", "", awards[1][1]],
+        [awards[2][0], "", f"{case.revenue - case.adjusted_cost_of_sales:,}", awards[2][1]],
         [
-            "Administration expenses",
+            awards[3][0],
             f"({case.adjusted_administration_expenses:,})",
             "",
-            "2",
+            awards[3][1],
         ],
-        ["Marketing expenses", f"({case.adjusted_marketing_expenses:,})", "", "2"],
-        ["Warehouse expenses", f"({case.warehouse_expenses:,})", "", "1"],
-        ["Other income – insurance claim", f"{case.insurance_claim:,}", "", "1"],
-        ["Finance costs", f"({case.finance_cost:,})", "", "2"],
-        ["Profit before tax", "", f"{case.profit_before_tax:,}", "1 OF"],
-        ["Taxation", f"({case.current_tax_charge:,})", "", "1"],
+        [awards[4][0], f"({case.adjusted_marketing_expenses:,})", "", awards[4][1]],
+        [awards[5][0], f"({case.warehouse_expenses:,})", "", awards[5][1]],
+        [awards[6][0], f"{case.insurance_claim:,}", "", awards[6][1]],
+        [awards[7][0], f"({case.finance_cost:,})", "", awards[7][1]],
+        [awards[8][0], "", f"{case.profit_before_tax:,}", awards[8][1]],
+        [awards[9][0], f"({case.current_tax_charge:,})", "", awards[9][1]],
         ["Profit for the year", "", f"{case.profit_for_year:,}", ""],
     ]
     return [
@@ -865,7 +855,7 @@ def _income_statement_finishing_scheme(
                 ),
                 (
                     "Tax",
-                    "Credit a tax charge calculated consistently from the student's profit figure.",
+                    "Deduct the supplied taxation charge; do not recalculate it from an own-figure profit.",
                 ),
                 ("Format", "Accept alternative conventional labels and ordering."),
                 ("Total", "Do not award more than 14 marks across Question 14.1."),
@@ -878,54 +868,7 @@ def _levels_scheme_page(
     question: GeneratedQuestion,
     context: str,
 ) -> list[Flowable]:
-    if question.marks == 6:
-        levels = [
-            [
-                "3",
-                "5–6",
-                "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement.",
-            ],
-            [
-                "2",
-                "3–4",
-                "A reasonable response with some application and developed analysis. Judgement may be partial or uneven.",
-            ],
-            [
-                "1",
-                "1–2",
-                "Limited knowledge or application. Points are asserted with little development.",
-            ],
-            ["0", "0", "Nothing worthy of credit."],
-        ]
-    else:
-        levels = [
-            [
-                "5",
-                "21–25",
-                "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation.",
-            ],
-            [
-                "4",
-                "16–20",
-                "Good knowledge and effective application. Analysis is developed and the judgement is supported.",
-            ],
-            [
-                "3",
-                "11–15",
-                "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement.",
-            ],
-            [
-                "2",
-                "6–10",
-                "Some knowledge and limited application. Analysis is incomplete and evaluation is weak.",
-            ],
-            [
-                "1",
-                "1–5",
-                "Fragmented knowledge with little application or development.",
-            ],
-            ["0", "0", "Nothing worthy of credit."],
-        ]
+    levels = printed_level_rows(question)
     return [
         _scheme_question_heading(question),
         Paragraph(context, STYLES["heading"]),
@@ -934,12 +877,6 @@ def _levels_scheme_page(
             ["Level", "Marks", "Descriptor"],
             levels,
             [20 * mm, 25 * mm, 122 * mm],
-        ),
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Use a best-fit approach. The indicative content on the following page "
-            "illustrates material that may be credited; it is not a model answer.",
-            STYLES["small"],
         ),
     ]
 
@@ -966,24 +903,7 @@ def _levels_with_indicative_scheme_page(
         Spacer(1, 3 * mm),
         _scheme_grid(
             ["Level", "Marks", "Descriptor"],
-            [
-                [
-                    "3",
-                    "5–6",
-                    "A well-developed assessment with relevant application, analysis and a supported judgement.",
-                ],
-                [
-                    "2",
-                    "3–4",
-                    "A reasonable response with some application and development; judgement may be partial.",
-                ],
-                [
-                    "1",
-                    "1–2",
-                    "Limited knowledge or application with little development.",
-                ],
-                ["0", "0", "Nothing worthy of credit."],
-            ],
+            printed_level_rows(question),
             [20 * mm, 25 * mm, 122 * mm],
         ),
         Spacer(1, 4 * mm),
@@ -992,7 +912,7 @@ def _levels_with_indicative_scheme_page(
             ["Possible content", "AO"],
             [
                 [point, _indicative_objective(point)]
-                for point in question.mark_scheme[:5]
+                for point in indicative_content(question)
             ],
             [137 * mm, 30 * mm],
         ),
@@ -1005,7 +925,7 @@ def _indicative_content_page(
 ) -> list[Flowable]:
     rows = [
         [Paragraph(point, STYLES["scheme_small"]), _indicative_objective(point)]
-        for point in question.mark_scheme
+        for point in indicative_content(question)
     ]
     return [
         Paragraph(f"{title} continued", STYLES["kicker"]),
@@ -1016,12 +936,6 @@ def _indicative_content_page(
             rows,
             [132 * mm, 35 * mm],
         ),
-        Spacer(1, 5 * mm),
-        Paragraph(
-            "Credit a different conclusion where it follows from valid accounting "
-            "analysis and is supported by the circumstances in the question.",
-            STYLES["small"],
-        ),
     ]
 
 
@@ -1029,25 +943,7 @@ def _extended_indicative_content_page(
     question: GeneratedQuestion,
     title: str,
 ) -> list[Flowable]:
-    # The generator also carries reusable level descriptors and marker checks.
-    # Those are printed on the preceding page; this page mirrors the concise
-    # question-specific indicative-content page used in the reference scheme.
-    shareholder_source = question.authoring_context.get("candidate_source")
-    if (
-        isinstance(shareholder_source, dict)
-        and shareholder_source.get("source_type") == "shareholder_investor_case"
-    ):
-        points = question.mark_scheme[:5]
-    else:
-        points = [
-            *question.mark_scheme[:5],
-            *[
-                point
-                for point in question.mark_scheme
-                if _indicative_objective(point) != "—"
-            ][:7],
-        ]
-    points = list(dict.fromkeys(points))
+    points = indicative_content(question)
     rows = [
         [
             Paragraph(point, STYLES["scheme_small"]),
@@ -1064,7 +960,12 @@ def _extended_indicative_content_page(
             rows,
             [137 * mm, 30 * mm],
         ),
-        Spacer(1, 4 * mm),
+    ]
+
+
+def _general_judgement_guidance() -> list[Flowable]:
+    return [
+        Spacer(1, 5 * mm),
         Paragraph("Judgement", STYLES["heading"]),
         Paragraph(
             "The recommendation should weigh the alternatives, recognise the limitations "
@@ -1072,36 +973,7 @@ def _extended_indicative_content_page(
             "A conclusion without supporting analysis cannot reach the highest level.",
             STYLES["small"],
         ),
-    ]
-
-
-def _extended_judgement_page(
-    question: GeneratedQuestion,
-    title: str,
-) -> list[Flowable]:
-    shareholder_source = question.authoring_context.get("candidate_source")
-    if (
-        isinstance(shareholder_source, dict)
-        and shareholder_source.get("source_type") == "shareholder_investor_case"
-    ):
-        applied_points = question.mark_scheme[5:8]
-    else:
-        applied_points = [
-            point
-            for point in question.mark_scheme
-            if point.startswith(("AO2:", "AO3:"))
-        ][7:]
-    return [
-        Paragraph(f"{title} continued", STYLES["kicker"]),
-        Paragraph("Analysis and evaluation", STYLES["heading"]),
         Spacer(1, 3 * mm),
-        _scheme_grid(
-            ["Further guidance", "AO"],
-            [[point, _indicative_objective(point)] for point in applied_points[:5]],
-            [137 * mm, 30 * mm],
-        ),
-        Spacer(1, 5 * mm),
-        Paragraph("Judgement", STYLES["heading"]),
         _guidance_table(
             [
                 (
@@ -1192,11 +1064,7 @@ def _completed_capital_accounts_scheme(
             [16 * mm, 27 * mm, 20 * mm, 20 * mm, 16 * mm, 27 * mm, 20 * mm, 21 * mm],
         ),
         Spacer(1, 5 * mm),
-        Paragraph(
-            "Award marks for opening balances, goodwill in the correct ratio, cash "
-            "introduced or withdrawn, and closing balances (own figure).",
-            STYLES["small"],
-        ),
+        _explicit_credit_table(question),
     ]
 
 
@@ -1210,45 +1078,46 @@ def _completed_appropriation_scheme(
     second = periods["second_period"]
     first_shares = first["residual_profit_shares"]
     second_shares = second["residual_profit_shares"]
+    awards = printed_award_rows(question)
     rows = [
-        ["Profit for the period", f"{first['profit']:,}", f"{second['profit']:,}", "1"],
+        [awards[0][0], f"{first['profit']:,}", f"{second['profit']:,}", awards[0][1]],
         [
-            "Interest on drawings",
+            awards[1][0],
             f"{sum(first['interest_on_drawings'].values()):,}",
             f"{sum(second['interest_on_drawings'].values()):,}",
-            "1",
+            awards[1][1],
         ],
         [
-            "Interest on capital",
+            awards[2][0],
             f"({sum(first['interest_on_capital'].values()):,})",
             f"({sum(second['interest_on_capital'].values()):,})",
-            "2",
+            awards[2][1],
         ],
         [
-            "Morgan's salary",
+            awards[3][0],
             f"({first['partner_salary']['Morgan']:,})",
             f"({second['partner_salary']['Morgan']:,})",
-            "1",
+            awards[3][1],
         ],
         [
-            "Residual profit",
+            awards[4][0],
             f"{first['residual_profit']:,}",
             f"{second['residual_profit']:,}",
-            "1",
+            awards[4][1],
         ],
         [
-            "Alex's share",
+            awards[5][0],
             f"{first_shares['Alex']:,}",
             f"{second_shares['Alex']:,}",
-            "1",
+            awards[5][1],
         ],
         [
-            "Morgan's share",
+            awards[6][0],
             f"{first_shares['Morgan']:,}",
             f"{second_shares['Morgan']:,}",
-            "1",
+            awards[6][1],
         ],
-        ["Riley's share", f"{first_shares['Riley']:,}", "—", "0"],
+        [awards[7][0], f"{first_shares['Riley']:,}", "—", awards[7][1]],
     ]
     return [
         _scheme_question_heading(question),
@@ -1630,6 +1499,13 @@ def _paper_one_section_c_pages(
     ]
 
 
+def _source_text(source: dict[str, object], key: str) -> str:
+    value = source.get(key)
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError(f"Accounting candidate source requires {key}")
+    return value
+
+
 def _accounting_system_case(question: GeneratedQuestion) -> Table:
     source = question.authoring_context.get("candidate_source")
     if not isinstance(source, dict):
@@ -1643,9 +1519,9 @@ def _accounting_system_case(question: GeneratedQuestion) -> Table:
     implementation = list(source["implementation_evidence"])
     paragraphs = [
         (
-            f"<b>{case.business}</b> is a growing business owned by a sole trader. "
-            "Its accounting records are currently maintained by the owner using "
-            "spreadsheets, a cash book and paper invoices."
+            f"<b>{escape(case.business)}</b> is a growing business owned by a "
+            f"{escape(_source_text(source, 'business_form'))}. "
+            f"{escape(_source_text(source, 'recordkeeping'))}"
         ),
         " ".join(current_system),
         (
@@ -1664,10 +1540,7 @@ def _accounting_system_case(question: GeneratedQuestion) -> Table:
             f"£{case.initial_training_cost:,}. {' '.join(software_option)}"
         ),
         " ".join(implementation),
-        (
-            "The owner must decide whether to employ a bookkeeper, introduce the cloud "
-            "system, or continue with the present arrangements."
-        ),
+        escape(_source_text(source, "decision")),
     ]
     content: list[Flowable] = []
     for paragraph in paragraphs:
@@ -1773,9 +1646,8 @@ def _shareholder_case(question: GeneratedQuestion) -> Table:
     )
     content: list[Flowable] = [
         Paragraph(
-            f"An investor owns shares in <b>{shareholder.business}</b> and is considering "
-            "whether to retain or sell the investment. The company has borrowed to fund "
-            f"new production equipment. Each ordinary share has a nominal value of "
+            f"{escape(_source_text(source, 'investment_context'))} "
+            "Each ordinary share has a nominal value of "
             f"{shareholder.nominal_share_value_pence}p.",
             STYLES["body"],
         ),
@@ -2385,7 +2257,7 @@ def _non_current_asset_case(option: GeneratedOption) -> Table:
             "",
         ]
     )
-    table = Table(case_rows, colWidths=[142 * mm, 25 * mm])
+    table = Table(case_rows, colWidths=[128 * mm, 25 * mm])
     table.setStyle(
         TableStyle(
             [

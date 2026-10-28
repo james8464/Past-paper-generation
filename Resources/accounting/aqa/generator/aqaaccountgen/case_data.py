@@ -62,6 +62,15 @@ class AccountingSystemCase:
         return {
             "business": self.business,
             "source_type": "accounting_system_decision_case",
+            "business_form": "sole trader",
+            "recordkeeping": (
+                "Its accounting records are currently maintained by the owner using "
+                "spreadsheets, a cash book and paper invoices."
+            ),
+            "decision": (
+                "The owner must decide whether to employ a bookkeeper, introduce the "
+                "cloud system, or continue with the present arrangements."
+            ),
             "units": "GBP per year unless described as initial",
             "costs": {
                 "annual_bookkeeper_salary": self.annual_bookkeeper_salary,
@@ -375,6 +384,12 @@ class ShareholderCase:
         return {
             "business": self.business,
             "source_type": "shareholder_investor_case",
+            "business_form": "company",
+            "investment_context": (
+                f"An investor owns shares in {self.business} and is considering "
+                "whether to retain or sell the investment. The company has borrowed to fund new "
+                "production equipment."
+            ),
             "units": {
                 "ordinary_shares": "number of shares",
                 "nominal_share_value": "pence per ordinary share",
@@ -934,6 +949,24 @@ class PartnershipCase:
                 f"first-period share {_gbp(first['residual_profit_shares']['Riley'])}."
             ),
         ]
+
+    def agreement_candidate_source(self) -> dict[str, object]:
+        """Use the same published partnership inputs as the preceding tasks."""
+        return {
+            "source_type": "partnership_agreement_case",
+            "label": "Alex, Morgan and Riley's partnership",
+            "arrangements": [
+                "Alex, Morgan and Riley have been in partnership for several years.",
+                "Riley retired on 31 August.",
+                "The partners keep separate capital and current accounts.",
+                "Goodwill is credited in the old ratio and written off against "
+                "Alex and Morgan in their new ratio; it does not remain in the books.",
+                "Riley's balance is settled separately.",
+                "Profit accrues evenly; salary and interest on capital are time-apportioned.",
+            ],
+            "retirement": self.retirement_authoring_context()["source_data"],
+            "appropriation": self.appropriation_authoring_context()["source_data"],
+        }
 
     def retirement_authoring_context(self) -> dict[str, object]:
         return {

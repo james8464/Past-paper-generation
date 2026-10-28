@@ -7,12 +7,18 @@ import hashlib
 import json
 import re
 import statistics
-import subprocess
 import sys
 import tempfile
 from collections import Counter
 from pathlib import Path
 from typing import Any
+
+if __package__:
+    from .pdf_process import pdf_page_count as _page_count
+    from .pdf_process import pdf_text as _pdf_text
+else:
+    from pdf_process import pdf_page_count as _page_count
+    from pdf_process import pdf_text as _pdf_text
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS_ROOT = (
@@ -27,21 +33,6 @@ GENERATOR_ROOT = ROOT / "Resources" / "business" / "aqa" / "generator"
 OUTPUT = GENERATOR_ROOT / "data" / "difficulty-calibration.json"
 WORD_PATTERN = re.compile(r"[A-Za-z]+(?:[-'][A-Za-z]+)?")
 MARK_PATTERN = re.compile(r"\[(\d+)\s+marks?\]", re.IGNORECASE)
-
-
-def _command(*args: str) -> str:
-    return subprocess.run(args, check=True, capture_output=True, text=True).stdout
-
-
-def _page_count(path: Path) -> int:
-    match = re.search(r"^Pages:\s+(\d+)$", _command("pdfinfo", str(path)), re.MULTILINE)
-    if not match:
-        raise ValueError(f"could not read page count from {path}")
-    return int(match.group(1))
-
-
-def _pdf_text(path: Path) -> str:
-    return _command("pdftotext", "-layout", str(path), "-")
 
 
 def _fingerprint(paths: list[Path]) -> str:

@@ -25,6 +25,7 @@ from Backend.Core.qualification.manifest import (
     QualificationManifest,
     VersionIdentity,
 )
+from tools.atomic_json import write_json_atomically
 from tools.live_process import run_backend
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -144,10 +145,7 @@ def run_matrix(
                         output_root=output_root,
                     )
                     previous["qualification_manifest"] = str(qualification_path)
-                    result_path.write_text(
-                        json.dumps(previous, indent=2, ensure_ascii=False) + "\n",
-                        encoding="utf-8",
-                    )
+                    write_json_atomically(result_path, previous)
                 print(f"[{index + 1}/{len(jobs)}] {job.id}: already passed", flush=True)
                 results.append(previous)
                 _save_matrix_report(
@@ -199,7 +197,7 @@ def run_matrix(
             "provider": None if dry_run else provider,
             "model_digest": model_digest,
         }
-        result_path.write_text(json.dumps(active_result) + "\n", encoding="utf-8")
+        write_json_atomically(result_path, active_result, indent=None, ensure_ascii=True)
         (run_dir / "events.jsonl").write_text("", encoding="utf-8")
         _write_qualification_manifest(
             job=job,
@@ -307,10 +305,7 @@ def run_matrix(
             },
             "events_sha256": _sha256(run_dir / "events.jsonl"),
         }
-        result_path.write_text(
-            json.dumps(result, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        write_json_atomically(result_path, result)
         qualification_path = _write_qualification_manifest(
             job=job,
             result=result,
@@ -319,10 +314,7 @@ def run_matrix(
             output_root=output_root,
         )
         result["qualification_manifest"] = str(qualification_path)
-        result_path.write_text(
-            json.dumps(result, indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+        write_json_atomically(result_path, result)
         results.append(result)
         verdict = "passed" if passed else "failed"
         print(
@@ -394,9 +386,7 @@ def _save_matrix_report(
             result["errors"].append(
                 "qualification evidence is stale, incomplete or unverifiable; rerun this route"
             )
-            result_path.write_text(
-                json.dumps(result, indent=2) + "\n", encoding="utf-8"
-            )
+            write_json_atomically(result_path, result, ensure_ascii=True)
             _write_qualification_manifest(
                 job=job,
                 result=result,
@@ -421,10 +411,7 @@ def _save_matrix_report(
         },
         "results": results,
     }
-    (output_root / "matrix-report.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    write_json_atomically(output_root / "matrix-report.json", report)
     (output_root / "matrix-report.md").write_text(
         matrix_markdown(report),
         encoding="utf-8",
@@ -738,10 +725,7 @@ def _write_run_qualification_manifest(
         "paper_manifests": paper_manifests,
     }
     path = output_root / "qualification-run-manifest.json"
-    path.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-        encoding="utf-8",
-    )
+    write_json_atomically(path, payload, sort_keys=True)
     return path
 
 

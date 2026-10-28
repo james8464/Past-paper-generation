@@ -151,7 +151,10 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
         for task in _tasks(paper, {topic.id: topic for topic in syllabus.topics})
         if task.question.number == "14.2"
     )
-    assert "Staff turnover is 19%" in task.option.stimulus[1]
+    assert task.option.stimulus == []
+    # Deliberately inject legacy planning text to keep testing the exclusion
+    # boundary even though new generation no longer invents these extracts.
+    task.option.stimulus = ["Unprinted planning revenue is 710000.", "Staff turnover is 19%."]
 
     payload = solver_payload(task)
     for source in [payload, *model_sources(task)]:

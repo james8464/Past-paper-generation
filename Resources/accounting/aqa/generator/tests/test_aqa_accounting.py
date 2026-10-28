@@ -78,7 +78,7 @@ def test_shareholder_question_uses_the_same_visible_case_for_generator_context()
     paper = build_paper(RULES["paper_1"], SYLLABUS, 26083107)
     option = paper.sections[-1].options[0]
     question = next(item for item in option.questions if item.rule_id == "decision_2")
-    case = ShareholderCase.from_chart_values(option.title, option.chart_values)
+    case = ShareholderCase.from_chart_values(f"{option.title} plc", option.chart_values)
 
     assert question.authoring_context["candidate_source"] == case.candidate_source()
     assert question.authoring_context["source_data"] == case.candidate_source()
@@ -99,7 +99,8 @@ def test_section_c_decisions_share_complete_candidate_visible_cases(
         option.title, option.chart_values
     )
     expected_shareholder = ShareholderCase.from_chart_values(
-        option.title, option.chart_values
+        f"{option.title} plc" if paper_id == "paper_1" else option.title,
+        option.chart_values,
     )
 
     assert system.authoring_context["candidate_source"] == (
@@ -332,15 +333,23 @@ def test_indicative_rows_preserve_explicit_objectives_without_inventing_labels(
     from reportlab.platypus import Table
 
     paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
-    question = paper.sections[-1].options[0].questions[-1].model_copy(
+    original = paper.sections[-1].options[0].questions[-1]
+    source_points = [
+        "AO1: Explain the meaning of dividend yield.",
+        "AO3: Justify the recommendation against the investor's needs.",
+        "AO2/AO3: Apply and interpret the supplied figures.",
+        "AO2: Use the company's financial evidence.",
+        "Consider another valid approach.",
+    ]
+    question = original.model_copy(
         update={
-            "mark_scheme": [
-                "AO1: Explain the meaning of dividend yield.",
-                "AO3: Justify the recommendation against the investor's needs.",
-                "AO2/AO3: Apply and interpret the supplied figures.",
-                "AO2: Use the company's financial evidence.",
-                "Consider another valid approach.",
-            ]
+            "mark_scheme": source_points,
+            "authoring_context": {
+                **original.authoring_context,
+                "accounting_source_content": [
+                    {"role": "indicative", "text": text} for text in source_points
+                ],
+            },
         }
     )
     flowables = getattr(render_pdf, page_builder)(question, "Question 17")
@@ -659,20 +668,20 @@ def test_trade_discount_explanation_has_two_contextual_reasoning_chains() -> Non
         if item.rule_id == "explain_trade"
     )
     awarded = [
-        point.text
+        point
         for point in question.structured_mark_scheme
         if point.marks > 0
     ]
 
-    assert len(awarded) == question.marks
-    assert not any(
-        text.casefold().startswith(("award", "credit", "indicative content"))
-        for text in awarded
-    )
+    assert [point.marks for point in awarded] == [3, 3]
+    assert sum(point.marks for point in awarded) == question.marks
+    assert question.scheme_mode == "levels"
+    source_content = question.authoring_context["accounting_source_content"]
     developed = [
-        text
-        for text in awarded
-        if question.prompt.split()[4] in text and " therefore " in text.casefold()
+        entry["text"]
+        for entry in source_content
+        if question.prompt.split()[4] in entry["text"]
+        and " therefore " in entry["text"].casefold()
     ]
     assert len(developed) >= 2
 
@@ -808,7 +817,7 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 26, "2": 28}
+    mark_scheme_pages = {"1": 24, "2": 28}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -1168,11 +1177,11 @@ def test_paper_one_mark_scheme_matches_reference_question_sequence(tmp_path: Pat
         18: "Profit and loss appropriation account",
         19: "formal partnership agreement",
         20: "Advise the owner",
-        22: "Question 16 continued",
-        23: "Advise the investor",
-        25: "Question 17 continued",
+        21: "Question 16 continued",
+        22: "Advise the investor",
+        23: "Question 17 continued",
     }
-    assert len(pages) == 26
+    assert len(pages) == 24
     for page_index, label in expected.items():
         assert label in (pages[page_index].extract_text() or "")
 
