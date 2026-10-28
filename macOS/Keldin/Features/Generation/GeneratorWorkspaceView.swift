@@ -23,7 +23,7 @@ struct GeneratorWorkspace: View {
             }
         }
         .navigationTitle("\(board.subjectTitle) · \(board.shortTitle)")
-        .focusedSceneValue(\.keldinCreationContext, .board)
+        .focusedSceneValue(\.keldinCreationContext, KeldinCreationContext.board.presentingModal(showsQualityReview))
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {

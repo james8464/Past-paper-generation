@@ -1,6 +1,48 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Creating your paper" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Création du sujet" } } }
+    },
+    "Your paper is ready" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Votre sujet est prêt" } } }
+    },
+    "The paper and mark scheme are in %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le sujet et le corrigé se trouvent dans %@." } } }
+    },
+    "Couldn’t create the paper" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de créer le sujet" } } }
+    },
+    "Downloading model" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Téléchargement du modèle" } } }
+    },
+    "Ollama is downloading %@." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama télécharge %@." } } }
+    },
+    "Model ready" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Modèle prêt" } } }
+    },
+    "%@ is available in Ollama." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ est disponible dans Ollama." } } }
+    },
+    "Couldn’t download the model" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de télécharger le modèle" } } }
+    },
+    "Setting up Apple MLX" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Configuration d’Apple MLX" } } }
+    },
+    "Keldin is preparing the selected local model." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin prépare le modèle local sélectionné." } } }
+    },
+    "Apple MLX ready" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Apple MLX est prêt" } } }
+    },
+    "The selected model is ready for local generation." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le modèle sélectionné est prêt pour la création locale." } } }
+    },
+    "Apple MLX setup needs attention" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "La configuration d’Apple MLX nécessite votre attention" } } }
+    },
     "Benchmark failed" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Échec du test de performance" } } }
     },

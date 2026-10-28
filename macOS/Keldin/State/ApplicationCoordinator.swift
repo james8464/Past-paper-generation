@@ -67,6 +67,11 @@ final class ApplicationCoordinator: ObservableObject {
 
     var isRunning: Bool { activeRun != nil }
 
+    var hasCommandBlockingPresentation: Bool {
+        showWelcome || showHelp || showError || showHostedAIConsent
+            || showMLXSetupConfirmation || showPullConfirmation
+    }
+
     private var activeOperation: RunningOperation { activeRun?.intent.operation ?? .none }
 
     private var currentGenerationFileIDs: Set<UUID> {
@@ -1533,11 +1538,11 @@ final class ApplicationCoordinator: ObservableObject {
     private func notifySuccess(for operation: RunningOperation) {
         switch operation {
         case .generation:
-            sendNotification(title: "Your paper is ready", body: "The paper and mark scheme are in \(outputFolder.lastPathComponent).")
+            sendNotification(.paperReady(folder: outputFolder.lastPathComponent))
         case .modelPull:
-            sendNotification(title: "Model ready", body: "\(selectedModel) is available in Ollama.")
+            sendNotification(.modelReady(model: selectedModel))
         case .mlxSetup:
-            sendNotification(title: "Apple MLX ready", body: "The selected model is ready for local generation.")
+            sendNotification(.mlxReady)
         case .none:
             break
         }
@@ -1546,14 +1551,11 @@ final class ApplicationCoordinator: ObservableObject {
     private func notifyStarted(for operation: RunningOperation) {
         switch operation {
         case .generation:
-            sendNotification(
-                title: "Creating your paper",
-                body: "\(selectedBoard.subjectTitle) · \(selectedPaper.title)"
-            )
+            sendNotification(.paperStarted(subject: selectedBoard.subjectTitle, paper: selectedPaper.title))
         case .modelPull:
-            sendNotification(title: "Downloading model", body: "Ollama is downloading \(modelToPull).")
+            sendNotification(.modelStarted(model: modelToPull))
         case .mlxSetup:
-            sendNotification(title: "Setting up Apple MLX", body: "Keldin is preparing the selected local model.")
+            sendNotification(.mlxStarted)
         case .none:
             break
         }
@@ -1562,11 +1564,11 @@ final class ApplicationCoordinator: ObservableObject {
     private func notifyFailure(for operation: RunningOperation, message: String) {
         switch operation {
         case .generation:
-            sendNotification(title: "Couldn’t create the paper", body: GenerationPresentation.error(message, language: presentationLanguage))
+            sendNotification(.paperFailed(detail: message))
         case .modelPull:
-            sendNotification(title: "Couldn’t download the model", body: message)
+            sendNotification(.modelFailed(detail: message))
         case .mlxSetup:
-            sendNotification(title: "Apple MLX setup needs attention", body: message)
+            sendNotification(.mlxFailed(detail: message))
         case .none:
             break
         }
@@ -1576,6 +1578,11 @@ final class ApplicationCoordinator: ObservableObject {
         Task {
             _ = try? await notificationCenter.requestAuthorization(options: [.alert, .sound])
         }
+    }
+
+    private func sendNotification(_ event: WorkNotification) {
+        let copy = event.content(language: presentationLanguage)
+        sendNotification(title: copy.title, body: copy.body)
     }
 
     private func sendNotification(title: String, body: String) {

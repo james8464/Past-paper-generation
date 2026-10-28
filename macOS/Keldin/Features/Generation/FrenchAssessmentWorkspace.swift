@@ -40,7 +40,8 @@ struct FrenchAssessmentWorkspace: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle("Baccalauréat · NSI")
-        .focusedSceneValue(\.keldinCreationContext, .french(largePrint: largePrint))
+        .focusedSceneValue(\.keldinCreationContext, KeldinCreationContext.french(largePrint: largePrint)
+            .presentingModal(showTeacherReview || showDownloadConsent || showDeleteReferences))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if application.isRunning {
