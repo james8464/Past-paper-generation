@@ -147,10 +147,10 @@ final class CoordinatorTests: XCTestCase {
         let coordinator = GenerationCoordinator(history: store)
         let record = GenerationJobRecord.fixture(state: .pending)
         try coordinator.begin(record)
-        coordinator.receive(.file(role: "question_paper", path: "/private/working/sujet.pdf"))
+        coordinator.receive(.file(role: "question_paper", path: "/private/working/sujet.pdf"), expectedJobID: record.id)
         let exported = GeneratedFile(role: "question_paper", url: temporaryDirectory.appendingPathComponent("sujet.pdf"))
         try Data("PDF fixture".utf8).write(to: exported.url)
-        try coordinator.complete(artifacts: [exported])
+        try coordinator.complete(expectedJobID: record.id, artifacts: [exported])
         XCTAssertEqual(store.records.first?.artifacts.map(\.url), [exported.url])
     }
 
@@ -171,7 +171,7 @@ final class CoordinatorTests: XCTestCase {
         )
         let manifest = temporaryDirectory.appendingPathComponent("manifest.json")
         try coordinator.begin(record)
-        XCTAssertThrowsError(try coordinator.complete())
+        XCTAssertThrowsError(try coordinator.complete(expectedJobID: record.id))
         XCTAssertEqual(store.records.first?.state, .running)
         let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v35","seed":270101,"prompt_version":"fr-nsi-written-2027-v35","print_policy":"fr-nsi-v35-internal-review-v1"}}"#
         try Data(payload.utf8).write(to: manifest)
@@ -192,7 +192,7 @@ final class CoordinatorTests: XCTestCase {
         }
         try Data(payload.utf8).write(to: manifest)
         let file = GeneratedFile(role: "package_manifest", url: manifest)
-        try coordinator.complete(artifacts: [file])
+        try coordinator.complete(expectedJobID: record.id, artifacts: [file])
         XCTAssertEqual(store.records.first?.id, record.id)
         XCTAssertEqual(store.records.first?.configuration.seed, 270101)
         XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v35")
@@ -465,7 +465,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testSavedReportClearsOnlyForAcceptedTargetChanges() throws {
-        let model = isolatedApplication()
+        let model = isolatedApplication(backend: ControlledRunBackend())
         let board = try XCTUnwrap(
             ExamCatalog.readyBoards.first { $0.papers.count > 1 }
         )
@@ -479,10 +479,11 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.lastQualityReport, report)
         model.selectPaperID("not-a-paper")
         XCTAssertEqual(model.lastQualityReport, report)
-        model.isRunning = true
+        model.prepareFrenchReferences()
+        model.lastQualityReport = report
         model.selectPaperID(changed.id)
         XCTAssertEqual(model.lastQualityReport, report)
-        model.isRunning = false
+        model.cancelGeneration()
         model.selectPaperID(changed.id)
         XCTAssertNil(model.lastQualityReport)
     }
@@ -537,15 +538,22 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testReportedBackendFailureFinalizesHistoryAndReleasesSeed() throws {
-        let model = isolatedApplication()
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        let model = isolatedApplication(defaults: defaults, backend: backend)
         let record = GenerationJobRecord.fixture(state: .pending)
         model.duplicateConfiguration(record)
-        try model.generationCoordinator.begin(record)
-        model.apply(.error(message: "Checkpoint identity changed", code: "french_generation_failed"))
-        model.finishGeneration(.success(1))
+        model.setDryRun(true)
+        model.generate()
+        let job = try XCTUnwrap(model.generationCoordinator.activeJob)
+        let run = try XCTUnwrap(backend.requests.first)
+        run.onEvent(.error(message: "Checkpoint identity changed", code: "french_generation_failed"))
+        run.onFinish(.success(1))
         XCTAssertNil(model.pendingGenerationSeed)
         XCTAssertNil(model.generationCoordinator.activeJob)
-        XCTAssertEqual(model.recentDocumentStore.records.first(where: { $0.id == record.id })?.state, .failed)
+        XCTAssertEqual(model.recentDocumentStore.records.first(where: { $0.id == job.id })?.state, .failed)
     }
 
     @MainActor

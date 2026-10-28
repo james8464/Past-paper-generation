@@ -36,7 +36,8 @@ final class GenerationCoordinator {
         generatedFiles.removeAll()
     }
 
-    func receive(_ event: BackendEvent) {
+    func receive(_ event: BackendEvent, expectedJobID: UUID) {
+        guard activeJob?.id == expectedJobID else { return }
         switch event {
         case let .progress(stage, message, value):
             status = message
@@ -55,8 +56,8 @@ final class GenerationCoordinator {
         }
     }
 
-    func complete(artifacts: [GeneratedFile]? = nil) throws {
-        guard var job = activeJob else { return }
+    func complete(expectedJobID: UUID, artifacts: [GeneratedFile]? = nil) throws {
+        guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         if let artifacts { generatedFiles = artifacts }
         if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
            job.configuration.model == FrenchAssessmentRequest.modelID {
@@ -87,8 +88,8 @@ final class GenerationCoordinator {
         progress = 1
     }
 
-    func cancel() throws {
-        guard var job = activeJob else { return }
+    func cancel(expectedJobID: UUID) throws {
+        guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         job.state = .cancelled
         job.updatedAt = clock.now
         try history.save(job)
@@ -97,8 +98,8 @@ final class GenerationCoordinator {
         status = "Cancelled"
     }
 
-    func fail(message: String) throws {
-        guard var job = activeJob else { return }
+    func fail(message: String, expectedJobID: UUID) throws {
+        guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         job.state = .failed
         job.updatedAt = clock.now
         try history.save(job)
@@ -106,4 +107,8 @@ final class GenerationCoordinator {
         progress = nil
         status = message
     }
+}
+
+enum GenerationOwnershipError: Error {
+    case jobChanged
 }

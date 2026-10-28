@@ -162,7 +162,7 @@ final class UKArtifactPublisherTests: XCTestCase {
 
         XCTAssertTrue(committed)
         XCTAssertNotEqual(application.generatedFiles.map(\.url), urls)
-        try application.generationCoordinator.complete(artifacts: application.currentGenerationFiles)
+        try application.generationCoordinator.complete(expectedJobID: job.id, artifacts: application.currentGenerationFiles)
         XCTAssertNil(application.generationCoordinator.activeJob)
         XCTAssertEqual(application.recentDocumentStore.records.first?.state, .completed)
         XCTAssertEqual(application.recentDocumentStore.records.first?.artifacts.map(\.url), application.currentGenerationFiles.map(\.url))

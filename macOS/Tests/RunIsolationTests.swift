@@ -5,6 +5,275 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testMLXSetupContinuesOnlyTheUnchangedLaunchTarget() throws {
+        for change in ["none", "board", "paper", "provider", "model", "dryRun", "output"] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            application.duplicateConfiguration(pendingJob(seed: 73))
+            let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI && $0.supports(.apple) && $0.papers.count > 1 })
+            application.selectBoard(board)
+            application.aiProvider = .apple
+            application.appleModel = "fixture/model"
+            application.ollamaState = OllamaState(installed: true, running: true, command: nil, message: "Fixture")
+            let originalPaperID = application.selectedPaperID
+            let originalOutput = application.outputFolder
+            application.generate()
+            XCTAssertTrue(application.showMLXSetupConfirmation)
+            application.confirmMLXSetup()
+            let setup = try XCTUnwrap(backend.requests.first)
+            switch change {
+            case "board":
+                let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != board.id })
+                application.catalogStore.selectedBoardID = other.id
+                application.catalogStore.selectedPaperID = try XCTUnwrap(other.papers.first).id
+            case "paper":
+                application.catalogStore.selectedPaperID = try XCTUnwrap(board.papers.first { $0.id != originalPaperID }).id
+            case "provider": application.aiProvider = .ollama
+            case "model": application.appleModel = "fixture/another-model"
+            case "dryRun": application.dryRun = true
+            case "output": application.outputFolder = originalOutput.appendingPathComponent("different-folder")
+            default: break
+            }
+            let chosenBoard = application.selectedBoardID
+            let chosenPaper = application.selectedPaperID
+            let chosenProvider = application.aiProvider
+            let chosenModel = application.appleModel
+            let chosenOutput = application.outputFolder
+
+            setup.onFinish(.success(0))
+
+            if change == "none" {
+                XCTAssertEqual(backend.requests.count, 2)
+                let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+                XCTAssertEqual(job.configuration.boardID, board.id)
+                XCTAssertEqual(job.configuration.paperID, originalPaperID)
+                XCTAssertEqual(job.configuration.provider, "apple")
+                XCTAssertEqual(job.configuration.model, "fixture/model")
+                XCTAssertEqual(job.configuration.seed, 73)
+                XCTAssertTrue(application.isRunning)
+                application.cancelGeneration()
+            } else {
+                XCTAssertEqual(backend.requests.count, 1, change)
+                XCTAssertFalse(application.isRunning, change)
+                XCTAssertNil(application.generationCoordinator.activeJob, change)
+                XCTAssertFalse(application.showMLXSetupConfirmation, change)
+                XCTAssertEqual(application.status, "Apple MLX is ready", change)
+            }
+            XCTAssertEqual(application.selectedBoardID, chosenBoard)
+            XCTAssertEqual(application.selectedPaperID, chosenPaper)
+            XCTAssertEqual(application.aiProvider, chosenProvider)
+            XCTAssertEqual(application.appleModel, chosenModel)
+            XCTAssertEqual(application.outputFolder, chosenOutput)
+        }
+    }
+
+    @MainActor
+    func testGenerationMutationsRequireTheExactOwningJob() throws {
+        let historyURL = try temporaryHistoryURL()
+        let store = RecentDocumentStore(directory: historyURL, retentionLimit: 10)
+        let coordinator = GenerationCoordinator(history: store)
+        let old = pendingJob(seed: 1)
+        let current = pendingJob(seed: 2)
+        try coordinator.begin(old)
+        try coordinator.begin(current)
+        coordinator.receive(.progress(stage: "current", message: "Current", progress: 0.2), expectedJobID: current.id)
+        let recordFile = historyURL.appendingPathComponent("\(current.id.uuidString).json")
+        let bytes = try Data(contentsOf: recordFile)
+        let entries = coordinator.progressEntries
+
+        coordinator.receive(.file(role: "question_paper", path: "/stale.pdf"), expectedJobID: old.id)
+        coordinator.receive(.done(message: "Old result"), expectedJobID: old.id)
+        XCTAssertThrowsError(try coordinator.complete(expectedJobID: old.id, artifacts: [GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/stale.pdf"))]))
+        XCTAssertThrowsError(try coordinator.cancel(expectedJobID: old.id))
+        XCTAssertThrowsError(try coordinator.fail(message: "Old failure", expectedJobID: old.id))
+
+        XCTAssertEqual(coordinator.activeJob?.id, current.id)
+        XCTAssertEqual(coordinator.progress, 0.2)
+        XCTAssertEqual(coordinator.progressEntries, entries)
+        XCTAssertTrue(coordinator.generatedFiles.isEmpty)
+        XCTAssertEqual(try Data(contentsOf: recordFile), bytes)
+        try coordinator.complete(expectedJobID: current.id, artifacts: [])
+        XCTAssertNil(coordinator.activeJob)
+        XCTAssertEqual(store.records.first(where: { $0.id == current.id })?.state, .completed)
+    }
+
+    @MainActor
+    func testPaperArtifactsKeepTheirLaunchTargetAfterSelectionChanges() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
+        application.selectBoard(board)
+        application.setDryRun(true)
+        let originalPaper = application.selectedPaper
+        application.generate()
+        let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+        let run = try XCTUnwrap(backend.requests.first)
+        let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != board.id })
+        // Exercise the ownership boundary directly; normal UI changes are locked.
+        application.catalogStore.selectedBoardID = other.id
+        application.catalogStore.selectedPaperID = try XCTUnwrap(other.papers.first).id
+        run.onEvent(.file(role: "question_paper", path: "/fixture/current-paper.pdf"))
+        run.onFinish(.success(0))
+
+        let file = try XCTUnwrap(application.currentGenerationFiles.first)
+        XCTAssertEqual(file.subject, "\(board.subjectTitle) \(board.shortTitle)")
+        XCTAssertEqual(file.paper, originalPaper.title)
+        XCTAssertEqual(application.recentDocumentStore.records.first(where: { $0.id == job.id })?.artifacts, [file])
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        XCTAssertFalse(application.isRunning)
+    }
+
+    @MainActor
+    func testFailedPaperBeginCannotFailAnOlderOwnedRecord() throws {
+        let backend = ControlledRunBackend()
+        let historyURL = try temporaryHistoryURL()
+        let application = application(backend: backend, historyDirectory: historyURL)
+        let prior = pendingJob(seed: 3)
+        try application.generationCoordinator.begin(prior)
+        let active = application.generationCoordinator.activeJob
+        let backup = historyURL.deletingLastPathComponent().appendingPathComponent("backup")
+        try FileManager.default.moveItem(at: historyURL, to: backup)
+        try Data("temporary write blocker".utf8).write(to: historyURL)
+        application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI }))
+        application.setDryRun(true)
+
+        application.generate()
+
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertNil(application.pendingGenerationSeed)
+        XCTAssertNil(application.generationEstimate)
+    }
+
+    @MainActor
+    func testReferenceMaintenanceNeverMutatesAnUnrelatedPaperJob() throws {
+        let outcomes: [Result<Int32, Error>?] = [
+            .success(0), .success(1), .failure(CocoaError(.fileReadUnknown)), nil,
+        ]
+        for (isReview, outcome) in [false, true].flatMap({ review in outcomes.map { (review, $0) } }) {
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, historyDirectory: history)
+            application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI }))
+            application.setDryRun(true)
+            application.generate()
+            let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+            let backup = history.deletingLastPathComponent().appendingPathComponent("history-backup")
+            try FileManager.default.moveItem(at: history, to: backup)
+            try Data("temporary write blocker".utf8).write(to: history)
+            application.cancelGeneration()
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            try FileManager.default.removeItem(at: history)
+            try FileManager.default.moveItem(at: backup, to: history)
+            let originalRecords = application.recentDocumentStore.records
+            let recordFile = history.appendingPathComponent("\(job.id.uuidString).json")
+            let originalBytes = try Data(contentsOf: recordFile)
+            let originalProgress = application.generationCoordinator.progress
+            let originalFiles = application.generationCoordinator.generatedFiles
+
+            if !isReview {
+                application.prepareFrenchReferences()
+            } else {
+                let request = FrenchReviewRequest(
+                    manifest: URL(fileURLWithPath: "/fixture/manifest.json"), reviewer: "Test fixture",
+                    decision: .revise,
+                    scores: Dictionary(uniqueKeysWithValues: FrenchReviewRequest.rubricKeys.map { ($0, 1) }),
+                    notes: "Test fixture only."
+                )
+                XCTAssertEqual(application.submitFrenchReview(request), .submitted)
+            }
+            let maintenance = try XCTUnwrap(backend.requests.last)
+            XCTAssertEqual(backend.requests.count, 2)
+            maintenance.onEvent(.progress(stage: "references", message: "Reference fixture", progress: 0.8))
+            maintenance.onEvent(.file(role: "reference_report", path: "/fixture/reference-report.json"))
+            if let outcome {
+                maintenance.onFinish(outcome)
+            } else {
+                application.cancelGeneration()
+                maintenance.onFinish(.success(0))
+            }
+
+            XCTAssertFalse(application.isRunning)
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            XCTAssertEqual(application.generationCoordinator.progress, originalProgress)
+            XCTAssertEqual(application.generationCoordinator.generatedFiles, originalFiles)
+            XCTAssertEqual(application.recentDocumentStore.records, originalRecords)
+            XCTAssertEqual(try Data(contentsOf: recordFile), originalBytes)
+        }
+    }
+
+    @MainActor
+    func testMaintenanceLaunchFailureCannotFailAnExistingPaper() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let prior = pendingJob(seed: 9)
+        try application.generationCoordinator.begin(prior)
+        let active = application.generationCoordinator.activeJob
+        let records = application.recentDocumentStore.records
+        backend.launchError = CocoaError(.executableLoad)
+
+        application.prepareFrenchReferences()
+
+        XCTAssertFalse(application.isRunning)
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertEqual(application.recentDocumentStore.records, records)
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertTrue(application.showError)
+    }
+
+    @MainActor
+    func testModelManagementDoesNotCollectFilesOrDiscardLastPaperResults() throws {
+        for setupMLX in [false, true] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            application.beginDocumentCollection()
+            application.apply(.file(role: "question_paper", path: "/fixture/saved-paper.pdf"))
+            let files = application.currentGenerationFiles
+            application.modelToPull = "fixture-model"
+            if setupMLX { application.confirmMLXSetup() }
+            else { application.confirmPullModel() }
+            let run = try XCTUnwrap(backend.requests.first)
+
+            run.onEvent(.file(role: "question_paper", path: "/fixture/not-a-paper.pdf"))
+            XCTAssertEqual(application.currentGenerationFiles, files)
+            application.cancelGeneration()
+            run.onFinish(.success(0))
+
+            XCTAssertEqual(application.currentGenerationFiles, files)
+            XCTAssertEqual(application.generatedFiles, files)
+            XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+            XCTAssertFalse(application.isRunning)
+        }
+    }
+
+    @MainActor
+    func testReplacedJobRefusesCallbacksAndPublicationFromThePreviousRun() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI }))
+        application.setDryRun(true)
+        application.generate()
+        let prior = try XCTUnwrap(backend.requests.first)
+        let replacement = pendingJob(seed: 10)
+        try application.generationCoordinator.begin(replacement)
+        let records = application.recentDocumentStore.records
+        let active = application.generationCoordinator.activeJob
+
+        prior.onEvent(.file(role: "question_paper", path: "/fixture/stale.pdf"))
+        prior.onEvent(.progress(stage: "stale", message: "Stale", progress: 0.9))
+        prior.onFinish(.success(0))
+
+        XCTAssertEqual(application.recentDocumentStore.records, records)
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertTrue(application.generationCoordinator.generatedFiles.isEmpty)
+        XCTAssertTrue(application.currentGenerationFiles.isEmpty)
+        XCTAssertTrue(application.generatedFiles.isEmpty)
+        XCTAssertTrue(application.showError)
+        XCTAssertFalse(application.isRunning)
+    }
+
+    @MainActor
     func testBenchmarkFailureRetainsItsActionableDetailAndCanRetry() throws {
         let backend = ControlledRunBackend()
         let benchmark = BenchmarkCoordinator(backend: backend)
@@ -175,9 +444,10 @@ final class RunIsolationTests: XCTestCase {
             let history = RecentDocumentStore(directory: historyURL, retentionLimit: 10)
             let coordinator = GenerationCoordinator(history: history)
             if hasActiveJob {
-                try coordinator.begin(pendingJob(seed: 1))
-                coordinator.receive(.progress(stage: "current", message: "Existing job", progress: 0.4))
-                coordinator.receive(.file(role: "question_paper", path: "/existing/question.pdf"))
+                let job = pendingJob(seed: 1)
+                try coordinator.begin(job)
+                coordinator.receive(.progress(stage: "current", message: "Existing job", progress: 0.4), expectedJobID: job.id)
+                coordinator.receive(.file(role: "question_paper", path: "/existing/question.pdf"), expectedJobID: job.id)
                 try FileManager.default.moveItem(
                     at: historyURL,
                     to: historyURL.deletingLastPathComponent().appendingPathComponent("preserved-history")
@@ -568,19 +838,21 @@ final class RunIsolationTests: XCTestCase {
 
 // Each instance is driven synchronously by one main-actor test. Captured callbacks
 // retain the production main-actor contract without launching a helper or model.
-private final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
+final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     struct Request {
         let onEvent: @Sendable @MainActor (BackendEvent) -> Void
         let onFinish: @Sendable @MainActor (Result<Int32, Error>) -> Void
     }
 
     private(set) var requests: [Request] = []
+    var launchError: Error?
 
     func run(
         arguments: [String], environment: [String: String],
         onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void,
         onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void
     ) throws -> Process {
+        if let launchError { throw launchError }
         requests.append(Request(onEvent: onEvent, onFinish: onFinish))
         return ControlledProcess()
     }
