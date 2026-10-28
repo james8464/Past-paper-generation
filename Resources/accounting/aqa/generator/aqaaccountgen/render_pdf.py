@@ -37,6 +37,9 @@ from aqaaccountgen.marking_policy import (
     credit_total,
     explicit_credit_points,
     indicative_content,
+    printed_award_rows,
+    printed_level_rows,
+    printed_mcq_rows,
     reason_level_rows,
 )
 from Backend.Core.assessment_objectives import objective_policy_for
@@ -492,10 +495,7 @@ def _accounting_marking_guidance_pages() -> list[list[Flowable]]:
 
 
 def _objective_test_answers(questions: list[GeneratedQuestion]) -> list[Flowable]:
-    rows = []
-    for question in questions:
-        answer = question.mark_scheme[0].removesuffix(".")
-        rows.append([question.number.lstrip("0") or "0", answer, "1"])
+    rows = printed_mcq_rows(questions)
     return [
         Paragraph("Section A", STYLES["kicker"]),
         Paragraph("Objective test answers", STYLES["heading"]),
@@ -544,6 +544,7 @@ def _statement_of_financial_position_scheme(
     option: GeneratedOption,
 ) -> list[Flowable]:
     case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
+    awards = printed_award_rows(question)
     rows = [
         [
             "Non-current assets",
@@ -553,25 +554,25 @@ def _statement_of_financial_position_scheme(
             "Marks",
         ],
         [
-            "Plant and machinery",
+            awards[0][0],
             f"{case.plant_cost_closing:,}",
             f"({case.plant_accumulated_depreciation_closing:,})",
             f"{case.plant_carrying_amount:,}",
-            credit_total(question, 0, 1, 2),
+            awards[0][1],
         ],
         [
-            "Motor vehicles",
+            awards[1][0],
             f"{case.motor_cost_closing:,}",
             f"({case.motor_accumulated_depreciation_closing:,})",
             f"{case.motor_carrying_amount:,}",
-            credit_total(question, 3, 4, 5),
+            awards[1][1],
         ],
         [
-            "Total non-current assets",
+            awards[2][0],
             "",
             "",
             f"{case.total_carrying_amount:,}",
-            f"{credit_total(question, 6)} OF",
+            awards[2][1],
         ],
     ]
     return [
@@ -677,7 +678,7 @@ def _completed_ledger_scheme(
 def _explicit_credit_table(question: GeneratedQuestion) -> Table:
     return _scheme_grid(
         ["Requirement", "Mark"],
-        [[point.text, str(point.marks)] for point in explicit_credit_points(question)],
+        printed_award_rows(question),
         [145 * mm, 22 * mm],
     )
 
@@ -718,22 +719,23 @@ def _completed_income_statement_scheme(
     option: GeneratedOption,
 ) -> list[Flowable]:
     case = IncomeStatementCase.from_chart_values(option.title, option.chart_values)
+    awards = printed_award_rows(question)
     rows = [
-        ["Revenue", f"{case.revenue:,}", "", credit_total(question, 0)],
-        ["Cost of sales", f"({case.adjusted_cost_of_sales:,})", "", credit_total(question, 1, 2)],
-        ["Gross profit", "", f"{case.revenue - case.adjusted_cost_of_sales:,}", f"{credit_total(question, 3)} OF"],
+        [awards[0][0], f"{case.revenue:,}", "", awards[0][1]],
+        [awards[1][0], f"({case.adjusted_cost_of_sales:,})", "", awards[1][1]],
+        [awards[2][0], "", f"{case.revenue - case.adjusted_cost_of_sales:,}", awards[2][1]],
         [
-            "Administration expenses",
+            awards[3][0],
             f"({case.adjusted_administration_expenses:,})",
             "",
-            credit_total(question, 4, 5),
+            awards[3][1],
         ],
-        ["Marketing expenses", f"({case.adjusted_marketing_expenses:,})", "", credit_total(question, 6, 7)],
-        ["Warehouse expenses", f"({case.warehouse_expenses:,})", "", credit_total(question, 8)],
-        ["Other income – insurance claim", f"{case.insurance_claim:,}", "", credit_total(question, 9)],
-        ["Finance costs", f"({case.finance_cost:,})", "", credit_total(question, 10, 11)],
-        ["Profit before tax", "", f"{case.profit_before_tax:,}", f"{credit_total(question, 12)} OF"],
-        ["Taxation", f"({case.current_tax_charge:,})", "", credit_total(question, 13)],
+        [awards[4][0], f"({case.adjusted_marketing_expenses:,})", "", awards[4][1]],
+        [awards[5][0], f"({case.warehouse_expenses:,})", "", awards[5][1]],
+        [awards[6][0], f"{case.insurance_claim:,}", "", awards[6][1]],
+        [awards[7][0], f"({case.finance_cost:,})", "", awards[7][1]],
+        [awards[8][0], "", f"{case.profit_before_tax:,}", awards[8][1]],
+        [awards[9][0], f"({case.current_tax_charge:,})", "", awards[9][1]],
         ["Profit for the year", "", f"{case.profit_for_year:,}", ""],
     ]
     return [
@@ -866,54 +868,7 @@ def _levels_scheme_page(
     question: GeneratedQuestion,
     context: str,
 ) -> list[Flowable]:
-    if question.marks == 6:
-        levels = [
-            [
-                "3",
-                "5–6",
-                "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement.",
-            ],
-            [
-                "2",
-                "3–4",
-                "A reasonable response with some application and developed analysis. Judgement may be partial or uneven.",
-            ],
-            [
-                "1",
-                "1–2",
-                "Limited knowledge or application. Points are asserted with little development.",
-            ],
-            ["0", "0", "Nothing worthy of credit."],
-        ]
-    else:
-        levels = [
-            [
-                "5",
-                "21–25",
-                "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation.",
-            ],
-            [
-                "4",
-                "16–20",
-                "Good knowledge and effective application. Analysis is developed and the judgement is supported.",
-            ],
-            [
-                "3",
-                "11–15",
-                "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement.",
-            ],
-            [
-                "2",
-                "6–10",
-                "Some knowledge and limited application. Analysis is incomplete and evaluation is weak.",
-            ],
-            [
-                "1",
-                "1–5",
-                "Fragmented knowledge with little application or development.",
-            ],
-            ["0", "0", "Nothing worthy of credit."],
-        ]
+    levels = printed_level_rows(question)
     return [
         _scheme_question_heading(question),
         Paragraph(context, STYLES["heading"]),
@@ -948,24 +903,7 @@ def _levels_with_indicative_scheme_page(
         Spacer(1, 3 * mm),
         _scheme_grid(
             ["Level", "Marks", "Descriptor"],
-            [
-                [
-                    "3",
-                    "5–6",
-                    "A well-developed assessment with relevant application, analysis and a supported judgement.",
-                ],
-                [
-                    "2",
-                    "3–4",
-                    "A reasonable response with some application and development; judgement may be partial.",
-                ],
-                [
-                    "1",
-                    "1–2",
-                    "Limited knowledge or application with little development.",
-                ],
-                ["0", "0", "Nothing worthy of credit."],
-            ],
+            printed_level_rows(question),
             [20 * mm, 25 * mm, 122 * mm],
         ),
         Spacer(1, 4 * mm),
@@ -1140,45 +1078,46 @@ def _completed_appropriation_scheme(
     second = periods["second_period"]
     first_shares = first["residual_profit_shares"]
     second_shares = second["residual_profit_shares"]
+    awards = printed_award_rows(question)
     rows = [
-        ["Profit for the period", f"{first['profit']:,}", f"{second['profit']:,}", credit_total(question, 0)],
+        [awards[0][0], f"{first['profit']:,}", f"{second['profit']:,}", awards[0][1]],
         [
-            "Interest on drawings",
+            awards[1][0],
             f"{sum(first['interest_on_drawings'].values()):,}",
             f"{sum(second['interest_on_drawings'].values()):,}",
-            credit_total(question, 1),
+            awards[1][1],
         ],
         [
-            "Interest on capital",
+            awards[2][0],
             f"({sum(first['interest_on_capital'].values()):,})",
             f"({sum(second['interest_on_capital'].values()):,})",
-            credit_total(question, 2, 3),
+            awards[2][1],
         ],
         [
-            "Morgan's salary",
+            awards[3][0],
             f"({first['partner_salary']['Morgan']:,})",
             f"({second['partner_salary']['Morgan']:,})",
-            credit_total(question, 4),
+            awards[3][1],
         ],
         [
-            "Residual profit",
+            awards[4][0],
             f"{first['residual_profit']:,}",
             f"{second['residual_profit']:,}",
-            credit_total(question, 5),
+            awards[4][1],
         ],
         [
-            "Alex's share",
+            awards[5][0],
             f"{first_shares['Alex']:,}",
             f"{second_shares['Alex']:,}",
-            credit_total(question, 6),
+            awards[5][1],
         ],
         [
-            "Morgan's share",
+            awards[6][0],
             f"{first_shares['Morgan']:,}",
             f"{second_shares['Morgan']:,}",
-            credit_total(question, 7),
+            awards[6][1],
         ],
-        ["Riley's share", f"{first_shares['Riley']:,}", "—", "0"],
+        [awards[7][0], f"{first_shares['Riley']:,}", "—", awards[7][1]],
     ]
     return [
         _scheme_question_heading(question),

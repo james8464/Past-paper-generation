@@ -283,3 +283,133 @@ def reason_level_rows(question: GeneratedQuestion) -> list[list[str]]:
         [str(level["level"]), str(level["maximum_mark"]), level["descriptor"]]
         for level in reversed(levels)
     ]
+
+
+# The renderer and printed-content guard use the same row labels and budgets.
+def printed_mcq_rows(questions: list[GeneratedQuestion]) -> list[list[str]]:
+    rows = []
+    for question in questions:
+        index = question.correct_choice
+        if (
+            question.kind != "multiple_choice"
+            or type(index) is not int
+            or len(question.choices) != 4
+            or not 0 <= index < 4
+        ):
+            raise ValueError(
+                "Accounting answer table requires four choices and a valid key"
+            )
+        answer = question.choices[index].removesuffix(".")
+        rows.append(
+            [
+                question.number.lstrip("0") or "0",
+                f"Option {'ABCD'[index]}: {answer}",
+                str(question.marks),
+            ]
+        )
+    return rows
+
+
+def printed_award_rows(question: GeneratedQuestion) -> list[list[str]]:
+    groups = {
+        "statement_extract": [
+            ("Plant and machinery", (0, 1, 2), ""),
+            ("Motor vehicles", (3, 4, 5), ""),
+            ("Total non-current assets", (6,), " OF"),
+        ],
+        "company_statement": [
+            ("Revenue", (0,), ""),
+            ("Cost of sales", (1, 2), ""),
+            ("Gross profit", (3,), " OF"),
+            ("Administration expenses", (4, 5), ""),
+            ("Marketing expenses", (6, 7), ""),
+            ("Warehouse expenses", (8,), ""),
+            ("Other income – insurance claim", (9,), ""),
+            ("Finance costs", (10, 11), ""),
+            ("Profit before tax", (12,), " OF"),
+            ("Taxation", (13,), ""),
+        ],
+        "partnership_2": [
+            ("Profit for the period", (0,), ""),
+            ("Interest on drawings", (1,), ""),
+            ("Interest on capital", (2, 3), ""),
+            ("Morgan's salary", (4,), ""),
+            ("Residual profit", (5,), ""),
+            ("Alex's share", (6,), ""),
+            ("Morgan's share", (7,), ""),
+            ("Riley's share", (), ""),
+        ],
+    }
+    if question.rule_id in groups:
+        return [
+            [label, credit_total(question, *indices) + suffix]
+            for label, indices, suffix in groups[question.rule_id]
+        ]
+    return [
+        [point.text, str(point.marks)] for point in explicit_credit_points(question)
+    ]
+
+
+def printed_level_rows(question: GeneratedQuestion) -> list[list[str]]:
+    if question.rule_id == "explain_trade":
+        return reason_level_rows(question)
+    if question.rule_id == "partnership_3":
+        return [
+            [
+                "3",
+                "5–6",
+                "A well-developed assessment with relevant application, analysis and a supported judgement.",
+            ],
+            [
+                "2",
+                "3–4",
+                "A reasonable response with some application and development; judgement may be partial.",
+            ],
+            ["1", "1–2", "Limited knowledge or application with little development."],
+            ["0", "0", "Nothing worthy of credit."],
+        ]
+    if question.marks == 6:
+        return [
+            [
+                "3",
+                "5–6",
+                "A well-developed assessment. Uses relevant accounting evidence, analyses effects and reaches a supported judgement.",
+            ],
+            [
+                "2",
+                "3–4",
+                "A reasonable response with some application and developed analysis. Judgement may be partial or uneven.",
+            ],
+            [
+                "1",
+                "1–2",
+                "Limited knowledge or application. Points are asserted with little development.",
+            ],
+            ["0", "0", "Nothing worthy of credit."],
+        ]
+    if question.marks != 25:
+        raise ValueError(f"No printed Accounting levels for {question.number}")
+    return [
+        [
+            "5",
+            "21–25",
+            "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation.",
+        ],
+        [
+            "4",
+            "16–20",
+            "Good knowledge and effective application. Analysis is developed and the judgement is supported.",
+        ],
+        [
+            "3",
+            "11–15",
+            "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement.",
+        ],
+        [
+            "2",
+            "6–10",
+            "Some knowledge and limited application. Analysis is incomplete and evaluation is weak.",
+        ],
+        ["1", "1–5", "Fragmented knowledge with little application or development."],
+        ["0", "0", "Nothing worthy of credit."],
+    ]

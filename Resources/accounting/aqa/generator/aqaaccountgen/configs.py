@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from Backend.Core.exam_blueprints import PaperRule, QuestionRule, SectionRule
+from Backend.Core.exam_blueprints import (
+    PaperRule,
+    QuestionRule,
+    SectionRule,
+    SourceDependency,
+)
 
 PAPER_1_TOPICS = {
     "accounting-1",
@@ -35,13 +40,21 @@ PAPER_2_TOPICS = {
 }
 
 
-def q(id: str, marks: int, kind: str, command: str, **objectives: int) -> QuestionRule:
+def q(
+    id: str, marks: int, kind: str, command: str,
+    *, source_dependency: SourceDependency | None = None, **objectives: int,
+) -> QuestionRule:
     return QuestionRule(id=id, marks=marks, kind=kind, command_word=command,
-                        assessment_objectives=objectives)
+                        source_dependency=source_dependency, assessment_objectives=objectives)
 
 
-def mcqs() -> list[QuestionRule]:
-    return [q(f"mcq_{index}", 1, "multiple_choice", "Select", AO1=1) for index in range(1, 11)]
+def mcqs(calculation_numbers: frozenset[int] = frozenset()) -> list[QuestionRule]:
+    questions = [q(f"mcq_{index}", 1, "multiple_choice", "Select", AO1=1) for index in range(1, 11)]
+    for number in calculation_numbers:
+        questions[number - 1] = questions[number - 1].model_copy(
+            update={"task_operation": "transform", "source_dependency": "stem"}
+        )
+    return questions
 
 
 # June 2025 official schemes, P1 pp9-25 / P2 pp9-27; see
@@ -60,30 +73,30 @@ RULES = {
                 id="A", title="Short questions", option_count=1,
                 answer_options=1, option_marks=30,
                 questions=[
-                    *mcqs(),
-                    q("explain_trade", 6, "analysis", "Explain", AO1=6),
-                    q("statement_extract", 7, "calculation", "Prepare", AO1=7),
-                    q("ledger_calculation", 5, "calculation", "Prepare", AO1=5),
-                    q("accounting_concept", 2, "calculation", "Prepare", AO1=2),
+                    *mcqs(frozenset({6, 7, 8, 9})),
+                    q("explain_trade", 6, "analysis", "Explain", source_dependency="stem", AO1=6),
+                    q("statement_extract", 7, "calculation", "Prepare", source_dependency="figure", AO1=7),
+                    q("ledger_calculation", 5, "calculation", "Prepare", source_dependency="figure", AO1=5),
+                    q("accounting_concept", 2, "calculation", "Prepare", source_dependency="figure", AO1=2),
                 ],
             ),
             SectionRule(
                 id="B", title="Financial statements", option_count=1,
                 answer_options=1, option_marks=40,
                 questions=[
-                    q("company_statement", 14, "calculation", "Prepare", AO2=14),
-                    q("company_adjustment", 6, "analysis", "Assess", AO2=2, AO3=4),
-                    q("partnership_1", 6, "calculation", "Prepare", AO2=6),
-                    q("partnership_2", 8, "calculation", "Prepare", AO2=8),
-                    q("partnership_3", 6, "analysis", "Assess", AO2=2, AO3=4),
+                    q("company_statement", 14, "calculation", "Prepare", source_dependency="figure", AO2=14),
+                    q("company_adjustment", 6, "analysis", "Assess", source_dependency="figure", AO2=2, AO3=4),
+                    q("partnership_1", 6, "calculation", "Prepare", source_dependency="figure", AO2=6),
+                    q("partnership_2", 8, "calculation", "Prepare", source_dependency="figure", AO2=8),
+                    q("partnership_3", 6, "analysis", "Assess", source_dependency="figure", AO2=2, AO3=4),
                 ],
             ),
             SectionRule(
                 id="C", title="Accounting decisions", option_count=1,
                 answer_options=1, option_marks=50,
                 questions=[
-                    q("decision_1", 25, "extended_response", "Advise", AO2=5, AO3=20),
-                    q("decision_2", 25, "extended_response", "Advise", AO2=5, AO3=20),
+                    q("decision_1", 25, "extended_response", "Advise", source_dependency="figure", AO2=5, AO3=20),
+                    q("decision_2", 25, "extended_response", "Advise", source_dependency="figure", AO2=5, AO3=20),
                 ],
             ),
         ],

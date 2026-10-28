@@ -301,6 +301,7 @@ def _mcq(
         return GeneratedQuestion(
             rule_id=rule.id, number=number, marks=rule.marks,
             kind=rule.kind, command_word=rule.command_word, topic_id=topic.id,
+            task_operation=rule.task_operation, source_dependency=rule.source_dependency,
             prompt=scenario.prompt, choices=scenario.choices,
             correct_choice=scenario.correct_choice,
             mark_scheme=[scenario.choices[scenario.correct_choice]],

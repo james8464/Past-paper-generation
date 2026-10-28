@@ -61,10 +61,10 @@ multiline source material remain valid.
 
 This is app-owned source rendering, **not live AI qualification**. Seed 270100:
 
-| Final baseline 2 artifact | Pages | SHA-256 |
+| Final baseline 4 artifact | Pages | SHA-256 |
 | --- | ---: | --- |
-| Question paper | 36 | `24a98256816ab8a7b99f8edf021b2f8a117b7fc83576dca6dec405e14787fe6f` |
-| Scheme | 24 | `0e7c60f4a84b89809976a5977dc736ecca92ea6b07d874c3e374c2bdd03803a1` |
+| Question paper | 36 | `b62b2e84f98a0a753d18176345ece63175bc8e196e2e18b1f65b059fd913bf91` |
+| Scheme | 24 | `a61dc29c61ffe3995fa2b3cbccbf2499370067c6a52df227f7b9d312885eac5d` |
 
 Retained root: `tmp/pdfs/accounting-marking-policy-20261028`. The main reviewer
 inspected all 36 subject and 26 scheme pages of baseline 1. That review found
@@ -84,10 +84,59 @@ baseline 1 at 100 dpi. No clipping, overlap or answer-border overflow was found
 in the final changed pages. Some level-grid pages remain sparse. Deliberate
 blank and candidate-working pages are not mistaken for missing content.
 
+Baseline 3 reproduced all 60 baseline 2 pages exactly at 100 dpi after the
+shared credit-row and level-grid helpers were introduced. Baseline 4 changes
+only scheme page 8: the four new multi-step MCQ answers now include their option
+letters. The renderer derives every key from `choices` and `correct_choice`,
+independently of mutable `mark_scheme` prose. The main reviewer and second
+reviewer inspected that complete page; its ten numbered answers and one-mark
+awards are readable, with no clipping or overlap. The other 59 full-page rasters
+are identical to baseline 3. All four baseline directories remain retained.
+
+`baseline-run-4/raster-comparison.json` records PDF hashes, actual page dimensions
+and per-page RGB hashes. Comparisons use the complete 100 dpi page, including
+headers and footers, rather than cropped answer regions. Byte differences in
+PDF metadata do not invalidate an otherwise identical page raster.
+
 The June 2025 official Paper 1 comparator's 36 pages were also reviewed during
 the preceding V10 analysis. Page-count matching is not an equivalence claim.
 The corrected shorter scheme retains the source rows and appropriate account
 layouts; it does not copy official question wording or bundle official PDFs.
+
+## Compact scheme acceptance policy
+
+`generated-aqa-accounting-paper1-credit-v1` applies only to the AQA Accounting
+Paper 1 mark scheme. A package declaring the explicit marking policy must have
+exactly 24 scheme pages and matching exported assessed items. Its 21 questions
+must follow the configured order, number, rule, kind, tariff and assessment
+objectives, with the expected paper identity and one option per section.
+Changing the package and recomputing its item projection cannot bypass these
+checks. Unmarked historical schemes retain their exact 26-page fallback; an
+unmarked 24-page scheme is not accepted. No other subject's page requirement is
+lowered.
+
+Printed checks require the correct MCQ question/letter/text/mark rows and the
+complete credit tables and levels grids for each written part. Renderer and
+validator share the canonical key, feature-label, credit-weight and level-row
+helpers. Missing grids, changed bands and swapped awards are rejected even when
+all question text, numerical answers and total marks remain elsewhere on the
+page. An altered `scheme_mode` cannot hide a missing decision grid.
+
+All six primary calculation tables are also bound to the independent Core
+candidate-input solver and raw candidate postings: Q12's asset roles and
+depreciation deductions, Q13's debit/credit account sides, Q14's labelled income
+and expense columns, Q15.1's partner capital columns and Q15.2's period columns
+and appropriation deductions. The verifier does not use renderer case objects
+or worked formulae as answer evidence. Intermediate workings retain the earlier
+numeric-presence checks; those checks alone do not establish role or sign
+correctness for every intermediate cell.
+
+The pinned build/test dependency is PyMuPDF 1.28.2. Its supported
+`no_recommend_layout()` switch suppresses only the optional layout-package
+advertisement before table extraction. Missing quiet table support produces an
+actionable error. A fresh-process regression validates actual generated paths
+and requires exactly one JSON output line, protecting the native event stream
+without redirecting or hiding diagnostics.
 
 ## Tests and remaining gates
 
@@ -103,6 +152,26 @@ targeted results and baseline 1 remain retained under
 `tmp/final-validation-20261028` and the PDF root above. Ruff passes. Graphify was
 updated with AST-only extraction; 42 JSON resource files again produce no code
 nodes, so this graph does not imply semantic review of those resources.
+
+The first full V11 run finished with 4 failures, 4,089 passes and 2 skips in
+476.64 seconds. It exposed the old 26-page scheme requirement, a mismatch
+between exported source demands and the new MCQ/company-case inputs, and two
+fixtures that still assumed the previous planning text or simpler MCQs. The
+repairs declare the compact policy, carry the configured source dependencies
+into generated questions, inject legacy text explicitly where its exclusion is
+being tested, and recompute the new MCQ expectations from their public inputs.
+That full run is retained in `accounting-v11-full-suite.log`; it does not certify
+the later fixed source.
+
+The first printed-credit mutation run reproduced 9 failures with 8 existing
+passes. A separate forged-mode mutation reproduced another failure. The final
+positional checks reproduced 9 further failures: a wrong MCQ letter, swapped
+answer rows, mutable answer prose, swapped carrying amounts, an expense with
+its deduction sign removed, switched appropriation periods, debit/credit swaps
+in both Q13 tables and switched partner columns. After repair, the combined
+pagination/marking-policy suite passes 63 tests. Its final logs are
+`accounting-scheme-position-red.log` and `accounting-scheme-position-green.log`
+under `tmp/final-validation-20261028`. Ruff and the diff whitespace check pass.
 
 Full fixed-source tests, packaged acceptance, a fresh pinned complete live run
 and protected publication still need their actual results recorded. Teacher
