@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793199888.5374722,
-    "ast_hash": "080b7d04151a8b2448203f33cc5c7e04",
+    "mtime": 1793202628.3226259,
+    "ast_hash": "15aafbeb8322a7036e84e79fbdc41319",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2055,8 +2055,8 @@
     "semantic_hash": ""
   },
   "tools/build_occitanie_submission.py": {
-    "mtime": 1793143509.1319702,
-    "ast_hash": "6af9204274ffccc5ff4b717752eb5cde",
+    "mtime": 1793203103.0382252,
+    "ast_hash": "e73b8ded9631a52f35651a211062d402",
     "semantic_hash": ""
   },
   "tools/french_nsi_benchmark.py": {
@@ -2255,13 +2255,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1793143576.4287336,
-    "ast_hash": "5f02aaa08c87fe0a05986dff9cd867a2",
+    "mtime": 1793203205.2029595,
+    "ast_hash": "ba0b1cb7254098d06b2e12f7e71b9a38",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1793143576.428233,
-    "ast_hash": "48b68d7d63bb1593d4c91e20b26417f3",
+    "mtime": 1793202935.4682827,
+    "ast_hash": "b52a555c383dab6a1e79e3483c8a4e2a",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -2285,8 +2285,8 @@
     "semantic_hash": ""
   },
   "docs/occitanie-project.md": {
-    "mtime": 1793143859.7578542,
-    "ast_hash": "3c313189047ff68d13d451b0f2054979",
+    "mtime": 1793202947.1046062,
+    "ast_hash": "c3563f30a59ad598c4ef0b8d83afbf75",
     "semantic_hash": ""
   },
   "docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md": {
@@ -2555,8 +2555,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_submission.py": {
-    "mtime": 1793143509.1328793,
-    "ast_hash": "7d31c32e0efcd43bd5dfb302d4c20057",
+    "mtime": 1793202915.1396382,
+    "ast_hash": "ab6828dd29e5dc4e94a8d7145d86585b",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png": {
@@ -3837,6 +3837,16 @@
   "docs/quality/aqa-accounting-component-scope-review-2026-10-28.md": {
     "mtime": 1793199855.3253186,
     "ast_hash": "2e02de3cd1d048a8ef68db406f269424",
+    "semantic_hash": ""
+  },
+  "docs/quality/model-guidance-copy-review-2026-10-28.md": {
+    "mtime": 1793202613.9425824,
+    "ast_hash": "b9412434e06673da4f0d2ba72832fb46",
+    "semantic_hash": ""
+  },
+  "docs/quality/occitanie-v35-report-review-2026-10-28.md": {
+    "mtime": 1793203205.2036426,
+    "ast_hash": "c6f31511bc43a01a251afb5132bfff61",
     "semantic_hash": ""
   }
 }
