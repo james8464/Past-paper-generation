@@ -6,6 +6,15 @@ Closing preserves the slot; only an empty closed channel produces EOF.
 """
 
 
+def recevoir(case, ferme):
+    """Return status, delivered value and the slot after an atomic receive."""
+    if case is not None:
+        return ("valeur", case, None)
+    if ferme:
+        return ("fin", None, None)
+    return ("attente", None, None)
+
+
 def simulate(schedule, *, close=True):
     if (
         type(schedule) is not list

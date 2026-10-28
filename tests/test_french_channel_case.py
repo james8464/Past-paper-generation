@@ -3,6 +3,19 @@
 import pytest
 
 
+@pytest.mark.parametrize(
+    "slot,closed,expected",
+    [("A", False, ("valeur", "A", None)),
+     ("B", True, ("valeur", "B", None)),
+     (None, True, ("fin", None, None)),
+     (None, False, ("attente", None, None))],
+)
+def test_receive_distinguishes_value_eof_and_waiting(slot, closed, expected):
+    from Backend.Core.france.channel_case import recevoir
+
+    assert recevoir(slot, closed) == expected
+
+
 def test_blocked_instructions_retry_without_advancing_the_program():
     from Backend.Core.france.channel_case import simulate
 
