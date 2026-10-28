@@ -19,7 +19,7 @@ struct GeneratorWorkspace: View {
                 }
             }
         }
-        .navigationTitle("\(board.subjectTitle) — \(board.shortTitle)")
+        .navigationTitle("\(board.subjectTitle) · \(board.shortTitle)")
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {
@@ -416,7 +416,9 @@ private struct QualityReviewView: View {
                         LabeledContent("Legal candidate paths", value: "\(count)")
                     }
                     if let marks = report.candidateMarkRange, marks.count == 2 {
-                        LabeledContent("Candidate marks", value: "\(marks[0])–\(marks[1])")
+                        LabeledContent("Candidate marks") {
+                            Text("\(marks[0]) to \(marks[1])")
+                        }
                     }
                     if let marks = report.printedMarks {
                         LabeledContent("Printed marks (all alternatives)", value: "\(marks)")

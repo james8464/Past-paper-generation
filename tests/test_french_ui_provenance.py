@@ -6,14 +6,27 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1] / "macOS" / "PaperCreator"
 
 
+def test_fixed_assessment_values_defer_localization_to_swiftui():
+    workspace = (
+        ROOT / "Features/Generation/FrenchAssessmentWorkspace.swift"
+    ).read_text()
+    for key in (
+        "2027 · 3 h 30 · 3 independent exercises",
+        "18 technical + 2 French language = 20",
+    ):
+        assert f'Text("{key}")' in workspace
+    for row in ("written-exam", "indicative-credit"):
+        assert f'.id("{row}-\\(interfaceLanguage)")' in workspace
+
+
 def test_french_workspace_explains_application_owned_cases_in_both_languages():
     workspace = (
         ROOT / "Features/Generation/FrenchAssessmentWorkspace.swift"
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "French NSI has three app-authored case families. The originality check refuses repeated families.",
-        "No AI model or Ollama installation is needed for V32. These papers do not qualify an AI model.",
+        "Three paper families are available. The app blocks repeats.",
+        "This catalogue runs locally without an AI model or Ollama. It does not test model quality.",
         "Official sources are downloaded with your permission. V32 builds papers on this Mac without model prompts or cloud generation.",
     ):
         assert f'Text("{key}")' in workspace

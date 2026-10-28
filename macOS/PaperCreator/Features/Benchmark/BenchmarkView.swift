@@ -302,7 +302,7 @@ private struct BenchmarkMetricGrid: View {
                             Text(score.formatted(.percent.precision(.fractionLength(0))))
                                 .monospacedDigit()
                         } else {
-                            Text("—")
+                            Text("Not available")
                                 .foregroundStyle(.secondary)
                         }
                     }

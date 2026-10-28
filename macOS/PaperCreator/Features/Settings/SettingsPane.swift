@@ -143,12 +143,11 @@ private struct AISettingsTab: View {
 
                 Picker("Model", selection: $application.selectedModel) {
                     ForEach(application.ollamaModelOptions, id: \.self) { model in
-                        Text(
-                            model == application.ollamaRecommendation.model
-                                ? "\(model) — Recommended"
-                                : model
-                        )
-                        .tag(model)
+                        if model == application.ollamaRecommendation.model {
+                            Text("\(model) (recommended)").tag(model)
+                        } else {
+                            Text(model).tag(model)
+                        }
                     }
                 }
 
@@ -227,7 +226,7 @@ private struct OutputSettingsTab: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                        Button("Choose...", action: application.chooseOutputFolder)
+                        Button("Choose…", action: application.chooseOutputFolder)
                     }
                 }
             }

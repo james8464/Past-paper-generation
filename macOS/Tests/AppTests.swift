@@ -526,8 +526,8 @@ final class PaperCreatorTests: XCTestCase {
         let frenchBundle = resourceURL.flatMap(Bundle.init(url:))
         XCTAssertNotNil(frenchBundle)
         XCTAssertEqual(
-            frenchBundle?.localizedString(forKey: "Record a teacher review", value: nil, table: nil),
-            "Enregistrer l’avis d’un enseignant"
+            frenchBundle?.localizedString(forKey: "Record a teacher review…", value: nil, table: nil),
+            "Enregistrer l’avis d’un enseignant…"
         )
         XCTAssertEqual(
             frenchBundle?.localizedString(forKey: "Create an unreviewed draft", value: nil, table: nil),
@@ -537,6 +537,14 @@ final class PaperCreatorTests: XCTestCase {
             frenchBundle?.localizedString(forKey: "Delete downloaded French references", value: nil, table: nil),
             "Supprimer les références françaises téléchargées"
         )
+        for (key, expected) in [
+            ("%@ (recommended)", "%@ (recommandé)"),
+            ("%lld to %lld", "%lld à %lld"),
+            ("Print…", "Imprimer…"),
+            ("Save review…", "Enregistrer la relecture…"),
+        ] {
+            XCTAssertEqual(frenchBundle?.localizedString(forKey: key, value: nil, table: nil), expected)
+        }
     }
 
     func testFrenchReviewUsesEnvironmentLocalisableKeys() {

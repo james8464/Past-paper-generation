@@ -95,7 +95,7 @@ struct JobHistoryView: View {
     private func boardTitle(_ id: String) -> String {
         if id == "fr-national-nsi" { return "Baccalauréat · NSI" }
         guard let board = ExamCatalog.board(id: id) else { return id }
-        return "\(board.subjectTitle) — \(board.shortTitle)"
+        return "\(board.subjectTitle) · \(board.shortTitle)"
     }
 }
 

@@ -1315,8 +1315,8 @@
     "semantic_hash": "af9171976da3bc85eb789c48cfe3ddb0"
   },
   "macOS/PaperCreator/Domain/AppModels.swift": {
-    "mtime": 1793122458.3013167,
-    "ast_hash": "e0a9a0520b56d2e62d859309f654d15e",
+    "mtime": 1793145959.1771564,
+    "ast_hash": "3fa49b9221e9f970fb31f7090c875d90",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/AssessmentBundleExporter.swift": {
@@ -1340,28 +1340,28 @@
     "semantic_hash": "98f8e1ff694bdf8b186ca807cf8f1fbc"
   },
   "macOS/PaperCreator/Features/Benchmark/BenchmarkView.swift": {
-    "mtime": 1791129181.584711,
-    "ast_hash": "b28ef05dabe56b2cab279e7886a2e9d8",
-    "semantic_hash": "b28ef05dabe56b2cab279e7886a2e9d8"
+    "mtime": 1793145959.1778789,
+    "ast_hash": "11fc5198f3278b9a52a29c80511790e3",
+    "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/DocumentPreviewView.swift": {
-    "mtime": 1793110890.8223898,
-    "ast_hash": "c6714221996ca8466a68b13faaac1757",
+    "mtime": 1793146345.2133367,
+    "ast_hash": "64e1595510c40f24e67316cecfc290bd",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/JobHistoryView.swift": {
-    "mtime": 1793136239.328644,
-    "ast_hash": "0df33d565610ef3310c1e5c494780807",
+    "mtime": 1793145959.1773887,
+    "ast_hash": "6555a1e2dfcd5786e6ef9328228487b7",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/FrenchAssessmentWorkspace.swift": {
-    "mtime": 1793140335.1791337,
-    "ast_hash": "943ba277cd07d93df1e52ebe3452a393",
+    "mtime": 1793147187.3715417,
+    "ast_hash": "5889fdf0d5c78d5a2ee9756d8503be63",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1793136239.328821,
-    "ast_hash": "6fe07ab3209d80fb1b3efa25183905dd",
+    "mtime": 1793146110.3884788,
+    "ast_hash": "9575672807816483bbc4a48fd6016785",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/PaperCreationTips.swift": {
@@ -1370,13 +1370,13 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1793039932.9905832,
-    "ast_hash": "0a3cc0f37526430eda587401d654644f",
+    "mtime": 1793145959.1782804,
+    "ast_hash": "9d04240cfceddf4aac6ea95b05957565",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793121651.9101923,
-    "ast_hash": "e9a152652379625978bb2cf54eedbfbe",
+    "mtime": 1793146345.2141037,
+    "ast_hash": "a1bff278f631dbacb486e5ba75cd7161",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Navigation/ContentView.swift": {
@@ -1445,8 +1445,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793140177.1496208,
-    "ast_hash": "d96e83f53b44195743ec14e10d2ec351",
+    "mtime": 1793146462.855424,
+    "ast_hash": "74e658e95004a7356b7e73fcac569bbb",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -2250,8 +2250,8 @@
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
-    "mtime": 1791129181.546883,
-    "ast_hash": "0f7cab161a709465a0f50b69fdb377c0",
+    "mtime": 1793147468.4990695,
+    "ast_hash": "72040c22de76b5a766b4f7fa8cf67bc2",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
@@ -3390,8 +3390,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793132983.7568438,
-    "ast_hash": "42e2d87b2783a19069aa290b3436685e",
+    "mtime": 1793146331.5570183,
+    "ast_hash": "a6339ca55872c55edff79afd330d06d6",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3600,8 +3600,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_ui_provenance.py": {
-    "mtime": 1793041524.2411873,
-    "ast_hash": "993ae5acf8ff39f493f17dd738f15047",
+    "mtime": 1793147177.7370455,
+    "ast_hash": "3c868b31fa78273625d833ad47124701",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_benchmark.py": {
