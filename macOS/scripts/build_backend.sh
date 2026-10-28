@@ -119,6 +119,7 @@ PYINSTALLER_ARGS=(
   --specpath "$WORK_DIR"
   --paths "$ROOT_DIR"
   --hidden-import fitz
+  --hidden-import keldin_edexcel.cli
   --collect-data pymupdf
   --collect-all mlx
   --collect-all mlx_lm

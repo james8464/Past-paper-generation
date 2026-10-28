@@ -17,9 +17,10 @@ dev = [
 
 [project.scripts]
 pastpapergen = "pastpapergen.cli:main"
+keldin-edexcel = "keldin_edexcel.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["pastpapergen*"]
+include = ["pastpapergen*", "keldin_edexcel*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
