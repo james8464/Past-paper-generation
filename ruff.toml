@@ -15,3 +15,38 @@ ignore = ["RUF001"] # Publication copy intentionally uses typographic and maths 
 "tests/**" = ["B018"]
 "Resources/**/tests/**" = ["B018"]
 "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py" = ["E402"]
+
+[format]
+# These exact source bytes participate in retained French catalogue identities.
+# Keep them linted. Format changes need a versioned replay migration first.
+exclude = [
+  "Backend/Core/france/allocation_case.py",
+  "Backend/Core/france/allocation_exercise.py",
+  "Backend/Core/france/channel_case.py",
+  "Backend/Core/france/channel_exercise.py",
+  "Backend/Core/france/database_case_authoring.py",
+  "Backend/Core/france/database_case_families.py",
+  "Backend/Core/france/database_case_prose.py",
+  "Backend/Core/france/database_curriculum_prose.py",
+  "Backend/Core/france/database_depth_authoring.py",
+  "Backend/Core/france/directory_case.py",
+  "Backend/Core/france/directory_exercise.py",
+  "Backend/Core/france/expanded_pipeline.py",
+  "Backend/Core/france/expression_exercise.py",
+  "Backend/Core/france/expression_stack.py",
+  "Backend/Core/france/expression_synthesis.py",
+  "Backend/Core/france/extended_pipeline.py",
+  "Backend/Core/france/loan_case.py",
+  "Backend/Core/france/loan_exercise.py",
+  "Backend/Core/france/nsi.py",
+  "Backend/Core/france/postfix_exercise.py",
+  "Backend/Core/france/round_robin_case.py",
+  "Backend/Core/france/round_robin_exercise.py",
+  "Backend/Core/france/synthesized_authoring.py",
+  "Backend/Core/france/system_case_authoring.py",
+  "Backend/Core/france/system_case_families.py",
+  "Backend/Core/france/system_case_prose.py",
+  "Backend/Core/france/tree_case_authoring.py",
+  "Backend/Core/france/tree_case_families.py",
+  "Backend/Core/france/tree_case_prose.py",
+]
