@@ -195,6 +195,28 @@ rendering behaviour. The public route remains V32 pending separate acceptance
 checks. Run 9 rebuilds the 16 V34 PDFs for visual review of the new notices; this
 is an application-owned diagnostic, not a live model qualification.
 
+### Choosing an unused whole-paper family
+
+The experimental V34 selector tries each of the four families once, starting
+from the preferred seed and wrapping within the signed 64-bit range. Every
+exercise must pass the existing similarity screen against retained history.
+A repeated exercise excludes that complete paper; the selector does not mix
+exercises from different families. It leaves history intact and reports catalogue
+exhaustion when no complete paper passes.
+
+Similarity refusal now has a `ValueError` subtype, so selection can distinguish
+it from malformed source or validation failures. The thresholds and legacy error
+text are unchanged. Other failures propagate. Preselection does not inspect
+references or create files; generation still performs the full reference and
+history checks, and must record the selected seed in its package and checkpoint.
+
+An actual-reference trial requested seed 270100 four times and selected 270100,
+270101, 270102 and 270103. All four packages validated. Their complete exercises
+match run 9 exactly. The fifth selection stopped before generation and preserved
+history. Evidence is retained in `unused-family-reference-trial`. This helper
+does not activate V34 in the public CLI or native app; those integration checks
+remain required.
+
 Ignored evidence is retained under `tmp/pdfs/v34-reference-review-20261028` and
 `tmp/final-validation-20261028`. Runs 1 and 2 preceded the SQL curriculum
 correction and are not final-release evidence. Earlier V13-V33 packages,

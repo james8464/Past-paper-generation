@@ -19,6 +19,10 @@ COMMON_INSTRUCTIONS = (
 CODE_BLOCK = re.compile(r"```(?:python|sql)?\s*(.*?)```", re.DOTALL | re.IGNORECASE)
 
 
+class SimilarityRejected(ValueError):
+    """The candidate exceeded a calibrated similarity threshold."""
+
+
 def _normalise_prose(value: str) -> tuple[str, list[str]]:
     value = CODE_BLOCK.sub(" ", value.casefold())
     for phrase in COMMON_INSTRUCTIONS:
@@ -128,7 +132,7 @@ def screen_originality(
         for name, score in scores.items():
             maximums[name] = max(maximums[name], score)
         if _too_similar(scores):
-            raise ValueError(
+            raise SimilarityRejected(
                 f"Contrôle d'originalité refusé : proximité avec une {source_kind}"
             )
     return {

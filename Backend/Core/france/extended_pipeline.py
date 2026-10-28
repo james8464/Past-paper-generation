@@ -36,6 +36,53 @@ FAMILIES = (
 )
 
 
+class FamilyCatalogueExhausted(ValueError):
+    """No complete family passes the retained-history screen."""
+
+
+def _validate_history(history):
+    if (
+        type(history) is not list
+        or len(history) > 20
+        or any(
+            type(text) is not str or not text.strip() or len(text) > 100_000
+            for text in history
+        )
+    ):
+        raise ValueError("Invalid originality history")
+
+
+def choose_fresh_seed(seed, *, previous_texts=None):
+    """Try each whole family once; publication still checks its references.
+
+    The returned signed seed belongs in the generated package and checkpoint.
+    This preselection writes nothing and never removes or relaxes history.
+    """
+    from Backend.Core.france.originality import SimilarityRejected, screen_originality
+    from Backend.Core.france.pipeline import exercise_candidate_text
+
+    first = _source(seed)[2]
+    history = [] if previous_texts is None else previous_texts
+    _validate_history(history)
+    for offset in range(FAMILY_COUNT):
+        selected = (seed + offset + 2**63) % 2**64 - 2**63
+        exercises = first if offset == 0 else _source(selected)[2]
+        try:
+            for raw in exercises:
+                screen_originality(
+                    exercise_candidate_text(NSIExercise.model_validate(raw)),
+                    [],
+                    previous_texts=history,
+                )
+        except SimilarityRejected:
+            continue
+        return selected
+    raise FamilyCatalogueExhausted(
+        "Les quatre familles disponibles sont trop proches des sujets précédents. "
+        "Aucun nouveau sujet n'a été créé."
+    )
+
+
 def _source(seed):
     if type(seed) is not int or not -(2**63) <= seed < 2**63:
         raise ValueError("V34 requires a signed 64-bit integer seed")
@@ -127,15 +174,7 @@ def _build(seed, references, history):
 
     family, source_seed, raw_exercises = _source(seed)
     _references(references)
-    if (
-        type(history) is not list
-        or len(history) > 20
-        or any(
-            type(text) is not str or not text.strip() or len(text) > 100_000
-            for text in history
-        )
-    ):
-        raise ValueError("Invalid originality history")
+    _validate_history(history)
     tasks = [_task(exercise) for exercise in raw_exercises]
     identity = dict(
         assessment=asdict(NSI_2027),

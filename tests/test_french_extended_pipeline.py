@@ -334,3 +334,99 @@ def test_v34_pdf_cannot_silently_use_historical_notices(tmp_path):
     )
     with pytest.raises(ValueError, match="Pied de page"):
         validate_whole_case_pdf(path, package, correction=False)
+
+
+def family_history(seed):
+    from Backend.Core.france.extended_pipeline import _source
+
+    return [
+        exercise_candidate_text(NSIExercise.model_validate(raw))
+        for raw in _source(seed)[2]
+    ]
+
+
+@pytest.mark.parametrize("seed", [270100, 270101, 270102, 270103, -(2**63), 2**63 - 1])
+def test_unused_family_selection_preserves_preferred_seed(seed):
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    assert choose_fresh_seed(seed) == seed
+
+
+@pytest.mark.parametrize("remaining", range(4))
+def test_unused_family_selection_finds_only_remaining_whole_paper(remaining):
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    history = [
+        text
+        for family in range(4)
+        if family != remaining
+        for text in family_history(270100 + family)
+    ]
+    before = history.copy()
+    selected = choose_fresh_seed(270100, previous_texts=history)
+    assert selected == 270100 + remaining
+    assert history == before
+
+
+def test_same_preference_generates_four_families_then_reports_exhaustion(tmp_path):
+    from Backend.Core.france.extended_pipeline import (
+        FamilyCatalogueExhausted,
+        choose_fresh_seed,
+    )
+
+    history, selected = [], []
+    for _ in range(4):
+        seed = choose_fresh_seed(270100, previous_texts=history)
+        package = generate(tmp_path, seed, history)
+        assert package["identity"]["seed"] == seed
+        selected.append(package["identity"]["family"])
+        history.extend(
+            exercise_candidate_text(NSIExercise.model_validate(raw))
+            for raw in package["exercises"]
+        )
+    before = history.copy()
+    assert selected == [0, 1, 2, 3]
+    with pytest.raises(FamilyCatalogueExhausted, match="quatre familles"):
+        choose_fresh_seed(270100, previous_texts=history)
+    assert history == before
+    assert len(list(tmp_path.glob("checkpoint-*.json"))) == 4
+
+
+def test_one_repeated_exercise_excludes_the_entire_family():
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    assert choose_fresh_seed(270100, previous_texts=family_history(270100)[:1]) == 270101
+
+
+def test_unused_family_selection_wraps_signed_seed_without_overflow():
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    seed = 2**63 - 1
+    assert choose_fresh_seed(seed, previous_texts=family_history(seed)) == -(2**63)
+
+
+@pytest.mark.parametrize("history", [(), {}, [None], [""], ["x" * 100001], ["x"] * 21])
+def test_unused_family_selection_rejects_malformed_history(history):
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    with pytest.raises(ValueError, match="history"):
+        choose_fresh_seed(270100, previous_texts=history)
+
+
+@pytest.mark.parametrize("seed", [True, "270100", 1.5, -(2**63) - 1, 2**63])
+def test_unused_family_selection_rejects_invalid_seed(seed):
+    from Backend.Core.france.extended_pipeline import choose_fresh_seed
+
+    with pytest.raises(ValueError, match="seed"):
+        choose_fresh_seed(seed)
+
+
+def test_unused_family_selection_does_not_swallow_unrelated_validation_errors(monkeypatch):
+    from Backend.Core.france import extended_pipeline, originality
+
+    def broken_screen(*args, **kwargs):
+        raise ValueError("broken fixture, not a similarity rejection")
+
+    monkeypatch.setattr(originality, "screen_originality", broken_screen)
+    with pytest.raises(ValueError, match="broken fixture"):
+        extended_pipeline.choose_fresh_seed(270100)
