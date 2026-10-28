@@ -33,6 +33,19 @@ final class BackendClient: @unchecked Sendable {
     }
 
     private let fileManager = FileManager.default
+    private let bundleURL: URL
+    private let distributionMode: DistributionMode
+    private let developmentRoot: URL?
+
+    init(
+        bundleURL: URL = Bundle.main.bundleURL,
+        distributionMode: DistributionMode = .current,
+        developmentRoot: URL? = nil
+    ) {
+        self.bundleURL = bundleURL
+        self.distributionMode = distributionMode
+        self.developmentRoot = developmentRoot
+    }
 
     func run(
         arguments: [String],
@@ -126,14 +139,14 @@ final class BackendClient: @unchecked Sendable {
         }.value
     }
 
-    private struct LaunchConfiguration {
+    struct LaunchConfiguration {
         let executable: URL
         let workingDirectory: URL
         let arguments: [String]
     }
 
-    private func launchConfiguration(arguments: [String]) throws -> LaunchConfiguration {
-        let bundledExecutable = Bundle.main.bundleURL.appendingPathComponent(BackendFile.bundledExecutable)
+    func launchConfiguration(arguments: [String]) throws -> LaunchConfiguration {
+        let bundledExecutable = bundleURL.appendingPathComponent(BackendFile.bundledExecutable)
         if fileManager.isExecutableFile(atPath: bundledExecutable.path) {
             return LaunchConfiguration(
                 executable: bundledExecutable,
@@ -141,6 +154,10 @@ final class BackendClient: @unchecked Sendable {
                 arguments: arguments
             )
         }
+
+        // Store builds must use their signed, bundled service. A local checkout
+        // or environment override is only a development convenience.
+        guard distributionMode == .direct else { throw BackendClientError.backendMissing }
 
         let root = try repositoryRoot()
         return LaunchConfiguration(
@@ -165,6 +182,10 @@ final class BackendClient: @unchecked Sendable {
     }
 
     private func repositoryRoot() throws -> URL {
+        if let developmentRoot {
+            guard hasBackendScript(in: developmentRoot) else { throw BackendClientError.backendMissing }
+            return developmentRoot
+        }
         let environment = ProcessInfo.processInfo.environment
         if let override = environment[BackendFile.rootOverrideEnvironmentKey] {
             let url = URL(fileURLWithPath: override)
@@ -181,7 +202,7 @@ final class BackendClient: @unchecked Sendable {
             return sourceRoot
         }
 
-        var candidate = Bundle.main.bundleURL
+        var candidate = bundleURL
         for _ in 0..<BackendFile.bundleSearchDepth {
             if hasBackendScript(in: candidate) {
                 return candidate

@@ -1390,8 +1390,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/BackendClient.swift": {
-    "mtime": 1793038362.5820217,
-    "ast_hash": "838792f7e90cbcb90bccf6711b6bf445",
+    "mtime": 1793157455.1547287,
+    "ast_hash": "00eac34d6a4cd00e9b5ad4db805815ba",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Services/SecretStore.swift": {
@@ -1445,8 +1445,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793146462.855424,
-    "ast_hash": "74e658e95004a7356b7e73fcac569bbb",
+    "mtime": 1793157365.6096642,
+    "ast_hash": "22c11f3768ccf1e27aa14fdf602baa1d",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {

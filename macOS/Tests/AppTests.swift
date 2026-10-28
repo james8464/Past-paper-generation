@@ -215,6 +215,45 @@ final class PaperCreatorTests: XCTestCase {
         })
     }
 
+    func testStoreBackendCannotFallBackToDevelopmentPython() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let bridge = root.appendingPathComponent("bridge.py")
+        try Data("# Development fixture; must never execute in a store build.\n".utf8).write(to: bridge)
+        let missingBundle = root.appendingPathComponent("Missing.app")
+
+        let direct = BackendClient(bundleURL: missingBundle, distributionMode: .direct, developmentRoot: root)
+        let launch = try direct.launchConfiguration(arguments: ["ollama-status"])
+        XCTAssertEqual(launch.workingDirectory, root)
+        XCTAssertEqual(launch.arguments, [bridge.path, "ollama-status"])
+
+        let store = BackendClient(bundleURL: missingBundle, distributionMode: .appStore, developmentRoot: root)
+        XCTAssertThrowsError(try store.launchConfiguration(arguments: ["ollama-status"])) { error in
+            guard case BackendClientError.backendMissing = error else {
+                return XCTFail("Expected a missing bundled service, got \(error)")
+            }
+        }
+    }
+
+    func testBothDistributionModesPreferTheirBundledBackend() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let bundle = root.appendingPathComponent("Keldin.app")
+        let executable = bundle.appendingPathComponent("Contents/Resources/PaperCreatorBackend/PaperCreatorBackend")
+        try FileManager.default.createDirectory(at: executable.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data("# Selection fixture; this test never starts a process.\n".utf8).write(to: executable)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: executable.path)
+
+        for mode in [DistributionMode.direct, .appStore] {
+            let client = BackendClient(bundleURL: bundle, distributionMode: mode, developmentRoot: root)
+            let launch = try client.launchConfiguration(arguments: ["mlx-status"])
+            XCTAssertEqual(launch.executable, executable)
+            XCTAssertEqual(launch.workingDirectory, executable.deletingLastPathComponent())
+            XCTAssertEqual(launch.arguments, ["mlx-status"])
+        }
+    }
+
     func testBuiltAppContainsStandaloneBackend() throws {
         let bundle = Bundle(for: ApplicationCoordinator.self).bundleURL
         let executable = bundle
