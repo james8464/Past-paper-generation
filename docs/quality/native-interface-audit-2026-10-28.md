@@ -51,3 +51,17 @@ Metric display accepts the selected locale, retaining the existing zero-to-two-d
 - `tmp/benchmark-finite-copy-green.log`: 31 targeted tests passed, zero failures. Result bundle: `macOS/build/logs/benchmark-finite-copy-green/test.xcresult`.
 
 The final set covers all eight verdict/detail strings in English and French, all 24 metric labels, all five fixed helper messages, unknown/OS values, raw-field preservation, French decimals and display units, and unchanged thermal-percentage meaning. The five interface and 22 process-isolation cases remain green. No backend benchmark code, solving code, full suite, signed release build or new performance measurement was included in this follow-up.
+
+## Combined frozen-source gates
+
+At `f83165e109929e5e70e0cfe72231dabb48ab4100`, the full Python suite
+passed 4,239 tests with two skips in 546.48 seconds. The full native suite passed
+205 tests with no failures. Personal-development-signed Store Release preflight
+and strict signatures also passed. Retained logs are
+`tmp/native-ui-final-full-suite.log`, `tmp/native-ui-final-native-tests.log` and
+`tmp/native-ui-final-store-preflight.log`.
+
+These results include the separately reviewed P7 calculation-handler refactor.
+Later direct-release interaction and protected publication need their own actual
+results. No live model qualification, teacher evidence, full HIG compliance or
+Store approval follows from these engineering gates.

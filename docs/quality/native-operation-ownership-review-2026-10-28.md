@@ -27,3 +27,10 @@ The six new tests cover the result-before-exit benchmark boundary, both launch c
 No backend, paper content, PDF access, signing or Keychain execution changes are included. These tests do not replace the full native suite, Store-mode preflight or native interaction checks.
 
 Keychain calls remain synchronous. This review establishes no measured UI stall and makes no performance claim. Measure privacy-safe operation durations before considering an asynchronous credential boundary.
+
+N8 remains partial. A later source trace found that seed-free French reference
+preparation and review-record operations share generic generation completion
+without first beginning a generation job. A dangling earlier job after a failed
+history write may therefore still be affected. This path needs its own controlled
+regression and an explicit per-run owned-job fence before final release. The
+model-pull fixes above are not presented as proof that every operation is isolated.
