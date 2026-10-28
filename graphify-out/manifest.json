@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793160921.3068283,
+    "mtime": 1793165017.2197402,
     "ast_hash": "faa06dbdbea764aa21bad0236faeb928",
     "semantic_hash": ""
   },
@@ -2035,8 +2035,8 @@
     "semantic_hash": "71b32dde8a229be05e1753161e8b201b"
   },
   "Backend/Core/france/originality.py": {
-    "mtime": 1792801205.4452655,
-    "ast_hash": "9985894e09a9203eee8350a2deb14e18",
+    "mtime": 1793164842.8683689,
+    "ast_hash": "850c1334c37f25e756a0b811887e2f14",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Domain/FrenchReviewRequest.swift": {
@@ -3660,8 +3660,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/extended_pipeline.py": {
-    "mtime": 1793160844.8514965,
-    "ast_hash": "bb4b006437ec8f65f92855edd6177659",
+    "mtime": 1793164842.8688622,
+    "ast_hash": "c5897f7f1f433585f457d2e378c1eb4f",
     "semantic_hash": ""
   },
   "Backend/Core/france/loan_case.py": {
@@ -3690,8 +3690,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_extended_pipeline.py": {
-    "mtime": 1793161013.1427126,
-    "ast_hash": "4b21da9082173c1d7fc3b92149d8ea68",
+    "mtime": 1793164815.5046418,
+    "ast_hash": "c48e3c8b2c175eba0fa7d3fe830923c4",
     "semantic_hash": ""
   },
   "tests/test_french_loan_case.py": {
@@ -3705,8 +3705,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v34-curriculum-and-variety-review-2026-10-28.md": {
-    "mtime": 1793160919.9876842,
-    "ast_hash": "65bdd39a35a200b35420c95e9ee34a58",
+    "mtime": 1793165015.990989,
+    "ast_hash": "c7e3caa935ec07e2025cda528226f079",
     "semantic_hash": ""
   },
   "Backend/Core/france/print_policy.py": {
