@@ -12,9 +12,9 @@ def test_model_status_labels_use_semantic_primary_text():
         settings.split('Label("Recommended model selected"', 1)[1].split("} else", 1)[
             0
         ],
-        settings.split("OllamaModelGuide.document.otherModelWarning,", 1)[1].split(
-            "HStack", 1
-        )[0],
+        settings.split("OllamaModelGuide.document.otherModelWarningResource,", 1)[
+            1
+        ].split("HStack", 1)[0],
         workspace.split('"Results may vary with other Ollama models.', 1)[1].split(
             'LabeledContent("Save to")', 1
         )[0],

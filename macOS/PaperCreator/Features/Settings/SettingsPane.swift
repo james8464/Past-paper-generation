@@ -2,6 +2,7 @@ import AppKit
 import SwiftUI
 
 struct SettingsPane: View {
+    @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @AppStorage(AppStorageKey.settingsPane)
     private var selectedPane = SettingsPaneID.ai
 
@@ -27,8 +28,9 @@ struct SettingsPane: View {
         }
         .scenePadding()
         .frame(minWidth: 620, minHeight: 500)
-        .navigationTitle(selectedPane.title)
-        .background(SettingsWindowConfiguration(title: selectedPane.title))
+        .navigationTitle(InterfaceText.resolve(selectedPane.title, language: interfaceLanguage))
+        .background(SettingsWindowConfiguration(title: InterfaceText.resolve(selectedPane.title, language: interfaceLanguage)))
+        .environment(\.locale, interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage))
     }
 }
 
@@ -37,7 +39,7 @@ private enum SettingsPaneID: String {
     case output
     case privacy
 
-    var title: String {
+    var title: LocalizedStringResource {
         switch self {
         case .ai: "AI Settings"
         case .output: "Output Settings"
@@ -67,6 +69,7 @@ private struct SettingsWindowConfiguration: NSViewRepresentable {
 }
 
 private struct AISettingsTab: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
@@ -156,7 +159,7 @@ private struct AISettingsTab: View {
                         .foregroundStyle(.primary)
                 } else {
                     Label(
-                        OllamaModelGuide.document.otherModelWarning,
+                        InterfaceText.localizedResource(OllamaModelGuide.document.otherModelWarningResource, locale: locale),
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .foregroundStyle(.primary)

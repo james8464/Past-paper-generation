@@ -54,25 +54,60 @@
 
     },
     "A generated PDF can look convincing and still contain a weak or ambiguous question. Review content and presentation separately." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un PDF généré peut paraître convaincant et contenir une question faible ou ambiguë. Vérifiez séparément le contenu et la présentation."
+          }
+        }
+      }
     },
     "A time-series chart summarised by its latest, minimum and maximum values." : {
 
     },
     "AI" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "IA"
+          }
+        }
+      }
     },
     "AI provider" : {
 
     },
     "API key" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clé API"
+          }
+        }
+      }
     },
     "API keys" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clés API"
+          }
+        }
+      }
     },
     "Accounts" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comptes"
+          }
+        }
+      }
     },
     "Action required" : {
 
@@ -116,16 +151,37 @@
       }
     },
     "Cancel Benchmark" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler le test de performances"
+          }
+        }
+      }
     },
     "Cancel Generation" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler la génération"
+          }
+        }
+      }
     },
     "Cancel paper creation" : {
 
     },
     "Check Again" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier à nouveau"
+          }
+        }
+      }
     },
     "Close" : {
       "localizations" : {
@@ -138,7 +194,14 @@
       }
     },
     "Choose the subject and paper. AI-assisted families also let you choose a model; constrained families run without one." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez la matière et l’épreuve. Les générateurs assistés par IA permettent aussi de choisir un modèle. Les générateurs à cas prédéfinis fonctionnent sans modèle."
+          }
+        }
+      }
     },
     "Choose…" : {
       "localizations" : {
@@ -164,22 +227,57 @@
 
     },
     "Continue" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
+          }
+        }
+      }
     },
     "Copy Diagnostic Summary" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier le diagnostic"
+          }
+        }
+      }
     },
     "Copy Diagnostics" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier le diagnostic"
+          }
+        }
+      }
     },
     "Copy Provenance" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copier la provenance"
+          }
+        }
+      }
     },
     "Create Again with New Questions" : {
 
     },
     "Create Paper" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet"
+          }
+        }
+      }
     },
     "Create a layout preview" : {
 
@@ -188,7 +286,14 @@
 
     },
     "Create a practice paper" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet d’entraînement"
+          }
+        }
+      }
     },
     "Created" : {
 
@@ -200,7 +305,14 @@
 
     },
     "Distribution" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Distribution"
+          }
+        }
+      }
     },
     "Document" : {
 
@@ -216,16 +328,44 @@
       }
     },
     "Done" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Terminé"
+          }
+        }
+      }
     },
     "Download" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger"
+          }
+        }
+      }
     },
     "Download Recommended Model…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger le modèle recommandé…"
+          }
+        }
+      }
     },
     "Download model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger un modèle"
+          }
+        }
+      }
     },
     "Duplicate Configuration" : {
 
@@ -234,7 +374,14 @@
 
     },
     "Export…" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exporter…"
+          }
+        }
+      }
     },
     "Favourites" : {
       "localizations" : {
@@ -250,7 +397,14 @@
 
     },
     "Folder" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dossier"
+          }
+        }
+      }
     },
     "Generation" : {
 
@@ -266,7 +420,14 @@
       }
     },
     "Help" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide"
+          }
+        }
+      }
     },
     "Hide Quality Inspector" : {
 
@@ -285,19 +446,47 @@
 
     },
     "History stores configuration and provenance. Generated PDFs remain in the folder you chose." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’historique conserve la configuration et la provenance. Les PDF générés restent dans le dossier choisi."
+          }
+        }
+      }
     },
     "Hosted AI Disclosure" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisation d’une IA en ligne"
+          }
+        }
+      }
     },
     "Hosted AI consent" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accord pour l’IA en ligne"
+          }
+        }
+      }
     },
     "Items" : {
 
     },
     "Keep %lld jobs" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conserver %lld tâches"
+          }
+        }
+      }
     },
     "Latest package" : {
 
@@ -356,7 +545,14 @@
       }
     },
     "Local model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle local"
+          }
+        }
+      }
     },
     "Location" : {
 
@@ -375,25 +571,67 @@
 
     },
     "Model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle"
+          }
+        }
+      }
     },
     "Model ID or path" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Identifiant ou chemin du modèle"
+          }
+        }
+      }
     },
     "Model maximum context" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contexte maximal du modèle"
+          }
+        }
+      }
     },
     "Model name" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nom du modèle"
+          }
+        }
+      }
     },
     "Models are managed in Ollama. Once a model is installed, choose Check Again." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les modèles sont gérés dans Ollama. Une fois le modèle installé, choisissez Vérifier à nouveau."
+          }
+        }
+      }
     },
     "Nearest match" : {
 
     },
     "New Paper" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nouveau sujet"
+          }
+        }
+      }
     },
     "No PDFs to preview" : {
 
@@ -402,7 +640,14 @@
 
     },
     "Notifications" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        }
+      }
     },
     "Notify when generation starts and finishes" : {
 
@@ -418,31 +663,87 @@
       }
     },
     "Ollama generation is local. Hosted providers send prompts to the provider you select." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération avec Ollama est locale. Les fournisseurs en ligne reçoivent les instructions que vous leur transmettez."
+          }
+        }
+      }
     },
     "Ollama model details" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Détails du modèle Ollama"
+          }
+        }
+      }
     },
     "Ollama will download this model and make it available locally." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ollama va télécharger ce modèle pour le rendre disponible sur ce Mac."
+          }
+        }
+      }
     },
     "Open Latest Mark Scheme" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le dernier corrigé"
+          }
+        }
+      }
     },
     "Open Latest Question Paper" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le dernier sujet"
+          }
+        }
+      }
     },
     "Open Model Guide" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le guide des modèles"
+          }
+        }
+      }
     },
     "Open Output Folder" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le dossier de sortie"
+          }
+        }
+      }
     },
     "Open Settings…" : {
 
     },
     "Open User Guide" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrir le guide d’utilisation"
+          }
+        }
+      }
     },
     "Open the question paper and mark scheme in Documents, then check the Quality inspector." : {
 
@@ -451,13 +752,27 @@
 
     },
     "OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération avec OpenAI ou Anthropic transmet les instructions, les éléments du programme sélectionnés et les questions en cours de rédaction au fournisseur choisi. Les clés API restent dans le Trousseau. Avec Ollama, la génération reste locale."
+          }
+        }
+      }
     },
     "Other Ollama models and quantisations can change question and mark-scheme quality." : {
 
     },
     "Output" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortie"
+          }
+        }
+      }
     },
     "PDF not found" : {
 
@@ -472,25 +787,67 @@
 
     },
     "Keldin Help" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aide de Keldin"
+          }
+        }
+      }
     },
     "Keldin creates unofficial practice papers and mark schemes. Check the selected subject's generation details before starting. Preview mode checks layout without calling AI. Every paper needs human review." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keldin crée des sujets d’entraînement et des corrigés non officiels. Avant de commencer, consultez les indications du générateur choisi. Le mode aperçu vérifie la mise en page sans appeler d’IA. Chaque sujet doit être relu."
+          }
+        }
+      }
     },
     "Keldin context" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contexte de Keldin"
+          }
+        }
+      }
     },
     "Keldin makes unofficial practice material and is not affiliated with any exam board." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keldin produit des documents d’entraînement non officiels et n’est affilié à aucun organisme d’examen."
+          }
+        }
+      }
     },
     "Keldin only sends notifications about work you start." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keldin envoie des notifications uniquement pour les tâches que vous lancez."
+          }
+        }
+      }
     },
     "Preview" : {
 
     },
     "Preview Mode" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode aperçu"
+          }
+        }
+      }
     },
     "Preview before a live generation" : {
 
@@ -512,10 +869,24 @@
       }
     },
     "Privacy" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Confidentialité"
+          }
+        }
+      }
     },
     "Privacy Policy" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Politique de confidentialité"
+          }
+        }
+      }
     },
     "Progress" : {
 
@@ -524,13 +895,34 @@
 
     },
     "Provider" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fournisseur"
+          }
+        }
+      }
     },
     "Pull %@?" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger %@ ?"
+          }
+        }
+      }
     },
     "Pull Model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Télécharger le modèle"
+          }
+        }
+      }
     },
     "Qualification" : {
       "localizations" : {
@@ -556,10 +948,24 @@
       }
     },
     "Quick Look" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coup d’œil"
+          }
+        }
+      }
     },
     "Read the Privacy Policy" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lire la politique de confidentialité"
+          }
+        }
+      }
     },
     "Recent Configurations" : {
       "localizations" : {
@@ -575,13 +981,34 @@
 
     },
     "Recommended" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommandé"
+          }
+        }
+      }
     },
     "Recommended for this Mac" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recommandé pour ce Mac"
+          }
+        }
+      }
     },
     "Recommended model selected" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modèle recommandé sélectionné"
+          }
+        }
+      }
     },
     "Remove from Favourites" : {
 
@@ -593,10 +1020,24 @@
 
     },
     "Report Issue" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signaler un problème"
+          }
+        }
+      }
     },
     "Report an Issue" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Signaler un problème"
+          }
+        }
+      }
     },
     "Review the quality evidence and its limits" : {
       "localizations" : {
@@ -618,10 +1059,24 @@
 
     },
     "Reveal Latest Question Paper in Finder" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher le dernier sujet dans le Finder"
+          }
+        }
+      }
     },
     "Reveal in Finder" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher dans le Finder"
+          }
+        }
+      }
     },
     "Reveal the job in History or create the paper again." : {
 
@@ -633,7 +1088,14 @@
 
     },
     "Run Benchmark" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lancer le test de performances"
+          }
+        }
+      }
     },
     "Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation." : {
 
@@ -658,34 +1120,83 @@
 
     },
     "Set Up Apple MLX?" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer Apple MLX ?"
+          }
+        }
+      }
     },
     "Set Up and Continue" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer et continuer"
+          }
+        }
+      }
     },
     "Settings…" : {
 
     },
     "Show Benchmark" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher le test de performances"
+          }
+        }
+      }
     },
     "Show Documents" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher les documents"
+          }
+        }
+      }
     },
     "Show History" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher l’historique"
+          }
+        }
+      }
     },
     "Show Quality Inspector" : {
 
     },
     "Show Welcome Guide" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher le guide de démarrage"
+          }
+        }
+      }
     },
     "State" : {
 
     },
     "Structured-output guide" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Guide des sorties structurées"
+          }
+        }
+      }
     },
     "Subjects" : {
 
@@ -704,22 +1215,57 @@
 
     },
     "The recommendation is selected from this Mac’s unified-memory capacity and this project’s paper-generation workload, not from a generic chatbot ranking." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La recommandation tient compte de la mémoire unifiée de ce Mac et du travail de génération de sujets demandé par l’application. Elle ne provient pas d’un classement général de robots conversationnels."
+          }
+        }
+      }
     },
     "Tools" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outils"
+          }
+        }
+      }
     },
     "Unified memory" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mémoire unifiée"
+          }
+        }
+      }
     },
     "Unofficial practice material. Not affiliated with Pearson, Edexcel, AQA, or any exam board." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documents d’entraînement non officiels, sans affiliation à Pearson, Edexcel, AQA ou à un autre organisme d’examen."
+          }
+        }
+      }
     },
     "Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content." : {
 
     },
     "Use Hosted AI" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser l’IA en ligne"
+          }
+        }
+      }
     },
     "Taking longer than estimated" : {
       "localizations" : {
@@ -732,10 +1278,24 @@
       }
     },
     "Use Recommended Model" : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser le modèle recommandé"
+          }
+        }
+      }
     },
     "Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Indiquez un identifiant de modèle Hugging Face ou le chemin d’un modèle déjà présent sur ce Mac. Keldin propose une configuration guidée avant la première génération réelle avec chaque modèle."
+          }
+        }
+      }
     },
     "Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks." : {
       "localizations" : {
@@ -757,7 +1317,14 @@
 
     },
     "Your key is stored in Keychain." : {
-
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Votre clé est enregistrée dans le Trousseau."
+          }
+        }
+      }
     },
     "seconds" : {
 
@@ -1938,6 +2505,946 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Créer un sujet d'entraînement non officiel avec un barème indicatif."
+          }
+        }
+      }
+    },
+    "Couldn't complete the action" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’action n’a pas pu aboutir"
+          }
+        }
+      }
+    },
+    "Keldin is tuned and checked against the recommended model for this Mac. Results may vary with other models or quantisations, including question quality, difficulty, factual accuracy, mark schemes, and structured-output reliability." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keldin est réglé et testé avec le modèle recommandé pour ce Mac. D’autres modèles ou quantifications peuvent modifier la qualité des questions, la difficulté, l’exactitude des faits, les corrigés et la fiabilité du format de sortie."
+          }
+        }
+      }
+    },
+    "Getting Started" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premiers pas"
+          }
+        }
+      }
+    },
+    "Choosing a Model" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir un modèle"
+          }
+        }
+      }
+    },
+    "Creating a Paper" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer un sujet"
+          }
+        }
+      }
+    },
+    "Checking Quality" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier la qualité"
+          }
+        }
+      }
+    },
+    "Troubleshooting" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dépannage"
+          }
+        }
+      }
+    },
+    "Keyboard Shortcuts" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Raccourcis clavier"
+          }
+        }
+      }
+    },
+    "Choose a subject" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir une matière"
+          }
+        }
+      }
+    },
+    "Choose the subject and assessment you want to practise." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez la matière et l’épreuve à travailler."
+          }
+        }
+      }
+    },
+    "Use the recommended model" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser le modèle recommandé"
+          }
+        }
+      }
+    },
+    "Keldin recommends %@ for this Mac; other models can produce different results." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keldin recommande %@ pour ce Mac. D’autres modèles peuvent produire des résultats différents."
+          }
+        }
+      }
+    },
+    "Create both documents" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer les deux documents"
+          }
+        }
+      }
+    },
+    "The question paper and mark scheme are saved together." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sujet et le corrigé sont enregistrés ensemble."
+          }
+        }
+      }
+    },
+    "Preview and review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher et vérifier"
+          }
+        }
+      }
+    },
+    "Inspect every generated PDF in Documents and return to any configuration from History." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez chaque PDF dans Documents. L’Historique permet de retrouver une configuration."
+          }
+        }
+      }
+    },
+    "Choose a generator" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir un générateur"
+          }
+        }
+      }
+    },
+    "Select a supported subject and exam board in the sidebar." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sélectionnez une matière et un organisme d’examen disponibles dans la barre latérale."
+          }
+        }
+      }
+    },
+    "Prepare AI" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Préparer l’IA"
+          }
+        }
+      }
+    },
+    "For local generation, install Ollama and use the model recommended for this Mac." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour la génération locale assistée par IA, installez Ollama et utilisez le modèle recommandé pour ce Mac."
+          }
+        }
+      }
+    },
+    "Configure the paper" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configurer le sujet"
+          }
+        }
+      }
+    },
+    "Choose a paper, output folder, and provider. Leave preview mode off for new AI-written questions." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez l’épreuve, le dossier de sortie et le fournisseur. Désactivez le mode aperçu pour obtenir de nouvelles questions rédigées par IA."
+          }
+        }
+      }
+    },
+    "Create and review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer et vérifier"
+          }
+        }
+      }
+    },
+    "Create the paper, then inspect both PDFs and the quality evidence before using them." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créez le sujet, puis vérifiez les deux PDF et les éléments de contrôle avant de les utiliser."
+          }
+        }
+      }
+    },
+    "Unofficial practice material" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documents d’entraînement non officiels"
+          }
+        }
+      }
+    },
+    "Generated work is not affiliated with or endorsed by an exam board. Always review it before giving it to students." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les documents générés ne sont ni affiliés ni approuvés par un organisme d’examen. Relisez-les avant de les donner à des élèves."
+          }
+        }
+      }
+    },
+    "AI Settings identifies the recommendation and warns when another model is selected." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les réglages IA indiquent le modèle recommandé et signalent la sélection d’un autre modèle."
+          }
+        }
+      }
+    },
+    "Results may vary with other models" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les résultats peuvent varier avec d’autres modèles"
+          }
+        }
+      }
+    },
+    "Why this model" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pourquoi ce modèle"
+          }
+        }
+      }
+    },
+    "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il suit les schémas JSON de l’application ainsi que les points, consignes, thèmes et totaux par objectif d’évaluation fixés par le plan."
+          }
+        }
+      }
+    },
+    "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sa capacité de raisonnement convient aux questions fondées sur des documents et aux barèmes détaillés par niveau de réponse, tout en restant utilisable sur un Mac."
+          }
+        }
+      }
+    },
+    "Ollama keeps prompts and generated content on this Mac." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avec Ollama, les instructions et le contenu généré restent sur ce Mac."
+          }
+        }
+      }
+    },
+    "Intended cognitive demand is compared with source-derived feature proxies, not measured learner difficulty. Every legal candidate path is checked separately; every printed alternative still needs item review. Times are allocated, not observed." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’exigence cognitive visée est comparée à des indicateurs tirés des sources. Elle ne mesure pas la difficulté rencontrée par les élèves. Chaque parcours de réponse autorisé est vérifié séparément et chaque question alternative imprimée doit aussi être relue. Les durées sont prévues, pas observées."
+          }
+        }
+      }
+    },
+    "Content review, independent solution checking, and difficulty review use separate prompts and evidence. They may use the same selected model, but one check never stands in for another." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La revue du contenu, la résolution indépendante et la revue de difficulté utilisent des instructions et des preuves distinctes. Elles peuvent utiliser le même modèle sélectionné, sans qu’un contrôle remplace un autre."
+          }
+        }
+      }
+    },
+    "Every completed form is checked again for distribution drift. These engineering tolerances are not empirically learned confidence intervals, and external examiner and learner evidence is still needed for qualification." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaque sujet complet est à nouveau contrôlé pour détecter un écart de répartition. Ces tolérances techniques ne sont pas des intervalles de confiance établis par des observations. La qualification exige encore des éléments provenant d’examinateurs et d’élèves."
+          }
+        }
+      }
+    },
+    "Memory guidance" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conseils sur la mémoire"
+          }
+        }
+      }
+    },
+    "16 GB or more: use gemma4:12b for the intended quality level." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "16 Go ou plus : utilisez gemma4:12b pour le niveau de qualité visé."
+          }
+        }
+      }
+    },
+    "8 GB: qwen2.5:7b is the memory-compatible option, but expect weaker long-form questions and mark schemes and review every page carefully." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "8 Go : qwen2.5:7b convient à cette capacité de mémoire. Ses questions longues et ses corrigés peuvent être moins aboutis. Vérifiez chaque page attentivement."
+          }
+        }
+      }
+    },
+    "Keep memory-heavy apps closed during generation. Model download size is not the model’s complete runtime memory requirement." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fermez les applications gourmandes en mémoire pendant la génération. La taille du téléchargement du modèle ne représente pas toute la mémoire nécessaire à son exécution."
+          }
+        }
+      }
+    },
+    "The workspace keeps the paper configuration, create action, recent files, and release gates visible together." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’espace de travail regroupe la configuration, l’action de création, les fichiers récents et les contrôles avant publication."
+          }
+        }
+      }
+    },
+    "Select subject and board" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir la matière et l’organisme"
+          }
+        }
+      }
+    },
+    "Only implemented generators appear. Their papers come from the canonical generator registry." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Seuls les générateurs disponibles apparaissent. Leurs épreuves proviennent du registre central des générateurs."
+          }
+        }
+      }
+    },
+    "Choose the assessment" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir l’épreuve"
+          }
+        }
+      }
+    },
+    "Select a full paper or, where available, Topic Practice. The blueprint locks marks, command words, syllabus scope, and expected demand." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisissez une épreuve complète ou, si elle est disponible, une série par thème. Le plan fixe les points, les consignes, le programme couvert et l’exigence attendue."
+          }
+        }
+      }
+    },
+    "Check the provider" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier le fournisseur"
+          }
+        }
+      }
+    },
+    "Ollama must be running and the selected model must be installed. Hosted providers require a key and explicit consent." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ollama doit être lancé et le modèle sélectionné doit être installé. Les fournisseurs en ligne exigent une clé et votre accord explicite."
+          }
+        }
+      }
+    },
+    "Choose a folder" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisir un dossier"
+          }
+        }
+      }
+    },
+    "The question paper, mark scheme, assessment evidence, and package manifest are published together only after validation passes." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sujet, le corrigé, les éléments de contrôle et le manifeste sont publiés ensemble uniquement après validation."
+          }
+        }
+      }
+    },
+    "Create the assessment" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créer l’épreuve"
+          }
+        }
+      }
+    },
+    "Generation can take several minutes. Progress and the estimated time remain visible, and Command-Period cancels safely." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération peut prendre plusieurs minutes. La progression et la durée estimée restent visibles. Commande-Point permet d’annuler sans publier de document incomplet."
+          }
+        }
+      }
+    },
+    "Preview and reuse" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Afficher et réutiliser"
+          }
+        }
+      }
+    },
+    "Documents opens every generated PDF in the app. History can duplicate a setup or create a new form with a new seed." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documents ouvre chaque PDF généré dans l’application. L’Historique permet de dupliquer une configuration ou de créer un autre sujet avec une nouvelle graine."
+          }
+        }
+      }
+    },
+    "Preview mode is not a finished paper" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le mode aperçu ne produit pas un sujet final"
+          }
+        }
+      }
+    },
+    "Create a layout preview only when checking document geometry. Preview content has no live item-review or originality evidence, and missing saved evidence is reported as unknown rather than passed." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilisez l’aperçu pour vérifier la géométrie du document. Son contenu n’a pas de preuve de revue des questions ni d’originalité issue d’une génération réelle. Les preuves absentes sont signalées comme inconnues, sans être considérées comme validées."
+          }
+        }
+      }
+    },
+    "Use Topic Practice for focused revision" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utiliser les séries par thème pour réviser"
+          }
+        }
+      }
+    },
+    "A topic bank is matched to reviewed topic and task-operation records, not full-paper AO percentages. Sparse, mixed or missing source evidence is shown as Insufficient. A bank may be built after structural, correctness, source-content and item-review checks pass while calibration remains insufficient; this is not a calibration pass or external qualification. Data structures, databases, and functional programming are available for AQA Computer Science." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une banque thématique est comparée aux thèmes et opérations des questions relues, pas aux pourcentages par objectif d’une épreuve complète. Des sources rares, hétérogènes ou absentes entraînent le statut Insuffisant. La banque peut être créée après les contrôles de structure, d’exactitude, de contenu des sources et de revue des questions, même si son étalonnage reste insuffisant. Cela ne valide ni son étalonnage ni une qualification externe. Les structures de données, les bases de données et la programmation fonctionnelle sont disponibles pour AQA Computer Science."
+          }
+        }
+      }
+    },
+    "Question and mark-scheme review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier les questions et le corrigé"
+          }
+        }
+      }
+    },
+    "Confirm each command word matches the marks and the expected depth of response." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez que chaque consigne correspond au nombre de points et au développement attendu."
+          }
+        }
+      }
+    },
+    "Check every fact, calculation, chart label, unit, source reference, distractor, and correct answer." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez les faits, les calculs, les légendes, les unités, les références, les réponses proposées dans les QCM et les réponses correctes."
+          }
+        }
+      }
+    },
+    "Ensure the mark scheme awards every available mark, uses specific creditworthy points, and supports consistent marking." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez que le corrigé permet d’attribuer tous les points, donne des critères précis et permet une correction cohérente."
+          }
+        }
+      }
+    },
+    "For essays, look for accurate knowledge, contextual application, developed analysis, balanced evaluation, and a supported judgement." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour les réponses rédigées, vérifiez les connaissances, leur application au contexte, le développement de l’analyse, l’évaluation des différents arguments et la justification du jugement."
+          }
+        }
+      }
+    },
+    "Layout review" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifier la mise en page"
+          }
+        }
+      }
+    },
+    "Check page size, cover hierarchy, fonts, margins, question numbering, mark placement, continuation space, tables, diagrams, and page breaks." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vérifiez le format des pages, la couverture, les polices, les marges, la numérotation, l’emplacement des points, l’espace de réponse, les tableaux, les schémas et les sauts de page."
+          }
+        }
+      }
+    },
+    "Use Recent Documents to open both PDFs. Quality review reports blueprint, originality, visual, and difficulty evidence separately." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrez les deux PDF depuis les documents récents. Le contrôle qualité présente séparément les éléments relatifs au plan, à l’originalité, à la mise en page et à la difficulté."
+          }
+        }
+      }
+    },
+    "Difficulty is intended demand until the exact form has enough independently reviewed examiner, learner-response, and timing evidence; the app does not claim psychometric equivalence." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La difficulté indiquée reste une exigence visée tant que le sujet exact ne dispose pas d’éléments suffisants provenant d’examinateurs, de réponses d’élèves et de durées observées, revus indépendamment. L’application ne revendique aucune équivalence psychométrique."
+          }
+        }
+      }
+    },
+    "The French workspace shows the exam context, local references, enlarged-print option and review limits." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L’espace français présente le contexte de l’épreuve, les références locales, l’option de caractères agrandis et les limites de la revue."
+          }
+        }
+      }
+    },
+    "Work through the paper" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résoudre le sujet"
+          }
+        }
+      }
+    },
+    "Check the syllabus content, reasoning steps, calculations and proposed marks against official papers. Automated checks do not establish equal difficulty." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comparez le programme couvert, les étapes de raisonnement, les calculs et les points proposés aux sujets officiels. Les contrôles automatiques ne prouvent pas une difficulté équivalente."
+          }
+        }
+      }
+    },
+    "Keep the limits visible" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Conserver les limites indiquées"
+          }
+        }
+      }
+    },
+    "Difficulty and completion time are uncalibrated. An optional teacher-review record can be attached to the exact artifact hashes; the app does not invent one." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La difficulté et la durée de réalisation ne sont pas étalonnées. Une revue enseignante facultative peut être rattachée aux empreintes exactes des fichiers. L’application n’en invente pas."
+          }
+        }
+      }
+    },
+    "Ollama generation stays on this Mac and does not require an account." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La génération avec Ollama reste sur ce Mac et ne nécessite pas de compte."
+          }
+        }
+      }
+    },
+    "The App Store build can detect Ollama but cannot install the app or download models; manage those in Ollama." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La version App Store peut détecter Ollama, mais ne peut ni l’installer ni télécharger ses modèles. Gérez ces opérations dans Ollama."
+          }
+        }
+      }
+    },
+    "OpenAI and Anthropic receive the generation prompt, relevant syllabus context, and draft assessment data when selected." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lorsque vous les sélectionnez, OpenAI et Anthropic reçoivent les instructions de génération, les éléments utiles du programme et les données du sujet en cours de rédaction."
+          }
+        }
+      }
+    },
+    "API keys are stored in Keychain. Hosted generation remains blocked until you accept the disclosure." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les clés API sont enregistrées dans le Trousseau. La génération en ligne reste bloquée jusqu’à votre accord sur les données transmises."
+          }
+        }
+      }
+    },
+    "Ollama is unavailable" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ollama est indisponible"
+          }
+        }
+      }
+    },
+    "Open Ollama, wait for it to start, then choose AI > Check Ollama Status." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouvrez Ollama, attendez son démarrage, puis choisissez IA > Vérifier l’état d’Ollama."
+          }
+        }
+      }
+    },
+    "If a model is missing, download the exact recommended tag shown in AI Settings and check again." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si un modèle manque, téléchargez la version exacte recommandée dans les réglages IA, puis vérifiez à nouveau."
+          }
+        }
+      }
+    },
+    "If generation repeatedly fails, keep enough free memory, stop other model workloads, and copy diagnostics before reporting the issue." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si la génération échoue plusieurs fois, libérez de la mémoire, arrêtez les autres tâches utilisant des modèles et copiez le diagnostic avant de signaler le problème."
+          }
+        }
+      }
+    },
+    "A paper fails validation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un sujet échoue à la validation"
+          }
+        }
+      }
+    },
+    "No partial package is published. The error identifies the failed provider, content, or PDF gate." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun ensemble de fichiers incomplet n’est publié. Le message d’erreur indique le fournisseur ou le contrôle de contenu ou de PDF concerné."
+          }
+        }
+      }
+    },
+    "Retry once with the recommended model. A different seed creates a new form; changing models can materially change quality." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayez une fois avec le modèle recommandé. Une autre graine crée un nouveau sujet. Changer de modèle peut modifier sensiblement la qualité."
+          }
+        }
+      }
+    },
+    "Use Tools > Show Benchmark to check memory pressure, storage, thermal state, PDF speed, network, and Ollama latency." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dans Outils > Afficher le test de performances, vérifiez la pression mémoire, le stockage, l’état thermique, la vitesse de création des PDF, le réseau et la latence d’Ollama."
+          }
+        }
+      }
+    },
+    "Commands" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commandes"
+          }
+        }
+      }
+    },
+    "Command-Return: Create Paper" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commande-Retour : créer un sujet"
+          }
+        }
+      }
+    },
+    "Command-Period: Cancel Generation" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commande-Point : annuler la génération"
+          }
+        }
+      }
+    },
+    "Option-Command-O: Open Output Folder" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option-Commande-O : ouvrir le dossier de sortie"
+          }
+        }
+      }
+    },
+    "Shift-Command-B: Show Benchmark" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maj-Commande-B : afficher le test de performances"
+          }
+        }
+      }
+    },
+    "Shift-Command-D: Show Documents" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maj-Commande-D : afficher les documents"
+          }
+        }
+      }
+    },
+    "Shift-Command-Y: Show History" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maj-Commande-Y : afficher l’historique"
+          }
+        }
+      }
+    },
+    "Shift-Command-H: Keldin Help" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maj-Commande-H : ouvrir l’aide de Keldin"
+          }
+        }
+      }
+    },
+    "Command-Comma: Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Commande-Virgule : réglages"
+          }
+        }
+      }
+    },
+    "AI Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages IA"
+          }
+        }
+      }
+    },
+    "Output Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages de sortie"
+          }
+        }
+      }
+    },
+    "Privacy Settings" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages de confidentialité"
           }
         }
       }
