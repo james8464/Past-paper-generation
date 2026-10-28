@@ -1224,12 +1224,12 @@
     "The PDF could not be exported" : {
 
     },
-    "The recommendation is selected from this Mac’s unified-memory capacity and this project’s paper-generation workload, not from a generic chatbot ranking." : {
+    "The app chooses a model suggestion from this Mac's unified memory. This is not a ranking of paper quality." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La recommandation tient compte de la mémoire unifiée de ce Mac et du travail de génération de sujets demandé par l’application. Elle ne provient pas d’un classement général de robots conversationnels."
+            "value" : "L’application suggère un modèle selon la mémoire unifiée de ce Mac. Il ne s’agit pas d’un classement de la qualité des sujets."
           }
         }
       }
@@ -2579,12 +2579,12 @@
         }
       }
     },
-    "Keldin is tuned and checked against the recommended model for this Mac. Results may vary with other models or quantisations, including question quality, difficulty, factual accuracy, mark schemes, and structured-output reliability." : {
+    "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keldin est réglé et testé avec le modèle recommandé pour ce Mac. D’autres modèles ou quantifications peuvent modifier la qualité des questions, la difficulté, l’exactitude des faits, les corrigés et la fiabilité du format de sortie."
+            "value" : "Ces suggestions tiennent compte de la mémoire disponible. Les sujets produits par ces modèles n’ont pas encore passé un contrôle de qualité complet. Les résultats peuvent varier avec un autre modèle ou une autre quantification."
           }
         }
       }
@@ -2849,72 +2849,62 @@
         }
       }
     },
-    "Why this model" : {
+    "Checks and limits" : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pourquoi ce modèle"
+            "value" : "Contrôles et limites"
           }
         }
       }
     },
-    "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals." : {
+    "Keldin checks structured output, marks, command words, topics and assessment objectives. Invalid output can stop generation." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il suit les schémas JSON de l’application ainsi que les points, consignes, thèmes et totaux par objectif d’évaluation fixés par le plan."
+            "value" : "Keldin vérifie le format des résultats, les points, les consignes, les thèmes et les objectifs d’évaluation. Un résultat non valide peut interrompre la génération."
           }
         }
       }
     },
-    "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac." : {
+    "With the default local Ollama server, prompts and generated content stay on this Mac." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sa capacité de raisonnement convient aux questions fondées sur des documents et aux barèmes détaillés par niveau de réponse, tout en restant utilisable sur un Mac."
+            "value" : "Avec le serveur local Ollama utilisé par défaut, les instructions et le contenu généré restent sur ce Mac."
           }
         }
       }
     },
-    "Ollama keeps prompts and generated content on this Mac." : {
+    "Difficulty checks compare task features with past papers. Each valid choice of questions is checked separately, as is every printed alternative. Completion times are estimates; no learner timings have been measured." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avec Ollama, les instructions et le contenu généré restent sur ce Mac."
+            "value" : "Les contrôles de difficulté comparent les caractéristiques des questions à celles des annales. Chaque choix de questions autorisé est vérifié séparément, de même que chaque question alternative imprimée. Les durées sont des estimations ; aucun temps de travail d’élève n’a été mesuré."
           }
         }
       }
     },
-    "Intended cognitive demand is compared with source-derived feature proxies, not measured learner difficulty. Every legal candidate path is checked separately; every printed alternative still needs item review. Times are allocated, not observed." : {
+    "Question review, answer checking and difficulty checks use separate prompts and evidence. They may use the same model, so they are not independent model opinions." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L’exigence cognitive visée est comparée à des indicateurs tirés des sources. Elle ne mesure pas la difficulté rencontrée par les élèves. Chaque parcours de réponse autorisé est vérifié séparément et chaque question alternative imprimée doit aussi être relue. Les durées sont prévues, pas observées."
+            "value" : "La relecture des questions, la vérification des réponses et les contrôles de difficulté utilisent des instructions et des éléments distincts. Ils peuvent employer le même modèle et ne constituent donc pas des avis de modèles indépendants."
           }
         }
       }
     },
-    "Content review, independent solution checking, and difficulty review use separate prompts and evidence. They may use the same selected model, but one check never stands in for another." : {
+    "Completed papers are checked for changes in their expected task mix. These limits are engineering rules, not measured confidence intervals. No examiner approval or learner calibration is claimed." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La revue du contenu, la résolution indépendante et la revue de difficulté utilisent des instructions et des preuves distinctes. Elles peuvent utiliser le même modèle sélectionné, sans qu’un contrôle remplace un autre."
-          }
-        }
-      }
-    },
-    "Every completed form is checked again for distribution drift. These engineering tolerances are not empirically learned confidence intervals, and external examiner and learner evidence is still needed for qualification." : {
-      "localizations" : {
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chaque sujet complet est à nouveau contrôlé pour détecter un écart de répartition. Ces tolérances techniques ne sont pas des intervalles de confiance établis par des observations. La qualification exige encore des éléments provenant d’examinateurs et d’élèves."
+            "value" : "Les sujets terminés sont contrôlés pour repérer des écarts dans la répartition attendue des questions. Ces limites sont des règles techniques, pas des intervalles de confiance mesurés. Aucune validation par un examinateur ni aucun étalonnage auprès d’élèves ne sont revendiqués."
           }
         }
       }
@@ -2929,22 +2919,22 @@
         }
       }
     },
-    "16 GB or more: use gemma4:12b for the intended quality level." : {
+    "16 GB or more: gemma4:12b is the configured local suggestion." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "16 Go ou plus : utilisez gemma4:12b pour le niveau de qualité visé."
+            "value" : "À partir de 16 Go : gemma4:12b est le modèle local suggéré dans la configuration."
           }
         }
       }
     },
-    "8 GB: qwen2.5:7b is the memory-compatible option, but expect weaker long-form questions and mark schemes and review every page carefully." : {
+    "Below 16 GB: qwen2.5:7b is the smaller local suggestion. Memory use still depends on other apps and context." : {
       "localizations" : {
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "8 Go : qwen2.5:7b convient à cette capacité de mémoire. Ses questions longues et ses corrigés peuvent être moins aboutis. Vérifiez chaque page attentivement."
+            "value" : "En dessous de 16 Go : qwen2.5:7b est le modèle local plus petit qui est suggéré. La mémoire utilisée dépend aussi des autres applications et du contexte."
           }
         }
       }
@@ -3505,6 +3495,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Réglages de confidentialité"
+          }
+        }
+      }
+    },
+    "About %@ GB download · %@ app context" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Environ %@ Go à télécharger · contexte de %@ dans l’application"
+          }
+        }
+      }
+    },
+    "Smaller local option" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option locale plus petite"
+          }
+        }
+      }
+    },
+    "A smaller download for Macs with less than 16 GB of unified memory. Memory use also depends on the context and other running apps." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un téléchargement plus petit pour les Mac disposant de moins de 16 Go de mémoire unifiée. La mémoire utilisée dépend aussi du contexte et des autres applications ouvertes."
+          }
+        }
+      }
+    },
+    "Review the questions and marking guidance before use. Fitting in memory does not establish accuracy." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relisez les questions et les barèmes avant utilisation. Tenir dans la mémoire disponible ne garantit pas l’exactitude."
+          }
+        }
+      }
+    },
+    "Local option for 16 GB or more" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Option locale à partir de 16 Go"
+          }
+        }
+      }
+    },
+    "For Macs with at least 16 GB of unified memory. Close other memory-heavy apps before generating. Paper quality is still under review." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pour les Mac disposant d’au moins 16 Go de mémoire unifiée. Fermez les autres applications gourmandes en mémoire avant de générer. La qualité des sujets reste à évaluer."
+          }
+        }
+      }
+    },
+    "Download size does not include all memory needed during generation." : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La taille du téléchargement ne comprend pas toute la mémoire nécessaire à la génération."
+          }
+        }
+      }
+    },
+    "About %@ GB" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Environ %@ Go"
+          }
+        }
+      }
+    },
+    "%lld GB" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Go"
+          }
+        }
+      }
+    },
+    "Download size" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taille du téléchargement"
+          }
+        }
+      }
+    },
+    "Runs locally via Ollama" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fonctionne localement avec Ollama"
+          }
+        }
+      }
+    },
+    "Uses an API key" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilise une clé API"
+          }
+        }
+      }
+    },
+    "Runs locally on Apple Silicon" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fonctionne localement sur un Mac avec puce Apple"
           }
         }
       }

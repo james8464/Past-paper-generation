@@ -120,7 +120,13 @@ struct HelpSheet: View {
 private struct HelpTopicPage: View {
     @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(\.locale) private var locale
+    @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     let topic: HelpTopic
+
+    // Format dynamic values in the selected language, even when macOS uses another locale.
+    private var selectedLocale: Locale {
+        interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage)
+    }
 
     var body: some View {
         ScrollView {
@@ -181,19 +187,23 @@ private struct HelpTopicPage: View {
 
     private var choosingAModel: some View {
         Group {
-            Text("The recommendation is selected from this Mac’s unified-memory capacity and this project’s paper-generation workload, not from a generic chatbot ranking.")
+            Text("The app chooses a model suggestion from this Mac's unified memory. This is not a ranking of paper quality.")
                 .foregroundStyle(.secondary)
 
             GroupBox("Recommended for this Mac") {
                 VStack(alignment: .leading, spacing: 10) {
                     LabeledContent("Model", value: application.ollamaRecommendation.model)
-                    LabeledContent("Download", value: application.ollamaRecommendation.downloadDescription)
-                    LabeledContent("Unified memory", value: currentMemoryDescription)
+                    LabeledContent("Download size") {
+                        Text(application.ollamaRecommendation.downloadResource(locale: selectedLocale, includeContext: false))
+                    }
+                    LabeledContent("Unified memory") {
+                        Text(InterfaceText.localizedResource(currentMemoryResource, locale: selectedLocale))
+                    }
                     LabeledContent("Model maximum context", value: application.ollamaRecommendation.contextWindow)
                     LabeledContent("Keldin context", value: application.ollamaRecommendation.appContextWindow)
-                    Text(application.ollamaRecommendation.detail)
+                    Text(InterfaceText.localizedResource(application.ollamaRecommendation.detailResource, locale: locale))
                         .foregroundStyle(.secondary)
-                    Text(application.ollamaRecommendation.qualityNote)
+                    Text(InterfaceText.localizedResource(application.ollamaRecommendation.qualityNoteResource, locale: locale))
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
@@ -208,22 +218,21 @@ private struct HelpTopicPage: View {
             )
 
             HelpSection(
-                title: "Why this model",
+                title: "Checks and limits",
                 rows: [
-                    "It follows the app’s exact JSON schemas and immutable marks, command words, topics, and assessment-objective totals.",
-                    "It has enough reasoning capacity for source-based questions and detailed level-of-response mark schemes while remaining practical on a Mac.",
-                    "Ollama keeps prompts and generated content on this Mac.",
-                    "Intended cognitive demand is compared with source-derived feature proxies, not measured learner difficulty. Every legal candidate path is checked separately; every printed alternative still needs item review. Times are allocated, not observed.",
-                    "Content review, independent solution checking, and difficulty review use separate prompts and evidence. They may use the same selected model, but one check never stands in for another.",
-                    "Every completed form is checked again for distribution drift. These engineering tolerances are not empirically learned confidence intervals, and external examiner and learner evidence is still needed for qualification.",
+                    "Keldin checks structured output, marks, command words, topics and assessment objectives. Invalid output can stop generation.",
+                    "With the default local Ollama server, prompts and generated content stay on this Mac.",
+                    "Difficulty checks compare task features with past papers. Each valid choice of questions is checked separately, as is every printed alternative. Completion times are estimates; no learner timings have been measured.",
+                    "Question review, answer checking and difficulty checks use separate prompts and evidence. They may use the same model, so they are not independent model opinions.",
+                    "Completed papers are checked for changes in their expected task mix. These limits are engineering rules, not measured confidence intervals. No examiner approval or learner calibration is claimed.",
                 ]
             )
 
             HelpSection(
                 title: "Memory guidance",
                 rows: [
-                    "16 GB or more: use gemma4:12b for the intended quality level.",
-                    "8 GB: qwen2.5:7b is the memory-compatible option, but expect weaker long-form questions and mark schemes and review every page carefully.",
+                    "16 GB or more: gemma4:12b is the configured local suggestion.",
+                    "Below 16 GB: qwen2.5:7b is the smaller local suggestion. Memory use still depends on other apps and context.",
                     "Keep memory-heavy apps closed during generation. Model download size is not the model’s complete runtime memory requirement.",
                 ]
             )
@@ -382,9 +391,9 @@ private struct HelpTopicPage: View {
         )
     }
 
-    private var currentMemoryDescription: String {
+    private var currentMemoryResource: LocalizedStringResource {
         let value = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
-        return "\(Int(value.rounded())) GB"
+        return LocalizedStringResource("\(Int(value.rounded())) GB", locale: selectedLocale)
     }
 }
 

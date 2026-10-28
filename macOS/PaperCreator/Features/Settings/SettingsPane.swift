@@ -85,7 +85,7 @@ private struct AISettingsTab: View {
                 }
                 .pickerStyle(.segmented)
 
-                Text(application.aiProvider.subtitle)
+                Text(InterfaceText.localizedResource(application.aiProvider.subtitleResource, locale: locale))
                     .foregroundStyle(.secondary)
 
                 if application.aiProvider.sendsPromptsOffDevice {
@@ -118,13 +118,13 @@ private struct AISettingsTab: View {
                 LabeledContent("Recommended") {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(application.ollamaRecommendation.model)
-                        Text(application.ollamaRecommendation.downloadDescription)
+                        Text(application.ollamaRecommendation.downloadResource(locale: locale))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
 
-                Text(application.ollamaRecommendation.detail)
+                Text(InterfaceText.localizedResource(application.ollamaRecommendation.detailResource, locale: locale))
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
 
