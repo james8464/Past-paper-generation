@@ -144,7 +144,7 @@ checks. The closed app was returned to its canonical path and all history hashes
 are unchanged. See the merged-native integrity acceptance record for that
 workaround and its limits; this is not every-button coverage.
 
-P1, P3, T3 and T4 are implemented on the next integration branch:
+P1, P3, T3 and T4 were implemented in protected PR110:
 
 - P1 requires an actual integer seed at hashing and decoding boundaries. Four
   coercion regressions failed before the fix; 21 checkpoint tests pass, retaining
@@ -158,11 +158,13 @@ P1, P3, T3 and T4 are implemented on the next integration branch:
 - T4 bounds PDF tools at 30 seconds with document-specific errors. Thirty-three
   boundary regressions failed before the fix; 48 helper/report tests pass.
 
-These four packages still need final integration and protected publication.
+PR110 merged at `29a9e0587b1bdd5feca7f73b40f0e34d25fa4368` after both protected
+checks passed. Its fixed-source Python suite passed 4,122 tests with two skips.
 Their scoped evidence is recorded in the checkpoint-seed, atomic-matrix and
 generation-policy/PDF-tool reviews under `docs/quality/`.
 
-The remaining 13 work packages are planned. Record implemented commits, tests,
+The combined checkpoint has nine unfinished packages: N8 is partial and eight
+remain planned. Record implemented commits, tests,
 retained evidence and any justified deferrals here. The file-level coverage
 inventory must be completed before claiming a whole-project audit.
 App Store distribution credentials, third-party rights and observed learner
@@ -170,8 +172,8 @@ calibration are separate from this implementation audit and remain unverified.
 
 ### Primary storage and configuration package checkpoint
 
-The preceding count of 17 planned packages predates these four completed
-implementations on the primary branch. N5/N6/N7 are committed at `6295278`:
+The original primary checkpoint had 17 planned packages before these four
+implementations. N5/N6/N7 are committed at `9bb2601` (rebased from `6295278`):
 history removal and retention preserve failed records, Keychain errors remain
 explicit without exposing credentials, and UK publication commits a complete
 output directory before changing document URLs. The final combined native run
@@ -181,17 +183,17 @@ manifest hashes and byte counts; its subject opened and Cmd-P showed 36 pages
 before cancellation. This is preview/publication evidence, not live paper
 qualification. See `docs/quality/native-storage-transactions-review-2026-10-28.md`.
 
-T7 is committed at `b74c5b1`. A fake-bootstrap regression reproduced five missing
+T7 is committed at `95721af` (rebased from `b74c5b1`). A fake-bootstrap regression
+reproduced five missing
 advertised projects without modifying the real environment or accessing the
 network. Bootstrap installation, backend CI, pytest paths and conftest routing
 now agree on the seven advertised generator roots. All four scoped parity tests
 pass. See `docs/quality/generator-configuration-parity-review-2026-10-28.md`.
 
-The separate saved-PDF access repair is committed at `1c6e109`; it is not counted
-as completion of another planned package. On this primary checkpoint, 13 of the
-original 24 packages remain planned. Parallel Accounting/Python changes require
-their own fixed-source acceptance and protected merge before this primary
-completion record is reconciled with them.
+The separate saved-PDF access repair is committed at `a8eb51c` (rebased from
+`1c6e109`); it is not counted as completion of another planned package. That
+original primary checkpoint had 13 of the 24 packages still planned before its
+integration with PR110.
 
 The new file-level coverage ledger records tracked paths as pending or explicitly
 excluded, with reasons: 844 tracked files, 640 pending and 204 excluded at this
@@ -206,7 +208,8 @@ native suite or fixed-source release checks.
 
 ### N8 operation ownership follow-up: partial
 
-The native follow-up at `d488fad` fixes concrete ownership defects without completing
+The native follow-up at `c9e1f78` (rebased from `d488fad`) fixes concrete ownership
+defects without completing
 the planned coordinator extraction. A benchmark result no longer releases its
 process slot before exit. Model-download and MLX confirmations refuse to replace
 running work. Model-download completion and cancellation have operation-specific
@@ -229,3 +232,18 @@ combined native gate, signed builds and protected publication.
 At this follow-up, coverage lists 845 tracked files (640 pending, 205 excluded).
 The 25 coverage/parity/hygiene checks and Ruff pass; these do not mark any file's
 semantic review complete.
+
+### Rebased native and Accounting integration checkpoint
+
+The native commits were rebased onto PR110's merged main. There were no
+executable conflicts. Native source, T7 and coverage-tool source remain identical
+to the pre-rebase native head, and all Accounting/Core source remains identical
+to merged PR110. Both audit completion records were retained. Conflicting
+derived graph/inventory files were restored from main during replay, then
+regenerated for the combined tree.
+
+Fifteen of the original 24 packages are implemented at this checkpoint. N8
+remains partial; P2, P4, P5, P6, P7, T5, T6 and T8 remain planned. The regenerated
+coverage ledger contains 869 tracked files, with 656 pending and 213 explicitly
+excluded. No file-level semantic completion or whole-project audit is claimed.
+Final combined native and Python gates still need results for this rebased head.
