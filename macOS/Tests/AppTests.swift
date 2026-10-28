@@ -4,6 +4,29 @@ import XCTest
 @testable import PaperCreator
 
 final class PaperCreatorTests: XCTestCase {
+    @MainActor
+    func testDocumentCommandsFollowSelectionAndMissingFiles() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let first = GeneratedFile(role: "question_paper", url: directory.appendingPathComponent("subject.pdf"))
+        let second = GeneratedFile(role: "mark_scheme", url: directory.appendingPathComponent("correction.pdf"))
+        try Data("subject".utf8).write(to: first.url)
+        try Data("correction".utf8).write(to: second.url)
+        let actions = DocumentActionController()
+        XCTAssertFalse(actions.canAccessDocument)
+        actions.update(file: first, provenance: nil)
+        XCTAssertTrue(actions.canAccessDocument)
+        XCTAssertEqual(actions.selectedFile, first)
+        actions.update(file: second, provenance: nil)
+        XCTAssertEqual(actions.selectedFile, second)
+        try FileManager.default.removeItem(at: second.url)
+        XCTAssertFalse(actions.canAccessDocument)
+        actions.update(file: nil, provenance: nil)
+        XCTAssertNil(actions.selectedFile)
+        XCTAssertNil(actions.provenance)
+    }
+
     func testCancelledReviewSelectionKeepsItsFormOpen() {
         XCTAssertFalse(FrenchReviewSubmissionOutcome.cancelled.closesReviewForm)
         XCTAssertTrue(FrenchReviewSubmissionOutcome.submitted.closesReviewForm)

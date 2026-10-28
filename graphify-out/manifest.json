@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793165017.2197402,
-    "ast_hash": "faa06dbdbea764aa21bad0236faeb928",
+    "mtime": 1793169847.8130481,
+    "ast_hash": "761ccce1889771e119ac2125c9e34037",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1265,8 +1265,8 @@
     "semantic_hash": "0468f7ebe38f92198b3a5b0b1a0afe79"
   },
   "macOS/PaperCreator/Application/AppCommands.swift": {
-    "mtime": 1793038362.5818295,
-    "ast_hash": "6d4e700d119f7387aef7f532052490fe",
+    "mtime": 1793179563.3904798,
+    "ast_hash": "30e8b044e4980c7fef85cfda62088d1a",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Application/AppConfiguration.swift": {
@@ -1345,8 +1345,8 @@
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/DocumentPreviewView.swift": {
-    "mtime": 1793146345.2133367,
-    "ast_hash": "64e1595510c40f24e67316cecfc290bd",
+    "mtime": 1793179563.3900723,
+    "ast_hash": "7e33f43282e740f3faba58f888b10362",
     "semantic_hash": ""
   },
   "macOS/PaperCreator/Features/Documents/JobHistoryView.swift": {
@@ -1445,8 +1445,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793157365.6096642,
-    "ast_hash": "22c11f3768ccf1e27aa14fdf602baa1d",
+    "mtime": 1793179502.1006076,
+    "ast_hash": "064fea5034ee780d72779a8c80759893",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3712,6 +3712,11 @@
   "Backend/Core/france/print_policy.py": {
     "mtime": 1793160844.8510656,
     "ast_hash": "66bdb0f7506fc86be1a513ea34dcccdb",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v34-public-flow-acceptance-2026-10-28.md": {
+    "mtime": 1793169847.724219,
+    "ast_hash": "4b40e4b8c3ccd7349ce8e2e6805ab6c1",
     "semantic_hash": ""
   }
 }
