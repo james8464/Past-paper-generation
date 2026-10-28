@@ -1936,6 +1936,13 @@ def generate_assessment(
     contract_graph_tree: bool = False,
     contract_authoring_version: str = "v12",
 ) -> dict:
+    if contract_graph_tree and contract_authoring_version == "v34":
+        from Backend.Core.france.extended_pipeline import generate
+
+        return generate(
+            index_path=index_path, seed=seed, checkpoint=checkpoint,
+            progress=progress, previous_texts=previous_texts,
+        )
     if contract_graph_tree and contract_authoring_version == "v33":
         from Backend.Core.france.synthesized_pipeline import generate
 
@@ -3099,6 +3106,10 @@ def generate_assessment(
 
 
 def validate_package(package: dict):
+    if package.get("identity", {}).get("prompt_version") == "fr-nsi-written-2027-v34":
+        from Backend.Core.france.extended_pipeline import validate
+
+        return validate(package)
     if package.get("identity", {}).get("prompt_version") == "fr-nsi-written-2027-v33":
         from Backend.Core.france.synthesized_pipeline import validate
 
