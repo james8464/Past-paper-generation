@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793204486.9677439,
-    "ast_hash": "23fdd3ff87a9cf84ed212d01a681e471",
+    "mtime": 1793207594.8590631,
+    "ast_hash": "8ef76cd452e88da3b5133bf59e7c3e5f",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/BackendClient.swift": {
-    "mtime": 1793197084.2787738,
-    "ast_hash": "7173d5be297384f545a8f1d1deba1bb3",
+    "mtime": 1793207427.147519,
+    "ast_hash": "f172c0c9eaa97121c60ec1fda381dbfd",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/SecretStore.swift": {
@@ -3595,13 +3595,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793203599.3563461,
-    "ast_hash": "ba241a6d32ab245d52996c48e0779dcc",
+    "mtime": 1793207843.7069488,
+    "ast_hash": "d60ea2dce20c8d3980d70d26bcfa0206",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
-    "mtime": 1793196270.002897,
-    "ast_hash": "aa770be06fe7e9c1400da73f7d256d87",
+    "mtime": 1793207430.7664478,
+    "ast_hash": "24aea5800ca5164566cdd8d9cf1a7684",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/CatalogStore.swift": {
@@ -3877,6 +3877,26 @@
   "docs/quality/keldin-identity-integration-review-2026-10-28.md": {
     "mtime": 1793204486.5794837,
     "ast_hash": "cce348cc899fc06ec0fef7b0b424083c",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/BackendStreamTests.swift": {
+    "mtime": 1793207427.1484668,
+    "ast_hash": "218f49627411ca1f43b5d69c1f96f9d2",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/RunIsolationTests.swift": {
+    "mtime": 1793207843.707607,
+    "ast_hash": "c2195a78adf4d41662d9364e93b91462",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-run-isolation-review-2026-10-28.md": {
+    "mtime": 1793207920.1698968,
+    "ast_hash": "bcd5943b77cb3b96338d12f50f494c3f",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-28-implementation-quality-audit.md": {
+    "mtime": 1793207920.1708484,
+    "ast_hash": "7384ef15513cc4f65f0330d5c8e2b716",
     "semantic_hash": ""
   }
 }

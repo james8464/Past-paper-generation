@@ -52,10 +52,12 @@ final class ApplicationCoordinator: ObservableObject {
 
     let distributionMode = DistributionMode.current
 
-    private let backend = BackendClient()
+    private let backend: any BackendRunning
     private let defaults: UserDefaults
     private let notificationCenter = UNUserNotificationCenter.current()
     private var runningProcess: Process?
+    private var activeRunSession: BackendRunSession?
+    private var ollamaRefreshRevision = UUID()
     private var didReceiveBackendError = false
     private var didCancelRun = false
     private var activeOperation = RunningOperation.none
@@ -187,9 +189,11 @@ final class ApplicationCoordinator: ObservableObject {
     init(
         defaults: UserDefaults = .standard,
         secrets: SecretStoring = KeychainSecretStore(),
-        historyDirectory: URL? = nil
+        historyDirectory: URL? = nil,
+        backend: any BackendRunning = BackendClient()
     ) {
         self.defaults = defaults
+        self.backend = backend
         let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
@@ -198,7 +202,7 @@ final class ApplicationCoordinator: ObservableObject {
         settingsStore = settings
         catalogStore = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
         modelCoordinator = ModelCoordinator()
-        benchmarkCoordinator = BenchmarkCoordinator()
+        benchmarkCoordinator = BenchmarkCoordinator(backend: backend)
         recentDocumentStore = recents
         generationCoordinator = GenerationCoordinator(history: recents)
 
@@ -243,14 +247,19 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning, !benchmarkCoordinator.isRunning, !isRefreshingOllama else { return }
         isRefreshingOllama = true
         status = "Checking Ollama"
+        let revision = ollamaRefreshRevision
         Task {
             defer { isRefreshingOllama = false }
+            guard ollamaRefreshRevision == revision else { return }
             do {
                 let statusEvents = try await backend.collect(arguments: ["ollama-status"])
+                guard ollamaRefreshRevision == revision else { return }
                 statusEvents.forEach(apply)
                 let modelEvents = try await backend.collect(arguments: ["list-models"])
+                guard ollamaRefreshRevision == revision else { return }
                 modelEvents.forEach(apply)
             } catch {
+                guard ollamaRefreshRevision == revision else { return }
                 setError(error.localizedDescription)
             }
         }
@@ -402,6 +411,7 @@ final class ApplicationCoordinator: ObservableObject {
         activeOperation = .generation
         status = statusMessage
         generationProgress = nil
+        let session = beginRunSession()
         do {
             if let seed {
                 try generationCoordinator.begin(GenerationJobRecord(
@@ -418,12 +428,15 @@ final class ApplicationCoordinator: ObservableObject {
                     qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
                 ))
             }
-            runningProcess = try backend.run(arguments: arguments) { [weak self] event in
-                self?.apply(event)
+            runningProcess = try backend.run(arguments: arguments, environment: [:]) { [weak self] event in
+                self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                self?.finishGeneration(result)
+                guard let self, self.activeRunSession == session else { return }
+                self.activeRunSession = nil
+                self.finishGeneration(result)
             }
         } catch {
+            activeRunSession = nil
             finishGeneration(.failure(error))
         }
     }
@@ -699,14 +712,18 @@ final class ApplicationCoordinator: ObservableObject {
             arguments.append("--dry-run")
         }
 
+        let session = beginRunSession()
         do {
             runningProcess = try backend.run(arguments: arguments, environment: backendEnvironment) { [weak self] event in
-                self?.apply(event)
+                self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                self?.finishGeneration(result)
+                guard let self, self.activeRunSession == session else { return }
+                self.activeRunSession = nil
+                self.finishGeneration(result)
             }
             notifyStarted(for: .generation)
         } catch {
+            activeRunSession = nil
             finishGeneration(.failure(error))
         }
     }
@@ -731,17 +748,21 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer?.cancel()
         etaTimer = nil
 
+        let session = beginRunSession()
         do {
             runningProcess = try backend.run(
                 arguments: ["setup-mlx", "--model", model],
                 environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
             ) { [weak self] event in
-                self?.apply(event)
+                self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                self?.finishMLXSetup(result, model: model)
+                guard let self, self.activeRunSession == session else { return }
+                self.activeRunSession = nil
+                self.finishMLXSetup(result, model: model)
             }
             notifyStarted(for: .mlxSetup)
         } catch {
+            activeRunSession = nil
             finishMLXSetup(.failure(error), model: model)
         }
     }
@@ -752,9 +773,16 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func cancelGeneration() {
+        ollamaRefreshRevision = UUID()
         didCancelRun = true
         try? generationCoordinator.cancel()
         mlxRecoveryState.cancel()
+        // MLX setup keeps ownership until its helper exits. Other operations can
+        // release the UI immediately, but their queued callbacks no longer own it.
+        if activeOperation != .mlxSetup {
+            activeRunSession = nil
+            activeFrameworkID = nil
+        }
         runningProcess?.terminate()
         if activeOperation == .mlxSetup {
             status = "Cancelling Apple MLX setup"
@@ -803,19 +831,23 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer?.cancel()
         etaTimer = nil
 
+        let session = beginRunSession()
         do {
-            runningProcess = try backend.run(arguments: ["pull-model", "--model", model]) { [weak self] event in
-                self?.apply(event)
+            runningProcess = try backend.run(arguments: ["pull-model", "--model", model], environment: [:]) { [weak self] event in
+                self?.apply(event, from: session)
             } onFinish: { [weak self] result in
+                guard let self, self.activeRunSession == session else { return }
+                self.activeRunSession = nil
                 if case .success(0) = result {
-                    self?.selectedModel = model
-                    self?.defaults.set(model, forKey: AppStorageKey.ollamaModel)
+                    self.selectedModel = model
+                    self.defaults.set(model, forKey: AppStorageKey.ollamaModel)
                 }
-                self?.finishGeneration(result)
-                self?.refreshOllama()
+                self.finishGeneration(result)
+                self.refreshOllama()
             }
             notifyStarted(for: .modelPull)
         } catch {
+            activeRunSession = nil
             finishGeneration(.failure(error))
         }
     }
@@ -951,12 +983,14 @@ final class ApplicationCoordinator: ObservableObject {
 
     func startBenchmark() {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        ollamaRefreshRevision = UUID()
         benchmarkCoordinator.start(generationIsRunning: isRunning)
         status = "Benchmarking"
         sidebarSelection = .benchmark
     }
 
     func cancelBenchmark() {
+        ollamaRefreshRevision = UUID()
         status = "Benchmark cancelled"
         benchmarkCoordinator.cancel()
     }
@@ -1030,6 +1064,20 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func generatedFile(role: String) -> GeneratedFile? {
         generatedFiles.first { $0.role == role }
+    }
+
+    private func beginRunSession() -> BackendRunSession {
+        // A discovery request started before this operation must remain obsolete
+        // even if the operation finishes before that request returns.
+        ollamaRefreshRevision = UUID()
+        let session = BackendRunSession()
+        activeRunSession = session
+        return session
+    }
+
+    private func apply(_ event: BackendEvent, from session: BackendRunSession) {
+        guard activeRunSession == session, !didCancelRun else { return }
+        apply(event)
     }
 
     func apply(_ event: BackendEvent) {
@@ -1416,4 +1464,8 @@ private enum RunningOperation {
     case generation
     case modelPull
     case mlxSetup
+}
+
+private struct BackendRunSession: Equatable, Sendable {
+    let id = UUID()
 }

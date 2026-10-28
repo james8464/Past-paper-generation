@@ -22,7 +22,43 @@ enum BackendClientError: LocalizedError {
     }
 }
 
-final class BackendClient: @unchecked Sendable {
+protocol BackendRunning: Sendable {
+    func run(
+        arguments: [String],
+        environment: [String: String],
+        onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void,
+        onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void
+    ) throws -> Process
+
+    func collect(arguments: [String]) async throws -> [BackendEvent]
+}
+
+struct BackendEventLineBuffer {
+    private var buffer = Data()
+
+    mutating func append(_ data: Data) -> [String] {
+        buffer.append(data)
+        var lines: [String] = []
+        while let newline = buffer.firstIndex(of: 0x0A) {
+            lines.append(decode(buffer[..<newline]))
+            buffer.removeSubrange(...newline)
+        }
+        return lines
+    }
+
+    mutating func finish() -> String {
+        defer { buffer.removeAll(keepingCapacity: true) }
+        return decode(buffer)
+    }
+
+    private func decode(_ data: Data) -> String {
+        // A pipe read may split a character. Decode only complete lines; invalid
+        // UTF-8 becomes an unreadable event, never silently discarded content.
+        String(data: data, encoding: .utf8) ?? "\u{FFFD}"
+    }
+}
+
+final class BackendClient: BackendRunning, @unchecked Sendable {
     private enum BackendFile {
         static let bundledExecutable = "Contents/Resources/KeldinBackend/KeldinBackend"
         static let bridgeScript = "bridge.py"
@@ -76,19 +112,15 @@ final class BackendClient: @unchecked Sendable {
             }
 
             let handle = pipe.fileHandleForReading
-            var buffer = ""
+            var buffer = BackendEventLineBuffer()
             while true {
                 let data = handle.availableData
                 if data.isEmpty { break }
-                buffer += String(data: data, encoding: .utf8) ?? ""
-
-                while let newline = buffer.firstIndex(of: "\n") {
-                    let line = String(buffer[..<newline])
-                    buffer.removeSubrange(...newline)
+                for line in buffer.append(data) {
                     await Self.emitLine(line, onEvent: onEvent)
                 }
             }
-            await Self.emitLine(buffer, onEvent: onEvent)
+            await Self.emitLine(buffer.finish(), onEvent: onEvent)
 
             process.waitUntilExit()
             let stderr = await errorTask.value.trimmingCharacters(in: .whitespacesAndNewlines)
