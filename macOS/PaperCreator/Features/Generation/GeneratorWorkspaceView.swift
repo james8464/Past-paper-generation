@@ -178,7 +178,7 @@ private struct PaperConfiguration: View {
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.caption)
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(.primary)
                     .fixedSize(horizontal: false, vertical: true)
                 }
 
