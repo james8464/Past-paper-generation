@@ -1,7 +1,7 @@
-"""Experimental fifth whole-paper family with immutable V34 source reuse.
+"""Five whole-paper families with immutable V34 source reuse.
 
-This module does not activate the public route. Reconstruction certifies source
-integrity and retained-history screening, not difficulty or learner timing.
+Reconstruction certifies source integrity and retained-history screening,
+not difficulty or learner timing.
 """
 
 import json

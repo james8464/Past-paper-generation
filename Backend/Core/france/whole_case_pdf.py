@@ -1,4 +1,4 @@
-"""Compare complete V32 printed exercise content with its verified package.
+"""Compare complete printed French exercises with their verified package.
 
 This is a content-integrity gate, not educational or visual calibration. It
 checks the entire ordered exercise stream, not just the presence of a few
@@ -219,7 +219,7 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
             if package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION}:
                 body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
                 if not body.strip():
-                    raise ValueError(f"Page {number} sans contenu dans le sujet V34")
+                    raise ValueError(f"Page {number} sans contenu dans le sujet vérifié")
             page_lines = [line.strip() for line in page.get_text().splitlines()]
             if sum(line in footers for line in page_lines) != 1:
                 raise ValueError("Pied de page non officiel absent ou dupliqué")

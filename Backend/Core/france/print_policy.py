@@ -1,4 +1,4 @@
-"""Versioned V34 notices describe review limits without granting approval."""
+"""Versioned French notices describe review limits without granting approval."""
 
 V34_PRINT_POLICY = "fr-nsi-v34-internal-review-v1"
 V35_PRINT_POLICY = "fr-nsi-v35-internal-review-v1"

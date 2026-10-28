@@ -1,4 +1,4 @@
-"""Eligibility joins and a greedy counterexample for unpublished practice."""
+"""Eligibility joins and a greedy counterexample for French practice."""
 
 
 def candidate_query():

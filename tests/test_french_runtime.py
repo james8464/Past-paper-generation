@@ -1027,11 +1027,11 @@ def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatc
     manifest = json.loads((bundle / "manifest.json").read_text())
     assert manifest["model_used"] is False
     assert manifest["identity"]["provider"] == "application-owned"
-    assert manifest["identity"]["model"] == "app-owned-v34"
+    assert manifest["identity"]["model"] == "app-owned-v35"
 
 
 @pytest.mark.parametrize("large_print", [False, True])
-def test_public_v34_uses_each_family_and_records_selected_seed(
+def test_public_v35_uses_each_family_and_records_selected_seed(
     tmp_path, monkeypatch, capsys, large_print
 ):
     import json
@@ -1056,7 +1056,7 @@ def test_public_v34_uses_each_family_and_records_selected_seed(
         "--reference-index", str(index), "--output", str(output),
         "--seed", "270100",
     ] + (["--large-print"] if large_print else [])
-    for seed in range(270100, 270104):
+    for seed in range(270100, 270105):
         args = build_parser().parse_args(argv)
         assert args.handler(args) == 0
         (bundle,) = output.glob(f"nsi-2027-{seed}-*")
@@ -1064,11 +1064,14 @@ def test_public_v34_uses_each_family_and_records_selected_seed(
         manifest = json.loads((bundle / "manifest.json").read_text())
         assert package["identity"]["seed"] == seed
         assert manifest["identity"] == package["identity"]
-        assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v34"
-        assert package["identity"]["print_policy"] == "fr-nsi-v34-internal-review-v1"
+        assert package["identity"]["prompt_version"] == "fr-nsi-written-2027-v35"
+        assert package["identity"]["print_policy"] == "fr-nsi-v35-internal-review-v1"
         assert manifest["generation_origin"] == "application_owned"
         assert manifest["model_used"] is False
-        checkpoint = output / ".papercreator-checkpoints" / f"{args.assessment}-{seed}.json"
+        checkpoint = output / ".papercreator-checkpoints" / (
+            f"{args.assessment}-{package['identity']['prompt_version']}-"
+            f"{package['identity']['implementation_sha256']}-{seed}.json"
+        )
         assert checkpoint.is_file()
         validate_whole_case_pdf(bundle / "sujet.pdf", package, correction=False)
         validate_whole_case_pdf(bundle / "corrige.pdf", package, correction=True)
@@ -1077,8 +1080,35 @@ def test_public_v34_uses_each_family_and_records_selected_seed(
     after = {path: path.read_bytes() for path in output.rglob("*") if path.is_file()}
     assert before == after
     events = capsys.readouterr().out
-    assert "quatre familles" in events
+    assert "cinq familles" in events
     assert "Relecture par un enseignant requise" not in events
+
+
+def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp_path):
+    import json
+
+    from Backend.Core.cli import build_parser
+    from Backend.Core.france.extended_pipeline import generate as retained_generate
+    from tests.test_nsi_pipeline import make_index
+
+    index = tmp_path / "references.sqlite"
+    make_index(index)
+    output = tmp_path / "output"
+    old = output / ".papercreator-checkpoints/fr-bac-general-nsi-written-2027-270100.json"
+    retained_generate(index_path=index, seed=270100, checkpoint=old)
+    before = old.read_bytes()
+    args = build_parser().parse_args([
+        "generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027",
+        "--reference-index", str(index), "--output", str(output), "--seed", "270100",
+    ])
+    assert args.handler(args) == 0
+    assert old.read_bytes() == before
+    current = [path for path in old.parent.glob("*.json") if path != old]
+    assert len(current) == 1
+    state = json.loads(current[0].read_text())
+    assert state["request"]["version"] == "fr-nsi-written-2027-v35"
+    assert state["request"]["seed"] == 270100
+    assert state["request"]["source"] in current[0].name
 
 
 @pytest.mark.parametrize("failure", [None, "render", "cancel"])

@@ -53,6 +53,20 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(model.errorMessage, "None of the four paper families is sufficiently different from your saved papers. No new paper was created.")
     }
 
+    @MainActor
+    func testFiveFamilyRefusalHasEnglishAndFrenchCopy() {
+        let message = "Les cinq familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé."
+        XCTAssertEqual(GenerationPresentation.error(message, language: "en"), "None of the five paper families is sufficiently different from your saved papers. No new paper was created.")
+        XCTAssertEqual(GenerationPresentation.error(message, language: "fr"), "Aucune des cinq familles n’est suffisamment différente de vos sujets enregistrés. Aucun nouveau sujet n’a été créé.")
+    }
+
+    @MainActor
+    func testFrenchPreparationProgressUsesTheSelectedLanguage() {
+        let message = "Construction des exercices vérifiés, sans appel à un modèle."
+        XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), "Preparing the practice paper.")
+        XCTAssertEqual(GenerationPresentation.progress(message, language: "fr"), "Préparation du sujet d’entraînement.")
+    }
+
     private var temporaryDirectory: URL!
 
     override func setUpWithError() throws {
@@ -110,11 +124,11 @@ final class CoordinatorTests: XCTestCase {
         let record = GenerationJobRecord(
             configuration: GenerationConfiguration(
                 boardID: "fr-national-nsi", paperID: "written-2027",
-                provider: "application-owned", model: "app-owned-v34", seed: 270100,
+                provider: "application-owned", model: "app-owned-v35", seed: 270100,
                 dryRun: false, educationSystem: "fr-national",
                 assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR"
             ),
-            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v34"),
+            provenance: GenerationProvenance(appVersion: "test", provider: "application-owned", model: "app-owned-v35"),
             state: .pending, artifacts: [],
             qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
         )
@@ -122,7 +136,7 @@ final class CoordinatorTests: XCTestCase {
         try coordinator.begin(record)
         XCTAssertThrowsError(try coordinator.complete())
         XCTAssertEqual(store.records.first?.state, .running)
-        let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v34","seed":270101,"prompt_version":"fr-nsi-written-2027-v34","print_policy":"fr-nsi-v34-internal-review-v1"}}"#
+        let payload = #"{"schema_version":1,"assessment":"fr-bac-general-nsi-written-2027","status":"unreviewed_draft","generation_origin":"application_owned","model_used":false,"teacher_review":"not_run","empirical_calibration":"not_run","identity":{"provider":"application-owned","model":"app-owned-v35","seed":270101,"prompt_version":"fr-nsi-written-2027-v35","print_policy":"fr-nsi-v35-internal-review-v1"}}"#
         try Data(payload.utf8).write(to: manifest)
         let original = try XCTUnwrap(JSONSerialization.jsonObject(with: Data(payload.utf8)) as? [String: Any])
         for (key, value) in ["seed": true, "print_policy": "approved", "model": "app-owned-v32"] as [String: Any] {
@@ -144,7 +158,7 @@ final class CoordinatorTests: XCTestCase {
         try coordinator.complete(artifacts: [file])
         XCTAssertEqual(store.records.first?.id, record.id)
         XCTAssertEqual(store.records.first?.configuration.seed, 270101)
-        XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v34")
+        XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v35")
         XCTAssertEqual(store.records.first?.qualification, record.qualification)
         XCTAssertEqual(store.records.first?.state, .completed)
     }

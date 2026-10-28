@@ -1,4 +1,4 @@
-"""Keep visible French authoring claims aligned with the V34 runtime."""
+"""Keep visible French authoring claims aligned with the current catalogue."""
 
 import json
 from pathlib import Path
@@ -25,9 +25,9 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "Four paper families are available. The app selects an unused family and blocks repeats.",
+        "Five paper families are available. The app selects an unused family and blocks repeats.",
         "This catalogue runs locally without an AI model or Ollama. It does not test model quality.",
-        "Official sources are downloaded with your permission. V34 builds papers on this Mac without model prompts or cloud generation.",
+        "Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation.",
     ):
         assert f'Text("{key}")' in workspace
         unit = catalog[key]["localizations"]["fr"]["stringUnit"]
@@ -43,15 +43,25 @@ def test_french_help_does_not_claim_ollama_authors_current_papers():
         "private var", 1
     )[0]
     assert (
-        "V34 uses finite app-authored cases, not model-generated questions." in french
+        "French papers are built locally from a fixed catalogue." in french
     )
     assert "Ollama generation uses" not in french
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     key = (
-        "V34 uses finite app-authored cases, not model-generated questions. "
-        "No AI model or Ollama installation is needed; papers are built locally without cloud generation."
+        "French papers are built locally from a fixed catalogue. "
+        "No AI model, Ollama installation or cloud service is needed."
     )
     assert key in french
     unit = catalog[key]["localizations"]["fr"]["stringUnit"]
     assert unit["state"] == "translated"
-    assert "sans génération" in unit["value"]
+    assert "catalogue fixe" in unit["value"]
+    assert "Aucun modèle" in unit["value"]
+
+
+def test_french_local_progress_has_selected_language_copy():
+    source = (ROOT / "Domain/GenerationPresentation.swift").read_text()
+    assert '"Construction des exercices vérifiés, sans appel à un modèle."' in source
+    key = "Preparing the practice paper."
+    assert key in source
+    catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
+    assert catalog[key]["localizations"]["fr"]["stringUnit"]["value"] == "Préparation du sujet d’entraînement."

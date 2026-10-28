@@ -1,4 +1,4 @@
-"""Object identity and graph traversal for an unpublished French exercise.
+"""Object identity and graph traversal for the French practice catalogue.
 
 Links represent shortcuts between directories, not filesystem containment.
 Two distinct directories may have the same displayed name.

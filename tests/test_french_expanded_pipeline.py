@@ -159,3 +159,15 @@ def test_forged_print_policy_cannot_replay(tmp_path):
     package["identity"]["print_policy"] = "fr-nsi-v34-internal-review-v1"
     with pytest.raises(ValueError):
         validate(package)
+
+
+def test_v35_runtime_dispatch_does_not_use_an_older_validator():
+    from Backend.Core.france.runtime import (
+        database_pdf_contract_version,
+        network_pdf_contract_version,
+    )
+
+    assert database_pdf_contract_version("fr-nsi-written-2027-v35") == "v35"
+    assert network_pdf_contract_version("fr-nsi-written-2027-v35") == "v35"
+    assert database_pdf_contract_version("fr-nsi-written-2027-v34") == "v34"
+    assert network_pdf_contract_version("fr-nsi-written-2027-v34") == "v34"

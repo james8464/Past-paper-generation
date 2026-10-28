@@ -3,6 +3,9 @@ import Foundation
 /// Short status text belongs in the workspace; original messages stay in diagnostics.
 enum GenerationPresentation {
     static func progress(_ message: String, language: String = "system") -> String {
+        if message == "Construction des exercices vérifiés, sans appel à un modèle." {
+            return localized("Preparing the practice paper.", language: language)
+        }
         let prefix = "Refining AI item "
         let separator = " after an automated quality check:"
         guard message.hasPrefix(prefix),
@@ -18,6 +21,9 @@ enum GenerationPresentation {
     }
 
     static func error(_ message: String, language: String = "system") -> String {
+        if message.hasPrefix("Les cinq familles disponibles sont trop proches des sujets précédents.") {
+            return localized("None of the five paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
+        }
         if message.hasPrefix("Les quatre familles disponibles sont trop proches des sujets précédents.") {
             return localized("None of the four paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
         }

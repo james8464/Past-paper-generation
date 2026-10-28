@@ -2,7 +2,7 @@ import Foundation
 
 struct FrenchAssessmentRequest {
     static let assessmentID = "fr-bac-general-nsi-written-2027"
-    static let modelID = "app-owned-v34"
+    static let modelID = "app-owned-v35"
     let referenceIndex: URL
     let output: URL
     let seed: Int
@@ -32,8 +32,8 @@ struct FrenchAssessmentRequest {
               publication.empiricalCalibration == "not_run",
               publication.identity.provider == "application-owned",
               publication.identity.model == modelID,
-              publication.identity.promptVersion == "fr-nsi-written-2027-v34",
-              publication.identity.printPolicy == "fr-nsi-v34-internal-review-v1" else {
+              publication.identity.promptVersion == "fr-nsi-written-2027-v35",
+              publication.identity.printPolicy == "fr-nsi-v35-internal-review-v1" else {
             throw CocoaError(.fileReadCorruptFile)
         }
         return publication.identity.seed
