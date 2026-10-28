@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793204397.772975,
-    "ast_hash": "bb46ff11f1712c3373d1bf8326e0d94c",
+    "mtime": 1793204486.9677439,
+    "ast_hash": "23fdd3ff87a9cf84ed212d01a681e471",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3872,6 +3872,11 @@
   "docs/quality/occitanie-v35-report-review-2026-10-28.md": {
     "mtime": 1793204377.0584905,
     "ast_hash": "c6f31511bc43a01a251afb5132bfff61",
+    "semantic_hash": ""
+  },
+  "docs/quality/keldin-identity-integration-review-2026-10-28.md": {
+    "mtime": 1793204486.5794837,
+    "ast_hash": "cce348cc899fc06ec0fef7b0b424083c",
     "semantic_hash": ""
   }
 }
