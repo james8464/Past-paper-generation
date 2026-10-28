@@ -23,6 +23,7 @@ from Backend.Core.candidate_identity import (
     candidate_content_identity,
     candidate_review_content,
 )
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.json_client import JSONGenerationClient as JSONClient
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 
@@ -198,7 +199,7 @@ def independent_review(
     candidate: Any,
     specification: Any,
 ) -> ReviewResult:
-    raw = client.generate_json(
+    prompt = (
         "Act as a second-pass UK A-level assessment editor. Review the candidate "
         f"{subject} item against its immutable blueprint and specification. "
         f"{objective_policy_for(subject).guidance()} Check "
@@ -229,6 +230,7 @@ def independent_review(
             ensure_ascii=False,
         )
     )
+    raw = request_json(client, make_request(prompt, OutputContract("review")))
     if not isinstance(raw, dict) or set(ReviewResult.model_fields) - raw.keys():
         raise ValueError(f"{item_id} returned an invalid review response: missing checks")
     try:
@@ -488,7 +490,7 @@ def difficulty_review(
         '"shortcut_resistant":true|false,"timing_fit":true|false,'
         '"scaffolding_fit":true|false,"estimated_minutes":0,"issues":[]}.'
     )
-    raw = client.generate_json(
+    prompt = (
         "Act as an independent UK A-level difficulty calibration specialist; "
         "factual correctness is reviewed separately. Concentrate only on whether "
         f"the {subject} candidate elicits the reference-shaped cognitive demand "
@@ -549,6 +551,7 @@ def difficulty_review(
         )
         + response_contract
     )
+    raw = request_json(client, make_request(prompt, OutputContract("difficulty")))
     required_response_fields = set(DifficultyReviewResult.model_fields) - {
         "schema_version", "target_profile_fingerprint", "independent_solution_steps",
         "target_objective_policy_fingerprint",

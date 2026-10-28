@@ -20,6 +20,7 @@ from Backend.Core.computer_science_authoring import (
     reviewed_question_metadata,
     validate_question_review,
 )
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
     SQLProgramAttemptAudit,
@@ -136,7 +137,12 @@ def improve_questions_with_ollama(
                 if not failure
                 else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
             )
-            payload = client.generate_json(retry_prompt)
+            scenario_only = _uses_scenario_only_generation(question)
+            payload = request_json(client, make_request(retry_prompt, OutputContract(
+                "aqa_cs", immutable_marking=not scenario_only,
+                scenario_only=scenario_only,
+                part_count=0 if scenario_only else min(8, len(question.parts)),
+            )))
             try:
                 candidate = _merge_question(question, payload)
                 _validate_ai_question(question, candidate)

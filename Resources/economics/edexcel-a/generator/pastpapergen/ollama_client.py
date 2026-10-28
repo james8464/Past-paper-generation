@@ -15,6 +15,7 @@ from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
 from Backend.Core.candidate_identity import edexcel_difficulty_candidate_projection
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
@@ -220,7 +221,9 @@ def generate_questions_with_ollama(
                 if not failure
                 else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
             )
-            payload = client.generate_json(retry_prompt)
+            payload = request_json(client, make_request(retry_prompt, OutputContract(
+                "edexcel", immutable_marking=True, part_count=min(6, len(question.parts)),
+            )))
             question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
             source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
             source_reference = question.source_reference

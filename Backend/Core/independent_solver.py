@@ -25,6 +25,7 @@ from Backend.Core.credit_policy import (
     declared_rule_metadata_present,
 )
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.json_client import JSONGenerationClient as SolverClient
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
@@ -284,6 +285,11 @@ class IndependentSolver:
                     ),
                     item_id=item_id,
                     derived_context=derived_context,
+                    output_contract=OutputContract(
+                        "solver", response_slots=tuple(response_slots),
+                        choices=tuple(solver_item["choices"]) if isinstance(solver_item.get("choices"), list) and all(isinstance(choice, str) and choice.strip() for choice in solver_item["choices"]) else (),
+                        kind=solver_item.get("kind"), marks=solver_item.get("marks"),
+                    ),
                 )
             try:
                 envelope = SolverResponseEnvelope.model_validate(raw_result, strict=True)
@@ -459,12 +465,13 @@ def _generate_solver_response(
     *,
     item_id: str,
     derived_context: dict[str, Any] | None,
+    output_contract: OutputContract,
 ) -> dict[str, object]:
     required = (derived_context or {}).get("required_numeric_evidence", {})
     attempts: list[dict[str, Any]] = []
     correction = ""
     for _ in range(2 if required else 1):
-        raw = client.generate_json(prompt + correction)
+        raw = request_json(client, make_request(prompt + correction, output_contract))
         if not required:
             return raw
         try:

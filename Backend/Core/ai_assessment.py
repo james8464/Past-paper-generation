@@ -35,6 +35,7 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     CanonicalSolution,
     IndependentSolver,
@@ -60,7 +61,7 @@ from Backend.Core.shared_source_scope import (
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v6-explicit-fit-semantics"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v7-trusted-generation-requests"
 
 
 class AssessmentLLMClient(JSONGenerationClient, Protocol):
@@ -576,7 +577,11 @@ def _generate_item_transaction(
                     demand_profile=demand_profile,
                 )
             )
-            raw = client.generate_json(prompt)
+            raw = request_json(client, make_request(
+                prompt,
+                OutputContract("authoring", identifiers=(task.id,), mark_schemes_locked=task.question.authoring_context.get("preserve_mark_scheme") is True),
+                generation_seed=seed, attempt=attempt,
+            ))
             candidate = _parse_batch(
                 raw,
                 [task],
@@ -1368,9 +1373,10 @@ def _review_batch(
     subject: str,
     canonical_solutions: dict[str, CanonicalSolution | None] | None = None,
 ) -> dict[str, ReviewResult]:
-    raw = client.generate_json(_review_prompt(
+    prompt = _review_prompt(
         tasks, candidates, subject=subject, canonical_solutions=canonical_solutions
-    ))
+    )
+    raw = request_json(client, make_request(prompt, OutputContract("batch_review", identifiers=tuple(task.id for task in tasks))))
     reviews = raw.get("reviews")
     if not isinstance(reviews, list):
         raise ValueError("second-pass review response has no reviews")
