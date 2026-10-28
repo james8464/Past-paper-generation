@@ -169,7 +169,46 @@ def test_bundle_check_loads_every_advertised_generator() -> None:
     assert status["healthy"] is True
     assert status["errors"] == []
     assert len(status["generators"]) == 7
-    assert status["french_case_families"] == 3
+    from Backend.Core.france.expanded_pipeline import FAMILY_COUNT, VERSION
+
+    assert status["french_case_families"] == FAMILY_COUNT
+    assert status["french_prompt_version"] == VERSION
+
+
+@pytest.mark.parametrize("missing", ["fourth", "fifth", "catalogue", "typed"])
+def test_bundle_check_rejects_missing_current_public_french_family(
+    missing, monkeypatch, capsys
+):
+    from argparse import Namespace
+
+    from Backend.Core.cli import handle_bundle_check
+    from Backend.Core.france import expanded_pipeline, loan_exercise
+
+    def unavailable(*_args, **_kwargs):
+        raise OSError("missing current public family source")
+
+    if missing == "fourth":
+        monkeypatch.setattr(loan_exercise, "render_case", unavailable)
+    elif missing == "fifth":
+        monkeypatch.setattr(
+            expanded_pipeline.directory_exercise, "render_case", unavailable
+        )
+    elif missing == "catalogue":
+        monkeypatch.setattr(expanded_pipeline, "_catalogue", unavailable)
+    else:
+        source = expanded_pipeline._source
+
+        def malformed(seed):
+            family, source_seed, exercises = source(seed)
+            if family == 4:
+                exercises[0]["questions"][0]["points"] = "-1"
+            return family, source_seed, exercises
+
+        monkeypatch.setattr(expanded_pipeline, "_source", malformed)
+    assert handle_bundle_check(Namespace()) == 1
+    status = json.loads(capsys.readouterr().out.splitlines()[-1])
+    assert status["healthy"] is False
+    assert any("French NSI" in error for error in status["errors"])
 
 
 def test_bundle_check_rejects_unrenderable_french_corrections(monkeypatch, capsys):
