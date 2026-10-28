@@ -40,7 +40,7 @@ struct FrenchAssessmentWorkspace: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .navigationTitle("Baccalauréat · NSI")
-        .focusedSceneValue(\.paperCreationContext, .french(largePrint: largePrint))
+        .focusedSceneValue(\.keldinCreationContext, .french(largePrint: largePrint))
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 if application.isRunning {
@@ -159,7 +159,7 @@ struct FrenchAssessmentWorkspace: View {
     }
 
     private var canGenerate: Bool {
-        PaperCreationContext.french(largePrint: largePrint).canCreate(
+        KeldinCreationContext.french(largePrint: largePrint).canCreate(
             boardCanGenerate: false,
             hasFrenchReferences: application.hasFrenchReferences,
             isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome
