@@ -1,6 +1,39 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Try Again" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réessayer" } } }
+    },
+    "PDF unavailable" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "PDF indisponible" } } }
+    },
+    "Choose This PDF…" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisir ce PDF…" } } }
+    },
+    "Couldn't complete the PDF action" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible d’effectuer cette action sur le PDF" } } }
+    },
+    "This PDF is no longer at its saved location." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce PDF ne se trouve plus à l’emplacement enregistré." } } }
+    },
+    "Keldin can't read this PDF. Choose the same file to allow access." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin ne peut pas lire ce PDF. Choisissez le même fichier pour autoriser l’accès." } } }
+    },
+    "This PDF couldn't be read. Check the file, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Impossible de lire ce PDF. Vérifiez le fichier, puis réessayez." } } }
+    },
+    "This file couldn't be opened as a PDF." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce fichier n’a pas pu être ouvert en tant que PDF." } } }
+    },
+    "This PDF is locked. Unlock it outside Keldin, then try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce PDF est verrouillé. Déverrouillez-le en dehors de Keldin, puis réessayez." } } }
+    },
+    "Choose the same PDF shown in History. Other files won't replace it." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisissez le PDF indiqué dans Historique. Aucun autre fichier ne le remplacera." } } }
+    },
+    "Access to this PDF couldn't be saved. Choose the file again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "L’autorisation d’accès à ce PDF n’a pas pu être enregistrée. Choisissez à nouveau le fichier." } } }
+    },
     "Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened." : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Certains anciens éléments de l’historique n’ont pas pu être supprimés. Ils restent affichés. Keldin réessaiera lors du prochain enregistrement de l’historique ou au redémarrage." } } }
     },
