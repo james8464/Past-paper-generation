@@ -31,6 +31,13 @@ from Backend.Core.france.nsi import (
     NSITableMaterial,
     NSIWeightedGraphMaterial,
 )
+from Backend.Core.france.print_policy import (
+    V34_CORRECTION_GUIDANCE,
+    V34_CREDIT_NOTICE,
+    V34_FOOTER,
+    V34_PRINT_POLICY,
+    V34_REVIEW_NOTICE,
+)
 
 WHOLE_CASE_KINDS = frozenset(
     {
@@ -274,9 +281,10 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
 
 
 class NumberedCanvas(Canvas):
-    def __init__(self, *args, brand_name="Paper Creator", **kwargs):
+    def __init__(self, *args, brand_name="Paper Creator", print_policy=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._brand_name = brand_name
+        self._print_policy = print_policy
         self._pages = []
 
     def showPage(self):
@@ -289,7 +297,11 @@ class NumberedCanvas(Canvas):
             self.__dict__.update(state)
             self.setFont("ExamSans", 9)
             self.drawString(
-                70, 43, f"{self._brand_name} — entraînement non officiel — non relu"
+                70,
+                43,
+                V34_FOOTER
+                if self._print_policy == V34_PRINT_POLICY
+                else f"{self._brand_name} — entraînement non officiel — non relu",
             )
             self.setFont("ExamSans", 10)
             self.drawRightString(A4[0] - 54, 43, f"Page : {self._pageNumber} / {total}")
@@ -307,6 +319,7 @@ def draw_cover_page(
     bold_font: str,
     italic_font: str,
     brand_name: str = "Paper Creator",
+    print_policy: str | None = None,
 ) -> None:
     """Draw the cover from measured 2026 coordinates, with independent branding."""
 
@@ -325,7 +338,11 @@ def draw_cover_page(
     centred(
         "CORRIGÉ PROPOSÉ ET BARÈME INDICATIF"
         if correction
-        else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL",
+        else (
+            "SUJET D’ENTRAÎNEMENT - NON OFFICIEL"
+            if print_policy == V34_PRINT_POLICY
+            else "SUJET D’ENTRAÎNEMENT — NON OFFICIEL"
+        ),
         376,
         14,
         bold_font,
@@ -350,7 +367,9 @@ def draw_cover_page(
             regular_font,
         )
     centred(
-        "Ce document doit être relu par un enseignant avant toute utilisation.",
+        V34_REVIEW_NOTICE
+        if print_policy == V34_PRINT_POLICY
+        else "Ce document doit être relu par un enseignant avant toute utilisation.",
         583,
         11,
         regular_font,
@@ -370,7 +389,11 @@ def draw_cover_page(
         bold_font,
     )
     centred(
-        "Barème et variantes à confirmer par un enseignant."
+        (
+            V34_CREDIT_NOTICE
+            if print_policy == V34_PRINT_POLICY
+            else "Barème et variantes à confirmer par un enseignant."
+        )
         if correction
         else "Le candidat traite les trois exercices.",
         678,
@@ -398,7 +421,10 @@ def render_assessment(
     human_readable_graph_titles: bool = False,
     coherent_material_flow: bool = False,
     compact_correction: bool = False,
+    print_policy: str | None = None,
 ):
+    if print_policy not in (None, V34_PRINT_POLICY):
+        raise ValueError("Unknown French print policy")
     # Historical contracts keep their recorded identity; current whole cases use
     # the public app name without changing their questions or indicative credit.
     brand_name = (
@@ -570,7 +596,9 @@ def render_assessment(
     if correction:
         paragraph("Consignes générales de correction", heading)
         paragraph(
-            "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative."
+            V34_CORRECTION_GUIDANCE
+            if print_policy == V34_PRINT_POLICY
+            else "Barème indicatif : attribuer uniquement les crédits explicitement justifiés. Accepter une méthode équivalente correcte. Ne pas compter deux fois le même élément. Faire vérifier les réponses, variantes et cas limites par un enseignant avant toute utilisation évaluative."
         )
         paragraph(
             "Maîtrise de la langue - 2 points sur l'ensemble de la copie", heading
@@ -984,10 +1012,11 @@ def render_assessment(
             bold_font=bold,
             italic_font=italic,
             brand_name=brand_name,
+            print_policy=print_policy,
         )
 
     doc.build(
         story,
-        canvasmaker=partial(NumberedCanvas, brand_name=brand_name),
+        canvasmaker=partial(NumberedCanvas, brand_name=brand_name, print_policy=print_policy),
         onFirstPage=cover_page,
     )

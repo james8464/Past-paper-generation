@@ -179,6 +179,22 @@ The public route must not change until its complete-package, print, originality,
 packaged-runtime and native-app checks pass. No official PDF is bundled; the
 document-specific third-party rights gap remains open.
 
+### Versioned review notices
+
+V34 now records `fr-nsi-v34-internal-review-v1` in its package identity. Its cover
+states that difficulty and duration have not been calibrated. The correction
+states that its marking guidance has no teacher validation. It asks the reader
+to check answers and edge cases before assessment without making an unavailable
+teacher review a prerequisite for practice. Neither the teacher-review field nor
+the learner-calibration field changes from `not_run`.
+
+The renderer must receive the recorded policy. Complete-PDF validation rejects
+historical notices on a V34 package, and package validation rejects relabelling
+the policy as approved. Older editions keep their existing wording and default
+rendering behaviour. The public route remains V32 pending separate acceptance
+checks. Run 9 rebuilds the 16 V34 PDFs for visual review of the new notices; this
+is an application-owned diagnostic, not a live model qualification.
+
 Ignored evidence is retained under `tmp/pdfs/v34-reference-review-20261028` and
 `tmp/final-validation-20261028`. Runs 1 and 2 preceded the SQL curriculum
 correction and are not final-release evidence. Earlier V13-V33 packages,
