@@ -19,6 +19,7 @@ from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
@@ -137,7 +138,7 @@ def _parts_for_prompt(question: QuestionBlueprint) -> str:
 
 
 def generate_questions_with_ollama(
-    client: OllamaClient,
+    client: JSONGenerationClient,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
@@ -324,7 +325,7 @@ def generate_questions_with_ollama(
 
 # Run an independent demand-only gate over every rendered question item.
 def review_blueprint_difficulty(
-    client: object,
+    client: JSONGenerationClient,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,

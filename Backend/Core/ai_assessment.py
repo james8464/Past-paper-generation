@@ -41,6 +41,7 @@ from Backend.Core.independent_solver import (
     reconcile_solution,
     solution_failure_evidence,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.mark_scheme_quality import validate_mark_scheme_item
 from Backend.Core.model_review import (
     ReviewResult,
@@ -62,14 +63,12 @@ LOGGER = logging.getLogger(__name__)
 ASSESSMENT_REVIEW_VERSION = "assessment-review-v6-explicit-fit-semantics"
 
 
-class AssessmentLLMClient(Protocol):
+class AssessmentLLMClient(JSONGenerationClient, Protocol):
     provider: str
     model: str
 
     @property
     def supports_parallel_generation(self) -> bool: ...
-
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
 @dataclass(frozen=True)

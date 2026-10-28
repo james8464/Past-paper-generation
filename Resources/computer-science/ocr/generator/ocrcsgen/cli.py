@@ -6,6 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from Backend.Core.family_adapter import ArtifactSpec, FamilyAdapter, run_family_adapter
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from ocrcsgen.configs import load_rule
 from ocrcsgen.generator import build_paper
@@ -60,7 +61,7 @@ def generate_package(
     ollama_url: str = "http://localhost:11434",
     dry_run: bool = True,
     progress: Callable[[str], None] | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     return run_family_adapter(

@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
 
 from pydantic import (
     BaseModel,
@@ -23,11 +23,8 @@ from Backend.Core.candidate_identity import (
     candidate_content_identity,
     candidate_review_content,
 )
+from Backend.Core.json_client import JSONGenerationClient as JSONClient
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
-
-
-class JSONClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
 class ReviewResult(BaseModel):

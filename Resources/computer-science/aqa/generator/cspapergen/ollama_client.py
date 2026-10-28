@@ -7,7 +7,6 @@ import re
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_contracts import EvidenceRecord
@@ -26,6 +25,7 @@ from Backend.Core.independent_solver import (
     SQLProgramAttemptAudit,
     require_solution_matches_scheme,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
@@ -57,10 +57,6 @@ from cspapergen.models import (
 )
 from cspapergen.notes import note_context_for_topic
 from cspapergen.render_pdf import candidate_stimulus_data
-
-
-class JSONGenerationClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
 def improve_questions_with_ollama(

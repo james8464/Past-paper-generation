@@ -11,7 +11,7 @@ import re
 from collections import Counter
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Any, Protocol
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -25,6 +25,7 @@ from Backend.Core.credit_policy import (
     declared_rule_metadata_present,
 )
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.json_client import JSONGenerationClient as SolverClient
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
     CheckedNumericOutput,
@@ -57,10 +58,6 @@ class SQLProgramAttemptAudit(BaseModel):
     mark_points: list[str] = Field(default_factory=list)
     evidence_ids: list[str] = Field(default_factory=list)
     validation_result: SQLValidationResult
-
-
-class SolverClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
 # Exact raw-provider shape; semantic validation remains item-specific below.
