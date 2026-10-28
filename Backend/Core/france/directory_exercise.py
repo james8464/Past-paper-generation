@@ -80,7 +80,7 @@ def render_case(seed):
         ),
         (
             "On cherche le nombre minimal d'arcs depuis un départ vers un identifiant cible ; renvoyer None si aucun chemin n'existe. Donner les résultats pour (r,r), (r,d), (r,e) et (a,b), avec justification. Le rang de visite dans vus donne-t-il cette distance ?",
-            "0, 3, None, None. r-a-c-d ou r-b-c-d utilise trois arcs ; e est isolé ; aucun arc ne rejoint b depuis a. Non : la position de b dans vus vaut 4, alors que r-b est un chemin d'un arc.",
+            "0, 3, None, None. r-a-c-d ou r-b-c-d utilise trois arcs ; e est isolé ; aucun arc ne rejoint b depuis a. Non : b est le cinquième identifiant ajouté à vus, alors que r-b est un chemin d'un arc.",
             [("0.25", "Les quatre résultats sont corrects avec les chemins ou absences de chemin."),
              ("0.25", "b fournit un contre-exemple au rang de visite comme distance.")],
             "analyse", "ALG-GRAPHES",

@@ -1,6 +1,14 @@
 from decimal import Decimal
 
 
+def test_allocation_context_states_the_small_problem_without_a_performance_disclaimer():
+    from Backend.Core.france.allocation_exercise import render_case
+
+    context = render_case(270104)["context"]
+    assert "La recherche récursive porte sur les trois tâches données." in context
+    assert "aucune efficacité" not in context
+
+
 def test_allocation_sequence_retains_sql_rows_and_complete_credit():
     from Backend.Core.france.allocation_exercise import render_case
     from Backend.Core.france.nsi import NSIExercise

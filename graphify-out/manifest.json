@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793191589.4895132,
+    "mtime": 1793193031.146295,
     "ast_hash": "ecd1e58713be72a2faeb6b87286292b5",
     "semantic_hash": ""
   },
@@ -3755,8 +3755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/directory_exercise.py": {
-    "mtime": 1793192853.8662536,
-    "ast_hash": "2399ce6ce166f0e4f06b791866fcebba",
+    "mtime": 1793194167.8674734,
+    "ast_hash": "9e3bca7d66bd56d1a83e3eef9a1f88d0",
     "semantic_hash": ""
   },
   "tests/test_french_allocation_case.py": {
@@ -3775,13 +3775,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_directory_exercise.py": {
-    "mtime": 1793191589.3631685,
-    "ast_hash": "bc51071bb98f1a378dd14b09aa07d927",
+    "mtime": 1793194153.2961273,
+    "ast_hash": "83e33ec1c3f04c052a9180d6431e0d7d",
     "semantic_hash": ""
   },
   "Backend/Core/france/allocation_exercise.py": {
-    "mtime": 1793191589.4884658,
-    "ast_hash": "c246a1249b74ec3dbec05b8df05cc771",
+    "mtime": 1793194167.8680406,
+    "ast_hash": "0e696d1a62cbc27a56784ec46921b4d1",
     "semantic_hash": ""
   },
   "Backend/Core/france/channel_exercise.py": {
@@ -3790,8 +3790,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_allocation_exercise.py": {
-    "mtime": 1793191589.499545,
-    "ast_hash": "861545d60d137755ab357b480ca51031",
+    "mtime": 1793194153.296452,
+    "ast_hash": "6298723ac133c0b38af77048997019a1",
     "semantic_hash": ""
   },
   "tests/test_french_channel_exercise.py": {

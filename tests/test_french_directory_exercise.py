@@ -21,6 +21,15 @@ def test_original_directory_sequence_has_complete_credit_and_visible_sources():
     assert "```python" in exercise.questions[9].answer
 
 
+def test_distance_counterexample_names_visit_order_without_an_ambiguous_index():
+    from Backend.Core.france.directory_exercise import render_case
+
+    answer = render_case(270104)["questions"][8]["answer"]
+    assert "cinquième identifiant ajouté" in answer
+    assert "chemin d'un arc" in answer
+    assert "position de b dans vus vaut 4" not in answer
+
+
 def test_every_question_has_explicit_tested_case_identity():
     from Backend.Core.france.directory_exercise import render_case
 
