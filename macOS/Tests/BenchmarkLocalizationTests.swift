@@ -7,6 +7,9 @@ final class BenchmarkLocalizationTests: XCTestCase {
         let cases: [(LocalizedStringResource, String)] = [
             ("Benchmark", "Test du Mac"),
             ("Results", "Résultats"),
+            ("Metric", "Mesure"),
+            ("Value", "Valeur"),
+            ("Detail", "Détail"),
             ("Benchmark score", "Score du test de performance"),
             ("Benchmark progress", "Progression du test de performance"),
             ("Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation.", "Lancez le test pour estimer les temps de création et vérifier les capacités de ce Mac."),

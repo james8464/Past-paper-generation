@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793218363.7112315,
-    "ast_hash": "4c990312ff7f80aa54915da04324bb57",
+    "mtime": 1793221766.3847914,
+    "ast_hash": "cb094ca497eed6c82cad2ed4f72b2ec5",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793203254.9067461,
-    "ast_hash": "85297459d18355f708b5494212f2335f",
+    "mtime": 1793223751.5050333,
+    "ast_hash": "b52aceaf1e1074665c708db944925616",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3115,8 +3115,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/IsolatedApplication.swift": {
-    "mtime": 1793196890.1417038,
-    "ast_hash": "ef2babe0c0c6a43a5fc12db1c17432f2",
+    "mtime": 1793223751.505149,
+    "ast_hash": "fc8a3ced684671f643f0df6517a32ad1",
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
@@ -3595,8 +3595,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793220026.916447,
-    "ast_hash": "a1f8d905fb46d38b2f4cdabc14e7dfa3",
+    "mtime": 1793223751.5045753,
+    "ast_hash": "1c7d64d0cf246af51747b9a28b03d5b3",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3615,8 +3615,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/GenerationCoordinator.swift": {
-    "mtime": 1793211430.8846364,
-    "ast_hash": "2fd287cddc628a5e85520eaf4b32902d",
+    "mtime": 1793223751.5047264,
+    "ast_hash": "6547024df170060857475867714f7d38",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ModelCoordinator.swift": {
@@ -3885,8 +3885,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793219937.2584128,
-    "ast_hash": "ec06134e61862df6748b5b412653d59f",
+    "mtime": 1793223751.5053134,
+    "ast_hash": "edd059afe89ce6e3e5924c4e3c9ab7df",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4070,8 +4070,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/UKArtifactPublisherTests.swift": {
-    "mtime": 1793218256.7624452,
-    "ast_hash": "54bacd69f7217fc81b63aa75945057c3",
+    "mtime": 1793223751.5054593,
+    "ast_hash": "7b369bc26258017d958c42e1948489c6",
     "semantic_hash": ""
   },
   "tests/test_audit_coverage.py": {
@@ -4095,8 +4095,8 @@
     "semantic_hash": ""
   },
   "docs/quality/native-operation-ownership-review-2026-10-28.md": {
-    "mtime": 1793218274.875683,
-    "ast_hash": "7387d681430d069b9bbc40e15942b215",
+    "mtime": 1793223751.5040548,
+    "ast_hash": "aea08b2be567fc662ba2add15aa5ced7",
     "semantic_hash": ""
   },
   "docs/quality/native-storage-transactions-review-2026-10-28.md": {
@@ -4115,8 +4115,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/BenchmarkLocalizationTests.swift": {
-    "mtime": 1793221397.2530618,
-    "ast_hash": "21a7d2ab10a046f4acf8fa072695d3be",
+    "mtime": 1793223751.5048578,
+    "ast_hash": "04a9aac6937745b4aaf9b2d6829729f1",
     "semantic_hash": ""
   },
   "macOS/Tests/NativeInterfaceAuditTests.swift": {
@@ -4135,8 +4135,8 @@
     "semantic_hash": ""
   },
   "docs/quality/native-interface-audit-2026-10-28.md": {
-    "mtime": 1793221513.786486,
-    "ast_hash": "8fb8bf49f8469dab745a0faad33ecd20",
+    "mtime": 1793223751.503902,
+    "ast_hash": "aaa04e3503f13ffef593713f4aab8f65",
     "semantic_hash": ""
   },
   "docs/quality/selected-response-dispatch-review-2026-10-28.md": {

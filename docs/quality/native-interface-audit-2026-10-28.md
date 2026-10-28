@@ -84,3 +84,26 @@ units, provider/model, credentials, output settings and saved papers were retain
 Detailed observations remain in `tmp/french-system-language-native-20261028.md`.
 Fresh native verification of the corrected labels and final release gates remain
 required. This bounded check does not establish complete translation coverage.
+
+The corrected direct Release subsequently completed an actual benchmark in
+French. Its title, launch/cancel controls, progress accessibility label, result
+heading and verdict translated. That run exposed three further untranslated
+table headers. Three assertions then failed before their catalogue fix. The
+final direct Release completed another benchmark and displayed Mesure, Valeur,
+Score and Détail. OS-reported values remain verbatim; number formatting retains
+the user's UK region. No paper or model was downloaded or generated.
+
+The final full native suite passed 214 tests with zero failures. The signed
+Store-mode preflight and direct Release build passed, with strict signatures.
+Thirty repository/branding/coverage checks passed; an earlier mistyped test path
+ran no tests and is retained separately, not counted as acceptance. Logs are
+`tmp/owned-operation-final-headers-native.log`,
+`tmp/owned-operation-final-headers-store.log`,
+`tmp/owned-operation-final-headers-direct.log` and
+`tmp/owned-operation-hygiene-green.log`. Core source matches merged PR111.
+
+An unexpected one-line Core comment edit was found between earlier gates and a
+later resource red run. Its proposed wording was preserved separately before
+restoring the exact committed bytes; the writer was not established. The final
+gates above ran after restoration. No historical identity check was relaxed.
+The candidate is closed and the temporary app-language override again removed.

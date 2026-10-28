@@ -89,3 +89,12 @@ model-option deduplication and further coordinator decomposition are not changed
 These are separate maintainability decisions, not measured performance gains.
 Full native, release-signing, Store and real interaction gates remain for the
 parent release workflow; this targeted pass does not certify the entire app.
+
+The parent then ran the final combined native suite: 214 passed, zero failures.
+Personal-development-signed Store preflight and direct Release builds passed.
+The final source includes the separately tested French benchmark resources; no
+Core or French exercise changes are included. An actual direct Release benchmark
+completed through the native interface with French progress/results. Logs are
+`tmp/owned-operation-final-headers-{native,store,direct}.log`. Protected latest-head
+Backend/macOS checks remain required before merge; these local gates are not
+App Store approval or complete interaction coverage.

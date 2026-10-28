@@ -806,7 +806,7 @@
 
     },
     "Detail" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Détail" } } }
     },
     "Diagnostic" : {
 
@@ -1075,7 +1075,7 @@
       }
     },
     "Metric" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mesure" } } }
     },
     "Model" : {
       "localizations" : {
@@ -1821,7 +1821,7 @@
 
     },
     "Value" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Valeur" } } }
     },
     "Your key is stored in Keychain." : {
       "localizations" : {
