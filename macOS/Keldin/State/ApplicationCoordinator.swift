@@ -109,6 +109,10 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var generationBlocker: String? {
+        generationBlockerResource.map { InterfaceText.resolve($0, language: presentationLanguage) }
+    }
+
+    var generationBlockerResource: LocalizedStringResource? {
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
@@ -132,11 +136,11 @@ final class ApplicationCoordinator: ObservableObject {
             return nil
         case .openAI:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
-            if openAIAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.openAIAPIKey) { return error.message(language: presentationLanguage) }
+            if openAIAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.openAIAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an OpenAI API key in Settings." : nil
         case .anthropic:
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
-            if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return error.message(language: presentationLanguage) }
+            if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         case .apple:
             return nil
@@ -913,7 +917,11 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func removeGeneratedFile(_ file: GeneratedFile) {
-        generatedFiles.removeAll { $0.id == file.id }
+        let path = file.url.standardizedFileURL.path
+        var hidden = hiddenRecentPaths
+        hidden.insert(path)
+        defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
+        generatedFiles.removeAll { $0.url.standardizedFileURL.path == path }
         persistRecentDocuments()
     }
 
@@ -1141,6 +1149,9 @@ final class ApplicationCoordinator: ObservableObject {
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
+            var hidden = hiddenRecentPaths
+            hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
+            defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
             let file = GeneratedFile(
                 role: role,
                 url: URL(fileURLWithPath: path),
@@ -1407,9 +1418,15 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
         var seen = Set<URL>()
+        let hidden = hiddenRecentPaths
         return Array(documents.filter {
-            seen.insert($0.url.standardizedFileURL).inserted
+            !hidden.contains($0.url.standardizedFileURL.path)
+                && seen.insert($0.url.standardizedFileURL).inserted
         }.prefix(60))
+    }
+
+    private var hiddenRecentPaths: Set<String> {
+        Set(defaults.stringArray(forKey: AppStorageKey.hiddenRecentDocumentPaths) ?? [])
     }
 
     private func persistRecentDocuments() {

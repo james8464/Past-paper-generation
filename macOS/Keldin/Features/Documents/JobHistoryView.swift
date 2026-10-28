@@ -3,6 +3,7 @@
 import SwiftUI
 
 struct JobHistoryView: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     @Bindable var store: RecentDocumentStore
     @State private var selection: GenerationJobRecord.ID?
@@ -32,7 +33,7 @@ struct JobHistoryView: View {
                         }
                     }
                     TableColumn("State") { record in
-                        Label(record.state.title, systemImage: record.state.systemImage)
+                        Label { Text(InterfaceText.localizedResource(record.state.titleResource, locale: locale)) } icon: { Image(systemName: record.state.systemImage) }
                     }
                     TableColumn("Created") { record in
                         Text(record.createdAt, format: .dateTime.day().month().hour().minute())
@@ -109,18 +110,6 @@ struct JobHistoryView: View {
 }
 
 private extension GenerationJobState {
-    var title: String {
-        switch self {
-        case .pending: "Pending"
-        case .running: "Creating"
-        case .completed: "Completed"
-        case .cancelled: "Cancelled"
-        case .failed: "Failed"
-        case .interrupted: "Interrupted"
-        case .missingArtifacts: "Files Missing"
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .pending: "clock"

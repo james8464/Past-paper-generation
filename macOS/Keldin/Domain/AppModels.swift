@@ -598,14 +598,19 @@ struct BenchmarkMetric: Identifiable, Equatable {
     let score: Double?
 
     var displayValue: String {
+        displayValue(locale: .current)
+    }
+
+    func displayValue(locale: Locale) -> String {
         if let value {
-            let formatted = value.formatted(.number.precision(.fractionLength(0...2)))
+            let formatted = value.formatted(.number.precision(.fractionLength(0...2)).locale(locale))
             if let unit, !unit.isEmpty {
-                return "\(formatted) \(unit)"
+                return "\(formatted) \(NativeInterfaceCopy.benchmarkUnit(unit, locale: locale))"
             }
             return formatted
         }
-        return detail ?? "Unknown"
+        if let detail { return NativeInterfaceCopy.benchmarkText(detail, locale: locale) }
+        return String(localized: InterfaceText.localizedResource("Unknown", locale: locale))
     }
 }
 
@@ -891,16 +896,19 @@ struct GenerationQualityReport: Equatable {
 
 enum GenerationQualityPolicy {
     static func presentation(
-        for report: GenerationQualityReport?
+        for report: GenerationQualityReport?, locale: Locale = .current
     ) -> GenerationQualityPresentation {
+        func text(_ resource: LocalizedStringResource) -> String {
+            String(localized: InterfaceText.localizedResource(resource, locale: locale))
+        }
         guard let report else {
             return GenerationQualityPresentation(
                 originalityState: .atCreation,
-                originalityDetail: "Originality evidence is created with a saved package.",
+                originalityDetail: text("Originality evidence is created with a saved package."),
                 referenceDemandState: .atCreation,
-                referenceDemandDetail: "Reference-demand evidence is created with a saved package.",
+                referenceDemandDetail: text("Reference-demand evidence is created with a saved package."),
                 pathEvidenceState: .unknown,
-                pathEvidenceDetail: "Candidate-path evidence is not available.",
+                pathEvidenceDetail: text("Candidate-path evidence is not available."),
                 diagnosticLines: ["Saved package evidence: None"]
             )
         }
@@ -909,24 +917,24 @@ enum GenerationQualityPolicy {
         switch report.savedMode {
         case .preview:
             originalityState = .preview
-            originalityDetail = "Preview history comparison is skipped; authorship and originality are not reviewed."
+            originalityDetail = text("Preview history comparison is skipped; authorship and originality are not reviewed.")
         case .live where report.noveltyPassed == true:
             originalityState = switch report.authoringProvenance.kind {
             case .unreviewed, .unknown: .unknown
             case .reviewedFixedOnly, .aiAuthoredOnly, .mixed: .passed
             }
-            originalityDetail = "Saved-package similarity checks passed. " + provenanceDetail(report)
+            originalityDetail = text("Saved-package similarity checks passed. \(provenanceDetail(report, locale: locale))")
         case .live where report.noveltyPassed == false:
             originalityState = .pending
-            originalityDetail = "Saved-package similarity checks did not pass. " + provenanceDetail(report)
+            originalityDetail = text("Saved-package similarity checks did not pass. \(provenanceDetail(report, locale: locale))")
         case .live, .unknown:
             originalityState = .unknown
-            originalityDetail = "Saved-package originality evidence is incomplete. " + provenanceDetail(report)
+            originalityDetail = text("Saved-package originality evidence is incomplete. \(provenanceDetail(report, locale: locale))")
         }
 
         let coverageText = report.difficultyReviewCoverage.map {
-            "\(report.difficultyReviewedItems) of \(report.referenceDemandItems) items (\($0.formatted(.percent.precision(.fractionLength(0)))))"
-        } ?? "unknown item coverage"
+            text("\(report.difficultyReviewedItems) of \(report.referenceDemandItems) items (\($0.formatted(.percent.precision(.fractionLength(0)).locale(locale))))")
+        } ?? text("unknown item coverage")
         let validItemReview = validatedItemReview(report)
         let completeLiveReview = report.savedMode == .live
             && validItemReview
@@ -941,22 +949,22 @@ enum GenerationQualityPolicy {
         let referenceDetail: String
         if report.referenceEvidenceState == "insufficient" {
             referenceState = .insufficient
-            referenceDetail = "Reference calibration is insufficient; item review covers \(coverageText). "
-                + report.evidenceGaps.joined(separator: " ")
+            referenceDetail = text("Reference calibration is insufficient; item review covers \(coverageText).")
+                + " " + report.evidenceGaps.joined(separator: " ")
         } else if report.savedMode == .preview {
             referenceState = .preview
-            referenceDetail = "Aggregate profile fit is preview-only; validated item depth covers \(coverageText)."
+            referenceDetail = text("Aggregate profile fit is preview-only; validated item depth covers \(coverageText).")
         } else if completeLiveReview {
             referenceState = .passed
-            referenceDetail = "Aggregate profile fit passed and validated item depth covers \(coverageText)."
+            referenceDetail = text("Aggregate profile fit passed and validated item depth covers \(coverageText).")
         } else if report.savedMode == .unknown
                     || report.referenceDemandPassed == nil
                     || !validItemReview {
             referenceState = .unknown
-            referenceDetail = "Saved profile or item-review coverage is missing; item depth is unknown."
+            referenceDetail = text("Saved profile or item-review coverage is missing; item depth is unknown.")
         } else {
             referenceState = .pending
-            referenceDetail = "Profile fit or validated item coverage is incomplete: \(coverageText)."
+            referenceDetail = text("Profile fit or validated item coverage is incomplete: \(coverageText).")
         }
         let pathState: GenerationQualityState
         if report.pathEvidenceState == "insufficient" {
@@ -969,10 +977,10 @@ enum GenerationQualityPolicy {
             }
         }
         let pathDetail = report.pathEvidenceState == "insufficient"
-            ? "Candidate-path reference qualification is insufficient. A structurally valid practice bank is not calibrated or externally qualified."
+            ? text("Candidate-path reference qualification is insufficient. A structurally valid practice bank is not calibrated or externally qualified.")
             : (report.candidatePathEvidencePassed.map {
-            $0 ? "Candidate-path evidence passed." : "Candidate-path evidence needs review."
-        } ?? "Candidate-path and focused-bank evidence is not present in this package.")
+            $0 ? text("Candidate-path evidence passed.") : text("Candidate-path evidence needs review.")
+        } ?? text("Candidate-path and focused-bank evidence is not present in this package."))
         let identity = [report.identity.subject, report.identity.paper]
             .compactMap { $0 }
             .joined(separator: " / ")
@@ -998,22 +1006,25 @@ enum GenerationQualityPolicy {
         )
     }
 
-    private static func provenanceDetail(_ report: GenerationQualityReport) -> String {
+    private static func provenanceDetail(_ report: GenerationQualityReport, locale: Locale) -> String {
+        func text(_ resource: LocalizedStringResource) -> String {
+            String(localized: InterfaceText.localizedResource(resource, locale: locale))
+        }
         let provenance = report.authoringProvenance
         switch provenance.kind {
         case .reviewedFixedOnly:
-            return "All content follows reviewed fixed contracts; no AI-authored wording is recorded."
+            return text("All content follows reviewed fixed contracts; no AI-authored wording is recorded.")
         case .aiAuthoredOnly:
-            return "The package records AI-authored content; review coverage remains a separate check."
+            return text("The package records AI-authored content; review coverage remains a separate check.")
         case .mixed:
             if let stems = provenance.aiAuthoredStemItems, stems > 0 {
-                return "Mixed provenance includes \(stems) stem edit(s) and reviewed fixed contracts; a stem edit is not full-question authorship."
+                return text("Mixed provenance includes \(stems) stem edit(s) and reviewed fixed contracts; a stem edit is not full-question authorship.")
             }
-            return "The package records mixed authored and reviewed fixed content."
+            return text("The package records mixed authored and reviewed fixed content.")
         case .unreviewed:
-            return "The package records built-in or unreviewed content, not reviewed originality."
+            return text("The package records built-in or unreviewed content, not reviewed originality.")
         case .unknown:
-            return "Authoring provenance is unknown."
+            return text("Authoring provenance is unknown.")
         }
     }
 

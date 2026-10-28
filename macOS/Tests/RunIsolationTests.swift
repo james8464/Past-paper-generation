@@ -5,6 +5,24 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testBenchmarkFailureRetainsItsActionableDetailAndCanRetry() throws {
+        let backend = ControlledRunBackend()
+        let benchmark = BenchmarkCoordinator(backend: backend)
+        benchmark.start(generationIsRunning: false)
+        let failed = try XCTUnwrap(backend.requests.first)
+        failed.onEvent(.error(message: "The diagnostic cannot access its test folder.", code: "benchmark_failed"))
+        failed.onFinish(.success(1))
+
+        XCTAssertFalse(benchmark.isRunning)
+        XCTAssertEqual(benchmark.errorMessage, "The diagnostic cannot access its test folder.")
+        benchmark.start(generationIsRunning: false)
+        XCTAssertTrue(benchmark.isRunning)
+        XCTAssertNil(benchmark.errorMessage)
+        XCTAssertEqual(backend.requests.count, 2)
+        benchmark.cancel()
+    }
+
+    @MainActor
     func testBenchmarkResultKeepsProcessOwnershipUntilItsExit() throws {
         let backend = ControlledRunBackend()
         let benchmark = BenchmarkCoordinator(backend: backend)

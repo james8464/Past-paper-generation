@@ -380,6 +380,11 @@ final class KeldinTests: XCTestCase {
         XCTAssertEqual(presentation.referenceDemandState, .preview)
         XCTAssertTrue(presentation.referenceDemandDetail.contains("0 of 12"))
         XCTAssertEqual(presentation.pathEvidenceState, .unknown)
+        let french = GenerationQualityPolicy.presentation(for: report, locale: Locale(identifier: "fr"))
+        XCTAssertEqual(french.originalityState, .preview)
+        XCTAssertTrue(french.originalityDetail.hasPrefix("L’aperçu n’est pas comparé"))
+        XCTAssertTrue(french.referenceDemandDetail.hasPrefix("La correspondance du profil global ne concerne que l’aperçu."))
+        XCTAssertTrue(french.referenceDemandDetail.contains("0 éléments sur 12"))
     }
 
     func testSparseBankEvidenceNeverBecomesPassedInInspectorOrDiagnostics() throws {
@@ -418,6 +423,11 @@ final class KeldinTests: XCTestCase {
             GenerationQualityPolicy.presentation(for: mixed).referenceDemandState,
             .passed
         )
+        let french = GenerationQualityPolicy.presentation(for: mixed, locale: Locale(identifier: "fr"))
+        XCTAssertEqual(french.referenceDemandState, .passed)
+        XCTAssertTrue(french.originalityDetail.hasPrefix("Les contrôles de similarité du dossier enregistré sont validés."))
+        XCTAssertTrue(french.originalityDetail.contains("La provenance mixte"))
+        XCTAssertTrue(french.referenceDemandDetail.contains("4 éléments sur 4"))
     }
 
     func testLiveSimilarityPassDoesNotBecomeOriginalityPassWithoutReviewedProvenance() throws {

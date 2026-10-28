@@ -247,3 +247,35 @@ remains partial; P2, P4, P5, P6, P7, T5, T6 and T8 remain planned. The regenerat
 coverage ledger contains 869 tracked files, with 656 pending and 213 explicitly
 excluded. No file-level semantic completion or whole-project audit is claimed.
 Final combined native and Python gates still need results for this rebased head.
+
+### Selected-response dispatch and bounded native UI follow-up
+
+P7 is implemented in `ab4f6d4a457f56a4eb89ec5384a02711cb71bdda`.
+The original selected-response implementation passed 97 characterization tests;
+the named-handler extraction passed the same 97 tests. The final registry/helper
+version passed 275 numeric and solver tests, plus 86 existing subject tests.
+Formulas, half-up rounding, public-input validation, response fields, explanation
+strings, raw numeric results and version strings were preserved. See
+`docs/quality/selected-response-dispatch-review-2026-10-28.md`. This is a
+maintainability change, not evidence of faster generation or a new paper-quality
+qualification.
+
+The bounded native UI follow-up fixes the benchmark toolbar's application-boundary
+bypass, visible failure/retry handling, semantic verdict text, persistent URL-based
+Remove from Recents, and selected-language finite labels and benchmark copy.
+The final interface/quality/coordinator/isolation gate passed 70 targeted tests;
+the finite benchmark-copy follow-up passed 31 targeted tests. Those source changes
+still require their final combined native suite, signed builds, native interaction
+checks and protected publication. No PDF or job-history bytes were deleted by
+the Recents change. The read-only review provenance and exact source hashes remain
+in `docs/quality/implementation-audit-file-review-2026-10-28.md` and
+`docs/quality/native-interface-audit-2026-10-28.md`.
+
+Sixteen of the original 24 packages are implemented at this primary checkpoint.
+N8 remains PARTIAL: the concrete operation-ownership defects have scoped fixes,
+but state-owner consolidation, immutable-request snapshots and further small
+architectural extraction are not declared complete. P2, P4, P5, P6, T5, T6 and T8
+remain planned here; work in another checkout does not count as integrated work.
+The file-level coverage ledger remains an inventory of pending and excluded work,
+not a whole-project semantic clearance. No full language, HIG, paper-equivalence
+or App Store approval claim follows from these changes.
