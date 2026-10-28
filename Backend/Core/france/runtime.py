@@ -36,11 +36,14 @@ from Backend.Core.france.database_reconciliation_contract import (
 from Backend.Core.france.database_reconciliation_prose import (
     database_reconciliation_working_materials,
 )
-from Backend.Core.france.extended_pipeline import (
-    VERSION as EXTENDED_VERSION,
+from Backend.Core.france.expanded_pipeline import (
+    VERSION as EXPANDED_VERSION,
+)
+from Backend.Core.france.expanded_pipeline import (
+    choose_fresh_seed,
 )
 from Backend.Core.france.extended_pipeline import (
-    choose_fresh_seed,
+    VERSION as EXTENDED_VERSION,
 )
 from Backend.Core.france.graph_resilience_contract import (
     GraphResilienceContract,
@@ -2309,6 +2312,8 @@ def load_originality_history(output: Path) -> list[str]:
 
 def network_pdf_contract_version(prompt_version: str) -> str:
     """Never silently render an unknown French package with an older validator."""
+    if prompt_version == EXPANDED_VERSION:
+        return "v35"
     if prompt_version == EXTENDED_VERSION:
         return "v34"
     if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
@@ -2351,6 +2356,8 @@ def network_pdf_contract_version(prompt_version: str) -> str:
 
 
 def database_pdf_contract_version(prompt_version: str) -> str:
+    if prompt_version == EXPANDED_VERSION:
+        return "v35"
     if prompt_version == EXTENDED_VERSION:
         return "v34"
     if prompt_version == CONTROLLED_WHOLE_CASE_PROMPT_VERSION:
@@ -2410,6 +2417,11 @@ def handle_generate_assessment(args) -> int:
         # Explicit Ollama mode remains available for historical diagnostic labels.
         # The public CLI defaults to app-owned authoring with no model dependency.
         application_owned = getattr(args, "provider", "ollama") == "application-owned"
+        excluded_families = getattr(args, "exclude_family", [])
+        if excluded_families and not application_owned:
+            raise ValueError(
+                "Saved-family exclusions require application-owned generation"
+            )
         if application_owned:
             client = ApplicationOwnedFrenchClient()
             identity = client.model_digest
@@ -2425,14 +2437,20 @@ def handle_generate_assessment(args) -> int:
         output = Path(args.output).expanduser().absolute()
         output.mkdir(parents=True, exist_ok=True)
         history = load_originality_history(output)
+        run_implementation = implementation_identity() if application_owned else None
         selected_seed = (
-            choose_fresh_seed(args.seed, previous_texts=history)
+            choose_fresh_seed(
+                args.seed, previous_texts=history, excluded_families=excluded_families
+            )
             if application_owned
             else args.seed
         )
-        checkpoint = (
-            output / ".papercreator-checkpoints" / f"{definition.id}-{selected_seed}.json"
+        checkpoint_name = (
+            f"{definition.id}-{EXPANDED_VERSION}-{run_implementation}-{selected_seed}.json"
+            if application_owned
+            else f"{definition.id}-{selected_seed}.json"
         )
+        checkpoint = output / ".papercreator-checkpoints" / checkpoint_name
         previous_handler = signal.signal(signal.SIGTERM, cancel)
         package = generate_assessment(
             index_path=args.reference_index,
@@ -2442,15 +2460,23 @@ def handle_generate_assessment(args) -> int:
             progress=lambda message: emit_progress(message, stage="french_generation"),
             previous_texts=history,
             contract_graph_tree=True,
-            contract_authoring_version="v34" if application_owned else "v32",
+            contract_authoring_version="v35" if application_owned else "v32",
         )
         validate_package(package)
+        if (
+            application_owned
+            and package["identity"]["implementation_sha256"] != run_implementation
+        ):
+            raise ValueError(
+                "Le programme a changé pendant la génération; publication refusée"
+            )
         staging = Path(tempfile.mkdtemp(prefix=".nsi-", dir=output))
         exercises = [NSIExercise.model_validate(item) for item in package["exercises"]]
-        whole_case = (
-            package["identity"]["prompt_version"]
-            in {CONTROLLED_WHOLE_CASE_PROMPT_VERSION, EXTENDED_VERSION}
-        )
+        whole_case = package["identity"]["prompt_version"] in {
+            CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
+            EXTENDED_VERSION,
+            EXPANDED_VERSION,
+        }
         graph_route_trace = package["identity"]["prompt_version"] in {
             CONTROLLED_GRAPH_ROUTE_TRACE_PROMPT_VERSION,
             CONTROLLED_NETWORK_INCIDENT_PROMPT_VERSION,
@@ -2521,6 +2547,7 @@ def handle_generate_assessment(args) -> int:
             "v31",
             "v32",
             "v34",
+            "v35",
         }
         network_incident = network_pdf_version == "v23"
         network_reasoning = network_pdf_version == "v18"
@@ -2553,8 +2580,8 @@ def handle_generate_assessment(args) -> int:
                     large_print=args.large_print,
                     human_readable_graph_titles=human_readable_graph_titles,
                     coherent_material_flow=network_pdf_version
-                    in {"v28", "v29", "v30", "v31", "v32", "v34"},
-                    compact_correction=network_pdf_version == "v34",
+                    in {"v28", "v29", "v30", "v31", "v32", "v34", "v35"},
+                    compact_correction=network_pdf_version in {"v34", "v35"},
                     print_policy=package["identity"].get("print_policy"),
                 ),
                 role=role,
@@ -2695,7 +2722,8 @@ def handle_generate_assessment(args) -> int:
             "done",
             message=(
                 "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."
-                if package["identity"]["prompt_version"] == EXTENDED_VERSION
+                if package["identity"]["prompt_version"]
+                in {EXTENDED_VERSION, EXPANDED_VERSION}
                 else "Brouillon créé. Relecture par un enseignant requise."
             ),
         )
