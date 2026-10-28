@@ -962,9 +962,11 @@ def render_assessment(
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
-                    exercise_index < len(exercises) - 1
+                    (exercise_index < len(exercises) - 1 and not compact_correction)
                     or question_index < len(exercise.questions) - 1
                 ):
+                    # V34 starts the next exercise with PageBreak. A trailing
+                    # spacer can spill onto a fresh page and leave it empty.
                     story.append(Spacer(1, 2 if graph_depth_correction else 5))
 
     def cover_page(canvas, built_doc):

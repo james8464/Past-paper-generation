@@ -170,6 +170,10 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         ):
             raise ValueError("Toutes les pages du sujet V32 doivent être au format A4")
         for number, page in enumerate(pdf, 1):
+            if package["identity"]["prompt_version"] == EXTENDED_VERSION:
+                body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
+                if not body.strip():
+                    raise ValueError(f"Page {number} sans contenu dans le sujet V34")
             page_lines = [line.strip() for line in page.get_text().splitlines()]
             footers = {
                 "Paper Creator — entraînement non officiel — non relu",

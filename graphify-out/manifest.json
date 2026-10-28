@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793152991.7110121,
-    "ast_hash": "e0adf3eb96b701c5adb9be5c2759ce93",
+    "mtime": 1793153702.9907877,
+    "ast_hash": "778678c2d41a773200df8f5e395cf861",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -3515,8 +3515,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/whole_case_pdf.py": {
-    "mtime": 1793152840.3242164,
-    "ast_hash": "4e833b63991adea04a20705b9da382d8",
+    "mtime": 1793153702.9911487,
+    "ast_hash": "6f4e44967a06531e98346c9492230ff3",
     "semantic_hash": ""
   },
   "tests/test_french_database_case_authoring.py": {
@@ -3690,8 +3690,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_extended_pipeline.py": {
-    "mtime": 1793152968.3949523,
-    "ast_hash": "e0e0877ebaad8fc529900c545301eee3",
+    "mtime": 1793153682.8756964,
+    "ast_hash": "28105ba7c51f8283dbdbc154e8a82547",
     "semantic_hash": ""
   },
   "tests/test_french_loan_case.py": {
@@ -3705,8 +3705,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v34-curriculum-and-variety-review-2026-10-28.md": {
-    "mtime": 1793151938.4286025,
-    "ast_hash": "011d1153dd8a6b5d87e6e9ac3cdfc365",
+    "mtime": 1793153735.8281775,
+    "ast_hash": "1fb8ce6a94455633915d16385665f4b8",
     "semantic_hash": ""
   }
 }

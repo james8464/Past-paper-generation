@@ -222,3 +222,17 @@ def test_v34_correction_keeps_filled_code_and_subject_keeps_blanks(tmp_path):
         text = "".join(page.get_text() for page in pdf)
         assert "return pile[0]" in text
         assert "pile.append(__A__)" not in text
+
+
+def test_compact_correction_has_no_footer_only_page_between_exercises(tmp_path):
+    import pymupdf
+
+    from tests.test_french_whole_case_pdf import render
+
+    package = generate(tmp_path, seed=270100)
+    path = tmp_path / "no-blank-page.pdf"
+    render(path, package, True)
+    with pymupdf.open(path) as pdf:
+        for page in pdf:
+            body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
+            assert body.strip(), f"Content-empty page {page.number + 1}"

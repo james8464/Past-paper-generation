@@ -114,8 +114,8 @@ The new database and scheduling source tables paginate independently from the
 first worked answer, so an oversized combined group cannot strand an
 introduction. Regression tests require a source table on each introduction
 page at 16 points. The font size, questions and credit allocations are unchanged.
-No blank pages were added. Run 4 confirmed the database fix and exposed the same
-problem in scheduling; run 5 includes both fixes. Earlier runs remain retained.
+Run 4 confirmed the database fix and exposed the same problem in scheduling;
+run 5 includes both fixes. Earlier runs remain retained.
 
 The installed main-branch app also opened the native Print panel for the selected
 26-page Accounting correction. Cancel returned to Documents without sending a
@@ -125,10 +125,18 @@ saved file matched its source byte for byte (SHA-256
 `aaed8b943970d7e8a17511395aa909ed9df1db751625235111fc5f735357aa05`).
 The uniquely named test export was moved into the ignored UI evidence folder.
 
-The final targeted print/replay suite passes 101 tests, including all four
+The first targeted print/replay suite passes 101 tests, including all four
 families in normal and enlarged subject/correction form. All 16 run-5 PDFs pass
 the full ordered-content check. The fourth family's enlarged correction remains
 34 pages; shorter output alone is not the acceptance criterion.
+
+Visual review then found a footer-only page 13 in the first family's normal
+correction, despite the passing content checks. A trailing spacer had moved to a
+fresh page immediately before the next exercise's page break. The V34 layout now
+omits that final spacer, and its PDF validator rejects a page without body
+content. A regression reproduced the blank page before the fix and passes after
+it. Run 6 rebuilds the full set with this additional check. The earlier
+3,689-test full-suite pass applies to the preceding head, not this later fix.
 
 Every-page visual review and question-level reference comparison of the revised
 edition are in progress. The original three families remain more compact and
