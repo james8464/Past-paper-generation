@@ -11,7 +11,9 @@ extension XCTestCase {
     }
 
     @MainActor
-    func isolatedApplication(defaults suppliedDefaults: UserDefaults? = nil) -> ApplicationCoordinator {
+    func isolatedApplication(
+        defaults suppliedDefaults: UserDefaults? = nil, backend: any BackendRunning = BackendClient()
+    ) -> ApplicationCoordinator {
         let suite = "KeldinTests.\(UUID().uuidString)"
         let defaults = suppliedDefaults ?? isolatedDefaults()
         let history = FileManager.default.temporaryDirectory
@@ -24,7 +26,8 @@ extension XCTestCase {
         return ApplicationCoordinator(
             defaults: defaults,
             secrets: IsolatedSecrets(),
-            historyDirectory: history
+            historyDirectory: history,
+            backend: backend
         )
     }
 }

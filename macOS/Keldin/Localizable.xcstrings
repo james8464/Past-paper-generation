@@ -373,6 +373,9 @@
     "Ollama stopped the model download (exit code %@). Check Ollama, then try again." : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ollama a interrompu le téléchargement du modèle (code de sortie %@). Vérifiez Ollama, puis réessayez." } } }
     },
+    "The operation stopped (exit code %@). Try again." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "L’opération s’est arrêtée (code de sortie %@). Réessayez." } } }
+    },
     "Try Again" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réessayer" } } }
     },
@@ -636,10 +639,13 @@
       }
     },
     "Benchmark" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Test du Mac" } } }
+    },
+    "Benchmark progress" : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Progression du test de performance" } } }
     },
     "Benchmark score" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Score du test de performance" } } }
     },
     "Cancel" : {
       "localizations" : {
@@ -1551,7 +1557,7 @@
       }
     },
     "Results" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résultats" } } }
     },
     "Results may vary with other Ollama models. Use the recommendation in Settings for the checked workflow." : {
 
@@ -1586,7 +1592,7 @@
 
     },
     "Run %lld Second Test" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lancer le test de %lld secondes" } } }
     },
     "Run Benchmark" : {
       "localizations" : {
@@ -1599,10 +1605,10 @@
       }
     },
     "Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation." : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lancez le test pour estimer les temps de création et vérifier les capacités de ce Mac." } } }
     },
     "Running CPU, memory, storage, PDF, network, power and Ollama checks" : {
-
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérification du processeur, de la mémoire, du stockage, des PDF, du réseau, de l’alimentation et d’Ollama" } } }
     },
     "Save to" : {
       "localizations" : {

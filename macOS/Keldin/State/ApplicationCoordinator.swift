@@ -20,7 +20,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var ollamaURL = AppDefaults.ollamaURL
     @Published var outputFolder = AppDefaults.defaultOutputFolder()
     @Published var dryRun = false
-    @Published var isRunning = false
+    @Published private var activeRun: BackendRun?
     @Published var status = "Ready"
     @Published var generationProgress: Double?
     @Published var progressEntries: [ProgressEntry] = []
@@ -55,19 +55,35 @@ final class ApplicationCoordinator: ObservableObject {
     private let backend: any BackendRunning
     private let defaults: UserDefaults
     private let notificationCenter = UNUserNotificationCenter.current()
-    private var runningProcess: Process?
-    private var activeRunSession: BackendRunSession?
     private var ollamaRefreshRevision = UUID()
-    private var didReceiveBackendError = false
-    private var didCancelRun = false
-    private var activeOperation = RunningOperation.none
-    private var activeFrameworkID: String?
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
     private var preparedMLXModels: Set<String> = []
     private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
-    private var currentGenerationFileIDs = Set<UUID>()
+    // Finished artifacts outlive their process so Documents can keep showing
+    // the last result. During a run, its collection is the only mutable owner.
+    private var completedDocuments = RunDocuments()
+
+    var isRunning: Bool { activeRun != nil }
+
+    private var activeOperation: RunningOperation { activeRun?.intent.operation ?? .none }
+
+    private var currentGenerationFileIDs: Set<UUID> {
+        get { activeRun?.documents.fileIDs ?? completedDocuments.fileIDs }
+        set {
+            if activeRun != nil { activeRun?.documents.fileIDs = newValue }
+            else { completedDocuments.fileIDs = newValue }
+        }
+    }
+
+    private var generationRetryTarget: GenerationRetryTarget {
+        GenerationRetryTarget(
+            boardID: selectedBoardID, paperID: selectedPaperID, provider: aiProvider,
+            model: activeModelName, dryRun: dryRun, output: outputFolder.standardizedFileURL,
+            seed: pendingGenerationSeed
+        )
+    }
 
     private var presentationLanguage: String {
         defaults.string(forKey: "interfaceLanguage") ?? "system"
@@ -78,7 +94,11 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func beginDocumentCollection() {
-        currentGenerationFileIDs.removeAll()
+        guard activeRun == nil else { return }
+        completedDocuments = RunDocuments(
+            subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)",
+            paper: selectedPaper.title
+        )
     }
 
     var selectedBoard: ExamBoardOption {
@@ -395,6 +415,15 @@ final class ApplicationCoordinator: ObservableObject {
             scores: scores,
             notes: notes
         )
+        return submitFrenchReview(request)
+    }
+
+    func submitFrenchReview(_ request: FrenchReviewRequest) -> FrenchReviewSubmissionOutcome {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return .cancelled }
+        guard request.manifest.lastPathComponent == "manifest.json" else {
+            setError(String(localized: "Choose the bundle's manifest.json file."))
+            return .rejected
+        }
         guard request.isComplete else {
             setError(String(localized: "Complete every review score and add review notes."))
             return .rejected
@@ -402,6 +431,7 @@ final class ApplicationCoordinator: ObservableObject {
         startFrenchOperation(
             arguments: request.arguments,
             seed: nil,
+            intent: .reviewRecord,
             statusMessage: String(localized: "Recording teacher review")
         )
         return isRunning ? .submitted : .rejected
@@ -410,23 +440,25 @@ final class ApplicationCoordinator: ObservableObject {
     private func startFrenchOperation(
         arguments: [String],
         seed: Int?,
+        intent: BackendRunIntent = .referencePreparation,
         statusMessage: String = String(localized: "Preparing French assessment")
     ) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
-        activeFrameworkID = FrenchAssessmentRequest.assessmentID
-        didReceiveBackendError = false
-        didCancelRun = false
         progressEntries.removeAll()
-        beginDocumentCollection()
         lastQualityReport = nil
-        isRunning = true
-        activeOperation = .generation
         status = statusMessage
         generationProgress = nil
-        let session = beginRunSession()
+        let session = beginRunSession(
+            intent: seed == nil ? intent : .paper,
+            documents: RunDocuments(
+                frameworkID: FrenchAssessmentRequest.assessmentID,
+                subject: "Baccalauréat général · NSI", paper: "Partie écrite · 2027"
+            ),
+            model: FrenchAssessmentRequest.modelID
+        )
         do {
             if let seed {
-                try generationCoordinator.begin(GenerationJobRecord(
+                let job = GenerationJobRecord(
                     configuration: GenerationConfiguration(
                         boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned",
                         model: FrenchAssessmentRequest.modelID, seed: seed, dryRun: false,
@@ -438,18 +470,18 @@ final class ApplicationCoordinator: ObservableObject {
                         provider: "application-owned", model: FrenchAssessmentRequest.modelID
                     ), state: .pending, artifacts: [],
                     qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
-                ))
+                )
+                try generationCoordinator.begin(job)
+                activeRun?.ownedJobID = job.id
             }
-            runningProcess = try backend.run(arguments: arguments, environment: [:]) { [weak self] event in
+            let process = try backend.run(arguments: arguments, environment: [:]) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                guard let self, self.activeRunSession == session else { return }
-                self.activeRunSession = nil
-                self.finishGeneration(result)
+                self?.finishRun(result, from: session)
             }
+            if activeRun?.id == session { activeRun?.process = process }
         } catch {
-            activeRunSession = nil
-            finishGeneration(.failure(error))
+            finishRun(.failure(error), from: session)
         }
     }
 
@@ -639,14 +671,9 @@ final class ApplicationCoordinator: ObservableObject {
 
         progressEntries.removeAll()
         lastQualityReport = nil
-        didReceiveBackendError = false
-        didCancelRun = false
         mlxRecoveryState.beginGeneration()
-        beginDocumentCollection()
-        isRunning = true
         status = "Starting"
         generationProgress = 0.02
-        activeOperation = .generation
         beginGenerationEstimate()
         let generationSeed = pendingGenerationSeed
             ?? Int.random(in: 1 ... Int(Int32.max))
@@ -728,20 +755,25 @@ final class ApplicationCoordinator: ObservableObject {
             arguments.append("--dry-run")
         }
 
-        let session = beginRunSession()
+        let session = beginRunSession(
+            intent: .paper,
+            documents: RunDocuments(
+                subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)", paper: selectedPaper.title
+            ),
+            model: activeModelName
+        )
         do {
             try generationCoordinator.begin(record)
-            runningProcess = try backend.run(arguments: arguments, environment: backendEnvironment) { [weak self] event in
+            activeRun?.ownedJobID = record.id
+            let process = try backend.run(arguments: arguments, environment: backendEnvironment) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                guard let self, self.activeRunSession == session else { return }
-                self.activeRunSession = nil
-                self.finishGeneration(result)
+                self?.finishRun(result, from: session)
             }
+            if activeRun?.id == session { activeRun?.process = process }
             notifyStarted(for: .generation)
         } catch {
-            activeRunSession = nil
-            finishGeneration(.failure(error))
+            finishRun(.failure(error), from: session)
         }
     }
 
@@ -755,33 +787,27 @@ final class ApplicationCoordinator: ObservableObject {
         }
 
         showMLXSetupConfirmation = false
-        isRunning = true
         status = "Setting up Apple MLX"
         generationProgress = 0.05
         progressEntries.removeAll()
-        didReceiveBackendError = false
-        didCancelRun = false
-        activeOperation = .mlxSetup
         generationEstimate = nil
         etaTimer?.cancel()
         etaTimer = nil
 
-        let session = beginRunSession()
+        let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: generationRetryTarget)
         do {
-            runningProcess = try backend.run(
+            let process = try backend.run(
                 arguments: ["setup-mlx", "--model", model],
                 environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
             ) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                guard let self, self.activeRunSession == session else { return }
-                self.activeRunSession = nil
-                self.finishMLXSetup(result, model: model)
+                self?.finishRun(result, from: session)
             }
+            if activeRun?.id == session { activeRun?.process = process }
             notifyStarted(for: .mlxSetup)
         } catch {
-            activeRunSession = nil
-            finishMLXSetup(.failure(error), model: model)
+            finishRun(.failure(error), from: session)
         }
     }
 
@@ -791,27 +817,27 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func cancelGeneration() {
+        guard var run = activeRun else { return }
         ollamaRefreshRevision = UUID()
-        didCancelRun = true
-        let operation = activeOperation
-        if operation == .generation { try? generationCoordinator.cancel() }
+        run.phase = .cancelling
+        let operation = run.intent.operation
+        if let jobID = run.ownedJobID { try? generationCoordinator.cancel(expectedJobID: jobID) }
         mlxRecoveryState.cancel()
         // MLX setup keeps ownership until its helper exits. Other operations can
         // release the UI immediately, but their queued callbacks no longer own it.
-        if activeOperation != .mlxSetup {
-            activeRunSession = nil
-            activeFrameworkID = nil
+        if run.intent == .mlxSetup { activeRun = run }
+        else {
+            completedDocuments = run.documents
+            activeRun = nil
         }
-        runningProcess?.terminate()
-        if activeOperation == .mlxSetup {
+        run.process?.terminate()
+        if run.intent == .mlxSetup {
             status = "Cancelling Apple MLX setup"
             progressEntries.append(
                 ProgressEntry(stage: "cancel", message: "Cancelling Apple MLX setup…")
             )
             return
         }
-        runningProcess = nil
-        isRunning = false
         status = operation == .modelPull
             ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
             : "Cancelled"
@@ -819,10 +845,15 @@ final class ApplicationCoordinator: ObservableObject {
         generationEstimate = nil
         etaTimer?.cancel()
         etaTimer = nil
-        activeOperation = .none
-        let message = operation == .modelPull
-            ? InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
-            : "Generation cancelled."
+        let message: String
+        switch operation {
+        case .modelPull:
+            message = InterfaceText.resolve("Model download cancelled.", language: presentationLanguage)
+        case .generation:
+            message = "Generation cancelled."
+        case .none, .mlxSetup:
+            message = InterfaceText.resolve("Cancelled", language: presentationLanguage)
+        }
         progressEntries.append(ProgressEntry(stage: "cancel", message: message))
     }
 
@@ -845,30 +876,24 @@ final class ApplicationCoordinator: ObservableObject {
 
         let model = modelToPull.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !model.isEmpty else { return }
-        isRunning = true
         status = "Pulling model"
         generationProgress = 0.05
         progressEntries.removeAll()
-        didReceiveBackendError = false
-        didCancelRun = false
-        activeOperation = .modelPull
         generationEstimate = nil
         etaTimer?.cancel()
         etaTimer = nil
 
-        let session = beginRunSession()
+        let session = beginRunSession(intent: .modelPull, model: model)
         do {
-            runningProcess = try backend.run(arguments: ["pull-model", "--model", model], environment: [:]) { [weak self] event in
+            let process = try backend.run(arguments: ["pull-model", "--model", model], environment: [:]) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
-                guard let self, self.activeRunSession == session else { return }
-                self.activeRunSession = nil
-                self.finishModelPull(result, model: model)
+                self?.finishRun(result, from: session)
             }
+            if activeRun?.id == session { activeRun?.process = process }
             notifyStarted(for: .modelPull)
         } catch {
-            activeRunSession = nil
-            finishModelPull(.failure(error), model: model)
+            finishRun(.failure(error), from: session)
         }
     }
 
@@ -1121,23 +1146,30 @@ final class ApplicationCoordinator: ObservableObject {
         generatedFiles.first { $0.role == role }
     }
 
-    private func beginRunSession() -> BackendRunSession {
+    private func beginRunSession(
+        intent: BackendRunIntent, documents: RunDocuments? = nil, model: String,
+        retryTarget: GenerationRetryTarget? = nil
+    ) -> UUID {
         // A discovery request started before this operation must remain obsolete
         // even if the operation finishes before that request returns.
         ollamaRefreshRevision = UUID()
-        let session = BackendRunSession()
-        activeRunSession = session
-        return session
+        let run = BackendRun(
+            intent: intent, documents: documents ?? completedDocuments, model: model, retryTarget: retryTarget
+        )
+        activeRun = run
+        return run.id
     }
 
-    private func apply(_ event: BackendEvent, from session: BackendRunSession) {
-        guard activeRunSession == session, !didCancelRun else { return }
+    private func apply(_ event: BackendEvent, from session: UUID) {
+        guard activeRun?.id == session, activeRun?.phase == .running else { return }
         apply(event)
     }
 
     func apply(_ event: BackendEvent) {
-        generationCoordinator.receive(event)
-        benchmarkCoordinator.receive(event)
+        if let jobID = activeRun?.ownedJobID {
+            guard generationCoordinator.activeJob?.id == jobID else { return }
+            generationCoordinator.receive(event, expectedJobID: jobID)
+        }
         switch event {
         case let .hello(protocolVersion, _, _):
             if protocolVersion != 2 {
@@ -1149,14 +1181,17 @@ final class ApplicationCoordinator: ObservableObject {
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
+            // Setup and model-management output cannot become paper artifacts.
+            if let intent = activeRun?.intent, intent == .mlxSetup || intent == .modelPull { return }
             var hidden = hiddenRecentPaths
             hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
             defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
             let file = GeneratedFile(
                 role: role,
                 url: URL(fileURLWithPath: path),
-                subject: activeFrameworkID == nil ? "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)" : "Baccalauréat général · NSI",
-                paper: activeFrameworkID == nil ? selectedPaper.title : "Partie écrite · 2027"
+                subject: activeRun?.documents.subject ?? completedDocuments.subject
+                    ?? "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)",
+                paper: activeRun?.documents.paper ?? completedDocuments.paper ?? selectedPaper.title
             )
             // UK exports can replace an existing filename. Give each new
             // revision a fresh identity so previews reload the actual output.
@@ -1173,10 +1208,10 @@ final class ApplicationCoordinator: ObservableObject {
             updateGenerationEstimate()
             progressEntries.append(ProgressEntry(stage: "done", message: message))
         case let .error(message, code):
-            guard !didCancelRun else { return }
-            didReceiveBackendError = true
-            if code == "mlx_setup_required", activeOperation == .generation {
-                let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard activeRun?.phase != .cancelling else { return }
+            activeRun?.backendErrorMessage = message
+            if code == "mlx_setup_required", activeRun?.intent == .paper {
+                let model = activeRun?.model ?? ""
                 preparedMLXModels.remove(model)
                 defaults.set(preparedMLXModels.sorted(), forKey: AppStorageKey.preparedMLXModels)
                 mlxRecoveryState.requestSetup()
@@ -1201,23 +1236,41 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    func finishGeneration(_ result: Result<Int32, Error>) {
-        defer { activeFrameworkID = nil }
-        let operation = activeOperation
-        activeOperation = .none
-        runningProcess = nil
-        isRunning = false
+    private func finishRun(_ result: Result<Int32, Error>, from session: UUID) {
+        guard let run = activeRun, run.id == session else { return }
+        completedDocuments = run.documents
+        activeRun = nil
         etaTimer?.cancel()
         etaTimer = nil
         generationEstimate = nil
-        if didCancelRun {
-            didCancelRun = false
-            mlxRecoveryState.cancel()
-            status = "Cancelled"
-            generationProgress = nil
-            generationEstimate = nil
-            return
+        switch run.intent {
+        case .paper:
+            finishGeneration(result, run: run)
+        case .referencePreparation, .reviewRecord:
+            finishMaintenance(result, run: run)
+        case .modelPull:
+            finishModelPull(result, run: run)
+        case .mlxSetup:
+            finishMLXSetup(result, run: run)
         }
+    }
+
+    private func finishMaintenance(_ result: Result<Int32, Error>, run: BackendRun) {
+        switch result {
+        case .success(0) where run.backendErrorMessage == nil:
+            generationProgress = 1
+            persistRecentDocuments()
+        case let .success(code):
+            if run.backendErrorMessage == nil {
+                setError(InterfaceText.resolve("The operation stopped (exit code \(String(code))). Try again.", language: presentationLanguage))
+            }
+        case let .failure(error):
+            setError(error.localizedDescription)
+        }
+    }
+
+    private func finishGeneration(_ result: Result<Int32, Error>, run: BackendRun) {
+        let operation = run.intent.operation
         if mlxRecoveryState.consumeSetupRequest() {
             generationProgress = nil
             generationEstimate = nil
@@ -1228,14 +1281,20 @@ final class ApplicationCoordinator: ObservableObject {
 
         switch result {
         case let .success(code):
-            if code == 0 && !didReceiveBackendError {
+            if code == 0 && run.backendErrorMessage == nil {
+                guard let jobID = run.ownedJobID else { return }
+                guard generationCoordinator.activeJob?.id == jobID else {
+                    setError(String(localized: "The paper was created, but its history could not be saved or verified."))
+                    pendingGenerationSeed = nil
+                    return
+                }
                 do {
-                    try moveGeneratedFilesToOutputFolderIfNeeded()
+                    try moveGeneratedFilesToOutputFolderIfNeeded(frameworkID: run.documents.frameworkID)
                 } catch {
                     let message = "The paper was created, but it could not be saved to the selected folder: \(error.localizedDescription)"
                     setError(message)
                     notifyFailure(for: operation, message: message)
-                    try? generationCoordinator.fail(message: message)
+                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
                     pendingGenerationSeed = nil
                     return
                 }
@@ -1243,15 +1302,15 @@ final class ApplicationCoordinator: ObservableObject {
                 generationProgress = 1.0
                 generationEstimate = nil
                 do {
-                    try generationCoordinator.complete(artifacts: currentGenerationFiles)
-                    if activeFrameworkID == FrenchAssessmentRequest.assessmentID {
+                    try generationCoordinator.complete(expectedJobID: jobID, artifacts: currentGenerationFiles)
+                    if run.documents.frameworkID == FrenchAssessmentRequest.assessmentID {
                         _ = try savedFrenchFamilies()
                     }
                 } catch {
                     let message = String(localized: "The paper was created, but its history could not be saved or verified.")
                     setError(message)
                     notifyFailure(for: operation, message: message)
-                    try? generationCoordinator.fail(message: message)
+                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
                     pendingGenerationSeed = nil
                     return
                 }
@@ -1263,27 +1322,30 @@ final class ApplicationCoordinator: ObservableObject {
                 pendingGenerationSeed = nil
                 notifySuccess(for: operation)
             } else {
-                let message = didReceiveBackendError ? errorMessage
-                    : "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
-                if !didReceiveBackendError {
+                let message = run.backendErrorMessage.map {
+                    GenerationPresentation.error($0, language: presentationLanguage)
+                } ?? "Generation failed without a backend error message. Refresh Ollama, check the selected model, then try again. Backend exited with code \(code)."
+                if run.backendErrorMessage == nil {
                     setError(message)
                     notifyFailure(for: operation, message: message)
                 }
-                try? generationCoordinator.fail(message: message)
+                if let jobID = run.ownedJobID {
+                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
+                }
                 pendingGenerationSeed = nil
             }
         case let .failure(error):
             setError(error.localizedDescription)
             notifyFailure(for: operation, message: error.localizedDescription)
-            try? generationCoordinator.fail(message: error.localizedDescription)
+            if let jobID = run.ownedJobID {
+                try? generationCoordinator.fail(message: error.localizedDescription, expectedJobID: jobID)
+            }
             pendingGenerationSeed = nil
         }
     }
 
-    private func finishModelPull(_ result: Result<Int32, Error>, model: String) {
-        runningProcess = nil
-        isRunning = false
-        activeOperation = .none
+    private func finishModelPull(_ result: Result<Int32, Error>, run: BackendRun) {
+        let model = run.model
         generationProgress = nil
         generationEstimate = nil
         etaTimer?.cancel()
@@ -1291,7 +1353,7 @@ final class ApplicationCoordinator: ObservableObject {
         // A model download owns no generation job, even when an earlier job's
         // cancellation could not be written to history.
         switch result {
-        case .success(0) where !didReceiveBackendError:
+        case .success(0) where run.backendErrorMessage == nil:
             selectedModel = model
             defaults.set(model, forKey: AppStorageKey.ollamaModel)
             status = InterfaceText.resolve("Done", language: presentationLanguage)
@@ -1299,7 +1361,7 @@ final class ApplicationCoordinator: ObservableObject {
             notifySuccess(for: .modelPull)
             refreshOllama()
         case let .success(code):
-            if !didReceiveBackendError {
+            if run.backendErrorMessage == nil {
                 let message = InterfaceText.resolve("Ollama stopped the model download (exit code \(String(code))). Check Ollama, then try again.", language: presentationLanguage)
                 setError(message)
                 notifyFailure(for: .modelPull, message: message)
@@ -1310,14 +1372,11 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func finishMLXSetup(_ result: Result<Int32, Error>, model: String) {
-        runningProcess = nil
-        isRunning = false
-        activeOperation = .none
+    private func finishMLXSetup(_ result: Result<Int32, Error>, run: BackendRun) {
+        let model = run.model
         generationProgress = nil
 
-        if didCancelRun {
-            didCancelRun = false
+        if run.phase == .cancelling {
             status = "Cancelled"
             progressEntries.append(
                 ProgressEntry(stage: "cancel", message: "Apple MLX setup cancelled.")
@@ -1326,14 +1385,16 @@ final class ApplicationCoordinator: ObservableObject {
         }
 
         switch result {
-        case let .success(code) where code == 0 && !didReceiveBackendError:
+        case let .success(code) where code == 0 && run.backendErrorMessage == nil:
             preparedMLXModels.insert(model)
             defaults.set(preparedMLXModels.sorted(), forKey: AppStorageKey.preparedMLXModels)
             status = "Apple MLX is ready"
             notifySuccess(for: .mlxSetup)
-            generate()
+            // Never turn a finished setup into a request for a different target.
+            // A later selection stays intact and can be generated explicitly.
+            if let target = run.retryTarget, target == generationRetryTarget { generate() }
         case let .success(code):
-            if !didReceiveBackendError {
+            if run.backendErrorMessage == nil {
                 let message = "Apple MLX setup could not finish (code \(code)). Check your connection and storage, then try Setup Again."
                 setError(message)
                 notifyFailure(for: .mlxSetup, message: message)
@@ -1344,7 +1405,7 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func moveGeneratedFilesToOutputFolderIfNeeded() throws {
+    private func moveGeneratedFilesToOutputFolderIfNeeded(frameworkID: String?) throws {
         guard distributionMode == .appStore else { return }
         // Save review records beside the user-selected manifest so they stay
         // with that assessment instead of the app's temporary working files.
@@ -1353,7 +1414,7 @@ final class ApplicationCoordinator: ObservableObject {
         let destinationFolder = outputFolder.standardizedFileURL
         guard workingFolder != destinationFolder else { return }
 
-        if activeFrameworkID == FrenchAssessmentRequest.assessmentID,
+        if frameworkID == FrenchAssessmentRequest.assessmentID,
            let first = currentGenerationFiles.first {
             let source = first.url.deletingLastPathComponent().standardizedFileURL
             guard source.deletingLastPathComponent() == workingFolder,
@@ -1565,6 +1626,54 @@ private enum RunningOperation {
     case mlxSetup
 }
 
-private struct BackendRunSession: Equatable, Sendable {
+private enum BackendRunIntent {
+    case paper, referencePreparation, reviewRecord, modelPull, mlxSetup
+
+    var operation: RunningOperation {
+        switch self {
+        case .paper: .generation
+        case .referencePreparation, .reviewRecord: .none
+        case .modelPull: .modelPull
+        case .mlxSetup: .mlxSetup
+        }
+    }
+}
+
+private struct RunDocuments {
+    let frameworkID: String?
+    let subject: String?
+    let paper: String?
+    var fileIDs = Set<UUID>()
+
+    init(frameworkID: String? = nil, subject: String? = nil, paper: String? = nil) {
+        self.frameworkID = frameworkID
+        self.subject = subject
+        self.paper = paper
+    }
+}
+
+private struct BackendRun {
     let id = UUID()
+    let intent: BackendRunIntent
+    var documents: RunDocuments
+    let model: String
+    let retryTarget: GenerationRetryTarget?
+    var ownedJobID: UUID?
+    var process: Process?
+    var phase = BackendRunPhase.running
+    var backendErrorMessage: String?
+}
+
+private struct GenerationRetryTarget: Equatable {
+    let boardID: String
+    let paperID: String
+    let provider: AIProvider
+    let model: String
+    let dryRun: Bool
+    let output: URL
+    let seed: Int?
+}
+
+private enum BackendRunPhase {
+    case running, cancelling
 }

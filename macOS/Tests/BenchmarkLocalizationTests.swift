@@ -3,6 +3,25 @@ import XCTest
 @testable import Keldin
 
 final class BenchmarkLocalizationTests: XCTestCase {
+    func testWorkspaceLabelsAndProgressUseFrenchResources() {
+        let cases: [(LocalizedStringResource, String)] = [
+            ("Benchmark", "Test du Mac"),
+            ("Results", "Résultats"),
+            ("Benchmark score", "Score du test de performance"),
+            ("Benchmark progress", "Progression du test de performance"),
+            ("Run the benchmark to calibrate ETA and check whether this Mac is ready for local generation.", "Lancez le test pour estimer les temps de création et vérifier les capacités de ce Mac."),
+            ("Running CPU, memory, storage, PDF, network, power and Ollama checks", "Vérification du processeur, de la mémoire, du stockage, des PDF, du réseau, de l’alimentation et d’Ollama"),
+        ]
+        for (resource, french) in cases {
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "fr"), french)
+            XCTAssertNotEqual(InterfaceText.resolve(resource, language: "en"), french)
+        }
+        let duration = 30
+        let runLabel: LocalizedStringResource = "Run \(duration) Second Test"
+        XCTAssertEqual(InterfaceText.resolve(runLabel, language: "fr"), "Lancer le test de 30 secondes")
+        XCTAssertEqual(InterfaceText.resolve(runLabel, language: "en"), "Run 30 Second Test")
+    }
+
     func testEveryKnownVerdictAndDetailUsesChosenEnglishOrFrench() {
         let cases = [
             ("Benchmark failed", "Échec du test de performance"),
