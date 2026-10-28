@@ -77,6 +77,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#text">Text</a>
     <a href="#string">String</a>
     <a href="#codingkeys">CodingKeys</a>
+    <a href="#pastpapergen-render-pdf-py">pastpapergen/render_pdf.py</a>
     <a href="#codingkeys-dfef23">CodingKeys</a>
     <a href="#other">Other</a>
 </div>
@@ -94,13 +95,13 @@ flowchart LR
     class BUILD_GRAPH_321CBB04 module;
     ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>701 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>88 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>90 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>37 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>145 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>104 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>127 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
@@ -114,6 +115,8 @@ flowchart LR
     class STRING_ECB25204 module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>65 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
+    PASTPAPERGEN_RENDER_PDF_PY_FEEEA5D1("pastpapergen/render_pdf.py<br/><small>46 nodes</small>")
+    class PASTPAPERGEN_RENDER_PDF_PY_FEEEA5D1 module;
     CODINGKEYS_DFEF23_FF5CBE38("CodingKeys<br/><small>44 nodes</small>")
     class CODINGKEYS_DFEF23_FF5CBE38 module;
     OTHER_D0941E68("Other<br/><small>884 nodes</small>")
@@ -161,7 +164,7 @@ flowchart LR
       <li>9746 nodes · 27804 edges · 371 communities (333 shown, 38 thin omitted)</li>
       <li>Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 1405 edges (avg confidence: 0.63)</li>
       <li>Token cost: 0 input · 0 output</li>
-      <li>1. `NSIExercise` - 253 edges</li>
+      <li>1. `NSIExercise` - 258 edges</li>
       <li>2. `GeneratedQuestion` - 216 edges</li>
       <li>3. `build_paper_blueprint()` - 182 edges</li>
     </ul>
@@ -339,7 +342,7 @@ flowchart LR
   <td><code>_expression_oracle()</code><br><small style="color:var(--muted)">Core/france/tree_case_families.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>bind_graph_tree_contract()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small><br><code>canonical_answer()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small><br><code>graph tree candidate()</code><br><small style="color:var(--muted)">Core/france/graph_tree_prose.py</small><br>+12 more</td>
+  <td><code>bind_graph_tree_contract()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small><br><code>canonical_answer()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small><br><code>graph tree candidate()</code><br><small style="color:var(--muted)">Core/france/graph_tree_prose.py</small><br>+9 more</td>
   <td>Module file in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
@@ -391,6 +394,14 @@ flowchart LR
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Design note for Original whole-tree cases for the unreleased V32 draft. Fixed application….</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>part_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>part_selection_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>parts replay exactly()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br><code>question_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br>+3 more</td>
+  <td>part_selection_schema() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
   <td>17</td>
@@ -1246,12 +1257,12 @@ flowchart LR
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around docs, 2026, quality, reportmd, mostly in docs/quality/difficulty-calibration-v2-report.md, docs/quality/teacher-feedback-review-2026-09-27.md, Core/document_dsl/reportlab_canvas.py. This section covers 88 nodes and 109 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around docs, 2026, quality, reportmd, mostly in docs/quality/difficulty-calibration-v2-report.md, docs/quality/teacher-feedback-review-2026-09-27.md, Core/document_dsl/reportlab_canvas.py. This section covers 90 nodes and 112 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (88 nodes, 109 edges)
+    %% Section: Outputs &amp; Docs (90 nodes, 112 edges)
     subgraph outputs_docs_Core_document_dsl_reportlab_canvas_aa51f374["Core/document_dsl/reportlab_canvas.py"]
         backend_core_document_dsl_reportlab_canvas_canva_8baff445("CanvasBarcodeStyle<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
         backend_core_document_dsl_reportlab_canvas_draw_c3fc7548("draw_barcode()<br/><small>Core/document_dsl/reportlab_canvas.py</small>")
@@ -1274,25 +1285,30 @@ flowchart LR
         backend_core_document_dsl_reportlab_canvas_py_ca_049c7f1b("Canvas")
         tests_test_canvas_furniture_py_path_f809d31e("Path")
     end
-    readme_f78a71af("README.md")
-    docs_competition_occitanie_2026_readme_evidence_45c50769("Evidence boundaries<br/><small>competition/occitanie-2026/README.md</small>")
+    subgraph outputs_docs_generator_pastpapergen_render_pdf_p_b513854a["generator/pastpapergen/render_pdf.py"]
+        resources_economics_edexcel_a_generator_pastpape_1e8d71ab("_draw_fake_barcode()<br/><small>generator/pastpapergen/render_pdf.py</small>")
+        resources_economics_edexcel_a_generator_pastpape_86168eab("_encode_barcode()<br/><small>generator/pastpapergen/render_pdf.py</small>")
+    end
     backend_core_document_dsl_reportlab_canvas_solid_dff09cfd -->|calls| tests_test_canvas_furniture_test_canvas_furnitur_4944b788
     backend_core_document_dsl_reportlab_canvas_solid_dff09cfd -->|calls| tests_test_canvas_furniture_test_solid_answer_ru_825cc135
     backend_core_document_dsl_reportlab_canvas_glyph_ecae2660 -->|calls| tests_test_canvas_furniture_test_glyph_answer_ru_045027fd
+    backend_core_document_dsl_reportlab_canvas_canva_8baff445 -->|calls| resources_economics_edexcel_a_generator_pastpape_1e8d71ab
     backend_core_document_dsl_reportlab_canvas_canva_8baff445 -->|calls| tests_test_canvas_furniture_test_canvas_furnitur_4944b788
     backend_core_document_dsl_reportlab_canvas_canva_8baff445 -->|calls| tests_test_canvas_furniture_test_glyph_answer_ru_045027fd
     backend_core_document_dsl_reportlab_canvas_draw_df55b6b0 -->|calls| tests_test_canvas_furniture_test_canvas_furnitur_4944b788
     backend_core_document_dsl_reportlab_canvas_draw_df55b6b0 -->|calls| tests_test_canvas_furniture_test_solid_answer_ru_825cc135
     backend_core_document_dsl_reportlab_canvas_draw_c4b9924f -->|calls| tests_test_canvas_furniture_test_glyph_answer_ru_045027fd
+    backend_core_document_dsl_reportlab_canvas_draw_c3fc7548 -->|calls| resources_economics_edexcel_a_generator_pastpape_1e8d71ab
     backend_core_document_dsl_reportlab_canvas_draw_c3fc7548 -->|calls| tests_test_canvas_furniture_test_canvas_furnitur_4944b788
     backend_core_document_dsl_reportlab_canvas_draw_c3fc7548 -->|calls| tests_test_canvas_furniture_test_glyph_answer_ru_045027fd
+    resources_economics_edexcel_a_generator_pastpape_86168eab -->|calls| resources_economics_edexcel_a_generator_pastpape_1e8d71ab
     backend_core_document_dsl_reportlab_canvas_solid_dff09cfd -->|imports| tests_test_canvas_furniture_8fb7a3f4
     backend_core_document_dsl_reportlab_canvas_glyph_ecae2660 -->|imports| tests_test_canvas_furniture_8fb7a3f4
     backend_core_document_dsl_reportlab_canvas_canva_8baff445 -->|imports| tests_test_canvas_furniture_8fb7a3f4
     backend_core_document_dsl_reportlab_canvas_draw_df55b6b0 -->|imports| tests_test_canvas_furniture_8fb7a3f4
     backend_core_document_dsl_reportlab_canvas_draw_c4b9924f -->|imports| tests_test_canvas_furniture_8fb7a3f4
     backend_core_document_dsl_reportlab_canvas_draw_c3fc7548 -->|imports| tests_test_canvas_furniture_8fb7a3f4
-    %% Omitted for readability: 70 nodes, 0 edges
+    %% Omitted for readability: 72 nodes, 0 edges
     class backend_core_document_dsl_reportlab_canvas_canva_8baff445 klass;
     class backend_core_document_dsl_reportlab_canvas_draw_c3fc7548 function;
     class backend_core_document_dsl_reportlab_canvas_draw_df55b6b0 function;
@@ -1309,8 +1325,8 @@ flowchart LR
     class tests_test_canvas_furniture_8fb7a3f4 test;
     class backend_core_document_dsl_reportlab_canvas_py_ca_049c7f1b klass;
     class tests_test_canvas_furniture_py_path_f809d31e klass;
-    class readme_f78a71af concept;
-    class docs_competition_occitanie_2026_readme_evidence_45c50769 concept;
+    class resources_economics_edexcel_a_generator_pastpape_1e8d71ab function;
+    class resources_economics_edexcel_a_generator_pastpape_86168eab function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1591,7 +1607,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x68, references x22, calls x10, imports x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x68, references x22, calls x13, imports x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2249,9 +2265,9 @@ flowchart LR
   <td>30</td>
   <td><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>GeneratedFile</code><br><small style="color:var(--muted)">PaperCreator/Domain/AppModels.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.init() node in PaperCreator/Domain/AppModels.swift.</td>
+  <td>External entry / no inbound edge</td>
+  <td><code>selectAIProvider()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectAssessmentKind()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br><code>selectPaperID()</code><br><small style="color:var(--muted)">PaperCreator/State/ApplicationCoordinator.swift</small><br>+1 more</td>
+  <td>.body node in Features/Generation/GeneratorWorkspaceView.swift.</td>
 </tr>
 <tr>
   <td>24</td>
@@ -2312,10 +2328,9 @@ flowchart LR
         backend_core_subjects_accounting_result_064e55f2("_result()<br/><small>Core/subjects/accounting.py</small>")
         backend_core_subjects_accounting_number_7d9fb1b9("_number()<br/><small>Core/subjects/accounting.py</small>")
     end
-    subgraph serve_api_tests_test_level_of_response_py_a7919688["tests/test_level_of_response.py"]
-        tests_test_level_of_response_test_level_engine_m_33c972c7("excellent responses monotonically()<br/><small>tests/test_level_of_response.py</small>")
-        tests_test_level_of_response_test_all_supported_0418335a("best fit policies()<br/><small>tests/test_level_of_response.py</small>")
-        tests_test_level_of_response_test_aqa_economics_bdf9e475("exact mark bands()<br/><small>tests/test_level_of_response.py</small>")
+    subgraph serve_api_Backend_Core_events_py_872eb0f0["Backend/Core/events.py"]
+        backend_core_events_emit_a5a67dcb("emit()<br/><small>Backend/Core/events.py</small>")
+        backend_core_events_run_subprocess_json_d431bb09("run_subprocess_json()<br/><small>Backend/Core/events.py</small>")
     end
     backend_core_response_simulation_responsesimulat_a341ee40("ResponseSimulator<br/><small>Backend/Core/response_simulation.py</small>")
     tests_test_computer_science_objectives_test_ocr_6af9fe93("consistent with scheme()<br/><small>tests/test_computer_science_objectives.py</small>")
@@ -2333,6 +2348,7 @@ flowchart LR
     %% Omitted for readability: 86 nodes, 0 edges
     class backend_core_level_of_response_load_level_polici_f3dacead function;
     class backend_core_level_of_response_07d4abe5 module;
+    class backend_core_level_of_response_load_level_polici_f3dacead function;
     class backend_core_level_of_response_markannotation_e839a91e klass;
     class backend_core_level_of_response_levelofresponseen_2fec0505 function;
     class backend_core_level_of_response_levelofresponseen_e403bd0b klass;
@@ -2344,11 +2360,10 @@ flowchart LR
     class backend_core_subjects_accounting_exact_37be9a48 function;
     class backend_core_subjects_accounting_result_064e55f2 function;
     class backend_core_subjects_accounting_number_7d9fb1b9 function;
-    class tests_test_level_of_response_test_level_engine_m_33c972c7 test;
-    class tests_test_level_of_response_test_all_supported_0418335a test;
-    class tests_test_level_of_response_test_aqa_economics_bdf9e475 test;
+    class backend_core_events_emit_a5a67dcb function;
+    class backend_core_events_run_subprocess_json_d431bb09 function;
     class backend_core_response_simulation_responsesimulat_a341ee40 klass;
-    class tests_test_computer_science_objectives_test_ocr_6af9fe93 test;
+    class tests_test_mlx_setup_test_cli_accepts_guided_mlx_29a7977f test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -2454,8 +2469,8 @@ flowchart LR
   <td>11</td>
   <td><code>load_level_policies()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>best fit policies()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small><br><code>consistent with scheme()</code><br><small style="color:var(--muted)">tests/test_computer_science_objectives.py</small><br><code>exact mark bands()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small><br>+2 more</td>
+  <td><code>cli.py</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small><br><code>handle_bundle_check()</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small></td>
+  <td><code>best fit policies()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small><br><code>exact mark bands()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small><br><code>excellent responses monotonically()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small><br>+1 more</td>
   <td>load_level_policies() node in Backend/Core/level_of_response.py.</td>
 </tr>
 <tr>
@@ -2471,7 +2486,7 @@ flowchart LR
   <td><code>scale_level_policy()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>consistent with scheme()</code><br><small style="color:var(--muted)">tests/test_computer_science_objectives.py</small></td>
+  <td>No direct outbound edge</td>
   <td>scale_level_policy() node in Backend/Core/level_of_response.py.</td>
 </tr>
 <tr>
@@ -2588,14 +2603,6 @@ flowchart LR
 </tr>
 <tr>
   <td>28</td>
-  <td><code>test_ocr_extended_level_policy_uses_three_bands_consistent_with_scheme()</code><br><small style="color:var(--muted)">tests/test_computer_science_objectives.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>load_level_policies()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small><br><code>scale_level_policy()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
-</tr>
-<tr>
-  <td>29</td>
   <td><code>test_level_of_response.py</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>CandidateResponse</code><br><small style="color:var(--muted)">Backend/Core/response_simulation.py</small><br><code>level_of_response.py</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small><br><code>LevelOfResponseEngine</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small><br>+2 more</td>
@@ -2603,8 +2610,16 @@ flowchart LR
   <td>Module file in tests/test_level_of_response.py.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>29</td>
   <td><code>test_all_supported_boards_have_data_backed_best_fit_policies()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>load_level_policies()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>Verifies imports, entry points, or version behavior.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>test_aqa_economics_tariffs_are_registered_with_their_exact_mark_bands()</code><br><small style="color:var(--muted)">tests/test_level_of_response.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>load_level_policies()</code><br><small style="color:var(--muted)">Backend/Core/level_of_response.py</small></td>
   <td>No direct outbound edge</td>
@@ -2617,14 +2632,14 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Backend/Core/open_credit.py</code></td><td>28 nodes</td></tr>
+      <tr><td><code>Backend/Core/open_credit.py</code></td><td>29 nodes</td></tr>
 <tr><td><code>Core/subjects/accounting.py</code></td><td>21 nodes</td></tr>
 <tr><td><code>Backend/Core/response_simulation.py</code></td><td>11 nodes</td></tr>
 <tr><td><code>Backend/Core/level_of_response.py</code></td><td>10 nodes</td></tr>
+<tr><td><code>Backend/Core/cli.py</code></td><td>8 nodes</td></tr>
+<tr><td><code>Backend/Core/ollama.py</code></td><td>6 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-09-28-selected-response-label-integrity.md</code></td><td>6 nodes</td></tr>
 <tr><td><code>docs/quality/french-nsi-v28-construction-and-flow-2026-10-24.md</code></td><td>5 nodes</td></tr>
-<tr><td><code>.github/pull_request_template.md</code></td><td>4 nodes</td></tr>
-<tr><td><code>tests/test_level_of_response.py</code></td><td>4 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -2789,11 +2804,9 @@ flowchart LR
         tests_test_ai_assessment_test_content_approval_c_22a3fa7b("separate difficulty rejection()<br/><small>tests/test_ai_assessment.py</small>")
         tests_test_ai_assessment_test_generated_extended_173d9621("adds examiner guidance()<br/><small>tests/test_ai_assessment.py</small>")
     end
-    subgraph tests_fixtures_Backend_Core_independent_solver_p_683440ac["Backend/Core/independent_solver.py"]
-        backend_core_independent_solver_independentsolve_ca9b7e1f("IndependentSolver<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_reconcile_soluti_03e71447("reconcile_solution()<br/><small>Backend/Core/independent_solver.py</small>")
-    end
+    backend_core_exam_blueprints_generatedquestion_51da0e26("GeneratedQuestion<br/><small>Backend/Core/exam_blueprints.py</small>")
     backend_core_family_adapter_run_family_adapter_08fa9303("run_family_adapter()<br/><small>Backend/Core/family_adapter.py</small>")
+    backend_core_independent_solver_independentsolve_ca9b7e1f("IndependentSolver<br/><small>Backend/Core/independent_solver.py</small>")
     resources_computer_science_aqa_generator_cspaper_6d513fb8("load_syllabus()<br/><small>generator/cspapergen/syllabus.py</small>")
     resources_economics_edexcel_a_generator_pastpape_2f0be924("build_paper_blueprint()<br/><small>generator/pastpapergen/generator.py</small>")
     resources_economics_edexcel_a_generator_pastpape_7dfc6c7f("load_builtin_paper_config()<br/><small>generator/pastpapergen/paper_configs.py</small>")
@@ -2823,9 +2836,9 @@ flowchart LR
     class tests_test_ai_assessment_test_candidate_question_7f191d2a test;
     class tests_test_ai_assessment_test_content_approval_c_22a3fa7b test;
     class tests_test_ai_assessment_test_generated_extended_173d9621 test;
-    class backend_core_independent_solver_independentsolve_ca9b7e1f klass;
-    class backend_core_independent_solver_reconcile_soluti_03e71447 function;
+    class backend_core_exam_blueprints_generatedquestion_51da0e26 klass;
     class backend_core_family_adapter_run_family_adapter_08fa9303 function;
+    class backend_core_independent_solver_independentsolve_ca9b7e1f klass;
     class resources_computer_science_aqa_generator_cspaper_6d513fb8 function;
     class resources_economics_edexcel_a_generator_pastpape_2f0be924 function;
     class resources_economics_edexcel_a_generator_pastpape_7dfc6c7f function;
@@ -3106,7 +3119,6 @@ flowchart LR
 <tr><td><code>generator/tests/test_question_styles.py</code></td><td>62 nodes</td></tr>
 <tr><td><code>Backend/Core/ai_assessment.py</code></td><td>59 nodes</td></tr>
 <tr><td><code>tests/test_ai_assessment.py</code></td><td>55 nodes</td></tr>
-<tr><td><code>generator/tests/test_render_pdf.py</code></td><td>52 nodes</td></tr>
     </table>
   </div>
   <div class="card">
@@ -5179,7 +5191,9 @@ flowchart LR
 <tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-paper-creator-excellence-programme.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>Core/overlay/graphs.py</code></td><td>26 nodes</td></tr>
+<tr><td><code>Core/document_dsl/components.py</code></td><td>24 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-paper-creator-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
+<tr><td><code>Backend/Core/independent_solver.py</code></td><td>22 nodes</td></tr>
 <tr><td><code>docs/quality/keldin-user-acceptance-2026-10-27.md</code></td><td>18 nodes</td></tr>
 <tr><td><code>PaperCreator/Domain/FrenchReviewRequest.swift</code></td><td>16 nodes</td></tr>
     </table>

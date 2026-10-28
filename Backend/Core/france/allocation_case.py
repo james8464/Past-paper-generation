@@ -53,7 +53,7 @@ active INTEGER NOT NULL CHECK (active IN (0, 1)));
 CREATE TABLE Tache (
 id INTEGER PRIMARY KEY, domaine TEXT NOT NULL, priorite INTEGER NOT NULL);
 CREATE TABLE Habilitation (
-equipe INTEGER REFERENCES Equipe(id), domaine TEXT NOT NULL,
+equipe INTEGER NOT NULL REFERENCES Equipe(id), domaine TEXT NOT NULL,
 PRIMARY KEY (equipe, domaine));""",
         "teams": [[1, "Aube", 1], [2, "Rive", 1], [3, "Pin", 1], [4, "Lac", 0]],
         "tasks": [[10, "son", 1], [11, "lumière", 2], [12, "image", 3]],

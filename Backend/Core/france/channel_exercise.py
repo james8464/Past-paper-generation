@@ -17,8 +17,15 @@ def render_case(seed):
     schedule = ["P", "P", "C", "C", "P", "C", "P", "C"]
     trace = simulate(schedule)
     digest = hashlib.sha256(json.dumps(trace, sort_keys=True).encode()).hexdigest()
+    events = {
+        "send A": "envoi de A", "send B": "envoi de B",
+        "receive A": "réception de A", "receive B": "réception de B",
+        "blocked full": "blocage sur case pleine",
+        "blocked empty": "blocage sur case vide",
+        "close": "fermeture", "eof": "fin de communication",
+    }
     trace_answer = "\n".join(
-        f"Étape {index} : {row['actor']}, {row['event']}, case={row['slot']}, fermé={row['closed']}, positions={row['positions']}, bloqués={row['blocked']}."
+        f"Étape {index} : {row['actor']}, {events[row['event']]}, case={row['slot'] if row['slot'] is not None else 'vide'}, fermé={'oui' if row['closed'] else 'non'}, positions={row['positions']}, bloqués={row['blocked']}."
         for index, row in enumerate(trace["trace"])
     )
     items = [

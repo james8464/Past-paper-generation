@@ -14,3 +14,6 @@ def test_channel_sequence_has_explicit_rules_and_complete_credit():
     assert "attente" in exercise.questions[5].answer
     assert "ASR-CRYPTO" in exercise.questions[11].curriculum_codes
     assert "clé" in exercise.questions[10].answer
+    assert "envoi de B" in exercise.questions[4].answer
+    assert "blocked" not in exercise.questions[4].answer
+    assert "send" not in exercise.questions[4].answer

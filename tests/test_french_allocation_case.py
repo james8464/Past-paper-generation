@@ -61,6 +61,22 @@ def test_failed_search_does_not_pollute_the_next_attempt():
     assert affecter([10], [(10, 1)]) == [(10, 1)]
 
 
+def test_sql_schema_enforces_the_keys_and_active_domain_claimed_in_the_paper():
+    from Backend.Core.france.allocation_case import build_case
+
+    case = build_case(270104)
+    with sqlite3.connect(":memory:") as database:
+        database.execute("PRAGMA foreign_keys = ON")
+        database.executescript(case["schema"])
+        database.executemany("INSERT INTO Equipe VALUES (?, ?, ?)", case["teams"])
+        database.executemany("INSERT INTO Habilitation VALUES (?, ?)", case["skills"])
+        for team, domain in [(9, "son"), (1, "son"), (None, "son")]:
+            with pytest.raises(sqlite3.IntegrityError):
+                database.execute("INSERT INTO Habilitation VALUES (?, ?)", (team, domain))
+        with pytest.raises(sqlite3.IntegrityError):
+            database.execute("UPDATE Equipe SET active = 2 WHERE id = 1")
+
+
 @pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63)-1, 2**63])
 def test_invalid_seed_is_refused(seed):
     from Backend.Core.france.allocation_case import build_case
