@@ -34,8 +34,20 @@ struct OllamaModelRecommendation: Identifiable, Hashable, Decodable {
             && maximumMemoryGB.map { memoryGB < $0 } != false
     }
 
-    var downloadDescription: String {
-        "\(downloadSizeGB.formatted(.number.precision(.fractionLength(1)))) GB download · \(appContextWindow) app context"
+    func downloadResource(locale: Locale, includeContext: Bool = true) -> LocalizedStringResource {
+        let size = downloadSizeGB.formatted(.number.locale(locale).precision(.fractionLength(1)))
+        if !includeContext {
+            return LocalizedStringResource("About \(size) GB", locale: locale)
+        }
+        return LocalizedStringResource("About \(size) GB download · \(appContextWindow) app context", locale: locale)
+    }
+
+    var detailResource: LocalizedStringResource {
+        LocalizedStringResource(stringLiteral: detail)
+    }
+
+    var qualityNoteResource: LocalizedStringResource {
+        LocalizedStringResource(stringLiteral: qualityNote)
     }
 }
 
@@ -69,35 +81,35 @@ struct OllamaModelGuideDocument: Decodable {
 
     static let fallback = OllamaModelGuideDocument(
         schemaVersion: 1,
-        researchedAt: "2026-08-01",
+        researchedAt: "2026-10-28",
         defaultModel: "gemma4:12b",
-        otherModelWarning: "Results may vary with other Ollama models or quantisations.",
+        otherModelWarning: "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation.",
         tiers: [
             OllamaModelRecommendation(
                 id: "memory-compatible",
                 minimumMemoryGB: 0,
                 maximumMemoryGB: 16,
                 model: "qwen2.5:7b",
-                title: "Memory-compatible choice",
+                title: "Smaller local option",
                 downloadSizeGB: 4.7,
                 contextWindow: "32K",
                 appContextWindow: "16K",
                 validatedForFullMatrix: false,
-                detail: "Fits a tighter unified-memory budget, with more careful review required.",
-                qualityNote: "Smaller models can produce weaker long-form questions and mark schemes."
+                detail: "A smaller download for Macs with less than 16 GB of unified memory. Memory use also depends on the context and other running apps.",
+                qualityNote: "Review the questions and marking guidance before use. Fitting in memory does not establish accuracy."
             ),
             OllamaModelRecommendation(
                 id: "quality",
                 minimumMemoryGB: 16,
                 maximumMemoryGB: nil,
                 model: "gemma4:12b",
-                title: "Recommended for paper quality",
-                downloadSizeGB: 7.6,
+                title: "Local option for 16 GB or more",
+                downloadSizeGB: 8.0,
                 contextWindow: "256K",
                 appContextWindow: "16K",
                 validatedForFullMatrix: false,
-                detail: "Recommended for this assessment-writing workflow.",
-                qualityNote: "A Mac with at least 16 GB unified memory is recommended."
+                detail: "For Macs with at least 16 GB of unified memory. Close other memory-heavy apps before generating. Paper quality is still under review.",
+                qualityNote: "Download size does not include all memory needed during generation."
             ),
         ],
         sources: []

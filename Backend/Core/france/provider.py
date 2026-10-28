@@ -2,7 +2,6 @@
 
 import json
 from hashlib import sha256
-from Backend.Core.legacy_migration import LEGACY_V32_ORIGIN
 
 from Backend.Core.france.database_audit_contract import DatabaseAuditContract
 from Backend.Core.france.database_audit_prose import database_audit_selection_schema
@@ -56,6 +55,7 @@ from Backend.Core.france.network_reasoning_prose import (
 from Backend.Core.france.nsi import NSIQuestion, authoring_schema
 from Backend.Core.france.pipeline import REVIEW_FLAGS
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.legacy_migration import LEGACY_V32_ORIGIN
 from Backend.Core.providers import HostedLLMClient
 
 

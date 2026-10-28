@@ -626,6 +626,37 @@ final class KeldinTests: XCTestCase {
         XCTAssertNotNil(NSImage(named: NSImage.Name("TutorialFrenchNSI")))
     }
 
+    func testModelGuidanceUsesSelectedLanguageAndStatesReviewLimits() throws {
+        let guide = try OllamaModelGuide.load(bundle: .main)
+        let large = guide.recommendation(physicalMemoryBytes: 16 * 1_073_741_824)
+        let small = guide.recommendation(physicalMemoryBytes: 8 * 1_073_741_824)
+        XCTAssertFalse(large.validatedForFullMatrix)
+        XCTAssertFalse(small.validatedForFullMatrix)
+        let french = Locale(identifier: "fr")
+        let detail = InterfaceText.resolve(large.detailResource, language: "fr")
+        XCTAssertTrue(detail.contains("mémoire unifiée"))
+        XCTAssertFalse(detail.contains("For Macs"))
+        let download = String(localized: large.downloadResource(locale: french))
+        XCTAssertTrue(download.contains("Environ"))
+        XCTAssertTrue(download.contains("Go"))
+        XCTAssertTrue(download.contains(","))
+        XCTAssertFalse(download.contains("GB download"))
+        let shortDownload = String(localized: large.downloadResource(locale: french, includeContext: false))
+        XCTAssertTrue(shortDownload.contains(","))
+        XCTAssertTrue(shortDownload.contains("Go"))
+        XCTAssertFalse(shortDownload.contains("contexte"))
+        for provider in AIProvider.allCases {
+            let subtitle = InterfaceText.resolve(provider.subtitleResource, language: "fr")
+            XCTAssertFalse(subtitle.isEmpty)
+            XCTAssertNotEqual(subtitle, provider.subtitle)
+        }
+        let warning = InterfaceText.resolve(guide.otherModelWarningResource, language: "fr")
+        XCTAssertTrue(warning.contains("pas encore passé un contrôle de qualité complet"))
+        let fallback = OllamaModelGuideDocument.fallback.recommendation(physicalMemoryBytes: 16 * 1_073_741_824)
+        XCTAssertEqual(fallback.detail, large.detail)
+        XCTAssertEqual(fallback.downloadSizeGB, large.downloadSizeGB)
+    }
+
     func testFrenchNSIWorkflowHasFrenchLocalisation() {
         let resourceURL = try? XCTUnwrap(Bundle.main.url(forResource: "fr", withExtension: "lproj"))
         let frenchBundle = resourceURL.flatMap(Bundle.init(url:))

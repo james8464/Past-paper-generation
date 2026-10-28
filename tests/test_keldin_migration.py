@@ -1,8 +1,9 @@
 """Renaming storage must preserve prior files without reviving stale settings."""
 
 
-import pytest
 from hashlib import sha256
+
+import pytest
 
 from Backend.Core.legacy_migration import (
     copy_missing_tree,

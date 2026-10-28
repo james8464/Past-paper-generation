@@ -90,7 +90,8 @@ def test_generic_alert_and_model_warning_do_not_use_stale_names():
         (ROOT / "Resources/ollama-model-recommendations.json").read_text()
     )
     warning = guide["other_model_warning"]
-    assert warning.startswith("Keldin ")
+    assert "memory" in warning
+    assert "not passed a complete paper-quality review" in warning
     assert "Paper Creator" not in warning and "PaperMaker" not in warning
     translated(warning)
 
