@@ -185,8 +185,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
-    "mtime": 1793042159.2698772,
-    "ast_hash": "0012d7bed671a40f0c8e7f632e33f6d8",
+    "mtime": 1793148457.2286894,
+    "ast_hash": "2d7fa1c61f8ca5b0039bf7d428e2e9cf",
     "semantic_hash": ""
   },
   "Backend/Core/france/provider.py": {
@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793043453.9326532,
-    "ast_hash": "1194a38ddeaf1a47b499d0589f8447d7",
+    "mtime": 1793149325.8710823,
+    "ast_hash": "9009fda3ce866aebf6e1f9fba1cc448c",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793141052.2993565,
-    "ast_hash": "eedeef8206493a6be6cb401ba2824049",
+    "mtime": 1793149527.9836314,
+    "ast_hash": "385139413c0b43565811c0c4ea2e1893",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2250,8 +2250,8 @@
     "semantic_hash": ""
   },
   "docs/HIG_COMPLIANCE.md": {
-    "mtime": 1793147468.4990695,
-    "ast_hash": "72040c22de76b5a766b4f7fa8cf67bc2",
+    "mtime": 1793147576.0495577,
+    "ast_hash": "934593d0a47b2f40cab4bd3825ea093b",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
@@ -3515,8 +3515,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/whole_case_pdf.py": {
-    "mtime": 1793042001.5793386,
-    "ast_hash": "0f2a71828d94b38239a393bac3962f00",
+    "mtime": 1793148908.507795,
+    "ast_hash": "0bb6da94ab588478fb11ee92d004ec36",
     "semantic_hash": ""
   },
   "tests/test_french_database_case_authoring.py": {
@@ -3652,6 +3652,61 @@
   "Backend/Core/shared_source_scope.py": {
     "mtime": 1793141052.2992048,
     "ast_hash": "3f8c3fa4108d1152a48245175a70da31",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/database_curriculum_prose.py": {
+    "mtime": 1793149325.87058,
+    "ast_hash": "497b4603ebf50ab746cf23fe5d752223",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/extended_pipeline.py": {
+    "mtime": 1793149325.7834353,
+    "ast_hash": "bbbca855cb4886c31ac33f44505ea11d",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/loan_case.py": {
+    "mtime": 1793149325.7827747,
+    "ast_hash": "c344207647d24ff73ea6574a991220cd",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/loan_exercise.py": {
+    "mtime": 1793149325.7830667,
+    "ast_hash": "052b94bf996604f39a8875a83892cc43",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/round_robin_case.py": {
+    "mtime": 1793148314.0443995,
+    "ast_hash": "2743c8a905b644ddbd0961602ba4b4dc",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/round_robin_exercise.py": {
+    "mtime": 1793148823.2070744,
+    "ast_hash": "184c64f63a7bc243f59b0915c0caf42f",
+    "semantic_hash": ""
+  },
+  "tests/test_french_database_curriculum.py": {
+    "mtime": 1793149325.87058,
+    "ast_hash": "24224466ee92198c361d3d5f0b00a97a",
+    "semantic_hash": ""
+  },
+  "tests/test_french_extended_pipeline.py": {
+    "mtime": 1793149114.049752,
+    "ast_hash": "f8101b12dbc1bb553040e75795980950",
+    "semantic_hash": ""
+  },
+  "tests/test_french_loan_case.py": {
+    "mtime": 1793149325.784134,
+    "ast_hash": "1fe20fc697ef5da13f4018a042c9f987",
+    "semantic_hash": ""
+  },
+  "tests/test_french_round_robin_case.py": {
+    "mtime": 1793148314.0444074,
+    "ast_hash": "2b90906cc84bbf482f5ad72768452de3",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v34-curriculum-and-variety-review-2026-10-28.md": {
+    "mtime": 1793149527.8048491,
+    "ast_hash": "9e576a765ffa2d9f3277d6a5c1481fde",
     "semantic_hash": ""
   }
 }

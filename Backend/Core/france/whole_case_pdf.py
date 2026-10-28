@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pymupdf
 
+from Backend.Core.france.extended_pipeline import VERSION as EXTENDED_VERSION
 from Backend.Core.france.nsi import LANGUAGE_RUBRIC_2027, NSIExercise, NSITableMaterial
 from Backend.Core.france.pipeline import (
     CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
@@ -145,8 +146,9 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
     if package["identity"]["prompt_version"] not in {
         CONTROLLED_WHOLE_CASE_PROMPT_VERSION,
         SYNTHESIZED_VERSION,
+        EXTENDED_VERSION,
     }:
-        raise ValueError("Ce contrôle exige un sujet complet V32 ou V33")
+        raise ValueError("Ce contrôle exige un sujet complet V32, V33 ou V34")
     # Late import permits runtime to select this validator without a cycle.
     from Backend.Core.france.runtime import validate_pdf
 

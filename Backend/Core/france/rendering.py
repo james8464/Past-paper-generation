@@ -39,6 +39,9 @@ WHOLE_CASE_KINDS = frozenset(
         "system_case_contract",
         "expression_synthesis_contract",
         "postfix_synthesis_contract",
+        "loan_case_contract",
+        "round_robin_case_contract",
+        "curriculum_database_case_contract",
     }
 )
 
@@ -101,7 +104,8 @@ def structured_material(
                     stringWidth(word, body.fontName, body.fontSize)
                     for value in (column, *(row[index] for row in material.rows))
                     for word in value.split()
-                ) + 10
+                )
+                + 10
                 for index, column in enumerate(material.columns)
             ]
             spare = available_width - sum(minimums)
@@ -614,7 +618,8 @@ def render_assessment(
         content(exercise.context)
         staged_network_materials = bool(exercise.questions) and all(
             question.verification.get("kind")
-            in {
+            in WHOLE_CASE_KINDS
+            | {
                 "network_reasoning_contract",
                 "network_incident_contract",
                 "network_incident_timeline_contract",
@@ -626,17 +631,17 @@ def render_assessment(
                 "route_family_contract",
                 "database_audit_contract",
                 "database_reconciliation_contract",
-                "database_case_contract",
-                "tree_case_contract",
-                "expression_synthesis_contract",
-                "postfix_synthesis_contract",
-                "system_case_contract",
             }
             for question in exercise.questions
         )
         staged_material_ids: set[str] = set()
         database_case = any(
-            question.verification.get("kind") == "database_case_contract"
+            question.verification.get("kind")
+            in {
+                "database_case_contract",
+                "loan_case_contract",
+                "curriculum_database_case_contract",
+            }
             for question in exercise.questions
         )
 
@@ -697,13 +702,7 @@ def render_assessment(
                                 or (
                                     correction
                                     and question.verification.get("kind")
-                                    in {
-                                        "database_case_contract",
-                                        "tree_case_contract",
-                                        "expression_synthesis_contract",
-                                        "postfix_synthesis_contract",
-                                        "system_case_contract",
-                                    }
+                                    in WHOLE_CASE_KINDS
                                 )
                             ),
                         )
@@ -768,14 +767,10 @@ def render_assessment(
                     or question_index == 0
                 )
                 and question.verification.get("kind")
-                in {
+                in WHOLE_CASE_KINDS
+                | {
                     "database_audit_contract",
                     "database_reconciliation_contract",
-                    "database_case_contract",
-                    "tree_case_contract",
-                    "expression_synthesis_contract",
-                    "postfix_synthesis_contract",
-                    "system_case_contract",
                 }
             ):
                 start = material_start if question.id == "2g" else question_start
@@ -800,15 +795,11 @@ def render_assessment(
                 paragraph(
                     f"Réponse attendue — question {question.id}"
                     if question.verification.get("kind")
-                    in {
+                    in WHOLE_CASE_KINDS
+                    | {
                         "tree_construction_contract",
                         "route_selection_contract",
                         "route_family_contract",
-                        "database_case_contract",
-                        "tree_case_contract",
-                        "expression_synthesis_contract",
-                        "postfix_synthesis_contract",
-                        "system_case_contract",
                     }
                     else "Réponse attendue",
                     credit,
@@ -881,15 +872,11 @@ def render_assessment(
                 )
                 if (
                     question.verification.get("kind")
-                    in {
+                    in WHOLE_CASE_KINDS
+                    | {
                         "tree_construction_contract",
                         "route_selection_contract",
                         "route_family_contract",
-                        "database_case_contract",
-                        "tree_case_contract",
-                        "expression_synthesis_contract",
-                        "postfix_synthesis_contract",
-                        "system_case_contract",
                     }
                     and not whole_case_question
                 ):
@@ -922,15 +909,11 @@ def render_assessment(
                     (
                         v18_paper
                         and question.verification.get("kind")
-                        not in {
+                        not in WHOLE_CASE_KINDS
+                        | {
                             "tree_construction_contract",
                             "route_selection_contract",
                             "route_family_contract",
-                            "database_case_contract",
-                            "tree_case_contract",
-                            "expression_synthesis_contract",
-                            "postfix_synthesis_contract",
-                            "system_case_contract",
                         }
                     )
                     or question.verification.get("kind") == "graph_resilience_contract"
