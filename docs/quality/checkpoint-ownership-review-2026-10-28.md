@@ -36,4 +36,8 @@ The follow-up tests first recorded six failures in `tmp/checkpoint-ownership-rev
 
 After the fixes and final lint adjustment, the same targeted gate passed 95 tests in 25.51 seconds. The fixed-source log is `tmp/checkpoint-ownership-reviewed-fixed-source-green.log`; Ruff and the whitespace diff check passed. This is a targeted result, not the full release suite.
 
+Terminal-event review found that a cleanup notice could follow the backend's `done` event and overwrite the native completion status. Seven cases now capture actual JSON events around fixture publication. Five failed before the fix. Files commit first, checkpoint maintenance and any notice follow, and file/completion events are emitted last. Changed receipts, receipt/read failures, retirement and directory-sync failures, and cancellation during cleanup all keep the published file and return success with `done` last. Pre-publication cancellation still returns 130 without file or completion events.
+
+The revised targeted gate passed 102 tests in 23.91 seconds. Logs are `tmp/checkpoint-terminal-protocol-red.log` and `tmp/checkpoint-terminal-protocol-targeted-green.log`. Ruff and the whitespace diff check passed. The earlier full-suite/Store results precede this terminal-event change; a fresh final-source release gate is required.
+
 No model requests, teacher reviews or learner timing studies were performed for this storage change. No historical checkpoint or retained paper artifact was edited. Implementation fingerprints will change with Core source; release acceptance must use the final source identity.

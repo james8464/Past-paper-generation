@@ -112,7 +112,6 @@ def handle_generate(args: argparse.Namespace) -> int:
                 output_dir=output_dir,
                 paths=generated,
             )
-            emit_generated_files(published)
             # Publication has committed. Maintenance cannot turn that successful
             # run into an error or delete accepted work written after our receipt.
             if checkpoint_used:
@@ -125,6 +124,9 @@ def handle_generate(args: argparse.Namespace) -> int:
                         "The paper was saved. Recovery checkpoint cleanup could not be confirmed.",
                         stage="checkpoint_cleanup",
                     )
+            # The terminal done event follows every maintenance notice so native
+            # clients cannot replace completion with a later progress update.
+            emit_generated_files(published)
         return 0
     except CheckpointBusy as error:
         emit("error", message=str(error), code="checkpoint_busy")

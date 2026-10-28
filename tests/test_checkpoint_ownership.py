@@ -538,3 +538,96 @@ def test_handler_holds_lease_and_separates_publication_from_cleanup(
             assert all("retained" not in message for message, _ in events)
     with checkpoints.checkpoint_job_lease(path):
         pass
+
+
+@pytest.mark.parametrize(
+    "outcome",
+    [
+        "changed",
+        "read_error",
+        "retire_error",
+        "sync_error",
+        "postcommit_cancel",
+        "unchanged",
+        "precommit_cancel",
+    ],
+)
+def test_actual_json_protocol_finishes_after_checkpoint_maintenance(
+    tmp_path, monkeypatch, capsys, outcome
+):
+    from Backend.Core import generation
+
+    request = _request(tmp_path)
+    checkpoint = generation.checkpoint_path_for_job(request, tmp_path)
+    destination = tmp_path / "question-paper.pdf"
+    content = b"Publication fixture bytes, not a PDF validation claim."
+
+    def author(_capability, _request, staging, **_kwargs):
+        AssessmentCheckpointStore(checkpoint, identity()).save_payload(
+            "accepted", {"value": 1}
+        )
+        source = staging / destination.name
+        source.write_bytes(content)
+        return {"question_paper": source}
+
+    def publish(**kwargs):
+        if outcome == "precommit_cancel":
+            raise generation.GenerationCancelled
+        kwargs["paths"]["question_paper"].replace(destination)
+        if outcome == "changed":
+            AssessmentCheckpointStore(checkpoint, identity()).save_payload(
+                "later", {"value": 2}
+            )
+        return {"question_paper": destination}
+
+    def unavailable(*_args):
+        raise OSError("injected checkpoint maintenance failure")
+
+    def cancelled(*_args):
+        raise generation.GenerationCancelled
+
+    monkeypatch.setattr(generation, "_invoke_plugin", author)
+    monkeypatch.setattr(generation, "finalize_generated_documents", publish)
+    if outcome == "read_error":
+        monkeypatch.setattr(generation, "checkpoint_receipt", unavailable)
+    elif outcome == "retire_error":
+        monkeypatch.setattr(generation, "retire_checkpoint", unavailable)
+    elif outcome == "postcommit_cancel":
+        monkeypatch.setattr(generation, "retire_checkpoint", cancelled)
+    elif outcome == "sync_error":
+        original_sync = checkpoints._sync_directory
+
+        def fail_after_retirement(directory):
+            if not checkpoint.exists():
+                raise OSError("injected retirement sync failure")
+            original_sync(directory)
+
+        monkeypatch.setattr(checkpoints, "_sync_directory", fail_after_retirement)
+
+    result = generation.handle_generate(request)
+    # Capture actual emit_generated_files/emit_progress JSON, not mocked events.
+    events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert not any(event["type"] == "error" for event in events)
+    if outcome == "precommit_cancel":
+        assert result == 130
+        assert not destination.exists()
+        assert not any(event["type"] in {"file", "done"} for event in events)
+        assert events[-1]["stage"] == "cancel"
+        return
+    assert result == 0
+    assert destination.read_bytes() == content
+    assert events[-1]["type"] == "done"
+    assert sum(event["type"] == "done" for event in events) == 1
+    files = [event for event in events if event["type"] == "file"]
+    assert len(files) == 1
+    assert Path(files[0]["path"]).read_bytes() == content
+    cleanup = [
+        index
+        for index, event in enumerate(events)
+        if event.get("stage") == "checkpoint_cleanup"
+    ]
+    assert bool(cleanup) == (outcome != "unchanged")
+    if cleanup:
+        assert cleanup[0] < next(
+            index for index, event in enumerate(events) if event["type"] == "file"
+        )
