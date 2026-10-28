@@ -195,7 +195,6 @@ def _expected(tables: dict) -> dict:
 # Canonical V4 facts, including deterministic independently checked results.
 @dataclass(frozen=True)
 class DatabaseReconciliationContract:
-
     _json: str
 
     def to_dict(self) -> dict:

@@ -1938,15 +1938,21 @@ def generate_assessment(
         from Backend.Core.france.expanded_pipeline import generate
 
         return generate(
-            index_path=index_path, seed=seed, checkpoint=checkpoint,
-            progress=progress, previous_texts=previous_texts,
+            index_path=index_path,
+            seed=seed,
+            checkpoint=checkpoint,
+            progress=progress,
+            previous_texts=previous_texts,
         )
     if contract_graph_tree and contract_authoring_version == "v34":
         from Backend.Core.france.extended_pipeline import generate
 
         return generate(
-            index_path=index_path, seed=seed, checkpoint=checkpoint,
-            progress=progress, previous_texts=previous_texts,
+            index_path=index_path,
+            seed=seed,
+            checkpoint=checkpoint,
+            progress=progress,
+            previous_texts=previous_texts,
         )
     if contract_graph_tree and contract_authoring_version == "v33":
         from Backend.Core.france.synthesized_pipeline import generate

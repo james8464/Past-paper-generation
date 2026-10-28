@@ -10,7 +10,6 @@ from enum import StrEnum
 # A measured distance stored in PDF points.
 @dataclass(frozen=True, order=True)
 class Length:
-
     pt: float
 
     def __post_init__(self) -> None:
@@ -185,7 +184,6 @@ class RenderEvidence:
 # Versioned capabilities declared by a family renderer.
 @dataclass(frozen=True)
 class RendererContract:
-
     profile: BoardProfile
     document_roles: tuple[DocumentRole, ...]
     vector_components: tuple[str, ...]

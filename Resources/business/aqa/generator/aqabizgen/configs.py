@@ -57,16 +57,20 @@ RULES = {
         allowed_topic_ids=ALL_TOPICS,
         sections=[
             SectionRule(
-                id="A", title="Multiple choice", option_count=15,
-                answer_options=15, option_marks=1,
-                questions=[
-                    mcq("AO1", "retrieve", "none")
-                ],
+                id="A",
+                title="Multiple choice",
+                option_count=15,
+                answer_options=15,
+                option_marks=1,
+                questions=[mcq("AO1", "retrieve", "none")],
                 question_overrides=_BUSINESS_MCQ_OVERRIDES,
             ),
             SectionRule(
-                id="B", title="Short and extended response", option_count=1,
-                answer_options=1, option_marks=35,
+                id="B",
+                title="Short and extended response",
+                option_count=1,
+                answer_options=1,
+                option_marks=35,
                 questions=[
                     q(
                         "current_ratio",
@@ -116,8 +120,11 @@ RULES = {
                 ],
             ),
             SectionRule(
-                id="C", title="Essay choice", option_count=2,
-                answer_options=1, option_marks=25,
+                id="C",
+                title="Essay choice",
+                option_count=2,
+                answer_options=1,
+                option_marks=25,
                 questions=[
                     q(
                         "essay",
@@ -131,8 +138,11 @@ RULES = {
                 ],
             ),
             SectionRule(
-                id="D", title="Essay choice", option_count=2,
-                answer_options=1, option_marks=25,
+                id="D",
+                title="Essay choice",
+                option_count=2,
+                answer_options=1,
+                option_marks=25,
                 questions=[
                     q(
                         "essay",
@@ -156,12 +166,39 @@ RULES = {
         allowed_topic_ids=ALL_TOPICS,
         sections=[
             SectionRule(
-                id="1", title="Case study 1", option_count=1,
-                answer_options=1, option_marks=32,
+                id="1",
+                title="Case study 1",
+                option_count=1,
+                answer_options=1,
+                option_marks=32,
                 questions=[
-                    q("calculate", 3, "calculation", "Calculate", {"AO1": 2, "AO2": 1}, "transform", "figure"),
-                    q("explain", 4, "analysis", "Explain", {"AO1": 2, "AO2": 2}, "explain", "external"),
-                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    q(
+                        "calculate",
+                        3,
+                        "calculation",
+                        "Calculate",
+                        {"AO1": 2, "AO2": 1},
+                        "transform",
+                        "figure",
+                    ),
+                    q(
+                        "explain",
+                        4,
+                        "analysis",
+                        "Explain",
+                        {"AO1": 2, "AO2": 2},
+                        "explain",
+                        "external",
+                    ),
+                    q(
+                        "analyse",
+                        9,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "external",
+                    ),
                     q(
                         "evaluate",
                         16,
@@ -174,12 +211,39 @@ RULES = {
                 ],
             ),
             SectionRule(
-                id="2", title="Case study 2", option_count=1,
-                answer_options=1, option_marks=34,
+                id="2",
+                title="Case study 2",
+                option_count=1,
+                answer_options=1,
+                option_marks=34,
                 questions=[
-                    q("calculate", 3, "calculation", "Calculate", {"AO1": 3}, "transform", "figure"),
-                    q("explain", 6, "analysis", "Explain", {"AO1": 3, "AO2": 3}, "explain", "external"),
-                    q("analyse", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    q(
+                        "calculate",
+                        3,
+                        "calculation",
+                        "Calculate",
+                        {"AO1": 3},
+                        "transform",
+                        "figure",
+                    ),
+                    q(
+                        "explain",
+                        6,
+                        "analysis",
+                        "Explain",
+                        {"AO1": 3, "AO2": 3},
+                        "explain",
+                        "external",
+                    ),
+                    q(
+                        "analyse",
+                        9,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "external",
+                    ),
                     q(
                         "evaluate",
                         16,
@@ -192,11 +256,30 @@ RULES = {
                 ],
             ),
             SectionRule(
-                id="3", title="Case study 3", option_count=1,
-                answer_options=1, option_marks=34,
+                id="3",
+                title="Case study 3",
+                option_count=1,
+                answer_options=1,
+                option_marks=34,
                 questions=[
-                    q("analyse_1", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
-                    q("analyse_2", 9, "analysis", "Analyse", {"AO1": 2, "AO2": 3, "AO3": 4}, "analyse", "external"),
+                    q(
+                        "analyse_1",
+                        9,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "external",
+                    ),
+                    q(
+                        "analyse_2",
+                        9,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 2, "AO2": 3, "AO3": 4},
+                        "analyse",
+                        "external",
+                    ),
                     q(
                         "evaluate",
                         16,
@@ -219,11 +302,30 @@ RULES = {
         allowed_topic_ids=ALL_TOPICS,
         sections=[
             SectionRule(
-                id="A", title="Synoptic case study", option_count=1,
-                answer_options=1, option_marks=100,
+                id="A",
+                title="Synoptic case study",
+                option_count=1,
+                answer_options=1,
+                option_marks=100,
                 questions=[
-                    q("analyse_1", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}, "analyse", "external"),
-                    q("analyse_2", 12, "analysis", "Analyse", {"AO1": 3, "AO2": 3, "AO3": 6}, "analyse", "external"),
+                    q(
+                        "analyse_1",
+                        12,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 3, "AO2": 3, "AO3": 6},
+                        "analyse",
+                        "external",
+                    ),
+                    q(
+                        "analyse_2",
+                        12,
+                        "analysis",
+                        "Analyse",
+                        {"AO1": 3, "AO2": 3, "AO3": 6},
+                        "analyse",
+                        "external",
+                    ),
                     q(
                         "evaluate_1",
                         16,
@@ -270,9 +372,15 @@ RULES = {
 def load_rule(value: str) -> PaperRule:
     key = value.strip().lower().replace("-", "_").replace(" ", "")
     aliases = {
-        "1": "paper_1", "2": "paper_2", "3": "paper_3",
-        "paper1": "paper_1", "paper2": "paper_2", "paper3": "paper_3",
-        "paper_1": "paper_1", "paper_2": "paper_2", "paper_3": "paper_3",
+        "1": "paper_1",
+        "2": "paper_2",
+        "3": "paper_3",
+        "paper1": "paper_1",
+        "paper2": "paper_2",
+        "paper3": "paper_3",
+        "paper_1": "paper_1",
+        "paper_2": "paper_2",
+        "paper_3": "paper_3",
     }
     try:
         return RULES[aliases[key]].model_copy(deep=True)

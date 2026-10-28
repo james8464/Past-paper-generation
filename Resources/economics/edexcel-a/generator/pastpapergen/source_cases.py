@@ -2,14 +2,20 @@
 
 from __future__ import annotations
 
-GENERIC_SOURCE_ATTRIBUTION = "Source: fictional illustrative case; not official statistics"
+GENERIC_SOURCE_ATTRIBUTION = (
+    "Source: fictional illustrative case; not official statistics"
+)
 
 
 def data_response_extract(topic_title: str, points: list[str], index: int) -> str:
     title = _normalise(topic_title)
     cases = _DATA_RESPONSE_CASES.get(title)
     if cases is None:
-        cases = _macro_fallback(topic_title, points) if _is_macro_title(title) else _micro_fallback(topic_title, points)
+        cases = (
+            _macro_fallback(topic_title, points)
+            if _is_macro_title(title)
+            else _micro_fallback(topic_title, points)
+        )
     return _article_length_extract(cases[index % len(cases)], topic_title, points)
 
 
@@ -24,7 +30,20 @@ def _normalise(title: str) -> str:
 
 
 def _is_macro_title(title: str) -> bool:
-    return title.startswith(("measures", "aggregate", "national", "economic growth", "macroeconomic", "international", "poverty", "emerging", "financial", "role of"))
+    return title.startswith(
+        (
+            "measures",
+            "aggregate",
+            "national",
+            "economic growth",
+            "macroeconomic",
+            "international",
+            "poverty",
+            "emerging",
+            "financial",
+            "role of",
+        )
+    )
 
 
 def _article_length_extract(text: str, topic_title: str, points: list[str]) -> str:

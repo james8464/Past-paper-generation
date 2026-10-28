@@ -97,14 +97,20 @@ def test_complete_command_receives_method_guidance() -> None:
 
 
 def test_equivalent_leading_command_is_normalised_to_blueprint_word() -> None:
-    assert _normalise_command_word(
-        "Identify 2 consequences for the program.",
-        "State",
-    ) == "State 2 consequences for the program."
-    assert _normalise_command_word(
-        "The developer should identify a suitable test.",
-        "State",
-    ) == "The developer should identify a suitable test."
+    assert (
+        _normalise_command_word(
+            "Identify 2 consequences for the program.",
+            "State",
+        )
+        == "State 2 consequences for the program."
+    )
+    assert (
+        _normalise_command_word(
+            "The developer should identify a suitable test.",
+            "State",
+        )
+        == "The developer should identify a suitable test."
+    )
 
 
 def test_family_prompt_word_limit_rejects_layout_breaking_text() -> None:
@@ -165,7 +171,9 @@ def test_local_seeded_fallback_is_limited_to_safe_stem_failures(provider) -> Non
 
 
 @pytest.mark.parametrize("provider", ["ollama", "apple"])
-def test_local_precision_drift_uses_independently_reviewed_seeded_stem(provider) -> None:
+def test_local_precision_drift_uses_independently_reviewed_seeded_stem(
+    provider,
+) -> None:
     point = MarkSchemePoint(
         text="Award two marks for the correct method and result.",
         marks=2,
@@ -260,10 +268,13 @@ def test_generated_prompt_drops_renderer_owned_number_and_mark_label() -> None:
         mark_scheme=["Purchase invoice."],
     )
 
-    assert _clean_generated_prompt(
-        "Question 01: Which document is evidence of a credit purchase? [1 mark]",
-        question=question,
-    ) == "Which document is evidence of a credit purchase?"
+    assert (
+        _clean_generated_prompt(
+            "Question 01: Which document is evidence of a credit purchase? [1 mark]",
+            question=question,
+        )
+        == "Which document is evidence of a credit purchase?"
+    )
 
 
 def test_generated_prompt_drops_an_unprotected_renderer_source_number() -> None:
@@ -278,10 +289,13 @@ def test_generated_prompt_drops_an_unprotected_renderer_source_number() -> None:
         mark_scheme=["Credit valid workings."],
     )
 
-    assert _clean_generated_prompt(
-        "Prepare the non-current assets section using Extract 1. [7 marks]",
-        question=question,
-    ) == "Prepare the non-current assets section using the extract."
+    assert (
+        _clean_generated_prompt(
+            "Prepare the non-current assets section using Extract 1. [7 marks]",
+            question=question,
+        )
+        == "Prepare the non-current assets section using the extract."
+    )
 
 
 def test_multiple_choice_answer_shorthand_is_normalised_to_the_full_choice() -> None:
@@ -310,16 +324,23 @@ def test_multiple_choice_answer_shorthand_is_normalised_to_the_full_choice() -> 
         "Year-end adjustments match income to the correct period.",
     )
 
-    assert normalised[0].text == "Year-end adjustments match income to the correct period."
+    assert (
+        normalised[0].text == "Year-end adjustments match income to the correct period."
+    )
     assert normalised[0].marks == 1
-    assert _clean_generated_prompt(
-        "1. Which document is evidence of a credit purchase?",
-        question=question,
-    ) == "Which document is evidence of a credit purchase?"
+    assert (
+        _clean_generated_prompt(
+            "1. Which document is evidence of a credit purchase?",
+            question=question,
+        )
+        == "Which document is evidence of a credit purchase?"
+    )
 
 
 # A model must not corrupt units or precision in deterministic MCQ options.
-def test_candidate_question_preserves_selected_response_choices_owned_by_contract() -> None:
+def test_candidate_question_preserves_selected_response_choices_owned_by_contract() -> (
+    None
+):
 
     choices = [
         "12 units of product Y",
@@ -364,7 +385,9 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
     task = _Task(
         key=(0, 0, 0),
         question=question,
-        option=GeneratedOption(id="option", title="Opportunity cost", questions=[question]),
+        option=GeneratedOption(
+            id="option", title="Opportunity cost", questions=[question]
+        ),
         topic=object(),
     )
 
@@ -396,7 +419,10 @@ def test_candidate_question_preserves_selected_response_choices_owned_by_contrac
     assert "quantity of product Y forgone" in candidate.prompt
     assert candidate.mark_scheme == question.mark_scheme
     assert candidate.structured_mark_scheme == question.structured_mark_scheme
-    assert solve_selected_response(candidate.model_dump(mode="json"))["answer"] == choices[0]
+    assert (
+        solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+        == choices[0]
+    )
 
 
 def test_local_batches_separate_high_mark_items() -> None:
@@ -439,7 +465,9 @@ def test_local_batches_separate_high_mark_items() -> None:
     assert [len(batch) for batch in remote] == [5]
 
 
-def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points() -> None:
+def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points() -> (
+    None
+):
     question = GeneratedQuestion(
         rule_id="q1",
         number="1",
@@ -475,8 +503,7 @@ def test_generation_prompt_exposes_semantics_but_withholds_draft_marking_points(
 
     assert '"semantic_task_contract": {' in prompt
     assert (
-        '"required_task_terms": ["forbidden", "planning", "draft", "phrase"]'
-        in prompt
+        '"required_task_terms": ["forbidden", "planning", "draft", "phrase"]' in prompt
     )
     assert "forbidden planning mark point" not in prompt.casefold()
     assert "draft_to_replace" not in prompt
@@ -556,7 +583,9 @@ def test_content_approval_cannot_bypass_separate_difficulty_rejection() -> None:
             stimulus=["A firm's costs and demand both changed."],
             questions=[question],
         ),
-        topic=type("Topic", (), {"id": "topic", "title": "Business change", "points": []})(),
+        topic=type(
+            "Topic", (), {"id": "topic", "title": "Business change", "points": []}
+        )(),
     )
 
     class Client:
@@ -657,14 +686,17 @@ def test_generation_prompt_skips_model_scheme_for_verified_guidance() -> None:
     assert "must not exceed `maximum_prompt_words`" in prompt
 
 
-@pytest.mark.parametrize("prompt", [
-    "Glenmore Trading has revenue of £185000 and cost of sales of £35000. What is gross profit?",
-    "Which source of finance normally increases gearing?",
-    "Which of the following data structures uses last-in first-out ordering?",
-    "Which source document records a credit purchase?",
-    "Which statement about the sources of finance is correct?",
-    "What is the purpose of the source code?",
-])
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "Glenmore Trading has revenue of £185000 and cost of sales of £35000. What is gross profit?",
+        "Which source of finance normally increases gearing?",
+        "Which of the following data structures uses last-in first-out ordering?",
+        "Which source document records a credit purchase?",
+        "Which statement about the sources of finance is correct?",
+        "What is the purpose of the source code?",
+    ],
+)
 def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus(prompt) -> None:
     question = GeneratedQuestion(
         rule_id="q07",
@@ -702,12 +734,18 @@ def test_self_contained_numeric_mcq_excludes_unrelated_option_stimulus(prompt) -
     assert "£1060000" in str(projection.identity_content)
 
 
-@pytest.mark.parametrize("kind,prompt", [
-    ("extended_response", "Use the information in the case to advise Glenmore Trading."),
-    ("multiple_choice", "According to Extract 1, which statement is correct?"),
-    ("multiple_choice", "What does the data above show?"),
-    ("multiple_choice", "Which statement is supported by the source?"),
-])
+@pytest.mark.parametrize(
+    "kind,prompt",
+    [
+        (
+            "extended_response",
+            "Use the information in the case to advise Glenmore Trading.",
+        ),
+        ("multiple_choice", "According to Extract 1, which statement is correct?"),
+        ("multiple_choice", "What does the data above show?"),
+        ("multiple_choice", "Which statement is supported by the source?"),
+    ],
+)
 def test_explicit_source_question_retains_option_material(kind, prompt) -> None:
     question = GeneratedQuestion(
         rule_id="q16",
@@ -746,8 +784,7 @@ def test_generated_question_must_preserve_visual_contract_terms() -> None:
         command_word="select",
         topic_id="topic",
         prompt=(
-            "Figure 2 shows a D curve shifting to the right. Which outcome "
-            "follows?"
+            "Figure 2 shows a D curve shifting to the right. Which outcome follows?"
         ),
         mark_scheme=["Equilibrium price and quantity rise."],
         choices=["Both rise", "Both fall", "Price rises", "Quantity falls"],
@@ -1132,12 +1169,17 @@ def test_checkpointed_item_must_still_meet_release_quality_gate() -> None:
         _validate_checkpoint_item(task, question)
 
 
-@pytest.mark.parametrize("context", [
-    {"preserve_mark_scheme": True},
-    {"selected_response_contract": selected_response_contract(
-        "index_percentage_increase", inputs={"base": 176, "rate": 15}
-    )},
-])
+@pytest.mark.parametrize(
+    "context",
+    [
+        {"preserve_mark_scheme": True},
+        {
+            "selected_response_contract": selected_response_contract(
+                "index_percentage_increase", inputs={"base": 176, "rate": 15}
+            )
+        },
+    ],
+)
 def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme(context) -> None:
     verified = MarkSchemePoint(
         text="Credit the verified economic relationship.",
@@ -1179,9 +1221,13 @@ def test_checkpoint_cannot_replace_a_locked_verified_mark_scheme(context) -> Non
         _validate_checkpoint_item(task, checkpoint)
 
 
-def test_checkpoint_preserves_verified_examiner_guidance_without_reauthoring_limits() -> None:
+def test_checkpoint_preserves_verified_examiner_guidance_without_reauthoring_limits() -> (
+    None
+):
     points = [
-        MarkSchemePoint(text="Revenue is £12,000.", marks=1, assessment_objective="AO2"),
+        MarkSchemePoint(
+            text="Revenue is £12,000.", marks=1, assessment_objective="AO2"
+        ),
         MarkSchemePoint(text="Profit is £3,000.", marks=1, assessment_objective="AO2"),
         *[
             MarkSchemePoint(
@@ -1253,8 +1299,12 @@ def test_checkpoint_can_adopt_a_new_prompt_budget_without_content_changes() -> N
     _validate_checkpoint_item(task, upgraded)
 
 
-@pytest.mark.parametrize("evidence", [{"schema_version": 2, "approved": True}, None, []])
-def test_checkpoint_requires_complete_evidence_when_difficulty_review_is_enabled(evidence) -> None:
+@pytest.mark.parametrize(
+    "evidence", [{"schema_version": 2, "approved": True}, None, []]
+)
+def test_checkpoint_requires_complete_evidence_when_difficulty_review_is_enabled(
+    evidence,
+) -> None:
     from Backend.Core.reference_demand import profile_for
 
     point = MarkSchemePoint(
@@ -1292,7 +1342,9 @@ def test_checkpoint_requires_complete_evidence_when_difficulty_review_is_enabled
     )
 
     _validate_checkpoint_item(task, checkpoint)
-    with pytest.raises(ValueError, match=r"incomplete difficulty evidence|stale; regenerate"):
+    with pytest.raises(
+        ValueError, match=r"incomplete difficulty evidence|stale; regenerate"
+    ):
         _validate_checkpoint_item(
             task, checkpoint, demand_profile=profile_for("aqa/economics", "1")
         )
@@ -1496,32 +1548,37 @@ def test_live_verified_contract_is_solved_and_difficulty_reviewed(
 
     monkeypatch.setattr(
         "Backend.Core.ai_assessment._independently_validate_candidate",
-        lambda *_args, **_kwargs: calls.append("solve")
-        or CanonicalSolution(
-            item_id="verified",
-            answer="Balance",
-            steps=["calculate the balance"],
-            mark_points=[point.text],
-            assessment_objectives={"AO2": 1},
+        lambda *_args, **_kwargs: (
+            calls.append("solve")
+            or CanonicalSolution(
+                item_id="verified",
+                answer="Balance",
+                steps=["calculate the balance"],
+                mark_points=[point.text],
+                assessment_objectives={"AO2": 1},
+            )
         ),
     )
     monkeypatch.setattr(
         "Backend.Core.ai_assessment._review_batch",
-        lambda *_args, **_kwargs: calls.append("review")
-        or {task.id: ReviewResult(approved=True)},
+        lambda *_args, **_kwargs: (
+            calls.append("review") or {task.id: ReviewResult(approved=True)}
+        ),
     )
     monkeypatch.setattr(
         "Backend.Core.ai_assessment.require_difficulty_review",
-        lambda *_args, **_kwargs: calls.append("difficulty")
-        or DifficultyReviewResult(
-            approved=True,
-            estimated_demand="low",
-            reasoning_steps=2,
-            tariff_fit=True,
-            command_word_fit=True,
-            context_fit=True,
-            profile_fit=True,
-            observed_cognitive_operations=["apply", "transform", "contextualise"],
+        lambda *_args, **_kwargs: (
+            calls.append("difficulty")
+            or DifficultyReviewResult(
+                approved=True,
+                estimated_demand="low",
+                reasoning_steps=2,
+                tariff_fit=True,
+                command_word_fit=True,
+                context_fit=True,
+                profile_fit=True,
+                observed_cognitive_operations=["apply", "transform", "contextualise"],
+            )
         ),
     )
 
@@ -1565,18 +1622,30 @@ def test_live_verified_contract_is_solved_and_difficulty_reviewed(
     assert checkpoint.saved == reviewed
 
 
-def test_locked_contract_cannot_skip_editor_rejection_when_difficulty_is_disabled() -> None:
-    point = MarkSchemePoint(text="Correct economic answer.", marks=1, assessment_objective="AO1")
+def test_locked_contract_cannot_skip_editor_rejection_when_difficulty_is_disabled() -> (
+    None
+):
+    point = MarkSchemePoint(
+        text="Correct economic answer.", marks=1, assessment_objective="AO1"
+    )
     question = GeneratedQuestion(
-        rule_id="q1", number="1", marks=1, kind="multiple_choice",
-        command_word="Select", topic_id="economics", prompt="Select the outcome.",
-        mark_scheme=[point.text], structured_mark_scheme=[point],
-        choices=[point.text, "Other", "Third", "Fourth"], correct_choice=0,
+        rule_id="q1",
+        number="1",
+        marks=1,
+        kind="multiple_choice",
+        command_word="Select",
+        topic_id="economics",
+        prompt="Select the outcome.",
+        mark_scheme=[point.text],
+        structured_mark_scheme=[point],
+        choices=[point.text, "Other", "Third", "Fourth"],
+        correct_choice=0,
         assessment_objectives={"AO1": 1},
         authoring_context={"preserve_prompt": True, "preserve_mark_scheme": True},
     )
     task = _Task(
-        key=(0, 0, 0), question=question,
+        key=(0, 0, 0),
+        question=question,
         option=GeneratedOption(id="case", title="Case", questions=[question]),
         topic=type("Topic", (), {"title": "Economics", "points": []})(),
     )
@@ -1584,12 +1653,25 @@ def test_locked_contract_cannot_skip_editor_rejection_when_difficulty_is_disable
     class Editor:
         def generate_json(self, prompt):
             assert "REVIEW_DATA=" in prompt
-            return {"reviews": [{"id": task.id, "approved": False,
-                                 "ambiguity_issues": ["Two options are correct."]}]}
+            return {
+                "reviews": [
+                    {
+                        "id": task.id,
+                        "approved": False,
+                        "ambiguity_issues": ["Two options are correct."],
+                    }
+                ]
+            }
 
     with pytest.raises(RuntimeError, match="Two options are correct"):
-        _generate_batch([task], client=Editor(), subject="Economics", seed=1,
-                        policy=GenerationPolicy(), progress=None)
+        _generate_batch(
+            [task],
+            client=Editor(),
+            subject="Economics",
+            seed=1,
+            policy=GenerationPolicy(),
+            progress=None,
+        )
 
 
 def test_rejected_second_item_does_not_regenerate_accepted_first_item() -> None:
@@ -1850,24 +1932,37 @@ def test_review_prompt_labels_multiple_choice_keys_without_index_ambiguity() -> 
         topic=type("Topic", (), {"title": "Economics", "points": []})(),
     )
 
-    solution = CanonicalSolution(item_id="q1", answer="Fourth", steps=["Independent derivation"],
-                                 solution_source="deterministic", verified_scope="selected-response")
-    prompt = _review_prompt([task], [question], subject="Economics",
-                            canonical_solutions={task.id: solution})
+    solution = CanonicalSolution(
+        item_id="q1",
+        answer="Fourth",
+        steps=["Independent derivation"],
+        solution_source="deterministic",
+        verified_scope="selected-response",
+    )
+    prompt = _review_prompt(
+        [task], [question], subject="Economics", canonical_solutions={task.id: solution}
+    )
 
     assert '"correct_choice_label": "D: Fourth"' in prompt
     assert '"correct_choice_index_convention": "zero-based"' in prompt
     assert '"protected_numeric_tokens": []' in prompt
     assert "do not compare the candidate against withheld draft prose" in prompt
     import json
+
     payload = json.loads(prompt.split("REVIEW_DATA=", 1)[1])[0]
     assert payload["independent_solution"]["answer"] == "Fourth"
     assert payload["independent_solution"]["steps"] == ["Independent derivation"]
 
 
-@pytest.mark.parametrize("contract", [{}, selected_response_contract(
-    "index_percentage_increase", inputs={"base": 176, "rate": 15}
-)])
+@pytest.mark.parametrize(
+    "contract",
+    [
+        {},
+        selected_response_contract(
+            "index_percentage_increase", inputs={"base": 176, "rate": 15}
+        ),
+    ],
+)
 def test_selected_response_still_requires_editorial_review(contract) -> None:
     question = GeneratedQuestion(
         rule_id="q1",
@@ -1885,7 +1980,9 @@ def test_selected_response_still_requires_editorial_review(contract) -> None:
     )
 
     assert _requires_model_review(question, GenerationPolicy())
-    assert not _requires_model_review(question, GenerationPolicy(require_model_review=False))
+    assert not _requires_model_review(
+        question, GenerationPolicy(require_model_review=False)
+    )
     assert _requires_model_review(
         question.model_copy(update={"authoring_context": {}}), GenerationPolicy()
     )
@@ -1929,11 +2026,14 @@ def test_high_mark_points_scheme_caps_rows_without_losing_ao_marks() -> None:
     assert len(entries) == 8
     assert sum(int(entry["marks"]) for entry in entries) == 12
     for objective, marks in question.assessment_objectives.items():
-        assert sum(
-            int(entry["marks"])
-            for entry in entries
-            if entry["assessment_objective"] == objective
-        ) == marks
+        assert (
+            sum(
+                int(entry["marks"])
+                for entry in entries
+                if entry["assessment_objective"] == objective
+            )
+            == marks
+        )
 
 
 def test_levels_scheme_uses_ao_allocations_and_descriptors() -> None:
@@ -2162,9 +2262,12 @@ def test_levels_scheme_recovers_unlabelled_substantive_ao_content() -> None:
         ("AO2", 3),
         ("AO3", 6),
     ]
-    assert next(
-        point for point in normalised if point.text.startswith("Additional")
-    ).credit_type == "guidance"
+    assert (
+        next(
+            point for point in normalised if point.text.startswith("Additional")
+        ).credit_type
+        == "guidance"
+    )
     _validate_mark_points(question, normalised)
 
 

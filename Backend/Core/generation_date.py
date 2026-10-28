@@ -16,9 +16,7 @@ def generation_date() -> date:
     try:
         return date.fromisoformat(value)
     except ValueError as error:
-        raise ValueError(
-            f"{GENERATION_DATE_ENV} must use YYYY-MM-DD format"
-        ) from error
+        raise ValueError(f"{GENERATION_DATE_ENV} must use YYYY-MM-DD format") from error
 
 
 def formatted_generation_date() -> str:

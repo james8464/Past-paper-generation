@@ -25,7 +25,6 @@ class CandidateResponse(BaseModel):
 
 # Create diagnostic responses without exposing a drafted mark scheme.
 class ResponseSimulator:
-
     def __init__(self, client: SimulationClient | None = None) -> None:
         self.client = client
 

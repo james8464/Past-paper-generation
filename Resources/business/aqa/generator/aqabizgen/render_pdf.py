@@ -517,12 +517,11 @@ def _indicative_points(
     limit: int = 6,
 ) -> list[Flowable]:
     points = question.authoring_context.get("observable_mark_points")
-    if not isinstance(points, list) or not all(isinstance(point, str) for point in points):
+    if not isinstance(points, list) or not all(
+        isinstance(point, str) for point in points
+    ):
         points = question.mark_scheme
-    return [
-        Paragraph(f"• {point}", STYLES["body"])
-        for point in points[:limit]
-    ]
+    return [Paragraph(f"• {point}", STYLES["body"]) for point in points[:limit]]
 
 
 def _indicative_content_page(

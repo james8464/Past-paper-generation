@@ -68,9 +68,7 @@ def test_archive_reconciliation_freezes_standard_papers_and_records_variants():
 
     rows = []
     for index in range(5):
-        documents = [
-            {"format": "standard", "file": f"26-nsij{index}-fixture.pdf"}
-        ]
+        documents = [{"format": "standard", "file": f"26-nsij{index}-fixture.pdf"}]
         if index == 0:
             documents.append({"format": "A16", "file": "26-nsij0-a16.pdf"})
         rows.append(
@@ -100,7 +98,9 @@ def test_archive_reconciliation_freezes_standard_papers_and_records_variants():
     assert len(register["documents"]) == 5
     assert len({document["id"] for document in register["documents"]}) == 5
     assert all(document["template_eligible"] for document in register["documents"])
-    assert sum(document["split"] == "holdout" for document in register["documents"]) == 1
+    assert (
+        sum(document["split"] == "holdout" for document in register["documents"]) == 1
+    )
     assert register["archive_variants"] == [
         {
             "canonical_document_id": register["documents"][0]["id"],
@@ -175,7 +175,9 @@ def test_pin_reconciled_hashes_requires_every_document_and_records_duplicates():
     assert all(document["sha256"] == digest for document in pinned["documents"])
 
     with pytest.raises(ValueError, match="missing documents"):
-        pin_reconciled_hashes(register, {**manifest, "documents": manifest["documents"][:1]})
+        pin_reconciled_hashes(
+            register, {**manifest, "documents": manifest["documents"][:1]}
+        )
 
 
 def test_duplicate_policy_never_leaks_a_holdout_through_a_reference_alias():
@@ -229,6 +231,6 @@ def test_reconciliation_prunes_sources_no_longer_in_the_register(tmp_path):
         assert index.connection.execute("SELECT id FROM sources").fetchall() == [
             ("current",)
         ]
-        assert index.connection.execute(
-            "SELECT source_id FROM chunks"
-        ).fetchall() == [("current",)]
+        assert index.connection.execute("SELECT source_id FROM chunks").fetchall() == [
+            ("current",)
+        ]

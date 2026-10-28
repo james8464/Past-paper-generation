@@ -18,7 +18,9 @@ SYLLABUS = load_syllabus(
 
 class NoModelArithmetic:
     def generate_json(self, _prompt: str) -> dict[str, object]:
-        raise AssertionError("closed accounting calculations must use source-data arithmetic")
+        raise AssertionError(
+            "closed accounting calculations must use source-data arithmetic"
+        )
 
 
 @pytest.mark.parametrize("seed", [123, 26080100, 26083031])
@@ -80,4 +82,7 @@ def test_seeded_partnership_allocations_balance_without_rounding_losses() -> Non
         assert sum(case.goodwill_credit.values()) == case.goodwill
         assert sum(case.goodwill_write_off.values()) == case.goodwill
         for period in case.appropriation_by_period().values():
-            assert sum(period["residual_profit_shares"].values()) == period["residual_profit"]
+            assert (
+                sum(period["residual_profit_shares"].values())
+                == period["residual_profit"]
+            )

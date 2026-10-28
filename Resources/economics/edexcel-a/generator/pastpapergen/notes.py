@@ -82,7 +82,9 @@ def _note_prefix(topic_id: str) -> str:
 @cache
 def _note_text(topic_id: str) -> str:
     try:
-        text = note_file_for_topic(topic_id).read_text(encoding="utf-8", errors="ignore")
+        text = note_file_for_topic(topic_id).read_text(
+            encoding="utf-8", errors="ignore"
+        )
     except FileNotFoundError:
         return ""
     text = text.replace("\u200b", "").replace("​", "")
@@ -90,12 +92,16 @@ def _note_text(topic_id: str) -> str:
     return text
 
 
-def _ranked_note_chunks(topic_id: str, title: str, keywords: list[str] | tuple[str, ...]) -> list[str]:
+def _ranked_note_chunks(
+    topic_id: str, title: str, keywords: list[str] | tuple[str, ...]
+) -> list[str]:
     return _ranked_note_chunks_cached(topic_id, title, tuple(keywords))
 
 
 @lru_cache(maxsize=512)
-def _ranked_note_chunks_cached(topic_id: str, title: str, keywords: tuple[str, ...]) -> list[str]:
+def _ranked_note_chunks_cached(
+    topic_id: str, title: str, keywords: tuple[str, ...]
+) -> list[str]:
     text = _note_text(topic_id)
     chunks = [_clean_chunk(chunk) for chunk in _note_chunks(text)]
     chunks = [chunk for chunk in chunks if 35 <= len(chunk) <= 320]
@@ -104,7 +110,12 @@ def _ranked_note_chunks_cached(topic_id: str, title: str, keywords: tuple[str, .
     def score(chunk: str) -> tuple[int, int]:
         lowered = chunk.lower()
         exact = sum(3 for term in terms if term and term in lowered)
-        partial = sum(1 for term in terms for word in term.split() if len(word) > 4 and word in lowered)
+        partial = sum(
+            1
+            for term in terms
+            for word in term.split()
+            if len(word) > 4 and word in lowered
+        )
         return exact + partial, -len(chunk)
 
     ranked = sorted(chunks, key=score, reverse=True)

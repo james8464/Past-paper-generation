@@ -19,9 +19,7 @@ def _csv(path: Path, *, rows: int = 4, specification: str = "aqa-7136-v1.2") -> 
         "candidate_id,item_id,score,max_score,time_seconds,group,marker_id,specification_version"
     ]
     for candidate in range(rows):
-        lines.append(
-            f"p-{candidate},q1,{candidate % 2},1,60,A,m1,{specification}"
-        )
+        lines.append(f"p-{candidate},q1,{candidate % 2},1,60,A,m1,{specification}")
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     return path
 
@@ -89,9 +87,7 @@ def test_import_rejects_direct_identifiers_and_missing_consent(tmp_path: Path) -
             consents=_consents(3),
         )
 
-    missing_provenance = CalibrationMetadata(
-        **{**_metadata().__dict__, "source": ""}
-    )
+    missing_provenance = CalibrationMetadata(**{**_metadata().__dict__, "source": ""})
     with pytest.raises(ValueError, match="provenance"):
         store.import_csv(
             _csv(tmp_path / "missing-provenance.csv"),
@@ -117,8 +113,7 @@ def test_import_rejects_mixed_versions_duplicates_and_impossible_values(
 
     duplicate = _csv(tmp_path / "duplicate.csv")
     duplicate.write_text(
-        duplicate.read_text(encoding="utf-8")
-        + "p-0,q1,0,1,60,A,m1,aqa-7136-v1.2\n",
+        duplicate.read_text(encoding="utf-8") + "p-0,q1,0,1,60,A,m1,aqa-7136-v1.2\n",
         encoding="utf-8",
     )
     with pytest.raises(ValueError, match="duplicate"):
@@ -181,9 +176,7 @@ def test_delete_is_complete_and_wrong_key_cannot_decrypt(tmp_path: Path) -> None
 
 def test_aggregate_schema_requires_privacy_and_evidence_fields() -> None:
     schema = json.loads(
-        Path("Resources/empirical-calibration.schema.json").read_text(
-            encoding="utf-8"
-        )
+        Path("Resources/empirical-calibration.schema.json").read_text(encoding="utf-8")
     )
     required = set(schema["required"])
     assert {

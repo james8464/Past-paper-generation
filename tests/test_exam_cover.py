@@ -43,7 +43,9 @@ def _bbox(page: fitz.Page, text: str) -> fitz.Rect:
 
 
 @pytest.mark.parametrize("board", ["aqa", "ocr"])
-def test_current_cover_uses_public_brand_without_official_approval_claim(tmp_path, board):
+def test_current_cover_uses_public_brand_without_official_approval_claim(
+    tmp_path, board
+):
     with _render(tmp_path, board) as document:
         text = document[0].get_text()
         assert "KELDIN" in text
@@ -52,16 +54,20 @@ def test_current_cover_uses_public_brand_without_official_approval_claim(tmp_pat
         assert "unofficial" in text.casefold()
 
 
-@pytest.mark.parametrize("rows", [
-    (("A", 1), ("B", 50)),
-    (("A", True), ("B", 79)),
-    (("A", -1), ("B", 81)),
-    (("A", 40), ("A", 40)),
-])
+@pytest.mark.parametrize(
+    "rows",
+    [
+        (("A", 1), ("B", 50)),
+        (("A", True), ("B", 79)),
+        (("A", -1), ("B", 81)),
+        (("A", 40), ("A", 40)),
+    ],
+)
 def test_cover_rejects_inconsistent_or_invalid_section_totals(rows):
     with pytest.raises(ValueError, match="Cover section marks"):
-        CoverProfile("aqa", "Economics", "7136/3", "Paper 3", "2 hours", 80,
-                     mark_rows=rows)
+        CoverProfile(
+            "aqa", "Economics", "7136/3", "Paper 3", "2 hours", 80, mark_rows=rows
+        )
 
 
 def test_aqa_mark_scheme_cover_matches_measured_title_grid(tmp_path: Path) -> None:

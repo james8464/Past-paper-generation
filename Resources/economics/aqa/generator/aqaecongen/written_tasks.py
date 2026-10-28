@@ -433,4 +433,6 @@ def profile_for(topic_id: str) -> WrittenTaskProfile:
     try:
         return PROFILES[topic_id]
     except KeyError as error:
-        raise ValueError(f"no AQA Economics written-task profile for {topic_id}") from error
+        raise ValueError(
+            f"no AQA Economics written-task profile for {topic_id}"
+        ) from error

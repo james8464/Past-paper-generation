@@ -639,9 +639,9 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
     assert exported_evidence["public_task_operation_evidence"]["source"] == (
         "deterministic-public-task-v1"
     )
-    assert exported_evidence["public_task_operation_evidence"][
-        "verified_operations"
-    ] == []
+    assert (
+        exported_evidence["public_task_operation_evidence"]["verified_operations"] == []
+    )
     assert audit["item_review_evidence"]["coverage"] == 1.0
 
     document["items"][0]["mark_scheme"] = [
@@ -655,11 +655,14 @@ def test_assessment_package_records_the_exact_reference_demand_audit(
     )
     path.write_text(json.dumps(document), encoding="utf-8")
     persisted = json.loads(path.read_text(encoding="utf-8"))
-    assert len(
-        _extract_items(
-            persisted["blueprint"], subject="economics_aqa", paper_number="1"
+    assert (
+        len(
+            _extract_items(
+                persisted["blueprint"], subject="economics_aqa", paper_number="1"
+            )
         )
-    ) == 1
+        == 1
+    )
     with pytest.raises(ValueError, match="exported items differ from the blueprint"):
         validate_assessment_package(
             path,
@@ -762,7 +765,9 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         independent_solution_steps=2,
         solution_integrity_version="closed-numeric-v2",
         public_task_operation_evidence=PublicTaskOperationEvidence(
-            candidate_task_sha256=hashlib.sha256(projection.encode("utf-8")).hexdigest(),
+            candidate_task_sha256=hashlib.sha256(
+                projection.encode("utf-8")
+            ).hexdigest(),
             candidate_authors_declarative_sql=False,
             declarative_sql_statement_kind=None,
             verified_operations=[],

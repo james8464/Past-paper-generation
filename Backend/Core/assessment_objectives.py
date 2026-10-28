@@ -88,7 +88,9 @@ class ObjectivePolicy:
 
     # CS tasks are not classified from their tariff or AO3 label alone.
     def task_operation(self, raw: dict[str, Any], command: str, kind: str) -> str:
-        explicit = raw.get("task_operation") or (raw.get("authoring_context") or {}).get("task_operation")
+        explicit = raw.get("task_operation") or (
+            raw.get("authoring_context") or {}
+        ).get("task_operation")
         if explicit:
             return str(explicit)
         prompt = " ".join(str(raw.get("prompt", "")).casefold().split())
@@ -98,28 +100,50 @@ class ObjectivePolicy:
             return "program"
         if "screen capture" in prompt and "test" in prompt:
             return "judge"
-        if command == "trace" or kind == "trace" or "trace table" in prompt or (
-            command in {"show", "give", "state", "complete"}
-            and re.search(r"\b(contents|output|values|pointers?)\b.*\b(after|execut|following)", prompt)
+        if (
+            command == "trace"
+            or kind == "trace"
+            or "trace table" in prompt
+            or (
+                command in {"show", "give", "state", "complete"}
+                and re.search(
+                    r"\b(contents|output|values|pointers?)\b.*\b(after|execut|following)",
+                    prompt,
+                )
+            )
         ):
             return "trace"
         if command in {"design", "develop"}:
             return "design" if command == "design" else "program"
         if command == "draw" and re.search(r"\b(circuit|logic|algorithm)\b", prompt):
             return "design" if not objectives or objectives.get("AO3") else "analyse"
-        if kind == "table" or (command == "complete" and "table" in prompt
-                                and not re.search(r"\b(truth|binary|denary|hexadecimal)\b", prompt)):
+        if kind == "table" or (
+            command == "complete"
+            and "table" in prompt
+            and not re.search(r"\b(truth|binary|denary|hexadecimal)\b", prompt)
+        ):
             return "analyse"
         if kind == "programming" or (
-            command in {"write", "complete"} and re.search(
-                r"\b(program|code|function|subroutine|algorithm|pseudocode|query|statement|add_record|adjusted_value|print_report)\b", prompt
+            command in {"write", "complete"}
+            and re.search(
+                r"\b(program|code|function|subroutine|algorithm|pseudocode|query|statement|add_record|adjusted_value|print_report)\b",
+                prompt,
             )
         ):
             return "program"
-        contextual = bool(objectives.get("AO2")) or (not objectives and bool(re.search(
-            r"\b(this|these|shown|given|supplied|following|above|below|figure|fig|table|line)\b", prompt)))
+        contextual = bool(objectives.get("AO2")) or (
+            not objectives
+            and bool(
+                re.search(
+                    r"\b(this|these|shown|given|supplied|following|above|below|figure|fig|table|line)\b",
+                    prompt,
+                )
+            )
+        )
         if command in {"calculate", "convert", "simplify", "complete", "determine"}:
-            if command == "complete" and re.search(r"\b(fsm|transition|classification|hierarchy)\b", prompt):
+            if command == "complete" and re.search(
+                r"\b(fsm|transition|classification|hierarchy)\b", prompt
+            ):
                 return "analyse"
             return "transform"
         if command in {"discuss", "evaluate", "assess", "justify", "recommend"}:
@@ -132,13 +156,17 @@ class ObjectivePolicy:
 
     def response_mode(self, operation: str, command: str, marks: int) -> str:
         return {
-            "design": "computational-design", "program": "programming",
-            "trace": "algorithm-trace", "analyse": "computational-analysis",
+            "design": "computational-design",
+            "program": "programming",
+            "trace": "algorithm-trace",
+            "analyse": "computational-analysis",
             "transform": "multi-stage-calculation" if marks >= 4 else "calculation",
             "retrieve": "selected-response" if command == "select" else "recall",
             "judge": "extended-evaluation",
             "describe": "constructed-response",
-            "explain": "structured-reasoning" if command == "explain" else "constructed-response",
+            "explain": "structured-reasoning"
+            if command == "explain"
+            else "constructed-response",
         }.get(operation, "constructed-response")
 
 
@@ -185,6 +213,15 @@ def objective_policy_for(*identifiers: str) -> ObjectivePolicy:
         return GENERAL_OBJECTIVES
     if "accounting" in identity or "7127" in identity:
         return ACCOUNTING_OBJECTIVES
-    if any(token in identity for token in ("computer science", "computer-science", "computer_science", "7517", "h446")):
+    if any(
+        token in identity
+        for token in (
+            "computer science",
+            "computer-science",
+            "computer_science",
+            "7517",
+            "h446",
+        )
+    ):
         return COMPUTER_SCIENCE_OBJECTIVES
     return GENERAL_OBJECTIVES

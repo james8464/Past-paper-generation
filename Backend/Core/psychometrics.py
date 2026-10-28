@@ -17,9 +17,7 @@ from typing import Any
 
 from Backend.Core.paths import REPO_ROOT
 
-DEFAULT_POLICY_PATH = (
-    REPO_ROOT / "Resources" / "empirical-calibration-policy.json"
-)
+DEFAULT_POLICY_PATH = REPO_ROOT / "Resources" / "empirical-calibration-policy.json"
 
 
 @dataclass(frozen=True)
@@ -97,9 +95,10 @@ def load_calibration_policy(path: Path | None = None) -> CalibrationPolicy:
     )
     if any(not 0 < float(thresholds[key]) <= 1 for key in bounded):
         raise ValueError("calibration proportion thresholds must be in (0, 1]")
-    if thresholds["minimum_acceptable_facility"] >= thresholds[
-        "maximum_acceptable_facility"
-    ]:
+    if (
+        thresholds["minimum_acceptable_facility"]
+        >= thresholds["maximum_acceptable_facility"]
+    ):
         raise ValueError("calibration facility bounds are invalid")
     identity = payload.get("approved_by_identity_class")
     evidence = payload.get("approval_evidence")
@@ -145,7 +144,10 @@ def load_responses(path: Path) -> list[Response]:
             raise ValueError(
                 "response CSV is missing columns: " + ", ".join(sorted(missing))
             )
-        responses = [_parse_response(row, row_number=index) for index, row in enumerate(reader, 2)]
+        responses = [
+            _parse_response(row, row_number=index)
+            for index, row in enumerate(reader, 2)
+        ]
     if not responses:
         raise ValueError("response CSV contains no response rows")
     return responses
@@ -224,8 +226,7 @@ def calibrate_responses(
             >= thresholds["minimum_facility_coverage"]
         ),
         "internal_consistency": (
-            reliability is not None
-            and reliability >= thresholds["minimum_reliability"]
+            reliability is not None and reliability >= thresholds["minimum_reliability"]
         ),
         "marker_standardisation": (
             marker["pair_count"] >= thresholds["minimum_double_marked_pairs"]
@@ -251,11 +252,7 @@ def calibrate_responses(
             "items": len(items),
             "response_rows": len(materialised),
             "groups": sorted(
-                {
-                    response.group
-                    for response in materialised
-                    if response.group
-                }
+                {response.group for response in materialised if response.group}
             ),
         },
         "form": {
@@ -373,13 +370,9 @@ def _validate_identity(responses: list[Response]) -> None:
     for response in responses:
         previous = maxima.setdefault(response.item_id, response.max_score)
         if not math.isclose(previous, response.max_score):
-            raise ValueError(
-                f"item {response.item_id} has inconsistent maximum marks"
-            )
+            raise ValueError(f"item {response.item_id} has inconsistent maximum marks")
         if response.group:
-            candidate_group = groups.setdefault(
-                response.candidate_id, response.group
-            )
+            candidate_group = groups.setdefault(response.candidate_id, response.group)
             if candidate_group != response.group:
                 raise ValueError(
                     f"candidate {response.candidate_id} has inconsistent groups"
@@ -391,13 +384,8 @@ def _candidate_item_means(
 ) -> dict[tuple[str, str], float]:
     grouped: dict[tuple[str, str], list[float]] = defaultdict(list)
     for response in responses:
-        grouped[(response.candidate_id, response.item_id)].append(
-            response.proportion
-        )
-    return {
-        key: statistics.fmean(values)
-        for key, values in grouped.items()
-    }
+        grouped[(response.candidate_id, response.item_id)].append(response.proportion)
+    return {key: statistics.fmean(values) for key, values in grouped.items()}
 
 
 def _item_statistics(
@@ -415,8 +403,7 @@ def _item_statistics(
     ]
     item_values = [value for _candidate, value in observations]
     rest_scores = [
-        candidate_totals[candidate] - value
-        for candidate, value in observations
+        candidate_totals[candidate] - value for candidate, value in observations
     ]
     times = [
         response.time_seconds
@@ -448,9 +435,7 @@ def _dif(
     maximum_gap: float,
 ) -> list[dict[str, Any]]:
     candidate_groups = {
-        response.candidate_id: response.group
-        for response in raw
-        if response.group
+        response.candidate_id: response.group for response in raw if response.group
     }
     by_group: dict[str, list[float]] = defaultdict(list)
     for (candidate, current_item), score in candidate_items.items():
@@ -509,14 +494,10 @@ def _marker_agreement(responses: list[Response]) -> dict[str, Any]:
     agreements: list[float] = []
     for values in grouped.values():
         by_marker = {
-            response.marker_id: response
-            for response in values
-            if response.marker_id
+            response.marker_id: response for response in values if response.marker_id
         }
         for left, right in combinations(by_marker.values(), 2):
-            agreements.append(
-                1 - abs(left.score - right.score) / left.max_score
-            )
+            agreements.append(1 - abs(left.score - right.score) / left.max_score)
     return {
         "method": "mean-pairwise-normalised-absolute-agreement",
         "pair_count": len(agreements),
@@ -531,9 +512,7 @@ def _normalise_review(review: dict[str, Any] | None) -> dict[str, Any]:
     role = str(raw.get("role", "")).strip()
     date = str(raw.get("date", "")).strip()
     if approved and not all((reviewer, role, date)):
-        raise ValueError(
-            "an approved manual review requires reviewer, role, and date"
-        )
+        raise ValueError("an approved manual review requires reviewer, role, and date")
     return {
         "approved": approved,
         "reviewer": reviewer or None,
@@ -549,8 +528,7 @@ def _pearson(left: list[float], right: list[float]) -> float | None:
     left_mean = statistics.fmean(left)
     right_mean = statistics.fmean(right)
     numerator = sum(
-        (x - left_mean) * (y - right_mean)
-        for x, y in zip(left, right, strict=True)
+        (x - left_mean) * (y - right_mean) for x, y in zip(left, right, strict=True)
     )
     left_squared = sum((value - left_mean) ** 2 for value in left)
     right_squared = sum((value - right_mean) ** 2 for value in right)

@@ -215,9 +215,7 @@ def test_question_mark_label_does_not_collide_with_prompt(tmp_path: Path) -> Non
         mark = mark_words[0]
         prompt_words = [word for word in words if word[4].strip(".[]") in prompt]
         same_line = [
-            word
-            for word in prompt_words
-            if word[1] < mark[3] and word[3] > mark[1]
+            word for word in prompt_words if word[1] < mark[3] and word[3] > mark[1]
         ]
         assert all(word[2] < mark[0] for word in same_line)
 
@@ -296,17 +294,13 @@ def test_board_answer_line_presets_own_repeated_renderer_geometry() -> None:
     ocr = OCRAnswerLines(2, spacing_mm=8)
     ocr_cs = OCRComputerScienceAnswerLines(2)
 
-    assert (aqa.width * 25.4 / 72, aqa.spacing * 25.4 / 72) == pytest.approx(
-        (167, 6)
-    )
+    assert (aqa.width * 25.4 / 72, aqa.spacing * 25.4 / 72) == pytest.approx((167, 6))
     assert (aqa.rule_width, aqa.dashed) == (0.35, False)
     assert (
         aqa_compact.width * 25.4 / 72,
         aqa_compact.spacing * 25.4 / 72,
     ) == pytest.approx((165, 6.2))
-    assert (ocr.width * 25.4 / 72, ocr.spacing * 25.4 / 72) == pytest.approx(
-        (167, 8)
-    )
+    assert (ocr.width * 25.4 / 72, ocr.spacing * 25.4 / 72) == pytest.approx((167, 8))
     assert (ocr_cs.width * 25.4 / 72, ocr_cs.spacing * 25.4 / 72) == pytest.approx(
         (165, 4.7)
     )

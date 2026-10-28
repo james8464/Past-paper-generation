@@ -29,10 +29,7 @@ def _colour(value: Any) -> list[float] | None:
     if value is None:
         return None
     if isinstance(value, int):
-        return [
-            round(((value >> shift) & 255) / 255, 3)
-            for shift in (16, 8, 0)
-        ]
+        return [round(((value >> shift) & 255) / 255, 3) for shift in (16, 8, 0)]
     return [round(float(item), 3) for item in value]
 
 
@@ -59,7 +56,9 @@ def _text_lines(page: fitz.Page) -> list[dict[str, Any]]:
         if block.get("type") != 0:
             continue
         for line in block.get("lines", []):
-            spans = [span for span in line.get("spans", []) if span.get("text", "").strip()]
+            spans = [
+                span for span in line.get("spans", []) if span.get("text", "").strip()
+            ]
             if not spans:
                 continue
             text = "".join(span["text"] for span in spans)
@@ -76,7 +75,9 @@ def _text_lines(page: fitz.Page) -> list[dict[str, Any]]:
             result.append(
                 {
                     "bbox": bbox,
-                    "origin": _round_rect((*dominant.get("origin", (bbox[0], bbox[3])), 0, 0))[:2],
+                    "origin": _round_rect(
+                        (*dominant.get("origin", (bbox[0], bbox[3])), 0, 0)
+                    )[:2],
                     "font": str(dominant.get("font", "unknown")),
                     "size": size,
                     "flags": int(dominant.get("flags", 0)),

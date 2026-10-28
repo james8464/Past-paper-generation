@@ -197,7 +197,9 @@ def run_matrix(
             "provider": None if dry_run else provider,
             "model_digest": model_digest,
         }
-        write_json_atomically(result_path, active_result, indent=None, ensure_ascii=True)
+        write_json_atomically(
+            result_path, active_result, indent=None, ensure_ascii=True
+        )
         (run_dir / "events.jsonl").write_text("", encoding="utf-8")
         _write_qualification_manifest(
             job=job,

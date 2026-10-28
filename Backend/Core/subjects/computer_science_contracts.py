@@ -29,13 +29,17 @@ class SumTrace(Inputs):
     threshold: int
 
     def code(self) -> str:
-        return "\n".join([
-            f"01 total = {self.initial_total}",
-            f"02 for index = 0 to {len(self.values) - 1}",
-            f"03     if values[index] > {self.threshold} then",
-            "04         total = total + values[index]",
-            "05     endif", "06 next index", "07 print(total)",
-        ])
+        return "\n".join(
+            [
+                f"01 total = {self.initial_total}",
+                f"02 for index = 0 to {len(self.values) - 1}",
+                f"03     if values[index] > {self.threshold} then",
+                "04         total = total + values[index]",
+                "05     endif",
+                "06 next index",
+                "07 print(total)",
+            ]
+        )
 
 
 class DenaryHex(Inputs):
@@ -84,9 +88,19 @@ class FunctionalListOperations(Inputs):
     map_multiplier: int
 
 
-CS_INPUTS = TypeAdapter(Annotated[SumTrace | DenaryHex | BitmapBytes | SoundBytes |
-    UnsignedSum | FloatingEncode | BooleanEvaluation | FunctionalListOperations,
-    Field(discriminator="kind")])
+CS_INPUTS = TypeAdapter(
+    Annotated[
+        SumTrace
+        | DenaryHex
+        | BitmapBytes
+        | SoundBytes
+        | UnsignedSum
+        | FloatingEncode
+        | BooleanEvaluation
+        | FunctionalListOperations,
+        Field(discriminator="kind"),
+    ]
+)
 
 
 def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | None:
@@ -100,13 +114,24 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
 
     def number(role: str, label: str, value: int | Decimal, unit: str = "1") -> None:
         numbers[role] = Decimal(value)
-        outputs.append(NumericOutput(role=role, unit=unit, decimal_places=0,
-            scheme_pattern=rf"^{re.escape(label)}:[ \t]*(?P<value>{NUMBER})"))
+        outputs.append(
+            NumericOutput(
+                role=role,
+                unit=unit,
+                decimal_places=0,
+                scheme_pattern=rf"^{re.escape(label)}:[ \t]*(?P<value>{NUMBER})",
+            )
+        )
 
     def text(role: str, label: str, value: str) -> None:
-        texts.append(CheckedTextOutput(role=role, value=value,
-            whole_statement=True,
-            scheme_pattern=rf"^{re.escape(label)}:[ \t]*(.*?)\.[ \t]*$"))
+        texts.append(
+            CheckedTextOutput(
+                role=role,
+                value=value,
+                whole_statement=True,
+                scheme_pattern=rf"^{re.escape(label)}:[ \t]*(.*?)\.[ \t]*$",
+            )
+        )
 
     steps: list[str]
     if isinstance(source, SumTrace):
@@ -114,31 +139,50 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
         for index, value in enumerate(source.values):
             if value > source.threshold:
                 total += value
-            number(f"iteration-{index + 1}-total", f"After iteration {index + 1}, total", total)
+            number(
+                f"iteration-{index + 1}-total",
+                f"After iteration {index + 1}, total",
+                total,
+            )
         number("output", "Final output", total)
-        steps = ["Initialise total; use zero-based indexing and the inclusive loop bound.",
-                 "Apply the strict greater-than test and conditional accumulation at each iteration.",
-                 "Print once, after the complete loop; intermediate totals are not printed outputs."]
+        steps = [
+            "Initialise total; use zero-based indexing and the inclusive loop bound.",
+            "Apply the strict greater-than test and conditional accumulation at each iteration.",
+            "Print once, after the complete loop; intermediate totals are not printed outputs.",
+        ]
     elif isinstance(source, DenaryHex):
         text("hexadecimal", "Hexadecimal", f"{source.value:02X}")
-        steps = ["Divide the denary value by sixteen; encode the quotient and remainder as hexadecimal digits."]
+        steps = [
+            "Divide the denary value by sixteen; encode the quotient and remainder as hexadecimal digits."
+        ]
     elif isinstance(source, BitmapBytes):
         bits = source.width * source.height * source.depth
         if bits % 8:
             raise ValueError("bitmap source must occupy a whole number of bytes")
         number("file-size", "File size", bits // 8, "bytes")
-        steps = ["Multiply width by height and bits per pixel.", "Divide bits by eight to obtain bytes."]
+        steps = [
+            "Multiply width by height and bits per pixel.",
+            "Divide bits by eight to obtain bytes.",
+        ]
     elif isinstance(source, SoundBytes):
-        bits = source.sample_rate * source.sample_depth * source.duration * source.channels
+        bits = (
+            source.sample_rate * source.sample_depth * source.duration * source.channels
+        )
         if bits % 8:
             raise ValueError("sound source must occupy a whole number of bytes")
         number("file-size", "File size", bits // 8, "bytes")
-        steps = ["Multiply sample rate, duration, depth and channel count.", "Convert bits to bytes by dividing by eight."]
+        steps = [
+            "Multiply sample rate, duration, depth and channel count.",
+            "Convert bits to bytes by dividing by eight.",
+        ]
     elif isinstance(source, UnsignedSum):
         total = source.left + source.right
         text("8-bit-result", "8-bit result", f"{total % 256:08b}")
         text("overflow", "Overflow", "yes" if total > 255 else "no")
-        steps = ["Add corresponding binary place values with carries.", "Retain the low eight bits and check for a carry beyond the unsigned range."]
+        steps = [
+            "Add corresponding binary place values with carries.",
+            "Retain the low eight bits and check for a carry beyond the unsigned range.",
+        ]
     elif isinstance(source, FloatingEncode):
         value = Decimal(source.value)
         if not value.is_finite() or value <= 0:
@@ -152,30 +196,40 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
             mantissa *= 2
             exponent -= 1
         scaled = mantissa * (2 ** (source.mantissa_bits - 1))
-        if scaled != scaled.to_integral_value() or not -(2 ** (source.exponent_bits - 1)) <= exponent < 2 ** (source.exponent_bits - 1):
+        if scaled != scaled.to_integral_value() or not -(
+            2 ** (source.exponent_bits - 1)
+        ) <= exponent < 2 ** (source.exponent_bits - 1):
             raise ValueError("floating source is not exactly representable")
-        bits = f"{int(scaled):0{source.mantissa_bits}b}" + f"{exponent % (2 ** source.exponent_bits):0{source.exponent_bits}b}"
+        bits = (
+            f"{int(scaled):0{source.mantissa_bits}b}"
+            + f"{exponent % (2**source.exponent_bits):0{source.exponent_bits}b}"
+        )
         text("representation", "Floating representation", bits)
-        steps = ["Normalise the positive binary fraction to a leading 01 mantissa.", "Encode the exact signed mantissa and two's-complement exponent in the declared widths."]
+        steps = [
+            "Normalise the positive binary fraction to a leading 01 mantissa.",
+            "Encode the exact signed mantissa and two's-complement exponent in the declared widths.",
+        ]
     elif isinstance(source, FunctionalListOperations):
         filtered = [
             value for value in source.values if value > source.filter_greater_than
         ]
         mapped = [value * source.map_multiplier for value in source.values]
-        texts.extend([
-            CheckedTextOutput(
-                role="filtered-values",
-                value=str(filtered),
-                whole_statement=True,
-                scheme_pattern=r"^filtered values = (\[.*\])\.$",
-            ),
-            CheckedTextOutput(
-                role="mapped-values",
-                value=str(mapped),
-                whole_statement=True,
-                scheme_pattern=r"^mapped values = (\[.*\])\.$",
-            ),
-        ])
+        texts.extend(
+            [
+                CheckedTextOutput(
+                    role="filtered-values",
+                    value=str(filtered),
+                    whole_statement=True,
+                    scheme_pattern=r"^filtered values = (\[.*\])\.$",
+                ),
+                CheckedTextOutput(
+                    role="mapped-values",
+                    value=str(mapped),
+                    whole_statement=True,
+                    scheme_pattern=r"^mapped values = (\[.*\])\.$",
+                ),
+            ]
+        )
         number(
             "total-values",
             "total values =",
@@ -208,12 +262,26 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
         for index, inputs in enumerate(source.inputs, 1):
             if set(inputs) != {"A", "B"}:
                 raise ValueError("Boolean input rows must bind every variable")
-            number(f"case-{index}", f"Case {index} output", int(operation(inputs["A"], inputs["B"])))
-        steps = ["Apply operator precedence to each separately supplied input case; equal results are permitted."]
-    result = numeric_result(numbers, outputs, steps) if outputs else {
-        "answer": {}, "mark_points": {}, "numeric_results": {}, "numeric_checks": [],
-        "steps": steps, "evidence_ids": [],
-    }
+            number(
+                f"case-{index}",
+                f"Case {index} output",
+                int(operation(inputs["A"], inputs["B"])),
+            )
+        steps = [
+            "Apply operator precedence to each separately supplied input case; equal results are permitted."
+        ]
+    result = (
+        numeric_result(numbers, outputs, steps)
+        if outputs
+        else {
+            "answer": {},
+            "mark_points": {},
+            "numeric_results": {},
+            "numeric_checks": [],
+            "steps": steps,
+            "evidence_ids": [],
+        }
+    )
     for check in texts:
         result["answer"][check.role] = result["mark_points"][check.role] = check.value
     result["text_checks"] = [check.model_dump(mode="json") for check in texts]

@@ -114,7 +114,14 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         unit = re.match(unit_pattern, suffix, re.IGNORECASE)
         if unit:
             suffix = suffix[unit.end() :].lstrip(" \t")
-        elif check.unit in {"GBPm", "%", "bytes", "percentage points", "index points", "consumer units"}:
+        elif check.unit in {
+            "GBPm",
+            "%",
+            "bytes",
+            "percentage points",
+            "index points",
+            "consumer units",
+        }:
             return False
         # GBP rates can get their denominator from the explicitly selected
         # row heading. An explicit contradictory denominator is never ignored.
@@ -210,7 +217,9 @@ def check_numeric_alternatives(
 
 
 # Small explicit grammar: GBP/pence, declared denominator, percent, ratio.
-def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quantity: str) -> bool:
+def _equivalent_quantity(
+    check: CheckedNumericOutput | CheckedTextOutput, quantity: str
+) -> bool:
     if isinstance(check, CheckedTextOutput):
         # Encoded results preserve their complete width/order; only case and
         # terminal punctuation vary. Never accept a prefix or an extra claim.
@@ -253,7 +262,13 @@ def _equivalent_quantity(check: CheckedNumericOutput | CheckedTextOutput, quanti
             if sign == "nil" and actual != 0:
                 return False
     else:
-        unit = r"(?:%|\s+percent)" if check.unit == "%" else r"(?::1)?" if check.unit == "1" else r"\s+" + re.escape(check.unit)
+        unit = (
+            r"(?:%|\s+percent)"
+            if check.unit == "%"
+            else r"(?::1)?"
+            if check.unit == "1"
+            else r"\s+" + re.escape(check.unit)
+        )
         match = re.fullmatch(rf"(?P<value>{NUMBER}){unit}[.]?", quantity, re.IGNORECASE)
         if not match:
             return False

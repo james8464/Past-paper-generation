@@ -57,7 +57,9 @@ def _normalise_code(value: str) -> list[str]:
         "while",
     }
     for block in blocks:
-        for token in re.findall(r"[A-Za-zÀ-ÿ_][\wÀ-ÿ]*|\d+|==|!=|<=|>=|[-+*/%<>()\[\],:]", block.casefold()):
+        for token in re.findall(
+            r"[A-Za-zÀ-ÿ_][\wÀ-ÿ]*|\d+|==|!=|<=|>=|[-+*/%<>()\[\],:]", block.casefold()
+        ):
             if re.fullmatch(r"[A-Za-zÀ-ÿ_][\wÀ-ÿ]*", token) and token not in keywords:
                 tokens.append("IDENTIFIER")
             else:
@@ -68,7 +70,9 @@ def _normalise_code(value: str) -> list[str]:
 def _shingles(tokens: list[str], width: int) -> set[tuple[str, ...]]:
     if len(tokens) < width:
         return set()
-    return {tuple(tokens[index : index + width]) for index in range(len(tokens) - width + 1)}
+    return {
+        tuple(tokens[index : index + width]) for index in range(len(tokens) - width + 1)
+    }
 
 
 def _jaccard(left: set, right: set) -> float:
@@ -80,9 +84,11 @@ def _jaccard(left: set, right: set) -> float:
 def _scores(candidate: str, comparison: str) -> dict[str, float | int]:
     candidate_prose, candidate_tokens = _normalise_prose(candidate)
     comparison_prose, comparison_tokens = _normalise_prose(comparison)
-    longest = SequenceMatcher(
-        None, candidate_prose, comparison_prose, autojunk=False
-    ).find_longest_match().size
+    longest = (
+        SequenceMatcher(None, candidate_prose, comparison_prose, autojunk=False)
+        .find_longest_match()
+        .size
+    )
     prose_jaccard = _jaccard(
         _shingles(candidate_tokens, 5), _shingles(comparison_tokens, 5)
     )
@@ -125,9 +131,7 @@ def screen_originality(
         for value in (previous_texts or [])
         if isinstance(value, str)
     )
-    maximums: dict[str, float | int] = {
-        name: 0 for name in THRESHOLDS
-    }
+    maximums: dict[str, float | int] = {name: 0 for name in THRESHOLDS}
     for source_kind, comparison in comparisons:
         scores = _scores(candidate_text, comparison)
         for name, score in scores.items():

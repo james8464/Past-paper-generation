@@ -98,13 +98,24 @@ def test_edexcel_identity_binds_selected_source_key_credit_and_contract() -> Non
     changed_source_part = next(
         part for part in changed_source.parts if part.label == mcq.label
     )
-    assert candidate_content_identity(
-        subject._difficulty_candidate(changed_source, changed_source_part)
-    ) != baseline
-    for changed_part in [changed_options, changed_key, changed_credit, changed_contract]:
-        assert candidate_content_identity(
-            subject._difficulty_candidate(multipart, changed_part)
-        ) != baseline
+    assert (
+        candidate_content_identity(
+            subject._difficulty_candidate(changed_source, changed_source_part)
+        )
+        != baseline
+    )
+    for changed_part in [
+        changed_options,
+        changed_key,
+        changed_credit,
+        changed_contract,
+    ]:
+        assert (
+            candidate_content_identity(
+                subject._difficulty_candidate(multipart, changed_part)
+            )
+            != baseline
+        )
 
 
 def test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing() -> None:
@@ -114,9 +125,7 @@ def test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing() 
     changed_source = question.source_instance.model_copy(
         update={"provenance": "reviewed-public-source"}
     )
-    changed_question = question.model_copy(
-        update={"source_instance": changed_source}
-    )
+    changed_question = question.model_copy(update={"source_instance": changed_source})
     changed_part = changed_question.parts[0]
     changed = subject._difficulty_candidate(changed_question, changed_part)
 
@@ -126,13 +135,15 @@ def test_edexcel_typed_source_provenance_is_live_visible_and_identity_bearing() 
     assert candidate_review_content(changed)["stimulus"]["provenance"] == (
         "reviewed-public-source"
     )
-    assert baseline.identity_content["parent_source"]["source_instance"][
-        "provenance"
-    ] == "illustrative-generated"
+    assert (
+        baseline.identity_content["parent_source"]["source_instance"]["provenance"]
+        == "illustrative-generated"
+    )
     assert "provenance" not in baseline.identity_content["parent_source"]
-    assert changed.identity_content["parent_source"]["source_instance"][
-        "provenance"
-    ] == "reviewed-public-source"
+    assert (
+        changed.identity_content["parent_source"]["source_instance"]["provenance"]
+        == "reviewed-public-source"
+    )
     assert candidate_content_identity(changed) != candidate_content_identity(baseline)
 
 
@@ -194,7 +205,9 @@ def test_edexcel_saved_review_rejects_changed_typed_source_provenance() -> None:
 def test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity() -> None:
     multipart = _paper("paper_1", 26083049).questions[0]
     part = multipart.parts[0]
-    baseline = candidate_content_identity(subject._difficulty_candidate(multipart, part))
+    baseline = candidate_content_identity(
+        subject._difficulty_candidate(multipart, part)
+    )
     changed_parent = multipart.model_copy(
         update={
             "mark_scheme": ["Duplicate parent guidance must not be part credit"],
@@ -204,9 +217,10 @@ def test_edexcel_multipart_parent_credit_is_not_duplicated_in_part_identity() ->
         }
     )
 
-    assert candidate_content_identity(
-        subject._difficulty_candidate(changed_parent, part)
-    ) == baseline
+    assert (
+        candidate_content_identity(subject._difficulty_candidate(changed_parent, part))
+        == baseline
+    )
 
 
 @pytest.mark.parametrize("paper_id", ["paper_1", "paper_3"])
@@ -258,9 +272,7 @@ def test_edexcel_export_identity_binds_typed_source_provenance() -> None:
 
     assert changed["identity_content"]["parent_source"]["source_instance"][
         "provenance"
-    ] == (
-        "reviewed-public-source"
-    )
+    ] == ("reviewed-public-source")
     assert candidate_content_identity(changed) != candidate_content_identity(baseline)
 
 
@@ -307,9 +319,10 @@ def test_actual_recorded_responses_cross_the_real_source_and_choice_boundary(
     )
     assert evidence == {"approved": True, "reached": "difficulty"}
     assert len(reached) == 1
-    assert candidate_review_content(reached[0]["candidate"])["stimulus"][
-        "provenance"
-    ] == "illustrative-generated"
+    assert (
+        candidate_review_content(reached[0]["candidate"])["stimulus"]["provenance"]
+        == "illustrative-generated"
+    )
 
 
 @pytest.mark.parametrize("route", ["multipart", "standalone", "mcq"])
@@ -330,12 +343,14 @@ def test_blind_projection_uses_one_public_source_without_private_credit_or_key(r
     private = "PRIVATE_F2_CREDIT"
     projection.item["assessment_contract"]["credit"] = [private]
     answer = projection.expected_choice or "A source-based explanation."
-    response = complete_solver_response({
-        "steps": ["Use the public source."],
-        "answer": answer,
-        "mark_points": [answer],
-        "evidence_ids": [projection.evidence[0].id],
-    })
+    response = complete_solver_response(
+        {
+            "steps": ["Use the public source."],
+            "answer": answer,
+            "mark_points": [answer],
+            "evidence_ids": [projection.evidence[0].id],
+        }
+    )
     client = Replay(response)
 
     IndependentSolver(client).solve(projection.item, projection.evidence)
@@ -376,9 +391,15 @@ def test_genuinely_source_free_item_keeps_empty_evidence_and_empty_citations(
         stimulus_kind="written",
     )
     projection = subject._question_solver_projection(question, question)
-    client = Replay(complete_solver_response(
-        {"answer": "A household", "mark_points": ["A household"], "evidence_ids": []}
-    ))
+    client = Replay(
+        complete_solver_response(
+            {
+                "answer": "A household",
+                "mark_points": ["A household"],
+                "evidence_ids": [],
+            }
+        )
+    )
 
     class Reviewed:
         def model_dump(self, **_kwargs):
@@ -486,9 +507,11 @@ def test_reordered_choice_resolves_one_key_and_wrong_key_still_fails_reconciliat
         if option.label == reordered.correct_option
     )
     solution = IndependentSolver(
-        Replay(complete_solver_response(
-            {"answer": answer, "mark_points": [answer], "evidence_ids": []}
-        ))
+        Replay(
+            complete_solver_response(
+                {"answer": answer, "mark_points": [answer], "evidence_ids": []}
+            )
+        )
     ).solve(projection.item, projection.evidence)
 
     require_solution_matches_scheme(

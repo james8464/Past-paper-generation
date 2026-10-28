@@ -53,9 +53,23 @@ def test_render_question_paper_writes_pdf(tmp_path):
 
 
 def test_new_section_a_visual_stimuli_have_renderer_rows():
-    assert _table_rows("marginal_utility_table")[0] == ["Units consumed", "Total utility", "Marginal utility"]
-    assert _table_rows("opportunity_cost_ppc_table")[0] == ["Consumer goods", "100", "85", "60", "20"]
-    assert _table_rows("income_tax_schedule_table")[0] == ["Band", "Taxable income", "Marginal rate"]
+    assert _table_rows("marginal_utility_table")[0] == [
+        "Units consumed",
+        "Total utility",
+        "Marginal utility",
+    ]
+    assert _table_rows("opportunity_cost_ppc_table")[0] == [
+        "Consumer goods",
+        "100",
+        "85",
+        "60",
+        "20",
+    ]
+    assert _table_rows("income_tax_schedule_table")[0] == [
+        "Band",
+        "Taxable income",
+        "Marginal rate",
+    ]
 
 
 def test_render_question_paper_uses_exam_style_strings(tmp_path):
@@ -264,8 +278,12 @@ def test_question_paper_uses_reference_bleed_and_crop_boxes(tmp_path):
         page = doc[0]
         assert round(page.mediabox.width, 2) == round(EDEXCEL_MEDIA_BOX[2], 2)
         assert round(page.mediabox.height, 2) == round(EDEXCEL_MEDIA_BOX[3], 2)
-        assert round(page.cropbox.width, 2) == round(EDEXCEL_CROP_BOX[2] - EDEXCEL_CROP_BOX[0], 2)
-        assert round(page.cropbox.height, 2) == round(EDEXCEL_CROP_BOX[3] - EDEXCEL_CROP_BOX[1], 2)
+        assert round(page.cropbox.width, 2) == round(
+            EDEXCEL_CROP_BOX[2] - EDEXCEL_CROP_BOX[0], 2
+        )
+        assert round(page.cropbox.height, 2) == round(
+            EDEXCEL_CROP_BOX[3] - EDEXCEL_CROP_BOX[1], 2
+        )
     finally:
         doc.close()
 
@@ -280,7 +298,13 @@ def test_answer_frame_geometry_matches_reference_page():
 
 
 def test_section_a_instruction_lines_fit_question_frame():
-    assert max(len(line.replace(CROSS_BOX_TOKEN, "X")) for line in SECTION_A_INSTRUCTION_LINES) <= 78
+    assert (
+        max(
+            len(line.replace(CROSS_BOX_TOKEN, "X"))
+            for line in SECTION_A_INSTRUCTION_LINES
+        )
+        <= 78
+    )
 
 
 def test_paper_1_render_uses_question_specific_pages(tmp_path):
@@ -320,7 +344,9 @@ def test_paper_1_long_question_4_context_keeps_mcq_on_source_page(tmp_path):
 
 
 @pytest.mark.parametrize("seed", [26092830, 26092886])
-def test_paper_1_tall_question_4_mcq_keeps_adequate_answer_space_and_32_pages(tmp_path, seed):
+def test_paper_1_tall_question_4_mcq_keeps_adequate_answer_space_and_32_pages(
+    tmp_path, seed
+):
     syllabus = load_syllabus(Path(__file__).parents[1] / "data/syllabus_seed.json")
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=seed)
@@ -359,10 +385,7 @@ def test_paper_3_ends_with_three_labelled_blank_pages(tmp_path):
 
     render_question_paper(blueprint, output)
 
-    assert all(
-        "BLANK PAGE" in page
-        for page in _pdf_text(output).split("\f")[33:36]
-    )
+    assert all("BLANK PAGE" in page for page in _pdf_text(output).split("\f")[33:36])
     import pymupdf as fitz
 
     with fitz.open(output) as document:
@@ -438,7 +461,9 @@ def test_paper_1_25_mark_questions_get_multiple_answer_pages():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=42)
-    question_7 = next(question for question in blueprint.questions if question.number == "7")
+    question_7 = next(
+        question for question in blueprint.questions if question.number == "7"
+    )
 
     assert _extra_answer_pages("paper_1", question_7) >= 3
 
@@ -469,7 +494,10 @@ def test_paper_1_section_b_intro_matches_reference_wording(tmp_path):
     pages = _pdf_text(output).split("\f")
     section_b_page = pages[_first_page_containing(output, "SECTION B") - 1]
 
-    assert "Read the following extracts (A to D) before answering Question 6" in section_b_page
+    assert (
+        "Read the following extracts (A to D) before answering Question 6"
+        in section_b_page
+    )
     assert "Write your answers in the spaces provided." in section_b_page
     assert "You are advised to spend 1 hour on this section." in section_b_page
     assert "Extract A" in section_b_page
@@ -498,7 +526,11 @@ def test_paper_1_section_b_prompt_page_lists_subquestions_with_marks(tmp_path):
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    section_b_page = next(page for page in _pdf_text(output).split("\f") if re.search(r"\b6\s+\(a\)", page))
+    section_b_page = next(
+        page
+        for page in _pdf_text(output).split("\f")
+        if re.search(r"\b6\s+\(a\)", page)
+    )
 
     for mark in ["(5)", "(8)", "(12)", "(10)", "(15)"]:
         assert mark in section_b_page
@@ -535,6 +567,7 @@ def test_section_a_pages_include_graph_labels(tmp_path):
 
     render_question_paper(blueprint, output)
     import pymupdf as fitz
+
     doc = fitz.open(output)
     image_count = sum(len(page.get_images()) for page in doc)
     doc.close()
@@ -547,7 +580,11 @@ def test_market_share_chart_uses_reference_style_labels(tmp_path):
     blueprint = next(
         build_paper_blueprint(config, syllabus, seed=seed)
         for seed in range(100)
-        if any(question.section == "A" and question.stimulus_kind == "market_share_bar_chart" for question in build_paper_blueprint(config, syllabus, seed=seed).questions)
+        if any(
+            question.section == "A"
+            and question.stimulus_kind == "market_share_bar_chart"
+            for question in build_paper_blueprint(config, syllabus, seed=seed).questions
+        )
     )
     output = tmp_path / "paper.pdf"
 
@@ -571,10 +608,16 @@ def test_section_a_question_3_not_rotated_or_garbled(tmp_path):
     )
     prompt_fragment = question_three.parts[0].prompt[:30]
     page_with_q3_a = next(page for page in pages if prompt_fragment in page)
-    page_with_q3_b = next(page for page in pages if "Total for Question 3 = 5 marks" in page)
+    page_with_q3_b = next(
+        page for page in pages if "Total for Question 3 = 5 marks" in page
+    )
 
     assert prompt_fragment in page_with_q3_a
-    assert "(a)" in page_with_q3_a or "Calculate" in page_with_q3_a or "Which one" in page_with_q3_a
+    assert (
+        "(a)" in page_with_q3_a
+        or "Calculate" in page_with_q3_a
+        or "Which one" in page_with_q3_a
+    )
     assert "(b)" in page_with_q3_b
     assert page_with_q3_a.count("DO NOT WRITE IN THIS AREA") <= 6
 
@@ -597,7 +640,10 @@ def test_section_a_draw_question_and_mcq_share_reference_page(tmp_path):
     assert "which one of the following" in _normalised(draw_page).lower()
     assert f"Total for Question {draw_question.number} = 5 marks" in draw_page
     assert "TOTAL FOR SECTION A = 25 MARKS" in _pdf_text(output)
-    assert "Read the following extracts (A to D) before answering Question 6" in _pdf_text(output)
+    assert (
+        "Read the following extracts (A to D) before answering Question 6"
+        in _pdf_text(output)
+    )
     assert "QUESTION 6 BEGINS ON THE NEXT PAGE" not in _pdf_text(output)
 
 
@@ -607,13 +653,25 @@ def test_section_a_cost_revenue_draw_axes_have_labels(tmp_path):
     blueprint, question = _blueprint_with_section_a_question(
         config,
         syllabus,
-        lambda candidate: any("Draw a cost and revenue diagram" in part.prompt for part in candidate.parts),
+        lambda candidate: any(
+            "Draw a cost and revenue diagram" in part.prompt for part in candidate.parts
+        ),
     )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
-    prompt_text = _normalised(next(part.prompt for part in question.parts if "Draw a cost and revenue diagram" in part.prompt))
-    draw_page = next(page for page in _pdf_text(output).split("\f") if prompt_text in _normalised(page))
+    prompt_text = _normalised(
+        next(
+            part.prompt
+            for part in question.parts
+            if "Draw a cost and revenue diagram" in part.prompt
+        )
+    )
+    draw_page = next(
+        page
+        for page in _pdf_text(output).split("\f")
+        if prompt_text in _normalised(page)
+    )
 
     assert "Costs/revenues" in draw_page
     assert "Output" in draw_page
@@ -636,14 +694,20 @@ def test_section_a_blank_draw_axes_match_reference_scale(tmp_path):
     assert max(axis_lines["vertical"]) >= BLANK_AXIS_HEIGHT_PT - 5
 
 
-def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(tmp_path):
+def test_section_a_calculate_question_moves_mcq_to_next_page_when_spacing_is_tight(
+    tmp_path,
+):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     config.sections[0].part_command_words[0] = ["calculate", "mcq"]
     blueprint, question = _blueprint_with_section_a_question(
         config,
         syllabus,
-        lambda candidate: len(candidate.parts) > 1 and candidate.parts[0].command_word == "calculate" and candidate.parts[1].command_word == "mcq",
+        lambda candidate: (
+            len(candidate.parts) > 1
+            and candidate.parts[0].command_word == "calculate"
+            and candidate.parts[1].command_word == "mcq"
+        ),
     )
     output = tmp_path / "paper.pdf"
 
@@ -667,14 +731,22 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     blueprint, question = _blueprint_with_section_a_question(
         config,
         syllabus,
-        lambda candidate: len(candidate.parts) > 1 and candidate.parts[0].command_word == "calculate" and candidate.parts[1].command_word == "mcq",
+        lambda candidate: (
+            len(candidate.parts) > 1
+            and candidate.parts[0].command_word == "calculate"
+            and candidate.parts[1].command_word == "mcq"
+        ),
     )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
     pages = _pdf_text(output).split("\f")
     prompt_text = _normalised(question.parts[0].prompt)
-    page_number = next(index + 1 for index, page in enumerate(pages) if prompt_text in _normalised(page))
+    page_number = next(
+        index + 1
+        for index, page in enumerate(pages)
+        if prompt_text in _normalised(page)
+    )
 
     # Check the response area reaches the safe footer with the heading inside
     # the frame. A crossed title can leave room for two extra rules, so line
@@ -682,9 +754,14 @@ def test_section_a_calculate_page_fills_remaining_answer_space(tmp_path):
     assert _answer_rule_count(output, page_number) >= 10
     with pymupdf.open(output) as document:
         page = document[page_number - 1]
-        rules = [item[1].y for path in page.get_drawings() for item in path["items"]
-                 if item[0] == "l" and abs(item[1].y - item[2].y) < .1
-                 and abs(item[1].x - item[2].x) > 350]
+        rules = [
+            item[1].y
+            for path in page.get_drawings()
+            for item in path["items"]
+            if item[0] == "l"
+            and abs(item[1].y - item[2].y) < 0.1
+            and abs(item[1].x - item[2].x) > 350
+        ]
         assert max(rules) >= page.rect.height - 128 - 24
 
 
@@ -702,9 +779,7 @@ def test_paper_two_three_part_page_uses_reference_answer_space(tmp_path) -> None
     pages = _pdf_text(output).split("\f")
     prompt = _normalised(calculation.prompt)
     page_number = next(
-        index + 1
-        for index, page in enumerate(pages)
-        if prompt in _normalised(page)
+        index + 1 for index, page in enumerate(pages) if prompt in _normalised(page)
     )
 
     assert _answer_rule_count(output, page_number) >= 20
@@ -713,7 +788,9 @@ def test_paper_two_three_part_page_uses_reference_answer_space(tmp_path) -> None
 def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "data_table")
+    blueprint, _question = _blueprint_with_section_a_question(
+        config, syllabus, lambda candidate: candidate.stimulus_kind == "data_table"
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
@@ -728,7 +805,11 @@ def test_section_a_generic_data_table_uses_economic_labels(tmp_path):
 def test_section_a_context_uses_specific_source_text(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
-    blueprint, _question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "minimum_wage_context")
+    blueprint, _question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: candidate.stimulus_kind == "minimum_wage_context",
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
@@ -742,7 +823,11 @@ def test_section_a_surplus_diagrams_label_shaded_area(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     config.sections[0].stimulus_slots[3] = ["consumer_surplus_diagram"]
-    blueprint, question = _blueprint_with_section_a_question(config, syllabus, lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram")
+    blueprint, question = _blueprint_with_section_a_question(
+        config,
+        syllabus,
+        lambda candidate: candidate.stimulus_kind == "consumer_surplus_diagram",
+    )
     output = tmp_path / "paper.pdf"
 
     render_question_paper(blueprint, output)
@@ -750,6 +835,7 @@ def test_section_a_surplus_diagrams_label_shaded_area(tmp_path):
 
     assert f"Total for Question {question.number}" in text
     import pymupdf as fitz
+
     doc = fitz.open(output)
     image_count = sum(len(page.get_images()) for page in doc)
     doc.close()
@@ -764,7 +850,11 @@ def test_paper_2_three_part_section_a_questions_render_all_parts(tmp_path):
 
     render_question_paper(blueprint, output)
     text = _pdf_text(output)
-    three_part_question = next(question for question in blueprint.questions if question.section == "A" and len(question.parts) == 3)
+    three_part_question = next(
+        question
+        for question in blueprint.questions
+        if question.section == "A" and len(question.parts) == 3
+    )
 
     assert f"Total for Question {three_part_question.number} = 5 marks" in text
     assert all(f"({part.label})" in text for part in three_part_question.parts)
@@ -773,7 +863,9 @@ def test_paper_2_three_part_section_a_questions_render_all_parts(tmp_path):
 def _pdf_page_count(path: Path) -> int:
     import subprocess
 
-    result = subprocess.run(["pdfinfo", str(path)], check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        ["pdfinfo", str(path)], check=True, capture_output=True, text=True
+    )
     for line in result.stdout.splitlines():
         if line.startswith("Pages:"):
             return int(line.split(":", 1)[1].strip())
@@ -811,7 +903,11 @@ def _answer_rule_count(path: Path, page_number: int) -> int:
                 if item[0] != "l":
                     continue
                 start, end = item[1], item[2]
-                if abs(start.y - end.y) < 0.5 and abs(end.x - start.x) > 250 and 100 < start.y < 760:
+                if (
+                    abs(start.y - end.y) < 0.5
+                    and abs(end.x - start.x) > 250
+                    and 100 < start.y < 760
+                ):
                     count += 1
         return count
     finally:
@@ -845,12 +941,16 @@ def _blank_axis_lines(path: Path) -> dict[str, list[float]]:
         doc.close()
 
 
-def _dark_pixels(path: Path, *, page_index: int, rect: tuple[int, int, int, int]) -> int:
+def _dark_pixels(
+    path: Path, *, page_index: int, rect: tuple[int, int, int, int]
+) -> int:
     import pymupdf as fitz
 
     doc = fitz.open(path)
     try:
-        pixmap = doc[page_index].get_pixmap(matrix=fitz.Matrix(3, 3), clip=fitz.Rect(*rect), colorspace=fitz.csGRAY)
+        pixmap = doc[page_index].get_pixmap(
+            matrix=fitz.Matrix(3, 3), clip=fitz.Rect(*rect), colorspace=fitz.csGRAY
+        )
         return sum(1 for value in pixmap.samples if value < 160)
     finally:
         doc.close()

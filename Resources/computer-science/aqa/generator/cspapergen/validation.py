@@ -44,7 +44,9 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
             raise ValueError(f"Duplicate question number {question.number}")
         seen_numbers.add(question.number)
         if question.topic_id not in syllabus.topic_ids:
-            raise ValueError(f"Question {question.number} uses unknown topic {question.topic_id}")
+            raise ValueError(
+                f"Question {question.number} uses unknown topic {question.topic_id}"
+            )
         if not question.parts:
             raise ValueError(f"Question {question.number} has no parts")
         if question.stimulus and any(
@@ -56,19 +58,33 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
         _validate_verified_question_contract(question)
         total += question.total_marks
         for part in question.parts:
-            if not part.assessment_objectives or sum(part.assessment_objectives.values()) != part.marks:
-                raise ValueError("CS requires explicit assessment objectives matching each tariff")
+            if (
+                not part.assessment_objectives
+                or sum(part.assessment_objectives.values()) != part.marks
+            ):
+                raise ValueError(
+                    "CS requires explicit assessment objectives matching each tariff"
+                )
             if part.marking.assessment_objectives != part.assessment_objectives:
-                raise ValueError("CS marking objective allocation differs from the item")
+                raise ValueError(
+                    "CS marking objective allocation differs from the item"
+                )
             objective_totals.update(part.assessment_objectives)
             if part.expected_minutes is None or not isclose(
-                part.expected_minutes, blueprint.duration_minutes * part.marks / blueprint.total_marks
+                part.expected_minutes,
+                blueprint.duration_minutes * part.marks / blueprint.total_marks,
             ):
-                raise ValueError("CS item timing must match the declared component or bank allowance")
+                raise ValueError(
+                    "CS item timing must match the declared component or bank allowance"
+                )
             if part.marks <= 0:
-                raise ValueError(f"Question {question.number}.{part.label} has invalid marks")
+                raise ValueError(
+                    f"Question {question.number}.{part.label} has invalid marks"
+                )
             if not part.prompt.strip():
-                raise ValueError(f"Question {question.number}.{part.label} has no prompt")
+                raise ValueError(
+                    f"Question {question.number}.{part.label} has no prompt"
+                )
             prompt_key = " ".join(part.prompt.casefold().split())
             if prompt_key in seen_prompts:
                 raise ValueError(
@@ -76,7 +92,9 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
                 )
             seen_prompts.add(prompt_key)
             if not part.marking.points:
-                raise ValueError(f"Question {question.number}.{part.label} has no marking guidance")
+                raise ValueError(
+                    f"Question {question.number}.{part.label} has no marking guidance"
+                )
             points = [
                 " ".join(point.casefold().split())
                 for point in part.marking.points
@@ -92,9 +110,13 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
                     "traceable marking points"
                 )
             if not part.marking.ao:
-                raise ValueError(f"Question {question.number}.{part.label} has no AO reference")
+                raise ValueError(
+                    f"Question {question.number}.{part.label} has no AO reference"
+                )
             if part.options and len(part.options) != 4:
-                raise ValueError(f"Question {question.number}.{part.label} must have four options")
+                raise ValueError(
+                    f"Question {question.number}.{part.label} must have four options"
+                )
             if part.options:
                 labels = {option.label for option in part.options}
                 if labels != {"A", "B", "C", "D"}:
@@ -107,12 +129,18 @@ def validate_blueprint(blueprint: PaperBlueprint, syllabus: Syllabus) -> None:
                         "correct option"
                     )
     if total != blueprint.total_marks:
-        raise ValueError(f"Question marks total {total}, expected {blueprint.total_marks}")
+        raise ValueError(
+            f"Question marks total {total}, expected {blueprint.total_marks}"
+        )
     if blueprint.assessment_kind == "full-paper":
-        expected = {"1": {"AO1": 20, "AO2": 30, "AO3": 50},
-                    "2": {"AO1": 56, "AO2": 40, "AO3": 4}}[blueprint.paper_number]
+        expected = {
+            "1": {"AO1": 20, "AO2": 30, "AO3": 50},
+            "2": {"AO1": 56, "AO2": 40, "AO3": 4},
+        }[blueprint.paper_number]
         if dict(objective_totals) != expected:
-            raise ValueError("CS full-paper objective budget differs from the calibrated task plan")
+            raise ValueError(
+                "CS full-paper objective budget differs from the calibrated task plan"
+            )
 
 
 def _validate_question_bank_identity(
@@ -158,7 +186,9 @@ def _validate_verified_question_contract(question) -> None:
             )
     if question.style_id == "stored_program":
         cycle = " ".join(question.parts[1].marking.points).casefold()
-        if not all(name in cycle for name in ("address bus", "data bus", "control bus")):
+        if not all(
+            name in cycle for name in ("address bus", "data bus", "control bus")
+        ):
             raise ValueError("Fetch-decode-execute guidance must use all three buses")
     if question.style_id in {"truth_table_completion", "boolean_simplification"}:
         expression_text = " ".join(

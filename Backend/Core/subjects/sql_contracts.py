@@ -67,7 +67,9 @@ class SQLLiteralContract(_Frozen):
 
     @model_validator(mode="after")
     def matching_value_type(self) -> SQLLiteralContract:
-        if self.kind == "integer" and (not isinstance(self.value, int) or isinstance(self.value, bool)):
+        if self.kind == "integer" and (
+            not isinstance(self.value, int) or isinstance(self.value, bool)
+        ):
             raise ValueError("integer SQL literal requires an integer value")
         if self.kind == "text" and not isinstance(self.value, str):
             raise ValueError("text SQL literal requires a string value")
@@ -128,10 +130,14 @@ class SQLSourceContract(_Frozen):
                     try:
                         target_table, target_column = column.foreign_key.split(".", 1)
                     except ValueError as error:
-                        raise ValueError("SQL foreign key must name table.column") from error
+                        raise ValueError(
+                            "SQL foreign key must name table.column"
+                        ) from error
                     target = _contract_column(tables, target_table, target_column)
                     if not target.primary_key:
-                        raise ValueError("SQL foreign key must reference a declared key")
+                        raise ValueError(
+                            "SQL foreign key must reference a declared key"
+                        )
         sample_names = [sample.table.casefold() for sample in self.sample_tables]
         if len(sample_names) != len(set(sample_names)):
             raise ValueError("SQL sample tables must be unique")
@@ -184,11 +190,11 @@ def _validate_supported_select_intent(
         try:
             table_name, column_name = field_name.split(".", 1)
         except ValueError as error:
-            raise ValueError("SQL SELECT intent fields must name table.column") from error
+            raise ValueError(
+                "SQL SELECT intent fields must name table.column"
+            ) from error
         _contract_column(tables, table_name, column_name)
-    expected_join = frozenset(
-        {("session", "sessionid"), ("booking", "sessionid")}
-    )
+    expected_join = frozenset({("session", "sessionid"), ("booking", "sessionid")})
     declared_joins = {
         frozenset(
             {
@@ -199,8 +205,7 @@ def _validate_supported_select_intent(
         for join in joins
     }
     if (
-        [table.casefold() for table in intent.source_tables]
-        != ["session", "booking"]
+        [table.casefold() for table in intent.source_tables] != ["session", "booking"]
         or intent.projection_field.casefold() != "session.activity"
         or intent.group_field.casefold() != "session.activity"
         or intent.minimum_count != 5
@@ -221,7 +226,9 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
             SQLTableContract(
                 name="MEMBER",
                 columns=[
-                    SQLColumnContract(name="MemberID", nullable=False, primary_key=True),
+                    SQLColumnContract(
+                        name="MemberID", nullable=False, primary_key=True
+                    ),
                     SQLColumnContract(name="FullName", nullable=False),
                     SQLColumnContract(name="Email", nullable=True),
                 ],
@@ -230,7 +237,9 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
             SQLTableContract(
                 name="SESSION",
                 columns=[
-                    SQLColumnContract(name="SessionID", nullable=False, primary_key=True),
+                    SQLColumnContract(
+                        name="SessionID", nullable=False, primary_key=True
+                    ),
                     SQLColumnContract(name="Activity", nullable=False),
                     SQLColumnContract(name="StartsAt", nullable=False),
                     SQLColumnContract(name="Capacity", nullable=False),
@@ -241,11 +250,15 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
                 name="BOOKING",
                 columns=[
                     SQLColumnContract(
-                        name="MemberID", nullable=False, primary_key=True,
+                        name="MemberID",
+                        nullable=False,
+                        primary_key=True,
                         foreign_key="MEMBER.MemberID",
                     ),
                     SQLColumnContract(
-                        name="SessionID", nullable=False, primary_key=True,
+                        name="SessionID",
+                        nullable=False,
+                        primary_key=True,
                         foreign_key="SESSION.SessionID",
                     ),
                     SQLColumnContract(name="BookedAt", nullable=True),
@@ -254,10 +267,14 @@ def fitness_centre_sql_contract() -> SQLSourceContract:
                 primary_key=["MemberID", "SessionID"],
             ),
         ],
-        joins=[SQLJoinContract(
-            left_table="SESSION", left_column="SessionID",
-            right_table="BOOKING", right_column="SessionID",
-        )],
+        joins=[
+            SQLJoinContract(
+                left_table="SESSION",
+                left_column="SessionID",
+                right_table="BOOKING",
+                right_column="SessionID",
+            )
+        ],
         intents={
             "2": SQLSelectIntent(
                 source_tables=["SESSION", "BOOKING"],
@@ -371,7 +388,9 @@ def sql_source_intent_sha256(contract: SQLSourceContract, intent_id: str) -> str
         "intent": intent.model_dump(mode="json"),
     }
     return hashlib.sha256(
-        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        json.dumps(
+            payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
     ).hexdigest()
 
 
@@ -403,12 +422,17 @@ def validate_sql_response(
     try:
         intent = contract.intents[intent_id]
     except KeyError:
-        return _result(digest, [_finding("unknown-intent", "The SQL intent is unavailable.", "answer")])
+        return _result(
+            digest,
+            [_finding("unknown-intent", "The SQL intent is unavailable.", "answer")],
+        )
     findings = _validate_one(answer, contract, intent, "answer")
     for index, point in enumerate(mark_points, start=1):
         statement = _purported_statement(point)
         if statement is not None:
-            findings.extend(_validate_one(statement, contract, intent, f"mark_points[{index}]") )
+            findings.extend(
+                _validate_one(statement, contract, intent, f"mark_points[{index}]")
+            )
     return _result(digest, findings)
 
 
@@ -450,7 +474,9 @@ def _validate_one(
         stream.finish()
         return []
     except _SQLProblem as error:
-        return [_finding(error.code, error.message, location, unsupported=error.unsupported)]
+        return [
+            _finding(error.code, error.message, location, unsupported=error.unsupported)
+        ]
 
 
 def _purported_statement(text: str) -> str | None:
@@ -482,7 +508,11 @@ def _purported_statement(text: str) -> str | None:
             re.IGNORECASE | re.DOTALL,
         )
         if fence is None:
-            if declared_sql or explicit_sql_fence or _has_sql_statement_shape(candidate):
+            if (
+                declared_sql
+                or explicit_sql_fence
+                or _has_sql_statement_shape(candidate)
+            ):
                 return original
             return None
         declared_sql = declared_sql or explicit_sql_fence
@@ -490,7 +520,11 @@ def _purported_statement(text: str) -> str | None:
         if "```" in candidate or re.match(
             r"^(?:SQL|QUERY|ANSWER)\s*:", candidate, re.IGNORECASE
         ):
-            return original if declared_sql or _has_sql_statement_shape(candidate) else None
+            return (
+                original
+                if declared_sql or _has_sql_statement_shape(candidate)
+                else None
+            )
     if declared_sql or _has_sql_statement_shape(candidate):
         return candidate
     return None
@@ -511,7 +545,9 @@ _SQL_STATEMENT_SHAPES = (
 
 # Recognise executable shapes without extracting a statement substring.
 def _has_sql_statement_shape(text: str) -> bool:
-    return any(re.search(pattern, text, re.IGNORECASE) for pattern in _SQL_STATEMENT_SHAPES)
+    return any(
+        re.search(pattern, text, re.IGNORECASE) for pattern in _SQL_STATEMENT_SHAPES
+    )
 
 
 @dataclass(frozen=True)
@@ -535,8 +571,22 @@ _TOKEN = re.compile(
     re.DOTALL,
 )
 _KEYWORDS = {
-    "AS", "ASC", "BY", "DESC", "FROM", "GROUP", "HAVING", "INNER",
-    "INSERT", "INTO", "JOIN", "ON", "ORDER", "SELECT", "VALUES", "WHERE",
+    "AS",
+    "ASC",
+    "BY",
+    "DESC",
+    "FROM",
+    "GROUP",
+    "HAVING",
+    "INNER",
+    "INSERT",
+    "INTO",
+    "JOIN",
+    "ON",
+    "ORDER",
+    "SELECT",
+    "VALUES",
+    "WHERE",
 }
 
 
@@ -545,7 +595,11 @@ class _TokenStream:
         if not isinstance(text, str) or not text.strip():
             raise _SQLProblem("non-sql", "A complete SQL statement is required.")
         if len(text) > _MAX_SQL_LENGTH:
-            raise _SQLProblem("input-limit", "The SQL statement exceeds the verification length limit.", unsupported=True)
+            raise _SQLProblem(
+                "input-limit",
+                "The SQL statement exceeds the verification length limit.",
+                unsupported=True,
+            )
         self.tokens: list[_Token] = []
         depth = 0
         for match in _TOKEN.finditer(text):
@@ -554,30 +608,53 @@ class _TokenStream:
             if kind == "space":
                 continue
             if kind == "bad":
-                raise _SQLProblem("unsupported-token", f"Unsupported SQL token {value!r}.", unsupported=True)
+                raise _SQLProblem(
+                    "unsupported-token",
+                    f"Unsupported SQL token {value!r}.",
+                    unsupported=True,
+                )
             if value == "(":
                 depth += 1
                 if depth > _MAX_PARENTHESES:
-                    raise _SQLProblem("input-limit", "SQL nesting exceeds the verification limit.", unsupported=True)
+                    raise _SQLProblem(
+                        "input-limit",
+                        "SQL nesting exceeds the verification limit.",
+                        unsupported=True,
+                    )
             elif value == ")":
                 depth -= 1
                 if depth < 0:
-                    raise _SQLProblem("trailing-input", "The SQL statement has an unmatched closing parenthesis.")
+                    raise _SQLProblem(
+                        "trailing-input",
+                        "The SQL statement has an unmatched closing parenthesis.",
+                    )
             self.tokens.append(_Token(kind, value))
             if len(self.tokens) > _MAX_SQL_TOKENS:
-                raise _SQLProblem("input-limit", "The SQL statement exceeds the token limit.", unsupported=True)
+                raise _SQLProblem(
+                    "input-limit",
+                    "The SQL statement exceeds the token limit.",
+                    unsupported=True,
+                )
         if depth != 0:
-            raise _SQLProblem("incomplete-input", "The SQL statement has an unmatched parenthesis.")
+            raise _SQLProblem(
+                "incomplete-input", "The SQL statement has an unmatched parenthesis."
+            )
         self.index = 0
 
     def peek(self, value: str | None = None) -> bool:
         if self.index >= len(self.tokens):
             return False
-        return value is None or self.tokens[self.index].value.casefold() == value.casefold()
+        return (
+            value is None
+            or self.tokens[self.index].value.casefold() == value.casefold()
+        )
 
     def pop(self) -> _Token:
         if self.index >= len(self.tokens):
-            raise _SQLProblem("incomplete-input", "The SQL statement ended before the required clauses were complete.")
+            raise _SQLProblem(
+                "incomplete-input",
+                "The SQL statement ended before the required clauses were complete.",
+            )
         token = self.tokens[self.index]
         self.index += 1
         return token
@@ -585,7 +662,9 @@ class _TokenStream:
     def keyword(self, value: str) -> None:
         token = self.pop()
         if token.kind != "identifier" or token.value.casefold() != value.casefold():
-            raise _SQLProblem("statement-shape", f"Expected {value} in the SQL statement.")
+            raise _SQLProblem(
+                "statement-shape", f"Expected {value} in the SQL statement."
+            )
 
     def accept(self, value: str) -> bool:
         if self.peek(value):
@@ -611,13 +690,22 @@ class _TokenStream:
             return int(token.value)
         if token.kind == "string":
             return token.value[1:-1].replace("''", "'")
-        raise _SQLProblem("literal", "Only integer and single-quoted text literals are supported.", unsupported=True)
+        raise _SQLProblem(
+            "literal",
+            "Only integer and single-quoted text literals are supported.",
+            unsupported=True,
+        )
 
     def finish(self) -> None:
         if self.accept(";") and self.index < len(self.tokens):
-            raise _SQLProblem("trailing-input", "SQL input continues after the completed statement.")
+            raise _SQLProblem(
+                "trailing-input", "SQL input continues after the completed statement."
+            )
         if self.index < len(self.tokens):
-            raise _SQLProblem("trailing-input", "SQL input contains an unsupported or incomplete suffix.")
+            raise _SQLProblem(
+                "trailing-input",
+                "SQL input contains an unsupported or incomplete suffix.",
+            )
 
 
 @dataclass(frozen=True)
@@ -677,7 +765,11 @@ def _count(stream: _TokenStream) -> _Count:
 def _table(stream: _TokenStream) -> _Table:
     name = stream.identifier()
     alias = name
-    if stream.accept("AS") or (stream.peek() and stream.tokens[stream.index].kind == "identifier" and stream.tokens[stream.index].value.upper() not in _KEYWORDS):
+    if stream.accept("AS") or (
+        stream.peek()
+        and stream.tokens[stream.index].kind == "identifier"
+        and stream.tokens[stream.index].value.upper() not in _KEYWORDS
+    ):
         alias = stream.identifier()
     return _Table(name, alias)
 
@@ -685,7 +777,9 @@ def _table(stream: _TokenStream) -> _Table:
 def _equality(stream: _TokenStream) -> tuple[_Field, _Field]:
     left = _field(stream)
     if not stream.accept("="):
-        raise _SQLProblem("wrong-join", "The supported join requires one declared column equality.")
+        raise _SQLProblem(
+            "wrong-join", "The supported join requires one declared column equality."
+        )
     return left, _field(stream)
 
 
@@ -693,10 +787,16 @@ def _parse_select(stream: _TokenStream) -> _Select:
     stream.keyword("SELECT")
     field = _field(stream)
     if not stream.accept(","):
-        raise _SQLProblem("projection", "SELECT must project Activity and one booking count.")
+        raise _SQLProblem(
+            "projection", "SELECT must project Activity and one booking count."
+        )
     count = _count(stream)
     alias = None
-    if stream.accept("AS") or (stream.peek() and stream.tokens[stream.index].kind == "identifier" and stream.tokens[stream.index].value.upper() not in _KEYWORDS):
+    if stream.accept("AS") or (
+        stream.peek()
+        and stream.tokens[stream.index].kind == "identifier"
+        and stream.tokens[stream.index].value.upper() not in _KEYWORDS
+    ):
         alias = stream.identifier()
     stream.keyword("FROM")
     first = _table(stream)
@@ -718,7 +818,9 @@ def _parse_select(stream: _TokenStream) -> _Select:
     having_count = _count(stream)
     operator = stream.pop()
     if operator.kind != "operator":
-        raise _SQLProblem("wrong-threshold", "HAVING requires a supported integer comparison.")
+        raise _SQLProblem(
+            "wrong-threshold", "HAVING requires a supported integer comparison."
+        )
     threshold = stream.integer()
     stream.keyword("ORDER")
     stream.keyword("BY")
@@ -729,8 +831,17 @@ def _parse_select(stream: _TokenStream) -> _Select:
     descending = stream.accept("DESC")
     if not descending:
         stream.accept("ASC")
-    return _Select(field, count, alias, (first, second), join, group,
-                   (having_count, operator.value, threshold), order, descending)
+    return _Select(
+        field,
+        count,
+        alias,
+        (first, second),
+        join,
+        group,
+        (having_count, operator.value, threshold),
+        order,
+        descending,
+    )
 
 
 def _parse_insert(stream: _TokenStream) -> _Insert:
@@ -755,7 +866,9 @@ def _parse_insert(stream: _TokenStream) -> _Insert:
     return _Insert(table, columns, values)
 
 
-def _validate_select(parsed: _Select, contract: SQLSourceContract, intent: SQLSelectIntent) -> None:
+def _validate_select(
+    parsed: _Select, contract: SQLSourceContract, intent: SQLSelectIntent
+) -> None:
     schema = {table.name.casefold(): table for table in contract.tables}
     aliases: dict[str, SQLTableContract] = {}
     for table_ref in parsed.tables:
@@ -768,11 +881,16 @@ def _validate_select(parsed: _Select, contract: SQLSourceContract, intent: SQLSe
         aliases[key] = table
     expected_tables = {name.casefold() for name in intent.source_tables}
     if {table.name.casefold() for table in aliases.values()} != expected_tables:
-        raise _SQLProblem("wrong-tables", "SELECT must use exactly the declared SESSION and BOOKING sources.")
+        raise _SQLProblem(
+            "wrong-tables",
+            "SELECT must use exactly the declared SESSION and BOOKING sources.",
+        )
 
     field = _resolve(parsed.field, aliases)
     if field != _normal_field(intent.projection_field):
-        raise _SQLProblem("projection", "SELECT does not project the requested Activity field.")
+        raise _SQLProblem(
+            "projection", "SELECT does not project the requested Activity field."
+        )
     if (
         parsed.count_alias is not None
         and parsed.count_alias.casefold() == parsed.field.name.casefold()
@@ -783,26 +901,45 @@ def _validate_select(parsed: _Select, contract: SQLSourceContract, intent: SQLSe
         )
     group = _resolve(parsed.group, aliases)
     if group != _normal_field(intent.group_field):
-        raise _SQLProblem("wrong-group", "GROUP BY must combine rows for the requested Activity field.")
+        raise _SQLProblem(
+            "wrong-group",
+            "GROUP BY must combine rows for the requested Activity field.",
+        )
 
     left, right = (_resolve(value, aliases) for value in parsed.join)
     declared = {
-        frozenset({_normal_field(f"{join.left_table}.{join.left_column}"),
-                   _normal_field(f"{join.right_table}.{join.right_column}")})
+        frozenset(
+            {
+                _normal_field(f"{join.left_table}.{join.left_column}"),
+                _normal_field(f"{join.right_table}.{join.right_column}"),
+            }
+        )
         for join in contract.joins
     }
     if frozenset({left, right}) not in declared:
-        raise _SQLProblem("wrong-join", "The join does not use the declared SessionID relationship.")
+        raise _SQLProblem(
+            "wrong-join", "The join does not use the declared SessionID relationship."
+        )
 
     _validate_count(parsed.count, aliases)
     _validate_count(parsed.having[0], aliases)
     operator, threshold = parsed.having[1:]
-    if not ((operator == ">=" and threshold == intent.minimum_count)
-            or (operator == ">" and threshold == intent.minimum_count - 1)):
-        raise _SQLProblem("wrong-threshold", "HAVING does not express the requested integer minimum.")
+    if not (
+        (operator == ">=" and threshold == intent.minimum_count)
+        or (operator == ">" and threshold == intent.minimum_count - 1)
+    ):
+        raise _SQLProblem(
+            "wrong-threshold", "HAVING does not express the requested integer minimum."
+        )
     if isinstance(parsed.order, str):
-        if parsed.count_alias is None or parsed.order.casefold() != parsed.count_alias.casefold():
-            raise _SQLProblem("wrong-order", "ORDER BY uses neither the aggregate nor its declared alias.")
+        if (
+            parsed.count_alias is None
+            or parsed.order.casefold() != parsed.count_alias.casefold()
+        ):
+            raise _SQLProblem(
+                "wrong-order",
+                "ORDER BY uses neither the aggregate nor its declared alias.",
+            )
     else:
         _validate_count(parsed.order, aliases)
     if not parsed.descending:
@@ -819,20 +956,35 @@ def _validate_count(count: _Count, aliases: dict[str, SQLTableContract]) -> None
             unsupported=True,
         )
     table_name, column_name = _resolve(count.operand, aliases)
-    table = next(table for table in aliases.values() if table.name.casefold() == table_name)
-    column = next(column for column in table.columns if column.name.casefold() == column_name)
+    table = next(
+        table for table in aliases.values() if table.name.casefold() == table_name
+    )
+    column = next(
+        column for column in table.columns if column.name.casefold() == column_name
+    )
     if column.nullable:
-        raise _SQLProblem("nullable-count", "COUNT of a nullable field may not equal the requested row count.")
+        raise _SQLProblem(
+            "nullable-count",
+            "COUNT of a nullable field may not equal the requested row count.",
+        )
 
 
 def _resolve(field: _Field, aliases: dict[str, SQLTableContract]) -> tuple[str, str]:
     if field.qualifier is not None:
         table = aliases.get(field.qualifier.casefold())
         if table is None:
-            raise _SQLProblem("unknown-alias", f"Unknown table or alias {field.qualifier}.")
-        columns = [column for column in table.columns if column.name.casefold() == field.name.casefold()]
+            raise _SQLProblem(
+                "unknown-alias", f"Unknown table or alias {field.qualifier}."
+            )
+        columns = [
+            column
+            for column in table.columns
+            if column.name.casefold() == field.name.casefold()
+        ]
         if not columns:
-            raise _SQLProblem("unknown-column", f"Unknown column {field.qualifier}.{field.name}.")
+            raise _SQLProblem(
+                "unknown-column", f"Unknown column {field.qualifier}.{field.name}."
+            )
         return table.name.casefold(), columns[0].name.casefold()
     matches = [
         (table.name.casefold(), column.name.casefold())
@@ -847,7 +999,9 @@ def _resolve(field: _Field, aliases: dict[str, SQLTableContract]) -> tuple[str, 
     return matches[0]
 
 
-def _validate_insert(parsed: _Insert, contract: SQLSourceContract, intent: SQLInsertIntent) -> None:
+def _validate_insert(
+    parsed: _Insert, contract: SQLSourceContract, intent: SQLInsertIntent
+) -> None:
     if parsed.table.casefold() != intent.target_table.casefold():
         raise _SQLProblem("wrong-target", "INSERT targets a different table.")
     schema = {table.name.casefold(): table for table in contract.tables}
@@ -861,15 +1015,24 @@ def _validate_insert(parsed: _Insert, contract: SQLSourceContract, intent: SQLIn
             else [column.name for column in table.columns]
         )
     ]
-    if len(names) != len(set(names)) or set(names) != set(declared) or len(parsed.values) != len(names):
-        raise _SQLProblem("column-map", "INSERT must bind every target column exactly once.")
+    if (
+        len(names) != len(set(names))
+        or set(names) != set(declared)
+        or len(parsed.values) != len(names)
+    ):
+        raise _SQLProblem(
+            "column-map", "INSERT must bind every target column exactly once."
+        )
     expected = {name.casefold(): literal for name, literal in intent.values.items()}
     for name, value in zip(names, parsed.values, strict=True):
         if name not in declared:
             raise _SQLProblem("unknown-column", f"Unknown INSERT column {name}.")
         literal = expected[name]
         if type(value) is not type(literal.value) or value != literal.value:
-            raise _SQLProblem("wrong-literal", f"INSERT supplies the wrong value for {declared[name]}.")
+            raise _SQLProblem(
+                "wrong-literal",
+                f"INSERT supplies the wrong value for {declared[name]}.",
+            )
 
 
 def _normal_field(value: str) -> tuple[str, str]:

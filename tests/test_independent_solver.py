@@ -25,8 +25,17 @@ def _calculation_item() -> dict:
                 "variable_cost": 60,
                 "units": 10,
             },
-            "calculation_input_units": {"revenue": "GBP/unit", "variable_cost": "GBP/unit", "units": "units"},
-            "calculation_output": {"role": "result", "unit": "GBP", "decimal_places": 0, "scheme_pattern": r"Answer (?P<value>\d+)"},
+            "calculation_input_units": {
+                "revenue": "GBP/unit",
+                "variable_cost": "GBP/unit",
+                "units": "units",
+            },
+            "calculation_output": {
+                "role": "result",
+                "unit": "GBP",
+                "decimal_places": 0,
+                "scheme_pattern": r"Answer (?P<value>\d+)",
+            },
             "observable_mark_points": [
                 "subtract variable cost from revenue",
                 "multiply unit contribution by units",
@@ -108,7 +117,11 @@ def test_model_solver_prompt_excludes_nested_answer_key_and_marking_guidance() -
         def generate_json(self, prompt: str) -> dict[str, object]:
             prompts.append(prompt)
             return complete_solver_response(
-                {"answer": "42", "steps": ["Compute from the supplied data."], "mark_points": ["42"]}
+                {
+                    "answer": "42",
+                    "steps": ["Compute from the supplied data."],
+                    "mark_points": ["42"],
+                }
             )
 
     IndependentSolver(Client()).solve(
@@ -190,7 +203,11 @@ def test_solver_and_reconciliation_accept_structured_rubric_metadata() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
             return complete_solver_response(
-                {"answer": "19.6%", "steps": ["Calculate the percentage change"], "mark_points": ["Percentage change is 19.6%"]}
+                {
+                    "answer": "19.6%",
+                    "steps": ["Calculate the percentage change"],
+                    "mark_points": ["Percentage change is 19.6%"],
+                }
             )
 
     item = {
@@ -245,12 +262,14 @@ def test_solver_and_reconciliation_accept_structured_rubric_metadata() -> None:
 def test_solver_rejects_citation_to_unavailable_evidence() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
-            return complete_solver_response({
-                "answer": "Exports increased.",
-                "steps": ["Use source-b"],
-                "mark_points": ["identifies the increase"],
-                "evidence_ids": ["source-b"],
-            })
+            return complete_solver_response(
+                {
+                    "answer": "Exports increased.",
+                    "steps": ["Use source-b"],
+                    "mark_points": ["identifies the increase"],
+                    "evidence_ids": ["source-b"],
+                }
+            )
 
     with pytest.raises(ValueError, match="unavailable evidence"):
         IndependentSolver(Client()).solve(
@@ -262,12 +281,14 @@ def test_solver_rejects_citation_to_unavailable_evidence() -> None:
 def test_one_mark_multiple_choice_rejects_contradictory_solver_mark_point() -> None:
     class Client:
         def generate_json(self, _prompt: str) -> dict[str, object]:
-            return complete_solver_response({
-                "answer": "Purchases journal",
-                "mark_points": [
-                    "The purchase ledger is the book of prime entry for credit purchases"
-                ],
-            })
+            return complete_solver_response(
+                {
+                    "answer": "Purchases journal",
+                    "mark_points": [
+                        "The purchase ledger is the book of prime entry for credit purchases"
+                    ],
+                }
+            )
 
     item = {
         "id": "q-mcq",
@@ -294,11 +315,13 @@ def test_multiple_choice_solver_hides_key_and_normalises_option_number() -> None
 
         def generate_json(self, prompt: str) -> dict[str, object]:
             self.prompt = prompt
-            return complete_solver_response({
-                "answer": "1",
-                "mark_points": ["1"],
-                "evidence_ids": ["q-mcq"],
-            })
+            return complete_solver_response(
+                {
+                    "answer": "1",
+                    "mark_points": ["1"],
+                    "evidence_ids": ["q-mcq"],
+                }
+            )
 
     client = Client()
     item = {
@@ -445,13 +468,18 @@ def test_open_response_solver_examples_are_not_treated_as_exhaustive() -> None:
 
     assert not solution.mark_points_exhaustive
     assert result.passed, result.issues
+
+
 # Specialist schemes can encode keyed letters instead of full option text.
 def test_specialist_reconciliation_rejects_a_different_keyed_option() -> None:
     from Backend.Core.independent_solver import require_solution_matches_scheme
 
-    solution = CanonicalSolution(item_id="q1", answer="Current ratio", mark_points=["Current ratio"])
+    solution = CanonicalSolution(
+        item_id="q1", answer="Current ratio", mark_points=["Current ratio"]
+    )
     with pytest.raises(ValueError, match="keyed option"):
         require_solution_matches_scheme(
-            solution, {"marks": 1, "mark_scheme": ["Current ratio"]},
+            solution,
+            {"marks": 1, "mark_scheme": ["Current ratio"]},
             expected_choice="Gearing",
         )

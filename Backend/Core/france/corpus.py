@@ -173,9 +173,7 @@ def reconcile_archive_discovery(
     check_url(prefix)
 
     files = [
-        document.get("file")
-        for row in rows
-        for document in row.get("documents", [])
+        document.get("file") for row in rows for document in row.get("documents", [])
     ]
     if any(not isinstance(filename, str) or not filename for filename in files):
         raise ValueError("Archive document is missing its filename")
@@ -267,9 +265,7 @@ def reconcile_archive_discovery(
             "standard_papers": len(papers),
             "accessibility_variants": len(variants),
             "total_links": len(urls),
-            "holdout_papers": sum(
-                paper["split"] == "holdout" for paper in papers
-            ),
+            "holdout_papers": sum(paper["split"] == "holdout" for paper in papers),
         },
         "documents": foundational + papers,
         "archive_variants": variants,
@@ -281,8 +277,7 @@ def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
     if manifest.get("failures") or not manifest.get("complete_archive"):
         raise ValueError("Cannot pin an incomplete French archive acquisition")
     by_id = {
-        document["id"]: document["sha256"]
-        for document in manifest.get("documents", [])
+        document["id"]: document["sha256"] for document in manifest.get("documents", [])
     }
     expected = {document["id"] for document in register.get("documents", [])}
     missing = sorted(expected - by_id.keys())
@@ -296,9 +291,7 @@ def pin_reconciled_hashes(register: dict, manifest: dict) -> dict:
         document["sha256"] = digest
     reconciliation = pinned["archive_reconciliation"]
     reconciliation["content_hashes_complete"] = True
-    reconciliation["duplicate_content_groups"] = len(
-        manifest.get("duplicates", [])
-    )
+    reconciliation["duplicate_content_groups"] = len(manifest.get("duplicates", []))
     reconciliation["acquired_documents"] = len(pinned["documents"])
     pinned["status"] = "archive-content-reconciled"
     return pinned
@@ -318,9 +311,7 @@ def duplicate_index_policy(documents: list[dict]) -> list[dict]:
             continue
         ordered_ids = sorted(document["id"] for document in copies)
         held_out = sorted(
-            document["id"]
-            for document in copies
-            if document["split"] == "holdout"
+            document["id"] for document in copies if document["split"] == "holdout"
         )
         canonical = held_out[0] if held_out else ordered_ids[0]
         groups.append(
@@ -443,12 +434,9 @@ def ingest(register: Path, output: Path) -> dict:
                 report["documents"].append({**asdict(source), "page_metrics": metrics})
             except Exception as error:
                 report["failures"].append({"id": entry["id"], "error": str(error)})
-    expected_archive = payload.get("archive_reconciliation", {}).get(
-        "standard_papers"
-    )
+    expected_archive = payload.get("archive_reconciliation", {}).get("standard_papers")
     acquired_archive = sum(
-        document["category"] == "official_paper"
-        for document in report["documents"]
+        document["category"] == "official_paper" for document in report["documents"]
     )
     report["complete_archive"] = bool(
         expected_archive is not None
@@ -485,7 +473,9 @@ def ingest(register: Path, output: Path) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Fetch explicitly registered public French PDFs; never infer redistribution rights.')
+    parser = argparse.ArgumentParser(
+        description="Fetch explicitly registered public French PDFs; never infer redistribution rights."
+    )
     parser.add_argument("--register", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()

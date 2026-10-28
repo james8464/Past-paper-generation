@@ -55,11 +55,17 @@ def graph_route_trace_catalogue_digest() -> str:
         "questions": (_QUESTION_1C, _QUESTION_1E, _QUESTION_1F, _QUESTION_1G),
         "criteria_1g": _CRITERIA_1G,
         "table_columns": ("Fixation / donnée", *"ABCDEF"),
-        "table_rows": ("1re distance (fixé : ___)", "1re préd.",
-                       "2e distance (fixé : ___)", "2e préd."),
+        "table_rows": (
+            "1re distance (fixé : ___)",
+            "1re préd.",
+            "2e distance (fixé : ___)",
+            "2e préd.",
+        ),
     }
     return sha256(
-        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        json.dumps(
+            payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
     ).hexdigest()
 
 

@@ -195,7 +195,9 @@ def test_enlarged_correction_keeps_source_table_with_introduction(
     render(path, package, True, large_print=True)
     with pymupdf.open(path) as pdf:
         introduction = [
-            page for page in pdf if page.search_for(f"Exercice {exercise + 1} (6 points)")
+            page
+            for page in pdf
+            if page.search_for(f"Exercice {exercise + 1} (6 points)")
         ]
         assert len(introduction) == 1
         # A case heading alone gives the reader no data to work with.
@@ -270,7 +272,9 @@ def test_compact_correction_has_no_footer_only_page_between_exercises(tmp_path):
 
 @pytest.mark.parametrize("correction", [False, True])
 @pytest.mark.parametrize("large_print", [False, True])
-def test_v34_print_policy_states_actual_review_limits(tmp_path, correction, large_print):
+def test_v34_print_policy_states_actual_review_limits(
+    tmp_path, correction, large_print
+):
     import pymupdf
 
     from tests.test_french_whole_case_pdf import render
@@ -395,7 +399,9 @@ def test_same_preference_generates_four_families_then_reports_exhaustion(tmp_pat
 def test_one_repeated_exercise_excludes_the_entire_family():
     from Backend.Core.france.extended_pipeline import choose_fresh_seed
 
-    assert choose_fresh_seed(270100, previous_texts=family_history(270100)[:1]) == 270101
+    assert (
+        choose_fresh_seed(270100, previous_texts=family_history(270100)[:1]) == 270101
+    )
 
 
 def test_unused_family_selection_wraps_signed_seed_without_overflow():
@@ -421,7 +427,9 @@ def test_unused_family_selection_rejects_invalid_seed(seed):
         choose_fresh_seed(seed)
 
 
-def test_unused_family_selection_does_not_swallow_unrelated_validation_errors(monkeypatch):
+def test_unused_family_selection_does_not_swallow_unrelated_validation_errors(
+    monkeypatch,
+):
     from Backend.Core.france import extended_pipeline, originality
 
     def broken_screen(*args, **kwargs):

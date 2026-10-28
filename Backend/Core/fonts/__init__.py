@@ -101,19 +101,27 @@ def register_font(font_name: str, fallback: str = "Helvetica") -> str:
         path = Path(candidate_path)
         if path.exists():
             try:
-                pdfmetrics.registerFont(TTFont(font_name, str(path), subfontIndex=subfont_index))
+                pdfmetrics.registerFont(
+                    TTFont(font_name, str(path), subfontIndex=subfont_index)
+                )
                 return font_name
             except Exception:
                 continue
     # Standard PDF fonts are face names, not TTF file paths. Register an alias
     # so renderers can keep using their semantic font name on non-macOS hosts.
     fallback_name = _standard_fallback(font_name, fallback)
-    pdfmetrics.registerFont(pdfmetrics.Font(font_name, fallback_name, "WinAnsiEncoding"))
+    pdfmetrics.registerFont(
+        pdfmetrics.Font(font_name, fallback_name, "WinAnsiEncoding")
+    )
     return font_name
 
 
-def register_fonts(*font_names: str, default_fallback: str = "Helvetica") -> dict[str, str]:
-    registered = {name: register_font(name, fallback=default_fallback) for name in font_names}
+def register_fonts(
+    *font_names: str, default_fallback: str = "Helvetica"
+) -> dict[str, str]:
+    registered = {
+        name: register_font(name, fallback=default_fallback) for name in font_names
+    }
     families: dict[str, dict[str, str]] = {}
     for name in registered:
         if name.endswith("-BoldItalic"):

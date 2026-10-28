@@ -14,15 +14,24 @@ def test_notes_are_included_in_project_and_mapped_to_subtopics():
 
 
 def test_note_context_and_points_are_relevant_to_topic():
-    context = note_context_for_topic("3.4", title="Market structures", keywords=["perfect competition"])
-    points = note_points_for_topic("3.4", title="Market structures", keywords=["efficiency"])
+    context = note_context_for_topic(
+        "3.4", title="Market structures", keywords=["perfect competition"]
+    )
+    points = note_points_for_topic(
+        "3.4", title="Market structures", keywords=["efficiency"]
+    )
 
     assert "perfect competition" in context.lower()
     assert any("efficiency" in point.lower() for point in points)
 
 
 def test_note_points_are_complete_clean_bullets():
-    points = note_points_for_topic("1.4", title="government intervention", keywords=["regulation", "taxation"], limit=6)
+    points = note_points_for_topic(
+        "1.4",
+        title="government intervention",
+        keywords=["regulation", "taxation"],
+        limit=6,
+    )
 
     assert points
     assert all(not point.startswith(("●", "•", "-", "o ")) for point in points)

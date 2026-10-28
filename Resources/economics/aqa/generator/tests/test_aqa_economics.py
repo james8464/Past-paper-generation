@@ -57,11 +57,15 @@ def test_paper_three_cover_counts_all_compulsory_mcqs(tmp_path):
 def test_paper_one_and_two_have_exact_aqa_choice_structure() -> None:
     for paper_id in ("paper_1", "paper_2"):
         rule = RULES[paper_id]
-        assert [(s.option_count, s.answer_options, s.option_marks) for s in rule.sections] == [
+        assert [
+            (s.option_count, s.answer_options, s.option_marks) for s in rule.sections
+        ] == [
             (2, 1, 40),
             (3, 1, 40),
         ]
-        assert [(q.kind, q.marks, q.command_word) for q in rule.sections[0].questions] == [
+        assert [
+            (q.kind, q.marks, q.command_word) for q in rule.sections[0].questions
+        ] == [
             ("calculation", 2, "Calculate"),
             ("data_response", 4, "Explain"),
             ("diagram_analysis", 9, "Explain"),
@@ -144,7 +148,9 @@ def test_written_tasks_are_topic_specific_and_do_not_use_vague_outcome_stems() -
                 continue
             focus_terms = question.authoring_context.get("task_focus_terms")
             assert isinstance(focus_terms, list) and focus_terms
-            assert any(term.casefold() in question.prompt.casefold() for term in focus_terms)
+            assert any(
+                term.casefold() in question.prompt.casefold() for term in focus_terms
+            )
             assert question.authoring_context.get("item_specific_mark_scheme") is True
             scheme = " ".join(question.mark_scheme).casefold()
             assert "demonstrate precise knowledge of" not in scheme
@@ -217,7 +223,10 @@ def test_written_diagram_contract_binds_prompt_scheme_and_renderer(monkeypatch) 
         for question in diagrams:
             contract = question.authoring_context["written_diagram_contract"]
             assert contract["cause"].casefold() in question.prompt.casefold()
-            assert contract["effect"].casefold() in " ".join(question.mark_scheme).casefold()
+            assert (
+                contract["effect"].casefold()
+                in " ".join(question.mark_scheme).casefold()
+            )
             before = len(captured)
             render_pdf._scheme_question_page(
                 question,
@@ -306,11 +315,19 @@ def test_paper_three_visual_questions_have_data_bound_diagrams() -> None:
         assert contract["inputs"]["curve"] in {"D", "S", "AD", "SRAS", "LRAS"}
         assert contract["inputs"]["direction"] in {"left", "right"}
         assert set(context) == {"visual_kind", "selected_response_contract"}
-        assert f"{contract['inputs']['curve']} curve".casefold() not in question.prompt.casefold()
-        assert f"to the {contract['inputs']['direction']}" not in question.prompt.casefold()
+        assert (
+            f"{contract['inputs']['curve']} curve".casefold()
+            not in question.prompt.casefold()
+        )
+        assert (
+            f"to the {contract['inputs']['direction']}"
+            not in question.prompt.casefold()
+        )
 
         changed = deepcopy(question.model_dump(mode="json"))
-        changed_inputs = changed["authoring_context"]["selected_response_contract"]["inputs"]
+        changed_inputs = changed["authoring_context"]["selected_response_contract"][
+            "inputs"
+        ]
         changed_inputs["direction"] = (
             "left" if changed_inputs["direction"] == "right" else "right"
         )
@@ -337,7 +354,9 @@ def test_paper_three_visual_questions_have_distinct_candidate_visible_stems() ->
     )
 
 
-def test_visual_renderer_consumes_only_the_public_selected_response_contract(monkeypatch) -> None:
+def test_visual_renderer_consumes_only_the_public_selected_response_contract(
+    monkeypatch,
+) -> None:
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
     question = next(
         option.questions[0]
@@ -352,7 +371,9 @@ def test_visual_renderer_consumes_only_the_public_selected_response_contract(mon
 
     monkeypatch.setattr(render_pdf, "_economic_diagram", capture)
     render_pdf._mcq_visual(question)
-    assert captured == question.authoring_context["selected_response_contract"]["inputs"]
+    assert (
+        captured == question.authoring_context["selected_response_contract"]["inputs"]
+    )
 
 
 def test_visual_key_is_derived_from_public_shift_not_private_choice() -> None:
@@ -445,12 +466,14 @@ def test_actual_tasks_have_explicit_candidate_objective_vectors() -> None:
         for item in _extract_items(
             generated.model_dump(mode="json"), subject="Economics", paper_number="3"
         )
-            if int(item["id"].split("@", 1)[0]) in exact_operations
-        }
+        if int(item["id"].split("@", 1)[0]) in exact_operations
+    }
     assert exported == exact_operations
 
 
-def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices() -> None:
+def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices() -> (
+    None
+):
     for seed in (100, 26083134, 26090101):
         paper = build_paper(RULES["paper_3"], SYLLABUS, seed=seed)
         questions = [option.questions[0] for option in paper.sections[0].options]
@@ -477,7 +500,9 @@ def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices
         }
         for question in numeric:
             assert len(set(question.choices)) == 4
-            operation = question.authoring_context["selected_response_contract"]["operation"]
+            operation = question.authoring_context["selected_response_contract"][
+                "operation"
+            ]
             if operation == "index_percentage_change":
                 assert all(choice.endswith("%") for choice in question.choices)
                 malformed = question.model_dump(mode="json")
@@ -485,7 +510,9 @@ def test_index_mcqs_have_public_numeric_contract_and_semantically_unique_choices
                 with pytest.raises(ValueError, match="percent units"):
                     solve_selected_response(malformed)
                 wrong_unit = question.model_dump(mode="json")
-                wrong_unit["authoring_context"]["selected_response_contract"]["unit"] = "index"
+                wrong_unit["authoring_context"]["selected_response_contract"][
+                    "unit"
+                ] = "index"
                 with pytest.raises(ValueError, match="format policy"):
                     solve_selected_response(wrong_unit)
 
@@ -517,7 +544,10 @@ def test_applied_mcqs_project_one_typed_source_into_prompt_key_and_solver() -> N
         raw = question.model_dump(mode="json")
         contract = raw["authoring_context"]["selected_response_contract"]
         assert question.source_dependency == "stem"
-        assert all(str(source_value) in question.prompt for source_value in contract["inputs"].values())
+        assert all(
+            str(source_value) in question.prompt
+            for source_value in contract["inputs"].values()
+        )
 
         source = aqa_generator.APPLIED_SOURCE_BY_NUMBER[number]
         changed_source = source.model_copy(update={field: Decimal(value)})
@@ -562,8 +592,12 @@ def test_applied_source_mutation_reaches_rendered_candidate_text_and_key(
 
 @pytest.mark.parametrize(
     "primary,secondary",
-    [("Product A", "Product B"), ("product X", "product Z"),
-     ("product Xylophone", "product Yard"), ("", "")],
+    [
+        ("Product A", "Product B"),
+        ("product X", "product Z"),
+        ("product Xylophone", "product Yard"),
+        ("", ""),
+    ],
 )
 def test_opportunity_cost_rejects_stem_labels_inconsistent_with_options(
     primary, secondary
@@ -571,8 +605,8 @@ def test_opportunity_cost_rejects_stem_labels_inconsistent_with_options(
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
     item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
     assert solve_selected_response(item)["answer"] == "12 units of product Y"
-    item["prompt"] = item["prompt"].replace("product X", primary).replace(
-        "product Y", secondary
+    item["prompt"] = (
+        item["prompt"].replace("product X", primary).replace("product Y", secondary)
     )
     with pytest.raises(ValueError, match="product labels"):
         solve_selected_response(item)
@@ -581,31 +615,42 @@ def test_opportunity_cost_rejects_stem_labels_inconsistent_with_options(
 def test_opportunity_cost_accepts_case_and_whitespace_variants_of_public_labels():
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
     item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
-    item["prompt"] = item["prompt"].replace("product X", "PRODUCT  X").replace(
-        "product Y", "Product\nY"
+    item["prompt"] = (
+        item["prompt"]
+        .replace("product X", "PRODUCT  X")
+        .replace("product Y", "Product\nY")
     )
     assert solve_selected_response(item)["answer"] == "12 units of product Y"
 
 
-@pytest.mark.parametrize("primary,secondary,error", [
-    ("Product A", "Product B", "required source or visual term"),
-    ("Product Xylophone", "Product Yard", "product labels"),
-])
-def test_ai_parser_rejects_product_rename_before_model_review(primary, secondary, error):
+@pytest.mark.parametrize(
+    "primary,secondary,error",
+    [
+        ("Product A", "Product B", "required source or visual term"),
+        ("Product Xylophone", "Product Yard", "product labels"),
+    ],
+)
+def test_ai_parser_rejects_product_rename_before_model_review(
+    primary, secondary, error
+):
     from types import SimpleNamespace
 
     from Backend.Core.ai_assessment import GenerationPolicy, _candidate_question, _tasks
 
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
     task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
-    raw = {"prompt": (
-        f"A production switch increases {primary} output from 20 to 30 units, "
-        f"while {secondary} falls from 80 to 68 units. Which option gives the "
-        "output forgone for the extra 10 units?"
-    )}
+    raw = {
+        "prompt": (
+            f"A production switch increases {primary} output from 20 to 30 units, "
+            f"while {secondary} falls from 80 to 68 units. Which option gives the "
+            "output forgone for the extra 10 units?"
+        )
+    }
     with pytest.raises(ValueError, match=error):
         _candidate_question(
-            task, raw, client=SimpleNamespace(provider="test", model="test"),
+            task,
+            raw,
+            client=SimpleNamespace(provider="test", model="test"),
             policy=GenerationPolicy(),
         )
 
@@ -615,11 +660,13 @@ def test_independent_validation_rejects_product_rename_without_calling_model():
 
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
     task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
-    candidate = task.question.model_copy(update={
-        "prompt": task.question.prompt.replace("product X", "Product A").replace(
-            "product Y", "Product B"
-        )
-    })
+    candidate = task.question.model_copy(
+        update={
+            "prompt": task.question.prompt.replace("product X", "Product A").replace(
+                "product Y", "Product B"
+            )
+        }
+    )
     with pytest.raises(ValueError, match="product labels"):
         _independently_validate_candidate(task, candidate, client=None)
 
@@ -630,11 +677,13 @@ def test_checkpoint_replay_rejects_product_rename():
     paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
     task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
     _validate_checkpoint_item(task, task.question)
-    candidate = task.question.model_copy(update={
-        "prompt": task.question.prompt.replace("product X", "Product A").replace(
-            "product Y", "Product B"
-        )
-    })
+    candidate = task.question.model_copy(
+        update={
+            "prompt": task.question.prompt.replace("product X", "Product A").replace(
+                "product Y", "Product B"
+            )
+        }
+    )
     with pytest.raises(ValueError, match="product labels"):
         _validate_checkpoint_item(task, candidate)
 
@@ -799,7 +848,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             cover = reader.pages[0].extract_text() or ""
             assert "A-level" in cover
             assert "economics" in cover.casefold()
-        assert len(PdfReader(paths["question_paper"]).pages) == (44 if paper == "3" else 8)
+        assert len(PdfReader(paths["question_paper"]).pages) == (
+            44 if paper == "3" else 8
+        )
         print_evidence = extract_pdf_evidence(
             paths["question_paper"],
             non_printable_margin_mm=5.0,
@@ -810,7 +861,9 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
         )
         if paper == "3":
             assert len(PdfReader(paths["source_booklet"]).pages) == 8
-            final_page = PdfReader(paths["question_paper"]).pages[-1].extract_text() or ""
+            final_page = (
+                PdfReader(paths["question_paper"]).pages[-1].extract_text() or ""
+            )
             assert "DO NOT WRITE ON THIS PAGE" in final_page
             assert "Independent practice material" in final_page
             blueprint = build_paper(RULES["paper_3"], SYLLABUS, seed=123)
@@ -819,10 +872,7 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
                 "32",
                 "33",
             ]
-            mcqs = [
-                option.questions[0]
-                for option in blueprint.sections[0].options
-            ]
+            mcqs = [option.questions[0] for option in blueprint.sections[0].options]
             assert len({question.prompt for question in mcqs}) == 30
             assert all("Practice scenario" not in question.prompt for question in mcqs)
         else:
@@ -866,8 +916,7 @@ def test_each_package_renders_readable_pdfs(tmp_path: Path) -> None:
             assert "Highest" not in levels_page
             essay_levels_page = scheme_pages[14].extract_text() or ""
             assert all(
-                mark_range in essay_levels_page
-                for mark_range in ("11–15", "21–25")
+                mark_range in essay_levels_page for mark_range in ("11–15", "21–25")
             )
 
 

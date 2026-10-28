@@ -1052,9 +1052,15 @@ def test_public_v35_uses_each_family_and_records_selected_seed(
     monkeypatch.setattr(runtime, "FrenchOllamaClient", forbidden)
     monkeypatch.setattr(runtime, "validate_endpoint", forbidden)
     argv = [
-        "generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027",
-        "--reference-index", str(index), "--output", str(output),
-        "--seed", "270100",
+        "generate-assessment",
+        "--assessment",
+        "fr-bac-general-nsi-written-2027",
+        "--reference-index",
+        str(index),
+        "--output",
+        str(output),
+        "--seed",
+        "270100",
     ] + (["--large-print"] if large_print else [])
     for seed in range(270100, 270105):
         args = build_parser().parse_args(argv)
@@ -1068,9 +1074,13 @@ def test_public_v35_uses_each_family_and_records_selected_seed(
         assert package["identity"]["print_policy"] == "fr-nsi-v35-internal-review-v1"
         assert manifest["generation_origin"] == "application_owned"
         assert manifest["model_used"] is False
-        checkpoint = output / ".keldin-checkpoints" / (
-            f"{args.assessment}-{package['identity']['prompt_version']}-"
-            f"{package['identity']['implementation_sha256']}-{seed}.json"
+        checkpoint = (
+            output
+            / ".keldin-checkpoints"
+            / (
+                f"{args.assessment}-{package['identity']['prompt_version']}-"
+                f"{package['identity']['implementation_sha256']}-{seed}.json"
+            )
         )
         assert checkpoint.is_file()
         validate_whole_case_pdf(bundle / "sujet.pdf", package, correction=False)
@@ -1093,12 +1103,26 @@ def test_saved_families_are_excluded_in_a_fresh_output_folder(tmp_path):
     index = tmp_path / "references.sqlite"
     make_index(index)
     output = tmp_path / "new-output"
-    argv = ["generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027", "--reference-index", str(index), "--output", str(output), "--seed", "270100"]
-    exclusions = [arg for family in range(4) for arg in ("--exclude-family", str(family))]
+    argv = [
+        "generate-assessment",
+        "--assessment",
+        "fr-bac-general-nsi-written-2027",
+        "--reference-index",
+        str(index),
+        "--output",
+        str(output),
+        "--seed",
+        "270100",
+    ]
+    exclusions = [
+        arg for family in range(4) for arg in ("--exclude-family", str(family))
+    ]
     args = build_parser().parse_args(argv + exclusions)
     assert args.handler(args) == 0
     (bundle,) = output.glob("nsi-*")
-    assert json.loads((bundle / "manifest.json").read_text())["identity"]["seed"] == 270104
+    assert (
+        json.loads((bundle / "manifest.json").read_text())["identity"]["seed"] == 270104
+    )
     other = tmp_path / "another-output"
     argv[argv.index(str(output))] = str(other)
     args = build_parser().parse_args(argv + exclusions + ["--exclude-family", "4"])
@@ -1119,13 +1143,24 @@ def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp
     index = tmp_path / "references.sqlite"
     make_index(index)
     output = tmp_path / "output"
-    old = output / ".papercreator-checkpoints/fr-bac-general-nsi-written-2027-270100.json"
+    old = (
+        output / ".papercreator-checkpoints/fr-bac-general-nsi-written-2027-270100.json"
+    )
     retained_generate(index_path=index, seed=270100, checkpoint=old)
     before = old.read_bytes()
-    args = build_parser().parse_args([
-        "generate-assessment", "--assessment", "fr-bac-general-nsi-written-2027",
-        "--reference-index", str(index), "--output", str(output), "--seed", "270100",
-    ])
+    args = build_parser().parse_args(
+        [
+            "generate-assessment",
+            "--assessment",
+            "fr-bac-general-nsi-written-2027",
+            "--reference-index",
+            str(index),
+            "--output",
+            str(output),
+            "--seed",
+            "270100",
+        ]
+    )
     assert args.handler(args) == 0
     assert old.read_bytes() == before
     imported = output / ".keldin-checkpoints" / old.name
@@ -2124,11 +2159,16 @@ def test_originality_history_prefers_recent_files_over_seed_order(tmp_path):
         raw = exercise()
         raw["context"] = f"Contexte de génération {seed}. " + raw["context"]
         path = bundle / "assessment.json"
-        path.write_text(json.dumps({
-            "schema_version": 2,
-            "assessment_policy": "fr-bac-general-nsi-written-2027",
-            "exercises": [raw] * 20,
-        }), encoding="utf-8")
+        path.write_text(
+            json.dumps(
+                {
+                    "schema_version": 2,
+                    "assessment_policy": "fr-bac-general-nsi-written-2027",
+                    "exercises": [raw] * 20,
+                }
+            ),
+            encoding="utf-8",
+        )
         os.utime(path, (modified, modified))
     history = load_originality_history(tmp_path)
     assert len(history) == 20
@@ -2155,11 +2195,16 @@ def test_originality_history_does_not_keep_partial_malformed_bundle(tmp_path):
 
     bundle = tmp_path / "nsi-2027-partial"
     bundle.mkdir()
-    (bundle / "assessment.json").write_text(json.dumps({
-        "schema_version": 2,
-        "assessment_policy": "fr-bac-general-nsi-written-2027",
-        "exercises": [exercise(), {}],
-    }), encoding="utf-8")
+    (bundle / "assessment.json").write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "assessment_policy": "fr-bac-general-nsi-written-2027",
+                "exercises": [exercise(), {}],
+            }
+        ),
+        encoding="utf-8",
+    )
     assert load_originality_history(tmp_path) == []
 
 
@@ -2172,11 +2217,16 @@ def test_originality_history_does_not_follow_bundle_or_file_links(tmp_path):
     outside = tmp_path / "outside"
     outside.mkdir()
     source = outside / "assessment.json"
-    source.write_text(json.dumps({
-        "schema_version": 2,
-        "assessment_policy": "fr-bac-general-nsi-written-2027",
-        "exercises": [exercise()],
-    }), encoding="utf-8")
+    source.write_text(
+        json.dumps(
+            {
+                "schema_version": 2,
+                "assessment_policy": "fr-bac-general-nsi-written-2027",
+                "exercises": [exercise()],
+            }
+        ),
+        encoding="utf-8",
+    )
     output = tmp_path / "output"
     output.mkdir()
     (output / "nsi-2027-linked-directory").symlink_to(outside, target_is_directory=True)

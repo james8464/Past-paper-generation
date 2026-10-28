@@ -79,15 +79,25 @@ def test_legacy_source_scope_remains_read_only_and_replayable(tmp_path, monkeypa
     with monkeypatch.context() as legacy:
         legacy.setattr(package, "_extract_items", legacy_extract)
         package.write_assessment_package(
-            legacy_paper, path, subject="accounting", paper_number="1",
-            preview=True, provider=None, model=None,
+            legacy_paper,
+            path,
+            subject="accounting",
+            paper_number="1",
+            preview=True,
+            provider=None,
+            model=None,
         )
     document = json.loads(path.read_text())
     document.pop("source_scope_version")
     path.write_text(json.dumps(document))
     before = path.read_bytes()
     package.validate_assessment_package(
-        path, subject="accounting", paper_number="1", preview=True, provider=None, model=None,
+        path,
+        subject="accounting",
+        paper_number="1",
+        preview=True,
+        provider=None,
+        model=None,
     )
     assert path.read_bytes() == before
     assert document["items"][0]["context"]
@@ -100,13 +110,25 @@ def test_unknown_source_scope_version_cannot_reinterpret_a_package(tmp_path, ver
 
     path = tmp_path / "scope.json"
     package.write_assessment_package(
-        paper_for(), path, subject="accounting", paper_number="1",
-        preview=True, provider=None, model=None,
+        paper_for(),
+        path,
+        subject="accounting",
+        paper_number="1",
+        preview=True,
+        provider=None,
+        model=None,
     )
     document = json.loads(path.read_text())
     document["source_scope_version"] = version
     path.write_text(json.dumps(document))
-    with pytest.raises(AssessmentPackageCompatibilityError, match="source-scope version"):
+    with pytest.raises(
+        AssessmentPackageCompatibilityError, match="source-scope version"
+    ):
         package.validate_assessment_package(
-            path, subject="accounting", paper_number="1", preview=True, provider=None, model=None,
+            path,
+            subject="accounting",
+            paper_number="1",
+            preview=True,
+            provider=None,
+            model=None,
         )

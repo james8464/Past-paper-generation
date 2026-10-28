@@ -41,13 +41,13 @@ def test_science_diagrams_are_vector_and_deterministic() -> None:
                 )
             )
         ),
-        ray_diagram(
-            RaySpec(object_distance=80, focal_length=30, image_distance=48)
-        ),
+        ray_diagram(RaySpec(object_distance=80, focal_length=30, image_distance=48)),
     )
 
     assert all(isinstance(drawing, Drawing) for drawing in drawings)
-    assert all(renderPDF.drawToString(drawing).startswith(b"%PDF-") for drawing in drawings)
+    assert all(
+        renderPDF.drawToString(drawing).startswith(b"%PDF-") for drawing in drawings
+    )
     repeated = molecule_diagram(
         MoleculeSpec(
             atoms=(Atom("C", 0, 0), Atom("O", 1, 0), Atom("O", -1, 0)),
@@ -79,11 +79,17 @@ def test_science_diagrams_reject_invalid_geometry() -> None:
         raise AssertionError("invalid focal length was accepted")
 
 
-def _drawing_signature(drawing: Drawing) -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
+def _drawing_signature(
+    drawing: Drawing,
+) -> tuple[tuple[str, tuple[tuple[str, str], ...]], ...]:
     return tuple(
         (
             type(shape).__name__,
-            tuple(sorted((key, str(value)) for key, value in shape.getProperties().items())),
+            tuple(
+                sorted(
+                    (key, str(value)) for key, value in shape.getProperties().items()
+                )
+            ),
         )
         for shape in drawing.getContents()
     )

@@ -18,9 +18,7 @@ def test_every_tracked_file_has_a_durable_classification() -> None:
 
 def test_committed_inventory_matches_the_current_repository() -> None:
     committed = json.loads(
-        (ROOT / "Resources" / "repository-inventory.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "Resources" / "repository-inventory.json").read_text(encoding="utf-8")
     )
 
     assert committed == inspect_repository(ROOT)
@@ -33,11 +31,16 @@ def test_generated_and_binary_outputs_are_rejected() -> None:
     assert classify_path("release/Keldin.dmg").error == "unapproved binary artifact"
 
 
-def test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs() -> None:
+def test_maintained_visual_assets_are_classified_without_allowing_arbitrary_pngs() -> (
+    None
+):
     assert classify_path("Design/AppIcon/icon.png").category == "design-resource"
-    assert classify_path(
-        "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/icon.png"
-    ).category == "runtime-resource"
+    assert (
+        classify_path(
+            "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/icon.png"
+        ).category
+        == "runtime-resource"
+    )
     assert classify_path("screenshots/random.png").error == "unapproved binary artifact"
 
 

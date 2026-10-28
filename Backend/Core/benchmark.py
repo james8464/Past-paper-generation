@@ -80,7 +80,9 @@ def handle_benchmark(args: argparse.Namespace) -> int:
             break
 
         cpu_mb_s = cpu_probe(payload)
-        disk_write, disk_read, disk_free, small_file_ms = disk_probe(output_dir, payload)
+        disk_write, disk_read, disk_free, small_file_ms = disk_probe(
+            output_dir, payload
+        )
         memory_available, memory_pressure, swap_used = memory_snapshot()
         cpu_load = cpu_load_percent()
         if len(samples) % 5 == 0 or last_network_ms is None:
@@ -107,7 +109,9 @@ def handle_benchmark(args: argparse.Namespace) -> int:
         emit("benchmark_sample", **sample)
 
         remaining_tick = TICK_SECONDS - ((time.perf_counter() - started) % TICK_SECONDS)
-        time.sleep(min(remaining_tick, max(0, duration - (time.perf_counter() - started))))
+        time.sleep(
+            min(remaining_tick, max(0, duration - (time.perf_counter() - started)))
+        )
 
     emit_final_metrics(samples)
     return 0
@@ -122,14 +126,29 @@ def emit_static_metrics() -> None:
     emit("benchmark_metric", name="Python Runtime", detail=platform.python_version())
     performance_cores, efficiency_cores = apple_cpu_core_split()
     if performance_cores is not None:
-        emit("benchmark_metric", name="Performance Cores", value=performance_cores, unit="cores")
+        emit(
+            "benchmark_metric",
+            name="Performance Cores",
+            value=performance_cores,
+            unit="cores",
+        )
     if efficiency_cores is not None:
-        emit("benchmark_metric", name="Efficiency Cores", value=efficiency_cores, unit="cores")
+        emit(
+            "benchmark_metric",
+            name="Efficiency Cores",
+            value=efficiency_cores,
+            unit="cores",
+        )
 
 
 def emit_final_metrics(samples: list[Sample]) -> None:
     if not samples:
-        emit("benchmark_done", score=0.0, verdict="Benchmark failed", detail="No samples were collected.")
+        emit(
+            "benchmark_done",
+            score=0.0,
+            verdict="Benchmark failed",
+            detail="No samples were collected.",
+        )
         return
 
     cpu = avg(samples, "cpu_mb_s")
@@ -143,11 +162,23 @@ def emit_final_metrics(samples: list[Sample]) -> None:
     small_file_ms = avg(samples, "small_file_ms")
     pdf_pages_per_s = avg(samples, "pdf_pages_per_s")
     thermal_limit = optional_mean(samples, "thermal_speed_limit_percent")
-    latency_values = [float(sample["network_latency_ms"]) for sample in samples if sample["network_latency_ms"] is not None]
+    latency_values = [
+        float(sample["network_latency_ms"])
+        for sample in samples
+        if sample["network_latency_ms"] is not None
+    ]
     latency = mean(latency_values) if latency_values else None
-    download_values = [float(sample["network_download_mb_s"]) for sample in samples if sample["network_download_mb_s"] is not None]
+    download_values = [
+        float(sample["network_download_mb_s"])
+        for sample in samples
+        if sample["network_download_mb_s"] is not None
+    ]
     download = mean(download_values) if download_values else None
-    ollama_values = [float(sample["ollama_latency_ms"]) for sample in samples if sample["ollama_latency_ms"] is not None]
+    ollama_values = [
+        float(sample["ollama_latency_ms"])
+        for sample in samples
+        if sample["ollama_latency_ms"] is not None
+    ]
     ollama_latency = mean(ollama_values) if ollama_values else None
     power_source, battery_percent, power_score = power_status()
 
@@ -157,17 +188,31 @@ def emit_final_metrics(samples: list[Sample]) -> None:
     memory_pressure_score = memory_pressure_score_for(memory_pressure)
     swap_score = clamp(1.0 - swap_used / SWAP_USAGE_SCORE_GB)
     storage_score = clamp(disk_free / DISK_FREE_TARGET_GB)
-    small_file_score = clamp(1.0 - min(small_file_ms, SMALL_FILE_SCORE_MS) / SMALL_FILE_SCORE_MS)
+    small_file_score = clamp(
+        1.0 - min(small_file_ms, SMALL_FILE_SCORE_MS) / SMALL_FILE_SCORE_MS
+    )
     disk_score = (
         clamp(disk_write / DISK_WRITE_TARGET_MB_S)
         + clamp(disk_read / DISK_READ_TARGET_MB_S)
         + small_file_score
     ) / 3
-    latency_score = NETWORK_SCORE_FALLBACK if latency is None else clamp(1.0 - min(latency, NETWORK_LATENCY_CEILING_MS) / NETWORK_LATENCY_SCORE_MS)
-    download_score = NETWORK_SCORE_FALLBACK if download is None else clamp(download / NETWORK_DOWNLOAD_TARGET_MB_S)
+    latency_score = (
+        NETWORK_SCORE_FALLBACK
+        if latency is None
+        else clamp(
+            1.0 - min(latency, NETWORK_LATENCY_CEILING_MS) / NETWORK_LATENCY_SCORE_MS
+        )
+    )
+    download_score = (
+        NETWORK_SCORE_FALLBACK
+        if download is None
+        else clamp(download / NETWORK_DOWNLOAD_TARGET_MB_S)
+    )
     network_score = (latency_score + download_score) / 2
     pdf_score = clamp(pdf_pages_per_s / PDF_TARGET_PAGES_PER_SECOND)
-    thermal_score = THERMAL_SCORE_FALLBACK if thermal_limit is None else clamp(thermal_limit / 100)
+    thermal_score = (
+        THERMAL_SCORE_FALLBACK if thermal_limit is None else clamp(thermal_limit / 100)
+    )
     score = (
         cpu_score * CPU_SCORE_WEIGHT
         + load_score * LOAD_SCORE_WEIGHT
@@ -181,39 +226,154 @@ def emit_final_metrics(samples: list[Sample]) -> None:
         + power_score * POWER_SCORE_WEIGHT
     )
 
-    emit("benchmark_metric", name="CPU Throughput", value=cpu, unit="MB/s", score=cpu_score, detail="Hashing workload used as a local model proxy.")
-    emit("benchmark_metric", name="Average CPU Load", value=cpu_load, unit="%", score=load_score)
-    emit("benchmark_metric", name="Free Memory", value=free_memory, unit="GB", score=memory_score)
-    emit("benchmark_metric", name="Memory Pressure", value=memory_pressure, unit="%", score=memory_pressure_score)
-    emit("benchmark_metric", name="Swap Used", value=swap_used, unit="GB", score=swap_score)
-    emit("benchmark_metric", name="Disk Write", value=disk_write, unit="MB/s", score=clamp(disk_write / DISK_WRITE_TARGET_MB_S))
-    emit("benchmark_metric", name="Disk Read", value=disk_read, unit="MB/s", score=clamp(disk_read / DISK_READ_TARGET_MB_S))
-    emit("benchmark_metric", name="Small-file Latency", value=small_file_ms, unit="ms", score=small_file_score, detail="Proxy for many small PDF and image writes.")
-    emit("benchmark_metric", name="Output Free Space", value=disk_free, unit="GB", score=storage_score)
-    emit("benchmark_metric", name="PDF Render", value=pdf_pages_per_s, unit="pages/s", score=pdf_score)
+    emit(
+        "benchmark_metric",
+        name="CPU Throughput",
+        value=cpu,
+        unit="MB/s",
+        score=cpu_score,
+        detail="Hashing workload used as a local model proxy.",
+    )
+    emit(
+        "benchmark_metric",
+        name="Average CPU Load",
+        value=cpu_load,
+        unit="%",
+        score=load_score,
+    )
+    emit(
+        "benchmark_metric",
+        name="Free Memory",
+        value=free_memory,
+        unit="GB",
+        score=memory_score,
+    )
+    emit(
+        "benchmark_metric",
+        name="Memory Pressure",
+        value=memory_pressure,
+        unit="%",
+        score=memory_pressure_score,
+    )
+    emit(
+        "benchmark_metric",
+        name="Swap Used",
+        value=swap_used,
+        unit="GB",
+        score=swap_score,
+    )
+    emit(
+        "benchmark_metric",
+        name="Disk Write",
+        value=disk_write,
+        unit="MB/s",
+        score=clamp(disk_write / DISK_WRITE_TARGET_MB_S),
+    )
+    emit(
+        "benchmark_metric",
+        name="Disk Read",
+        value=disk_read,
+        unit="MB/s",
+        score=clamp(disk_read / DISK_READ_TARGET_MB_S),
+    )
+    emit(
+        "benchmark_metric",
+        name="Small-file Latency",
+        value=small_file_ms,
+        unit="ms",
+        score=small_file_score,
+        detail="Proxy for many small PDF and image writes.",
+    )
+    emit(
+        "benchmark_metric",
+        name="Output Free Space",
+        value=disk_free,
+        unit="GB",
+        score=storage_score,
+    )
+    emit(
+        "benchmark_metric",
+        name="PDF Render",
+        value=pdf_pages_per_s,
+        unit="pages/s",
+        score=pdf_score,
+    )
     if latency is None:
-        emit("benchmark_metric", name="Network Latency", detail="Unavailable during benchmark", score=latency_score)
+        emit(
+            "benchmark_metric",
+            name="Network Latency",
+            detail="Unavailable during benchmark",
+            score=latency_score,
+        )
     else:
-        emit("benchmark_metric", name="Network Latency", value=latency, unit="ms", score=latency_score)
+        emit(
+            "benchmark_metric",
+            name="Network Latency",
+            value=latency,
+            unit="ms",
+            score=latency_score,
+        )
     if download is None:
-        emit("benchmark_metric", name="Network Download", detail="Unavailable during benchmark", score=download_score)
+        emit(
+            "benchmark_metric",
+            name="Network Download",
+            detail="Unavailable during benchmark",
+            score=download_score,
+        )
     else:
-        emit("benchmark_metric", name="Network Download", value=download, unit="MB/s", score=download_score)
+        emit(
+            "benchmark_metric",
+            name="Network Download",
+            value=download,
+            unit="MB/s",
+            score=download_score,
+        )
     if ollama_latency is None:
-        emit("benchmark_metric", name="Ollama Response", detail="Ollama was not reachable during benchmark")
+        emit(
+            "benchmark_metric",
+            name="Ollama Response",
+            detail="Ollama was not reachable during benchmark",
+        )
     else:
-        emit("benchmark_metric", name="Ollama Response", value=ollama_latency, unit="ms", score=clamp(1.0 - min(ollama_latency, 1000) / 1000))
+        emit(
+            "benchmark_metric",
+            name="Ollama Response",
+            value=ollama_latency,
+            unit="ms",
+            score=clamp(1.0 - min(ollama_latency, 1000) / 1000),
+        )
     if thermal_limit is None:
-        emit("benchmark_metric", name="Thermal Speed Limit", detail="Unavailable on this Mac", score=thermal_score)
+        emit(
+            "benchmark_metric",
+            name="Thermal Speed Limit",
+            detail="Unavailable on this Mac",
+            score=thermal_score,
+        )
     else:
-        emit("benchmark_metric", name="Thermal Speed Limit", value=thermal_limit, unit="%", score=thermal_score)
-    emit("benchmark_metric", name="Power Source", detail=power_source, score=power_score)
+        emit(
+            "benchmark_metric",
+            name="Thermal Speed Limit",
+            value=thermal_limit,
+            unit="%",
+            score=thermal_score,
+        )
+    emit(
+        "benchmark_metric", name="Power Source", detail=power_source, score=power_score
+    )
     if battery_percent is not None:
-        emit("benchmark_metric", name="Battery Level", value=battery_percent, unit="%", score=power_score)
+        emit(
+            "benchmark_metric",
+            name="Battery Level",
+            value=battery_percent,
+            unit="%",
+            score=power_score,
+        )
 
     if score >= READY_SCORE:
         verdict = "Ready for local generation"
-        detail = "This Mac should generate papers comfortably with the selected local setup."
+        detail = (
+            "This Mac should generate papers comfortably with the selected local setup."
+        )
     elif score >= CAPABLE_SCORE:
         verdict = "Capable with slower local models"
         detail = "Generation should work, but large Ollama models may take noticeably longer."
@@ -235,7 +395,9 @@ def cpu_probe(payload: bytes) -> float:
 
 
 def disk_probe(output_dir: Path, payload: bytes) -> tuple[float, float, float, float]:
-    fd, raw_path = tempfile.mkstemp(prefix="past-paper-benchmark-", suffix=".bin", dir=output_dir)
+    fd, raw_path = tempfile.mkstemp(
+        prefix="past-paper-benchmark-", suffix=".bin", dir=output_dir
+    )
     path = Path(raw_path)
     try:
         with os.fdopen(fd, "wb", closefd=True) as handle:
@@ -283,7 +445,9 @@ def network_latency_ms() -> float | None:
             NETWORK_PROBE_URL,
             headers={"User-Agent": "KeldinBenchmark/1.0"},
         )
-        with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
+        with urllib.request.urlopen(
+            request, timeout=NETWORK_TIMEOUT_SECONDS
+        ) as response:
             response.read(128)
             if response.status >= 400:
                 return None
@@ -299,7 +463,9 @@ def network_download_mb_s() -> float | None:
             NETWORK_DOWNLOAD_URL,
             headers={"User-Agent": "KeldinBenchmark/1.0"},
         )
-        with urllib.request.urlopen(request, timeout=NETWORK_TIMEOUT_SECONDS) as response:
+        with urllib.request.urlopen(
+            request, timeout=NETWORK_TIMEOUT_SECONDS
+        ) as response:
             total = 0
             while chunk := response.read(64 * 1024):
                 total += len(chunk)
@@ -341,7 +507,9 @@ def memory_snapshot() -> tuple[float, float, float]:
     available = available_memory_gb()
     pressure = system_memory_pressure_percent()
     if pressure is None:
-        pressure = 0.0 if total <= 0 else clamp((total - available) / total, upper=1.0) * 100
+        pressure = (
+            0.0 if total <= 0 else clamp((total - available) / total, upper=1.0) * 100
+        )
     return available, pressure, swap_used_gb()
 
 
@@ -349,7 +517,9 @@ def system_memory_pressure_percent() -> float | None:
     if platform.system() != "Darwin":
         return None
     try:
-        output = subprocess.check_output(["memory_pressure", "-Q"], text=True, stderr=subprocess.DEVNULL, timeout=1.0)
+        output = subprocess.check_output(
+            ["memory_pressure", "-Q"], text=True, stderr=subprocess.DEVNULL, timeout=1.0
+        )
     except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
         return None
     match = re.search(r"free percentage:\s*(\d+)%", output)
@@ -361,15 +531,23 @@ def system_memory_pressure_percent() -> float | None:
 def available_memory_gb() -> float:
     if platform.system() == "Darwin":
         try:
-            output = subprocess.check_output(["vm_stat"], text=True, stderr=subprocess.DEVNULL)
+            output = subprocess.check_output(
+                ["vm_stat"], text=True, stderr=subprocess.DEVNULL
+            )
             page_size = 4096
             free_pages = 0
             for raw_line in output.splitlines():
                 line = raw_line.strip()
                 if "page size of" in line:
-                    page_size = int(line.split("page size of", 1)[1].split("bytes", 1)[0].strip())
-                elif line.startswith(("Pages free", "Pages inactive", "Pages speculative")):
-                    free_pages += int(line.split(":", 1)[1].strip().rstrip(".").replace(".", ""))
+                    page_size = int(
+                        line.split("page size of", 1)[1].split("bytes", 1)[0].strip()
+                    )
+                elif line.startswith(
+                    ("Pages free", "Pages inactive", "Pages speculative")
+                ):
+                    free_pages += int(
+                        line.split(":", 1)[1].strip().rstrip(".").replace(".", "")
+                    )
             return free_pages * page_size / BYTES_PER_GIBIBYTE
         except (OSError, subprocess.SubprocessError, ValueError, IndexError):
             return max(0.0, total_memory_gb() * 0.35)
@@ -379,7 +557,9 @@ def available_memory_gb() -> float:
 def swap_used_gb() -> float:
     if platform.system() == "Darwin":
         try:
-            raw = subprocess.check_output(["sysctl", "-n", "vm.swapusage"], text=True, stderr=subprocess.DEVNULL)
+            raw = subprocess.check_output(
+                ["sysctl", "-n", "vm.swapusage"], text=True, stderr=subprocess.DEVNULL
+            )
             match = re.search(r"used\s*=\s*([0-9.]+)([MGT])", raw)
             if match:
                 value = float(match.group(1))
@@ -398,7 +578,9 @@ def swap_used_gb() -> float:
 def total_memory_gb() -> float:
     if platform.system() == "Darwin":
         try:
-            raw = subprocess.check_output(["sysctl", "-n", "hw.memsize"], text=True, stderr=subprocess.DEVNULL)
+            raw = subprocess.check_output(
+                ["sysctl", "-n", "hw.memsize"], text=True, stderr=subprocess.DEVNULL
+            )
             return int(raw.strip()) / BYTES_PER_GIBIBYTE
         except (OSError, subprocess.SubprocessError, ValueError):
             pass
@@ -416,7 +598,9 @@ def thermal_speed_limit_percent() -> float | None:
     if platform.system() != "Darwin":
         return None
     try:
-        output = subprocess.check_output(["pmset", "-g", "therm"], text=True, stderr=subprocess.DEVNULL, timeout=1.0)
+        output = subprocess.check_output(
+            ["pmset", "-g", "therm"], text=True, stderr=subprocess.DEVNULL, timeout=1.0
+        )
     except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
         return None
     match = re.search(r"CPU_Speed_Limit\s*=\s*(\d+)", output)
@@ -427,11 +611,19 @@ def power_status() -> tuple[str, float | None, float]:
     if platform.system() != "Darwin":
         return "Unknown", None, 0.9
     try:
-        output = subprocess.check_output(["pmset", "-g", "batt"], text=True, stderr=subprocess.DEVNULL, timeout=1.0)
+        output = subprocess.check_output(
+            ["pmset", "-g", "batt"], text=True, stderr=subprocess.DEVNULL, timeout=1.0
+        )
     except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired):
         return "Unknown", None, 0.9
 
-    source = "AC Power" if "AC Power" in output else "Battery Power" if "Battery Power" in output else "Unknown"
+    source = (
+        "AC Power"
+        if "AC Power" in output
+        else "Battery Power"
+        if "Battery Power" in output
+        else "Unknown"
+    )
     match = re.search(r"(\d+)%", output)
     battery = float(match.group(1)) if match else None
     if source == "AC Power" or battery is None:
@@ -444,7 +636,9 @@ def power_status() -> tuple[str, float | None, float]:
 
 
 def pdf_probe(output_dir: Path) -> float:
-    fd, raw_path = tempfile.mkstemp(prefix="past-paper-pdf-benchmark-", suffix=".pdf", dir=output_dir)
+    fd, raw_path = tempfile.mkstemp(
+        prefix="past-paper-pdf-benchmark-", suffix=".pdf", dir=output_dir
+    )
     os.close(fd)
     path = Path(raw_path)
     pages = 4
@@ -482,7 +676,11 @@ def apple_cpu_core_split() -> tuple[float | None, float | None]:
 def cpu_brand() -> str:
     if platform.system() == "Darwin":
         try:
-            return subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"], text=True, stderr=subprocess.DEVNULL).strip()
+            return subprocess.check_output(
+                ["sysctl", "-n", "machdep.cpu.brand_string"],
+                text=True,
+                stderr=subprocess.DEVNULL,
+            ).strip()
         except (OSError, subprocess.SubprocessError):
             pass
     return platform.processor() or platform.machine()
@@ -490,7 +688,9 @@ def cpu_brand() -> str:
 
 def sysctl_float(name: str) -> float | None:
     try:
-        raw = subprocess.check_output(["sysctl", "-n", name], text=True, stderr=subprocess.DEVNULL, timeout=1.0)
+        raw = subprocess.check_output(
+            ["sysctl", "-n", name], text=True, stderr=subprocess.DEVNULL, timeout=1.0
+        )
         return float(raw.strip())
     except (OSError, subprocess.SubprocessError, subprocess.TimeoutExpired, ValueError):
         return None

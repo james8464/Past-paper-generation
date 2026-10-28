@@ -309,7 +309,7 @@ def test_cpu_semantic_prompt_gives_the_exact_ordered_outer_response_envelope():
     client = ReplaySolver(exact_response=adjudication_response(part))
     review_open_credit(client, item, solution)
     expected = (
-        'Exact response envelope (replace every angle-bracket placeholder; use [] when an array is empty):\n'
+        "Exact response envelope (replace every angle-bracket placeholder; use [] when an array is empty):\n"
         '{"criteria": [{"criterion_id": "instructions-main-memory", '
         '"decision": "<supported|unsupported|uncertain>", '
         '"answer_quote": "<exact final-answer substring or empty string>", '
@@ -485,10 +485,16 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("The CPU fetches, decodes and executes instructions.", False),
         ("The CPU fetches instructions in order to execute them.", False),
         ("The fetch-decode-execute cycle processes an instruction.", False),
-        ("The current instruction is executed and the next instruction is fetched.", False),
+        (
+            "The current instruction is executed and the next instruction is fetched.",
+            False,
+        ),
         ("Instructions are not executed sequentially.", False),
         ("Instructions are executed, but not sequentially.", False),
-        ("The processor does not necessarily execute instructions sequentially.", False),
+        (
+            "The processor does not necessarily execute instructions sequentially.",
+            False,
+        ),
         ("The processor executes instructions sequentially, but not always.", False),
         ("The processor executes instructions sequentially only sometimes.", False),
         ("Instructions may be executed sequentially.", False),
@@ -523,7 +529,10 @@ def test_cpu_storage_quote_requires_instructions_stored_in_main_memory(
         ("Instructions might be executed sequentially.", False),
         ("Instructions are stored sequentially in RAM.", False),
         ("The processor executes instructions in any order.", False),
-        ("The CPU starts the next instruction before completing the current one.", False),
+        (
+            "The CPU starts the next instruction before completing the current one.",
+            False,
+        ),
         ("The processor executes data one at a time.", False),
         ("The CPU executes data while fetching instructions one at a time.", False),
         ("The CPU executes instructions; data arrives one at a time.", False),
@@ -824,9 +833,7 @@ def test_genuine_paraphrase_and_reordered_allocations_are_eligible_after_semanti
     assert (
         review_open_credit(ReplaySolver(exact_response=response), item, solution)[
             "judgement"
-        ][
-            "criteria"
-        ][0]["point_index"]
+        ]["criteria"][0]["point_index"]
         == 1
     )
 

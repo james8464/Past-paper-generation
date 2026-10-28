@@ -253,48 +253,102 @@ GAPS = {
 # These content families have been reviewed individually. Empty means
 # no content-level qualification: a generic operation match is diagnostic only.
 SOURCE_FOCUS = {
-    "75171-2025-01.1": "hash-performance", "75171-2025-01.2": "hash-insertion",
-    "75171-2025-01.3": "hash-performance", "75171-2025-03.2": "tree-properties",
-    "75171-2025-03.3": "graph-representation", "75171-2024-02.1": "queue-choice",
-    "75171-2024-02.2": "queue-operations", "75171-2024-06.1": "tree-properties",
-    "75171-2024-06.3": "tree-shape", "75171-2023-01": "queue-operations",
-    "75171-2023-03.1": "tree-properties", "75171-2022-02.1": "queue-operations",
-    "75171-2022-02.2": "dynamic-static", "75171-2022-02.3": "stack-access",
-    "75171-2022-02.4": "stack-access", "75171-2022-02.5": "stack-reversal",
-    "75171-2022-04.4": "graph-representation", "75171-2021-02.2": "tree-traversal",
-    "75172-2025-06.1": "database-keys", "75172-2025-06.2": "database-relationships",
-    "75172-2025-06.3": "sql-insert", "75172-2025-06.4": "sql-select",
-    "75172-2025-06.5": "database-concurrency", "75172-2024-08.2": "sql-insert",
-    "75172-2024-08.3": "sql-update", "75172-2024-08.4": "database-timestamps",
-    "75172-2024-08.5": "database-normalisation", "75172-2023-05.1": "database-design",
-    "75172-2023-05.2": "sql-delete-errors", "75172-2023-05.3": "database-integrity",
-    "75172-2022-07.2": "database-relationships", "75172-2022-07.3": "sql-create",
-    "75172-2022-07.4": "sql-select", "75172-2022-07.5": "database-denormalisation",
-    "75172-2025-11.1": "functional-properties", "75172-2025-11.2": "function-type",
-    "75172-2025-11.3": "recursive-efficiency", "75172-2025-11.4": "partial-application",
-    "75172-2024-11.1": "function-type", "75172-2024-11.2": "functional-distribution",
-    "75172-2023-12.1": "functional-evaluation", "75172-2023-12.2": "function-type",
-    "75172-2022-12.1": "higher-order", "75172-2022-12.2": "functional-recursion",
-    "75172-2022-12.3": "functional-evaluation", "75172-2022-12.4": "functional-purpose",
-    "75172-2022-12.5": "functional-composition", "75172-2020-11.2": "functional-recursion",
-    "75172-2020-11.3": "higher-order", "75172-2020-11.4": "functional-evaluation",
+    "75171-2025-01.1": "hash-performance",
+    "75171-2025-01.2": "hash-insertion",
+    "75171-2025-01.3": "hash-performance",
+    "75171-2025-03.2": "tree-properties",
+    "75171-2025-03.3": "graph-representation",
+    "75171-2024-02.1": "queue-choice",
+    "75171-2024-02.2": "queue-operations",
+    "75171-2024-06.1": "tree-properties",
+    "75171-2024-06.3": "tree-shape",
+    "75171-2023-01": "queue-operations",
+    "75171-2023-03.1": "tree-properties",
+    "75171-2022-02.1": "queue-operations",
+    "75171-2022-02.2": "dynamic-static",
+    "75171-2022-02.3": "stack-access",
+    "75171-2022-02.4": "stack-access",
+    "75171-2022-02.5": "stack-reversal",
+    "75171-2022-04.4": "graph-representation",
+    "75171-2021-02.2": "tree-traversal",
+    "75172-2025-06.1": "database-keys",
+    "75172-2025-06.2": "database-relationships",
+    "75172-2025-06.3": "sql-insert",
+    "75172-2025-06.4": "sql-select",
+    "75172-2025-06.5": "database-concurrency",
+    "75172-2024-08.2": "sql-insert",
+    "75172-2024-08.3": "sql-update",
+    "75172-2024-08.4": "database-timestamps",
+    "75172-2024-08.5": "database-normalisation",
+    "75172-2023-05.1": "database-design",
+    "75172-2023-05.2": "sql-delete-errors",
+    "75172-2023-05.3": "database-integrity",
+    "75172-2022-07.2": "database-relationships",
+    "75172-2022-07.3": "sql-create",
+    "75172-2022-07.4": "sql-select",
+    "75172-2022-07.5": "database-denormalisation",
+    "75172-2025-11.1": "functional-properties",
+    "75172-2025-11.2": "function-type",
+    "75172-2025-11.3": "recursive-efficiency",
+    "75172-2025-11.4": "partial-application",
+    "75172-2024-11.1": "function-type",
+    "75172-2024-11.2": "functional-distribution",
+    "75172-2023-12.1": "functional-evaluation",
+    "75172-2023-12.2": "function-type",
+    "75172-2022-12.1": "higher-order",
+    "75172-2022-12.2": "functional-recursion",
+    "75172-2022-12.3": "functional-evaluation",
+    "75172-2022-12.4": "functional-purpose",
+    "75172-2022-12.5": "functional-composition",
+    "75172-2020-11.2": "functional-recursion",
+    "75172-2020-11.3": "higher-order",
+    "75172-2020-11.4": "functional-evaluation",
     "75172-2017-06.2": "functional-evaluation",
     "75171-2020-04.1": "dynamic-static",
 }
 
 STYLE_FOCUS = {
-    "data_structures_stack_queue": {"queue-operations", "queue-choice", "stack-access", "stack-reversal"},
+    "data_structures_stack_queue": {
+        "queue-operations",
+        "queue-choice",
+        "stack-access",
+        "stack-reversal",
+    },
     "data_structures_hash": {"hash-insertion", "hash-performance"},
     "data_structures_tree": {"tree-properties", "tree-traversal", "tree-shape"},
     "data_structures_graph": {"graph-representation", "tree-properties"},
     "data_structures_choice": {"dynamic-static", "stack-reversal", "stack-access"},
-    "sql_normalisation": {"sql-select", "sql-insert", "sql-update", "sql-delete-errors"},
-    "erd_keys": {"database-relationships", "database-keys", "database-normalisation", "database-denormalisation"},
+    "sql_normalisation": {
+        "sql-select",
+        "sql-insert",
+        "sql-update",
+        "sql-delete-errors",
+    },
+    "erd_keys": {
+        "database-relationships",
+        "database-keys",
+        "database-normalisation",
+        "database-denormalisation",
+    },
     "database_extended": {"database-design", "sql-create", "database-concurrency"},
-    "functional_programming": {"functional-evaluation", "higher-order", "partial-application"},
-    "functional_recursion": {"functional-evaluation", "functional-recursion", "functional-purpose", "higher-order"},
+    "functional_programming": {
+        "functional-evaluation",
+        "higher-order",
+        "partial-application",
+    },
+    "functional_recursion": {
+        "functional-evaluation",
+        "functional-recursion",
+        "functional-purpose",
+        "higher-order",
+    },
     "functional_type_short": {"function-type", "functional-distribution"},
-    "functional_extended": {"functional-evaluation", "recursive-efficiency", "partial-application", "higher-order"},
+    "functional_extended": {
+        "functional-evaluation",
+        "recursive-efficiency",
+        "partial-application",
+        "higher-order",
+    },
 }
 
 
@@ -303,13 +357,22 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
     prompt = str(item.get("prompt", "")).casefold()
     rules = {
         "4.2": [
-            ("queue-operations", r"(?:dequeue|remove.*circular queue|add.*circular queue)"),
-            ("queue-choice", r"circular queue.*linear queue|linear queue.*circular queue"),
+            (
+                "queue-operations",
+                r"(?:dequeue|remove.*circular queue|add.*circular queue)",
+            ),
+            (
+                "queue-choice",
+                r"circular queue.*linear queue|linear queue.*circular queue",
+            ),
             ("hash-insertion", r"(?:insert|add).*hash table"),
             ("hash-performance", r"hash table.*(?:full|performance|slow|search|load)"),
             ("tree-traversal", r"(?:in-order|pre-order|post-order).*traversal"),
             ("tree-shape", r"tree.*(?:chain|shape|stack capacity)"),
-            ("tree-properties", r"(?:properties|characteristics|reasons).*tree|tree.*(?:properties|characteristics)"),
+            (
+                "tree-properties",
+                r"(?:properties|characteristics|reasons).*tree|tree.*(?:properties|characteristics)",
+            ),
             ("graph-representation", r"adjacency matrix|adjacency list"),
             ("dynamic-static", r"dynamic.*static|static.*dynamic"),
             ("stack-reversal", r"stack.*reverse|reverse.*stack"),
@@ -318,11 +381,18 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
         "4.10": [
             ("sql-delete-errors", r"errors.*delete|delete.*errors"),
             ("sql-select", r"write.*select|write.*query"),
-            ("sql-insert", r"write.*insert"), ("sql-update", r"write.*update"),
+            ("sql-insert", r"write.*insert"),
+            ("sql-update", r"write.*update"),
             ("sql-create", r"(?:write|complete).*create table"),
             ("database-relationships", r"draw.*relationship"),
-            ("database-design", r"(?:develop|construct).*normalised.*(?:relations|design)"),
-            ("database-denormalisation", r"advantage.*disadvantage.*(?:additional|redundant)"),
+            (
+                "database-design",
+                r"(?:develop|construct).*normalised.*(?:relations|design)",
+            ),
+            (
+                "database-denormalisation",
+                r"advantage.*disadvantage.*(?:additional|redundant)",
+            ),
             ("database-integrity", r"delet.*(?:reference|referential|dependent)"),
             ("database-keys", r"(?:composite|primary).*key"),
             ("database-timestamps", r"timestamp ordering"),
@@ -330,7 +400,10 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
             ("database-normalisation", r"normalis"),
         ],
         "4.12": [
-            ("functional-evaluation", r"trace table.*(?:filtered values|mapped values|total\s*(?:values|\[)|h\s*\[)|result.*fold"),
+            (
+                "functional-evaluation",
+                r"trace table.*(?:filtered values|mapped values|total\s*(?:values|\[)|h\s*\[)|result.*fold",
+            ),
             ("higher-order", r"higher-order"),
             ("partial-application", r"partial.*appli"),
             ("function-type", r"co-domain|function type"),
@@ -355,33 +428,77 @@ def task_content_focus(item: dict[str, Any]) -> str | None:
 # answerable. New forms need reviewed selectors; metadata alone cannot qualify them.
 def task_context_complete(item: dict[str, Any], focus: str | None) -> bool:
     raw = item.get("context") or []
-    context = "\n".join(raw).casefold() if isinstance(raw, list) and all(isinstance(v, str) for v in raw) else ""
+    context = (
+        "\n".join(raw).casefold()
+        if isinstance(raw, list) and all(isinstance(v, str) for v in raw)
+        else ""
+    )
     prompt = str(item.get("prompt", "")).casefold()
     if focus == "functional-evaluation" and "trace table" in prompt:
-        functions = {name for name in ("filtered", "mapped", "total", "h") if re.search(rf"\b{name}\b", prompt)}
-        if not functions or not all(re.search(rf"(?m)^{name}\s+[^=\n]+\s*=\s*\S+", context) for name in functions):
+        functions = {
+            name
+            for name in ("filtered", "mapped", "total", "h")
+            if re.search(rf"\b{name}\b", prompt)
+        }
+        if not functions or not all(
+            re.search(rf"(?m)^{name}\s+[^=\n]+\s*=\s*\S+", context)
+            for name in functions
+        ):
             return False
-        if "values" in prompt and not re.search(r"(?m)^values\s*=\s*\[\s*\d+(?:\s*,\s*\d+)*\s*\]", context):
+        if "values" in prompt and not re.search(
+            r"(?m)^values\s*=\s*\[\s*\d+(?:\s*,\s*\d+)*\s*\]", context
+        ):
             return False
         if "mapped" in functions and not re.search(r"(?m)^double\s+\w+\s*=", context):
             return False
         if "h" in functions or ("total" in functions and "fold" not in context):
             name = "h" if "h" in functions else "total"
-            return bool(re.search(rf"(?m)^{name}\s+\[\]\s*=", context) and re.search(rf"(?m)^{name}\s+\(\w+:\w+\)\s*=.*\b{name}\b", context))
+            return bool(
+                re.search(rf"(?m)^{name}\s+\[\]\s*=", context)
+                and re.search(rf"(?m)^{name}\s+\(\w+:\w+\)\s*=.*\b{name}\b", context)
+            )
         return True
     requirements = {
         "tree-traversal": [r"root:\s*\d+", r"node\s+\d+:\s*left=\d+,\s*right=\d+"],
         "graph-representation": [r"edges:\s*[a-z]-[a-z](?:,\s*[a-z]-[a-z])+"],
-        "database-design": [r"clientid", r"name and email", r"registrationid", r"one client", r"booking date", r"several workshops", r"workshopid", r"places.*registration/workshop"],
-        "database-relationships": [r"member.*many bookings", r"session.*many bookings", r"exactly one member and one session"],
-        "sql-select": [r"session\([^)]*sessionid[^)]*activity", r"booking\([^)]*sessionid"],
+        "database-design": [
+            r"clientid",
+            r"name and email",
+            r"registrationid",
+            r"one client",
+            r"booking date",
+            r"several workshops",
+            r"workshopid",
+            r"places.*registration/workshop",
+        ],
+        "database-relationships": [
+            r"member.*many bookings",
+            r"session.*many bookings",
+            r"exactly one member and one session",
+        ],
+        "sql-select": [
+            r"session\([^)]*sessionid[^)]*activity",
+            r"booking\([^)]*sessionid",
+        ],
         "sql-insert": [r"member\([^)]*memberid[^)]*fullname[^)]*email"],
         "sql-update": [r"booking\([^)]*memberid[^)]*sessionid[^)]*attended"],
         "sql-delete-errors": [r"booking\([^)]*sessionid[^)]*attended"],
-        "functional-recursion": [r"(?m)^total\s+\[\]\s*=", r"(?m)^total\s+\(x:xs\)\s*=.*\btotal\b"],
-        "functional-purpose": [r"(?m)^total\s+\[\]\s*=", r"(?m)^total\s+\(x:xs\)\s*=.*\btotal\b"],
-        "recursive-efficiency": [r"(?m)^ways 1\s*=", r"(?m)^ways 2\s*=", r"(?m)^ways n\s*=.*ways.*ways"],
-        "function-type": [r"f:\s*natural\s*->\s*real|function f maps natural numbers to real numbers"],
+        "functional-recursion": [
+            r"(?m)^total\s+\[\]\s*=",
+            r"(?m)^total\s+\(x:xs\)\s*=.*\btotal\b",
+        ],
+        "functional-purpose": [
+            r"(?m)^total\s+\[\]\s*=",
+            r"(?m)^total\s+\(x:xs\)\s*=.*\btotal\b",
+        ],
+        "recursive-efficiency": [
+            r"(?m)^ways 1\s*=",
+            r"(?m)^ways 2\s*=",
+            r"(?m)^ways n\s*=.*ways.*ways",
+        ],
+        "function-type": [
+            r"f:\s*natural\s*->\s*real|function f maps natural numbers to real numbers"
+        ],
     }
     return all(re.search(pattern, context) for pattern in requirements.get(focus, []))
 
@@ -486,7 +603,10 @@ def task_features(item: dict[str, Any]) -> dict[str, Any]:
         or item.get("kind") != contract.style_id
         or semantics != (contract.operation, contract.response_mode)
         or source_dependency != contract.source_dependency
-        or (contract.source_dependency == "task-context" and not any(str(value).strip() for value in context))
+        or (
+            contract.source_dependency == "task-context"
+            and not any(str(value).strip() for value in context)
+        )
         or re.search(excluded[topic], text)
     ):
         return {"topic_id": None, "operation": "unknown", "mode": "unknown"}
@@ -512,38 +632,52 @@ def matching_records(
 def audit_topic_bank(
     items: list[dict[str, Any]], topic: str, records: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    inventory_valid = topic in TOPIC_STYLE_IDS and records == reviewed_topic_records(topic)
+    inventory_valid = topic in TOPIC_STYLE_IDS and records == reviewed_topic_records(
+        topic
+    )
     # Treat the committed, source-reviewed inventory as an allowlist. Schema-valid
     # synthetic hashes, changed tariffs and fabricated anchors are not evidence.
     records = records if inventory_valid else []
+
     def compared_sources(item):
         focus = task_content_focus(item)
+
         def band(mark):
             return "short" if mark <= 4 else "medium" if mark <= 9 else "extended"
+
         marks = item.get("marks")
-        if (focus not in STYLE_FOCUS.get(item.get("kind"), set())
-                or not isinstance(marks, int) or marks <= 0
-                or not task_context_complete(item, focus)):
+        if (
+            focus not in STYLE_FOCUS.get(item.get("kind"), set())
+            or not isinstance(marks, int)
+            or marks <= 0
+            or not task_context_complete(item, focus)
+        ):
             return []
-        return [r for r in matching_records(records, task_features(item))
-                if r.get("content_focus") == focus and band(r["marks"]) == band(marks)]
+        return [
+            r
+            for r in matching_records(records, task_features(item))
+            if r.get("content_focus") == focus and band(r["marks"]) == band(marks)
+        ]
 
     matches = [
         {
             "item_id": i["id"],
             "task": task_features(i),
             "content_focus": task_content_focus(i),
-            "source_ids": [
-                r["id"] for r in compared_sources(i)
-            ],
+            "source_ids": [r["id"] for r in compared_sources(i)],
         }
         for i in items
     ]
     matched_ids = {source_id for match in matches for source_id in match["source_ids"]}
     support_years = {r["year"] for r in records if r["id"] in matched_ids}
     support_focus = {m["content_focus"] for m in matches if m["source_ids"]}
-    passed = bool(inventory_valid and items and all(m["source_ids"] for m in matches)
-                  and len(support_years) >= 2 and len(support_focus) >= 3)
+    passed = bool(
+        inventory_valid
+        and items
+        and all(m["source_ids"] for m in matches)
+        and len(support_years) >= 2
+        and len(support_focus) >= 3
+    )
     eligible = [
         r
         for r in records
@@ -584,7 +718,8 @@ def audit_topic_bank(
         "evidence_validation_passed": inventory_valid,
         "qualification_scope": "generated-items",
         "sufficiency_policy": {
-            "every_item_matched": True, "minimum_source_years": 2,
+            "every_item_matched": True,
+            "minimum_source_years": 2,
             "minimum_content_families": 3,
             "observed_source_years": len(support_years),
             "observed_content_families": len(support_focus),

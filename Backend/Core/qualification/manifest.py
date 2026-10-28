@@ -148,7 +148,8 @@ class QualificationManifest(BaseModel):
         policy: QualificationPolicy,
     ) -> bool:
         return all(
-            self.gate_results.get(gate) in {
+            self.gate_results.get(gate)
+            in {
                 GateState.PASSED,
                 GateState.NOT_APPLICABLE,
             }

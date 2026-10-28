@@ -83,7 +83,11 @@ def test_technical_report_distinguishes_current_catalogue_from_historical_model_
 
 
 def test_current_submission_brand_and_french_scope_are_explicit():
-    for builder in (build_application, build_technical_dossier, build_mathematical_analysis):
+    for builder in (
+        build_application,
+        build_technical_dossier,
+        build_mathematical_analysis,
+    ):
         text = " ".join(p.text for p in Document(builder()).paragraphs)
         assert "Keldin" in text
         assert "Paper Creator" not in text
@@ -96,7 +100,9 @@ def test_current_submission_brand_and_french_scope_are_explicit():
 def test_reports_state_v35_scope_and_do_not_require_unavailable_teacher_reviews():
     application = " ".join(p.text for p in Document(build_application()).paragraphs)
     technical = " ".join(p.text for p in Document(build_technical_dossier()).paragraphs)
-    mathematical = " ".join(p.text for p in Document(build_mathematical_analysis()).paragraphs)
+    mathematical = " ".join(
+        p.text for p in Document(build_mathematical_analysis()).paragraphs
+    )
     assert "V35" in application and "cinq familles" in application
     assert "five finite whole-paper families" in technical
     assert "34 or 36 questions" in technical

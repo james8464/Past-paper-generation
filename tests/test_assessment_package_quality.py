@@ -75,10 +75,7 @@ def test_package_provenance_keeps_stem_edits_distinct_from_authored_questions() 
     report = _authoring_provenance(
         [
             {"provenance": "ai-authored-stem-reviewed-contract"},
-            *[
-                {"provenance": "reviewed-deterministic-contract"}
-                for _ in range(3)
-            ],
+            *[{"provenance": "reviewed-deterministic-contract"} for _ in range(3)],
         ]
     )
 

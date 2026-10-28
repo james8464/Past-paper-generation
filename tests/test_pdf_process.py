@@ -27,7 +27,11 @@ def test_calibration_pdf_tools_keep_their_output_and_have_a_finite_deadline(
     operation: str,
 ) -> None:
     path = Path("reference papers") / "exam.pdf"
-    output = "Épreuve\n  aligned content\n" if operation == "text" else "Title: Fixture\nPages: 36\n"
+    output = (
+        "Épreuve\n  aligned content\n"
+        if operation == "text"
+        else "Title: Fixture\nPages: 36\n"
+    )
     calls = []
 
     def run(command, **kwargs):
@@ -81,7 +85,11 @@ def test_calibration_pdf_failures_identify_the_document_and_tool(
     message = str(caught.value)
     assert tool in message
     assert str(path) in message
-    assert {"timeout": "timed out", "missing": "not found", "failed": "Cannot open PDF"}[failure] in message
+    assert {
+        "timeout": "timed out",
+        "missing": "not found",
+        "failed": "Cannot open PDF",
+    }[failure] in message
 
 
 @pytest.mark.parametrize(("module_name", "text_name", "pages_name"), CALIBRATIONS)
@@ -94,7 +102,9 @@ def test_invalid_pdf_page_counts_fail_with_document_and_command_context(
     output: str,
 ) -> None:
     path = Path("reference papers") / "invalid.pdf"
-    monkeypatch.setattr(subprocess, "run", lambda *args, **kwargs: SimpleNamespace(stdout=output))
+    monkeypatch.setattr(
+        subprocess, "run", lambda *args, **kwargs: SimpleNamespace(stdout=output)
+    )
     function = getattr(importlib.import_module(module_name), pages_name)
     with pytest.raises(ValueError) as caught:
         function(path)

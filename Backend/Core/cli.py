@@ -78,9 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["ollama", "openai", "anthropic", "apple"],
         default="ollama",
     )
-    generate.add_argument(
-        "--api-key", default=environment_value("KELDIN_API_KEY", "")
-    )
+    generate.add_argument("--api-key", default=environment_value("KELDIN_API_KEY", ""))
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")

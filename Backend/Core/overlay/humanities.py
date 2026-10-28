@@ -53,9 +53,21 @@ def timeline_diagram(specification: TimelineSpec) -> Drawing:
         above = index % 2 == 0
         label_y = 116 if above else 35
         drawing.add(Line(x, axis_y - 6, x, axis_y + 6, strokeColor=colors.black))
-        drawing.add(String(x, axis_y - 19, str(event.year), textAnchor="middle", fontSize=8))
-        drawing.add(Line(x, axis_y + (6 if above else -6), x, label_y, strokeColor=colors.grey))
-        drawing.add(String(x, label_y + (3 if above else -10), event.label, textAnchor="middle", fontSize=8))
+        drawing.add(
+            String(x, axis_y - 19, str(event.year), textAnchor="middle", fontSize=8)
+        )
+        drawing.add(
+            Line(x, axis_y + (6 if above else -6), x, label_y, strokeColor=colors.grey)
+        )
+        drawing.add(
+            String(
+                x,
+                label_y + (3 if above else -10),
+                event.label,
+                textAnchor="middle",
+                fontSize=8,
+            )
+        )
     return drawing
 
 
@@ -95,7 +107,9 @@ def map_diagram(specification: MapSpec) -> Drawing:
         if feature.kind == "settlement":
             drawing.add(Circle(x, y, 3, fillColor=colors.black, strokeColor=None))
         elif feature.kind == "site":
-            drawing.add(Rect(x - 3, y - 3, 6, 6, fillColor=None, strokeColor=colors.black))
+            drawing.add(
+                Rect(x - 3, y - 3, 6, 6, fillColor=None, strokeColor=colors.black)
+            )
         else:
             drawing.add(Line(x - 4, y - 4, x + 4, y + 4, strokeColor=colors.black))
             drawing.add(Line(x - 4, y + 4, x + 4, y - 4, strokeColor=colors.black))

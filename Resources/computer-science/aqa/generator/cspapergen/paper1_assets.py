@@ -133,7 +133,11 @@ def render_preliminary_material(
     pdf.drawString(70, y, "identifier,category,value")
     y -= 24
     pdf.setFont(FONT, 10)
-    pdf.drawString(70, y, "Example structure only; use the unique supplied data file for calculations.")
+    pdf.drawString(
+        70,
+        y,
+        "Example structure only; use the unique supplied data file for calculations.",
+    )
     _page_footer(pdf, 2, blueprint.paper_code)
     pdf.save()
 
@@ -211,9 +215,7 @@ def _set_metadata(
     pdf.setTitle(f"{blueprint.paper_code} {blueprint.title} — {role}")
     pdf.setAuthor("Keldin")
     pdf.setCreator("Keldin")
-    pdf.setSubject(
-        "Independent A-level Computer Science practice material"
-    )
+    pdf.setSubject("Independent A-level Computer Science practice material")
 
 
 def _practice_header(pdf: canvas.Canvas, document: str, code: str) -> None:

@@ -10,7 +10,10 @@ def test_original_directory_sequence_has_complete_credit_and_visible_sources():
     assert exercise.credit == Decimal("6")
     assert len(exercise.questions) == 12
     assert sum(question.estimated_minutes for question in exercise.questions) == 70
-    assert {material.kind for material in exercise.materials} == {"table", "weighted_graph"}
+    assert {material.kind for material in exercise.materials} == {
+        "table",
+        "weighted_graph",
+    }
     assert {"SD-POO", "SD-GRAPHE", "ALG-GRAPHES", "LP-RECURSIVITE"} <= {
         code for question in exercise.questions for code in question.curriculum_codes
     }
@@ -35,5 +38,10 @@ def test_every_question_has_explicit_tested_case_identity():
 
     first, second = render_case(270104), render_case(270104)
     assert first == second
-    assert all(question["verification"]["seed"] == 270104 for question in first["questions"])
-    assert all(len(question["verification"]["case_sha256"]) == 64 for question in first["questions"])
+    assert all(
+        question["verification"]["seed"] == 270104 for question in first["questions"]
+    )
+    assert all(
+        len(question["verification"]["case_sha256"]) == 64
+        for question in first["questions"]
+    )

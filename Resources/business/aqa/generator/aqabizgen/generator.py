@@ -56,16 +56,56 @@ MCQ_TOPIC_IDS = {
     15: "business-10",
 }
 FACTS = {
-    "business-1": ("Which objective is most directly concerned with owners' return?", "Profit", ["Market mapping", "Capacity utilisation", "Labour turnover"]),
-    "business-2": ("Which leadership style gives employees the greatest role in decisions?", "Democratic", ["Autocratic", "Paternalistic only", "Scientific"]),
-    "business-3": ("Which measure compares a firm's sales with total market sales?", "Market share", ["Labour productivity", "Gearing", "Payback"]),
-    "business-4": ("Which method aims to minimise inventory held?", "Just in Time", ["Market penetration", "Retrenchment", "Job rotation"]),
-    "business-5": ("Which item is a cash inflow?", "Receipts from customers", ["Depreciation", "Closing inventory", "Trade credit offered"]),
-    "business-6": ("Which measure records employees leaving during a period?", "Labour turnover", ["Capacity utilisation", "Gross margin", "Market growth"]),
-    "business-7": ("Which framework examines political and technological change?", "PEST analysis", ["Boston Matrix", "Payback", "Decision tree"]),
-    "business-8": ("Which Ansoff option combines new products with new markets?", "Diversification", ["Market penetration", "Market development", "Product development"]),
-    "business-9": ("Which method joins two businesses into one ownership structure?", "Merger", ["Organic growth", "Delegation", "Benchmarking"]),
-    "business-10": ("Which concept describes a strategy becoming misaligned gradually?", "Strategic drift", ["Economies of scale", "Market mapping", "Job enrichment"]),
+    "business-1": (
+        "Which objective is most directly concerned with owners' return?",
+        "Profit",
+        ["Market mapping", "Capacity utilisation", "Labour turnover"],
+    ),
+    "business-2": (
+        "Which leadership style gives employees the greatest role in decisions?",
+        "Democratic",
+        ["Autocratic", "Paternalistic only", "Scientific"],
+    ),
+    "business-3": (
+        "Which measure compares a firm's sales with total market sales?",
+        "Market share",
+        ["Labour productivity", "Gearing", "Payback"],
+    ),
+    "business-4": (
+        "Which method aims to minimise inventory held?",
+        "Just in Time",
+        ["Market penetration", "Retrenchment", "Job rotation"],
+    ),
+    "business-5": (
+        "Which item is a cash inflow?",
+        "Receipts from customers",
+        ["Depreciation", "Closing inventory", "Trade credit offered"],
+    ),
+    "business-6": (
+        "Which measure records employees leaving during a period?",
+        "Labour turnover",
+        ["Capacity utilisation", "Gross margin", "Market growth"],
+    ),
+    "business-7": (
+        "Which framework examines political and technological change?",
+        "PEST analysis",
+        ["Boston Matrix", "Payback", "Decision tree"],
+    ),
+    "business-8": (
+        "Which Ansoff option combines new products with new markets?",
+        "Diversification",
+        ["Market penetration", "Market development", "Product development"],
+    ),
+    "business-9": (
+        "Which method joins two businesses into one ownership structure?",
+        "Merger",
+        ["Organic growth", "Delegation", "Benchmarking"],
+    ),
+    "business-10": (
+        "Which concept describes a strategy becoming misaligned gradually?",
+        "Strategic drift",
+        ["Economies of scale", "Market mapping", "Job enrichment"],
+    ),
 }
 ALTERNATE_FACTS = {
     14: (
@@ -100,10 +140,10 @@ def build_paper(
                 if question_rule.kind == "multiple_choice":
                     required_topic = MCQ_TOPIC_IDS.get(option_index + 1)
                     if required_topic:
-                        topic = next(item for item in topics if item.id == required_topic)
-                    question = _mcq(
-                        option_index + 1, topic, rng, question_rule
-                    )
+                        topic = next(
+                            item for item in topics if item.id == required_topic
+                        )
+                    question = _mcq(option_index + 1, topic, rng, question_rule)
                 else:
                     question = _written_question(
                         question_rule,
@@ -117,8 +157,12 @@ def build_paper(
                 questions.append(question)
             stimulus_count = _stimulus_count(rule.id, section_rule.id)
             has_shared_chart = not (rule.id == "paper_1" and section_rule.id == "A")
-            chart_title = f"Performance index for {business}" if has_shared_chart else ""
-            chart_labels = ["2021", "2022", "2023", "2024", "2025"] if has_shared_chart else []
+            chart_title = (
+                f"Performance index for {business}" if has_shared_chart else ""
+            )
+            chart_labels = (
+                ["2021", "2022", "2023", "2024", "2025"] if has_shared_chart else []
+            )
             chart_values = values if has_shared_chart else []
             options.append(
                 GeneratedOption(
@@ -326,10 +370,30 @@ def _mcq(
                 "operation": "performance_statements",
                 "inputs": {},
                 "rows": [
-                    {"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"},
-                    {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower"},
-                    {"label": "Market share", "target": "13", "actual": "15", "better_when": "higher"},
-                    {"label": "ROCE", "target": "16", "actual": "12", "better_when": "higher"},
+                    {
+                        "label": "Capacity utilisation",
+                        "target": "90",
+                        "actual": "88",
+                        "better_when": "higher",
+                    },
+                    {
+                        "label": "Labour turnover",
+                        "target": "12",
+                        "actual": "17",
+                        "better_when": "lower",
+                    },
+                    {
+                        "label": "Market share",
+                        "target": "13",
+                        "actual": "15",
+                        "better_when": "higher",
+                    },
+                    {
+                        "label": "ROCE",
+                        "target": "16",
+                        "actual": "12",
+                        "better_when": "higher",
+                    },
                 ],
                 "unit": "classification",
                 "decimal_places": 0,
@@ -405,8 +469,7 @@ def _written_question(
     if rule.id == "current_ratio":
         ratio = format_number(financials.current_ratio)
         prompt = (
-            f"Calculate the current ratio for {business} for 2024. "
-            "Show your working."
+            f"Calculate the current ratio for {business} for 2024. Show your working."
         )
         scheme = [
             "Current ratio = current assets ÷ current liabilities.",
@@ -415,10 +478,7 @@ def _written_question(
                 f"{financials.receivables} + {financials.cash} = "
                 f"£{financials.current_assets}m."
             ),
-            (
-                f"Substitution: {financials.current_assets} ÷ "
-                f"{financials.payables}."
-            ),
+            (f"Substitution: {financials.current_assets} ÷ {financials.payables}."),
             f"Answer: {ratio}:1 (accept {ratio} without :1).",
         ]
         structured_scheme = [
@@ -448,9 +508,7 @@ def _written_question(
             "verified_answers": {"current_ratio": financials.current_ratio},
         }
     elif rule.id == "roce_calculation":
-        operating_profit = format_number(
-            financials.operating_profit_at_twelve_percent
-        )
+        operating_profit = format_number(financials.operating_profit_at_twelve_percent)
         prompt = (
             f"{business} achieved a Return on Capital Employed (ROCE) of 12%. "
             "Using the extract from its statement of financial position, calculate "
@@ -529,6 +587,7 @@ def _written_question(
         ]
     elif rule.kind == "calculation":
         from Backend.Core.numeric_integrity import percentage_change_context
+
         authoring_context.update(percentage_change_context(values[0], values[-1]))
         if "." in number:
             prompt = (
@@ -646,18 +705,64 @@ def _written_question(
         scheme = _levels(rule.marks, topic, point, case_id)
     if rule.id in {"current_ratio", "roce_calculation"}:
         from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput
+
         source = authoring_context["source_data"]
         is_ratio = rule.id == "current_ratio"
         expressions = (
-            {"current_assets": "inventories + receivables + cash", "current_ratio": "current_assets / current_liabilities"}
-            if is_ratio else {"capital_employed": "total_equity + non_current_liabilities", "operating_profit": "capital_employed * roce_percent / 100"}
+            {
+                "current_assets": "inventories + receivables + cash",
+                "current_ratio": "current_assets / current_liabilities",
+            }
+            if is_ratio
+            else {
+                "capital_employed": "total_equity + non_current_liabilities",
+                "operating_profit": "capital_employed * roce_percent / 100",
+            }
         )
-        source = {key: value for key, value in source.items() if key != "capital_employed"}
+        source = {
+            key: value for key, value in source.items() if key != "capital_employed"
+        }
         outputs = (
-            [NumericOutput(role="current_assets", unit="GBPm", decimal_places=0, scheme_pattern=rf"^Current assets =[^\n=]*=\s*{MONEY}m"), NumericOutput(role="current_ratio", unit="1", decimal_places=2, scheme_pattern=rf"^Answer: (?P<value>{NUMBER}):1")]
-            if is_ratio else [NumericOutput(role="capital_employed", unit="GBPm", decimal_places=0, scheme_pattern=rf"^Capital employed =[^\n=]*=\s*{MONEY}m"), NumericOutput(role="operating_profit", unit="GBPm", decimal_places=2, scheme_pattern=rf"^Operating profit =\s*{MONEY}m")]
+            [
+                NumericOutput(
+                    role="current_assets",
+                    unit="GBPm",
+                    decimal_places=0,
+                    scheme_pattern=rf"^Current assets =[^\n=]*=\s*{MONEY}m",
+                ),
+                NumericOutput(
+                    role="current_ratio",
+                    unit="1",
+                    decimal_places=2,
+                    scheme_pattern=rf"^Answer: (?P<value>{NUMBER}):1",
+                ),
+            ]
+            if is_ratio
+            else [
+                NumericOutput(
+                    role="capital_employed",
+                    unit="GBPm",
+                    decimal_places=0,
+                    scheme_pattern=rf"^Capital employed =[^\n=]*=\s*{MONEY}m",
+                ),
+                NumericOutput(
+                    role="operating_profit",
+                    unit="GBPm",
+                    decimal_places=2,
+                    scheme_pattern=rf"^Operating profit =\s*{MONEY}m",
+                ),
+            ]
         )
-        authoring_context.update({"calculation_variables": source, "calculation_input_units": {key: "%" if key == "roce_percent" else "GBPm" for key in source}, "calculation_expressions": expressions, "calculation_outputs": [output.model_dump() for output in outputs]})
+        authoring_context.update(
+            {
+                "calculation_variables": source,
+                "calculation_input_units": {
+                    key: "%" if key == "roce_percent" else "GBPm" for key in source
+                },
+                "calculation_expressions": expressions,
+                "calculation_outputs": [output.model_dump() for output in outputs],
+            }
+        )
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,

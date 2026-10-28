@@ -54,13 +54,10 @@ def _facts(seed: int) -> dict:
     if len(surviving_edges) != len(data["graph"]["edges"]) - 1:
         raise ValueError("Closed route edge is not unique")
     baseline_steps, baseline_route = _dijkstra_steps(_adjacency(data["graph"]))
-    outage_steps, outage_route = _dijkstra_steps(
-        _adjacency({"edges": surviving_edges})
-    )
-    if (
-        baseline_route != _independent_shortest(data["graph"]["edges"])
-        or outage_route != _independent_shortest(surviving_edges)
-    ):
+    outage_steps, outage_route = _dijkstra_steps(_adjacency({"edges": surviving_edges}))
+    if baseline_route != _independent_shortest(
+        data["graph"]["edges"]
+    ) or outage_route != _independent_shortest(surviving_edges):
         raise ValueError("Route trace disagrees with independent shortest-path check")
     if (
         baseline_route != before

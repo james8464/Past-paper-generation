@@ -47,7 +47,9 @@ def emit(event_type: str, **payload: Any) -> None:
     print(json.dumps(envelope, ensure_ascii=False), flush=True)
 
 
-def emit_progress(message: str, *, stage: str | None = None, progress: float | None = None) -> None:
+def emit_progress(
+    message: str, *, stage: str | None = None, progress: float | None = None
+) -> None:
     payload: dict[str, Any] = {"stage": stage or message, "message": message}
     if progress is not None:
         payload["progress"] = max(0.0, min(1.0, progress))
@@ -56,7 +58,9 @@ def emit_progress(message: str, *, stage: str | None = None, progress: float | N
 
 def run_subprocess_json(command: list[str], *, stage: str) -> int:
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        process = subprocess.Popen(
+            command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+        )
     except OSError as error:
         emit("error", message=f"Could not start {' '.join(command)}: {error}")
         return 127

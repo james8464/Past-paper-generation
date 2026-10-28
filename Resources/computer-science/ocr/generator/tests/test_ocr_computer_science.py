@@ -39,24 +39,39 @@ def test_mark_scheme_prints_shared_credit_rules_once(tmp_path: Path) -> None:
     render_mark_scheme(paper, output)
 
     text = " ".join(extract_pdf_text(output).split())
-    assert text.count(
-        "Accept equivalent answers; apply stated follow-through without duplicate credit."
-    ) == 1
-    assert text.count(
-        "Do not award the same developed point twice. Where an early numerical error is "
-        "carried through consistently, award the later method marks."
-    ) == 1
-    assert text.count(
-        "Credit a technically correct equivalent method. Apply follow-through where "
-        "the stated working remains coherent."
-    ) == 1
-    assert text.count(
-        "Marker check: reward a valid alternative route where it demonstrates the "
-        "same assessed knowledge or skill."
-    ) == 1
-    assert text.count(
-        "Accept a technically equivalent answer applied to the wildlife monitoring network."
-    ) == 1
+    assert (
+        text.count(
+            "Accept equivalent answers; apply stated follow-through without duplicate credit."
+        )
+        == 1
+    )
+    assert (
+        text.count(
+            "Do not award the same developed point twice. Where an early numerical error is "
+            "carried through consistently, award the later method marks."
+        )
+        == 1
+    )
+    assert (
+        text.count(
+            "Credit a technically correct equivalent method. Apply follow-through where "
+            "the stated working remains coherent."
+        )
+        == 1
+    )
+    assert (
+        text.count(
+            "Marker check: reward a valid alternative route where it demonstrates the "
+            "same assessed knowledge or skill."
+        )
+        == 1
+    )
+    assert (
+        text.count(
+            "Accept a technically equivalent answer applied to the wildlife monitoring network."
+        )
+        == 1
+    )
 
 
 # Consolidation must not erase per-question AO or marker instructions.
@@ -77,10 +92,13 @@ def test_mark_scheme_retains_question_assessment_guidance(tmp_path: Path) -> Non
     )
     for objective, count in expected.items():
         assert text.count(objective) >= count
-    assert text.count(
-        "Marker check: reward a valid alternative route where it demonstrates the "
-        "same assessed knowledge or skill."
-    ) == 1
+    assert (
+        text.count(
+            "Marker check: reward a valid alternative route where it demonstrates the "
+            "same assessed knowledge or skill."
+        )
+        == 1
+    )
 
 
 def _flatten(values: list[list[int]]) -> list[int]:
@@ -135,21 +153,25 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         answer_page = reader.pages[-1] if paper == "1" else reader.pages[-3]
         assert "EXTRA ANSWER SPACE" in (answer_page.extract_text() or "")
         if paper == "2":
-            assert "EXTRA ANSWER SPACE" not in (
-                reader.pages[-1].extract_text() or ""
-            )
+            assert "EXTRA ANSWER SPACE" not in (reader.pages[-1].extract_text() or "")
         if paper == "1":
             assert "Iteration" in (reader.pages[3].extract_text() or "")
             assert "First technology" in (reader.pages[9].extract_text() or "")
         scheme = PdfReader(paths["mark_scheme"])
         assert len(scheme.pages) == expected_scheme_pages
-        assert float(scheme.pages[0].mediabox.height) > float(scheme.pages[0].mediabox.width)
-        assert float(scheme.pages[1].mediabox.height) > float(scheme.pages[1].mediabox.width)
+        assert float(scheme.pages[0].mediabox.height) > float(
+            scheme.pages[0].mediabox.width
+        )
+        assert float(scheme.pages[1].mediabox.height) > float(
+            scheme.pages[1].mediabox.width
+        )
         assert all(
             float(page.mediabox.width) > float(page.mediabox.height)
             for page in scheme.pages[2:-1]
         )
-        assert float(scheme.pages[-1].mediabox.height) > float(scheme.pages[-1].mediabox.width)
+        assert float(scheme.pages[-1].mediabox.height) > float(
+            scheme.pages[-1].mediabox.width
+        )
 
 
 def test_extra_answer_page_uses_open_ocr_rule_grammar(tmp_path: Path) -> None:
@@ -372,7 +394,9 @@ def test_programming_items_allow_reviewed_code_literals() -> None:
     )
 
     assert programming.authoring_context["allow_additional_numeric_values"] is True
-    assert programming.authoring_context["max_prompt_words"] >= len(programming.prompt.split())
+    assert programming.authoring_context["max_prompt_words"] >= len(
+        programming.prompt.split()
+    )
     extended = next(
         question
         for section in paper.sections
@@ -502,7 +526,53 @@ def test_maximum_length_programming_prompt_preserves_paper_two_page_count(
 ) -> None:
     paper = build_paper(RULES["paper_2"], SYLLABUS, 26080118)
     question = paper.sections[5].options[0].questions[2]
-    words = ["Develop", "pseudocode", "that", "finds", "one", "appointment", "by", "its", "identifier,", "validates", "every", "input,", "handles", "a", "missing", "record", "safely,", "and", "labels", "all", "variables", "consistently.", "Include", "selection,", "iteration,", "a", "suitable", "data", "structure,", "and", "brief", "comments", "that", "explain", "the", "important", "design", "decisions", "for", "the", "medical", "appointment", "service", "when", "implemented."]
+    words = [
+        "Develop",
+        "pseudocode",
+        "that",
+        "finds",
+        "one",
+        "appointment",
+        "by",
+        "its",
+        "identifier,",
+        "validates",
+        "every",
+        "input,",
+        "handles",
+        "a",
+        "missing",
+        "record",
+        "safely,",
+        "and",
+        "labels",
+        "all",
+        "variables",
+        "consistently.",
+        "Include",
+        "selection,",
+        "iteration,",
+        "a",
+        "suitable",
+        "data",
+        "structure,",
+        "and",
+        "brief",
+        "comments",
+        "that",
+        "explain",
+        "the",
+        "important",
+        "design",
+        "decisions",
+        "for",
+        "the",
+        "medical",
+        "appointment",
+        "service",
+        "when",
+        "implemented.",
+    ]
     assert len(words) == 45
     paper.sections[5].options[0].questions[2] = question.model_copy(
         update={"prompt": " ".join(words)}

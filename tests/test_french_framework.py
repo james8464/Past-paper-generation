@@ -23,7 +23,9 @@ import pytest
         ("Le réseau est saturé.", "Thème de l'exercice : « Le réseau est saturé »."),
     ],
 )
-def test_french_exercise_scope_reads_naturally_for_titles_and_sentences(title, expected):
+def test_french_exercise_scope_reads_naturally_for_titles_and_sentences(
+    title, expected
+):
     from Backend.Core.france.rendering import exercise_scope_text
 
     assert exercise_scope_text(title) == expected
@@ -113,23 +115,21 @@ def test_french_pdf_has_real_credit_language_and_no_official_claim(tmp_path):
                             "prompt": "Expliquer précisément la méthode employée.",
                             "points": "1.5",
                             "answer": "La méthode utilise les connexions indiquées.",
-                                "marking": [
+                            "marking": [
                                 {
                                     "points": "1.5",
                                     "criterion": "Méthode justifiée dans ce contexte.",
-                                    }
-                                ],
-                                "curriculum_codes": ["ASR-ROUTAGE"],
-                                "operation": ("apply", "analyse", "design", "justify")[
-                                    i - 1
-                                ],
-                                "difficulty": (2, 3, 4, 4)[i - 1],
-                                "estimated_minutes": (
-                                    (15, 15, 15, 15)
-                                    if number < 3
-                                    else (18, 18, 17, 17)
-                                )[i - 1],
-                            }
+                                }
+                            ],
+                            "curriculum_codes": ["ASR-ROUTAGE"],
+                            "operation": ("apply", "analyse", "design", "justify")[
+                                i - 1
+                            ],
+                            "difficulty": (2, 3, 4, 4)[i - 1],
+                            "estimated_minutes": (
+                                (15, 15, 15, 15) if number < 3 else (18, 18, 17, 17)
+                            )[i - 1],
+                        }
                         for i in range(1, 5)
                     ],
                 }
@@ -202,9 +202,7 @@ def test_french_pdf_renders_structured_tables_and_graphs_as_vectors(tmp_path):
                     {"points": "1.5", "criterion": "Résultat et justification."}
                 ],
                 "material_ids": ["reseau"] if i == 1 else [],
-                "curriculum_codes": [
-                    "ASR-ROUTAGE" if i % 2 else "ALG-GRAPHES"
-                ],
+                "curriculum_codes": ["ASR-ROUTAGE" if i % 2 else "ALG-GRAPHES"],
                 "operation": ("apply", "analyse", "design", "justify")[i - 1],
                 "difficulty": (2, 3, 4, 4)[i - 1],
                 "estimated_minutes": 15,
@@ -245,7 +243,10 @@ def test_french_pdf_uses_measured_bac_page_geometry(tmp_path):
                     "points": "1.5",
                     "answer": "La réponse s'appuie sur les données du réseau.",
                     "marking": [
-                        {"points": "1.5", "criterion": "Réponse contextualisée et justifiée."}
+                        {
+                            "points": "1.5",
+                            "criterion": "Réponse contextualisée et justifiée.",
+                        }
                     ],
                     "curriculum_codes": ["ASR-ROUTAGE"],
                     "operation": ("apply", "analyse", "design", "justify")[index - 1],

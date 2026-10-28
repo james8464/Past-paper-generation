@@ -62,10 +62,14 @@ class ComputerSciencePlugin:
         if item.get("item_kind") == "practical-programming":
             language = str(item.get("language", "")).strip().casefold()
             if language not in _PRACTICAL_LANGUAGES:
-                diagnostics.append("practical language must be Java, Python, or Visual Basic")
+                diagnostics.append(
+                    "practical language must be Java, Python, or Visual Basic"
+                )
             evidence = item.get("test_evidence")
             if not isinstance(evidence, list) or len(evidence) < 3:
-                diagnostics.append("practical items require normal, boundary, and invalid test evidence")
+                diagnostics.append(
+                    "practical items require normal, boundary, and invalid test evidence"
+                )
         if item.get("item_kind") == "trace-table" and not item.get("trace_states"):
             diagnostics.append("trace-table items require recomputed states")
         if item.get("answer_kind") == "pseudocode" and not normalise_pseudocode(
@@ -100,7 +104,9 @@ class ComputerSciencePlugin:
         if not isinstance(scheme, dict) or not scheme.get("mark_points"):
             return SubjectValidation(False, ("mark scheme requires mark points",))
         alternatives = scheme.get("accepted_alternatives", [])
-        if item.get("answer_kind") == "pseudocode" and not isinstance(alternatives, list):
+        if item.get("answer_kind") == "pseudocode" and not isinstance(
+            alternatives, list
+        ):
             return SubjectValidation(False, ("pseudocode alternatives must be a list",))
         return SubjectValidation(True)
 

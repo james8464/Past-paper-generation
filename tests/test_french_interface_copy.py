@@ -34,13 +34,17 @@ def test_creation_commands_do_not_run_behind_guidance_sheets():
 
 def test_document_commands_do_not_target_the_document_behind_a_guide():
     source = (APP / "Application/AppCommands.swift").read_text()
-    access = source.split("private var canAccessDocument: Bool", 1)[1].split("private", 1)[0]
+    access = source.split("private var canAccessDocument: Bool", 1)[1].split(
+        "private", 1
+    )[0]
     assert "!application.showWelcome" in access
     assert "!application.showHelp" in access
     assert "documentActions?.canAccessDocument == true" in access
     assert source.count(".disabled(!canAccessDocument)") == 4
     assert source.count("guard canAccessDocument else { return }") == 4
-    provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split("private", 1)[0]
+    provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split(
+        "private", 1
+    )[0]
     assert "!application.showWelcome" in provenance
     assert "!application.showHelp" in provenance
     assert "documentActions?.provenance != nil" in provenance

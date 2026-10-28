@@ -31,7 +31,6 @@ class ExamPageProfile:
 
 # A full-page shell that can also live inside a Platypus story.
 class ExamPage(Flowable):
-
     def __init__(
         self,
         profile: ExamPageProfile,

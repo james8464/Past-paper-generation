@@ -158,7 +158,6 @@ def _expected(tables: dict) -> dict:
 # Canonical JSON, including deterministic, independently checked results.
 @dataclass(frozen=True)
 class DatabaseAuditContract:
-
     _json: str
 
     def to_dict(self) -> dict:

@@ -194,7 +194,9 @@ def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
     return bool(leading or trailing)
 
 
-def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Match[str], ...]:
+def _unqualified_matches(
+    clause: str, patterns: tuple[str, ...]
+) -> tuple[re.Match[str], ...]:
     return tuple(
         match
         for pattern in patterns
@@ -207,9 +209,7 @@ def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Mat
 def _passive_relation_patterns(
     subject: str, action: str, suffix: str
 ) -> tuple[str, str]:
-    assertion = (
-        rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
-    )
+    assertion = rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
     denial = (
         rf"{subject} "
         rf"(?:(?:is|are) (?:not|never)|(?:does|do) not get|must not|cannot) "
@@ -524,10 +524,13 @@ def review_open_credit(
             ensure_ascii=False,
         )
     )
-    contract = OutputContract("open_credit", credit_allocations=tuple(
-        (row["criterion_id"], row["point_index"], row["marks"])
-        for row in envelope["criteria"]
-    ))
+    contract = OutputContract(
+        "open_credit",
+        credit_allocations=tuple(
+            (row["criterion_id"], row["point_index"], row["marks"])
+            for row in envelope["criteria"]
+        ),
+    )
     raw = request_json(client, make_request(prompt, contract))
     judgement = _validate_judgement(item, solved, raw)
     return {

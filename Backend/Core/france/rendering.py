@@ -213,8 +213,12 @@ def structured_material(
         positions = {
             node: (width * x, height * y)
             for node, x, y in (
-                ("r", 0.15, 0.50), ("a", 0.42, 0.75), ("b", 0.42, 0.25),
-                ("c", 0.70, 0.50), ("d", 0.85, 0.80), ("e", 0.85, 0.15),
+                ("r", 0.15, 0.50),
+                ("a", 0.42, 0.75),
+                ("b", 0.42, 0.25),
+                ("c", 0.70, 0.50),
+                ("d", 0.85, 0.80),
+                ("e", 0.85, 0.15),
             )
         }
     else:
@@ -1006,9 +1010,8 @@ def render_assessment(
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
                 if (
-                    (exercise_index < len(exercises) - 1 and not compact_correction)
-                    or question_index < len(exercise.questions) - 1
-                ):
+                    exercise_index < len(exercises) - 1 and not compact_correction
+                ) or question_index < len(exercise.questions) - 1:
                     # V34 starts the next exercise with PageBreak. A trailing
                     # spacer can spill onto a fresh page and leave it empty.
                     story.append(Spacer(1, 2 if graph_depth_correction else 5))
@@ -1028,6 +1031,8 @@ def render_assessment(
 
     doc.build(
         story,
-        canvasmaker=partial(NumberedCanvas, brand_name=brand_name, print_policy=print_policy),
+        canvasmaker=partial(
+            NumberedCanvas, brand_name=brand_name, print_policy=print_policy
+        ),
         onFirstPage=cover_page,
     )

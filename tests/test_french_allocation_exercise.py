@@ -19,7 +19,9 @@ def test_allocation_sequence_retains_sql_rows_and_complete_credit():
     assert sum(question.estimated_minutes for question in exercise.questions) == 70
     assert len(exercise.materials) == 3
     assert [(item.id, item.title) for item in exercise.materials] == [
-        ("equipe", "equipe"), ("tache", "tache"), ("habilitation", "habilitation")
+        ("equipe", "equipe"),
+        ("tache", "tache"),
+        ("habilitation", "habilitation"),
     ]
     assert "(10, 1), (10, 2), (11, 1), (12, 3)" in exercise.questions[5].answer
     assert "[(10, 2), (11, 1), (12, 3)]" in exercise.questions[7].answer

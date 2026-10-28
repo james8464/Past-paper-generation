@@ -102,7 +102,16 @@ def test_v25_blueprint_only_changes_e1_and_preserves_total(seed: int) -> None:
         f"1{x}" for x in "abcdefghij"
     ]
     assert [item["estimated_minutes"] for item in new[0]["question_blueprint"]] == [
-        3, 3, 10, 8, 8, 10, 11, 6, 5, 6
+        3,
+        3,
+        10,
+        8,
+        8,
+        10,
+        11,
+        6,
+        5,
+        6,
     ]
     assert new[0]["question_blueprint"][5]["points"] == "1"
     assert new[0]["question_blueprint"][6]["points"] == "0.5"

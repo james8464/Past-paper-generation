@@ -41,7 +41,9 @@ def board_profile(identifier: str) -> BoardProfile:
         page_size=str(payload["page_size"]),
         page_width_mm=float(payload["page_width_mm"]),
         page_height_mm=float(payload["page_height_mm"]),
-        margins_mm={str(key): float(value) for key, value in payload["margins_mm"].items()},
+        margins_mm={
+            str(key): float(value) for key, value in payload["margins_mm"].items()
+        },
         typography=dict(payload["typography"]),
         components=dict(payload["components"]),
         scheme_policy=str(payload["scheme_policy"]),

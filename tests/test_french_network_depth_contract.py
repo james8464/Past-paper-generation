@@ -98,7 +98,9 @@ def test_forged_seeded_facts_or_derived_trace_fail_closed():
         lambda value: value["change"].__setitem__("new_cost", 99),
         lambda value: value["expected"]["before"].__setitem__("cost", 99),
         lambda value: value["expected"]["after"]["settled_order"].reverse(),
-        lambda value: value["expected"]["before"]["trace"][0]["tentative"].__setitem__("R1", 99),
+        lambda value: value["expected"]["before"]["trace"][0]["tentative"].__setitem__(
+            "R1", 99
+        ),
         lambda value: value.__setitem__("version", True),
         lambda value: value.__setitem__("profile_offset", True),
     )

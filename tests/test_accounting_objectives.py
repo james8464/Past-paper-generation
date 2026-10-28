@@ -78,7 +78,9 @@ def test_accounting_uses_official_item_budgets_and_component_totals(number, sect
     for question in paper.sections[-1].options[0].questions:
         assert question.assessment_objectives == {"AO2": 5, "AO3": 20}
         awarded = [p for p in question.structured_mark_scheme if p.marks]
-        assert len(awarded) == 2  # Best-fit budgets do not assign marks repeatedly to indicative content.
+        assert (
+            len(awarded) == 2
+        )  # Best-fit budgets do not assign marks repeatedly to indicative content.
         assert all(p.credit_type == "level" for p in awarded)
 
 
@@ -131,7 +133,9 @@ def test_authoring_and_editor_prompts_use_accounting_objective_semantics():
     assert "AO4" not in prompt
     review = _review_prompt([task], [task.question], subject="Accounting")
     assert "AO3" in review and "evaluation" in review.lower()
-    assert "familiar" in prompt.lower()  # Familiar calculation techniques may assess AO1.
+    assert (
+        "familiar" in prompt.lower()
+    )  # Familiar calculation techniques may assess AO1.
 
 
 def test_accounting_ao3_short_analysis_does_not_imply_judgement():

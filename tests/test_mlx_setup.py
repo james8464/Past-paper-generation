@@ -159,7 +159,9 @@ def test_local_model_resolution_never_enables_network_download(tmp_path: Path) -
     ]
 
 
-def test_guided_setup_downloads_data_only_and_never_trusts_remote_code(monkeypatch, tmp_path):
+def test_guided_setup_downloads_data_only_and_never_trusts_remote_code(
+    monkeypatch, tmp_path
+):
     snapshot = tmp_path / "snapshot"
     snapshot.mkdir()
     downloads = []
@@ -171,14 +173,23 @@ def test_guided_setup_downloads_data_only_and_never_trusts_remote_code(monkeypat
         "Backend.Core.mlx_setup.resolve_local_mlx_model", lambda model: str(snapshot)
     )
     load_mlx_model(
-        "mlx-community/test", snapshot_resolver=lambda **kwargs: downloads.append(kwargs) or str(snapshot)
+        "mlx-community/test",
+        snapshot_resolver=lambda **kwargs: downloads.append(kwargs) or str(snapshot),
     )
     assert downloads[0]["repo_id"] == "mlx-community/test"
     assert downloads[0]["local_files_only"] is False
     assert "*.py" not in downloads[0]["allow_patterns"]
-    assert loads == [(str(snapshot), {"tokenizer_config": {
-        "trust_remote_code": False, "local_files_only": True,
-    }})]
+    assert loads == [
+        (
+            str(snapshot),
+            {
+                "tokenizer_config": {
+                    "trust_remote_code": False,
+                    "local_files_only": True,
+                }
+            },
+        )
+    ]
 
 
 def test_missing_local_model_requests_setup_again() -> None:

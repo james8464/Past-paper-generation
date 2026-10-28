@@ -33,8 +33,7 @@ def build_paper_blueprint(
     theme_plan = _theme_plan(config, rng)
     paper_3_contexts = _paper_3_context_plan(config.id, rng)
     paper_3_source_variants = {
-        section: rng.randrange(10_000, 1_000_000)
-        for section in paper_3_contexts
+        section: rng.randrange(10_000, 1_000_000) for section in paper_3_contexts
     }
 
     questions: list[QuestionBlueprint] = []
@@ -50,7 +49,9 @@ def build_paper_blueprint(
         source_context_topic = (
             _choose_topic(
                 rng,
-                _topics_for_theme(_topics_matching(topics, essay_topic_ids), section_theme_targets[0])
+                _topics_for_theme(
+                    _topics_matching(topics, essay_topic_ids), section_theme_targets[0]
+                )
                 if section_theme_targets
                 else _topics_matching(topics, essay_topic_ids),
                 set(),
@@ -65,13 +66,21 @@ def build_paper_blueprint(
             excluded_ids = set(section_topic_ids)
             if group_index is not None:
                 excluded_ids.update(choice_group_topics.get(group_index, set()))
-            part_marks, part_commands, stimulus_kind = _section_template(section, section_templates, index)
-            available_topics = _topic_pool_for_question(topics, essay_topic_ids, marks, section.name)
+            part_marks, part_commands, stimulus_kind = _section_template(
+                section, section_templates, index
+            )
+            available_topics = _topic_pool_for_question(
+                topics, essay_topic_ids, marks, section.name
+            )
             if index < len(section_theme_targets):
-                available_topics = _topics_for_theme(available_topics, section_theme_targets[index])
+                available_topics = _topics_for_theme(
+                    available_topics, section_theme_targets[index]
+                )
             if case_title:
                 planned_topic_id = _PAPER_3_TOPIC_PLANS[case_title][index]
-                planned_topics = [topic for topic in topics if topic.id == planned_topic_id]
+                planned_topics = [
+                    topic for topic in topics if topic.id == planned_topic_id
+                ]
                 if planned_topics:
                     available_topics = planned_topics
             stimulus_kind = _compatible_stimulus_kind(
@@ -83,12 +92,20 @@ def build_paper_blueprint(
                 rng,
                 section_stimulus_kinds,
             )
-            available_topics = _topics_suitable_for_template(available_topics, part_commands, stimulus_kind)
-            topic = source_context_topic or _choose_topic(rng, available_topics, excluded_ids) or SyllabusTopic(id="unknown", theme=1, title="Economics", points=[])
+            available_topics = _topics_suitable_for_template(
+                available_topics, part_commands, stimulus_kind
+            )
+            topic = (
+                source_context_topic
+                or _choose_topic(rng, available_topics, excluded_ids)
+                or SyllabusTopic(id="unknown", theme=1, title="Economics", points=[])
+            )
             stimulus_kind = _specialize_stimulus_kind(stimulus_kind, topic.id)
             section_stimulus_kinds.add(stimulus_kind)
             command_word = section.command_words[index]
-            number = _question_number(config.id, section.name, absolute_question_number, index)
+            number = _question_number(
+                config.id, section.name, absolute_question_number, index
+            )
             parts = _build_parts(
                 part_marks,
                 part_commands,
@@ -136,7 +153,9 @@ def build_paper_blueprint(
                     ),
                     parts=parts,
                     stimulus_kind=stimulus_kind,
-                    choice_group=_choice_group_name(config.id, section.name, group_index),
+                    choice_group=_choice_group_name(
+                        config.id, section.name, group_index
+                    ),
                     source_reference=source_reference,
                     source_title=case_title or _source_title(topic.title, section.name),
                     source_text=_source_text(
@@ -186,15 +205,25 @@ def build_paper_blueprint(
             options = [q for q in section_questions if q.choice_group == name]
             if len(options) != len(group) or len({q.marks for q in options}) != 1:
                 raise ValueError("Edexcel configured choice bundle mismatch")
-            groups[name] = {"answer_options": 1, "candidate_marks": options[0].marks,
-                            "option_ids": [q.number for q in options]}
+            groups[name] = {
+                "answer_options": 1,
+                "candidate_marks": options[0].marks,
+                "option_ids": [q.number for q in options],
+            }
         path_rules.append({"id": section.name, "choice_groups": groups})
         for question in section_questions:
-            question.choice_selection_context = {"section_id": section.name, "groups": groups,
-                                                  "question_ids": [q.number for q in section_questions]}
-            question.expected_minutes = round(config.duration_minutes * question.marks / config.total_marks, 2)
+            question.choice_selection_context = {
+                "section_id": section.name,
+                "groups": groups,
+                "question_ids": [q.number for q in section_questions],
+            }
+            question.expected_minutes = round(
+                config.duration_minutes * question.marks / config.total_marks, 2
+            )
             for part in question.parts:
-                part.expected_minutes = round(config.duration_minutes * part.marks / config.total_marks, 2)
+                part.expected_minutes = round(
+                    config.duration_minutes * part.marks / config.total_marks, 2
+                )
     return PaperBlueprint(
         seed=seed,
         paper_id=config.id,
@@ -301,7 +330,13 @@ def _theme_plan(config: PaperConfig, rng: random.Random) -> dict[str, list[int]]
     data_response_theme = rng.choice(themes)
     remaining = [t for t in themes if t != data_response_theme]
     essay_theme = remaining[0] if remaining else data_response_theme
-    section_a_themes = [data_response_theme, data_response_theme, essay_theme, essay_theme, essay_theme]
+    section_a_themes = [
+        data_response_theme,
+        data_response_theme,
+        essay_theme,
+        essay_theme,
+        essay_theme,
+    ]
     rng.shuffle(section_a_themes)
     return {
         "A": section_a_themes,
@@ -345,12 +380,16 @@ def _topics_for_theme(topics, theme: int):
     return matched or topics
 
 
-def _section_templates(section, rng: random.Random) -> list[tuple[list[int], list[str], str]]:
+def _section_templates(
+    section, rng: random.Random
+) -> list[tuple[list[int], list[str], str]]:
     if not section.part_marks:
         return []
     templates = list(zip(section.part_marks, section.part_command_words, strict=True))
     stimulus_kinds = [
-        rng.choice(_stimulus_pool(section, index)) if _stimulus_pool(section, index) else ""
+        rng.choice(_stimulus_pool(section, index))
+        if _stimulus_pool(section, index)
+        else ""
         for index in range(len(templates))
     ]
     return [
@@ -365,7 +404,9 @@ def _stimulus_pool(section, index: int) -> list[str]:
     return section.stimulus_kinds
 
 
-def _section_template(section, templates: list[tuple[list[int], list[str], str]], index: int) -> tuple[list[int], list[str], str]:
+def _section_template(
+    section, templates: list[tuple[list[int], list[str], str]], index: int
+) -> tuple[list[int], list[str], str]:
     if templates:
         return templates[index]
     return [], [], _stimulus_kind(section, index)
@@ -376,7 +417,9 @@ def _topics_matching(topics, topic_ids: set[str]):
     return matched or topics
 
 
-def _topic_pool_for_question(topics, essay_topic_ids: set[str], marks: int, section_name: str):
+def _topic_pool_for_question(
+    topics, essay_topic_ids: set[str], marks: int, section_name: str
+):
     if marks >= 15 or section_name in {"B", "C"}:
         return _topics_matching(topics, essay_topic_ids)
     return topics
@@ -389,7 +432,9 @@ def _topics_suitable_for_template(topics, part_commands: list[str], stimulus_kin
         if matched:
             return matched
         if part_commands and part_commands[0] == "draw":
-            draw_matched = [topic for topic in topics if topic.id in _DRAW_CAPABLE_TOPIC_IDS]
+            draw_matched = [
+                topic for topic in topics if topic.id in _DRAW_CAPABLE_TOPIC_IDS
+            ]
             return draw_matched or topics
         return topics
     if part_commands and part_commands[0] == "draw":
@@ -421,9 +466,14 @@ def _compatible_stimulus_kind(
         if not _stimulus_matches_commands(kind, part_commands):
             continue
         suitable_ids = _STIMULUS_TOPIC_IDS.get(kind)
-        if suitable_ids and not any(topic.id in suitable_ids and topic.id not in excluded_ids for topic in topics):
+        if suitable_ids and not any(
+            topic.id in suitable_ids and topic.id not in excluded_ids
+            for topic in topics
+        ):
             continue
-        if not suitable_ids and not any(topic.id not in excluded_ids for topic in topics):
+        if not suitable_ids and not any(
+            topic.id not in excluded_ids for topic in topics
+        ):
             continue
         return kind
     command_compatible = [
@@ -451,7 +501,9 @@ def _uses_single_source_context(paper_id: str, section_name: str) -> bool:
     return paper_id in {"paper_1", "paper_2"} and section_name == "B"
 
 
-def _choice_group_name(paper_id: str, section_name: str, group_index: int | None) -> str | None:
+def _choice_group_name(
+    paper_id: str, section_name: str, group_index: int | None
+) -> str | None:
     if group_index is None:
         return None
     return f"{paper_id}-{section_name}-choice-{group_index}"
@@ -647,169 +699,481 @@ _STIMULUS_TOPIC_IDS = {
     "poverty_trap_diagram": {"4.2", "4.3"},
     "production_possibility_frontier": {"1.1", "2.5"},
     "index_number_chart": {"1.2.4", "2.1", "3.1", "3.3", "4.1"},
-    "line_graph": {"1.2.2", "1.2.3", "1.2.4", "2.1", "2.5", "3.1", "3.3", "3.4", "3.5", "4.1", "4.2"},
+    "line_graph": {
+        "1.2.2",
+        "1.2.3",
+        "1.2.4",
+        "2.1",
+        "2.5",
+        "3.1",
+        "3.3",
+        "3.4",
+        "3.5",
+        "4.1",
+        "4.2",
+    },
     "bar_chart": {"2.1", "2.5", "3.4", "4.2"},
 }
 
 
 _STIMULUS_PART_PROMPTS = {
     "ped_data_table": {
-        (None, "explain", 4): "Using the age-group coefficients above, explain why demand from 16–18-year-old consumers may be more price responsive than demand from adults.",
-        (None, "calculate", 4): "Calculate the likely percentage change in quantity demanded following the price change. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Using the age-group coefficients above, explain why demand from 16–18-year-old consumers may be more price responsive than demand from adults.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Calculate the likely percentage change in quantity demanded following the price change. You are advised to show your working.",
     },
     "pes_data_table": {
-        (None, "explain", 4): "Using the regional coefficients above, explain why rural producers may be more able to expand supply after a price rise than urban producers.",
-        (None, "calculate", 4): "Using the PES value for the rural market, calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Using the regional coefficients above, explain why rural producers may be more able to expand supply after a price rise than urban producers.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the PES value for the rural market, calculate the percentage increase in price if quantity supplied increases by 3.6%. You are advised to show your working.",
     },
     "market_share_bar_chart": {
-        (None, "explain", 4): "With reference to the information above, explain the market structure of the industry shown.",
-        (None, "calculate", 4): "Calculate the value of the largest firm's sales from the market share shown. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the information above, explain the market structure of the industry shown.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Calculate the value of the largest firm's sales from the market share shown. You are advised to show your working.",
     },
     "data_table": {
-        (None, "calculate", 2): "Using the data above, calculate the difference between the quantity demanded index and the average price index in 2023. You are advised to show your working.",
-        (None, "calculate", 4): "Using the data above, calculate the percentage change in the quantity demanded index between 2021 and 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the data above, calculate the difference between the quantity demanded index and the average price index in 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data above, calculate the percentage change in the quantity demanded index between 2021 and 2023. You are advised to show your working.",
     },
     "elasticity_data_table": {
-        (None, "calculate", 4): "Assume the price of cinema tickets falls by 5%. Using the PED value shown, calculate the expected percentage change in quantity demanded. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Assume the price of cinema tickets falls by 5%. Using the PED value shown, calculate the expected percentage change in quantity demanded. You are advised to show your working.",
     },
     "concentration_ratio_table": {
-        (None, "calculate", 4): "Using the data above, calculate the three-firm concentration ratio. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data above, calculate the three-firm concentration ratio. You are advised to show your working.",
     },
     "marginal_utility_table": {
-        (None, "explain", 4): "With reference to the data above, explain why a rational consumer may stop buying additional units.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain why a rational consumer may stop buying additional units.",
     },
     "opportunity_cost_ppc_table": {
-        (None, "calculate", 4): "Using the data above, calculate the opportunity cost of increasing production of capital goods from 20 to 40 units. You are advised to show your working.",
-        (None, "explain", 4): "With reference to the data above, explain what is meant by opportunity cost.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data above, calculate the opportunity cost of increasing production of capital goods from 20 to 40 units. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain what is meant by opportunity cost.",
     },
     "shutdown_cost_table": {
-        (None, "calculate", 4): "Using the data above, calculate the firm's total profit or loss at the current output. You are advised to show your working.",
-        (None, "explain", 4): "With reference to the data above, explain whether the firm should continue producing in the short run.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data above, calculate the firm's total profit or loss at the current output. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain whether the firm should continue producing in the short run.",
     },
     "wage_rate_table": {
-        (None, "calculate", 4): "Using the data above, calculate the percentage change in the average hourly wage. You are advised to show your working.",
-        (None, "explain", 4): "With reference to the data above, explain one likely reason for a change in labour supply.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data above, calculate the percentage change in the average hourly wage. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain one likely reason for a change in labour supply.",
     },
     "contestability_barrier_table": {
-        (None, "explain", 4): "With reference to the data above, explain one factor that may affect the contestability of this market.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain one factor that may affect the contestability of this market.",
     },
     "balance_payments_table": {
-        (None, "calculate", 2): "Using the data provided, calculate the change in exports between 2021 and 2023. You are advised to show your working.",
-        (None, "calculate", 4): "Using the data provided, calculate the trade deficit in 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the data provided, calculate the change in exports between 2021 and 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data provided, calculate the trade deficit in 2023. You are advised to show your working.",
     },
     "inflation_index_table": {
-        (None, "calculate", 2): "Using the CPI index, calculate the index-point increase between 2021 and 2023. You are advised to show your working.",
-        (None, "calculate", 4): "Using the CPI index, calculate the percentage increase between 2021 and 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the CPI index, calculate the index-point increase between 2021 and 2023. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the CPI index, calculate the percentage increase between 2021 and 2023. You are advised to show your working.",
     },
     "cost_revenue_graph": {
-        (None, "draw", 4): "For an imperfectly competitive firm facing a downward-sloping AR curve, draw and label a cost and revenue diagram showing the distinct profit-maximising and revenue-maximising output levels.",
-        (None, "calculate", 4): "Calculate the change in total supernormal profit if the firm changes output. You are advised to show your working.",
-        (None, "explain", 4): "Explain one likely reason why the firm may choose the output shown in the diagram.",
+        (
+            None,
+            "draw",
+            4,
+        ): "For an imperfectly competitive firm facing a downward-sloping AR curve, draw and label a cost and revenue diagram showing the distinct profit-maximising and revenue-maximising output levels.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Calculate the change in total supernormal profit if the firm changes output. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely reason why the firm may choose the output shown in the diagram.",
     },
     "perfect_competition_diagram": {
-        (None, "draw", 4): "Draw a cost and revenue diagram to show a firm in perfect competition making normal profit.",
-        (None, "explain", 4): "Explain one likely reason why firms in perfect competition may make only normal profit in the long run.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a cost and revenue diagram to show a firm in perfect competition making normal profit.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely reason why firms in perfect competition may make only normal profit in the long run.",
     },
     "monopoly_diagram": {
-        (None, "draw", 4): "Draw a cost and revenue diagram to show a profit-maximising monopoly making supernormal profit.",
-        (None, "explain", 4): "Explain one likely reason why the firm in the diagram may earn supernormal profit.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a cost and revenue diagram to show a profit-maximising monopoly making supernormal profit.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely reason why the firm in the diagram may earn supernormal profit.",
     },
     "monopsony_diagram": {
-        (None, "draw", 4): "Draw a labour market diagram to show the wage and employment level set by a monopsonist.",
-        (None, "explain", 4): "Explain one likely effect of monopsony power in a labour market.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a labour market diagram to show the wage and employment level set by a monopsonist.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely effect of monopsony power in a labour market.",
     },
     "labour_market_diagram": {
-        (None, "draw", 4): "Draw a labour market diagram to show the likely impact of an increase in demand for labour.",
-        (None, "explain", 4): "Explain one likely reason why wage rates may differ between labour markets.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a labour market diagram to show the likely impact of an increase in demand for labour.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely reason why wage rates may differ between labour markets.",
     },
     "business_objective_context": {
-        (None, "draw", 4): "Draw a cost and revenue diagram to illustrate profit maximisation and revenue maximisation.",
-        (None, "explain", 4): "With reference to the information above, explain one reason why a firm may prioritise sales growth.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a cost and revenue diagram to illustrate profit maximisation and revenue maximisation.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the information above, explain one reason why a firm may prioritise sales growth.",
     },
     "xed_context": {
-        (None, "explain", 4): "With reference to the data above, explain the likely relationship between the two goods.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain the likely relationship between the two goods.",
     },
     "imperfect_information_context": {
-        (None, "explain", 4): "With reference to the data above, explain how imperfect market information may lead to a misallocation of resources.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data above, explain how imperfect market information may lead to a misallocation of resources.",
     },
     "minimum_wage_context": {
-        (None, "draw", 4): "Draw a labour market diagram to show the likely impact of the increase in the National Minimum Wage.",
-        (None, "explain", 4): "Explain one likely effect of the increase in the National Minimum Wage on firms.",
+        (
+            None,
+            "draw",
+            4,
+        ): "Draw a labour market diagram to show the likely impact of the increase in the National Minimum Wage.",
+        (
+            None,
+            "explain",
+            4,
+        ): "Explain one likely effect of the increase in the National Minimum Wage on firms.",
     },
     "household_savings_line_chart": {
-        (1, "calculate", 2): "Using the chart, calculate the range of the household saving rate. You are advised to show your working.",
-        (2, "explain", 2): "Explain one likely reason for the change in household savings over the period shown.",
+        (
+            1,
+            "calculate",
+            2,
+        ): "Using the chart, calculate the range of the household saving rate. You are advised to show your working.",
+        (
+            2,
+            "explain",
+            2,
+        ): "Explain one likely reason for the change in household savings over the period shown.",
     },
     "investment_line_chart": {
-        (None, "explain", 4): "With reference to the data, explain one likely effect of the fall in investment on aggregate demand.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data, explain one likely effect of the fall in investment on aggregate demand.",
     },
     "financial_market_context": {
-        (None, "explain", 4): "With reference to the information above, explain what is meant by market rigging.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the information above, explain what is meant by market rigging.",
     },
     "state_policy_context": {
-        (None, "explain", 4): "With reference to the information above, explain one likely effect of the increase in preventive healthcare spending on the economy's productive capacity.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the information above, explain one likely effect of the increase in preventive healthcare spending on the economy's productive capacity.",
     },
     "trade_cycle": {
-        (None, "explain", 4): "With reference to Figure 1, explain one likely effect of a movement from the trough into recovery on cyclical unemployment.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to Figure 1, explain one likely effect of a movement from the trough into recovery on cyclical unemployment.",
     },
     "development_data_table": {
-        (None, "calculate", 2): "Using the data provided, calculate the difference in HDI between Morocco and Pakistan. You are advised to show your working.",
-        (None, "calculate", 4): "Using the data provided, calculate the difference in GDP per capita between Morocco and Pakistan. You are advised to show your working.",
-        (None, "explain", 4): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the data provided, calculate the difference in HDI between Morocco and Pakistan. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using the data provided, calculate the difference in GDP per capita between Morocco and Pakistan. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the data provided, explain one limitation of using GDP to compare living standards between countries.",
     },
     "current_account_line_chart": {
-        (None, "calculate", 2): "Using the Year 1 and Year 10 values, calculate the increase in the size of the current account deficit, in percentage points. Treat the deficit size as its distance below zero (for example, −3.8% has a deficit size of 3.8%). Show your working.",
-        (2, "explain", 2): "Explain one likely reason why the current account deficit was wider in Year 10 than in Year 1.",
-        (None, "explain", 4): "With reference to the chart above, explain one likely reason for the change in the current account balance.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the Year 1 and Year 10 values, calculate the increase in the size of the current account deficit, in percentage points. Treat the deficit size as its distance below zero (for example, −3.8% has a deficit size of 3.8%). Show your working.",
+        (
+            2,
+            "explain",
+            2,
+        ): "Explain one likely reason why the current account deficit was wider in Year 10 than in Year 1.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the chart above, explain one likely reason for the change in the current account balance.",
     },
     "inequality_line_chart": {
-        (None, "calculate", 2): "Using Figure 1, calculate the fall in the Gini coefficient from Year 1 to Year 5. Show your working.",
-        (None, "calculate", 4): "Using Figure 1, calculate the percentage fall in the Gini coefficient from Year 1 to Year 5. Show your working and give your answer to one decimal place.",
-        (None, "explain", 4): "With reference to Figure 1, explain one likely effect on living standards of the fall in the Gini coefficient from 0.42 to 0.33.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using Figure 1, calculate the fall in the Gini coefficient from Year 1 to Year 5. Show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Using Figure 1, calculate the percentage fall in the Gini coefficient from Year 1 to Year 5. Show your working and give your answer to one decimal place.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to Figure 1, explain one likely effect on living standards of the fall in the Gini coefficient from 0.42 to 0.33.",
     },
     "gdp_growth_bar_chart": {
-        (None, "calculate", 2): "Calculate the percentage point change in GDP growth over the period shown. You are advised to show your working.",
-        (1, "explain", 2): "Explain one likely disadvantage of a decline in GDP for workers.",
-        (2, "explain", 2): "Explain one likely disadvantage of a decline in GDP for the government.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage point change in GDP growth over the period shown. You are advised to show your working.",
+        (
+            1,
+            "explain",
+            2,
+        ): "Explain one likely disadvantage of a decline in GDP for workers.",
+        (
+            2,
+            "explain",
+            2,
+        ): "Explain one likely disadvantage of a decline in GDP for the government.",
     },
     "terms_of_trade_index_chart": {
-        (None, "calculate", 2): "Calculate the percentage change in the terms of trade index over the period shown. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage change in the terms of trade index over the period shown. You are advised to show your working.",
         (0, "explain", 2): "Explain what is meant by terms of trade.",
-        (2, "explain", 2): "Explain the likely impact of the change in the terms of trade on the current account.",
+        (
+            2,
+            "explain",
+            2,
+        ): "Explain the likely impact of the change in the terms of trade on the current account.",
     },
     "labour_inactivity_context": {
-        (None, "calculate", 2): "Calculate the total number of inactive workers. You are advised to show your working.",
-        (0, "calculate", 2): "Calculate the total number of inactive workers. You are advised to show your working.",
-        (1, "explain", 2): "Explain one likely reason for the high level of inactivity in the labour force.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the total number of inactive workers. You are advised to show your working.",
+        (
+            0,
+            "calculate",
+            2,
+        ): "Calculate the total number of inactive workers. You are advised to show your working.",
+        (
+            1,
+            "explain",
+            2,
+        ): "Explain one likely reason for the high level of inactivity in the labour force.",
     },
     "multiplier_context": {
-        (None, "calculate", 4): "Calculate the total increase in aggregate demand from an increase in government spending. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            4,
+        ): "Calculate the total increase in aggregate demand from an increase in government spending. You are advised to show your working.",
     },
     "tariff_context": {
-        (None, "explain", 4): "With reference to the information above, explain the likely effect of the tariff on the UK price of imported solar panels and on domestic panel output.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the information above, explain the likely effect of the tariff on the UK price of imported solar panels and on domestic panel output.",
     },
     "exchange_rate_index_chart": {
-        (None, "calculate", 2): "Calculate the percentage change in the exchange rate index over the period shown. You are advised to show your working.",
-        (2, "explain", 2): "Explain one likely effect of the change in the exchange rate index on exporters.",
-        (None, "explain", 4): "With reference to the chart above, explain one likely effect of the change in the exchange rate on exporters.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage change in the exchange rate index over the period shown. You are advised to show your working.",
+        (
+            2,
+            "explain",
+            2,
+        ): "Explain one likely effect of the change in the exchange rate index on exporters.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the chart above, explain one likely effect of the change in the exchange rate on exporters.",
     },
     "income_tax_schedule_table": {
-        (None, "calculate", 2): "Using the data above, calculate the marginal tax rate for income between £50 271 and £125 140. You are advised to show your working.",
-        (None, "explain", 2): "Explain one likely effect of a progressive income tax system on income inequality.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the data above, calculate the marginal tax rate for income between £50 271 and £125 140. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            2,
+        ): "Explain one likely effect of a progressive income tax system on income inequality.",
     },
     "public_spending_pie_table": {
-        (None, "calculate", 2): "Using the data above, calculate the percentage point difference between health and education spending. You are advised to show your working.",
-        (None, "explain", 2): "Explain one likely opportunity cost of increased public spending on health.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Using the data above, calculate the percentage point difference between health and education spending. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            2,
+        ): "Explain one likely opportunity cost of increased public spending on health.",
     },
     "unemployment_rate_bar_chart": {
-        (None, "calculate", 2): "Calculate the percentage point change in unemployment over the period shown. You are advised to show your working.",
-        (None, "explain", 4): "With reference to the chart above, explain one likely macroeconomic effect of rising unemployment.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage point change in unemployment over the period shown. You are advised to show your working.",
+        (
+            None,
+            "explain",
+            4,
+        ): "With reference to the chart above, explain one likely macroeconomic effect of rising unemployment.",
     },
     "macro_chart": {
-        (None, "calculate", 2): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
     },
     "line_graph": {
-        (None, "calculate", 2): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
+        (
+            None,
+            "calculate",
+            2,
+        ): "Calculate the percentage point change between the first and final observations shown. You are advised to show your working.",
     },
 }
 
@@ -853,7 +1217,10 @@ _STIMULUS_MCQ_OPTIONS = {
         ("A", "The 16–18 group has more price elastic demand because |−0.7| > |−0.4|"),
         ("B", "Both age groups have unit price elasticity of demand"),
         ("C", "Both age groups have perfectly price-inelastic demand"),
-        ("D", "The adult group is more responsive to price changes than the 16–18 group"),
+        (
+            "D",
+            "The adult group is more responsive to price changes than the 16–18 group",
+        ),
     ],
     "pes_data_table": [
         ("A", "2%"),
@@ -1046,7 +1413,10 @@ _TOPIC_MCQ_OPTIONS = {
         ("A", "A rise in consumer income may increase demand for a normal good"),
         ("B", "A movement along the demand curve is caused by a change in advertising"),
         ("C", "An increase in demand always reduces equilibrium price"),
-        ("D", "Demand is price inelastic when price elasticity of demand is greater than one"),
+        (
+            "D",
+            "Demand is price inelastic when price elasticity of demand is greater than one",
+        ),
     ],
     "supply": [
         ("A", "Higher production costs may shift the supply curve to the left"),
@@ -1055,13 +1425,22 @@ _TOPIC_MCQ_OPTIONS = {
         ("D", "Supply is perfectly elastic when firms cannot change output"),
     ],
     "rational decision making": [
-        ("A", "Consumers may compare marginal benefit with marginal cost when making choices"),
+        (
+            "A",
+            "Consumers may compare marginal benefit with marginal cost when making choices",
+        ),
         ("B", "Sunk costs should always determine current decisions"),
-        ("C", "A utility-maximising consumer buys every unit they can afford regardless of marginal benefit"),
+        (
+            "C",
+            "A utility-maximising consumer buys every unit they can afford regardless of marginal benefit",
+        ),
         ("D", "Opportunity cost is zero when a consumer makes a choice"),
     ],
     "market failure": [
-        ("A", "External costs may cause free-market output to exceed the socially efficient level"),
+        (
+            "A",
+            "External costs may cause free-market output to exceed the socially efficient level",
+        ),
         ("B", "Indirect taxes always increase consumer surplus"),
         ("C", "Public goods are usually overprovided by the free market"),
         ("D", "Positive externalities mean marginal social cost is zero"),
@@ -1073,7 +1452,10 @@ _TOPIC_MCQ_OPTIONS = {
         ("D", "Regulation always eliminates government failure"),
     ],
     "business objectives": [
-        ("A", "A firm may prioritise sales growth instead of short-run profit maximisation"),
+        (
+            "A",
+            "A firm may prioritise sales growth instead of short-run profit maximisation",
+        ),
         ("B", "Revenue maximisation always occurs where marginal cost is zero"),
         ("C", "Profit maximisation means output is produced where price is lowest"),
         ("D", "Satisficing means a firm always makes a loss"),
@@ -1085,8 +1467,14 @@ _TOPIC_MCQ_OPTIONS = {
         ("D", "A merger always reduces barriers to entry"),
     ],
     "market structures": [
-        ("A", "High barriers to entry may allow incumbent firms to maintain market power"),
-        ("B", "A high concentration ratio proves that a market is perfectly competitive"),
+        (
+            "A",
+            "High barriers to entry may allow incumbent firms to maintain market power",
+        ),
+        (
+            "B",
+            "A high concentration ratio proves that a market is perfectly competitive",
+        ),
         ("C", "Contestability falls when sunk costs become lower"),
         ("D", "Product differentiation is impossible in oligopoly"),
     ],
@@ -1211,7 +1599,9 @@ _SECTION_B_PROMPTS = {
 def _placeholder_prompt(command_word: str, marks: int, topic_title: str) -> str:
     phrase = _exam_focus(topic_title)
     if command_word == "mcq":
-        return f"Which one of the following is correct about {_topic_phrase(topic_title)}?"
+        return (
+            f"Which one of the following is correct about {_topic_phrase(topic_title)}?"
+        )
     if command_word == "calculate":
         return f"Calculate the change shown in the data for {phrase}. You are advised to show your working."
     if command_word == "draw":
@@ -1222,7 +1612,9 @@ def _placeholder_prompt(command_word: str, marks: int, topic_title: str) -> str:
         return f"Examine two likely factors affecting {phrase}."
     if command_word == "discuss":
         if marks == 12:
-            return f"Discuss whether the evidence supports one interpretation of {phrase}."
+            return (
+                f"Discuss whether the evidence supports one interpretation of {phrase}."
+            )
         return f"Discuss the likely effects of {phrase}."
     if command_word == "assess":
         return f"Assess whether {phrase} is significant in this context."
@@ -1285,7 +1677,9 @@ def _build_parts(
             part_index,
             rng,
         )
-        for part_index, (marks, command) in enumerate(zip(part_marks, part_commands, strict=True))
+        for part_index, (marks, command) in enumerate(
+            zip(part_marks, part_commands, strict=True)
+        )
     ]
 
 
@@ -1321,9 +1715,7 @@ def _build_part(
             mark_scheme=[
                 f"The only correct answer is {correct_label}: "
                 + next(
-                    option.text
-                    for option in options
-                    if option.label == correct_label
+                    option.text for option in options if option.label == correct_label
                 ),
                 "Do not award a mark for any other option.",
             ],
@@ -1474,7 +1866,12 @@ def _part_guidance(
             "AO3 (1 mark): Develops the chain to a rightward shift of long-run aggregate supply and a rise in the economy's productive capacity; accept that the effect depends on the healthcare programme being effective.",
         ]
         return points, points
-    if stimulus_kind == "trade_cycle" and topic.id == "2.1" and command == "explain" and marks == 4:
+    if (
+        stimulus_kind == "trade_cycle"
+        and topic.id == "2.1"
+        and command == "explain"
+        and marks == 4
+    ):
         points = [
             "AO1 (1 mark): Defines cyclical unemployment as unemployment caused by deficient aggregate demand during a downturn in the economic cycle.",
             "AO2 (1 mark): Applies Figure 1 by identifying that real output rises as the economy moves from the trough into the recovery phase.",
@@ -1506,7 +1903,12 @@ def _part_guidance(
             "AO2 (1 mark): Labels the distinct revenue-maximising output Qr directly below MR = 0, with Qr to the right of Qp.",
         ]
         return points, points
-    if stimulus_kind == "context_extract" and topic.id == "1.2.1" and command == "explain" and marks == 4:
+    if (
+        stimulus_kind == "context_extract"
+        and topic.id == "1.2.1"
+        and command == "explain"
+        and marks == 4
+    ):
         points = [
             "AO1 (1 mark): Explains that a rational consumer compares the marginal benefit of the next unit with its marginal cost, including opportunity cost.",
             "AO2 (1 mark): Uses the source values: the first ticket has marginal benefit £24 and price £18, giving positive marginal net benefit of £6.",
@@ -1757,7 +2159,12 @@ def _question_guidance(
         points = _paper_two_policy_guidance(marks)
         if points:
             return points, points
-    if paper_id == "paper_1" and topic.id == "3.2" and command == "explain" and marks == 5:
+    if (
+        paper_id == "paper_1"
+        and topic.id == "3.2"
+        and command == "explain"
+        and marks == 5
+    ):
         points = [
             "AO1 (1 mark): Identifies a valid alternative objective, such as satisficing, employee welfare, service quality, sales revenue or long-term survival.",
             "AO2 (1 mark): Applies the reason to Extract A, for example John Lewis is employee-owned and emphasises worker interests, service quality or long-term reputation.",
@@ -1766,7 +2173,12 @@ def _question_guidance(
             "AO3 (1 mark): Concludes that managers may therefore accept a satisfactory level of profit that still funds investment while balancing employee and customer objectives. Accept another coherent, source-applied reason.",
         ]
         return points, points
-    if paper_id == "paper_1" and topic.id == "3.2" and command == "examine" and marks == 8:
+    if (
+        paper_id == "paper_1"
+        and topic.id == "3.2"
+        and command == "examine"
+        and marks == 8
+    ):
         points = [
             "Conflict 1 — AO1 (1 mark): Explains that retaining profit for investment can conflict with an objective to improve employee pay or working conditions.",
             "Conflict 1 — AO2 (1 mark): Applies the supplied evidence: Amazon reinvested profit in logistics, cloud computing and new services while rapid expansion increased pressure on workers.",
@@ -1778,7 +2190,12 @@ def _question_guidance(
             "Conflict 2 — AO3 (1 mark): Examines the qualification that economies of scale and loyalty may later reduce average cost and increase profit, so the extent and duration of the conflict depend on successful demand growth.",
         ]
         return points, points
-    if paper_id == "paper_1" and topic.id == "3.2" and command == "assess" and marks == 10:
+    if (
+        paper_id == "paper_1"
+        and topic.id == "3.2"
+        and command == "assess"
+        and marks == 10
+    ):
         points = [
             "AO1 (1 mark): Explains that regulation changes firms' constraints and incentives through enforceable standards, monitoring, penalties or controls on prices and returns.",
             "AO1 (1 mark): Distinguishes profit maximisation from non-profit objectives such as service quality, environmental performance and stakeholder welfare.",
@@ -1798,7 +2215,12 @@ def _question_guidance(
             "Do not award the same developed point twice; a response that does not use Extract C cannot reach Level 3.",
         ]
         return points, points
-    if paper_id == "paper_1" and topic.id == "3.2" and command == "discuss" and marks == 12:
+    if (
+        paper_id == "paper_1"
+        and topic.id == "3.2"
+        and command == "discuss"
+        and marks == 12
+    ):
         points = [
             "AO1 (1 mark): Explains profit maximisation as producing where marginal revenue equals marginal cost, subject to regulatory constraints.",
             "AO1 (1 mark): Explains stakeholder objectives such as service quality, environmental performance and consumer welfare.",
@@ -1814,7 +2236,12 @@ def _question_guidance(
             "AO4 (1 mark): Reaches a supported judgement that the appropriate priority depends on binding standards, infrastructure needs and whether profits are reinvested rather than distributed.",
         ]
         return points, points
-    if paper_id == "paper_1" and topic.id == "3.2" and command == "discuss" and marks == 15:
+    if (
+        paper_id == "paper_1"
+        and topic.id == "3.2"
+        and command == "discuss"
+        and marks == 15
+    ):
         points = [
             "AO1 (1 mark): Defines satisficing as pursuing an acceptable profit while meeting other objectives rather than maximising profit.",
             "AO1 (1 mark): Explains separation of ownership and control as a reason managers may pursue growth, status or lower-risk objectives.",
@@ -2013,30 +2440,55 @@ def _question_guidance(
     )
 
 
-def _part_prompt(command: str, marks: int, topic_title: str, stimulus_kind: str, part_index: int) -> str:
+def _part_prompt(
+    command: str, marks: int, topic_title: str, stimulus_kind: str, part_index: int
+) -> str:
     stimulus_prompts = _STIMULUS_PART_PROMPTS.get(stimulus_kind, {})
-    return stimulus_prompts.get((part_index, command, marks)) or stimulus_prompts.get((None, command, marks)) or _placeholder_prompt(
-        command,
-        marks,
-        topic_title,
+    return (
+        stimulus_prompts.get((part_index, command, marks))
+        or stimulus_prompts.get((None, command, marks))
+        or _placeholder_prompt(
+            command,
+            marks,
+            topic_title,
+        )
     )
 
 
-def _mcq_options(topic_title: str, stimulus_kind: str = "") -> list[MultipleChoiceOption]:
+def _mcq_options(
+    topic_title: str, stimulus_kind: str = ""
+) -> list[MultipleChoiceOption]:
     stimulus_options = _STIMULUS_MCQ_OPTIONS.get(stimulus_kind)
     if stimulus_options:
-        return [MultipleChoiceOption(label=label, text=text) for label, text in stimulus_options]
+        return [
+            MultipleChoiceOption(label=label, text=text)
+            for label, text in stimulus_options
+        ]
     topic = _topic_phrase(topic_title)
     topic_key = topic_title.lower()
     topic_options = _TOPIC_MCQ_OPTIONS.get(topic_key)
     if topic_options:
-        return [MultipleChoiceOption(label=label, text=text) for label, text in topic_options]
+        return [
+            MultipleChoiceOption(label=label, text=text)
+            for label, text in topic_options
+        ]
     sentence_topic = topic[0].upper() + topic[1:]
     return [
-        MultipleChoiceOption(label="A", text=f"Changes in {topic} can alter incentives and resource allocation"),
-        MultipleChoiceOption(label="B", text=f"{sentence_topic} means economic agents no longer face trade-offs"),
-        MultipleChoiceOption(label="C", text=f"{sentence_topic} only affects consumers and never affects firms"),
-        MultipleChoiceOption(label="D", text=f"{sentence_topic} always leaves market price unchanged"),
+        MultipleChoiceOption(
+            label="A",
+            text=f"Changes in {topic} can alter incentives and resource allocation",
+        ),
+        MultipleChoiceOption(
+            label="B",
+            text=f"{sentence_topic} means economic agents no longer face trade-offs",
+        ),
+        MultipleChoiceOption(
+            label="C",
+            text=f"{sentence_topic} only affects consumers and never affects firms",
+        ),
+        MultipleChoiceOption(
+            label="D", text=f"{sentence_topic} always leaves market price unchanged"
+        ),
     ]
 
 
@@ -2056,7 +2508,10 @@ def _mcq_prompt(topic_title: str, stimulus_kind: str = "") -> str:
         "market structures": "Which one of the following is a likely source of market power?",
         "labour market": "Which one of the following is likely to affect wage rates in a labour market?",
     }
-    return prompts.get(topic, f"Which one of the following is correct about {_topic_phrase(topic_title)}?")
+    return prompts.get(
+        topic,
+        f"Which one of the following is correct about {_topic_phrase(topic_title)}?",
+    )
 
 
 def _stimulus_kind(section, index: int) -> str:
@@ -2119,7 +2574,9 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
     if stimulus_kind == "opportunity_cost_ppc_table":
         return "The table below shows possible combinations of output for an economy."
     if stimulus_kind == "business_objective_context":
-        return "Read the information below about a firm changing its business objectives."
+        return (
+            "Read the information below about a firm changing its business objectives."
+        )
     if stimulus_kind == "xed_context":
         return "Read the information below about cross elasticity of demand for two related goods."
     if stimulus_kind == "imperfect_information_context":
@@ -2139,7 +2596,9 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
     if stimulus_kind == "current_account_line_chart":
         return "The chart below shows the current account of the balance of payments as a percentage of GDP."
     if stimulus_kind == "inequality_line_chart":
-        return "Figure 1 below shows the Gini coefficient for an economy over five years."
+        return (
+            "Figure 1 below shows the Gini coefficient for an economy over five years."
+        )
     if stimulus_kind == "trade_cycle":
         return "Figure 1 below shows a stylised economic cycle with recession, trough, recovery and boom phases."
     if stimulus_kind == "gdp_growth_bar_chart":
@@ -2169,10 +2628,18 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return f"The table below shows selected economic data linked to {focus}."
     if stimulus_kind in {"market_diagram", "demand_shift_graph", "supply_shift_graph"}:
         return f"The diagram below shows demand and supply in a market affected by {focus}."
-    if stimulus_kind in {"tax_subsidy_diagram", "tax_incidence_diagram", "externality_diagram", "minimum_price_diagram", "maximum_price_diagram"}:
+    if stimulus_kind in {
+        "tax_subsidy_diagram",
+        "tax_incidence_diagram",
+        "externality_diagram",
+        "minimum_price_diagram",
+        "maximum_price_diagram",
+    }:
         return f"The diagram below shows a possible intervention or market failure linked to {focus}."
     if stimulus_kind in {"consumer_surplus_diagram", "producer_surplus_diagram"}:
-        return f"The diagram below shows welfare effects in a market affected by {focus}."
+        return (
+            f"The diagram below shows welfare effects in a market affected by {focus}."
+        )
     if stimulus_kind == "perfect_competition_diagram":
         return "The diagram below shows cost and revenue curves for a firm in perfect competition."
     if stimulus_kind == "monopoly_diagram":
@@ -2181,11 +2648,28 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
         return "The diagram below shows a monopsonist in a labour market."
     if stimulus_kind == "labour_market_diagram":
         return "The diagram below shows demand for and supply of labour in a labour market."
-    if stimulus_kind in {"macro_chart", "ad_as_diagram", "keynesian_as_diagram", "trade_cycle", "phillips_curve", "lorenz_curve", "exchange_rate_diagram", "tariff_diagram", "money_market_diagram", "laffer_curve", "poverty_trap_diagram", "production_possibility_frontier"}:
+    if stimulus_kind in {
+        "macro_chart",
+        "ad_as_diagram",
+        "keynesian_as_diagram",
+        "trade_cycle",
+        "phillips_curve",
+        "lorenz_curve",
+        "exchange_rate_diagram",
+        "tariff_diagram",
+        "money_market_diagram",
+        "laffer_curve",
+        "poverty_trap_diagram",
+        "production_possibility_frontier",
+    }:
         return f"The diagram below shows an economic relationship linked to {focus}."
     if stimulus_kind == "payoff_matrix":
         return f"The pay-off matrix below shows possible outcomes for firms affected by {focus}."
-    if stimulus_kind in {"line_graph", "index_number_chart", "exchange_rate_index_chart"}:
+    if stimulus_kind in {
+        "line_graph",
+        "index_number_chart",
+        "exchange_rate_index_chart",
+    }:
         return f"The line graph below shows changes in data linked to {focus}."
     if stimulus_kind == "unemployment_rate_bar_chart":
         return "The bar chart below shows unemployment rates in selected economies."
@@ -2196,8 +2680,14 @@ def _section_a_stem(topic_title: str, stimulus_kind: str) -> str:
     return f"The information below concerns {topic}."
 
 
-def _source_question_prompt(command_word: str, marks: int, topic: str, source_reference: str) -> str:
-    reference = "the source material" if source_reference == "source material" else source_reference
+def _source_question_prompt(
+    command_word: str, marks: int, topic: str, source_reference: str
+) -> str:
+    reference = (
+        "the source material"
+        if source_reference == "source material"
+        else source_reference
+    )
     topic_prompt = _SECTION_B_PROMPTS.get(_normal_topic_key(topic), {}).get(marks)
     if topic_prompt:
         prompt = topic_prompt.format(reference=reference or "the evidence")
@@ -2206,7 +2696,9 @@ def _source_question_prompt(command_word: str, marks: int, topic: str, source_re
         return prompt
     if marks == 5:
         if reference:
-            return f"With reference to {reference}, explain one likely effect of {topic}."
+            return (
+                f"With reference to {reference}, explain one likely effect of {topic}."
+            )
         return f"Explain one likely effect of {_exam_focus(topic)}."
     if marks == 8:
         if not reference:
@@ -2214,7 +2706,9 @@ def _source_question_prompt(command_word: str, marks: int, topic: str, source_re
         return f"With reference to {reference}, examine two likely factors affecting {topic}."
     if marks == 10:
         if not reference:
-            return f"Assess whether {_exam_focus(topic)} is significant in this context."
+            return (
+                f"Assess whether {_exam_focus(topic)} is significant in this context."
+            )
         return f"With reference to {reference}, assess whether {topic} is significant in this context."
     if marks == 12:
         if not reference:
@@ -2294,7 +2788,9 @@ def _paper_3_question_prompt(
     case_title: str,
 ) -> str:
     context = case_title.lower() if case_title else "the case-study context"
-    short_focus = _PAPER_3_SHORT_FOCI.get(topic, f"{topic} may affect economic outcomes")
+    short_focus = _PAPER_3_SHORT_FOCI.get(
+        topic, f"{topic} may affect economic outcomes"
+    )
     if marks == 5 and topic == "market failure":
         return (
             f"With reference to {source_reference}, explain why an unpriced negative "
@@ -2370,7 +2866,11 @@ def _source_reference(
 
 
 def _source_title(topic_title: str, section_name: str) -> str:
-    return f"{topic_title}: economic context" if section_name in {"B", "A"} else topic_title
+    return (
+        f"{topic_title}: economic context"
+        if section_name in {"B", "A"}
+        else topic_title
+    )
 
 
 def _source_text(
@@ -2433,7 +2933,9 @@ def _paper_3_source_text(
     figure_match = re.search(r"Figure\s+\d+", source_reference)
     extract_match = re.search(r"Extract\s+[A-Z]", source_reference)
     figure_ref = figure_match.group(0) if figure_match else "The figure"
-    extract_ref = extract_match.group(0) if extract_match else (source_reference or "The extract")
+    extract_ref = (
+        extract_match.group(0) if extract_match else (source_reference or "The extract")
+    )
     investment_intro = (
         f"{figure_ref} shows that firms in {context} increased capital spending by {investment}% in {year}. "
         f"{extract_ref} reports that long-term supply contracts reduced unit input costs by 4%. "
@@ -2480,8 +2982,7 @@ def _paper_3_source_text(
         ),
         (
             investment_intro
-            +
-            "Larger businesses installed specialist machinery, while smaller firms reported rejected loan "
+            + "Larger businesses installed specialist machinery, while smaller firms reported rejected loan "
             "applications and unfilled skilled posts. One operator combined its purchasing orders across "
             "three sites; another added a management layer and reported longer approval times. Several "
             "customers had not renewed contracts beyond the next six months."
@@ -2522,7 +3023,9 @@ def _data_response_extract(topic_title: str, points: list[str], index: int) -> s
     return data_response_extract(topic_title, points, index)
 
 
-def _section_c_extract(topic_id: str, topic_title: str, points: list[str], index: int) -> str:
+def _section_c_extract(
+    topic_id: str, topic_title: str, points: list[str], index: int
+) -> str:
     if topic_id == "1.4":
         return (
             "A study estimated a £0.12 external clean-up cost per disposable cup. Policy makers proposed "
@@ -2612,7 +3115,11 @@ def _section_a_context(
             "The government is considering a new policy to influence market outcomes. The policy may affect prices, "
             "output, consumer surplus and producer incentives."
         )
-    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=8) if topic_id else []
+    note_points = (
+        note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=8)
+        if topic_id
+        else []
+    )
     context_point = _best_section_a_context_point(note_points)
     if context_point:
         return (
@@ -2775,41 +3282,52 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
     ]
     if has_evaluation:
         if cmd in {"evaluate", "assess"}:
-            bullets.extend([
-                "",
-                f"AO4 (Evaluation) — supported judgement for {topic}:",
-                "Weighs competing arguments or stakeholder perspectives to reach a balanced conclusion.",
-                "Assesses the strength of the evidence: considers which factors are most significant and why.",
-                "Identifies limitations, assumptions or real-world complications (e.g. ceteris paribus, time lags, data reliability).",
-                "Makes a final, well-supported judgement that directly answers the question's command word.",
-                "Where appropriate, considers alternative policy options or theoretical viewpoints.",
-            ])
+            bullets.extend(
+                [
+                    "",
+                    f"AO4 (Evaluation) — supported judgement for {topic}:",
+                    "Weighs competing arguments or stakeholder perspectives to reach a balanced conclusion.",
+                    "Assesses the strength of the evidence: considers which factors are most significant and why.",
+                    "Identifies limitations, assumptions or real-world complications (e.g. ceteris paribus, time lags, data reliability).",
+                    "Makes a final, well-supported judgement that directly answers the question's command word.",
+                    "Where appropriate, considers alternative policy options or theoretical viewpoints.",
+                ]
+            )
         elif cmd == "discuss":
-            bullets.extend([
-                "",
-                f"AO4 (Discussion) — balanced consideration for {topic}:",
-                "Presents arguments on multiple sides of the issue, drawing on relevant economic theory.",
-                "Evaluates the relative importance of different factors, effects or stakeholder outcomes.",
-                "Synthesises the discussion into a coherent overall assessment with clear reasoning.",
-                "Considers real-world constraints, empirical evidence or counter-arguments that qualify the analysis.",
-            ])
+            bullets.extend(
+                [
+                    "",
+                    f"AO4 (Discussion) — balanced consideration for {topic}:",
+                    "Presents arguments on multiple sides of the issue, drawing on relevant economic theory.",
+                    "Evaluates the relative importance of different factors, effects or stakeholder outcomes.",
+                    "Synthesises the discussion into a coherent overall assessment with clear reasoning.",
+                    "Considers real-world constraints, empirical evidence or counter-arguments that qualify the analysis.",
+                ]
+            )
         elif cmd == "examine":
-            bullets.extend([
-                "",
-                f"AO4 (Examination) — detailed investigation for {topic}:",
-                "Breaks down the issue into its component parts for systematic investigation.",
-                "Investigates causes, effects and relationships in depth, using specific evidence.",
-                "Draws a supported conclusion based on the weight of evidence examined.",
-                "Identifies any ambiguities, exceptions or further questions raised by the analysis.",
-            ])
+            bullets.extend(
+                [
+                    "",
+                    f"AO4 (Examination) — detailed investigation for {topic}:",
+                    "Breaks down the issue into its component parts for systematic investigation.",
+                    "Investigates causes, effects and relationships in depth, using specific evidence.",
+                    "Draws a supported conclusion based on the weight of evidence examined.",
+                    "Identifies any ambiguities, exceptions or further questions raised by the analysis.",
+                ]
+            )
         else:
-            bullets.extend([
-                "",
-                f"AO4 (Evaluation) — supported judgement for {topic}:",
-                "Provides a clear judgement or conclusion supported by the preceding analysis.",
-                "Considers counter-arguments, limitations or alternative viewpoints.",
-            ])
-    bullets.insert(0, "Indicative content should be rewarded where it is relevant and developed, even if not explicitly listed. Credit must be given for accurate and relevant economic understanding demonstrated by the candidate.")
+            bullets.extend(
+                [
+                    "",
+                    f"AO4 (Evaluation) — supported judgement for {topic}:",
+                    "Provides a clear judgement or conclusion supported by the preceding analysis.",
+                    "Considers counter-arguments, limitations or alternative viewpoints.",
+                ]
+            )
+    bullets.insert(
+        0,
+        "Indicative content should be rewarded where it is relevant and developed, even if not explicitly listed. Credit must be given for accurate and relevant economic understanding demonstrated by the candidate.",
+    )
     if marks >= 8 and cmd in {
         "analyse",
         "analyze",
@@ -2836,8 +3354,14 @@ def _mark_scheme(command_word: str, marks: int, topic_title: str) -> list[str]:
     return bullets
 
 
-def _indicative_content(topic_id: str, topic_title: str, points: list[str]) -> list[str]:
-    note_points = note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=4) if topic_id else []
+def _indicative_content(
+    topic_id: str, topic_title: str, points: list[str]
+) -> list[str]:
+    note_points = (
+        note_points_for_topic(topic_id, title=topic_title, keywords=points, limit=4)
+        if topic_id
+        else []
+    )
     content = [*note_points, *points[:4]]
     unique_content = []
     for item in content:

@@ -41,9 +41,10 @@ class EssaySubjectPlugin:
             diagnostics.append("indicative content is required")
         if marks and marks >= 12 and not str(item.get("level_policy_id", "")).strip():
             diagnostics.append("extended responses require a level policy ID")
-        if self.id == "english-literature" and not str(
-            item.get("option_route", "")
-        ).strip():
+        if (
+            self.id == "english-literature"
+            and not str(item.get("option_route", "")).strip()
+        ):
             diagnostics.append("English Literature items require an option route")
         if self.id == "history":
             chronology = item.get("chronology")
@@ -67,9 +68,9 @@ class EssaySubjectPlugin:
             "history": {"source-panel", "timeline"},
             "english-literature": {"extract-panel", "text-comparison"},
         }
-        if not isinstance(specification, dict) or specification.get("kind") not in allowed.get(
-            self.id, set()
-        ):
+        if not isinstance(specification, dict) or specification.get(
+            "kind"
+        ) not in allowed.get(self.id, set()):
             raise ValueError(f"unsupported {self.id} visual kind")
         return specification
 
@@ -83,7 +84,9 @@ class EssaySubjectPlugin:
             if scheme.get("level_policy_id") != item.get("level_policy_id"):
                 diagnostics.append("mark scheme level policy does not match the item")
             if not scheme.get("levels"):
-                diagnostics.append("extended response scheme requires level descriptors")
+                diagnostics.append(
+                    "extended response scheme requires level descriptors"
+                )
         return SubjectValidation(not diagnostics, tuple(diagnostics))
 
     def calibration_features(self, item: Any) -> dict[str, float | str]:

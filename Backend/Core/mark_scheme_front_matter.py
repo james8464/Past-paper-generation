@@ -7,21 +7,54 @@ from reportlab.platypus import Flowable, PageBreak, Paragraph, Spacer
 
 SUBJECT_GUIDANCE = {
     "accounting": [
-        ("Applying the mark scheme", "Read the complete response before awarding marks. Credit a valid accounting treatment when it is applied consistently and answers the requirement."),
-        ("Workings and own figures", "Award method marks where workings make the intended method clear. Apply the own-figure rule to a later result that follows correctly from an earlier error."),
-        ("Assessment objectives", "AO1 covers knowledge, understanding and familiar accounting techniques; AO2 covers application to the given situation. AO3 covers analysis and evaluation, including supported decisions where required. Each 25-mark decision allocates AO2: 5 marks and AO3: 20 marks."),
-        ("Levels-based marking", "Choose the level that best describes the response as a whole, then use application and developed reasoning to select a mark within that level. Require a judgement where the command asks for one, not for every short explanation."),
-        ("Quality of presentation", "Require clear labels, appropriate units and a recognisable accounting format. Do not penalise an alternative layout that communicates the same information."),
-        ("Final checks", "Check that distinct marks reward distinct work, totals do not exceed the question maximum and valid alternative routes have received equivalent credit."),
+        (
+            "Applying the mark scheme",
+            "Read the complete response before awarding marks. Credit a valid accounting treatment when it is applied consistently and answers the requirement.",
+        ),
+        (
+            "Workings and own figures",
+            "Award method marks where workings make the intended method clear. Apply the own-figure rule to a later result that follows correctly from an earlier error.",
+        ),
+        (
+            "Assessment objectives",
+            "AO1 covers knowledge, understanding and familiar accounting techniques; AO2 covers application to the given situation. AO3 covers analysis and evaluation, including supported decisions where required. Each 25-mark decision allocates AO2: 5 marks and AO3: 20 marks.",
+        ),
+        (
+            "Levels-based marking",
+            "Choose the level that best describes the response as a whole, then use application and developed reasoning to select a mark within that level. Require a judgement where the command asks for one, not for every short explanation.",
+        ),
+        (
+            "Quality of presentation",
+            "Require clear labels, appropriate units and a recognisable accounting format. Do not penalise an alternative layout that communicates the same information.",
+        ),
+        (
+            "Final checks",
+            "Check that distinct marks reward distinct work, totals do not exceed the question maximum and valid alternative routes have received equivalent credit.",
+        ),
     ],
     "business": [
-        ("Applying the mark scheme", "Read the whole response before awarding marks. Credit accurate business knowledge only where it answers the question set."),
-        ("Application and analysis", "Application must use the case evidence. Analysis must connect that evidence to a developed effect on the business, its decision or its stakeholders."),
-        ("Evaluation", "Judge the quality of the argument as a whole. A supported conclusion should weigh the evidence, uncertainty, timescale and relative importance of the factors considered."),
+        (
+            "Applying the mark scheme",
+            "Read the whole response before awarding marks. Credit accurate business knowledge only where it answers the question set.",
+        ),
+        (
+            "Application and analysis",
+            "Application must use the case evidence. Analysis must connect that evidence to a developed effect on the business, its decision or its stakeholders.",
+        ),
+        (
+            "Evaluation",
+            "Judge the quality of the argument as a whole. A supported conclusion should weigh the evidence, uncertainty, timescale and relative importance of the factors considered.",
+        ),
     ],
     "economics": [
-        ("Applying the mark scheme", "Credit accurate economic reasoning that answers the question. Do not reward the same developed point twice, and accept a valid alternative analytical route."),
-        ("Assessment objectives", "Knowledge must be precise, application must use the context, analysis must show a connected transmission mechanism, and evaluation must support its final judgement."),
+        (
+            "Applying the mark scheme",
+            "Credit accurate economic reasoning that answers the question. Do not reward the same developed point twice, and accept a valid alternative analytical route.",
+        ),
+        (
+            "Assessment objectives",
+            "Knowledge must be precise, application must use the context, analysis must show a connected transmission mechanism, and evaluation must support its final judgement.",
+        ),
     ],
 }
 

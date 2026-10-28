@@ -33,7 +33,9 @@ def _run_pdf_tool(tool: str, path: Path, *arguments: str) -> str:
             f"{tool} failed while reading {path} (exit {error.returncode}): {detail}"
         ) from error
     except OSError as error:
-        raise ValueError(f"{tool} could not start while reading {path}: {error}") from error
+        raise ValueError(
+            f"{tool} could not start while reading {path}: {error}"
+        ) from error
     return result.stdout
 
 

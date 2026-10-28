@@ -280,7 +280,8 @@ def test_successful_replace_does_not_attempt_a_second_temporary_unlink(
 
     assert committed
     assert json.loads(path.read_text())["items"] == {
-        "accepted": {"value": 1}, "later": {"value": 2}
+        "accepted": {"value": 1},
+        "later": {"value": 2},
     }
     assert not list(tmp_path.glob("*.tmp"))
     assert failure is None

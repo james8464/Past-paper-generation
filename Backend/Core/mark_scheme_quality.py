@@ -63,7 +63,9 @@ def validate_mark_scheme_item(item: dict[str, Any]) -> MarkSchemeQuality:
         match.upper()
         for point in structured
         for match in re.findall(
-            r"\bAO[1-4]\b", str(point.get("assessment_objective", "")), flags=re.IGNORECASE
+            r"\bAO[1-4]\b",
+            str(point.get("assessment_objective", "")),
+            flags=re.IGNORECASE,
         )
     )
     declared_objectives = {

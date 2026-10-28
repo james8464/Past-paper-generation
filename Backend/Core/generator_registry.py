@@ -76,9 +76,7 @@ def generator_capabilities() -> dict[str, GeneratorCapability]:
             continue
         capability = _capability(raw)
         if capability.backend_subject in result:
-            raise ValueError(
-                f"duplicate backend subject: {capability.backend_subject}"
-            )
+            raise ValueError(f"duplicate backend subject: {capability.backend_subject}")
         result[capability.backend_subject] = capability
     if not result:
         raise ValueError("generator registry has no advertised families")
@@ -127,9 +125,7 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
             f"{raw['id']} has unknown providers: {sorted(unknown_providers)}"
         )
     if (mode == "ai-assisted") != bool(providers):
-        raise ValueError(
-            f"{raw['id']} AI mode and supported providers disagree"
-        )
+        raise ValueError(f"{raw['id']} AI mode and supported providers disagree")
     output_payload = raw.get("outputs_by_paper", {})
     outputs = {
         paper: tuple(str(role) for role in output_payload.get(paper, ()))
@@ -147,8 +143,7 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
     if set(evidence) != set(papers):
         raise ValueError(f"{raw['id']} is missing per-paper evidence")
     qualification = {
-        str(item["id"]): _paper_qualification(item)
-        for item in raw.get("papers", [])
+        str(item["id"]): _paper_qualification(item) for item in raw.get("papers", [])
     }
     entry_point = str(raw.get("entry_point", ""))
     package = str(raw.get("package", ""))
@@ -168,9 +163,7 @@ def _capability(raw: dict[str, Any]) -> GeneratorCapability:
     specification_version = str(
         raw.get("specification_version", "legacy-registry-v3")
     ).strip()
-    blueprint_version = str(
-        raw.get("blueprint_version", "legacy-registry-v3")
-    ).strip()
+    blueprint_version = str(raw.get("blueprint_version", "legacy-registry-v3")).strip()
     reference_demand_profile = (
         _relative_path(raw, "reference_demand_profile")
         if raw.get("reference_demand_profile")
@@ -224,7 +217,9 @@ def _paper_qualification(raw: dict[str, Any]) -> PaperQualification:
         "visual",
         "empirical",
     }:
-        raise ValueError("paper qualification levels must be engineering, visual, empirical")
+        raise ValueError(
+            "paper qualification levels must be engineering, visual, empirical"
+        )
 
     def level(name: str) -> tuple[bool, tuple[str, ...]]:
         value = payload[name]

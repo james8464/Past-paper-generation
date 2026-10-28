@@ -215,12 +215,12 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
                     "done": True,
                     "done_reason": "stop",
                     "message": {
-                            "content": json.dumps(
-                                complete_solver_response(
-                                    {"answer": answer, "mark_points": answer}
-                                )
+                        "content": json.dumps(
+                            complete_solver_response(
+                                {"answer": answer, "mark_points": answer}
                             )
-                    }
+                        )
+                    },
                 }
             ).encode()
         )
@@ -232,8 +232,13 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
     assert calls[0][0].endswith("/api/chat")
     schema = calls[0][1]["format"]
     assert schema["required"] == [
-        "steps", "answer", "mark_points", "evidence_ids", "alternatives",
-        "partial_credit_boundaries", "follow_through_rules",
+        "steps",
+        "answer",
+        "mark_points",
+        "evidence_ids",
+        "alternatives",
+        "partial_credit_boundaries",
+        "follow_through_rules",
     ]
     assert next(iter(schema["properties"])) == "steps"
     for field in ("answer", "mark_points"):
@@ -326,10 +331,18 @@ def test_specialist_choice_key_comparison_preserves_numeric_sign():
 def test_tree_root_has_no_child_side(root_side):
     from Backend.Core.independent_solver import CanonicalSolution
 
-    values = {"node-40-parent": "none", "node-40-side": root_side,
-              "node-20-parent": "40", "node-20-side": "left"}
-    solution = CanonicalSolution(item_id="tree", answer=json.dumps(values),
-                                 response_slots=list(values), answer_slots=values)
+    values = {
+        "node-40-parent": "none",
+        "node-40-side": root_side,
+        "node-20-parent": "40",
+        "node-20-side": "left",
+    }
+    solution = CanonicalSolution(
+        item_id="tree",
+        answer=json.dumps(values),
+        response_slots=list(values),
+        answer_slots=values,
+    )
     expected = {key: [value] for key, value in values.items()}
     expected["node-40-side"] = ["root"]
     assert reconcile_solution(solution, {"closed_answers": expected}).passed
@@ -385,9 +398,15 @@ def test_closed_prompt_requires_independent_slot_reasoning_without_leaking_keys(
     assert "solve each requested slot in turn" in client.prompt
     assert "results may coincide only if separately justified" in client.prompt
     assert "SECRET_KEY" not in client.prompt
-    assert reconcile_solution(solution, {"closed_answers": {"1": ["0"], "2": ["0"]}}).passed
-    open_client = ResponseClient({"answer": "A description", "mark_points": ["A description"]})
-    IndependentSolver(open_client).solve({"id": "open", "marks": 2, "prompt": "Describe caching."}, [])
+    assert reconcile_solution(
+        solution, {"closed_answers": {"1": ["0"], "2": ["0"]}}
+    ).passed
+    open_client = ResponseClient(
+        {"answer": "A description", "mark_points": ["A description"]}
+    )
+    IndependentSolver(open_client).solve(
+        {"id": "open", "marks": 2, "prompt": "Describe caching."}, []
+    )
     assert "solve each requested slot in turn" not in open_client.prompt
 
 

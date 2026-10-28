@@ -135,7 +135,13 @@ def _expected(
             if material.id not in question.material_ids or material.id in printed:
                 continue
             if isinstance(material, NSIWeightedGraphMaterial):
-                parts.extend([material.title, *[str(weight) for _, _, weight in material.edges], *material.nodes])
+                parts.extend(
+                    [
+                        material.title,
+                        *[str(weight) for _, _, weight in material.edges],
+                        *material.nodes,
+                    ]
+                )
                 printed.add(material.id)
                 continue
             if not isinstance(material, NSITableMaterial):
@@ -216,10 +222,15 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         ):
             raise ValueError("Toutes les pages du sujet V32 doivent être au format A4")
         for number, page in enumerate(pdf, 1):
-            if package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION}:
+            if package["identity"]["prompt_version"] in {
+                EXTENDED_VERSION,
+                EXPANDED_VERSION,
+            }:
                 body = page.get_text(clip=pymupdf.Rect(0, 0, page.rect.width, 760))
                 if not body.strip():
-                    raise ValueError(f"Page {number} sans contenu dans le sujet vérifié")
+                    raise ValueError(
+                        f"Page {number} sans contenu dans le sujet vérifié"
+                    )
             page_lines = [line.strip() for line in page.get_text().splitlines()]
             if sum(line in footers for line in page_lines) != 1:
                 raise ValueError("Pied de page non officiel absent ou dupliqué")
@@ -254,7 +265,8 @@ def validate_whole_case_pdf(path: Path, package: dict, *, correction: bool) -> N
         if text[positions[index] : end] != _expected(
             exercise,
             correction,
-            compact_correction=package["identity"]["prompt_version"] in {EXTENDED_VERSION, EXPANDED_VERSION},
+            compact_correction=package["identity"]["prompt_version"]
+            in {EXTENDED_VERSION, EXPANDED_VERSION},
         ):
             raise ValueError(
                 f"Contenu imprimé de l'exercice {exercise.id} incompatible avec le sujet vérifié"

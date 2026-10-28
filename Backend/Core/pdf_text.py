@@ -23,8 +23,7 @@ def extract_pdf_text(
             last_page if last_page is not None else document.page_count,
         )
         return "\f".join(
-            document[index].get_text("text", sort=False)
-            for index in range(start, stop)
+            document[index].get_text("text", sort=False) for index in range(start, stop)
         )
     finally:
         document.close()

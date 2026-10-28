@@ -64,7 +64,16 @@ def apparatus_diagram(specification: ApparatusSpec) -> Drawing:
         if vessel == "beaker":
             drawing.add(
                 Polygon(
-                    [centre - 30, 130, centre - 24, 55, centre + 24, 55, centre + 30, 130],
+                    [
+                        centre - 30,
+                        130,
+                        centre - 24,
+                        55,
+                        centre + 24,
+                        55,
+                        centre + 30,
+                        130,
+                    ],
                     strokeColor=INK,
                     fillColor=None,
                     strokeWidth=1,
@@ -75,7 +84,11 @@ def apparatus_diagram(specification: ApparatusSpec) -> Drawing:
             drawing.add(Rect(centre - 15, 55, 30, 82, strokeColor=INK, fillColor=None))
             for tick in range(1, 7):
                 y = 55 + tick * 11
-                drawing.add(Line(centre + 7, y, centre + 15, y, strokeColor=INK, strokeWidth=0.6))
+                drawing.add(
+                    Line(
+                        centre + 7, y, centre + 15, y, strokeColor=INK, strokeWidth=0.6
+                    )
+                )
         else:
             drawing.add(Rect(centre - 24, 55, 48, 70, strokeColor=INK, fillColor=None))
         drawing.add(String(centre, 25, vessel, textAnchor="middle", fontSize=8))
@@ -100,9 +113,7 @@ def molecule_diagram(specification: MoleculeSpec) -> Drawing:
             raise ValueError("bond order must be one, two, or three")
 
     drawing = Drawing(320, 180)
-    positions = [
-        (160 + atom.x * 70, 90 + atom.y * 55) for atom in specification.atoms
-    ]
+    positions = [(160 + atom.x * 70, 90 + atom.y * 55) for atom in specification.atoms]
     for bond in specification.bonds:
         x1, y1 = positions[bond.source]
         x2, y2 = positions[bond.target]
@@ -139,20 +150,34 @@ def circuit_diagram(specification: CircuitSpec) -> Drawing:
     for index, component in enumerate(specification.components):
         centre = left + step * (index + 0.5)
         drawing.add(Line(left + step * index, top, centre - 18, top, strokeColor=INK))
-        drawing.add(Line(centre + 18, top, left + step * (index + 1), top, strokeColor=INK))
+        drawing.add(
+            Line(centre + 18, top, left + step * (index + 1), top, strokeColor=INK)
+        )
         if component.kind == "cell":
-            drawing.add(Line(centre - 4, top - 15, centre - 4, top + 15, strokeColor=INK))
+            drawing.add(
+                Line(centre - 4, top - 15, centre - 4, top + 15, strokeColor=INK)
+            )
             drawing.add(Line(centre + 5, top - 9, centre + 5, top + 9, strokeColor=INK))
         elif component.kind == "resistor":
-            drawing.add(Rect(centre - 18, top - 8, 36, 16, strokeColor=INK, fillColor=None))
+            drawing.add(
+                Rect(centre - 18, top - 8, 36, 16, strokeColor=INK, fillColor=None)
+            )
         elif component.kind in {"ammeter", "voltmeter"}:
-            drawing.add(Circle(centre, top, 15, strokeColor=INK, fillColor=colors.white))
+            drawing.add(
+                Circle(centre, top, 15, strokeColor=INK, fillColor=colors.white)
+            )
             symbol = "A" if component.kind == "ammeter" else "V"
-            drawing.add(String(centre, top - 4, symbol, textAnchor="middle", fontSize=10))
+            drawing.add(
+                String(centre, top - 4, symbol, textAnchor="middle", fontSize=10)
+            )
         else:
             raise ValueError(f"unsupported circuit component: {component.kind}")
         if component.label:
-            drawing.add(String(centre, top - 30, component.label, textAnchor="middle", fontSize=8))
+            drawing.add(
+                String(
+                    centre, top - 30, component.label, textAnchor="middle", fontSize=8
+                )
+            )
     return drawing
 
 
@@ -171,12 +196,54 @@ def ray_diagram(specification: RaySpec) -> Drawing:
     drawing.add(Line(lens_x, 30, lens_x, 170, strokeColor=INK, strokeWidth=1.2))
     drawing.add(Polygon([lens_x, 170, lens_x - 4, 160, lens_x + 4, 160], fillColor=INK))
     drawing.add(Polygon([lens_x, 30, lens_x - 4, 40, lens_x + 4, 40], fillColor=INK))
-    drawing.add(Line(object_x, axis_y, object_x, axis_y + object_height, strokeColor=INK))
-    drawing.add(Polygon([object_x, axis_y + object_height, object_x - 4, axis_y + object_height - 9, object_x + 4, axis_y + object_height - 9], fillColor=INK))
+    drawing.add(
+        Line(object_x, axis_y, object_x, axis_y + object_height, strokeColor=INK)
+    )
+    drawing.add(
+        Polygon(
+            [
+                object_x,
+                axis_y + object_height,
+                object_x - 4,
+                axis_y + object_height - 9,
+                object_x + 4,
+                axis_y + object_height - 9,
+            ],
+            fillColor=INK,
+        )
+    )
     drawing.add(Line(image_x, axis_y, image_x, axis_y + image_height, strokeColor=INK))
-    drawing.add(Polygon([image_x, axis_y + image_height, image_x - 4, axis_y + image_height + 9, image_x + 4, axis_y + image_height + 9], fillColor=INK))
-    drawing.add(Line(object_x, axis_y + object_height, lens_x, axis_y + object_height, strokeColor=INK))
-    drawing.add(Line(lens_x, axis_y + object_height, image_x, axis_y + image_height, strokeColor=INK))
+    drawing.add(
+        Polygon(
+            [
+                image_x,
+                axis_y + image_height,
+                image_x - 4,
+                axis_y + image_height + 9,
+                image_x + 4,
+                axis_y + image_height + 9,
+            ],
+            fillColor=INK,
+        )
+    )
+    drawing.add(
+        Line(
+            object_x,
+            axis_y + object_height,
+            lens_x,
+            axis_y + object_height,
+            strokeColor=INK,
+        )
+    )
+    drawing.add(
+        Line(
+            lens_x,
+            axis_y + object_height,
+            image_x,
+            axis_y + image_height,
+            strokeColor=INK,
+        )
+    )
     drawing.add(Line(object_x, axis_y + object_height, lens_x, axis_y, strokeColor=INK))
     drawing.add(Line(lens_x, axis_y, image_x, axis_y + image_height, strokeColor=INK))
     for sign in (-1, 1):

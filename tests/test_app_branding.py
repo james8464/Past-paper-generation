@@ -27,16 +27,28 @@ def test_native_app_copy_uses_plain_punctuation():
 
 def test_panel_actions_signal_that_more_input_is_needed():
     for source, label in (
-        ("Features/Generation/FrenchAssessmentWorkspace.swift", "Choose output folder…"),
-        ("Features/Generation/FrenchAssessmentWorkspace.swift", "Record a teacher review…"),
+        (
+            "Features/Generation/FrenchAssessmentWorkspace.swift",
+            "Choose output folder…",
+        ),
+        (
+            "Features/Generation/FrenchAssessmentWorkspace.swift",
+            "Record a teacher review…",
+        ),
         ("Features/Generation/FrenchAssessmentWorkspace.swift", "Save review…"),
         ("Features/Documents/DocumentPreviewView.swift", "Print…"),
         ("Features/Settings/SettingsPane.swift", "Choose…"),
     ):
         assert f'Button("{label}"' in (APP / source).read_text(), (source, label)
     catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
-    assert catalog["%@ (recommended)"]["localizations"]["fr"]["stringUnit"]["value"] == "%@ (recommandé)"
-    assert catalog["%lld to %lld"]["localizations"]["fr"]["stringUnit"]["value"] == "%lld à %lld"
+    assert (
+        catalog["%@ (recommended)"]["localizations"]["fr"]["stringUnit"]["value"]
+        == "%@ (recommandé)"
+    )
+    assert (
+        catalog["%lld to %lld"]["localizations"]["fr"]["stringUnit"]["value"]
+        == "%lld à %lld"
+    )
 
 
 def test_display_and_bundle_identity_use_keldin():
@@ -48,10 +60,7 @@ def test_display_and_bundle_identity_use_keldin():
 
 
 def test_main_window_and_help_use_public_name():
-    assert (
-        'WindowGroup("Keldin"'
-        in (APP / "Application/KeldinApp.swift").read_text()
-    )
+    assert 'WindowGroup("Keldin"' in (APP / "Application/KeldinApp.swift").read_text()
     assert (
         '.navigationTitle("Keldin")'
         in (APP / "Navigation/SidebarView.swift").read_text()
@@ -60,7 +69,10 @@ def test_main_window_and_help_use_public_name():
     assert 'Button(localized("Keldin Help"))' in commands
     assert "application.showHelpGuide()" in commands
     catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
-    assert catalog["Keldin Help"]["localizations"]["fr"]["stringUnit"]["value"] == "Aide de Keldin"
+    assert (
+        catalog["Keldin Help"]["localizations"]["fr"]["stringUnit"]["value"]
+        == "Aide de Keldin"
+    )
 
 
 def test_rebrand_uses_keldin_storage_and_imports_legacy_credentials():
@@ -70,7 +82,10 @@ def test_rebrand_uses_keldin_storage_and_imports_legacy_credentials():
     secrets = (APP / "Services/SecretStore.swift").read_text()
     assert 'baseQuery(account, service: "Keldin")' in secrets
     assert "KeldinMigration.legacyKeychainService" in secrets
-    assert "if status == errSecSuccess { SecItemDelete(legacyQuery as CFDictionary) }" not in secrets
+    assert (
+        "if status == errSecSuccess { SecItemDelete(legacyQuery as CFDictionary) }"
+        not in secrets
+    )
     launch = (APP / "Application/KeldinApp.swift").read_text()
     assert "KeldinMigration.prepare()" in launch
 
@@ -134,10 +149,17 @@ def test_active_code_and_build_names_only_use_legacy_identity_in_migration_reade
         "Backend/Core/legacy_migration.py",
         "macOS/Keldin/Application/KeldinMigration.swift",
     }
-    paths = subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines()
+    paths = subprocess.check_output(
+        ["git", "ls-files"], cwd=ROOT, text=True
+    ).splitlines()
     offenders = []
     for name in paths:
-        if name.startswith((".codex/", "graphify-out/", "docs/", "tests/", "macOS/Tests/")) or "/tests/" in name:
+        if (
+            name.startswith(
+                (".codex/", "graphify-out/", "docs/", "tests/", "macOS/Tests/")
+            )
+            or "/tests/" in name
+        ):
             continue
         assert not legacy.search(name), name
         if name in exceptions:

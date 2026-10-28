@@ -53,7 +53,9 @@ def test_biology_requires_practical_and_data_provenance_when_declared() -> None:
         ("Al2(SO4)3", {"Al": 2, "S": 3, "O": 12}),
     ],
 )
-def test_chemical_formula_parser_counts_atoms(value: str, elements: dict[str, int]) -> None:
+def test_chemical_formula_parser_counts_atoms(
+    value: str, elements: dict[str, int]
+) -> None:
     assert Formula.parse(value).elements == elements
 
 

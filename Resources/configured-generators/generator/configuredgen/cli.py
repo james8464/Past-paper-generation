@@ -99,9 +99,9 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
             emit("Creating practical source-file template")
             path = output / f"{syllabus.subject_plugin}-paper-{paper}-solution.py"
             path.write_text(
-                '# Candidate source file. Complete this original task offline.\n\n'
+                "# Candidate source file. Complete this original task offline.\n\n"
                 "def main() -> None:\n"
-                "    raise NotImplementedError(\"Complete the examination task\")\n\n"
+                '    raise NotImplementedError("Complete the examination task")\n\n'
                 'if __name__ == "__main__":\n'
                 "    main()\n",
                 encoding="utf-8",
@@ -125,8 +125,7 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
         ),
         supporting_artifacts=(
             supporting
-            if {"evidence_document", "source_file"}
-            & set(specification.output_roles)
+            if {"evidence_document", "source_file"} & set(specification.output_roles)
             else None
         ),
         output_order=tuple(specification.output_roles),

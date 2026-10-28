@@ -269,11 +269,15 @@ def _generate_batch(
     ]
     for task in verified:
         _validate_release_mark_scheme(task.question)
-    verified_to_review = verified if (
-        policy.require_model_review
-        or policy.require_independent_solution
-        or policy.require_difficulty_review
-    ) else []
+    verified_to_review = (
+        verified
+        if (
+            policy.require_model_review
+            or policy.require_independent_solution
+            or policy.require_difficulty_review
+        )
+        else []
+    )
     trusted_verified = [] if verified_to_review else verified
     result: dict[tuple[int, int, int], GeneratedQuestion] = {
         task.key: task.question.model_copy(update={"provenance": "verified-contract"})
@@ -293,7 +297,9 @@ def _generate_batch(
                 _validate_checkpoint_item(
                     task,
                     stored,
-                    demand_profile=demand_profile if policy.require_difficulty_review else None,
+                    demand_profile=demand_profile
+                    if policy.require_difficulty_review
+                    else None,
                 )
             except ValueError as error:
                 LOGGER.info(
@@ -448,8 +454,13 @@ def _validate_checkpoint_item(
     demand_profile: ReferenceDemandProfile | None = None,
 ) -> None:
     original = task.question
-    if original.authoring_context.get("preserve_prompt") and candidate.prompt != original.prompt:
-        raise ValueError(f"checkpoint item {task.id} changed immutable preserved prompt")
+    if (
+        original.authoring_context.get("preserve_prompt")
+        and candidate.prompt != original.prompt
+    ):
+        raise ValueError(
+            f"checkpoint item {task.id} changed immutable preserved prompt"
+        )
     immutable = (
         "rule_id",
         "number",
@@ -488,7 +499,9 @@ def _validate_checkpoint_item(
         candidate.choices != original.choices
         or candidate.correct_choice != original.correct_choice
     ):
-        raise ValueError(f"checkpoint item {task.id} changed source-owned choices or key")
+        raise ValueError(
+            f"checkpoint item {task.id} changed source-owned choices or key"
+        )
     preserves_scheme = (
         original.authoring_context.get("preserve_mark_scheme") is True
         or selected_response
@@ -573,11 +586,22 @@ def _generate_item_transaction(
                     demand_profile=demand_profile,
                 )
             )
-            raw = request_json(client, make_request(
-                prompt,
-                OutputContract("authoring", identifiers=(task.id,), mark_schemes_locked=task.question.authoring_context.get("preserve_mark_scheme") is True),
-                generation_seed=seed, attempt=attempt,
-            ))
+            raw = request_json(
+                client,
+                make_request(
+                    prompt,
+                    OutputContract(
+                        "authoring",
+                        identifiers=(task.id,),
+                        mark_schemes_locked=task.question.authoring_context.get(
+                            "preserve_mark_scheme"
+                        )
+                        is True,
+                    ),
+                    generation_seed=seed,
+                    attempt=attempt,
+                ),
+            )
             candidate = _parse_batch(
                 raw,
                 [task],
@@ -705,9 +729,7 @@ def _generate_item_transaction(
         if fallback_review.approved and not fallback_review.issues:
             if policy.require_difficulty_review:
                 if demand_profile is None:
-                    raise ValueError(
-                        "reference-demand review requires a paper profile"
-                    )
+                    raise ValueError("reference-demand review requires a paper profile")
                 difficulty_evidence = require_difficulty_review(
                     client,
                     item_id=task.id,
@@ -754,22 +776,48 @@ def _independently_validate_candidate(
     *,
     client: AssessmentLLMClient,
 ) -> CanonicalSolution:
-    if task.question.authoring_context.get("preserve_prompt") and candidate.prompt != task.question.prompt:
-        raise ValueError(f"question {candidate.number} changed immutable numeric prompt")
+    if (
+        task.question.authoring_context.get("preserve_prompt")
+        and candidate.prompt != task.question.prompt
+    ):
+        raise ValueError(
+            f"question {candidate.number} changed immutable numeric prompt"
+        )
     numeric_fields = {
-        key for key in task.question.authoring_context
-        if key.startswith("calculation_") or key in {
-            "cs_input_contract", "numeric_input_contract", "source_data", "candidate_source",
+        key
+        for key in task.question.authoring_context
+        if key.startswith("calculation_")
+        or key
+        in {
+            "cs_input_contract",
+            "numeric_input_contract",
+            "source_data",
+            "candidate_source",
             "selected_response_contract",
-            "accounting_source_content", "accounting_marking_policy", "grouped_level_policy",
-            "opening_balances", "depreciation_policy", "transactions_at_start_of_year",
-            "adjustment_source_data", "adjustment_policy", "task_scope", "required_entries",
-            "referenced_question_data", "independent_solver_instructions",
+            "accounting_source_content",
+            "accounting_marking_policy",
+            "grouped_level_policy",
+            "opening_balances",
+            "depreciation_policy",
+            "transactions_at_start_of_year",
+            "adjustment_source_data",
+            "adjustment_policy",
+            "task_scope",
+            "required_entries",
+            "referenced_question_data",
+            "independent_solver_instructions",
         }
     }
-    if any(candidate.authoring_context.get(key) != task.question.authoring_context[key] for key in numeric_fields):
-        raise ValueError(f"question {candidate.number} changed immutable numeric source contract")
-    contract_for_question(candidate)  # Retain full contract validation before model use.
+    if any(
+        candidate.authoring_context.get(key) != task.question.authoring_context[key]
+        for key in numeric_fields
+    ):
+        raise ValueError(
+            f"question {candidate.number} changed immutable numeric source contract"
+        )
+    contract_for_question(
+        candidate
+    )  # Retain full contract validation before model use.
     # The option may contain planning extracts that its specialist renderer
     # never prints (e.g. Accounting 14.2 uses the company-statement case).
     # A blind solver must see the same public evidence as the writer/reviewer.
@@ -1027,7 +1075,9 @@ def _candidate_question(
             if (
                 not isinstance(choices, list)
                 or len(choices) != 4
-                or not all(isinstance(choice, str) and choice.strip() for choice in choices)
+                or not all(
+                    isinstance(choice, str) and choice.strip() for choice in choices
+                )
                 or len({" ".join(choice.casefold().split()) for choice in choices}) != 4
                 or not isinstance(correct_choice, int)
                 or correct_choice not in range(4)
@@ -1155,11 +1205,13 @@ def _validate_mcq_prompt_options(
 ) -> None:
     # The renderer owns the option list. Match the actual four choices, rather
     # than banning labels that could legitimately identify data in the stem.
-    labels = list(re.finditer(
-        r"(?<!\w)(?:\*\*|__)?\(?([A-D])(?:\*\*|__)?\s*[.):\-\u2013\u2014](?:\*\*|__)?\s+",
-        prompt,
-        re.IGNORECASE,
-    ))
+    labels = list(
+        re.finditer(
+            r"(?<!\w)(?:\*\*|__)?\(?([A-D])(?:\*\*|__)?\s*[.):\-\u2013\u2014](?:\*\*|__)?\s+",
+            prompt,
+            re.IGNORECASE,
+        )
+    )
     choice_words = [re.findall(r"\w+", choice.casefold()) for choice in choices]
     for start in range(len(labels) - 3):
         group = labels[start : start + 4]
@@ -1214,9 +1266,7 @@ def _validate_mark_points(
     is_levels = question.scheme_mode == "levels"
     if not is_levels:
         meta_awards = [
-            point.text
-            for point in awarded
-            if _is_examiner_meta_guidance(point.text)
+            point.text for point in awarded if _is_examiner_meta_guidance(point.text)
         ]
         if meta_awards:
             raise ValueError(
@@ -1372,7 +1422,15 @@ def _review_batch(
     prompt = _review_prompt(
         tasks, candidates, subject=subject, canonical_solutions=canonical_solutions
     )
-    raw = request_json(client, make_request(prompt, OutputContract("batch_review", identifiers=tuple(task.id for task in tasks))))
+    raw = request_json(
+        client,
+        make_request(
+            prompt,
+            OutputContract(
+                "batch_review", identifiers=tuple(task.id for task in tasks)
+            ),
+        ),
+    )
     reviews = raw.get("reviews")
     if not isinstance(reviews, list):
         raise ValueError("second-pass review response has no reviews")

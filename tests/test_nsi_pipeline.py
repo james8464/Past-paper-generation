@@ -528,7 +528,6 @@ class ContractFrenchClient(FrenchClient):
 
 # Only the external model response is faked; package validation is real.
 class ClosedProseFrenchClient(FrenchClient):
-
     def generate_json(self, prompt):
         if prompt.startswith("Sélectionne la partie "):
             request = json.loads(prompt.split("\nDONNÉES_JSON\n", 1)[1])

@@ -116,7 +116,9 @@ def handle_generate(args: argparse.Namespace) -> int:
             # run into an error or delete accepted work written after our receipt.
             if checkpoint_used:
                 try:
-                    retired = receipt_available and retire_checkpoint(checkpoint_path, receipt)
+                    retired = receipt_available and retire_checkpoint(
+                        checkpoint_path, receipt
+                    )
                 except (OSError, GenerationCancelled):
                     retired = False
                 if not retired:
@@ -150,7 +152,9 @@ def handle_generate(args: argparse.Namespace) -> int:
                 "model": args.model,
             },
         )
-        diagnostic_fields = {"diagnostic_path": str(diagnostic_path)} if diagnostic_path else {}
+        diagnostic_fields = (
+            {"diagnostic_path": str(diagnostic_path)} if diagnostic_path else {}
+        )
         message = str(error)
         if diagnostic_path:
             message += f"\nA private diagnostic report was saved to {diagnostic_path}"
@@ -218,9 +222,7 @@ def _invoke_plugin(
             ollama_url=args.ollama_url,
         )
     keyword_arguments = {
-        name: value
-        for name, value in candidate_arguments.items()
-        if name in parameters
+        name: value for name, value in candidate_arguments.items() if name in parameters
     }
     missing = [
         name
@@ -259,9 +261,7 @@ def checkpoint_path_for_job(
         "model": args.model,
     }
     digest = hashlib.sha256(
-        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode(
-            "utf-8"
-        )
+        json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()[:20]
     return (
         output_directory(output_dir, ".keldin-checkpoints")
@@ -335,7 +335,9 @@ def finalize_generated_documents(
         )
     )
 
-    pagination_validation = conform_generated_documents(args.subject, args.paper, paths) or {}
+    pagination_validation = (
+        conform_generated_documents(args.subject, args.paper, paths) or {}
+    )
     pdf_validation = {
         role: validate_pdf_for_release(
             path,
@@ -422,9 +424,7 @@ def _write_package_manifest(
                 "empirically_calibrated": qualification.empirically_calibrated,
             },
             "visual_calibration": gate_results.get("visual", False),
-            "difficulty_independently_verified": gate_results.get(
-                "difficulty", False
-            ),
+            "difficulty_independently_verified": gate_results.get("difficulty", False),
             "reference_demand": assessment_validation.get("reference_demand"),
             "warning": (
                 "Each item and the complete form are checked against aggregate "
@@ -503,12 +503,7 @@ def _repository_commit() -> str | None:
 
 
 def _generator_version(capability: GeneratorCapability) -> str | None:
-    pyproject = (
-        REPO_ROOT
-        / "Resources"
-        / capability.python_path
-        / "pyproject.toml"
-    )
+    pyproject = REPO_ROOT / "Resources" / capability.python_path / "pyproject.toml"
     try:
         value = tomllib.loads(pyproject.read_text(encoding="utf-8"))
         return str(value["project"]["version"])

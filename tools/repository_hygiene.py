@@ -71,7 +71,9 @@ def classify_path(value: str) -> Classification:
         or "Assets.xcassets" in value
         or value.startswith("docs/project-analysis/ui-audit-")
     )
-    if suffix in BINARY_SUFFIXES or (suffix in {".png", ".jpg", ".jpeg"} and not approved_image):
+    if suffix in BINARY_SUFFIXES or (
+        suffix in {".png", ".jpg", ".jpeg"} and not approved_image
+    ):
         return Classification(error="unapproved binary artifact")
 
     if value in ROOT_FILES:
@@ -84,7 +86,9 @@ def classify_path(value: str) -> Classification:
     if value.startswith("macOS/Tests/"):
         return Classification(category="test")
     if value.startswith("macOS/Keldin/"):
-        category = "runtime-resource" if "Assets.xcassets" in value else "runtime-source"
+        category = (
+            "runtime-resource" if "Assets.xcassets" in value else "runtime-source"
+        )
         return Classification(category=category)
     if value.startswith("macOS/"):
         return Classification(category="build-release-configuration")

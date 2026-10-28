@@ -24,9 +24,10 @@ class BiologyPlugin:
         if item.get("item_kind") == "required-practical":
             if not str(item.get("required_practical_id", "")).strip():
                 diagnostics.append("required-practical items need a practical ID")
-            if item.get("data") is not None and not str(
-                item.get("data_provenance", "")
-            ).strip():
+            if (
+                item.get("data") is not None
+                and not str(item.get("data_provenance", "")).strip()
+            ):
                 diagnostics.append("practical data needs deterministic provenance")
         if item.get("item_kind") == "magnification":
             for field in ("image_size", "actual_size", "unit"):
@@ -55,7 +56,9 @@ class BiologyPlugin:
         if not isinstance(scheme, dict) or not scheme.get("mark_points"):
             return SubjectValidation(False, ("mark scheme requires mark points",))
         if len(scheme["mark_points"]) < int(item.get("marks", 0)):
-            return SubjectValidation(False, ("mark scheme has too few observable points",))
+            return SubjectValidation(
+                False, ("mark scheme has too few observable points",)
+            )
         return SubjectValidation(True)
 
     def calibration_features(self, item: Any) -> dict[str, float | str]:

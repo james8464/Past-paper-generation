@@ -60,9 +60,7 @@ def main() -> int:
     _validate_operation(args, parser=parser)
 
     review = (
-        json.loads(args.review.read_text(encoding="utf-8"))
-        if args.review
-        else None
+        json.loads(args.review.read_text(encoding="utf-8")) if args.review else None
     )
     if args.secure_store:
         return _run_secure(args, review=review, parser=parser)
@@ -123,9 +121,7 @@ def _run_secure(
             return 0
     else:
         if not all((args.responses, args.metadata, args.consents)):
-            parser.error(
-                "secure import requires responses, --metadata, and --consents"
-            )
+            parser.error("secure import requires responses, --metadata, and --consents")
         metadata = CalibrationMetadata(
             **json.loads(args.metadata.read_text(encoding="utf-8"))
         )
@@ -170,7 +166,11 @@ def _validate_operation(
     if args.delete and args.export_encrypted is not None:
         parser.error("choose either --delete or --export-encrypted")
     secure_flags = (
-        args.dataset_id, args.metadata, args.consents, args.key_file, action
+        args.dataset_id,
+        args.metadata,
+        args.consents,
+        args.key_file,
+        action,
     )
     if not args.secure_store:
         if any(value is not None and value is not False for value in secure_flags):
@@ -189,10 +189,10 @@ def _validate_operation(
     ):
         parser.error("delete/export actions cannot be combined with aggregation inputs")
     if any(value is not None for value in (args.family, args.paper, args.form_id)):
-        parser.error("secure datasets use metadata instead of --family, --paper or --form-id")
-    if not args.dataset_id and not all(
-        (args.responses, args.metadata, args.consents)
-    ):
+        parser.error(
+            "secure datasets use metadata instead of --family, --paper or --form-id"
+        )
+    if not args.dataset_id and not all((args.responses, args.metadata, args.consents)):
         parser.error("secure import requires responses, --metadata, and --consents")
 
 

@@ -98,10 +98,7 @@ def test_v22_routes_match_independent_path_enumeration(seed: int) -> None:
     assert facts["expected"]["1g"]["cost_after"] == replacement_cost
     assert replacement_cost >= original_cost
     assert replacement_path != original_path
-    assert (
-        facts["expected"]["1g"]["steps"][0]
-        != facts["expected"]["1c"]["steps"][0]
-    )
+    assert facts["expected"]["1g"]["steps"][0] != facts["expected"]["1c"]["steps"][0]
     assert build_graph_resilience_contract(seed).to_dict()["version"] == 4
 
 

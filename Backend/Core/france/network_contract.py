@@ -92,8 +92,15 @@ class NetworkContract:
     @classmethod
     def from_dict(cls, data: dict) -> NetworkContract:
         if not isinstance(data, dict) or set(data) != {
-            "version", "seed", "exercise_id", "task_ids", "links", "change",
-            "processes", "security", "expected",
+            "version",
+            "seed",
+            "exercise_id",
+            "task_ids",
+            "links",
+            "change",
+            "processes",
+            "security",
+            "expected",
         }:
             raise ValueError("Invalid network contract fields")
         seed = data["seed"]

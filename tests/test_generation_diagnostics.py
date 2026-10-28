@@ -58,7 +58,9 @@ def test_failed_solution_survives_staging_cleanup(tmp_path, monkeypatch, capsys)
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
     assert stat.S_IMODE(path.parent.stat().st_mode) == 0o700
     assert set(tmp_path.iterdir()) == {path.parent, tmp_path / ".keldin-checkpoints"}
-    assert {entry.suffix for entry in (tmp_path / ".keldin-checkpoints").iterdir()} == {".lock"}
+    assert {entry.suffix for entry in (tmp_path / ".keldin-checkpoints").iterdir()} == {
+        ".lock"
+    }
 
 
 def test_diagnostics_are_bounded_redacted_and_do_not_follow_symlinks(tmp_path):
@@ -78,9 +80,7 @@ def test_diagnostics_are_bounded_redacted_and_do_not_follow_symlinks(tmp_path):
     assert len(list(path.parent.glob("failure-*.json"))) == 20
     other = tmp_path / "other"
     other.mkdir()
-    (other / ".keldin-diagnostics").symlink_to(
-        path.parent, target_is_directory=True
-    )
+    (other / ".keldin-diagnostics").symlink_to(path.parent, target_is_directory=True)
     assert save_failure_diagnostic(other, error) is None
 
 

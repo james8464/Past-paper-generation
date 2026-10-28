@@ -92,17 +92,14 @@ def validate_candidate_contract(
         )
 
     ordered = [
-        _normalise_quantity(value.text)
-        for value in expected_values
-        if value.ordered
+        _normalise_quantity(value.text) for value in expected_values if value.ordered
     ]
     if ordered and not _is_subsequence(
         ordered,
         [_normalise_quantity(token) for token in actual_tokens],
     ):
-        raise ValueError(
-            f"{contract.item_id} changed ordered immutable numeric data"
-        )
+        raise ValueError(f"{contract.item_id} changed ordered immutable numeric data")
+
 
 # Reject common exchange-rate reversals before model review.
 def validate_economics_causal_direction(value: str) -> None:
@@ -133,8 +130,7 @@ def _ignored_candidate_quantities(value: str) -> list[str]:
     )
     for pattern in patterns:
         ignored.extend(
-            match.group(1)
-            for match in re.finditer(pattern, value, flags=re.IGNORECASE)
+            match.group(1) for match in re.finditer(pattern, value, flags=re.IGNORECASE)
         )
     return ignored
 
@@ -159,7 +155,9 @@ def _precision_instructions(value: str) -> tuple[tuple[int, str], ...]:
                 if match.group(1).casefold() in words
                 else int(match.group(1))
             ),
-            "decimal" if match.group(2).casefold().startswith("decimal") else "significant",
+            "decimal"
+            if match.group(2).casefold().startswith("decimal")
+            else "significant",
         )
         for match in pattern.finditer(value)
     )
@@ -259,10 +257,9 @@ def validate_package_novelty(
             continue
         for item in current_items:
             for historic_item in _items(historic):
-                if (
-                    item.get("subject") != historic_item.get("subject")
-                    or item.get("paper") != historic_item.get("paper")
-                ):
+                if item.get("subject") != historic_item.get("subject") or item.get(
+                    "paper"
+                ) != historic_item.get("paper"):
                     continue
                 comparisons += 1
                 score = content_similarity(

@@ -64,11 +64,14 @@ def test_checkpoint_identity_preserves_integer_seed_and_hash(seed: int) -> None:
     )
     assert result.seed == seed
     assert CheckpointIdentity.model_validate_json(result.model_dump_json()) == result
-    assert result.blueprint_sha256 == hashlib.sha256(
-        json.dumps(
-            blueprint, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-        ).encode("utf-8")
-    ).hexdigest()
+    assert (
+        result.blueprint_sha256
+        == hashlib.sha256(
+            json.dumps(
+                blueprint, sort_keys=True, separators=(",", ":"), ensure_ascii=False
+            ).encode("utf-8")
+        ).hexdigest()
+    )
 
 
 def test_checkpoint_refuses_boolean_seed_without_rewriting_file(tmp_path: Path) -> None:
@@ -153,7 +156,9 @@ def test_checkpoint_write_is_atomic_and_valid_json(tmp_path: Path) -> None:
     assert document["items"]["0/0/0"]["prompt"] == question().prompt
 
 
-def test_corrupt_checkpoint_fails_closed_with_actionable_identity(tmp_path: Path) -> None:
+def test_corrupt_checkpoint_fails_closed_with_actionable_identity(
+    tmp_path: Path,
+) -> None:
     path = tmp_path / "job.json"
     path.write_text('{"schema_version": 1, "items": ', encoding="utf-8")
 
@@ -279,9 +284,12 @@ def test_v4_operation_and_candidate_evidence_survives_authoring_save_and_resume(
     )
 
     assert resumed == first
-    evidence = resumed.sections[0].options[0].questions[0].authoring_context[
-        "difficulty_evidence"
-    ]
+    evidence = (
+        resumed.sections[0]
+        .options[0]
+        .questions[0]
+        .authoring_context["difficulty_evidence"]
+    )
     assert evidence["schema_version"] == 4
     assert evidence["observed_cognitive_operations"] == ["explain", "analyse"]
     assert evidence["public_task_operation_evidence"]["source"] == (
@@ -345,8 +353,10 @@ def test_checkpoint_rejects_source_drift_outside_the_question(
         checkpoint_store=store,
         demand_profile=profile,
     )
-    changed_option = paper.sections[0].options[0].model_copy(
-        update={"stimulus": ["Source revenue: £12 million"]}
+    changed_option = (
+        paper.sections[0]
+        .options[0]
+        .model_copy(update={"stimulus": ["Source revenue: £12 million"]})
     )
     changed_paper = paper.model_copy(
         update={

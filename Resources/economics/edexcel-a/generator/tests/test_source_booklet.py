@@ -81,7 +81,9 @@ def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):
 def _pdf_page_count(path: Path) -> int:
     import subprocess
 
-    result = subprocess.run(["pdfinfo", str(path)], check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        ["pdfinfo", str(path)], check=True, capture_output=True, text=True
+    )
     for line in result.stdout.splitlines():
         if line.startswith("Pages:"):
             return int(line.split(":", 1)[1].strip())

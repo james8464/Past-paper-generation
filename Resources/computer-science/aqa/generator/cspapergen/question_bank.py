@@ -23,7 +23,9 @@ class QuestionStyle:
 
 
 QUESTION_STYLES = [
-    QuestionStyle("data_structures_stack_queue", "4.2", (6,), "data_structures_stack_queue"),
+    QuestionStyle(
+        "data_structures_stack_queue", "4.2", (6,), "data_structures_stack_queue"
+    ),
     QuestionStyle("data_structures_hash", "4.2", (6,), "data_structures_hash"),
     QuestionStyle("data_structures_tree", "4.2", (6,), "data_structures_tree"),
     QuestionStyle("data_structures_graph", "4.2", (6,), "data_structures_graph"),
@@ -80,7 +82,9 @@ def styles_for_total(total: int) -> list[QuestionStyle]:
     return [style for style in QUESTION_STYLES if total in style.totals]
 
 
-def build_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def build_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     builders = {
         "data_structures_stack_queue": _data_structures_stack_queue_question,
         "data_structures_hash": _data_structures_hash_question,
@@ -156,8 +160,23 @@ def ao_for_marks(marks: int) -> str:
     return "AO1"
 
 
-def _question(style: QuestionStyle, number: int, title: str, stem: str, stimulus: Stimulus | None, parts: list[QuestionPart]) -> Question:
-    return Question(number=number, topic_id=style.topic_id, style_id=style.id, title=title, stem=stem, stimulus=stimulus, parts=parts)
+def _question(
+    style: QuestionStyle,
+    number: int,
+    title: str,
+    stem: str,
+    stimulus: Stimulus | None,
+    parts: list[QuestionPart],
+) -> Question:
+    return Question(
+        number=number,
+        topic_id=style.topic_id,
+        style_id=style.id,
+        title=title,
+        stem=stem,
+        stimulus=stimulus,
+        parts=parts,
+    )
 
 
 def _fit_parts(parts: list[QuestionPart], total: int) -> list[QuestionPart]:
@@ -170,7 +189,13 @@ def _fit_parts(parts: list[QuestionPart], total: int) -> list[QuestionPart]:
     if delta > 0:
         points.append("Credit any further valid, question-specific expansion;")
     marks = max(1, last.marks + delta)
-    parts[-1] = last.model_copy(update={"marks": marks, "answer_lines": max(last.answer_lines, marks + 1), "marking": last.marking.model_copy(update={"points": points})})
+    parts[-1] = last.model_copy(
+        update={
+            "marks": marks,
+            "answer_lines": max(last.answer_lines, marks + 1),
+            "marking": last.marking.model_copy(update={"points": points}),
+        }
+    )
     return parts
 
 
@@ -185,18 +210,59 @@ def _data_structures_stack_queue_question(
     stimulus = Stimulus(
         kind="code",
         title="Operations",
-        code=(
-            f"push({a})\npush({b})\npop()\npush({c})\npush({d})"
-        ),
+        code=(f"push({a})\npush({b})\npop()\npush({c})\npush({d})"),
     )
-    parts = _parts([
-        ("1", 2, "State the contents of the stack after all five operations. Give the values from bottom to top.", [f"Bottom-to-top order starts {a}, {c};", f"Top item is {d}, giving {a}, {c}, {d};"], "", 4),
-        ("2", 2, "State the sequence of values removed if the same four inserted values were processed by a queue instead of a stack.", [f"The first removed value is {a};", f"FIFO order gives {a}, {b}, {c}, {d};"], "", 4),
-        ("3", 2, "Explain why a stack is suitable for an undo feature in a drawing application.", ["The most recent action is stored at the top of the stack;", "LIFO removal reverses actions in the opposite order to that in which they were performed;"], "", 5),
-    ])
-    parts[0].set_closed_answers({f"bottom-{i}": [str(value)] for i, value in enumerate([a, c, d], 1)})
-    parts[1].set_closed_answers({f"removed-{i}": [str(value)] for i, value in enumerate([a, b, c, d], 1)})
-    return _question(style, number, "Stacks and queues", "A program applies the operations shown to an initially empty stack.", stimulus, _fit_parts(parts, total))
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State the contents of the stack after all five operations. Give the values from bottom to top.",
+                [
+                    f"Bottom-to-top order starts {a}, {c};",
+                    f"Top item is {d}, giving {a}, {c}, {d};",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "State the sequence of values removed if the same four inserted values were processed by a queue instead of a stack.",
+                [
+                    f"The first removed value is {a};",
+                    f"FIFO order gives {a}, {b}, {c}, {d};",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain why a stack is suitable for an undo feature in a drawing application.",
+                [
+                    "The most recent action is stored at the top of the stack;",
+                    "LIFO removal reverses actions in the opposite order to that in which they were performed;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    parts[0].set_closed_answers(
+        {f"bottom-{i}": [str(value)] for i, value in enumerate([a, c, d], 1)}
+    )
+    parts[1].set_closed_answers(
+        {f"removed-{i}": [str(value)] for i, value in enumerate([a, b, c, d], 1)}
+    )
+    return _question(
+        style,
+        number,
+        "Stacks and queues",
+        "A program applies the operations shown to an initially empty stack.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
 def _data_structures_hash_question(
@@ -231,13 +297,53 @@ def _data_structures_hash_question(
         title="Hash table rule",
         code=f"index = key MOD {size}\nCollision handling: linear probing\nKeys inserted: {keys[0]}, {keys[1]}, {keys[2]}",
     )
-    parts = _parts([
-        ("1", 3, "State the table index occupied by each key after all three insertions.", [f"Key {key} is stored at index {slot} after {probes} probe{'s' if probes != 1 else ''};" for key, slot, probes in zip(keys, final_slots, probe_counts, strict=True)], "", 6),
-        ("2", 1, "State what is meant by a collision in a hash table.", ["Two different keys produce the same initial table index;"], "", 3),
-        ("3", 2, "Explain one reason why the table should not be allowed to become almost full.", ["Linear probing may need to inspect many occupied slots because clusters become longer;", "Insertion and retrieval therefore become slower and may approach a linear search;"], "", 5),
-    ])
-    parts[0].set_closed_answers({f"key-{key}": [str(slot)] for key, slot in zip(keys, final_slots, strict=True)})
-    return _question(style, number, "Hash tables", "A hash table stores integer keys using the rule shown.", stimulus, _fit_parts(parts, total))
+    parts = _parts(
+        [
+            (
+                "1",
+                3,
+                "State the table index occupied by each key after all three insertions.",
+                [
+                    f"Key {key} is stored at index {slot} after {probes} probe{'s' if probes != 1 else ''};"
+                    for key, slot, probes in zip(
+                        keys, final_slots, probe_counts, strict=True
+                    )
+                ],
+                "",
+                6,
+            ),
+            (
+                "2",
+                1,
+                "State what is meant by a collision in a hash table.",
+                ["Two different keys produce the same initial table index;"],
+                "",
+                3,
+            ),
+            (
+                "3",
+                2,
+                "Explain one reason why the table should not be allowed to become almost full.",
+                [
+                    "Linear probing may need to inspect many occupied slots because clusters become longer;",
+                    "Insertion and retrieval therefore become slower and may approach a linear search;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    parts[0].set_closed_answers(
+        {f"key-{key}": [str(slot)] for key, slot in zip(keys, final_slots, strict=True)}
+    )
+    return _question(
+        style,
+        number,
+        "Hash tables",
+        "A hash table stores integer keys using the rule shown.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
 def _data_structures_tree_question(
@@ -254,7 +360,9 @@ def _data_structures_tree_question(
         [root, root - 20, root + 20, root - 30, root - 40, root + 10],
     ][variant]
     traversal_kind = ("in-order", "pre-order", "post-order")[variant]
-    stimulus = Stimulus(kind="code", title="Insertion order", code=", ".join(map(str, values)))
+    stimulus = Stimulus(
+        kind="code", title="Insertion order", code=", ".join(map(str, values))
+    )
     links: dict[int, tuple[int | None, str]] = {root: (None, "root")}
     children: dict[int, dict[str, int]] = {root: {}}
     for value in values[1:]:
@@ -278,22 +386,65 @@ def _data_structures_tree_question(
         return [*left, node, *right]
 
     traversal_values = traverse(root)
+
     def describe(value: int) -> str:
         parent, side = links[value]
         return f"{value} is the {side} child of {parent}"
-    parts = _parts([
-        ("1", 3, "Draw the binary search tree produced by inserting the values in the stated order.", [f"{root} is the root; {describe(values[1])}; {describe(values[2])};", f"{describe(values[3])}; {describe(values[4])};", f"{describe(values[5])};"], "", 8),
-        ("2", 1, f"State the {traversal_kind} traversal of the completed tree.", [f"{', '.join(map(str, traversal_values))};"], "", 3),
-        ("3", 2, "Explain why an unbalanced binary search tree can make searching less efficient.", ["Many nodes can lie on one long branch so each comparison removes little of the remaining search space;", "In the worst case the search visits a number of nodes proportional to the number stored, like a linear search;"], "", 5),
-    ])
+
+    parts = _parts(
+        [
+            (
+                "1",
+                3,
+                "Draw the binary search tree produced by inserting the values in the stated order.",
+                [
+                    f"{root} is the root; {describe(values[1])}; {describe(values[2])};",
+                    f"{describe(values[3])}; {describe(values[4])};",
+                    f"{describe(values[5])};",
+                ],
+                "",
+                8,
+            ),
+            (
+                "2",
+                1,
+                f"State the {traversal_kind} traversal of the completed tree.",
+                [f"{', '.join(map(str, traversal_values))};"],
+                "",
+                3,
+            ),
+            (
+                "3",
+                2,
+                "Explain why an unbalanced binary search tree can make searching less efficient.",
+                [
+                    "Many nodes can lie on one long branch so each comparison removes little of the remaining search space;",
+                    "In the worst case the search visits a number of nodes proportional to the number stored, like a linear search;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
     tree_answers = {}
     for value, (parent, side) in links.items():
-        tree_answers[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
+        tree_answers[f"node-{value}-parent"] = (
+            [str(parent)] if parent is not None else ["none", "no parent"]
+        )
         tree_answers[f"node-{value}-side"] = [side]
     parts[0].set_closed_answers(tree_answers)
     # Slot IDs refer only to supplied values, never to the answer's tree shape.
-    parts[1].set_closed_answers({f"visit-{i}": [str(value)] for i, value in enumerate(traversal_values, 1)})
-    return _question(style, number, "Binary search trees", "The values shown are inserted into an initially empty binary search tree.", stimulus, _fit_parts(parts, total))
+    parts[1].set_closed_answers(
+        {f"visit-{i}": [str(value)] for i, value in enumerate(traversal_values, 1)}
+    )
+    return _question(
+        style,
+        number,
+        "Binary search trees",
+        "The values shown are inserted into an initially empty binary search tree.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
 def _data_structures_graph_question(
@@ -302,14 +453,54 @@ def _data_structures_graph_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    adjacency, start, target = rng.choice([
-        ({"A": ["B", "D"], "B": ["A", "C"], "C": ["B", "E", "F"], "D": ["A", "E"], "E": ["C", "D"], "F": ["C"]}, "A", "F"),
-        ({"A": ["B", "C"], "B": ["A", "D", "E"], "C": ["A", "F"], "D": ["B"], "E": ["B", "F"], "F": ["C", "E"]}, "A", "F"),
-        ({"A": ["B", "C"], "B": ["A", "D"], "C": ["A", "E"], "D": ["B", "F"], "E": ["C", "F"], "F": ["D", "E"]}, "C", "F"),
-    ])
-    stimulus = Stimulus(kind="code", title="Adjacency list", code="\n".join(
-        f"{vertex}: {', '.join(neighbours)}" for vertex, neighbours in adjacency.items()
-    ))
+    adjacency, start, target = rng.choice(
+        [
+            (
+                {
+                    "A": ["B", "D"],
+                    "B": ["A", "C"],
+                    "C": ["B", "E", "F"],
+                    "D": ["A", "E"],
+                    "E": ["C", "D"],
+                    "F": ["C"],
+                },
+                "A",
+                "F",
+            ),
+            (
+                {
+                    "A": ["B", "C"],
+                    "B": ["A", "D", "E"],
+                    "C": ["A", "F"],
+                    "D": ["B"],
+                    "E": ["B", "F"],
+                    "F": ["C", "E"],
+                },
+                "A",
+                "F",
+            ),
+            (
+                {
+                    "A": ["B", "C"],
+                    "B": ["A", "D"],
+                    "C": ["A", "E"],
+                    "D": ["B", "F"],
+                    "E": ["C", "F"],
+                    "F": ["D", "E"],
+                },
+                "C",
+                "F",
+            ),
+        ]
+    )
+    stimulus = Stimulus(
+        kind="code",
+        title="Adjacency list",
+        code="\n".join(
+            f"{vertex}: {', '.join(neighbours)}"
+            for vertex, neighbours in adjacency.items()
+        ),
+    )
     paths = [[start]]
     seen = {start}
     for path in paths:
@@ -321,14 +512,57 @@ def _data_structures_graph_question(
     route = next(path for path in paths if path[-1] == target)
     route_text = ", ".join(route)
     edge_count = len(route) - 1
-    parts = _parts([
-        ("1", 2, f"Starting at {start}, state the breadth-first traversal when adjacent vertices are considered alphabetically.", [f"{', '.join(traversal[:3])} are visited first;", f"The complete traversal is {', '.join(traversal)};"], "", 5),
-        ("2", 2, f"State one shortest route from {start} to {target} and give its number of edges.", [f"{route_text};", f"The route contains {edge_count} edges;"], "", 4),
-        ("3", 2, "Explain one advantage of an adjacency list over an adjacency matrix for this graph.", ["Only existing edges and their endpoint references need to be stored;", "Because the graph is sparse, this normally uses less memory than storing a cell for every possible pair of vertices;"], "", 5),
-    ])
-    parts[0].set_closed_answers({f"visit-{i}": [value] for i, value in enumerate(traversal, 1)})
-    parts[1].set_closed_answers({"route-in-order": [",".join(route), f"[{','.join(route)}]"], "edges": [str(edge_count), f"{edge_count} edges"]})
-    return _question(style, number, "Graphs", "An undirected graph is represented by the adjacency list shown.", stimulus, _fit_parts(parts, total))
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                f"Starting at {start}, state the breadth-first traversal when adjacent vertices are considered alphabetically.",
+                [
+                    f"{', '.join(traversal[:3])} are visited first;",
+                    f"The complete traversal is {', '.join(traversal)};",
+                ],
+                "",
+                5,
+            ),
+            (
+                "2",
+                2,
+                f"State one shortest route from {start} to {target} and give its number of edges.",
+                [f"{route_text};", f"The route contains {edge_count} edges;"],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain one advantage of an adjacency list over an adjacency matrix for this graph.",
+                [
+                    "Only existing edges and their endpoint references need to be stored;",
+                    "Because the graph is sparse, this normally uses less memory than storing a cell for every possible pair of vertices;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    parts[0].set_closed_answers(
+        {f"visit-{i}": [value] for i, value in enumerate(traversal, 1)}
+    )
+    parts[1].set_closed_answers(
+        {
+            "route-in-order": [",".join(route), f"[{','.join(route)}]"],
+            "edges": [str(edge_count), f"{edge_count} edges"],
+        }
+    )
+    return _question(
+        style,
+        number,
+        "Graphs",
+        "An undirected graph is represented by the adjacency list shown.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
 def _data_structures_choice_question(
@@ -337,17 +571,49 @@ def _data_structures_choice_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    context = rng.choice(["hospital treatment requests", "roadside-assistance callouts", "print jobs in a shared laboratory"])
-    parts = _parts([
-        ("1", 2, f"Explain why a priority queue is more suitable than an ordinary queue for scheduling {context}.", ["A priority queue selects by stored priority rather than only FIFO arrival order;", f"Urgent {context} can therefore be processed before less urgent items;"], "", 5),
-        ("2", 4, "Compare a doubly linked list with an array for storing the waiting items. Relate your comparison to removal, storage and access requirements in this service.", ["With a reference to the cancelled node, a doubly linked list can update neighbouring links without shifting later items as an array would;", "The list can grow with the waiting workload without resizing a contiguous array or reserving capacity for the maximum;", "A list needs additional storage for links, whereas an array does not need per-item links;", "An array provides constant-time indexed access; a list requires traversal, but this service rarely accesses items by position;"], "", 9),
-    ])
+    context = rng.choice(
+        [
+            "hospital treatment requests",
+            "roadside-assistance callouts",
+            "print jobs in a shared laboratory",
+        ]
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                f"Explain why a priority queue is more suitable than an ordinary queue for scheduling {context}.",
+                [
+                    "A priority queue selects by stored priority rather than only FIFO arrival order;",
+                    f"Urgent {context} can therefore be processed before less urgent items;",
+                ],
+                "",
+                5,
+            ),
+            (
+                "2",
+                4,
+                "Compare a doubly linked list with an array for storing the waiting items. Relate your comparison to removal, storage and access requirements in this service.",
+                [
+                    "With a reference to the cancelled node, a doubly linked list can update neighbouring links without shifting later items as an array would;",
+                    "The list can grow with the waiting workload without resizing a contiguous array or reserving capacity for the maximum;",
+                    "A list needs additional storage for links, whereas an array does not need per-item links;",
+                    "An array provides constant-time indexed access; a list requires traversal, but this service rarely accesses items by position;",
+                ],
+                "",
+                9,
+            ),
+        ]
+    )
     stem = (
         f"A service needs to schedule {context} and frequently add or remove waiting items. "
         "The workload varies substantially. The cancellation system holds direct references "
         "to stored items, and items are rarely accessed by their position in the sequence."
     )
-    return _question(style, number, "Selecting data structures", stem, None, _fit_parts(parts, total))
+    return _question(
+        style, number, "Selecting data structures", stem, None, _fit_parts(parts, total)
+    )
 
 
 def _software_classification_question(
@@ -477,7 +743,9 @@ def _bitmap_storage_question(
         ]
     )
     parts[0].response_slots = ["result"]
-    parts[0].marking.closed_answers = {"result": [f"{mebibytes:.2f} MiB", f"{mebibytes:.2f}"]}
+    parts[0].marking.closed_answers = {
+        "result": [f"{mebibytes:.2f} MiB", f"{mebibytes:.2f}"]
+    }
     return _question(
         style,
         number,
@@ -566,7 +834,9 @@ def _ipv4_extended_question(
     total: int,
     rng: random.Random,
 ) -> Question:
-    organisation = rng.choice(["a regional university", "a logistics company", "a hospital group"])
+    organisation = rng.choice(
+        ["a regional university", "a logistics company", "a hospital group"]
+    )
     return _question(
         style,
         number,
@@ -662,8 +932,22 @@ def _fibonacci_recursion_question(
     stimulus = Stimulus(kind="code", title="Program 1", code=code)
     parts = _parts(
         [
-            ("1", 1, "State the base case in Program 1.", ["The empty-list pattern returns 0;"], "", 2),
-            ("2", 1, f"State the value returned by {function_name} [-2, 5, 0, 3].", ["8;"], "", 2),
+            (
+                "1",
+                1,
+                "State the base case in Program 1.",
+                ["The empty-list pattern returns 0;"],
+                "",
+                2,
+            ),
+            (
+                "2",
+                1,
+                f"State the value returned by {function_name} [-2, 5, 0, 3].",
+                ["8;"],
+                "",
+                2,
+            ),
             (
                 "3",
                 2,
@@ -721,26 +1005,28 @@ def _boolean_simplification_question(
             ("B̅·C", "A + C"),
         ]
     ]
-    cases.extend([
-        (
-            "(A + B)·(A̅ + C) + B·C",
-            [
-                "1 mark: distributivity gives A·A̅ + A·C + A̅·B + B·C;",
-                "1 mark: complement gives A·C + A̅·B + B·C;",
-                "1 mark: distributivity gives A·C + A̅·B + A·B·C + A̅·B·C;",
-            ],
-            "A·C + A̅·B",
-        ),
-        (
-            "(A + B)·(A̅ + B) + B·C",
-            [
-                "1 mark: distributivity gives A·A̅ + A·B + A̅·B + B·B + B·C;",
-                "1 mark: complement and idempotence gives A·B + A̅·B + B + B·C;",
-                "1 mark: absorption gives B + B·C;",
-            ],
-            "B",
-        ),
-    ])
+    cases.extend(
+        [
+            (
+                "(A + B)·(A̅ + C) + B·C",
+                [
+                    "1 mark: distributivity gives A·A̅ + A·C + A̅·B + B·C;",
+                    "1 mark: complement gives A·C + A̅·B + B·C;",
+                    "1 mark: distributivity gives A·C + A̅·B + A·B·C + A̅·B·C;",
+                ],
+                "A·C + A̅·B",
+            ),
+            (
+                "(A + B)·(A̅ + B) + B·C",
+                [
+                    "1 mark: distributivity gives A·A̅ + A·B + A̅·B + B·B + B·C;",
+                    "1 mark: complement and idempotence gives A·B + A̅·B + B + B·C;",
+                    "1 mark: absorption gives B + B·C;",
+                ],
+                "B",
+            ),
+        ]
+    )
     expression, working, answer = rng.choice(cases)
     stimulus = Stimulus(kind="code", title="Expression", code=expression)
     parts = _parts(
@@ -813,26 +1099,93 @@ def _assembly_program_question(
     )
 
 
-def _bitmap_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _bitmap_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     width = rng.choice([1280, 1920, 2048, 3840, 4000])
     height = rng.choice([720, 1080, 1536, 2160, 3000])
     colours = rng.choice([256, 65536, 16777216])
     bits = {256: 8, 65536: 16, 16777216: 24}[colours]
-    stimulus = Stimulus(kind="table", title="Table 1", headers=["Property", "Value"], rows=[["Width", f"{width} pixels"], ["Height", f"{height} pixels"], ["Colours", f"{colours:,}"], ["Colour depth", f"{bits} bits"]])
-    parts = _parts([
-        ("1", 2, "Calculate the uncompressed size of one bitmap image in mebibytes. You should show your working.", [f"Pixels = {width} x {height};", f"Bits per pixel = {bits};", "Convert from bits to bytes and then to MiB;"], "mebibytes", 5),
-        ("2", 1, "State one effect of increasing the colour depth of a bitmap image.", ["More colours can be represented;", "File size increases if resolution is unchanged;"], "", 2),
-        ("3", 2, "Explain why metadata may be stored with the image.", ["Metadata stores data about the image such as dimensions/date/location;", "It allows software to interpret, search or manage the image correctly;"], "", 4),
-        ("4", 3, "A lossy compression algorithm is applied to the image. Explain one advantage and one disadvantage of using lossy compression.", ["Advantage: smaller file size / faster transmission;", "Disadvantage: some original data is permanently removed;", "Linked explanation to image quality or suitability for purpose;"], "", 6),
-    ])
+    stimulus = Stimulus(
+        kind="table",
+        title="Table 1",
+        headers=["Property", "Value"],
+        rows=[
+            ["Width", f"{width} pixels"],
+            ["Height", f"{height} pixels"],
+            ["Colours", f"{colours:,}"],
+            ["Colour depth", f"{bits} bits"],
+        ],
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Calculate the uncompressed size of one bitmap image in mebibytes. You should show your working.",
+                [
+                    f"Pixels = {width} x {height};",
+                    f"Bits per pixel = {bits};",
+                    "Convert from bits to bytes and then to MiB;",
+                ],
+                "mebibytes",
+                5,
+            ),
+            (
+                "2",
+                1,
+                "State one effect of increasing the colour depth of a bitmap image.",
+                [
+                    "More colours can be represented;",
+                    "File size increases if resolution is unchanged;",
+                ],
+                "",
+                2,
+            ),
+            (
+                "3",
+                2,
+                "Explain why metadata may be stored with the image.",
+                [
+                    "Metadata stores data about the image such as dimensions/date/location;",
+                    "It allows software to interpret, search or manage the image correctly;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                3,
+                "A lossy compression algorithm is applied to the image. Explain one advantage and one disadvantage of using lossy compression.",
+                [
+                    "Advantage: smaller file size / faster transmission;",
+                    "Disadvantage: some original data is permanently removed;",
+                    "Linked explanation to image quality or suitability for purpose;",
+                ],
+                "",
+                6,
+            ),
+        ]
+    )
     size_mib = width * height * bits / 8 / 1024**2
     parts[0].response_slots = ["result"]
-    parts[0].marking.closed_answers = {"result": [f"{size_mib} MiB", f"{size_mib} mebibytes", str(size_mib)]}
+    parts[0].marking.closed_answers = {
+        "result": [f"{size_mib} MiB", f"{size_mib} mebibytes", str(size_mib)]
+    }
     parts[0].marking.points.append(f"Final answer = {size_mib} MiB;")
-    return _question(style, number, "Bitmap image data", "A digital camera stores images as bitmaps.", stimulus, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Bitmap image data",
+        "A digital camera stores images as bitmaps.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _short_security_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _short_security_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     parts = [
         QuestionPart(
             label="1",
@@ -849,12 +1202,23 @@ def _short_security_question(style: QuestionStyle, number: int, total: int, rng:
                     "Sandboxing or virtual machines can isolate untrusted files/programs;",
                     "Disabling macros or removable media can reduce infection routes;",
                 ],
-                accept=["Any other technically valid preventative or recovery measure."],
-                reject=["Anti-virus software or user training, as these are excluded by the question."],
+                accept=[
+                    "Any other technically valid preventative or recovery measure."
+                ],
+                reject=[
+                    "Anti-virus software or user training, as these are excluded by the question."
+                ],
             ),
         )
     ]
-    return _question(style, number, "Malware protection", "Anti-virus software and user training are measures that can be used to reduce the threat posed by malware.", None, parts)
+    return _question(
+        style,
+        number,
+        "Malware protection",
+        "Anti-virus software and user training are measures that can be used to reduce the threat posed by malware.",
+        None,
+        parts,
+    )
 
 
 def _software_roles_three_question(
@@ -921,145 +1285,593 @@ def _network_service_three_question(
     )
 
 
-def _binary_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _binary_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     first, second = rng.choice([(57, 39), (86, 41), (103, 24), (118, 17)])
-    parts = _parts([
-        ("1", 2, f"Add the denary numbers {first} and {second}. Give your answer as an 8-bit unsigned binary number.", ["Correct conversion or binary addition method;", "Correct 8-bit binary result;"], "", 4),
-        ("2", 2, "Explain what is meant by overflow in unsigned binary arithmetic.", ["Result is too large for the available number of bits;", "Most significant/carry bit is lost or cannot be represented;"], "", 4),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                f"Add the denary numbers {first} and {second}. Give your answer as an 8-bit unsigned binary number.",
+                [
+                    "Correct conversion or binary addition method;",
+                    "Correct 8-bit binary result;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain what is meant by overflow in unsigned binary arithmetic.",
+                [
+                    "Result is too large for the available number of bits;",
+                    "Most significant/carry bit is lost or cannot be represented;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
     result = f"{first + second:08b}"
-    parts[0].set_closed_answers({"8-bit-result": [result, f"{result[:4]} {result[4:]}"]})
+    parts[0].set_closed_answers(
+        {"8-bit-result": [result, f"{result[:4]} {result[4:]}"]}
+    )
     parts[0].marking.points[-1] = f"Correct 8-bit binary result: {result};"
-    return _question(style, number, "Unsigned binary arithmetic", "Unsigned binary is used to store integer values.", None, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Unsigned binary arithmetic",
+        "Unsigned binary is used to store integer values.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _unicode_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    context = rng.choice(["an international messaging app", "a website storing customer names", "a school database storing pupils' home languages"])
-    parts = _parts([
-        ("1", 2, "State two differences between ASCII and Unicode.", ["Unicode can represent a much larger character set;", "ASCII uses fewer bits per character than many Unicode encodings;", "Unicode supports characters from many languages;"], "", 4),
-        ("2", 2, f"Explain why Unicode would be suitable for {context}.", ["It can represent non-English characters/symbols;", "This avoids data loss or incorrect display for users' text;"], "", 4),
-    ])
-    return _question(style, number, "Character coding", "Text characters must be represented in binary.", None, _fit_parts(parts, total))
+def _unicode_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    context = rng.choice(
+        [
+            "an international messaging app",
+            "a website storing customer names",
+            "a school database storing pupils' home languages",
+        ]
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State two differences between ASCII and Unicode.",
+                [
+                    "Unicode can represent a much larger character set;",
+                    "ASCII uses fewer bits per character than many Unicode encodings;",
+                    "Unicode supports characters from many languages;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                f"Explain why Unicode would be suitable for {context}.",
+                [
+                    "It can represent non-English characters/symbols;",
+                    "This avoids data loss or incorrect display for users' text;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Character coding",
+        "Text characters must be represented in binary.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _fde_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "Describe the role of the program counter during the fetch-execute cycle.", ["Stores address of the next instruction;", "Is incremented or updated after an instruction is fetched/branch executed;"], "", 4),
-        ("2", 2, "Describe the role of the memory address register during the fetch stage.", ["Holds the address to be accessed in main memory;", "Receives the address copied from the program counter before the memory read;"], "", 4),
-    ])
-    return _question(style, number, "Processor registers", "Registers are used while instructions are fetched and executed.", None, _fit_parts(parts, total))
+def _fde_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Describe the role of the program counter during the fetch-execute cycle.",
+                [
+                    "Stores address of the next instruction;",
+                    "Is incremented or updated after an instruction is fetched/branch executed;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Describe the role of the memory address register during the fetch stage.",
+                [
+                    "Holds the address to be accessed in main memory;",
+                    "Receives the address copied from the program counter before the memory read;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Processor registers",
+        "Registers are used while instructions are fetched and executed.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _protocol_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _protocol_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     layer = rng.choice(["application", "transport", "network", "link"])
-    parts = _parts([
-        ("1", 2, "State two reasons why network protocols are needed.", ["Allow devices/software from different manufacturers to communicate;", "Define rules/formats/order for messages;", "Support error control, addressing or routing;"], "", 4),
-        ("2", 2, f"Describe one function of the {layer} layer in the TCP/IP protocol stack.", ["Valid function of the named layer;", "Description linked to communication between hosts or applications;"], "", 4),
-    ])
-    return _question(style, number, "Network protocols", "The TCP/IP stack is used when data is transmitted across a network.", None, _fit_parts(parts, total))
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State two reasons why network protocols are needed.",
+                [
+                    "Allow devices/software from different manufacturers to communicate;",
+                    "Define rules/formats/order for messages;",
+                    "Support error control, addressing or routing;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                f"Describe one function of the {layer} layer in the TCP/IP protocol stack.",
+                [
+                    "Valid function of the named layer;",
+                    "Description linked to communication between hosts or applications;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Network protocols",
+        "The TCP/IP stack is used when data is transmitted across a network.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _database_key_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "Explain the difference between a primary key and a foreign key.", ["Primary key uniquely identifies a record in its table;", "Foreign key is an attribute that refers to a primary key in another table;"], "", 4),
-        ("2", 2, "Explain why referential integrity is important in a relational database.", ["It prevents foreign key values referring to non-existent records;", "It helps keep relationships between tables consistent/valid;"], "", 4),
-    ])
-    return _question(style, number, "Relational database keys", "A relational database stores data in linked tables.", None, _fit_parts(parts, total))
+def _database_key_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Explain the difference between a primary key and a foreign key.",
+                [
+                    "Primary key uniquely identifies a record in its table;",
+                    "Foreign key is an attribute that refers to a primary key in another table;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain why referential integrity is important in a relational database.",
+                [
+                    "It prevents foreign key values referring to non-existent records;",
+                    "It helps keep relationships between tables consistent/valid;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Relational database keys",
+        "A relational database stores data in linked tables.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _big_data_short_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "State two characteristics commonly associated with Big Data.", ["Volume;", "Velocity;", "Variety;", "Veracity;"], "", 4),
-        ("2", 2, "Explain why distributed processing may be used to analyse Big Data.", ["Data/work can be split across many machines;", "This can reduce processing time or allow datasets too large for one machine to be handled;"], "", 4),
-    ])
-    return _question(style, number, "Big Data", "An organisation collects large quantities of data from online services.", None, _fit_parts(parts, total))
+def _big_data_short_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State two characteristics commonly associated with Big Data.",
+                ["Volume;", "Velocity;", "Variety;", "Veracity;"],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain why distributed processing may be used to analyse Big Data.",
+                [
+                    "Data/work can be split across many machines;",
+                    "This can reduce processing time or allow datasets too large for one machine to be handled;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Big Data",
+        "An organisation collects large quantities of data from online services.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _sound_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _sound_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     rate = rng.choice([44100, 48000, 96000])
     seconds = rng.choice([90, 120, 180])
     resolution = rng.choice([16, 24])
     channels = rng.choice([1, 2])
     size_mib = rate * seconds * resolution * channels / 8 / 1024**2
-    stimulus = Stimulus(kind="table", title="Table 1", headers=["Setting", "Value"], rows=[["Sampling rate", f"{rate} Hz"], ["Duration", f"{seconds} seconds"], ["Sample resolution", f"{resolution} bits"], ["Channels", str(channels)]])
-    parts = _parts([
-        ("1", 2, "Calculate the size of the recording in mebibytes. Show your working and give your answer to two decimal places.", [f"File size = {rate} × {seconds} × {resolution} × {channels} bits;", "Divide by 8 and then by 1024² to convert bits to MiB;", f"Final answer = {size_mib:.2f} MiB;"], "MiB", 5),
-        ("2", 2, "Calculate the minimum sampling rate needed to record a sound whose highest frequency is 18 kHz, and justify your answer.", ["36 kHz / 36 000 Hz;", "The Nyquist theorem requires a sampling rate of at least twice the highest frequency in the signal;"], "Hz", 3),
-        ("3", 2, "Explain what can happen if the sound is sampled below the Nyquist rate.", ["The samples can represent a false lower-frequency waveform, known as aliasing;", "The original waveform cannot then be reconstructed accurately from those samples;"], "", 4),
-        ("4", 4, "Explain how increasing the sampling rate and sample resolution can affect the stored sound.", ["Increasing sampling rate captures the waveform more frequently;", "Increasing sample resolution increases the number of possible amplitude values;", "Both can improve accuracy/quality;", "Both increase file size/storage requirement;"], "", 7),
-    ])
+    stimulus = Stimulus(
+        kind="table",
+        title="Table 1",
+        headers=["Setting", "Value"],
+        rows=[
+            ["Sampling rate", f"{rate} Hz"],
+            ["Duration", f"{seconds} seconds"],
+            ["Sample resolution", f"{resolution} bits"],
+            ["Channels", str(channels)],
+        ],
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Calculate the size of the recording in mebibytes. Show your working and give your answer to two decimal places.",
+                [
+                    f"File size = {rate} × {seconds} × {resolution} × {channels} bits;",
+                    "Divide by 8 and then by 1024² to convert bits to MiB;",
+                    f"Final answer = {size_mib:.2f} MiB;",
+                ],
+                "MiB",
+                5,
+            ),
+            (
+                "2",
+                2,
+                "Calculate the minimum sampling rate needed to record a sound whose highest frequency is 18 kHz, and justify your answer.",
+                [
+                    "36 kHz / 36 000 Hz;",
+                    "The Nyquist theorem requires a sampling rate of at least twice the highest frequency in the signal;",
+                ],
+                "Hz",
+                3,
+            ),
+            (
+                "3",
+                2,
+                "Explain what can happen if the sound is sampled below the Nyquist rate.",
+                [
+                    "The samples can represent a false lower-frequency waveform, known as aliasing;",
+                    "The original waveform cannot then be reconstructed accurately from those samples;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                4,
+                "Explain how increasing the sampling rate and sample resolution can affect the stored sound.",
+                [
+                    "Increasing sampling rate captures the waveform more frequently;",
+                    "Increasing sample resolution increases the number of possible amplitude values;",
+                    "Both can improve accuracy/quality;",
+                    "Both increase file size/storage requirement;",
+                ],
+                "",
+                7,
+            ),
+        ]
+    )
     parts[0].response_slots = ["result"]
     # The PDF preprints MiB beside the answer line; bare values use that unit.
-    parts[0].marking.closed_answers = {"result": [f"{size_mib:.2f} MiB", f"{size_mib} MiB", f"{size_mib:.2f}", str(size_mib)]}
+    parts[0].marking.closed_answers = {
+        "result": [
+            f"{size_mib:.2f} MiB",
+            f"{size_mib} MiB",
+            f"{size_mib:.2f}",
+            str(size_mib),
+        ]
+    }
     parts[1].response_slots = ["result"]
-    parts[1].marking.closed_answers = {"result": ["36 kHz", "36000 Hz", "36 000 Hz", "36000", "36 000"]}
-    return _question(style, number, "Digital sound", "A sound is sampled and stored digitally.", stimulus, _fit_parts(parts, total))
+    parts[1].marking.closed_answers = {
+        "result": ["36 kHz", "36000 Hz", "36 000 Hz", "36000", "36 000"]
+    }
+    return _question(
+        style,
+        number,
+        "Digital sound",
+        "A sound is sampled and stored digitally.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _rle_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    row = rng.choice([
-        "12, 12, 12, 12, 9, 9, 14, 18, 18, 18, 18, 18, 2, 2, 2, 7",
-        "3, 3, 6, 6, 6, 6, 9, 10, 11, 11, 11, 4, 4, 4, 4, 4",
-        "20, 21, 22, 22, 22, 8, 8, 8, 8, 1, 1, 5, 5, 5, 9, 9",
-    ])
+def _rle_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    row = rng.choice(
+        [
+            "12, 12, 12, 12, 9, 9, 14, 18, 18, 18, 18, 18, 2, 2, 2, 7",
+            "3, 3, 6, 6, 6, 6, 9, 10, 11, 11, 11, 4, 4, 4, 4, 4",
+            "20, 21, 22, 22, 22, 8, 8, 8, 8, 1, 1, 5, 5, 5, 9, 9",
+        ]
+    )
     stimulus = Stimulus(kind="code", title="Figure 1", code=row)
-    parts = _parts([
-        ("1", 2, "Encode the row of pixels using run length encoding. The run length and the pixel value are each stored using one byte.", ["Correct run lengths identified;", "Correct value paired with each run length;"], "", 4),
-        ("2", 2, "Calculate the number of bytes needed before and after RLE.", ["Before RLE: one byte per original pixel;", "After RLE: two bytes per run;"], "bytes", 4),
-        ("3", 2, "Comment on whether RLE is effective for this row of pixels.", ["Judgement based on whether encoded data is smaller/larger;", "Explanation linked to number and length of repeated runs;"], "", 4),
-        ("4", 2, "State two circumstances in which RLE would be a suitable compression method.", ["Data contains long runs of repeated values;", "The data is lossless-compression sensitive / original must be recoverable;", "Images contain large flat areas of identical colour;"], "", 5),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Encode the row of pixels using run length encoding. The run length and the pixel value are each stored using one byte.",
+                [
+                    "Correct run lengths identified;",
+                    "Correct value paired with each run length;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Calculate the number of bytes needed before and after RLE.",
+                [
+                    "Before RLE: one byte per original pixel;",
+                    "After RLE: two bytes per run;",
+                ],
+                "bytes",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Comment on whether RLE is effective for this row of pixels.",
+                [
+                    "Judgement based on whether encoded data is smaller/larger;",
+                    "Explanation linked to number and length of repeated runs;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                2,
+                "State two circumstances in which RLE would be a suitable compression method.",
+                [
+                    "Data contains long runs of repeated values;",
+                    "The data is lossless-compression sensitive / original must be recoverable;",
+                    "Images contain large flat areas of identical colour;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
     pixels = row.split(", ")
     groups = [(value, len(list(run))) for value, run in groupby(pixels)]
     sequences = {
         "run-lengths": ",".join(str(count) for _, count in groups),
         "pixel-values": ",".join(value for value, _ in groups),
     }
-    parts[0].set_closed_answers({key: [value, f"[{value}]"] for key, value in sequences.items()})
-    parts[0].marking.points.extend([
-        f"Ordered run lengths: {sequences['run-lengths']};",
-        f"Corresponding pixel values: {sequences['pixel-values']}; accept count-first or value-first pairs when clearly identified;",
-    ])
+    parts[0].set_closed_answers(
+        {key: [value, f"[{value}]"] for key, value in sequences.items()}
+    )
+    parts[0].marking.points.extend(
+        [
+            f"Ordered run lengths: {sequences['run-lengths']};",
+            f"Corresponding pixel values: {sequences['pixel-values']}; accept count-first or value-first pairs when clearly identified;",
+        ]
+    )
     runs = len(groups)
     parts[1].response_slots = ["before", "after"]
-    parts[1].marking.closed_answers = {"before": [f"{len(pixels)} bytes", str(len(pixels))], "after": [f"{2 * runs} bytes", str(2 * runs)]}
-    parts[1].marking.points.extend([f"Before: {len(pixels)} bytes;", f"After: {2 * runs} bytes;"])
-    return _question(style, number, "Run length encoding", "A row of bitmap pixel data is to be compressed using RLE.", stimulus, _fit_parts(parts, total))
+    parts[1].marking.closed_answers = {
+        "before": [f"{len(pixels)} bytes", str(len(pixels))],
+        "after": [f"{2 * runs} bytes", str(2 * runs)],
+    }
+    parts[1].marking.points.extend(
+        [f"Before: {len(pixels)} bytes;", f"After: {2 * runs} bytes;"]
+    )
+    return _question(
+        style,
+        number,
+        "Run length encoding",
+        "A row of bitmap pixel data is to be compressed using RLE.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _floating_point_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _floating_point_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     value = rng.choice(["010110 0011", "101010 0010", "011001 1101"])
     mantissa, exponent, scaled, result = {
         "010110 0011": ("0.10110₂ = 0.6875", "0011₂ = 3", "0.6875 × 2³ = 5.5", "5.5"),
-        "101010 0010": ("1.01010₂ = -1 + 1/4 + 1/16 = -0.6875", "0010₂ = 2", "-0.6875 × 2² = -2.75", "-2.75"),
-        "011001 1101": ("0.11001₂ = 0.78125", "1101₂ = -3", "0.78125 × 2⁻³ = 0.09765625", "0.09765625"),
+        "101010 0010": (
+            "1.01010₂ = -1 + 1/4 + 1/16 = -0.6875",
+            "0010₂ = 2",
+            "-0.6875 × 2² = -2.75",
+            "-2.75",
+        ),
+        "011001 1101": (
+            "0.11001₂ = 0.78125",
+            "1101₂ = -3",
+            "0.78125 × 2⁻³ = 0.09765625",
+            "0.09765625",
+        ),
     }[value]
     shift = "right" if value.split()[1].startswith("0") else "left"
-    stimulus = Stimulus(kind="bitgrid", title="Figure 1", headers=["Mantissa", "Exponent"], rows=[value.split()])
-    parts = _parts([
-        ("1", 1, "State whether the binary point is shifted left or right when the exponent in Figure 1 is applied.", [f"1 mark: the binary point is shifted {shift};"], "", 2),
-        ("2", 3, "Convert the floating point number into denary. The mantissa and exponent are both stored in two's complement, the binary point is immediately after the mantissa sign bit, and value = mantissa × 2^exponent. Show your working.", [f"1 mark: interpret the signed mantissa as {mantissa};", f"1 mark: interpret the signed exponent as {exponent};", f"1 mark: apply the exponent and give the denary result: {scaled};"], "", 5),
-        ("3", 1, "State whether the floating point number in Figure 1 is normalised. Give a reason for your answer.", ["1 mark: it is normalised because a two's-complement fractional mantissa starts 01 when positive or 10 when negative; equivalently, its first two bits differ;"], "", 2),
-        ("4", 1, "State how adding two bits to the mantissa while leaving the exponent unchanged affects precision.", ["1 mark: more mantissa bits give smaller gaps between representable values, increasing precision / reducing rounding error;"], "", 3),
-        ("5", 2, "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.", ["1 mark: more exponent bits permit a wider set of powers of two, increasing the magnitude range;", "1 mark: fewer mantissa bits reduce precision / increase rounding error;"], "", 4),
-        ("6", 1, "Name the error that occurs when a non-zero value is too close to zero to be represented.", ["1 mark: underflow;"], "", 2),
-    ])
+    stimulus = Stimulus(
+        kind="bitgrid",
+        title="Figure 1",
+        headers=["Mantissa", "Exponent"],
+        rows=[value.split()],
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                1,
+                "State whether the binary point is shifted left or right when the exponent in Figure 1 is applied.",
+                [f"1 mark: the binary point is shifted {shift};"],
+                "",
+                2,
+            ),
+            (
+                "2",
+                3,
+                "Convert the floating point number into denary. The mantissa and exponent are both stored in two's complement, the binary point is immediately after the mantissa sign bit, and value = mantissa × 2^exponent. Show your working.",
+                [
+                    f"1 mark: interpret the signed mantissa as {mantissa};",
+                    f"1 mark: interpret the signed exponent as {exponent};",
+                    f"1 mark: apply the exponent and give the denary result: {scaled};",
+                ],
+                "",
+                5,
+            ),
+            (
+                "3",
+                1,
+                "State whether the floating point number in Figure 1 is normalised. Give a reason for your answer.",
+                [
+                    "1 mark: it is normalised because a two's-complement fractional mantissa starts 01 when positive or 10 when negative; equivalently, its first two bits differ;"
+                ],
+                "",
+                2,
+            ),
+            (
+                "4",
+                1,
+                "State how adding two bits to the mantissa while leaving the exponent unchanged affects precision.",
+                [
+                    "1 mark: more mantissa bits give smaller gaps between representable values, increasing precision / reducing rounding error;"
+                ],
+                "",
+                3,
+            ),
+            (
+                "5",
+                2,
+                "Explain the trade-off if a fixed-length floating point format assigns more bits to the exponent and fewer bits to the mantissa.",
+                [
+                    "1 mark: more exponent bits permit a wider set of powers of two, increasing the magnitude range;",
+                    "1 mark: fewer mantissa bits reduce precision / increase rounding error;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "6",
+                1,
+                "Name the error that occurs when a non-zero value is too close to zero to be represented.",
+                ["1 mark: underflow;"],
+                "",
+                2,
+            ),
+        ]
+    )
     parts[0].set_closed_answers({"direction": [shift, f"to the {shift}"]})
-    parts[2].set_closed_answers({"normalised": ["yes", "normalised", "normalized"], "leading-mantissa-bits": [value[:2]]})
+    parts[2].set_closed_answers(
+        {
+            "normalised": ["yes", "normalised", "normalized"],
+            "leading-mantissa-bits": [value[:2]],
+        }
+    )
     parts[5].set_closed_answers({"error": ["underflow"]})
     parts[1].response_slots = ["result"]
     parts[1].marking.closed_answers = {"result": [result]}
-    return _question(style, number, "Floating point representation", "A scientific sensor stores readings using the fixed-length floating point format shown.", stimulus, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Floating point representation",
+        "A scientific sensor stores readings using the fixed-length floating point format shown.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _logic_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    expr = rng.choice(["(A · B) + C", "A · (B + C̅)", "(A ⊕ B) · C", "(A ⊼ B) + C", "(A ⊽ B) ⊕ C"])
+def _logic_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    expr = rng.choice(
+        ["(A · B) + C", "A · (B + C̅)", "(A ⊕ B) · C", "(A ⊼ B) + C", "(A ⊽ B) ⊕ C"]
+    )
     stimulus = Stimulus(kind="code", title="Boolean expression", code=expr)
-    parts = _parts([
-        ("1", 2, "Draw a logic circuit for the expression shown in Figure 1.", ["Correct gates selected;", "Correct connections/order of gates;"], "", 5),
-        ("2", 3, "Complete a truth table for the expression.", ["All input combinations attempted;", "Intermediate output correct;", "Final output correct;"], "", 7),
-        ("3", 3, "Explain one benefit of using Boolean algebra to simplify a logic circuit.", ["Simplification can reduce number of gates;", "This can reduce cost/power/latency;", "Answer linked to maintaining same logical output;"], "", 5),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Draw a logic circuit for the expression shown in Figure 1.",
+                ["Correct gates selected;", "Correct connections/order of gates;"],
+                "",
+                5,
+            ),
+            (
+                "2",
+                3,
+                "Complete a truth table for the expression.",
+                [
+                    "All input combinations attempted;",
+                    "Intermediate output correct;",
+                    "Final output correct;",
+                ],
+                "",
+                7,
+            ),
+            (
+                "3",
+                3,
+                "Explain one benefit of using Boolean algebra to simplify a logic circuit.",
+                [
+                    "Simplification can reduce number of gates;",
+                    "This can reduce cost/power/latency;",
+                    "Answer linked to maintaining same logical output;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
     answers = {}
     for inputs in range(8):
         a, b, c = map(int, f"{inputs:03b}")
@@ -1072,148 +1884,613 @@ def _logic_question(style: QuestionStyle, number: int, total: int, rng: random.R
         }[expr]
         answers[f"{inputs:03b}"] = [str(result)]
     parts[1].set_closed_answers(answers)
-    parts[1].marking.points.extend(f"ABC={inputs}: output {values[0]};" for inputs, values in answers.items())
-    return _question(style, number, "Logic gates", f"A logic circuit implements the expression {expr}.", stimulus, _fit_parts(parts, total))
+    parts[1].marking.points.extend(
+        f"ABC={inputs}: output {values[0]};" for inputs, values in answers.items()
+    )
+    return _question(
+        style,
+        number,
+        "Logic gates",
+        f"A logic circuit implements the expression {expr}.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _boolean_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _boolean_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     expr = rng.choice(["A·B + A·C", "A + A·B", "(A + B)·(A + C)"])
     stimulus = Stimulus(kind="code", title="Expression", code=expr)
-    parts = _parts([
-        ("1", 2, "State the Boolean algebra law that could be used in the first simplification step.", ["Correct law named, such as absorption/distribution/identity;", "Law is relevant to the expression;"], "", 3),
-        ("2", 2, "Simplify the expression as far as possible.", ["Valid simplification step;", "Final simplified expression correct;"], "", 5),
-        ("3", 4, "Explain why simplifying Boolean expressions can improve a hardware design.", ["Fewer gates may be required;", "Circuit can be cheaper or use less power;", "Propagation delay may be reduced;", "Same output is preserved;"], "", 7),
-    ])
-    return _question(style, number, "Boolean algebra", "A designer wants to simplify a Boolean expression before implementing it as hardware.", stimulus, _fit_parts(parts, total))
-
-
-def _truth_table_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    expression, rows, outputs = rng.choice(
+    parts = _parts(
         [
-            ("(A · B) + C", [["0", "0", "0", ""], ["0", "1", "1", ""], ["1", "0", "0", ""], ["1", "1", "1", ""]], ["0", "1", "0", "1"]),
-            ("A · (B + C̅)", [["0", "0", "0", ""], ["0", "1", "0", ""], ["1", "0", "1", ""], ["1", "1", "0", ""]], ["0", "0", "0", "1"]),
-            ("(A ⊕ B) · C", [["0", "1", "1", ""], ["1", "0", "1", ""], ["1", "1", "1", ""], ["0", "0", "1", ""]], ["1", "1", "0", "0"]),
+            (
+                "1",
+                2,
+                "State the Boolean algebra law that could be used in the first simplification step.",
+                [
+                    "Correct law named, such as absorption/distribution/identity;",
+                    "Law is relevant to the expression;",
+                ],
+                "",
+                3,
+            ),
+            (
+                "2",
+                2,
+                "Simplify the expression as far as possible.",
+                ["Valid simplification step;", "Final simplified expression correct;"],
+                "",
+                5,
+            ),
+            (
+                "3",
+                4,
+                "Explain why simplifying Boolean expressions can improve a hardware design.",
+                [
+                    "Fewer gates may be required;",
+                    "Circuit can be cheaper or use less power;",
+                    "Propagation delay may be reduced;",
+                    "Same output is preserved;",
+                ],
+                "",
+                7,
+            ),
         ]
     )
-    valid_rows = [row[:3] for row, output in zip(rows, outputs, strict=True) if output == "1"]
+    return _question(
+        style,
+        number,
+        "Boolean algebra",
+        "A designer wants to simplify a Boolean expression before implementing it as hardware.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
+
+
+def _truth_table_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    expression, rows, outputs = rng.choice(
+        [
+            (
+                "(A · B) + C",
+                [
+                    ["0", "0", "0", ""],
+                    ["0", "1", "1", ""],
+                    ["1", "0", "0", ""],
+                    ["1", "1", "1", ""],
+                ],
+                ["0", "1", "0", "1"],
+            ),
+            (
+                "A · (B + C̅)",
+                [
+                    ["0", "0", "0", ""],
+                    ["0", "1", "0", ""],
+                    ["1", "0", "1", ""],
+                    ["1", "1", "0", ""],
+                ],
+                ["0", "0", "0", "1"],
+            ),
+            (
+                "(A ⊕ B) · C",
+                [
+                    ["0", "1", "1", ""],
+                    ["1", "0", "1", ""],
+                    ["1", "1", "1", ""],
+                    ["0", "0", "1", ""],
+                ],
+                ["1", "1", "0", "0"],
+            ),
+        ]
+    )
+    valid_rows = [
+        row[:3] for row, output in zip(rows, outputs, strict=True) if output == "1"
+    ]
     valid_text = " or ".join(
         f"A={row[0]}, B={row[1]}, C={row[2]}" for row in valid_rows
     )
-    stimulus = Stimulus(kind="truth_table", title="Figure 1", headers=["A", "B", "C", "X"], rows=rows)
-    parts = _parts([
-        ("1", 4, f"Complete Figure 1 for the Boolean expression {expression}.", [
-            f"Row {row_index}: X = {output};"
-            for row_index, output in enumerate(outputs, start=1)
-        ], "", 7),
-        ("2", 2, "State one input combination from Figure 1 for which X has the value 1.", [
-            f"1 mark for A and B values matching one of these rows: {valid_text};",
-            "1 mark for the corresponding C value from the same row;",
-        ], "", 4),
-        ("3", 1, "Explain one reason why a truth table is useful when testing a logic circuit.", [
-            "Award 1 mark for one valid reason, such as comparing expected and actual outputs systematically or finding an incorrect circuit output;",
-        ], "", 5),
-    ])
+    stimulus = Stimulus(
+        kind="truth_table", title="Figure 1", headers=["A", "B", "C", "X"], rows=rows
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                4,
+                f"Complete Figure 1 for the Boolean expression {expression}.",
+                [
+                    f"Row {row_index}: X = {output};"
+                    for row_index, output in enumerate(outputs, start=1)
+                ],
+                "",
+                7,
+            ),
+            (
+                "2",
+                2,
+                "State one input combination from Figure 1 for which X has the value 1.",
+                [
+                    f"1 mark for A and B values matching one of these rows: {valid_text};",
+                    "1 mark for the corresponding C value from the same row;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                1,
+                "Explain one reason why a truth table is useful when testing a logic circuit.",
+                [
+                    "Award 1 mark for one valid reason, such as comparing expected and actual outputs systematically or finding an incorrect circuit output;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
     parts[0].response_slots = [f"row-{index}" for index in range(1, len(rows) + 1)]
     parts[0].marking.closed_answers = {
-        slot: [output] for slot, output in zip(parts[0].response_slots, outputs, strict=True)
+        slot: [output]
+        for slot, output in zip(parts[0].response_slots, outputs, strict=True)
     }
-    parts[1].set_closed_answers({"A,B,C": [
-        representation for row in valid_rows for representation in (
-            ",".join(row), "[" + ",".join(row) + "]",
-            ",".join(f"{name}={value}" for name, value in zip("ABC", row, strict=True)),
-        )
-    ]})
-    return _question(style, number, "Truth tables", "A logic circuit has three inputs, A, B and C, and one output, X.", stimulus, _fit_parts(parts, total))
+    parts[1].set_closed_answers(
+        {
+            "A,B,C": [
+                representation
+                for row in valid_rows
+                for representation in (
+                    ",".join(row),
+                    "[" + ",".join(row) + "]",
+                    ",".join(
+                        f"{name}={value}"
+                        for name, value in zip("ABC", row, strict=True)
+                    ),
+                )
+            ]
+        }
+    )
+    return _question(
+        style,
+        number,
+        "Truth tables",
+        "A logic circuit has three inputs, A, B and C, and one output, X.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _translator_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "Describe the difference between source code and object code.", ["Source code is written by programmers / human-readable;", "Object code is machine code or translated code executable by the processor;"], "", 4),
-        ("2", 2, "Explain the role of lexical analysis during compilation.", ["Input source code is split into tokens;", "Invalid tokens/lexical errors can be identified;"], "", 4),
-        ("3", 2, "Explain why bytecode may be used instead of native machine code.", ["Bytecode is portable across platforms with a virtual machine;", "It can be interpreted/JIT compiled on the target machine;"], "", 4),
-        ("4", 2, "State two advantages of using a high-level programming language.", ["Easier for humans to read/write/maintain;", "More portable than machine code;", "Provides abstractions/libraries;"], "", 4),
-    ])
-    return _question(style, number, "Programming languages and translators", "A program is written in a high-level language and translated before it is executed.", None, _fit_parts(parts, total))
+def _translator_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Describe the difference between source code and object code.",
+                [
+                    "Source code is written by programmers / human-readable;",
+                    "Object code is machine code or translated code executable by the processor;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain the role of lexical analysis during compilation.",
+                [
+                    "Input source code is split into tokens;",
+                    "Invalid tokens/lexical errors can be identified;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain why bytecode may be used instead of native machine code.",
+                [
+                    "Bytecode is portable across platforms with a virtual machine;",
+                    "It can be interpreted/JIT compiled on the target machine;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                2,
+                "State two advantages of using a high-level programming language.",
+                [
+                    "Easier for humans to read/write/maintain;",
+                    "More portable than machine code;",
+                    "Provides abstractions/libraries;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Programming languages and translators",
+        "A program is written in a high-level language and translated before it is executed.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _security_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 4, "Describe four measures, other than anti-virus software, that can reduce the threat posed by malware.", ["Firewall can filter suspicious network traffic;", "Access rights limit damage to files/data;", "Regular updates patch vulnerabilities;", "Backups allow recovery after infection;", "User training reduces risky behaviour;"], "", 8),
-        ("2", 2, "Explain why a sandbox may be used when opening an unknown file.", ["File runs in an isolated environment;", "This reduces risk to the host system or data;"], "", 4),
-        ("3", 2, "Explain one limitation of relying only on user training.", ["Users can still make mistakes or ignore guidance;", "New threats may not be recognised by users;"], "", 4),
-    ])
-    return _question(style, number, "System security", "An organisation wants to reduce the risk of malware damaging its computer systems.", None, _fit_parts(parts, total))
+def _security_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                4,
+                "Describe four measures, other than anti-virus software, that can reduce the threat posed by malware.",
+                [
+                    "Firewall can filter suspicious network traffic;",
+                    "Access rights limit damage to files/data;",
+                    "Regular updates patch vulnerabilities;",
+                    "Backups allow recovery after infection;",
+                    "User training reduces risky behaviour;",
+                ],
+                "",
+                8,
+            ),
+            (
+                "2",
+                2,
+                "Explain why a sandbox may be used when opening an unknown file.",
+                [
+                    "File runs in an isolated environment;",
+                    "This reduces risk to the host system or data;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain one limitation of relying only on user training.",
+                [
+                    "Users can still make mistakes or ignore guidance;",
+                    "New threats may not be recognised by users;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "System security",
+        "An organisation wants to reduce the risk of malware damaging its computer systems.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _processor_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "State the purpose of the address bus and the data bus.", ["Address bus carries the location/address being accessed;", "Data bus carries data/instructions between processor and memory/devices;"], "", 4),
-        ("2", 2, "Explain why the control bus is needed.", ["It carries control signals such as read/write/interrupt;", "It coordinates components so operations happen at the correct time;"], "", 4),
-        ("3", 2, "Describe the role of the program counter and memory address register in the fetch stage.", ["PC stores address of next instruction;", "Address is copied to MAR;", "PC is incremented/updated ready for next fetch;"], "", 5),
-        ("4", 2, "Explain how increasing clock speed can affect processor performance.", ["More cycles per second can be completed;", "Instructions may execute faster if not limited by other factors;", "Heat/power consumption may increase or bottlenecks may limit improvement;"], "", 5),
-    ])
-    return _question(style, number, "Processor architecture", "A processor uses registers and buses during the fetch-execute cycle.", None, _fit_parts(parts, total))
+def _processor_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State the purpose of the address bus and the data bus.",
+                [
+                    "Address bus carries the location/address being accessed;",
+                    "Data bus carries data/instructions between processor and memory/devices;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain why the control bus is needed.",
+                [
+                    "It carries control signals such as read/write/interrupt;",
+                    "It coordinates components so operations happen at the correct time;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Describe the role of the program counter and memory address register in the fetch stage.",
+                [
+                    "PC stores address of next instruction;",
+                    "Address is copied to MAR;",
+                    "PC is incremented/updated ready for next fetch;",
+                ],
+                "",
+                5,
+            ),
+            (
+                "4",
+                2,
+                "Explain how increasing clock speed can affect processor performance.",
+                [
+                    "More cycles per second can be completed;",
+                    "Instructions may execute faster if not limited by other factors;",
+                    "Heat/power consumption may increase or bottlenecks may limit improvement;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Processor architecture",
+        "A processor uses registers and buses during the fetch-execute cycle.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _stored_program_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _stored_program_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     from Backend.Core.open_credit import (
         CPU_POINTS,
         cpu_credit_allocations,
         cpu_credit_contract,
     )
 
-    parts = _parts([
-        ("1", 2, "Explain the stored program concept.", list(CPU_POINTS), "", 4),
-        ("2", 6, "Describe how one instruction is processed during the fetch-decode-execute cycle.", [
-            "The program counter value is copied to the memory address register, then the address bus carries that address to memory;",
-            "The control unit sends a memory-read signal on the control bus;",
-            "The data bus carries the instruction from memory to the memory data register, and it is copied to the current instruction register;",
-            "The program counter is incremented so that it identifies the next instruction;",
-            "The control unit decodes the instruction in the current instruction register;",
-            "The control unit issues control signals and the instruction is executed using the ALU, registers or memory as required;",
-        ], "", 10),
-        ("3", 1, "State the role of the current instruction register.", ["It stores the instruction currently being decoded or executed;"], "", 3),
-        ("4", 1, "State one benefit of the stored program concept.", ["Because instructions are held as addressable data in memory, a different instruction sequence can be loaded and run without redesigning the processor's hardware circuits;"], "", 3),
-    ])
+    parts = _parts(
+        [
+            ("1", 2, "Explain the stored program concept.", list(CPU_POINTS), "", 4),
+            (
+                "2",
+                6,
+                "Describe how one instruction is processed during the fetch-decode-execute cycle.",
+                [
+                    "The program counter value is copied to the memory address register, then the address bus carries that address to memory;",
+                    "The control unit sends a memory-read signal on the control bus;",
+                    "The data bus carries the instruction from memory to the memory data register, and it is copied to the current instruction register;",
+                    "The program counter is incremented so that it identifies the next instruction;",
+                    "The control unit decodes the instruction in the current instruction register;",
+                    "The control unit issues control signals and the instruction is executed using the ALU, registers or memory as required;",
+                ],
+                "",
+                10,
+            ),
+            (
+                "3",
+                1,
+                "State the role of the current instruction register.",
+                ["It stores the instruction currently being decoded or executed;"],
+                "",
+                3,
+            ),
+            (
+                "4",
+                1,
+                "State one benefit of the stored program concept.",
+                [
+                    "Because instructions are held as addressable data in memory, a different instruction sequence can be loaded and run without redesigning the processor's hardware circuits;"
+                ],
+                "",
+                3,
+            ),
+        ]
+    )
     parts[0].open_credit_contract = cpu_credit_contract()
     parts[0].marking.credit_allocations = cpu_credit_allocations()
-    return _question(style, number, "Stored program concept", "A computer executes machine-code instructions using the stored program concept.", None, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Stored program concept",
+        "A computer executes machine-code instructions using the stored program concept.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _packet_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    stimulus = Stimulus(kind="packet", title="Figure 1", headers=["Destination address", "Source address", "Payload", "Checksum"], rows=[["203.0.113.8", "198.51.100.4", "data", "A93F"]])
-    parts = _parts([
-        ("1", 2, "Name two fields typically found in a packet header that are not shown in Figure 1.", ["Sequence number;", "Time to live / hop limit;", "Protocol/port number;", "Packet length;"], "", 3),
-        ("2", 2, "Explain what the checksum is used for.", ["Used to detect transmission errors;", "Receiver recalculates/checks value and compares it with the transmitted checksum;"], "", 4),
-        ("3", 2, "Describe the role of a router in packet switching.", ["Router examines destination address;", "Router forwards packet along an appropriate next route/path;"], "", 4),
-        ("4", 2, "Explain one advantage of packet switching compared with circuit switching.", ["No dedicated circuit is required;", "Network capacity can be shared more efficiently/resiliently;"], "", 4),
-    ])
-    return _question(style, number, "Packet switching", "Figure 1 shows selected fields from a packet transmitted across a packet-switched network.", stimulus, _fit_parts(parts, total))
+def _packet_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    stimulus = Stimulus(
+        kind="packet",
+        title="Figure 1",
+        headers=["Destination address", "Source address", "Payload", "Checksum"],
+        rows=[["203.0.113.8", "198.51.100.4", "data", "A93F"]],
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Name two fields typically found in a packet header that are not shown in Figure 1.",
+                [
+                    "Sequence number;",
+                    "Time to live / hop limit;",
+                    "Protocol/port number;",
+                    "Packet length;",
+                ],
+                "",
+                3,
+            ),
+            (
+                "2",
+                2,
+                "Explain what the checksum is used for.",
+                [
+                    "Used to detect transmission errors;",
+                    "Receiver recalculates/checks value and compares it with the transmitted checksum;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Describe the role of a router in packet switching.",
+                [
+                    "Router examines destination address;",
+                    "Router forwards packet along an appropriate next route/path;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                2,
+                "Explain one advantage of packet switching compared with circuit switching.",
+                [
+                    "No dedicated circuit is required;",
+                    "Network capacity can be shared more efficiently/resiliently;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Packet switching",
+        "Figure 1 shows selected fields from a packet transmitted across a packet-switched network.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _network_topology_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _network_topology_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     topology = rng.choice(["client-switch-router-server", "mesh-wan", "star-lan"])
     stimulus = Stimulus(kind="network", title="Figure 1", diagram=topology)
-    parts = _parts([
-        ("1", 2, "Name two devices shown in Figure 1 that are used to connect computers or networks.", ["Switch;", "Router;", "Wireless access point if shown;"], "", 4),
-        ("2", 3, "Describe how data would be sent from a client to the server shown in Figure 1.", ["Data is split into packets or frames as appropriate;", "Switch forwards frames within the local network;", "Router forwards packets between networks using addresses/routing table;"], "", 7),
-        ("3", 3, "Explain one advantage and one disadvantage of the topology shown in Figure 1.", ["Advantage linked to central management, scalability or fault isolation;", "Disadvantage linked to central device failure, cost or cabling;", "Explanation is applied to the network diagram;"], "", 7),
-    ])
-    return _question(style, number, "Network topology", "Figure 1 shows part of a computer network.", stimulus, _fit_parts(parts, total))
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Name two devices shown in Figure 1 that are used to connect computers or networks.",
+                ["Switch;", "Router;", "Wireless access point if shown;"],
+                "",
+                4,
+            ),
+            (
+                "2",
+                3,
+                "Describe how data would be sent from a client to the server shown in Figure 1.",
+                [
+                    "Data is split into packets or frames as appropriate;",
+                    "Switch forwards frames within the local network;",
+                    "Router forwards packets between networks using addresses/routing table;",
+                ],
+                "",
+                7,
+            ),
+            (
+                "3",
+                3,
+                "Explain one advantage and one disadvantage of the topology shown in Figure 1.",
+                [
+                    "Advantage linked to central management, scalability or fault isolation;",
+                    "Disadvantage linked to central device failure, cost or cabling;",
+                    "Explanation is applied to the network diagram;",
+                ],
+                "",
+                7,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Network topology",
+        "Figure 1 shows part of a computer network.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _tcpip_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    stimulus = Stimulus(kind="table", title="Table 1", headers=["Layer", "Example protocol"], rows=[["Application", "HTTPS"], ["Transport", "TCP"], ["Internet", "IP"], ["Link", "Ethernet"]])
-    parts = _parts([
-        ("1", 1, "State the layer of the TCP/IP stack that is responsible for routing packets between networks.", ["Internet layer;"], "", 2),
-        ("2", 2, "Explain the role of DNS when a user enters a URL.", ["DNS resolves a domain name;", "It returns an IP address used to contact the server;"], "", 4),
-        ("3", 2, "Explain why TCP uses sequence numbers.", ["They allow packets/segments to be reordered;", "They help identify missing data for retransmission;"], "", 4),
-        ("4", 3, "Describe how HTTPS helps protect data sent over the Internet.", ["Uses encryption/TLS;", "Certificates authenticate the server;", "Protects confidentiality/integrity of transmitted data;"], "", 6),
-    ])
-    return _question(style, number, "TCP/IP and the Internet", "A client communicates with a web server using the TCP/IP stack.", stimulus, _fit_parts(parts, total))
+def _tcpip_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    stimulus = Stimulus(
+        kind="table",
+        title="Table 1",
+        headers=["Layer", "Example protocol"],
+        rows=[
+            ["Application", "HTTPS"],
+            ["Transport", "TCP"],
+            ["Internet", "IP"],
+            ["Link", "Ethernet"],
+        ],
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                1,
+                "State the layer of the TCP/IP stack that is responsible for routing packets between networks.",
+                ["Internet layer;"],
+                "",
+                2,
+            ),
+            (
+                "2",
+                2,
+                "Explain the role of DNS when a user enters a URL.",
+                [
+                    "DNS resolves a domain name;",
+                    "It returns an IP address used to contact the server;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain why TCP uses sequence numbers.",
+                [
+                    "They allow packets/segments to be reordered;",
+                    "They help identify missing data for retransmission;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                3,
+                "Describe how HTTPS helps protect data sent over the Internet.",
+                [
+                    "Uses encryption/TLS;",
+                    "Certificates authenticate the server;",
+                    "Protects confidentiality/integrity of transmitted data;",
+                ],
+                "",
+                6,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "TCP/IP and the Internet",
+        "A client communicates with a web server using the TCP/IP stack.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _sql_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     sql_contract = fitness_centre_sql_contract()
     stimulus = Stimulus(
         kind="code",
@@ -1221,13 +2498,64 @@ def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
         code=render_sql_schema(sql_contract),
         sql_contract=sql_contract,
     )
-    parts = _parts([
-        ("1", 2, "The following SQL contains an error. Identify the error and write the corrected condition.\nSELECT FullName FROM MEMBER WHERE Email = NULL;", ["The error is comparing NULL using =;", "Use WHERE Email IS NULL;"], "", 5),
-        ("2", 3, render_sql_intent_prompt(sql_contract.intents["2"]), ["JOIN SESSION to BOOKING using SessionID;", "GROUP BY Activity and use HAVING COUNT(*) >= 5;", "ORDER BY COUNT(*) DESC;"], "", 8),
-        ("3", 2, render_sql_intent_prompt(sql_contract.intents["3"]), ["INSERT INTO MEMBER (MemberID, FullName, Email) used;", "VALUES (1900, 'Amira Khan', 'amira@example.org') used in matching order;"], "", 5),
-        ("4", 3, "Write one UPDATE statement that marks member 1842 as having attended session 27. Your statement must not change any other booking.", ["UPDATE BOOKING SET Attended = TRUE (or an equivalent valid Boolean value);", "WHERE MemberID = 1842 used;", "AND SessionID = 27 used in the same WHERE condition;"], "", 7),
-        ("5", 2, "Write one DELETE statement that removes bookings for session 27 only where Attended is FALSE.", ["DELETE FROM BOOKING used;", "WHERE SessionID = 27 AND Attended = FALSE, or an equivalent valid Boolean comparison;"], "", 5),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "The following SQL contains an error. Identify the error and write the corrected condition.\nSELECT FullName FROM MEMBER WHERE Email = NULL;",
+                ["The error is comparing NULL using =;", "Use WHERE Email IS NULL;"],
+                "",
+                5,
+            ),
+            (
+                "2",
+                3,
+                render_sql_intent_prompt(sql_contract.intents["2"]),
+                [
+                    "JOIN SESSION to BOOKING using SessionID;",
+                    "GROUP BY Activity and use HAVING COUNT(*) >= 5;",
+                    "ORDER BY COUNT(*) DESC;",
+                ],
+                "",
+                8,
+            ),
+            (
+                "3",
+                2,
+                render_sql_intent_prompt(sql_contract.intents["3"]),
+                [
+                    "INSERT INTO MEMBER (MemberID, FullName, Email) used;",
+                    "VALUES (1900, 'Amira Khan', 'amira@example.org') used in matching order;",
+                ],
+                "",
+                5,
+            ),
+            (
+                "4",
+                3,
+                "Write one UPDATE statement that marks member 1842 as having attended session 27. Your statement must not change any other booking.",
+                [
+                    "UPDATE BOOKING SET Attended = TRUE (or an equivalent valid Boolean value);",
+                    "WHERE MemberID = 1842 used;",
+                    "AND SessionID = 27 used in the same WHERE condition;",
+                ],
+                "",
+                7,
+            ),
+            (
+                "5",
+                2,
+                "Write one DELETE statement that removes bookings for session 27 only where Attended is FALSE.",
+                [
+                    "DELETE FROM BOOKING used;",
+                    "WHERE SessionID = 27 AND Attended = FALSE, or an equivalent valid Boolean comparison;",
+                ],
+                "",
+                5,
+            ),
+        ]
+    )
     parts = [
         part.model_copy(
             update={
@@ -1248,57 +2576,252 @@ def _sql_question(style: QuestionStyle, number: int, total: int, rng: random.Ran
     )
 
 
-def _erd_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    stimulus = Stimulus(kind="erd", title="Figure 1", diagram="CUSTOMER -< ORDER -< ORDER_ITEM >- PRODUCT")
-    parts = _parts([
-        ("1", 2, "State the cardinality of the relationship between CUSTOMER and ORDER.", ["One customer can place many orders;", "Each order belongs to one customer;"], "", 4),
-        ("2", 2, "Explain why ORDER_ITEM is needed in the design.", ["It resolves the many-to-many relationship between ORDER and PRODUCT;", "It can store attributes such as quantity/price for each product in an order;"], "", 4),
-        ("3", 2, "State two fields that would be suitable foreign keys.", ["CustomerID in ORDER;", "OrderID in ORDER_ITEM;", "ProductID in ORDER_ITEM;"], "", 3),
-        ("4", 2, "Explain one benefit of using a relational database for this data.", ["Relationships can be enforced using keys;", "Queries can combine related data reliably;", "Redundancy can be reduced;"], "", 4),
-    ])
-    parts[0].set_closed_answers({"cardinality": ["one-to-many", "one to many", "1:M", "1:N"]})
-    return _question(style, number, "Entity relationship modelling", "An online shop stores orders in a relational database.", stimulus, _fit_parts(parts, total))
+def _erd_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    stimulus = Stimulus(
+        kind="erd",
+        title="Figure 1",
+        diagram="CUSTOMER -< ORDER -< ORDER_ITEM >- PRODUCT",
+    )
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State the cardinality of the relationship between CUSTOMER and ORDER.",
+                [
+                    "One customer can place many orders;",
+                    "Each order belongs to one customer;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain why ORDER_ITEM is needed in the design.",
+                [
+                    "It resolves the many-to-many relationship between ORDER and PRODUCT;",
+                    "It can store attributes such as quantity/price for each product in an order;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "State two fields that would be suitable foreign keys.",
+                [
+                    "CustomerID in ORDER;",
+                    "OrderID in ORDER_ITEM;",
+                    "ProductID in ORDER_ITEM;",
+                ],
+                "",
+                3,
+            ),
+            (
+                "4",
+                2,
+                "Explain one benefit of using a relational database for this data.",
+                [
+                    "Relationships can be enforced using keys;",
+                    "Queries can combine related data reliably;",
+                    "Redundancy can be reduced;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    parts[0].set_closed_answers(
+        {"cardinality": ["one-to-many", "one to many", "1:M", "1:N"]}
+    )
+    return _question(
+        style,
+        number,
+        "Entity relationship modelling",
+        "An online shop stores orders in a relational database.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _big_data_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
-    parts = _parts([
-        ("1", 2, "State two characteristics of Big Data.", ["Volume;", "Velocity;", "Variety;", "Veracity;"], "", 3),
-        ("2", 4, "Explain why a distributed system may be used to process Big Data.", ["Data may be too large for one machine;", "Processing can be split across many nodes;", "Parallel processing can reduce processing time;", "Fault tolerance can be improved through replication;"], "", 8),
-        ("3", 2, "Explain one reason why data quality is important when mining large datasets.", ["Poor quality data can produce misleading patterns;", "Decisions based on inaccurate data may be invalid/unfair;"], "", 4),
-    ])
-    return _question(style, number, "Big Data", "A company analyses a large stream of customer interaction data.", None, _fit_parts(parts, total))
+def _big_data_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State two characteristics of Big Data.",
+                ["Volume;", "Velocity;", "Variety;", "Veracity;"],
+                "",
+                3,
+            ),
+            (
+                "2",
+                4,
+                "Explain why a distributed system may be used to process Big Data.",
+                [
+                    "Data may be too large for one machine;",
+                    "Processing can be split across many nodes;",
+                    "Parallel processing can reduce processing time;",
+                    "Fault tolerance can be improved through replication;",
+                ],
+                "",
+                8,
+            ),
+            (
+                "3",
+                2,
+                "Explain one reason why data quality is important when mining large datasets.",
+                [
+                    "Poor quality data can produce misleading patterns;",
+                    "Decisions based on inaccurate data may be invalid/unfair;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Big Data",
+        "A company analyses a large stream of customer interaction data.",
+        None,
+        _fit_parts(parts, total),
+    )
 
 
-def _functional_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _functional_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     code = (
         "map (lambda x -> x * x)\n"
         "    (filter (lambda x -> x > 3)\n"
         "        [1, 4, 6, 2, 5])"
     )
     stimulus = Stimulus(kind="code", title="Program 1", code=code)
-    parts = _parts([
-        ("1", 2, "State the output of Program 1.", ["Filter keeps 4, 6 and 5;", "Map squares values to give 16, 36 and 25;"], "", 4),
-        ("2", 2, "Explain what is meant by a higher-order function.", ["A function that takes a function as an argument;", "Or returns a function as its result;"], "", 4),
-        ("3", 2, "Explain why immutability can make functional programs easier to reason about.", ["Values are not changed after creation;", "This reduces side effects/unexpected state changes;"], "", 4),
-        ("4", 2, "Describe one use of recursion in functional programming.", ["A function calls itself;", "It processes a list/problem by reducing it to a base case;"], "", 4),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "State the output of Program 1.",
+                [
+                    "Filter keeps 4, 6 and 5;",
+                    "Map squares values to give 16, 36 and 25;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "Explain what is meant by a higher-order function.",
+                [
+                    "A function that takes a function as an argument;",
+                    "Or returns a function as its result;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                2,
+                "Explain why immutability can make functional programs easier to reason about.",
+                [
+                    "Values are not changed after creation;",
+                    "This reduces side effects/unexpected state changes;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "4",
+                2,
+                "Describe one use of recursion in functional programming.",
+                [
+                    "A function calls itself;",
+                    "It processes a list/problem by reducing it to a base case;",
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
     parts[0].set_closed_answers({"output-in-order": ["16,36,25", "[16,36,25]"]})
-    return _question(style, number, "Functional programming", "A program uses higher-order functions.", stimulus, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Functional programming",
+        "A program uses higher-order functions.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _recursion_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _recursion_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     code = "sum [] = 0\nsum (x:xs) = x + sum xs"
     stimulus = Stimulus(kind="code", title="Program 1", code=code)
-    parts = _parts([
-        ("1", 2, "Identify the base case and the recursive case in Program 1.", ["Base case is sum [] = 0;", "Recursive case is sum (x:xs) = x + sum xs;"], "", 4),
-        ("2", 2, "State the result of evaluating sum [3, 5, 7]. Show the recursive accumulation.", ["The recursive cases produce 3 + 5 + 7 + sum [];", "The base case contributes 0, giving a final result of 15;"], "", 4),
-        ("3", 4, "Explain how head and tail are used when processing a list recursively.", ["Head is the first item in a list;", "Tail is the remaining list;", "Recursive function processes head and calls itself on tail;", "Base case stops recursion when list is empty;"], "", 7),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                2,
+                "Identify the base case and the recursive case in Program 1.",
+                [
+                    "Base case is sum [] = 0;",
+                    "Recursive case is sum (x:xs) = x + sum xs;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                2,
+                "State the result of evaluating sum [3, 5, 7]. Show the recursive accumulation.",
+                [
+                    "The recursive cases produce 3 + 5 + 7 + sum [];",
+                    "The base case contributes 0, giving a final result of 15;",
+                ],
+                "",
+                4,
+            ),
+            (
+                "3",
+                4,
+                "Explain how head and tail are used when processing a list recursively.",
+                [
+                    "Head is the first item in a list;",
+                    "Tail is the remaining list;",
+                    "Recursive function processes head and calls itself on tail;",
+                    "Base case stops recursion when list is empty;",
+                ],
+                "",
+                7,
+            ),
+        ]
+    )
     parts[1].set_closed_answers({"result": ["15"]})
-    return _question(style, number, "Recursion in functional programming", "A recursive function processes a list.", stimulus, _fit_parts(parts, total))
+    return _question(
+        style,
+        number,
+        "Recursion in functional programming",
+        "A recursive function processes a list.",
+        stimulus,
+        _fit_parts(parts, total),
+    )
 
 
-def _assembly_trace_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _assembly_trace_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     code = "\n".join(
         [
             "      MOV R0, #0",
@@ -1316,28 +2839,121 @@ def _assembly_trace_question(style: QuestionStyle, number: int, total: int, rng:
         ]
     )
     stimulus = Stimulus(kind="code", title="Figure 1", code=code)
-    parts = _parts([
-        ("1", 6, "Complete a trace table to show the results of executing the assembly language program in Figure 1.", ["Initial register values copied correctly;", "Each loop iteration updates R0 and R1 correctly;", "AND result in R3 is recorded correctly;", "Running total in R2 is updated correctly;", "Loop stops when R1 is 0;", "Final value stored in memory location 120 is correct;"], "", 20),
-        ("2", 2, "By considering your trace table, describe the purpose of the program.", ["Counts the number of 1 bits in the binary representation of the input value;", "Stores the count in memory location 120;"], "", 7),
-        ("3", 2, "Describe two advantages of writing programs in assembly language rather than a high-level language.", ["Can directly control registers/hardware;", "Can produce efficient code for a specific processor;", "Useful for low-level embedded/system routines;"], "", 7),
-        ("4", 1, "Some high-level languages are described as imperative. Explain what imperative means in this context.", ["The program is written as a sequence of commands/statements that change state;"], "", 4),
-    ])
+    parts = _parts(
+        [
+            (
+                "1",
+                6,
+                "Complete a trace table to show the results of executing the assembly language program in Figure 1.",
+                [
+                    "Initial register values copied correctly;",
+                    "Each loop iteration updates R0 and R1 correctly;",
+                    "AND result in R3 is recorded correctly;",
+                    "Running total in R2 is updated correctly;",
+                    "Loop stops when R1 is 0;",
+                    "Final value stored in memory location 120 is correct;",
+                ],
+                "",
+                20,
+            ),
+            (
+                "2",
+                2,
+                "By considering your trace table, describe the purpose of the program.",
+                [
+                    "Counts the number of 1 bits in the binary representation of the input value;",
+                    "Stores the count in memory location 120;",
+                ],
+                "",
+                7,
+            ),
+            (
+                "3",
+                2,
+                "Describe two advantages of writing programs in assembly language rather than a high-level language.",
+                [
+                    "Can directly control registers/hardware;",
+                    "Can produce efficient code for a specific processor;",
+                    "Useful for low-level embedded/system routines;",
+                ],
+                "",
+                7,
+            ),
+            (
+                "4",
+                1,
+                "Some high-level languages are described as imperative. Explain what imperative means in this context.",
+                [
+                    "The program is written as a sequence of commands/statements that change state;"
+                ],
+                "",
+                4,
+            ),
+        ]
+    )
     trace = {
-        "R0-initial-and-after-loops": "0,1,2,3,4", "R1-initial-and-after-loops": "13,6,3,1,0",
-        "R2-initial-and-after-loops": "0,1,1,2,3", "R3-after-loops": "1,0,1,1", "memory-120": "3",
+        "R0-initial-and-after-loops": "0,1,2,3,4",
+        "R1-initial-and-after-loops": "13,6,3,1,0",
+        "R2-initial-and-after-loops": "0,1,1,2,3",
+        "R3-after-loops": "1,0,1,1",
+        "memory-120": "3",
     }
-    parts[0].set_closed_answers({key: [value, f"[{value}]"] if "," in value else [value] for key, value in trace.items()})
+    parts[0].set_closed_answers(
+        {
+            key: [value, f"[{value}]"] if "," in value else [value]
+            for key, value in trace.items()
+        }
+    )
     parts[0].marking.points.extend(f"{key}: {value};" for key, value in trace.items())
-    return _question(style, number, "Assembly language trace", "Figure 1 shows an assembly language program for a processor using general purpose registers.", stimulus, parts)
+    return _question(
+        style,
+        number,
+        "Assembly language trace",
+        "Figure 1 shows an assembly language program for a processor using general purpose registers.",
+        stimulus,
+        parts,
+    )
 
 
-def _functional_type_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _functional_type_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     stimulus = Stimulus(kind="code", title="Function type", code="f: Natural -> Real")
-    parts = _parts([
-        ("1", 1, "Describe the co-domain of the function f.", ["The co-domain is the set of real numbers / possible output type Real;"], "", 4),
-        ("2", 3, "Describe two features of functional programming languages that make it easier to write code that can be distributed to run across multiple servers.", ["Functions avoid side effects / use immutable data;", "This reduces shared-state conflicts between servers;", "Higher-order functions such as map/reduce can split processing across data items;", "Pure functions can be evaluated independently/in parallel;"], "", 10),
-    ])
-    return _question(style, number, "Functional programming function type", "A functional programming function f has the function type shown below.", stimulus, parts)
+    parts = _parts(
+        [
+            (
+                "1",
+                1,
+                "Describe the co-domain of the function f.",
+                [
+                    "The co-domain is the set of real numbers / possible output type Real;"
+                ],
+                "",
+                4,
+            ),
+            (
+                "2",
+                3,
+                "Describe two features of functional programming languages that make it easier to write code that can be distributed to run across multiple servers.",
+                [
+                    "Functions avoid side effects / use immutable data;",
+                    "This reduces shared-state conflicts between servers;",
+                    "Higher-order functions such as map/reduce can split processing across data items;",
+                    "Pure functions can be evaluated independently/in parallel;",
+                ],
+                "",
+                10,
+            ),
+        ]
+    )
+    return _question(
+        style,
+        number,
+        "Functional programming function type",
+        "A functional programming function f has the function type shown below.",
+        stimulus,
+        parts,
+    )
 
 
 def _extended_part(prompt: str, points: list[str]) -> list[QuestionPart]:
@@ -1362,7 +2978,9 @@ def _extended_part(prompt: str, points: list[str]) -> list[QuestionPart]:
     ]
 
 
-def _ethics_extended_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _ethics_extended_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     return _question(
         style,
         number,
@@ -1383,7 +3001,9 @@ def _ethics_extended_question(style: QuestionStyle, number: int, total: int, rng
     )
 
 
-def _database_extended_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _database_extended_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     question = _question(
         style,
         number,
@@ -1405,7 +3025,9 @@ def _database_extended_question(style: QuestionStyle, number: int, total: int, r
     return question.model_copy(update={"parts": _fit_parts(question.parts, total)})
 
 
-def _network_extended_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _network_extended_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     return _question(
         style,
         number,
@@ -1426,7 +3048,9 @@ def _network_extended_question(style: QuestionStyle, number: int, total: int, rn
     )
 
 
-def _functional_extended_question(style: QuestionStyle, number: int, total: int, rng: random.Random) -> Question:
+def _functional_extended_question(
+    style: QuestionStyle, number: int, total: int, rng: random.Random
+) -> Question:
     question = _question(
         style,
         number,

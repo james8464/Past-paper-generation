@@ -74,7 +74,10 @@ def source_instance(question, seed: int) -> EconomicsSource:
                 "1",
             ),
             "Pay growth": (r"increased average pay by (\d+(?:\.\d+)?)%", "%"),
-            "Annual staff turnover": (r"annual staff turnover reached (\d+(?:\.\d+)?)%", "%"),
+            "Annual staff turnover": (
+                r"annual staff turnover reached (\d+(?:\.\d+)?)%",
+                "%",
+            ),
             "Later-period price change": (r"prices changed by (\d+(?:\.\d+)?)%", "%"),
             "Sector output change": (
                 r"Output in the sector changed by (\d+(?:\.\d+)?)%",

@@ -33,9 +33,7 @@ GUIDANCE = [
 
 
 def test_blueprint_receives_a_separate_reference_demand_review() -> None:
-    syllabus = load_syllabus(
-        Path(__file__).parents[1] / "data" / "syllabus_seed.json"
-    )
+    syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
     config = load_builtin_paper_config("paper_1")
     full = build_paper_blueprint(config, syllabus, seed=7)
     hardest = max(full.questions, key=lambda question: question.marks)
@@ -65,7 +63,16 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "command_word_fit": True,
                 "context_fit": True,
                 "profile_fit": True,
-                "observed_cognitive_operations": ["retrieve", "apply", "transform", "explain", "contextualise", "analyse", "integrate", "judge"],
+                "observed_cognitive_operations": [
+                    "retrieve",
+                    "apply",
+                    "transform",
+                    "explain",
+                    "contextualise",
+                    "analyse",
+                    "integrate",
+                    "judge",
+                ],
                 "cognitive_operations_fit": True,
                 "reasoning_range_fit": True,
                 "shortcut_resistant": True,
@@ -78,7 +85,11 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
     client = Client()
     reviewed = review_blueprint_difficulty(client, blueprint, syllabus)
 
-    difficulty_prompts = [prompt for prompt in client.prompts if "difficulty calibration specialist" in prompt]
+    difficulty_prompts = [
+        prompt
+        for prompt in client.prompts
+        if "difficulty calibration specialist" in prompt
+    ]
     assert len(difficulty_prompts) == 1
     assert '"reference_profile_fingerprint"' in difficulty_prompts[0]
     assert '"requires_judgement": true' in difficulty_prompts[0]
@@ -93,13 +104,23 @@ def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
     from Backend.Core.reference_demand import build_item_demand_target, profile_for
 
     syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
-    blueprint = build_paper_blueprint(load_builtin_paper_config(paper_id), syllabus, seed=7)
-    profile = profile_for("pearson-edexcel/economics-a-2015", paper_id.removeprefix("paper_"))
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config(paper_id), syllabus, seed=7
+    )
+    profile = profile_for(
+        "pearson-edexcel/economics-a-2015", paper_id.removeprefix("paper_")
+    )
     original = [item for q in blueprint.questions for item in _question_demand_items(q)]
-    exported = _extract_items(blueprint.model_dump(mode="json"), subject="economics", paper_number=paper_id.removeprefix("paper_"))
+    exported = _extract_items(
+        blueprint.model_dump(mode="json"),
+        subject="economics",
+        paper_number=paper_id.removeprefix("paper_"),
+    )
     assert len(original) == len(exported)
     for before, after in zip(original, exported, strict=True):
-        assert build_item_demand_target(before, profile) == build_item_demand_target(after, profile), after["id"]
+        assert build_item_demand_target(before, profile) == build_item_demand_target(
+            after, profile
+        ), after["id"]
 
 
 def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() -> None:
@@ -108,7 +129,9 @@ def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() 
     from Backend.Core.independent_solver import IndependentSolver
 
     syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
-    blueprint = build_paper_blueprint(load_builtin_paper_config("paper_2"), syllabus, seed=7)
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config("paper_2"), syllabus, seed=7
+    )
     question = blueprint.questions[0]
     part = question.parts[0]
     captured = []
@@ -117,7 +140,11 @@ def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() 
         def generate_json(self, prompt):
             captured.append(prompt)
             return complete_solver_response(
-                {"answer": part.options[0].text, "mark_points": [part.options[0].text], "steps": ["Read the chart"]}
+                {
+                    "answer": part.options[0].text,
+                    "mark_points": [part.options[0].text],
+                    "steps": ["Read the chart"],
+                }
             )
 
     item = _question_solver_item(question, part)
@@ -128,7 +155,9 @@ def test_solver_view_includes_chart_values_and_all_choices_without_answer_key() 
     assert "mark_scheme" not in captured[0]
 
 
-@pytest.mark.parametrize("kind", ["line_graph", "index_number_chart", "market_share_bar_chart", "data_table"])
+@pytest.mark.parametrize(
+    "kind", ["line_graph", "index_number_chart", "market_share_bar_chart", "data_table"]
+)
 def test_review_stimulus_uses_rendered_defaults(kind) -> None:
     from pastpapergen.models import QuestionBlueprint
     from pastpapergen.render_pdf import (
@@ -138,8 +167,15 @@ def test_review_stimulus_uses_rendered_defaults(kind) -> None:
     )
     from pastpapergen.stimulus_data import line_chart_data
 
-    question = QuestionBlueprint(section="A", number="1", marks=1, command_word="mcq",
-                                 topic_id="test", prompt="Read the figure.", stimulus_kind=kind)
+    question = QuestionBlueprint(
+        section="A",
+        number="1",
+        marks=1,
+        command_word="mcq",
+        topic_id="test",
+        prompt="Read the figure.",
+        stimulus_kind=kind,
+    )
     data = candidate_stimulus_data(question)
     if kind == "data_table":
         assert data["rows"] == _table_rows(kind)
@@ -322,7 +358,10 @@ def test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions() -> 
             [candidate.prompt, *(part.prompt for part in candidate.parts)]
         )
         if original.section == "A" and original.stimulus_kind:
-            assert candidate.model_copy(update={"provenance": original.provenance}) == original
+            assert (
+                candidate.model_copy(update={"provenance": original.provenance})
+                == original
+            )
             assert candidate.provenance == "reviewed-deterministic-contract"
         else:
             assert candidate_text != original_text
@@ -374,9 +413,7 @@ def test_generation_resumes_family_questions_from_checkpoint(
 def test_resume_validation_rejects_changed_verified_marking_data() -> None:
     _syllabus, blueprint = _paper(seed=26080122)
     question = blueprint.questions[7]
-    stale = question.model_copy(
-        update={"mark_scheme": question.mark_scheme[:10]}
-    )
+    stale = question.model_copy(update={"mark_scheme": question.mark_scheme[:10]})
 
     with pytest.raises(ValueError, match="verified assessment data"):
         _validate_ai_question(question, stale)
@@ -461,7 +498,9 @@ def test_generated_stem_repairs_singular_possessive_article() -> None:
 
 def test_generation_rejects_unchanged_template_fallback() -> None:
     syllabus, full_blueprint = _paper()
-    question = next(question for question in full_blueprint.questions if not question.parts)
+    question = next(
+        question for question in full_blueprint.questions if not question.parts
+    )
     blueprint = full_blueprint.model_copy(update={"questions": [question]})
 
     with pytest.raises(ValueError, match="only a paraphrase"):
@@ -484,9 +523,7 @@ def test_local_generation_retries_only_the_rejected_question() -> None:
     question = next(
         question for question in full_blueprint.questions if not question.parts
     )
-    blueprint = full_blueprint.model_copy(
-        update={"questions": [question]}
-    )
+    blueprint = full_blueprint.model_copy(update={"questions": [question]})
 
     class FlakyClient(BlueprintAwareClient):
         supports_parallel_generation = False
@@ -518,9 +555,7 @@ def test_local_generation_stops_before_queued_question_after_failure() -> None:
     questions = [
         question for question in full_blueprint.questions if not question.parts
     ][:2]
-    blueprint = full_blueprint.model_copy(
-        update={"questions": questions}
-    )
+    blueprint = full_blueprint.model_copy(update={"questions": questions})
 
     class RejectingLocalClient(EmptyClient):
         supports_parallel_generation = False
@@ -572,10 +607,14 @@ def test_local_paper_three_uses_reviewed_seeded_fallback_after_paraphrases() -> 
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
+    assert generated.questions == [
+        question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+    ]
 
 
-def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases() -> None:
+def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases() -> (
+    None
+):
     syllabus, full_blueprint = _paper(seed=26080122)
     question = full_blueprint.questions[5]
     blueprint = full_blueprint.model_copy(update={"questions": [question]})
@@ -596,7 +635,9 @@ def test_local_paper_one_uses_reviewed_source_bound_fallback_after_paraphrases()
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
+    assert generated.questions == [
+        question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+    ]
 
 
 def test_local_generation_uses_reviewed_fallback_after_scope_drift() -> None:
@@ -622,7 +663,9 @@ def test_local_generation_uses_reviewed_fallback_after_scope_drift() -> None:
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 3
-    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
+    assert generated.questions == [
+        question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+    ]
 
 
 def test_multipart_question_keeps_verified_stem_and_source_separate() -> None:
@@ -669,7 +712,9 @@ def test_exact_data_chart_is_reviewed_without_model_rewriting() -> None:
     generated = generate_questions_with_ollama(client, blueprint, syllabus)
 
     assert client.authoring_calls == 0
-    assert generated.questions == [question.model_copy(update={"provenance": "reviewed-deterministic-contract"})]
+    assert generated.questions == [
+        question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+    ]
     assert generated.questions[0].graph_params == question.graph_params
 
 
@@ -680,10 +725,16 @@ def test_section_a_context_and_stem_remain_bound_to_rendered_source() -> None:
     )
     question = blueprint.questions[3]
 
-    assert _merge_question_text(question, "A consumer has £30 available.") == question.prompt
-    assert _merge_source_text(
-        "A consumer has £30 available.", question.source_text, question
-    ) == question.source_text
+    assert (
+        _merge_question_text(question, "A consumer has £30 available.")
+        == question.prompt
+    )
+    assert (
+        _merge_source_text(
+            "A consumer has £30 available.", question.source_text, question
+        )
+        == question.source_text
+    )
 
 
 def test_generated_paper_three_prompt_restores_numbered_source_reference() -> None:

@@ -45,7 +45,11 @@ def test_correction_code_is_syntactically_complete_and_has_no_blank_tokens(modul
 
 
 def test_all_sustained_algorithm_scaffolds_have_real_blanks():
-    for module, index in [(directory_exercise, 9), (allocation_exercise, 7), (channel_exercise, 5)]:
+    for module, index in [
+        (directory_exercise, 9),
+        (allocation_exercise, 7),
+        (channel_exercise, 5),
+    ]:
         prompt = module.render_case(270104)["questions"][index]["prompt"]
         assert "__A__" in prompt
         assert "__B__" in prompt

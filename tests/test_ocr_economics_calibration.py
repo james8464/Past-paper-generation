@@ -41,7 +41,9 @@ def test_difficulty_is_not_promoted_without_external_evidence() -> None:
 
 def test_registry_links_ocr_calibration_without_false_promotion() -> None:
     registry = json.loads(GENERATOR_REGISTRY.read_text(encoding="utf-8"))
-    family = next(item for item in registry["families"] if item["id"] == "ocr/economics")
+    family = next(
+        item for item in registry["families"] if item["id"] == "ocr/economics"
+    )
     assert family["calibration_path"] == (
         "economics/ocr/generator/data/difficulty-calibration.json"
     )

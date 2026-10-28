@@ -34,14 +34,19 @@ def company_item():
 
 def response(values):
     facts = [f"{role}: £{value:,.0f}" for role, value in values.items()]
-    return complete_solver_response({
-        "answer": "These figures inform employee pay and job-security judgements. " + "; ".join(facts),
-        "steps": facts,
-        "mark_points": ["Profit is not evidence of available cash."],
-    })
+    return complete_solver_response(
+        {
+            "answer": "These figures inform employee pay and job-security judgements. "
+            + "; ".join(facts),
+            "steps": facts,
+            "mark_points": ["Profit is not evidence of available cash."],
+        }
+    )
 
 
-@pytest.mark.parametrize("missing", ["profit_for_year", "irrecoverable_debt", "supplier_invoice"])
+@pytest.mark.parametrize(
+    "missing", ["profit_for_year", "irrecoverable_debt", "supplier_invoice"]
+)
 def test_missing_public_numeric_evidence_gets_one_blind_solver_repair(missing):
     item, required = company_item()
 
@@ -51,9 +56,11 @@ def test_missing_public_numeric_evidence_gets_one_blind_solver_repair(missing):
 
         def generate_json(self, prompt):
             self.prompts.append(prompt)
-            values = required if len(self.prompts) == 2 else {
-                key: value for key, value in required.items() if key != missing
-            }
+            values = (
+                required
+                if len(self.prompts) == 2
+                else {key: value for key, value in required.items() if key != missing}
+            )
             return response(values)
 
     client = Client()
@@ -86,7 +93,9 @@ def test_repeated_omission_fails_closed_after_two_solver_calls():
     assert client.calls == 2
     assert len(failure.value.details["attempts"]) == 2
     assert set(failure.value.details["attempts"][0]["missing_roles"]) == {
-        "profit_for_year", "irrecoverable_debt", "supplier_invoice",
+        "profit_for_year",
+        "irrecoverable_debt",
+        "supplier_invoice",
     }
     assert "PRIVATE_MARKING_CANARY" not in str(failure.value.details)
 
@@ -96,7 +105,9 @@ def test_incorrect_figure_does_not_count_as_the_required_profit():
 
     class Client:
         def generate_json(self, prompt):
-            return response({**required, "profit_for_year": required["profit_for_year"] + 1})
+            return response(
+                {**required, "profit_for_year": required["profit_for_year"] + 1}
+            )
 
     with pytest.raises(GenerationEvidenceError, match="numeric evidence"):
         IndependentSolver(Client()).solve(item, [])
@@ -130,9 +141,15 @@ def test_complete_public_numeric_working_does_not_trigger_a_repair():
     assert client.calls == 1
 
 
-@pytest.mark.parametrize("field", ["referenced_question_data", "independent_solver_instructions"])
+@pytest.mark.parametrize(
+    "field", ["referenced_question_data", "independent_solver_instructions"]
+)
 def test_writer_cannot_replace_the_public_inputs_or_solver_instructions(field):
-    task = next(task for task in accounting_tasks("paper_1", 270100) if task.question.number == "14.2")
+    task = next(
+        task
+        for task in accounting_tasks("paper_1", 270100)
+        if task.question.number == "14.2"
+    )
     context = deepcopy(task.question.authoring_context)
     context[field] = {} if field == "referenced_question_data" else []
     candidate = task.question.model_copy(update={"authoring_context": context})
