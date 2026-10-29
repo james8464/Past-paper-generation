@@ -30,20 +30,16 @@ struct DocumentPreviewView: View {
                 }
             } else {
                 VStack(spacing: 0) {
-                    Picker("Document", selection: selectedBinding) {
-                        ForEach(files) { file in
-                            Text(file.title).tag(file.id)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .labelsHidden()
+                    DocumentPickerView(files: files, selection: selectedBinding)
                     .padding()
+                    .frame(minWidth: 0, maxWidth: .infinity)
 
                     Divider()
 
                     if let file = selectedFile, let pdf = documentActions.loadedPDF {
                         PDFDocumentView(document: pdf.document)
                             .id(file.id)
+                            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                             .accessibilityLabel("Preview of \(file.title)")
                     } else {
                         ContentUnavailableView {
@@ -57,6 +53,7 @@ struct DocumentPreviewView: View {
                         }
                     }
                 }
+                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
             }
         }
         .navigationTitle("Documents")
@@ -98,10 +95,7 @@ struct DocumentPreviewView: View {
     }
 
     private var selectedBinding: Binding<GeneratedFile.ID> {
-        Binding(
-            get: { selection ?? files[0].id },
-            set: { selection = $0 }
-        )
+        documentActions.selectionBinding(selection: $selection, files: files, records: application.recentDocumentStore.records)
     }
 
     private var selectedFile: GeneratedFile? {
@@ -134,6 +128,20 @@ final class DocumentActionController: ObservableObject {
     var canAccessDocument: Bool { loadedPDF != nil && selectedFile?.exists == true }
 
     init(access: PDFDocumentAccess = PDFDocumentAccess()) { self.access = access }
+
+    func selectionBinding(selection: Binding<GeneratedFile.ID?>, files: [GeneratedFile], records: [GenerationJobRecord]) -> Binding<GeneratedFile.ID> {
+        Binding(
+            get: { files.first(where: { $0.id == selection.wrappedValue })?.id ?? files[0].id },
+            set: { id in
+                let file = files.first(where: { $0.id == id })
+                let provenance = file.flatMap { PDFDocumentActions.provenanceRecord(for: $0, records: records) }
+                // File-menu shortcuts can run before SwiftUI's next onChange.
+                // Publish the selection only after its action target is ready.
+                self.update(file: file, provenance: provenance)
+                selection.wrappedValue = id
+            }
+        )
+    }
 
     func update(file: GeneratedFile?, provenance: GenerationJobRecord?) {
         if selectedFile?.url != file?.url { access.release() }

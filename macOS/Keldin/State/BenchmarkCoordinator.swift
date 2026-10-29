@@ -65,6 +65,12 @@ final class BenchmarkCoordinator {
             samples.append(sample)
             progress = min(1, sample.elapsed / AppDefaults.benchmarkDurationSeconds)
         case let .benchmarkDone(result):
+            guard result.validatedScore != nil else {
+                verdict = nil
+                progress = nil
+                errorMessage = BenchmarkVerdict.invalidScoreMessage
+                return
+            }
             verdict = result
             progress = 1
         case let .error(message, _):

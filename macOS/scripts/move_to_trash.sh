@@ -15,6 +15,9 @@ fi
 existing_paths=()
 for path in "$@"; do
   if [[ -e "$path" ]]; then
+    if [[ "$path" != /* ]]; then
+      path="$(pwd -P)/$path"
+    fi
     existing_paths+=("$path")
   fi
 done
@@ -29,11 +32,12 @@ if command -v trash >/dev/null 2>&1; then
 fi
 
 if command -v osascript >/dev/null 2>&1; then
-  for path in "${existing_paths[@]}"; do
-    if [[ -e "$path" ]]; then
-      /usr/bin/osascript -e 'tell application "Finder" to delete POSIX file '"'"$path"'"''
-    fi
-  done
+  # Paths are arguments, never AppleScript source, including quotes and spaces.
+  osascript -e 'on run argv
+    repeat with itemPath in argv
+      tell application "Finder" to delete POSIX file (contents of itemPath)
+    end repeat
+  end run' -- "${existing_paths[@]}"
   exit 0
 fi
 

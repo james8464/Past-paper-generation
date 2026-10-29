@@ -210,12 +210,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     var mlxSetupExplanation: String {
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
-        let runtimeDetail = distributionMode == .appStore
-            ? "Apple MLX support is included with Keldin."
-            : "Keldin will install Apple MLX into its managed environment if needed."
-        return "\(runtimeDetail) It will then download and prepare \(model). "
-            + "Models can use several gigabytes of storage. Generation remains on this Mac, "
-            + "and setup does not require Terminal or an administrator password."
+        return InterfaceText.resolve("Keldin will check Apple MLX support, then download and prepare \(model) if needed. Models can use several gigabytes of storage. Generation stays on this Mac.", language: presentationLanguage)
     }
 
     init(

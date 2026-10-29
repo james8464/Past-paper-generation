@@ -27,6 +27,9 @@ enum GenerationEstimator {
         dryRun: Bool,
         benchmark: BenchmarkVerdict?
     ) -> GenerationEstimate {
+        let benchmark = benchmark.flatMap { verdict in
+            verdict.validatedScore != nil ? verdict : nil
+        }
         let paperFactor = paperComplexity(board: board, paper: paper)
         let providerFactor: (value: Double, factor: EstimateFactor)
         let modelFactor: (value: Double, factor: EstimateFactor)
@@ -215,7 +218,8 @@ enum GenerationEstimator {
               let range = Range(match.range(at: 1), in: model) else {
             return nil
         }
-        return Double(model[range])
+        guard let size = Double(model[range]), size.isFinite, size < Double(Int.max) else { return nil }
+        return size
     }
 
     private static func thermalTitle(_ state: ProcessInfo.ThermalState) -> String {

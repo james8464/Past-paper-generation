@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "The benchmark returned an invalid score." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le test de performance a renvoyé un score invalide." } } }
+    },
+    "Keldin will check Apple MLX support, then download and prepare %@ if needed. Models can use several gigabytes of storage. Generation stays on this Mac." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin vérifiera la prise en charge d’Apple MLX, puis téléchargera et préparera %@ si nécessaire. Les modèles peuvent occuper plusieurs gigaoctets. La génération reste sur ce Mac." } } }
+    },
     "Keldin couldn't save access to this folder. Choose it again to keep access after restarting." : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin n’a pas pu mémoriser l’accès à ce dossier. Sélectionnez-le à nouveau pour conserver l’accès après le redémarrage." } } }
     },

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass, field, replace
 from typing import Protocol
 
@@ -10,6 +9,7 @@ from reportlab.pdfbase import pdfmetrics
 
 from Backend.Core.branding import PDF_WORDMARK
 from Backend.Core.document_dsl.model import BoardProfile, Length, Size
+from Backend.Core.document_dsl.text_layout import wrap_text
 
 
 class Component(Protocol):
@@ -26,26 +26,7 @@ class Component(Protocol):
 
 def _text_lines(text: str, profile: BoardProfile, width: float) -> int:
     font = profile.fonts.body
-    words = text.split()
-    if not words:
-        return 1
-    lines = 1
-    current = ""
-    for word in words:
-        word_width = pdfmetrics.stringWidth(word, font.name, font.size.pt)
-        if word_width > width:
-            if current:
-                lines += 1
-                current = ""
-            lines += max(1, math.ceil(word_width / width)) - 1
-            continue
-        candidate = word if not current else f"{current} {word}"
-        if pdfmetrics.stringWidth(candidate, font.name, font.size.pt) <= width:
-            current = candidate
-        else:
-            lines += 1
-            current = word
-    return lines
+    return len(wrap_text(text, font=font.name, size=font.size.pt, width=width))
 
 
 class BaseComponent:
@@ -83,8 +64,12 @@ class InstructionBlock(BaseComponent):
         return Length(12.4 * (1 + self.minimum_lines_after_heading) + 6)
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:
+        bullet_width = pdfmetrics.stringWidth(
+            "• ", profile.fonts.body.name, profile.fonts.body.size.pt
+        )
         lines = 1 + sum(
-            _text_lines(item, profile, available.width.pt - 12) for item in self.items
+            _text_lines(item, profile, available.width.pt - 12 - bullet_width)
+            for item in self.items
         )
         return Size(available.width, Length(lines * profile.fonts.body.leading.pt + 8))
 
@@ -94,9 +79,14 @@ class InstructionBlock(BaseComponent):
             return None, self
         used: list[str] = []
         lines = 0
+        bullet_width = pdfmetrics.stringWidth(
+            "• ", profile.fonts.body.name, profile.fonts.body.size.pt
+        )
         for item in self.items:
-            item_lines = _text_lines(item, profile, available.width.pt - 12)
-            if used and lines + item_lines > capacity:
+            item_lines = _text_lines(
+                item, profile, available.width.pt - 12 - bullet_width
+            )
+            if lines + item_lines > capacity:
                 break
             used.append(item)
             lines += item_lines
@@ -131,9 +121,7 @@ class QuestionBlock(BaseComponent):
         words = self.prompt.split()
         if len(words) < 8:
             return None, self
-        target_lines = max(
-            2, int((available.height.pt - 10) // profile.fonts.body.leading.pt)
-        )
+        target_lines = int((available.height.pt - 10) // profile.fonts.body.leading.pt)
         if target_lines < 2:
             return None, self
         used: list[str] = []
@@ -216,17 +204,20 @@ class Table(BaseComponent):
             available.width.pt * weight for weight in self.column_weights()
         )
         maximum_lines = max(
-            _text_lines(
-                str(value),
-                profile,
-                max(20, column_widths[column_index] - 8),
+            len(
+                wrap_text(
+                    str(value),
+                    font=profile.fonts.body.name,
+                    size=8,
+                    width=column_widths[column_index] - 8,
+                )
             )
             for row in (self.headers, *self.rows)
             for column_index, value in enumerate(row)
         )
         effective_row_height = max(
             self.row_height.pt,
-            maximum_lines * profile.fonts.small.leading.pt + 6,
+            maximum_lines * 9 + 6,
         )
         return Size(
             available.width,
@@ -271,7 +262,7 @@ class SourcePanel(BaseComponent):
     keep_together: bool = True
 
     def measure(self, profile: BoardProfile, available: Size) -> Size:
-        lines = _text_lines(self.body, profile, available.width.pt - 20)
+        lines = _text_lines(self.body, profile, available.width.pt - 16)
         return Size(
             available.width, Length((lines + 2) * profile.fonts.body.leading.pt + 12)
         )
@@ -317,13 +308,20 @@ class LevelTable(BaseComponent):
             available.width.pt * weight for weight in self.column_weights()
         )
         maximum_lines = max(
-            _text_lines(str(value), profile, max(20, column_widths[index] - 8))
+            len(
+                wrap_text(
+                    str(value),
+                    font=profile.fonts.body.name,
+                    size=8,
+                    width=column_widths[index] - 8,
+                )
+            )
             for row in (("Level", "Descriptor", "Marks"), *self.levels)
             for index, value in enumerate(row)
         )
         effective_row_height = max(
             self.row_height.pt,
-            maximum_lines * profile.fonts.small.leading.pt + 6,
+            maximum_lines * 9 + 6,
         )
         return Size(
             available.width, Length((1 + len(self.levels)) * effective_row_height)

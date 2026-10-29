@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pymupdf as fitz
 
+from Backend.Core.temporary_cleanup import remove_failed_temporary
+
 
 # Attach a deterministic page-level structure tree and marked content.
 #
@@ -24,8 +26,8 @@ def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
     )
     os.close(descriptor)
     staged = Path(staged_name)
-    staged.unlink()
     try:
+        staged.unlink()
         with fitz.open(path) as document:
             catalog = document.pdf_catalog()
             if _has_structure_tree(document, catalog):
@@ -73,8 +75,9 @@ def add_page_structure_tree(path: Path, *, language: str = "en-GB") -> None:
             document.xref_set_key(catalog, "Lang", f"({language})")
             document.save(staged, garbage=4, deflate=True)
         os.replace(staged, path)
-    finally:
-        staged.unlink(missing_ok=True)
+    except BaseException as error:
+        remove_failed_temporary(staged, error)
+        raise
 
 
 # Return whether a page is linked to marked content in a structure tree.

@@ -618,6 +618,12 @@ struct BenchmarkVerdict: Equatable {
     let score: Double
     let verdict: String
     let detail: String
+
+    var validatedScore: Double? {
+        score.isFinite && (0 ... 1).contains(score) ? score : nil
+    }
+
+    static let invalidScoreMessage = "The benchmark returned an invalid score."
 }
 
 struct GeneratedFile: Identifiable, Codable, Equatable {
@@ -1129,13 +1135,20 @@ enum BackendEvent: Equatable {
                 )
             )
         case "benchmark_done":
-            self = .benchmarkDone(
-                BenchmarkVerdict(
-                    score: payload.score ?? 0,
-                    verdict: payload.verdict ?? "Unknown",
-                    detail: payload.detail ?? payload.message ?? ""
-                )
+            guard let score = payload.score else {
+                self = .error(message: BenchmarkVerdict.invalidScoreMessage, code: "invalid_benchmark_score")
+                return
+            }
+            let verdict = BenchmarkVerdict(
+                score: score,
+                verdict: payload.verdict ?? "Unknown",
+                detail: payload.detail ?? payload.message ?? ""
             )
+            guard verdict.validatedScore != nil else {
+                self = .error(message: BenchmarkVerdict.invalidScoreMessage, code: "invalid_benchmark_score")
+                return
+            }
+            self = .benchmarkDone(verdict)
         default:
             self = .progress(stage: payload.type, message: payload.message ?? payload.type, progress: payload.progress)
         }

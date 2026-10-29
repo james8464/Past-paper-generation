@@ -92,7 +92,9 @@ final class SettingsStore {
             credentialFailures.removeValue(forKey: account)
             return value
         } catch {
-            credentialFailures[account] = (error as? SecretStoreError) ?? .unexpected(operation: .read)
+            let failure = (error as? SecretStoreError) ?? .unexpected(operation: .read)
+            if failure == .incompleteClear { savedCredentials[account] = "" }
+            credentialFailures[account] = failure
             return ""
         }
     }

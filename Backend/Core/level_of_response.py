@@ -20,6 +20,12 @@ class LevelDescriptor(BaseModel):
     minimum_coverage: float = Field(ge=0, le=1)
     descriptor: str = Field(min_length=1)
 
+    @model_validator(mode="after")
+    def validate_mark_range(self) -> LevelDescriptor:
+        if self.minimum_mark > self.maximum_mark:
+            raise ValueError("level minimum mark exceeds its maximum mark")
+        return self
+
 
 class BoardLevelPolicy(BaseModel):
     model_config = ConfigDict(frozen=True)
@@ -35,10 +41,30 @@ class BoardLevelPolicy(BaseModel):
     def validate_levels(self) -> BoardLevelPolicy:
         if not self.levels:
             raise ValueError("level policy requires descriptors")
-        if [level.level for level in self.levels] != sorted(
-            level.level for level in self.levels
-        ):
-            raise ValueError("level descriptors must be ordered")
+        identifiers = [level.level for level in self.levels]
+        if identifiers != list(range(len(identifiers))):
+            raise ValueError("level descriptors must be consecutive from zero")
+        first = self.levels[0]
+        if (
+            first.level,
+            first.minimum_mark,
+            first.maximum_mark,
+            first.minimum_coverage,
+        ) != (0, 0, 0, 0.0):
+            raise ValueError(
+                "level policy requires a zero-credit base at zero coverage"
+            )
+        for previous, current in zip(self.levels, self.levels[1:], strict=False):
+            if current.minimum_mark <= previous.maximum_mark:
+                raise ValueError(
+                    "level mark ranges must be ordered and non-overlapping"
+                )
+            if current.minimum_coverage <= previous.minimum_coverage:
+                raise ValueError(
+                    "level coverage thresholds must be strictly increasing"
+                )
+        if any(level.maximum_mark > self.maximum_mark for level in self.levels):
+            raise ValueError("level mark range exceeds the policy maximum")
         if self.levels[-1].maximum_mark != self.maximum_mark:
             raise ValueError("highest level must end at the policy maximum")
         return self
@@ -162,6 +188,10 @@ def scale_level_policy(
 ) -> BoardLevelPolicy:
     if maximum_mark <= 0:
         raise ValueError("scaled level policy requires a positive maximum")
+    if maximum_mark < sum(level.level > 0 for level in policy.levels):
+        raise ValueError(
+            "scaled tariff cannot allocate a mark to every positive level band"
+        )
     if maximum_mark == policy.maximum_mark:
         return policy
     levels: list[LevelDescriptor] = []
@@ -183,4 +213,8 @@ def scale_level_policy(
             level.model_copy(update={"minimum_mark": minimum, "maximum_mark": maximum})
         )
         previous_maximum = maximum
-    return policy.model_copy(update={"maximum_mark": maximum_mark, "levels": levels})
+    payload = policy.model_dump()
+    payload.update(
+        maximum_mark=maximum_mark, levels=[level.model_dump() for level in levels]
+    )
+    return BoardLevelPolicy.model_validate(payload)

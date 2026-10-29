@@ -3,6 +3,13 @@ import XCTest
 @testable import Keldin
 
 final class BenchmarkLocalizationTests: XCTestCase {
+    func testInvalidScoreNoticeUsesSelectedLanguageAndUnknownErrorsStayVerbatim() {
+        let message = BenchmarkVerdict.invalidScoreMessage
+        XCTAssertEqual(NativeInterfaceCopy.benchmarkText(message, locale: Locale(identifier: "en")), message)
+        XCTAssertEqual(NativeInterfaceCopy.benchmarkText(message, locale: Locale(identifier: "fr")), "Le test de performance a renvoyé un score invalide.")
+        XCTAssertEqual(NativeInterfaceCopy.benchmarkText("Exact OS failure 17", locale: Locale(identifier: "fr")), "Exact OS failure 17")
+    }
+
     func testWorkspaceLabelsAndProgressUseFrenchResources() {
         let cases: [(LocalizedStringResource, String)] = [
             ("Benchmark", "Test du Mac"),

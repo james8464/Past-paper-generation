@@ -46,6 +46,8 @@ jobs:
         run: ruff check Backend Resources tools tests bridge.py conftest.py
       - name: Check maintained Python formatting
         run: ruff format --check Backend Resources tools tests bridge.py conftest.py
+      - name: Check scoped Python type contracts
+        run: mypy --config-file tools/typecheck.ini
       - name: Run backend tests
         run: python -m pytest -q
 

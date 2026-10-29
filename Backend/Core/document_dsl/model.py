@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -13,6 +14,8 @@ class Length:
     pt: float
 
     def __post_init__(self) -> None:
+        if not math.isfinite(self.pt):
+            raise ValueError("length must be finite")
         if self.pt < 0:
             raise ValueError("length cannot be negative")
 

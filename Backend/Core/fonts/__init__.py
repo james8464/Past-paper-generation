@@ -86,6 +86,8 @@ def _standard_fallback(font_name: str, fallback: str) -> str:
     else:
         family = "Times"
 
+    if font_name.endswith("BoldItalic"):
+        return f"{family}-BoldOblique" if family != "Times" else "Times-BoldItalic"
     if font_name.endswith("Bold"):
         return f"{family}-Bold"
     if font_name.endswith("Italic"):
