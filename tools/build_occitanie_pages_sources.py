@@ -248,10 +248,19 @@ def paragraph(
 
 
 def row(label: str, text: str, *, formal: bool) -> str:
-    # Cell edges are 135 pt and 480 pt; no borders or background fills.
+    # Pages needs preferred cell widths as well as RTF's legacy cell edges.
     left_size = 25 if formal else 30
+    borders = (
+        r"\clvertalt\clbrdrt\brdrnil\clbrdrl\brdrnil\clbrdrb\brdrnil\clbrdrr\brdrnil"
+    )
     return (
-        r"\trowd\trgaph120\trleft0\trkeep\cellx2700\cellx9600"
+        r"\trowd\trgaph120\trleft0\trkeep\trrh0\trftsWidth3\trwWidth9600"
+        + r"\clftsWidth3\clwWidth2700"
+        + borders
+        + r"\cellx2700"
+        + r"\clftsWidth3\clwWidth6900"
+        + borders
+        + r"\cellx9600"
         + "\n"
         + rf"\pard\intbl\f0\fs{left_size}\b\sl310\slmult0\sa160 "
         + rtf_text(label)

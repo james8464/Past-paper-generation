@@ -14,7 +14,13 @@ def test_three_editable_rtf_sources_have_explicit_page_plans(tmp_path):
         content = path.read_text("ascii")
         assert content.startswith(r"{\rtf1")
         assert r"\fs21" in content and r"\fs40" in content
-        assert r"\cellx2700\cellx9600" in content
+        assert r"\trftsWidth3\trwWidth9600" in content
+        assert r"\clftsWidth3\clwWidth2700" in content
+        assert r"\clftsWidth3\clwWidth6900" in content
+        assert (
+            r"\clbrdrt\brdrnil\clbrdrl\brdrnil\clbrdrb\brdrnil\clbrdrr\brdrnil"
+            in content
+        )
         assert r"\fldinst PAGE" in content
         assert "SF Pro Text" in content
         assert r"\pict" not in content and "docx" not in content
