@@ -176,7 +176,7 @@ private struct PaperConfiguration: View {
 
                 if application.aiProvider == .ollama && !application.selectedModelIsRecommended {
                     Label(
-                        "Results may vary with other Ollama models. Use the recommendation in Settings for the checked workflow.",
+                        "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation.",
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.caption)
