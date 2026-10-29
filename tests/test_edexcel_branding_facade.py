@@ -10,6 +10,8 @@ import tomllib
 import zipfile
 from pathlib import Path
 
+from packaging.requirements import Requirement
+
 ROOT = Path(__file__).resolve().parents[1]
 GENERATOR = ROOT / "Resources/economics/edexcel-a/generator"
 
@@ -78,6 +80,17 @@ def test_packaging_and_frozen_collection_preserve_both_surfaces():
     assert 'find "$generator_root/$package"' in source
 
 
+def test_wheel_backend_is_an_explicit_test_dependency():
+    requirements = {}
+    for raw in (ROOT / "requirements-test.txt").read_text().splitlines():
+        line = raw.split("#", 1)[0].strip()
+        if line:
+            requirement = Requirement(line)
+            requirements[requirement.name] = requirement
+    assert "setuptools" in requirements
+    assert requirements["setuptools"].specifier
+
+
 def test_wheel_contains_facade_and_legacy_implementation_without_installing(tmp_path):
     copied = tmp_path / "generator"
     shutil.copytree(
@@ -87,7 +100,7 @@ def test_wheel_contains_facade_and_legacy_implementation_without_installing(tmp_
             "__pycache__", "*.egg-info", "build", ".pytest_cache"
         ),
     )
-    subprocess.run(
+    built = subprocess.run(
         [
             sys.executable,
             "-c",
@@ -96,7 +109,11 @@ def test_wheel_contains_facade_and_legacy_implementation_without_installing(tmp_
         cwd=copied,
         capture_output=True,
         text=True,
-        check=True,
+        check=False,
+    )
+    assert built.returncode == 0, (
+        f"Wheel build failed (exit {built.returncode}).\n"
+        f"stdout:\n{built.stdout}\nstderr:\n{built.stderr}"
     )
     (wheel,) = (copied / "dist").glob("*.whl")
     with zipfile.ZipFile(wheel) as archive:
