@@ -1,4 +1,4 @@
-"""Bounded parallelism for independent, side-effect-free review jobs."""
+"""Bounded local generation/review jobs, with caller-owned result acceptance."""
 
 from __future__ import annotations
 
@@ -8,12 +8,22 @@ from threading import Event, Thread
 from typing import cast
 
 
+def local_generation_workers(client: object) -> int:
+    if getattr(client, "provider", None) != "ollama":
+        return 1
+    workers = getattr(client, "parallel_review_workers", 1)
+    if type(workers) is not int or workers not in (1, 2):
+        raise ValueError("Local generation supports one or two workers.")
+    return workers
+
+
 def map_reviews[T, R](
     items: list[T],
     review: Callable[[T], R],
     *,
     workers: int,
     progress: Callable[[int, int], None] | None = None,
+    on_result: Callable[[int, R], None] | None = None,
 ) -> list[R]:
     if type(workers) is not int or workers not in (1, 2):
         raise ValueError("Reviews support one or two workers.")
@@ -21,6 +31,8 @@ def map_reviews[T, R](
         values = []
         for index, item in enumerate(items):
             values.append(review(item))
+            if on_result is not None:
+                on_result(index, values[-1])
             if progress is not None:
                 progress(index, len(values))
         return values
@@ -46,7 +58,8 @@ def map_reviews[T, R](
                 return
             finished.put((index, value, None))
 
-    # Jobs must not write checkpoints or mutate shared assessment state.
+    # Jobs must not write real checkpoints or mutate shared assessment state.
+    # on_result runs on the caller, where deferred accepted changes can commit.
     # Daemon workers let SIGTERM end the helper without waiting on model sockets.
     for index in range(min(workers, len(items))):
         Thread(target=work, daemon=True, name=f"question-review-{index}").start()
@@ -60,6 +73,8 @@ def map_reviews[T, R](
             if error is not None:
                 raise error
             results[index] = cast(R, value)
+            if on_result is not None:
+                on_result(index, results[index])
             if progress is not None:
                 progress(index, len(results))
     finally:

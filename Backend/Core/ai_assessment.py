@@ -14,7 +14,10 @@ from typing import Any, Protocol
 from pydantic import ValidationError
 
 from Backend.Core import assessment_prompts as _assessment_prompts
-from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    DeferredCheckpoints,
+)
 from Backend.Core.assessment_contracts import EvidenceRecord, contract_for_question
 from Backend.Core.assessment_quality import (
     assert_distinct_items,
@@ -53,6 +56,7 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
 )
+from Backend.Core.review_workers import local_generation_workers, map_reviews
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 # Keep established helper entry points while prompt construction has one owner.
@@ -144,7 +148,55 @@ def generate_unique_paper(
     )
 
     generated: dict[tuple[int, int, int], GeneratedQuestion] = {}
-    if getattr(client, "supports_parallel_generation", False) and len(batches) > 1:
+    local_workers = local_generation_workers(client)
+    if local_workers > 1 and len(batches) > 1:
+        jobs = [
+            (
+                batch,
+                DeferredCheckpoints(checkpoint_store)
+                if checkpoint_store is not None
+                else None,
+            )
+            for batch in batches
+        ]
+        completed_items = 0
+
+        def run_local(job):
+            batch, deferred = job
+            return _generate_batch(
+                batch,
+                client=client,
+                subject=subject,
+                seed=paper.seed,
+                policy=policy,
+                progress=None,
+                checkpoint_store=deferred,
+                demand_profile=demand_profile,
+            )
+
+        def accept_local(index, result):
+            nonlocal completed_items
+            deferred = jobs[index][1]
+            if deferred is not None:
+                deferred.commit()
+            generated.update(result)
+            completed_items += len(result)
+            emit(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted {completed_items} of {len(tasks)} AI items",
+                    completed_units=completed_items,
+                    total_units=len(tasks),
+                )
+            )
+
+        map_reviews(
+            jobs,
+            run_local,
+            workers=min(local_workers, policy.max_workers),
+            on_result=accept_local,
+        )
+    elif getattr(client, "supports_parallel_generation", False) and len(batches) > 1:
         with ThreadPoolExecutor(
             max_workers=min(policy.max_workers, len(batches)),
             thread_name_prefix="paper-items",

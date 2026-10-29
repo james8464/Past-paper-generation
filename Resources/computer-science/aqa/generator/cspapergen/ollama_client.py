@@ -8,7 +8,10 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
-from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    DeferredCheckpoints,
+)
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import numeric_tokens
@@ -20,6 +23,7 @@ from Backend.Core.computer_science_authoring import (
     reviewed_question_metadata,
     validate_question_review,
 )
+from Backend.Core.events import GenerationUpdate
 from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
@@ -39,6 +43,7 @@ from Backend.Core.reference_demand import (
     build_item_demand_target,
     profile_for,
 )
+from Backend.Core.review_workers import local_generation_workers, map_reviews
 from Backend.Core.subjects.sql_contracts import (
     SQL_VALIDATION_VERSION,
     SQL_VERIFIED_SCOPE,
@@ -76,8 +81,11 @@ def improve_questions_with_ollama(
         not isinstance(client, OllamaClient),
     )
     max_workers = max(1, min(total, 4)) if supports_parallel else 1
+    local_workers = local_generation_workers(client)
 
-    def _improve(index: int, question: Question) -> tuple[Question, str]:
+    def _improve(
+        index: int, question: Question, checkpoint_store=checkpoint_store
+    ) -> tuple[Question, str]:
         topic = syllabus.get_topic(question.topic_id)
         display_index = index + 1
         checkpoint_key = f"question-{question.number}"
@@ -138,9 +146,10 @@ def improve_questions_with_ollama(
                     f"0 {question.number:02d}"
                 ),
             )
-        emit(
-            f"Generating question {display_index}/{total}: 0 {question.number:02d} ({topic.title})"
-        )
+        if local_workers == 1:
+            emit(
+                f"Generating question {display_index}/{total}: 0 {question.number:02d} ({topic.title})"
+            )
         base_prompt = _prompt(
             question,
             topic.title,
@@ -210,6 +219,42 @@ def improve_questions_with_ollama(
             ),
         )
 
+    if local_workers > 1:
+        jobs = [
+            (
+                index,
+                question,
+                DeferredCheckpoints(checkpoint_store)
+                if checkpoint_store is not None
+                else None,
+            )
+            for index, question in enumerate(blueprint.questions)
+        ]
+
+        def accept(index, result):
+            deferred = jobs[index][2]
+            if deferred is not None:
+                deferred.commit()
+            improved[index] = result[0]
+
+        def report(_index, completed):
+            emit(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted {completed} of {total} AI questions",
+                    completed_units=completed,
+                    total_units=total,
+                )
+            )
+
+        map_reviews(
+            jobs,
+            lambda job: _improve(*job),
+            workers=local_workers,
+            on_result=accept,
+            progress=report,
+        )
+        return blueprint.model_copy(update={"questions": improved})
     if max_workers == 1:
         for index, question in enumerate(blueprint.questions):
             improved[index], message = _improve(index, question)

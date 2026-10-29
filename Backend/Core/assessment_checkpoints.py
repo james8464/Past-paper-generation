@@ -10,6 +10,7 @@ import os
 import tempfile
 from collections.abc import Iterator, Mapping
 from contextlib import contextmanager, suppress
+from copy import deepcopy
 from pathlib import Path
 from threading import RLock
 from typing import Any, Literal
@@ -17,6 +18,47 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from Backend.Core.exam_blueprints import GeneratedQuestion
+
+
+class DeferredCheckpoints:
+    """A worker's private changes, persisted only after caller acceptance."""
+
+    def __init__(self, source: AssessmentCheckpointStore) -> None:
+        self.source = source
+        self.changes: dict[str, dict[str, Any] | None] = {}
+
+    def load_payload(self, key: str) -> dict[str, Any] | None:
+        if key in self.changes:
+            return deepcopy(self.changes[key])
+        return self.source.load_payload(key)
+
+    def load_item(self, key: str) -> GeneratedQuestion | None:
+        raw = self.load_payload(key)
+        if raw is None:
+            return None
+        try:
+            return GeneratedQuestion.model_validate(raw)
+        except ValidationError as error:
+            raise CheckpointCorrupt(
+                f"checkpoint item {key} does not match the question schema"
+            ) from error
+
+    def save_item(self, key: str, question: GeneratedQuestion) -> None:
+        self.save_payload(key, question.model_dump(mode="json"))
+
+    def save_payload(self, key: str, payload: Mapping[str, Any]) -> None:
+        self.changes[key] = deepcopy(dict(payload))
+
+    def discard_item(self, key: str) -> None:
+        self.changes[key] = None
+
+    def commit(self) -> None:
+        for key, payload in self.changes.items():
+            if payload is None:
+                self.source.discard_item(key)
+            else:
+                self.source.save_payload(key, payload)
+        self.changes.clear()
 
 
 class CheckpointMismatch(ValueError):

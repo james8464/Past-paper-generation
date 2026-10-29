@@ -7,14 +7,17 @@ import re
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from threading import Lock
 
-from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
+from Backend.Core.assessment_checkpoints import (
+    AssessmentCheckpointStore,
+    DeferredCheckpoints,
+)
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
 from Backend.Core.candidate_identity import edexcel_difficulty_candidate_projection
+from Backend.Core.events import GenerationUpdate
 from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
@@ -28,7 +31,7 @@ from Backend.Core.model_review import (
 )
 from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
-from Backend.Core.review_workers import map_reviews
+from Backend.Core.review_workers import local_generation_workers, map_reviews
 from pastpapergen.extended_scenarios import SCENARIOS
 from pastpapergen.models import (
     MultipleChoiceOption,
@@ -149,10 +152,8 @@ def generate_questions_with_ollama(
     emit = progress or (lambda _message: None)
     total = len(blueprint.questions)
     results: dict[int, QuestionBlueprint] = {}
-    results_lock = Lock()
-    # Ollama serves one generation sequence per loaded local model. Sending several
-    # long exam prompts at once only queues work inside the server and makes the
-    # client-side requests time out. Hosted providers can still run concurrently.
+    # Local concurrency is opt-in and independent of hosted batching/fallback policy.
+    local_workers = local_generation_workers(client)
     supports_parallel = getattr(
         client,
         "supports_parallel_generation",
@@ -160,7 +161,11 @@ def generate_questions_with_ollama(
     )
     max_workers = max(1, min(total, 4)) if supports_parallel else 1
 
-    def _build_task(question_index: int, question: QuestionBlueprint) -> str:
+    def _build_task(
+        question_index: int,
+        question: QuestionBlueprint,
+        checkpoint_store=checkpoint_store,
+    ) -> tuple[QuestionBlueprint, str]:
         index = question_index + 1
         checkpoint_key = f"question-{question.number}"
         if checkpoint_store is not None:
@@ -184,10 +189,9 @@ def generate_questions_with_ollama(
                 except (ValueError, TypeError):
                     checkpoint_store.discard_item(checkpoint_key)
                 else:
-                    with results_lock:
-                        results[question_index] = candidate
                     return (
-                        f"Resumed reviewed question {index}/{total}: {question.number}"
+                        candidate,
+                        f"Resumed reviewed question {index}/{total}: {question.number}",
                     )
         try:
             topic = syllabus.get_topic(question.topic_id)
@@ -195,10 +199,11 @@ def generate_questions_with_ollama(
             raise ValueError(
                 f"unknown topic {question.topic_id!r} for question {question.number}"
             ) from error
-        emit(
-            f"Generating question {index}/{total}: {question.number} "
-            f"(Section {question.section}, {question.marks} marks, {topic.title})"
-        )
+        if local_workers == 1:
+            emit(
+                f"Generating question {index}/{total}: {question.number} "
+                f"(Section {question.section}, {question.marks} marks, {topic.title})"
+            )
         if _uses_review_only_generation(question):
             require_independent_review(
                 client,
@@ -216,11 +221,10 @@ def generate_questions_with_ollama(
                     checkpoint_key,
                     reviewed.model_dump(mode="json"),
                 )
-            with results_lock:
-                results[question_index] = reviewed
             return (
+                reviewed,
                 f"Reviewed immutable question {index}/{total}: "
-                f"{question.number} ({topic.title})"
+                f"{question.number} ({topic.title})",
             )
         base_prompt = build_question_prompt(question, topic, blueprint.paper_id)
         failure = ""
@@ -320,16 +324,51 @@ def generate_questions_with_ollama(
                 checkpoint_key,
                 candidate.model_dump(mode="json"),
             )
-        with results_lock:
-            results[question_index] = candidate
         return (
+            candidate,
             f"Generated and reviewed question {index}/{total}: "
-            f"{question.number} ({topic.title})"
+            f"{question.number} ({topic.title})",
         )
 
-    if max_workers == 1:
+    if local_workers > 1:
+        jobs = [
+            (
+                index,
+                question,
+                DeferredCheckpoints(checkpoint_store)
+                if checkpoint_store is not None
+                else None,
+            )
+            for index, question in enumerate(blueprint.questions)
+        ]
+
+        def accept(index, result):
+            deferred = jobs[index][2]
+            if deferred is not None:
+                deferred.commit()
+            results[index] = result[0]
+
+        def report(_index, completed):
+            emit(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted {completed} of {total} AI questions",
+                    completed_units=completed,
+                    total_units=total,
+                )
+            )
+
+        map_reviews(
+            jobs,
+            lambda job: _build_task(*job),
+            workers=local_workers,
+            on_result=accept,
+            progress=report,
+        )
+    elif max_workers == 1:
         for index, question in enumerate(blueprint.questions):
-            emit(_build_task(index, question))
+            results[index], message = _build_task(index, question)
+            emit(message)
     else:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = {
@@ -340,7 +379,9 @@ def generate_questions_with_ollama(
             next_message = 0
             for future in as_completed(futures):
                 question_index = futures[future]
-                completed_messages[question_index] = future.result()
+                results[question_index], completed_messages[question_index] = (
+                    future.result()
+                )
                 while next_message in completed_messages:
                     emit(completed_messages.pop(next_message))
                     next_message += 1
