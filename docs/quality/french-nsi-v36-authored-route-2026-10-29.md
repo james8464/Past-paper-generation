@@ -30,14 +30,17 @@ Missing eligible material refuses before any model request. The isolated
 a qualified full-paper route.
 
 Existing exercise validators check exact credits, question identifiers,
-curriculum codes, material links and timing sums. Only V36 passes an explicit
+curriculum codes and material links. Only V36 passes an explicit
 validation context that treats self-reported cognitive labels as profile
 warnings, not proof of actual demand or a reason to reject otherwise sound
 content. Historical/default validation retains its previous thresholds. An
 inconsistency between declared broad domains and valid Terminale objective codes
 also produces a V36 metadata warning, without rewriting either field. Unknown
 domains or objective codes still refuse; a real curriculum-alignment rejection
-from the subsequent question review remains blocking. An
+from the subsequent question review remains blocking. A sum mismatch between
+per-question indicative times and the exercise allocation also warns, recording
+both values without altering them. The official total remains 210 minutes; these
+estimates are not observed learner times. An
 explicit empty materials list permits code-only or conceptual exercises;
 omitting the field still refuses. Incorrect credits, unsafe code, unanswered
 questions and negative model reviews remain blocking.

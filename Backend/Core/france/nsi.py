@@ -342,7 +342,7 @@ class NSIExercise(BaseModel):
         }
         if not v36_profile and set(self.topics) - covered_topics:
             raise ValueError("Un thème annoncé du programme n'est pas évalué")
-        if (
+        if not v36_profile and (
             sum(question.estimated_minutes for question in self.questions)
             != self.minutes
         ):

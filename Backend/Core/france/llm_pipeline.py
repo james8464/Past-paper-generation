@@ -363,6 +363,21 @@ def _verification_evidence(
                     "reason": "Les domaines déclarés et les capacités indiquées ne coïncident pas. Ce signal de métadonnées ne prouve pas un écart au programme.",
                 }
             )
+        estimated_sum = sum(
+            question.estimated_minutes for question in exercise.questions
+        )
+        if estimated_sum != exercise.minutes:
+            warnings.append(
+                {
+                    "exercise_id": exercise.id,
+                    "question_id": exercise.questions[0].id,
+                    "state": "profile_warning",
+                    "code": "indicative_time_sum",
+                    "question_estimated_minutes": estimated_sum,
+                    "exercise_allocated_minutes": exercise.minutes,
+                    "reason": "La somme des estimations par question diffère du temps indicatif de l'exercice. Ces estimations ne sont pas des temps observés auprès d'élèves.",
+                }
+            )
         if not set(exercise.topics) - covered_topics:
             warnings.append(
                 {

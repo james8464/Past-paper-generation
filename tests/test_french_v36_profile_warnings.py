@@ -184,3 +184,36 @@ def test_domain_warning_context_still_refuses_unknown_taxonomy_and_missing_docum
     change(raw)
     with pytest.raises((ValueError, SchemaValidationError)):
         subject.validate_authored_exercise(raw, "1")
+
+
+def test_indicative_question_time_sum_warns_without_changing_official_duration(
+    tmp_path,
+):
+    def mismatch(raw):
+        for question in raw["questions"]:
+            question["estimated_minutes"] = 10
+
+    raw = raw_exercise()
+    mismatch(raw)
+    with pytest.raises(ValueError, match="temps des questions"):
+        NSIExercise.model_validate(raw)
+    assert subject.validate_authored_exercise(raw, "1").minutes == 70
+    package = generate(tmp_path, Client(mutate=mismatch))
+    warnings = [
+        item
+        for item in package["warnings"]
+        if item.get("code") == "indicative_time_sum"
+    ]
+    assert len(warnings) == 3
+    assert all(
+        item["question_estimated_minutes"] == 60
+        and item["exercise_allocated_minutes"] == 70
+        for item in warnings
+    )
+    assert package["minutes"] == 210
+    assert all(exercise["minutes"] == 70 for exercise in package["exercises"])
+    assert all(
+        sum(question["estimated_minutes"] for question in exercise["questions"]) == 60
+        for exercise in package["exercises"]
+    )
+    assert len(subject.validate_package(package)) == 3
