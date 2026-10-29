@@ -45,6 +45,31 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
+    func testBrowsingDuringMLXMetadataCannotChangeTheRequestedGenerationTarget() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let boards = ExamCatalog.readyBoards.filter { $0.usesAI && $0.supports(.apple) }
+        let original = try XCTUnwrap(boards.first)
+        let browsed = try XCTUnwrap(boards.first { $0.id != original.id })
+        application.selectBoard(original)
+        application.aiProvider = .apple
+        application.appleModel = "fixture/model"
+        application.generate()
+        XCTAssertTrue(application.isRunning)
+        application.selectBoard(browsed)
+        XCTAssertEqual(application.selectedBoardID, browsed.id)
+        try approveMLXMetadata(application, backend: backend)
+        application.confirmMLXSetup()
+        let setup = try XCTUnwrap(backend.requests.last)
+        XCTAssertEqual(setup.arguments.first, "setup-mlx")
+        setup.onFinish(.success(0))
+        XCTAssertEqual(backend.requests.count, 2, "Metadata and model setup must not generate the newly browsed paper.")
+        XCTAssertFalse(application.isRunning)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        XCTAssertEqual(application.selectedBoardID, browsed.id)
+    }
+
+    @MainActor
     func testMLXMetadataFailureCancellationOrModelChangeCannotAuthoriseDownload() throws {
         for outcome in ["missing", "error", "wrong-model", "change", "change-back", "cancel"] {
             let backend = ControlledRunBackend()

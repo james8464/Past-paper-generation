@@ -37,6 +37,7 @@ final class ApplicationCoordinator: ObservableObject {
         didSet {
             if appleModel != oldValue {
                 pendingMLXDownloadInfo = nil
+                pendingMLXSetupRetryTarget = nil
                 showMLXSetupConfirmation = false
                 if activeRun?.intent == .mlxDownloadInfo {
                     activeRun?.mlxDownloadInfo = nil
@@ -73,6 +74,7 @@ final class ApplicationCoordinator: ObservableObject {
     private var pendingHostedProvider: AIProvider?
     private var preparedMLXModels: Set<String> = []
     private var pendingMLXDownloadInfo: MLXDownloadInfo?
+    private var pendingMLXSetupRetryTarget: GenerationRetryTarget?
     private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
     // Finished artifacts outlive their process so Documents can keep showing
@@ -866,11 +868,12 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
         pendingMLXDownloadInfo = nil
+        pendingMLXSetupRetryTarget = nil
         showMLXSetupConfirmation = false
         generationProgress = nil
         generationEstimate = nil
         status = InterfaceText.resolve("Checking model download size", language: presentationLanguage)
-        let session = beginRunSession(intent: .mlxDownloadInfo, model: model)
+        let session = beginRunSession(intent: .mlxDownloadInfo, model: model, retryTarget: generationRetryTarget)
         do {
             let process = try backend.run(
                 arguments: ["mlx-download-info", "--model", model],
@@ -907,6 +910,8 @@ final class ApplicationCoordinator: ObservableObject {
 
         showMLXSetupConfirmation = false
         pendingMLXDownloadInfo = nil
+        let retryTarget = pendingMLXSetupRetryTarget
+        pendingMLXSetupRetryTarget = nil
         status = "Setting up Apple MLX"
         generationProgress = 0.05
         progressEntries.removeAll()
@@ -914,7 +919,7 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer?.cancel()
         etaTimer = nil
 
-        let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: generationRetryTarget)
+        let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: retryTarget)
         var arguments = ["setup-mlx", "--model", model]
         if approved.cached { arguments.append("--local-only") }
         if let revision = approved.revision { arguments += ["--revision", revision] }
@@ -937,6 +942,7 @@ final class ApplicationCoordinator: ObservableObject {
     func cancelMLXSetup() {
         showMLXSetupConfirmation = false
         pendingMLXDownloadInfo = nil
+        pendingMLXSetupRetryTarget = nil
         status = "Ready"
     }
 
@@ -1415,6 +1421,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard run.model == appleModel.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if case let .failure(error) = result {
             pendingMLXDownloadInfo = nil
+            pendingMLXSetupRetryTarget = nil
             showMLXSetupConfirmation = false
             progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: error.localizedDescription))
             setError(error.localizedDescription)
@@ -1422,11 +1429,13 @@ final class ApplicationCoordinator: ObservableObject {
         }
         guard case .success(0) = result, run.backendErrorMessage == nil, let info = run.mlxDownloadInfo else {
             pendingMLXDownloadInfo = nil
+            pendingMLXSetupRetryTarget = nil
             showMLXSetupConfirmation = false
             setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
             return
         }
         pendingMLXDownloadInfo = info
+        pendingMLXSetupRetryTarget = run.retryTarget
         status = InterfaceText.resolve("Model download size checked", language: presentationLanguage)
         showMLXSetupConfirmation = true
     }
