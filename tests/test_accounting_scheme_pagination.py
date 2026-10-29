@@ -362,3 +362,71 @@ def test_mcq_renderer_uses_choices_and_key_not_mutable_scheme_prose(paths, tmp_p
         "."
     )
     assert expected in text
+
+
+def _render_live_gearing_choice(paths, suffix):
+    """Reproduce the accepted live Q05 without depending on ignored artifacts."""
+    data = json.loads(paths["assessment_package"].read_text(encoding="utf-8"))
+    question = data["blueprint"]["sections"][0]["options"][0]["questions"][4]
+    question["prompt"] = (
+        "Select the statement that correctly describes how an increase in "
+        "long-term debt affects a company's gearing ratio."
+    )
+    question["choices"] = [
+        f"It decreases the gearing of the business{suffix}",
+        f"It increases the gearing of the business{suffix}",
+        f"It has no effect on the gearing of the business{suffix}",
+        f"It only impacts the liquidity ratios{suffix}",
+    ]
+    question["correct_choice"] = 1
+    answer = question["choices"][1]
+    question["mark_scheme"] = [answer]
+    question["structured_mark_scheme"][0]["text"] = answer
+    data["items"] = _extract_items(
+        data["blueprint"], subject=data["subject"], paper_number="1"
+    )
+    paths["assessment_package"].write_text(json.dumps(data), encoding="utf-8")
+    render_mark_scheme(
+        GeneratedPaper.model_validate(data["blueprint"]), paths["mark_scheme"]
+    )
+
+
+@pytest.mark.parametrize("suffix", ["", "."])
+def test_mcq_credit_validation_accepts_canonical_printed_terminal_stop(paths, suffix):
+    _render_live_gearing_choice(paths, suffix)
+    with pymupdf.open(paths["mark_scheme"]) as document:
+        table = _table(document, 7, ["Question", "Answer", "Mark"])
+        assert table.extract()[5] == [
+            "5",
+            "Option B: It increases the gearing of the business",
+            "1",
+        ]
+    report = conform_generated_documents("accounting_aqa", "1", paths)["mark_scheme"]
+    assert report["checked_parts"] == 21
+
+
+@pytest.mark.parametrize("mutation", ["letter", "missing-row", "text", "credit"])
+def test_punctuated_choice_still_requires_its_exact_printed_row(paths, mutation):
+    _render_live_gearing_choice(paths, ".")
+    with pymupdf.open(paths["mark_scheme"]) as document:
+        page = document[7]
+        table = _table(document, 7, ["Question", "Answer", "Mark"])
+        row = table.rows[5]
+        if mutation == "missing-row":
+            for cell in row.cells:
+                _replace_cell(page, cell, "")
+        elif mutation == "credit":
+            _replace_cell(page, row.cells[2], "2")
+        else:
+            replacement = (
+                "Option A: It increases the gearing of the business"
+                if mutation == "letter"
+                else "Option B: It decreases the gearing of the business"
+            )
+            _replace_cell(page, row.cells[1], replacement)
+        document.saveIncr()
+    with pytest.raises(
+        LayoutConformanceError,
+        match=r"Accounting scheme (printed awards differ|omits or repeats the credit table)",
+    ):
+        conform_generated_documents("accounting_aqa", "1", paths)

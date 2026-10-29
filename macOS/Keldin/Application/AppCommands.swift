@@ -6,7 +6,15 @@ private struct KeldinCreationContextKey: FocusedValueKey {
     typealias Value = KeldinCreationContext
 }
 
+private struct KeldinMainWindowIdentityKey: FocusedValueKey {
+    typealias Value = MainWindowIdentity
+}
+
 extension FocusedValues {
+    var keldinMainWindowIdentity: MainWindowIdentity? {
+        get { self[KeldinMainWindowIdentityKey.self] }
+        set { self[KeldinMainWindowIdentityKey.self] = newValue }
+    }
     var keldinCreationContext: KeldinCreationContext? {
         get { self[KeldinCreationContextKey.self] }
         set { self[KeldinCreationContextKey.self] = newValue }
@@ -14,14 +22,21 @@ extension FocusedValues {
 }
 
 struct AppCommands: Commands {
+    @Environment(\.openWindow) private var openWindow
     @ObservedObject var application: ApplicationCoordinator
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @FocusedObject private var documentActions: DocumentActionController?
+    @FocusedObject private var modelDownloadPresentation: ModelDownloadPresentation?
+    @FocusedObject private var settingsPresentation: SettingsActionPresentation?
+    @FocusedValue(\.keldinMainWindowIdentity) private var mainWindowIdentity
     @FocusedValue(\.keldinCreationContext) private var creationContext
 
     private var canNavigate: Bool {
         KeldinCreationContext.allowsNavigation(
-            from: creationContext, applicationModal: application.hasCommandBlockingPresentation
+            from: creationContext,
+            applicationModal: application.hasCommandBlockingPresentation,
+            mainSceneIsFocused: mainWindowIdentity != nil,
+            settingsModal: modelDownloadPresentation?.blocksCommands == true || settingsPresentation?.blocksCommands == true
         )
     }
 
@@ -56,11 +71,18 @@ struct AppCommands: Commands {
         InterfaceText.resolve(resource, language: interfaceLanguage)
     }
 
+    private func navigate(_ route: MainWindowRoute) {
+        guard canNavigate else { return }
+        MainWindowRouting.navigate(route, application: application) {
+            openWindow(id: MainWindowRouting.sceneID, value: $0)
+        }
+    }
+
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
             Button(localized("New Paper")) {
                 guard canNavigate else { return }
-                application.showCreationWorkspace()
+                navigate(.creation)
             }
                 .keyboardShortcut("n", modifiers: [.command])
                 .disabled(!canNavigate)
@@ -121,13 +143,13 @@ struct AppCommands: Commands {
 
             Button(localized("Open Latest Question Paper")) {
                 guard canNavigate else { return }
-                application.previewGeneratedFile(role: "question_paper")
+                navigate(.latestPreview(role: "question_paper"))
             }
             .disabled(!canNavigate || !application.hasGeneratedFile(role: "question_paper"))
 
             Button(localized("Open Latest Mark Scheme")) {
                 guard canNavigate else { return }
-                application.previewGeneratedFile(role: "mark_scheme")
+                navigate(.latestPreview(role: "mark_scheme"))
             }
             .disabled(!canNavigate || !application.hasGeneratedFile(role: "mark_scheme"))
 
@@ -140,21 +162,21 @@ struct AppCommands: Commands {
         CommandMenu(localized("Tools")) {
             Button(localized("Show Documents")) {
                 guard canNavigate else { return }
-                application.showDocuments()
+                navigate(.documents)
             }
                 .keyboardShortcut("d", modifiers: [.command, .shift])
                 .disabled(!canNavigate)
 
             Button(localized("Show History")) {
                 guard canNavigate else { return }
-                application.showHistory()
+                navigate(.history)
             }
                 .keyboardShortcut("y", modifiers: [.command, .shift])
                 .disabled(!canNavigate)
 
             Button(localized("Show Benchmark")) {
                 guard canNavigate else { return }
-                application.showBenchmarkPage()
+                navigate(.benchmark)
             }
             .keyboardShortcut("b", modifiers: [.command, .shift])
             .disabled(!canNavigate)
@@ -163,9 +185,9 @@ struct AppCommands: Commands {
 
             Button(localized("Run Benchmark")) {
                 guard canNavigate else { return }
-                application.startBenchmark()
+                navigate(.runBenchmark)
             }
-                .disabled(!canNavigate || application.isRunning || application.benchmarkCoordinator.isRunning)
+                .disabled(!canNavigate || application.hasCommandBlockingPresentation || application.isRunning || application.benchmarkCoordinator.isRunning)
 
             Button(localized("Cancel Benchmark"), action: application.cancelBenchmark)
                 .disabled(!application.benchmarkCoordinator.isRunning)
@@ -178,14 +200,14 @@ struct AppCommands: Commands {
         CommandGroup(replacing: .help) {
             Button(localized("Keldin Help")) {
                 guard canNavigate else { return }
-                application.showHelpGuide()
+                navigate(.help(.gettingStarted))
             }
             .keyboardShortcut("h", modifiers: [.command, .shift])
             .disabled(!canNavigate)
 
             Button(localized("Show Welcome Guide")) {
                 guard canNavigate else { return }
-                application.showWelcomeGuide()
+                navigate(.welcome)
             }
             .disabled(!canNavigate)
 

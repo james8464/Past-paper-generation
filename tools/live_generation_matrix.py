@@ -240,11 +240,15 @@ def run_matrix(
         ]
         if not error_messages and return_code != 0:
             error_messages = [_process_failure_message(return_code, timed_out, stderr)]
+        protocol_error = _completion_protocol_error(events)
+        if return_code == 0 and protocol_error and not error_messages:
+            error_messages.append(protocol_error)
         generation_passed = (
             return_code == 0
+            and not timed_out
             and not missing_roles
             and not missing_files
-            and any(event.get("type") == "done" for event in events)
+            and protocol_error is None
         )
         current_identity = _request_identity(
             job,
@@ -469,6 +473,16 @@ def _events(stdout: str) -> list[dict[str, Any]]:
     return result
 
 
+def _completion_protocol_error(events: list[dict[str, Any]]) -> str | None:
+    if any(event.get("type") == "error" for event in events):
+        return "backend reported an error event"
+    if sum(event.get("type") == "done" for event in events) != 1:
+        return "backend must emit exactly one completion event"
+    if events[-1].get("type") != "done":
+        return "backend emitted events after completion"
+    return None
+
+
 def _request_identity(
     job: MatrixJob,
     *,
@@ -547,6 +561,12 @@ def _resumable_result(
         return None
     if not isinstance(result, dict) or result.get("passed") is not True:
         return None
+    if (
+        result.get("errors")
+        or result.get("return_code", 0) != 0
+        or result.get("timed_out")
+    ):
+        return None
     if result.get("request_identity") != request_identity:
         return None
     if (
@@ -573,6 +593,11 @@ def _resumable_result(
         return None
     events_path = path.parent / "events.jsonl"
     if not events_path.is_file() or _sha256(events_path) != result.get("events_sha256"):
+        return None
+    try:
+        if _completion_protocol_error(_events(events_path.read_text(encoding="utf-8"))):
+            return None
+    except (OSError, UnicodeError):
         return None
     demand = _read_package_manifest(files.get("assessment_package")).get(
         "reference_demand"

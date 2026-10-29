@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from tools.audit_coverage import LEDGER_PATH, tracked_paths, validate_ledger
 from tools.repository_hygiene import classify_path, inspect_repository
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,6 +23,11 @@ def test_committed_inventory_matches_the_current_repository() -> None:
     )
 
     assert committed == inspect_repository(ROOT)
+
+
+def test_committed_reviews_match_tracked_source_and_evidence() -> None:
+    ledger = json.loads((ROOT / LEDGER_PATH).read_text(encoding="utf-8"))
+    assert validate_ledger(ledger, tracked_paths(ROOT), root=ROOT) == []
 
 
 def test_generated_and_binary_outputs_are_rejected() -> None:

@@ -27,11 +27,26 @@ def write_json_atomically(
         prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
     )
     temporary = Path(name)
+    handle = None
     try:
-        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+        handle = os.fdopen(descriptor, "w", encoding="utf-8")
+        with handle:
             handle.write(rendered)
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    except BaseException as error:
+        if handle is None:
+            try:
+                os.close(descriptor)
+            except OSError as close_error:
+                error.add_note(
+                    f"Temporary JSON descriptor cleanup failed: {close_error}"
+                )
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            error.add_note(
+                f"Temporary JSON cleanup failed for {temporary}: {cleanup_error}"
+            )
+        raise

@@ -5,6 +5,305 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testOutputFolderBookmarkFailureIsVisibleInSettings() throws {
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, outputFolderBookmark: { _ in
+            throw CocoaError(.fileWriteUnknown)
+        })
+        let owner = application.settingsPresentation
+        owner.activate()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("bookmark-fixture")
+
+        application.setOutputFolder(folder, presentation: owner)
+
+        XCTAssertFalse(application.showError)
+        guard case let .error(message) = owner.request?.kind else { return XCTFail("Expected Settings bookmark failure") }
+        XCTAssertEqual(message, "Keldin n’a pas pu mémoriser l’accès à ce dossier. Sélectionnez-le à nouveau pour conserver l’accès après le redémarrage.")
+        XCTAssertNil(defaults.data(forKey: AppStorageKey.outputFolderBookmark))
+    }
+
+    @MainActor
+    func testOutputFolderBookmarkSuccessPreservesPathAndBookmark() {
+        let defaults = isolatedDefaults()
+        var requestedURLs: [URL] = []
+        let data = Data("fixture bookmark".utf8)
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, outputFolderBookmark: { url in
+            requestedURLs.append(url)
+            return data
+        })
+        let owner = application.settingsPresentation
+        owner.activate()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("bookmark-success")
+
+        application.setOutputFolder(folder, presentation: owner)
+
+        XCTAssertEqual(requestedURLs, [folder])
+        XCTAssertEqual(application.outputFolder, folder)
+        XCTAssertEqual(application.benchmarkCoordinator.outputFolder, folder)
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.outputFolderPath), folder.path)
+        XCTAssertEqual(defaults.data(forKey: AppStorageKey.outputFolderBookmark), data)
+        XCTAssertNil(owner.request)
+    }
+
+    @MainActor
+    func testSettingsConsentApprovalUsesCapturedProviderAndRechecksGeneration() throws {
+        for busy in [false, true] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            let owner = application.settingsPresentation
+            owner.activate()
+            application.selectAIProvider(.openAI, presentation: owner)
+            let request = try XCTUnwrap(owner.request)
+            if busy { application.generateFrenchPaper(largePrint: false) }
+            let originalProvider = application.aiProvider
+            let originalJob = application.generationCoordinator.activeJob
+            guard let approved = owner.consume(id: request.id), case let .hostedConsent(provider) = approved.kind else { return XCTFail("Expected owned consent") }
+
+            application.acceptHostedAIConsent(for: provider, presentation: owner)
+
+            XCTAssertEqual(application.hasHostedAIConsent, !busy)
+            XCTAssertEqual(application.aiProvider, busy ? originalProvider : .openAI)
+            XCTAssertEqual(application.generationCoordinator.activeJob, originalJob)
+            XCTAssertFalse(application.showHostedAIConsent)
+            if busy {
+                XCTAssertTrue(application.isRunning)
+                application.cancelGeneration()
+            } else {
+                XCTAssertEqual(application.modelCoordinator.provider, .openAI)
+                XCTAssertTrue(backend.requests.isEmpty)
+            }
+        }
+    }
+
+    @MainActor
+    func testSettingsDownloadFailureDoesNotOverwriteRetainedMainError() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.apply(.error(message: "Retained Main error", code: "fixture"))
+        let mainMessage = application.errorMessage
+        let owner = application.settingsPresentation
+        owner.activate()
+        backend.launchError = CocoaError(.executableLoad)
+
+        application.confirmPullModel(ModelDownloadRequest(model: "fixture/model"), presentation: owner)
+
+        XCTAssertTrue(application.showError)
+        XCTAssertEqual(application.errorMessage, mainMessage)
+        guard case .error = owner.request?.kind else { return XCTFail("Expected Settings error") }
+        XCTAssertFalse(application.isRunning)
+    }
+
+    @MainActor
+    func testLateSettingsRefreshErrorIsRetainedWithoutInvisiblePresentation() async throws {
+        let backend = DeferredRefreshBackend()
+        let application = application(backend: backend)
+        let owner = application.settingsPresentation
+        owner.activate()
+        application.refreshOllama(presentation: owner)
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        owner.deactivate()
+
+        backend.resumeNext(.failure(CocoaError(.fileReadUnknown)))
+        await waitForRefreshCompletion(application)
+
+        XCTAssertFalse(application.showError)
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.request)
+        XCTAssertEqual(application.progressEntries.last?.stage, "error")
+        owner.activate()
+        guard case .error = owner.request?.kind else { return XCTFail("Expected retained Settings error") }
+    }
+
+    @MainActor
+    func testMainRefreshFailureDoesNotBecomeSettingsOwnedWhenFocusChanges() async throws {
+        let backend = DeferredRefreshBackend()
+        let application = application(backend: backend)
+        application.refreshOllama()
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        application.settingsPresentation.activate()
+
+        backend.resumeNext(.failure(CocoaError(.fileReadUnknown)))
+        await waitForRefreshCompletion(application)
+
+        XCTAssertTrue(application.showError)
+        XCTAssertNil(application.settingsPresentation.request)
+        XCTAssertFalse(application.settingsPresentation.blocksCommands)
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: application.hasCommandBlockingPresentation, mainSceneIsFocused: false))
+    }
+
+    @MainActor
+    func testSettingsPersistenceErrorStaysWithItsExplicitOwner() {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, secrets: FailingSettingsSecrets())
+        let settings = application.settingsPresentation
+        settings.activate()
+        application.openAIAPIKey = "PRIVATE_TEST_KEY"
+
+        application.saveAISettings(presentation: settings)
+
+        XCTAssertFalse(application.showError)
+        XCTAssertTrue(settings.blocksCommands)
+        guard case let .error(message) = settings.request?.kind else { return XCTFail("Expected a Settings-owned error") }
+        XCTAssertFalse(message.contains("PRIVATE_TEST_KEY"))
+        settings.deactivate()
+        XCTAssertFalse(settings.blocksCommands)
+        settings.activate()
+        XCTAssertEqual(settings.request?.kind, .error(message))
+    }
+
+    @MainActor
+    func testSettingsConsentHasAnExplicitOwnerAndDoesNotPresentOnMain() {
+        let application = application(backend: ControlledRunBackend())
+        let settings = application.settingsPresentation
+        settings.activate()
+        let original = application.aiProvider
+
+        application.selectAIProvider(.openAI, presentation: settings)
+
+        XCTAssertFalse(application.showHostedAIConsent)
+        XCTAssertEqual(settings.request?.kind, .hostedConsent(.openAI))
+        XCTAssertEqual(application.aiProvider, original)
+        settings.deactivate()
+        XCTAssertFalse(settings.blocksCommands)
+        XCTAssertNil(settings.request)
+        XCTAssertFalse(application.hasHostedAIConsent)
+        settings.activate()
+        XCTAssertNil(settings.request)
+    }
+
+    @MainActor
+    func testDownloadRequestDoesNotBlockAnUnrelatedWindowGlobally() {
+        let application = application(backend: ControlledRunBackend())
+        application.modelToPull = "fixture/model"
+
+        let request = application.requestPullModel()
+
+        XCTAssertEqual(request?.model, "fixture/model")
+        XCTAssertFalse(application.hasCommandBlockingPresentation)
+    }
+
+    @MainActor
+    func testRecommendedDownloadRequestAndCancelPreserveTheSelectedModel() {
+        let defaults = isolatedDefaults()
+        defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, defaults: defaults)
+
+        XCTAssertTrue(application.canRequestModelDownload)
+        let presentation = ModelDownloadPresentation()
+        presentation.present(application.requestRecommendedOllamaModel())
+
+        XCTAssertEqual(application.modelToPull, application.ollamaRecommendation.model)
+        XCTAssertTrue(presentation.isPresented)
+        XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+        XCTAssertEqual(application.settingsStore.ollamaModel, "fixture/previous-model")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+        if let request = presentation.request { presentation.dismiss(id: request.id) }
+        XCTAssertFalse(presentation.isPresented)
+        XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+        XCTAssertTrue(backend.requests.isEmpty)
+    }
+
+    @MainActor
+    func testExplicitUseRecommendedModelStillPersistsWithoutDownloading() {
+        let defaults = isolatedDefaults()
+        defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, defaults: defaults)
+
+        application.useRecommendedOllamaModel()
+
+        XCTAssertEqual(application.selectedModel, application.ollamaRecommendation.model)
+        XCTAssertEqual(application.settingsStore.ollamaModel, application.ollamaRecommendation.model)
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), application.ollamaRecommendation.model)
+        XCTAssertFalse(application.hasCommandBlockingPresentation)
+        XCTAssertTrue(backend.requests.isEmpty)
+    }
+
+    @MainActor
+    func testModelDownloadRequestsDoNotChangeAnythingWhileWorkIsBusy() {
+        for benchmark in [false, true] {
+            let defaults = isolatedDefaults()
+            defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend, defaults: defaults)
+            if benchmark { application.startBenchmark() }
+            else { application.generateFrenchPaper(largePrint: false) }
+            application.modelToPull = "fixture/draft-tag"
+            XCTAssertFalse(application.canRequestModelDownload)
+
+            XCTAssertNil(application.requestRecommendedOllamaModel())
+            XCTAssertNil(application.requestPullModel())
+            XCTAssertNil(application.pullSelectedModel())
+
+            XCTAssertFalse(application.hasCommandBlockingPresentation)
+            XCTAssertEqual(application.modelToPull, "fixture/draft-tag")
+            XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+            XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+            XCTAssertEqual(backend.requests.count, 1)
+            if benchmark { application.cancelBenchmark() }
+            else { application.cancelGeneration() }
+        }
+    }
+
+    @MainActor
+    func testRecommendedDownloadSelectsOnlyItsCapturedSuccessfulModel() throws {
+        for outcome in ["success", "nonzero", "throw", "error", "cancel"] {
+            let defaults = isolatedDefaults()
+            defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend, defaults: defaults)
+            let request = try XCTUnwrap(application.requestRecommendedOllamaModel())
+            let requested = request.model
+            application.modelToPull = "fixture/changed-before-approval"
+            application.confirmPullModel(request)
+            let run = try XCTUnwrap(backend.requests.first)
+            application.modelToPull = "fixture/later-draft"
+            switch outcome {
+            case "success": run.onFinish(.success(0))
+            case "nonzero": run.onFinish(.success(7))
+            case "throw": run.onFinish(.failure(CocoaError(.fileReadUnknown)))
+            case "error":
+                run.onEvent(.error(message: "Fixture download failure", code: "fixture"))
+                run.onFinish(.success(0))
+            default:
+                application.cancelGeneration()
+                run.onFinish(.success(0))
+            }
+            let expected = outcome == "success" ? requested : "fixture/previous-model"
+            XCTAssertEqual(application.selectedModel, expected, outcome)
+            XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), expected, outcome)
+            XCTAssertFalse(application.isRunning)
+        }
+    }
+
+    @MainActor
+    func testDownloadApprovalIsConsumedOnceAndRechecksBusyOwnership() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let presentation = ModelDownloadPresentation()
+        application.modelToPull = "fixture/captured"
+        presentation.present(application.requestPullModel())
+        let request = try XCTUnwrap(presentation.request)
+        if let approved = presentation.consume(id: request.id) { application.confirmPullModel(approved) }
+        if let duplicate = presentation.consume(id: request.id) { application.confirmPullModel(duplicate) }
+        XCTAssertEqual(backend.requests.count, 1)
+        application.cancelGeneration()
+
+        application.modelToPull = "fixture/next"
+        presentation.present(application.requestPullModel())
+        let next = try XCTUnwrap(presentation.request)
+        application.startBenchmark()
+        if let approved = presentation.consume(id: next.id) { application.confirmPullModel(approved) }
+        XCTAssertEqual(backend.requests.count, 2) // One download, then one benchmark.
+        XCTAssertFalse(application.isRunning)
+        XCTAssertFalse(presentation.isPresented)
+        application.cancelBenchmark()
+    }
+
+    @MainActor
     func testMLXSetupContinuesOnlyTheUnchangedLaunchTarget() throws {
         for change in ["none", "board", "paper", "provider", "model", "dryRun", "output"] {
             let backend = ControlledRunBackend()
@@ -232,7 +531,7 @@ final class RunIsolationTests: XCTestCase {
             let files = application.currentGenerationFiles
             application.modelToPull = "fixture-model"
             if setupMLX { application.confirmMLXSetup() }
-            else { application.confirmPullModel() }
+            else { application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull)) }
             let run = try XCTUnwrap(backend.requests.first)
 
             run.onEvent(.file(role: "question_paper", path: "/fixture/not-a-paper.pdf"))
@@ -319,7 +618,7 @@ final class RunIsolationTests: XCTestCase {
         let status = application.status
         application.modelToPull = "fixture-model"
 
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         application.confirmMLXSetup()
 
         XCTAssertEqual(backend.requests.count, 1)
@@ -339,7 +638,7 @@ final class RunIsolationTests: XCTestCase {
         let status = application.status
         application.modelToPull = "fixture-model"
 
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         application.confirmMLXSetup()
 
         XCTAssertEqual(backend.requests.count, 1)
@@ -373,7 +672,7 @@ final class RunIsolationTests: XCTestCase {
             let originalBytes = try Data(contentsOf: historyFile)
             application.modelToPull = "fixture-model"
 
-            application.confirmPullModel()
+            application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
             let pull = try XCTUnwrap(backend.requests.last)
             XCTAssertEqual(backend.requests.count, 2)
             pull.onFinish(outcome)
@@ -393,7 +692,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend, defaults: defaults)
         let originalModel = application.selectedModel
         application.modelToPull = "fixture-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         let pull = try XCTUnwrap(backend.requests.first)
 
         pull.onFinish(.success(7))
@@ -426,7 +725,7 @@ final class RunIsolationTests: XCTestCase {
         let historyFile = history.appendingPathComponent("\(job.id.uuidString).json")
         let originalBytes = try Data(contentsOf: historyFile)
         application.modelToPull = "fixture-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
 
         application.cancelGeneration()
 
@@ -598,7 +897,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend)
         let originalModel = application.selectedModel
         application.modelToPull = "cancelled-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         let cancelled = try XCTUnwrap(backend.requests.first)
         application.cancelGeneration()
         application.generateFrenchPaper(largePrint: false)
@@ -802,7 +1101,11 @@ final class RunIsolationTests: XCTestCase {
 
     @MainActor
     private func application(
-        backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil
+        backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil,
+        secrets: any SecretStoring = RunIsolationSecrets(),
+        outputFolderBookmark: @escaping (URL) throws -> Data = { url in
+            try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+        }
     ) -> ApplicationCoordinator {
         let defaults = defaults ?? isolatedDefaults()
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
@@ -810,7 +1113,8 @@ final class RunIsolationTests: XCTestCase {
         let history = historyDirectory ?? FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRunIsolation-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: history) }
         return ApplicationCoordinator(
-            defaults: defaults, secrets: RunIsolationSecrets(), historyDirectory: history, backend: backend
+            defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend,
+            outputFolderBookmark: outputFolderBookmark
         )
     }
 
@@ -834,6 +1138,11 @@ final class RunIsolationTests: XCTestCase {
             )
         )
     }
+}
+
+private final class FailingSettingsSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) throws { throw SecretStoreError.unexpected(operation: .write) }
 }
 
 // Each instance is driven synchronously by one main-actor test. Captured callbacks

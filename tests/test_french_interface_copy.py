@@ -63,9 +63,28 @@ def test_document_commands_do_not_target_the_document_behind_a_guide():
         "showError",
         "showHostedAIConsent",
         "showMLXSetupConfirmation",
-        "showPullConfirmation",
     ):
         assert presentation in modal
+    assert "showPullConfirmation" not in coordinator
+    assert "modelDownloadPresentation?.blocksCommands == true" in navigation
+    assert "settingsPresentation?.blocksCommands == true" in navigation
+    assert "mainSceneIsFocused: mainWindowIdentity != nil" in navigation
+    assert "@FocusedObject private var modelDownloadPresentation" in source
+    settings = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    assert ".focusedSceneObject(downloadPresentation)" in settings
+    assert "presenting: downloadPresentation.request" in settings
+    assert "downloadPresentation.consume(id: request.id)" in settings
+    assert "downloadPresentation.presentationDidDismiss(id: requestID)" in settings
+    assert ".focusedSceneObject(presentation)" in settings
+    assert "presentation: application.settingsPresentation" in settings
+    assert "AISettingsTab(presentation: application.settingsPresentation)" in settings
+    assert "@ObservedObject var presentation: SettingsActionPresentation" in settings
+    assert "presentation.providerSelection(active: application.aiProvider)" in settings
+    assert "MainWindowRouting.navigate(.help(.choosingAModel)" in settings
+    main = (APP / "Navigation/ContentView.swift").read_text()
+    assert "showPullConfirmation" not in main
+    assert '"Pull Model"' not in main
+    assert r".focusedSceneValue(\.keldinMainWindowIdentity, .primary)" in main
 
 
 def test_help_containers_keep_localisable_resources_and_stable_identity():

@@ -100,8 +100,11 @@
     {
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed read-only permissions, per-ref concurrency cancellation, explicit seven-generator installation, lint/format/test steps, separate macOS tests/Store-mode build and failure-only diagnostics. Both jobs have deadlines. Action references use version tags, not immutable commit pins; pinning them is a separate supply-chain improvement. No protection settings were changed.",
+      "source_sha256": "77b45688f869e4312d389163c9f4ee8f850f134b19b0a57bf0325f8383f855fa",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": ".gitignore",
@@ -1204,8 +1207,11 @@
     {
       "path": "Backend/Core/qualification/manifest.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Fixed the same publication/descriptor boundaries. Policies reject empty levels, empty gate tuples, blank names and duplicates. An empty tuple introduced through mutation or constructor bypass still cannot qualify through `all(())`.",
+      "source_sha256": "30d1aa1828b59698fb106f4f777f535cbc9bd9b2236647f00821c916631809dc",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "Backend/Core/reference_demand.py",
@@ -2600,6 +2606,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/accounting-v11-final-validation-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/accounting-v11-public-credit-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -2900,6 +2912,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/implementation-audit-file-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -2966,6 +2984,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-storage-build-integrity-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3008,6 +3032,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/reference-live-fidelity-2026-09-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3045,6 +3075,12 @@
     },
     {
       "path": "docs/quality/trusted-generation-requests-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/window-settings-release-acceptance-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3520,14 +3556,26 @@
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed launch/test-host separation, scene ownership and the value-keyed Main window. The stable primary value keeps menu-open requests directed at one logical Main scene. Existing test-host defaults avoid real Keychain access. Optional TipKit setup still tolerates failure. Migration errors and Main presentations retain their existing flags.",
+      "source_sha256": "2821fa012ef36bd50630f157a2c0af4399c1658518abebd83059e4024500378c",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/Application/MainWindowRouting.swift",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Reviewed all routes and action ordering. Pending Main presentations reopen their host without another route mutation, dialog or benchmark. Normal benchmark routing selects and opens its destination before starting work. No view/window object or closure is stored in a focus key.",
+      "source_sha256": "ed44c09eb607fd8b92c330707eacdca824fbe6eb59d5e9d4ec6f3bbdd38f0d96",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/AccentColor.colorset/Contents.json",
@@ -3700,8 +3748,11 @@
     {
       "path": "macOS/Keldin/Domain/KeldinCreationContext.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed model-free French readiness, enlarged-print selection and disabled modal contexts. Main-owned blocking applies to focused Main; Settings dialogs block their own scene. Recovery routing still refuses new work until the retained Main prompt is resolved.",
+      "source_sha256": "f75a7ef4d249f3aaaf3f3be2dd59ebd703c3fa73ab189156269ca2c023c888f6",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Domain/NativeInterfaceCopy.swift",
@@ -3878,10 +3929,28 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Keldin/State/ModelDownloadPresentation.swift",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Reviewed immutable request IDs and model snapshots, visible/dismissing phases, matching consumption and replacement safety. An invisible dismissed request cannot disable commands; explicit cancellation and host disappearance consume the matching request.",
+      "source_sha256": "ccdac77c383c580843424b253781ec3ad28a0ebc6b247a8b14215e12fc50b0dc",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
+    },
+    {
       "path": "macOS/Keldin/State/RecentDocumentStore.swift",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/State/SettingsActionPresentation.swift",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Reviewed inactive/idle/presented/dismissing transitions, stale callback rejection and error retention. Closing the host discards pending consent but retains errors for reopening. Derived provider selection shows the captured consent intent and returns to the actual provider after cancellation, without a mirrored selection field. Deferred errors do not overwrite the visible request or flood alerts. The service stores no native window or view.",
+      "source_sha256": "5b9a4a9174c646ab465b732b1dc9fdfa9f017cad0135981681206e17a3316f7e",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/State/SettingsStore.swift",
@@ -3954,6 +4023,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/MainWindowRoutingTests.swift",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Read all five tests and the protocol fake. They check all eight pending-modal routes, normal ordering, benchmark visibility ordering, stable repeated identity and restoration coding. These are routing tests, not proof of actual window reuse.",
+      "source_sha256": "19cca7572d1b89b0cc46ec83321367ca0b4301147eec5b6bc82369f5e31358ba",
+      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Tests/MigrationTests.swift",
@@ -4060,20 +4138,29 @@
     {
       "path": "requirements-build.txt",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed packaged runtime dependencies and Darwin/arm64 markers for MLX and its grammar support. This does not establish model quality or a fresh dependency-resolution result.",
+      "source_sha256": "f2d7914ef11c95181e869de340888c5d1823d24f755c85fbb2a6adc79b122029",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": "requirements-test.txt",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed the explicit setuptools build-backend dependency needed by clean Python 3.12 wheel-parity tests, test-only dependencies and bounded major versions. A version range is not a reproducible lock or a dependency security audit.",
+      "source_sha256": "2fe9b6b76fb673296113eb2cc27e50afa6974d2e7053e6c93385dee33b417c70",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": "ruff.toml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed Python 3.12 target, lint rules, explicit test/import exceptions and formatter exclusions. The 29 exact-byte French catalogue files stay linted; their formatting exclusion preserves retained replay identities. These exclusions do not establish a semantic review of those files.",
+      "source_sha256": "847ccb23dcdc629fd8d2f801dac3e7ab7a330663d2c601a628a1462206fd712a",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": "tests/fixtures/assessment_prompt_snapshots.json",
@@ -4210,14 +4297,20 @@
     {
       "path": "tests/test_atomic_json.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Added successful-commit cleanup refusal, combined primary/secondary faults, cancellation preservation and unclaimed-descriptor checks. Existing complete-document concurrency tests remain.",
+      "source_sha256": "500aa0ec7045b3a39e2098ba83653dd3c54d8e143325369c259a66ae1693d63b",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tests/test_audit_coverage.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Read all tests, including isolated Git fixtures, malformed schemas, forged exclusions, changed evidence, external symlinks, symlink loops and stale source. The fixtures use temporary repositories and do not stage the user's project. All 32 tests passed in 1.25 seconds during this review.",
+      "source_sha256": "2eaa9f6afaeb9062eee622548a9e4e3d25fb9c52d77317178609034dc34f2f72",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": "tests/test_build_script_integrity.py",
@@ -4288,8 +4381,11 @@
     {
       "path": "tests/test_coverage_matrix.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Added twelve explicit state combinations, including inconsistent higher passes and inapplicable prerequisites. Tests preserve input evidence and current resource determinism.",
+      "source_sha256": "a8aed20fb9e32c2232801b8e6106ec5ed0accc935c55fa5c5ef1058250c7f5fe",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tests/test_cs_delivery_chrome.py",
@@ -5002,14 +5098,20 @@
     {
       "path": "tests/test_live_generation_matrix.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Read and extended fresh/resumed error-before-done, error-after-done, missing/duplicate completion and parsed events after completion cases. Valid historical cases remain tested.",
+      "source_sha256": "898c21232b87ce05dbfad489024b2e433209e3e057e79cceead8ca9ae89c566e",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tests/test_live_process.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Read fully; retained progress, timeout, interruption, missing executable and descendant-cleanup cases. No extra finding.",
+      "source_sha256": "18850a95fdc740e4808ebe629abc7b82dcbef761ade471aa8812710e18d2eaf0",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tests/test_mark_scheme_enrichment.py",
@@ -5158,8 +5260,11 @@
     {
       "path": "tests/test_qualification_manifest.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Added cleanup/descriptor faults, invalid policies and mutated/constructed empty-policy bypasses.",
+      "source_sha256": "99a64db4cded660e81c23facce425e53062fb2e707bb6c25f25978c9c9e8ac6a",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tests/test_reference_corpus.py",
@@ -5314,14 +5419,20 @@
     {
       "path": "tools/atomic_json.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Removed redundant cleanup after successful replacement. Failures preserve the original exception and add diagnostics if temporary cleanup also fails. Failed stream construction closes the descriptor that has not transferred ownership.",
+      "source_sha256": "7606c5ff9dab3635dfd90494ec5605109d863c4ad5f7d47d67b365b421962387",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tools/audit_coverage.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reviewed canonical relative paths, source-first classification, exact field validation, tracked evidence membership, source/evidence hashes, symlink containment and stale-review handling. Regeneration preserves valid reviews and returns changed source to pending. Invalid evidence refuses regeneration. The CLI writes derived metadata directly, so an interrupted write may require regeneration; it is not a crash-durable application data store.",
+      "source_sha256": "ed66424637fbccd4b1c3572512908583a3a81593e65442d7c2c077e4b1baec67",
+      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
+      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
       "path": "tools/build_layout_masters.py",
@@ -5356,8 +5467,11 @@
     {
       "path": "tools/coverage_matrix.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "An inapplicable gate can satisfy a permitted prerequisite, but cannot count as observed calibration. Higher displayed levels require satisfied lower prerequisites and an actual pass at the displayed level. The checked-in matrix is unchanged.",
+      "source_sha256": "53d0f1e142f0903172265e8f05ef4d2973868f187fdd25ca6719ac176fc7d48b",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tools/difficulty_calibration.py",
@@ -5380,14 +5494,20 @@
     {
       "path": "tools/live_generation_matrix.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Fixed acceptance of contradictory events. Fresh and resumed results now require an error-free parsed-event stream with exactly one final completion. A zero exit code does not override an error event or timeout. Retained request, model, event and artifact identities remain checked.",
+      "source_sha256": "0d9f36b5379bcf8ab38e0d2dcabf8592a3409851757678c82a5dd30eb772aa01",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tools/live_process.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Read fully; no additional actionable finding. Reviewed finite deadlines, streaming logs, interruption, process reaping and descendant termination. Existing tests establish the stated process-lifecycle scope.",
+      "source_sha256": "19b01621e76bf0185126198b6d87d04a0d5756966fca4a23dd75d45523d2a5db",
+      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
     },
     {
       "path": "tools/ocr_computer_science_calibration.py",

@@ -267,15 +267,20 @@ def _paper_rows(
         checks = paper.get("checks", paper.get("gates", {}))
         check_values = {gate: checks[gate] for gate in readiness_gates}
         qualification = paper["qualification"]
-        empirical = qualification["empirical"]["state"] in {
-            "passed",
-            "not_applicable",
-        }
-        visual = qualification["visual"]["state"] in {"passed", "not_applicable"}
-        engineering = qualification["engineering"]["state"] in {
-            "passed",
-            "not_applicable",
-        }
+        engineering_state = qualification["engineering"]["state"]
+        visual_state = qualification["visual"]["state"]
+        satisfied_states = {"passed", "not_applicable"}
+        engineering_satisfied = engineering_state in satisfied_states
+        visual_satisfied = visual_state in satisfied_states
+        # An inapplicable prerequisite can be satisfied without being evidence
+        # that calibration was performed at that level.
+        empirical = (
+            qualification["empirical"]["state"] == "passed"
+            and engineering_satisfied
+            and visual_satisfied
+        )
+        visual = visual_state == "passed" and engineering_satisfied
+        engineering = engineering_state == "passed"
         if empirical:
             status = "empirically-calibrated"
         elif visual:

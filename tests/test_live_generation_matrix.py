@@ -8,12 +8,75 @@ import pytest
 from tools.live_generation_matrix import (
     REGISTRY_PATH,
     _request_identity,
+    _resumable_result,
     _sha256,
     matrix_jobs,
     matrix_markdown,
     run_matrix,
 )
 from tools.live_process import BackendRun
+
+
+@pytest.mark.parametrize(
+    "terminal_events, expected",
+    [
+        ([{"type": "done"}], True),
+        ([{"type": "progress"}, {"type": "done"}], True),
+        ([{"type": "error", "message": "failed"}, {"type": "done"}], False),
+        ([{"type": "done"}, {"type": "error", "message": "failed"}], False),
+        ([{"type": "done"}, {"type": "progress"}], False),
+        ([{"type": "done"}, {"type": "done"}], False),
+        ([], False),
+    ],
+)
+def test_matrix_requires_an_error_free_terminal_event_stream(
+    tmp_path, monkeypatch, terminal_events, expected
+):
+    job = jobs()[0]
+
+    def complete(command, **_kwargs):
+        run_dir = Path(command[command.index("--output") + 1])
+        events = []
+        for role in (*job.expected_roles, "package_manifest"):
+            path = run_dir / f"{role}.json"
+            path.write_text(json.dumps({"reference_demand": {"passed": True}}))
+            events.append({"type": "file", "role": role, "path": str(path)})
+        return BackendRun(
+            0, False, "\n".join(map(json.dumps, events + terminal_events)), "", 1000
+        )
+
+    monkeypatch.setattr("tools.live_generation_matrix.run_backend", complete)
+    report = run_matrix(
+        [job],
+        output_root=tmp_path,
+        command_prefix=["backend"],
+        model="gemma4:12b",
+        provider="ollama",
+        ollama_url="http://localhost:11434",
+        base_seed=42,
+        timeout_seconds=30,
+        dry_run=False,
+        resume=False,
+    )
+    result = report["results"][0]
+    assert result["passed"] is expected
+    assert result["generation_passed"] is expected
+    manifest = json.loads(Path(result["qualification_manifest"]).read_text())
+    assert manifest["gate_results"]["generation"] == (
+        "passed" if expected else "failed"
+    )
+    if not expected:
+        assert result["errors"]
+
+    # Old writers may have saved the contradictory stream as passing. Hashes alone
+    # must not let that retained result bypass the current protocol checks.
+    result["passed"] = True
+    result["generation_passed"] = True
+    result["errors"] = []
+    path = tmp_path / job.backend_subject / f"paper-{job.paper}" / "matrix-result.json"
+    path.write_text(json.dumps(result))
+    resumed = _resumable_result(path, request_identity=result["request_identity"])
+    assert (resumed is not None) is expected
 
 
 @pytest.fixture(autouse=True)

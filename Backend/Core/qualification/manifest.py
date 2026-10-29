@@ -93,6 +93,20 @@ class QualificationPolicy(BaseModel):
     schema_version: int = 1
     levels: dict[QualificationLevel, tuple[str, ...]]
 
+    @field_validator("levels")
+    @classmethod
+    def require_nonempty_distinct_gates(
+        cls, value: dict[QualificationLevel, tuple[str, ...]]
+    ) -> dict[QualificationLevel, tuple[str, ...]]:
+        if not value:
+            raise ValueError("qualification policy must define at least one level")
+        for level, gates in value.items():
+            if not gates or any(not gate.strip() for gate in gates):
+                raise ValueError(f"qualification {level} requires nonempty gate names")
+            if len(set(gates)) != len(gates):
+                raise ValueError(f"qualification {level} contains duplicate gates")
+        return value
+
     @classmethod
     def load(cls, path: Path) -> QualificationPolicy:
         return cls.model_validate_json(path.read_text(encoding="utf-8"))
@@ -147,13 +161,14 @@ class QualificationManifest(BaseModel):
         level: QualificationLevel,
         policy: QualificationPolicy,
     ) -> bool:
-        return all(
+        required = policy.required_gates(level)
+        return bool(required) and all(
             self.gate_results.get(gate)
             in {
                 GateState.PASSED,
                 GateState.NOT_APPLICABLE,
             }
-            for gate in policy.required_gates(level)
+            for gate in required
         )
 
     def canonical_json(self) -> str:
@@ -172,14 +187,29 @@ class QualificationManifest(BaseModel):
             dir=path.parent,
         )
         temporary = Path(temporary_name)
+        stream = None
         try:
-            with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream = os.fdopen(descriptor, "w", encoding="utf-8")
+            with stream:
                 stream.write(self.canonical_json() + "\n")
                 stream.flush()
                 os.fsync(stream.fileno())
             os.replace(temporary, path)
-        finally:
-            temporary.unlink(missing_ok=True)
+        except BaseException as error:
+            if stream is None:
+                try:
+                    os.close(descriptor)
+                except OSError as close_error:
+                    error.add_note(
+                        f"Temporary manifest descriptor cleanup failed: {close_error}"
+                    )
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                error.add_note(
+                    f"Temporary manifest cleanup failed for {temporary}: {cleanup_error}"
+                )
+            raise
 
     @classmethod
     def load(cls, path: Path) -> QualificationManifest:

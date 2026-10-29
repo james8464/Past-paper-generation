@@ -2,6 +2,129 @@ import XCTest
 @testable import Keldin
 
 final class FinalInterfaceGuardTests: XCTestCase {
+    @MainActor
+    func testSettingsProviderSelectionTracksPendingConsentWithoutChangingActiveProvider() throws {
+        let presentation = SettingsActionPresentation()
+        let active = AIProvider.ollama
+        presentation.activate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+        presentation.requestConsent(for: .openAI)
+        let first = try XCTUnwrap(presentation.request)
+        XCTAssertEqual(presentation.providerSelection(active: active), .openAI)
+        presentation.presentationDidDismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .openAI)
+        presentation.dismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+
+        presentation.requestConsent(for: .anthropic)
+        let second = try XCTUnwrap(presentation.request)
+        presentation.dismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .anthropic)
+        XCTAssertEqual(presentation.request?.id, second.id)
+        presentation.deactivate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+        presentation.activate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+    }
+
+    func testMainOwnedPresentationAllowsRecoveryFromAnotherScene() {
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: true, mainSceneIsFocused: false))
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: .board, applicationModal: true, mainSceneIsFocused: true))
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: false, mainSceneIsFocused: false, settingsModal: true))
+    }
+
+    @MainActor
+    func testSettingsActionLifetimeRetainsErrorsButCancelsConsentOnClose() throws {
+        let owner = SettingsActionPresentation()
+        owner.reportError("Retained original error")
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.request)
+        owner.activate()
+        let error = try XCTUnwrap(owner.request)
+        XCTAssertEqual(error.kind, .error("Retained original error"))
+        XCTAssertEqual(owner.consume(id: error.id), error)
+        owner.requestConsent(for: .openAI)
+        let consent = try XCTUnwrap(owner.request)
+        owner.presentationDidDismiss(id: consent.id)
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertEqual(owner.consume(id: consent.id), consent)
+        XCTAssertNil(owner.consume(id: consent.id))
+        owner.requestConsent(for: .anthropic)
+        let newer = try XCTUnwrap(owner.request)
+        owner.dismiss(id: consent.id)
+        XCTAssertEqual(owner.request, newer)
+        owner.reportError("Deferred error")
+        owner.deactivate()
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.consume(id: newer.id))
+        owner.activate()
+        XCTAssertEqual(owner.request?.kind, .error("Deferred error"))
+        owner.deactivate()
+        owner.activate()
+        XCTAssertEqual(owner.request?.kind, .error("Deferred error"))
+    }
+
+    @MainActor
+    func testDownloadApprovalHandlesBothDismissalOrdersWithoutInvisibleCommandBlocking() {
+        for dismissFirst in [false, true] {
+            let presentation = ModelDownloadPresentation()
+            let request = ModelDownloadRequest(model: "fixture/captured")
+            presentation.present(request)
+            if dismissFirst {
+                presentation.presentationDidDismiss(id: request.id)
+                XCTAssertFalse(presentation.blocksCommands)
+                XCTAssertFalse(presentation.isPresented)
+            }
+            XCTAssertEqual(presentation.consume(id: request.id), request)
+            if !dismissFirst { presentation.presentationDidDismiss(id: request.id) }
+            XCTAssertNil(presentation.request)
+            XCTAssertFalse(presentation.blocksCommands)
+            XCTAssertNil(presentation.consume(id: request.id))
+
+            presentation.present(request)
+            presentation.presentationDidDismiss(id: request.id)
+            let replacement = ModelDownloadRequest(model: "fixture/replacement")
+            presentation.present(replacement)
+            presentation.presentationDidDismiss(id: request.id)
+            XCTAssertNil(presentation.consume(id: request.id))
+            XCTAssertEqual(presentation.request, replacement)
+            XCTAssertTrue(presentation.blocksCommands)
+            presentation.dismiss(id: replacement.id)
+            XCTAssertNil(presentation.consume(id: replacement.id))
+            XCTAssertFalse(presentation.blocksCommands)
+        }
+    }
+
+    @MainActor
+    func testDownloadPresentationOwnsOnlyItsSceneAndConsumesTheExactRequestOnce() throws {
+        let settings = ModelDownloadPresentation()
+        let otherScene = ModelDownloadPresentation()
+        let first = ModelDownloadRequest(model: "fixture/first")
+        let newer = ModelDownloadRequest(model: "fixture/newer")
+        settings.present(first)
+        otherScene.present(newer)
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: settings.isPresented))
+        settings.present(newer)
+        XCTAssertEqual(settings.request, first)
+        XCTAssertNil(settings.consume(id: newer.id))
+        XCTAssertEqual(settings.request, first)
+        XCTAssertEqual(settings.consume(id: first.id), first)
+        XCTAssertNil(settings.consume(id: first.id))
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: settings.isPresented))
+        XCTAssertEqual(otherScene.request, newer)
+
+        settings.present(newer)
+        settings.dismiss(id: first.id)
+        XCTAssertEqual(settings.request, newer)
+        settings.dismiss(id: newer.id)
+        XCTAssertFalse(settings.isPresented)
+        XCTAssertEqual(otherScene.request, newer)
+        otherScene.dismiss(id: newer.id)
+        XCTAssertFalse(otherScene.isPresented)
+        settings.present(nil)
+        XCTAssertFalse(settings.isPresented)
+    }
+
     func testLocalModalContextBlocksCreationAndNavigationThenRestoresItsPrintChoice() {
         for original in [KeldinCreationContext.board, .french(largePrint: false), .french(largePrint: true)] {
             let modal = original.presentingModal(true)
@@ -22,7 +145,7 @@ final class FinalInterfaceGuardTests: XCTestCase {
         application.showWelcome = false
         let flags: [ReferenceWritableKeyPath<ApplicationCoordinator, Bool>] = [
             \.showWelcome, \.showHelp, \.showError, \.showHostedAIConsent,
-            \.showMLXSetupConfirmation, \.showPullConfirmation,
+            \.showMLXSetupConfirmation,
         ]
         XCTAssertFalse(application.hasCommandBlockingPresentation)
         for flag in flags {

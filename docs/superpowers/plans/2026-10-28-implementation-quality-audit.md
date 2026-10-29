@@ -347,3 +347,56 @@ focused gate passed 32 tests after 11 initial and three additional edge-case
 regressions failed. No real file was automatically marked reviewed. These
 records bind evidence to bytes; they do not authenticate a reviewer or establish
 that an attestation is true. Full file-level semantic review remains unfinished.
+
+### 29 October boundary follow-up
+
+Protected PR114 merged at `47cdeb09` after both latest-head checks passed. Its
+tested direct Release replaced the installed app with signature and byte-equality
+checks; the preceding app remains recoverable in Trash. The control tool still
+resolves some installed-path requests to old identifiers or candidate copies, so
+mixed-process GUI observations are not canonical-path acceptance.
+
+A further full-file review of ten qualification/process files found four
+specific boundary defects. Commits `c7e0b8cb`, `f33c1d13`, `1488eaca`, `68c531a9`
+and `beb3763e` preserve atomic publication outcomes and descriptor ownership,
+reject contradictory parsed completion events, refuse vacuous qualification
+policies, and distinguish observed calibration from inapplicable gates. All 93
+focused tests passed. The checked-in qualification matrix and prior evidence
+were not promoted or rewritten. See the qualification-boundary audit record.
+
+The current Accounting failure was a mismatch between a canonical printed
+answer and a redundant punctuation-sensitive check. Commit `1ff0011a` repairs
+that check; strict real-PDF negative cases remain. The related 69 tests pass.
+The original live attempt remains failed. Its separately labelled, zero-call
+checkpoint reconstruction has a 60-page review and 55 independent arithmetic
+checks, documented in the retained-attempt review.
+
+Native cancellation and Settings-owned download fixes are committed at
+`d294616c` and `56170a2c`. New typed Main-window routing is at `41f51255`, with a
+recovery-only pending-modal guard at `36d048da`. Settings-origin consent/error
+handling is committed at `39a96860`. The combined focused native gate passed 129
+tests and the scoped Python wiring gate passed seven. Actual window verification
+and final release acceptance are pending; this follow-up is not protected-published
+yet.
+
+The separate six-file review/build-boundary record covers the ledger producer,
+its tests, Ruff, dependency lists and CI. It records remaining limits such as
+version-tagged Actions and direct writes of regenerable ledger metadata. These
+reviews can support exact-byte ledger entries; they do not clear unreviewed files.
+
+The separate bookmark follow-up at `7fc9f427` reports failure to save output-folder
+access in the initiating scene. Its injected failure regression failed before
+the fix; the focused native gate passed 76 tests. Successful saved bytes, selected
+path and security-scope options are unchanged. This fixes the silent failure
+recorded as outside the earlier scene-routing package.
+
+Actual signed-app testing caught a provider-control highlight that did not reset
+after cancelling disclosure. The actual provider and consent were unchanged.
+Commit `916738ab` observes the typed pending request and derives the control's
+selection; its focused regression gate passed 53 native tests. The full Python
+run also identified one obsolete direct-call spelling assertion after typed menu
+routing (4,554 passed, one failed, two skipped). That wiring assertion now follows
+the route covered by native ordering/recovery tests. A real-repository ledger
+check additionally rejects stale reviewed source; its red case caught the changed
+Settings service before its explicit re-review. Final gates must use the refreshed
+ledger and rebuilt interface, not the preceding frontend's results.

@@ -14,6 +14,7 @@ final class ApplicationCoordinator: ObservableObject {
     let benchmarkCoordinator: BenchmarkCoordinator
     let recentDocumentStore: RecentDocumentStore
     let generationCoordinator: GenerationCoordinator
+    let settingsPresentation = SettingsActionPresentation()
 
     @Published var selectedModel = AppDefaults.ollamaModel
     @Published var aiProvider: AIProvider = .ollama
@@ -35,7 +36,6 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var appleModel = AppDefaults.appleModel
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
-    @Published var showPullConfirmation = false
     @Published var showHostedAIConsent = false
     @Published var showMLXSetupConfirmation = false
     @Published var showError = false
@@ -54,6 +54,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     private let backend: any BackendRunning
     private let defaults: UserDefaults
+    private let outputFolderBookmark: (URL) throws -> Data
     private let notificationCenter = UNUserNotificationCenter.current()
     private var ollamaRefreshRevision = UUID()
     private var etaTimer: AnyCancellable?
@@ -69,7 +70,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     var hasCommandBlockingPresentation: Bool {
         showWelcome || showHelp || showError || showHostedAIConsent
-            || showMLXSetupConfirmation || showPullConfirmation
+            || showMLXSetupConfirmation
     }
 
     private var activeOperation: RunningOperation { activeRun?.intent.operation ?? .none }
@@ -222,12 +223,16 @@ final class ApplicationCoordinator: ObservableObject {
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
         backend: any BackendRunning = BackendClient(),
+        outputFolderBookmark: @escaping (URL) throws -> Data = { url in
+            try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+        },
         historyRecordRemover: @escaping (URL) throws -> Void = { url in
             try FileManager.default.removeItem(at: url)
         }
     ) {
         self.defaults = defaults
         self.backend = backend
+        self.outputFolderBookmark = outputFolderBookmark
         let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
@@ -280,7 +285,7 @@ final class ApplicationCoordinator: ObservableObject {
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
     }
 
-    func refreshOllama() {
+    func refreshOllama(presentation: SettingsActionPresentation? = nil) {
         guard !isRunning, !benchmarkCoordinator.isRunning, !isRefreshingOllama else { return }
         isRefreshingOllama = true
         status = "Checking Ollama"
@@ -291,18 +296,18 @@ final class ApplicationCoordinator: ObservableObject {
             do {
                 let statusEvents = try await backend.collect(arguments: ["ollama-status"])
                 guard ollamaRefreshRevision == revision else { return }
-                statusEvents.forEach(apply)
+                statusEvents.forEach { apply($0, errorPresentation: presentation) }
                 let modelEvents = try await backend.collect(arguments: ["list-models"])
                 guard ollamaRefreshRevision == revision else { return }
-                modelEvents.forEach(apply)
+                modelEvents.forEach { apply($0, errorPresentation: presentation) }
             } catch {
                 guard ollamaRefreshRevision == revision else { return }
-                setError(error.localizedDescription)
+                setError(error.localizedDescription, presentation: presentation)
             }
         }
     }
 
-    func importPreviousAppData() {
+    func importPreviousAppData(presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -314,10 +319,10 @@ final class ApplicationCoordinator: ObservableObject {
         defer { if scoped { source.stopAccessingSecurityScopedResource() } }
         do {
             try KeldinMigration.importData(from: source, defaults: defaults)
-            restoreRecentDocuments()
+            restoreRecentDocuments(presentation: presentation)
             status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
         } catch {
-            setError(error.localizedDescription)
+            setError(error.localizedDescription, presentation: presentation)
         }
     }
 
@@ -490,7 +495,9 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    func chooseOutputFolder() {
+    func chooseOutputFolder() { chooseOutputFolder(presentation: nil) }
+
+    func chooseOutputFolder(presentation: SettingsActionPresentation?) {
         guard !isRunning else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -499,7 +506,7 @@ final class ApplicationCoordinator: ObservableObject {
         panel.directoryURL = outputFolder
 
         if panel.runModal() == .OK, let url = panel.url {
-            setOutputFolder(url)
+            setOutputFolder(url, presentation: presentation)
         }
     }
 
@@ -540,27 +547,44 @@ final class ApplicationCoordinator: ObservableObject {
         selectPaperID(first.id)
     }
 
-    func selectAIProvider(_ provider: AIProvider) {
+    func selectAIProvider(_ provider: AIProvider, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
         guard provider != aiProvider else { return }
         if provider.sendsPromptsOffDevice && !hasHostedAIConsent {
+            if let presentation {
+                presentation.requestConsent(for: provider)
+                return
+            }
             pendingHostedProvider = provider
             showHostedAIConsent = true
             return
         }
         aiProvider = provider
         modelCoordinator.provider = provider
-        persistSettings()
+        persistSettings(presentation: presentation)
     }
 
     func acceptHostedAIConsent() {
+        guard !isRunning else { return }
         defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
         if let provider = pendingHostedProvider {
             aiProvider = provider
+            modelCoordinator.provider = provider
         }
         pendingHostedProvider = nil
         showHostedAIConsent = false
         persistSettings()
+    }
+
+    func acceptHostedAIConsent(for provider: AIProvider, presentation: SettingsActionPresentation) {
+        guard !isRunning else {
+            presentation.reportError(InterfaceText.resolve("Generation is already running.", language: presentationLanguage))
+            return
+        }
+        defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
+        aiProvider = provider
+        modelCoordinator.provider = provider
+        persistSettings(presentation: presentation)
     }
 
     func cancelHostedAIConsent() {
@@ -862,24 +886,26 @@ final class ApplicationCoordinator: ObservableObject {
         progressEntries.append(ProgressEntry(stage: "cancel", message: message))
     }
 
-    func pullSelectedModel() {
+    func pullSelectedModel() -> ModelDownloadRequest? {
+        guard canRequestModelDownload else { return nil }
         modelToPull = selectedModel
-        showPullConfirmation = true
+        return requestPullModel()
     }
 
-    func requestPullModel() {
-        guard !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        showPullConfirmation = true
+    func requestPullModel() -> ModelDownloadRequest? {
+        guard canRequestModelDownload,
+              !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return ModelDownloadRequest(model: modelToPull.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
-    func confirmPullModel() {
+    func confirmPullModel(_ request: ModelDownloadRequest, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         guard distributionMode.canManageOllama else {
-            setError("The App Store build can detect Ollama, but cannot install or pull models.")
+            setError("The App Store build can detect Ollama, but cannot install or pull models.", presentation: presentation)
             return
         }
 
-        let model = modelToPull.trimmingCharacters(in: .whitespacesAndNewlines)
+        let model = request.model.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !model.isEmpty else { return }
         status = "Pulling model"
         generationProgress = 0.05
@@ -888,7 +914,7 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer?.cancel()
         etaTimer = nil
 
-        let session = beginRunSession(intent: .modelPull, model: model)
+        let session = beginRunSession(intent: .modelPull, model: model, errorPresentation: presentation)
         do {
             let process = try backend.run(arguments: ["pull-model", "--model", model], environment: [:]) { [weak self] event in
                 self?.apply(event, from: session)
@@ -896,7 +922,7 @@ final class ApplicationCoordinator: ObservableObject {
                 self?.finishRun(result, from: session)
             }
             if activeRun?.id == session { activeRun?.process = process }
-            notifyStarted(for: .modelPull)
+            notifyStarted(for: .modelPull, model: model)
         } catch {
             finishRun(.failure(error), from: session)
         }
@@ -942,8 +968,8 @@ final class ApplicationCoordinator: ObservableObject {
         revealGeneratedFile(file)
     }
 
-    func saveAISettings() {
-        persistSettings()
+    func saveAISettings(presentation: SettingsActionPresentation? = nil) {
+        persistSettings(presentation: presentation)
     }
 
     func removeGeneratedFile(_ file: GeneratedFile) {
@@ -963,9 +989,9 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    func setHistoryRetentionLimit(_ value: Int) {
+    func setHistoryRetentionLimit(_ value: Int, presentation: SettingsActionPresentation? = nil) {
         settingsStore.historyRetentionLimit = max(1, value)
-        _ = saveSettingsAndReportSecretFailure()
+        _ = saveSettingsAndReportSecretFailure(presentation: presentation)
         recentDocumentStore.updateRetentionLimit(value)
     }
 
@@ -987,15 +1013,20 @@ final class ApplicationCoordinator: ObservableObject {
         showHelp = false
     }
 
-    func useRecommendedOllamaModel() {
+    func useRecommendedOllamaModel(presentation: SettingsActionPresentation? = nil) {
         selectedModel = ollamaRecommendation.model
         modelToPull = ollamaRecommendation.model
-        saveAISettings()
+        saveAISettings(presentation: presentation)
     }
 
-    func requestRecommendedOllamaModel() {
-        useRecommendedOllamaModel()
-        requestPullModel()
+    var canRequestModelDownload: Bool {
+        distributionMode.canManageOllama && !isRunning && !benchmarkCoordinator.isRunning
+    }
+
+    func requestRecommendedOllamaModel() -> ModelDownloadRequest? {
+        guard canRequestModelDownload else { return nil }
+        modelToPull = ollamaRecommendation.model
+        return requestPullModel()
     }
 
     func copyDiagnosticSummary() {
@@ -1033,20 +1064,20 @@ final class ApplicationCoordinator: ObservableObject {
         GenerationQualityPolicy.presentation(for: lastQualityReport).diagnosticLines
     }
 
-    func setNotificationsEnabled(_ enabled: Bool) {
+    func setNotificationsEnabled(_ enabled: Bool, presentation: SettingsActionPresentation? = nil) {
         notificationsEnabled = enabled
         settingsStore.notificationsEnabled = enabled
-        saveSettingsAndReportSecretFailure()
+        saveSettingsAndReportSecretFailure(presentation: presentation)
         if enabled {
             requestNotificationAuthorization()
         }
     }
 
-    func setDryRun(_ enabled: Bool) {
+    func setDryRun(_ enabled: Bool, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
         dryRun = enabled
         settingsStore.dryRun = enabled
-        saveSettingsAndReportSecretFailure()
+        saveSettingsAndReportSecretFailure(presentation: presentation)
     }
 
     func startBenchmark() {
@@ -1064,7 +1095,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     @discardableResult
-    private func persistSettings(includeCredentials: Bool = true) -> Bool {
+    private func persistSettings(includeCredentials: Bool = true, presentation: SettingsActionPresentation? = nil) -> Bool {
         settingsStore.provider = aiProvider
         settingsStore.ollamaModel = selectedModel
         settingsStore.openAIModel = openAIModel
@@ -1074,15 +1105,15 @@ final class ApplicationCoordinator: ObservableObject {
         settingsStore.notificationsEnabled = notificationsEnabled
         settingsStore.openAIAPIKey = openAIAPIKey
         settingsStore.anthropicAPIKey = anthropicAPIKey
-        let saved = saveSettingsAndReportSecretFailure(includeCredentials: includeCredentials)
+        let saved = saveSettingsAndReportSecretFailure(includeCredentials: includeCredentials, presentation: presentation)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         return saved
     }
 
     @discardableResult
-    func saveSettingsAndReportSecretFailure(includeCredentials: Bool = false) -> Bool {
+    func saveSettingsAndReportSecretFailure(includeCredentials: Bool = false, presentation: SettingsActionPresentation? = nil) -> Bool {
         let saved = settingsStore.save(includeCredentials: includeCredentials)
-        if !saved, let message = settingsStore.secretFailureMessage(language: presentationLanguage) { setError(message) }
+        if !saved, let message = settingsStore.secretFailureMessage(language: presentationLanguage) { setError(message, presentation: presentation) }
         return saved
     }
 
@@ -1103,21 +1134,21 @@ final class ApplicationCoordinator: ObservableObject {
         return formatter
     }()
 
-    private func setOutputFolder(_ url: URL) {
+    func setOutputFolder(_ url: URL, presentation: SettingsActionPresentation? = nil) {
         benchmarkCoordinator.outputFolder = url
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
         securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
         outputFolder = url
         defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
         do {
-            let bookmark = try url.bookmarkData(
-                options: .withSecurityScope,
-                includingResourceValuesForKeys: nil,
-                relativeTo: nil
-            )
+            let bookmark = try outputFolderBookmark(url)
             defaults.set(bookmark, forKey: AppStorageKey.outputFolderBookmark)
         } catch {
             defaults.removeObject(forKey: AppStorageKey.outputFolderBookmark)
+            setError(
+                InterfaceText.resolve("Keldin couldn't save access to this folder. Choose it again to keep access after restarting.", language: presentationLanguage),
+                presentation: presentation
+            )
         }
     }
 
@@ -1153,13 +1184,14 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func beginRunSession(
         intent: BackendRunIntent, documents: RunDocuments? = nil, model: String,
-        retryTarget: GenerationRetryTarget? = nil
+        retryTarget: GenerationRetryTarget? = nil, errorPresentation: SettingsActionPresentation? = nil
     ) -> UUID {
         // A discovery request started before this operation must remain obsolete
         // even if the operation finishes before that request returns.
         ollamaRefreshRevision = UUID()
         let run = BackendRun(
-            intent: intent, documents: documents ?? completedDocuments, model: model, retryTarget: retryTarget
+            intent: intent, documents: documents ?? completedDocuments, model: model, retryTarget: retryTarget,
+            errorPresentation: errorPresentation
         )
         activeRun = run
         return run.id
@@ -1170,7 +1202,7 @@ final class ApplicationCoordinator: ObservableObject {
         apply(event)
     }
 
-    func apply(_ event: BackendEvent) {
+    func apply(_ event: BackendEvent, errorPresentation: SettingsActionPresentation? = nil) {
         if let jobID = activeRun?.ownedJobID {
             guard generationCoordinator.activeJob?.id == jobID else { return }
             generationCoordinator.receive(event, expectedJobID: jobID)
@@ -1178,7 +1210,7 @@ final class ApplicationCoordinator: ObservableObject {
         switch event {
         case let .hello(protocolVersion, _, _):
             if protocolVersion != 2 {
-                setError("The generation service uses an unsupported protocol version.")
+                setError("The generation service uses an unsupported protocol version.", presentation: activeRun?.errorPresentation ?? errorPresentation)
             }
         case let .progress(stage, message, progress):
             status = GenerationPresentation.progress(message, language: presentationLanguage)
@@ -1223,7 +1255,7 @@ final class ApplicationCoordinator: ObservableObject {
                 status = "Apple MLX setup required"
                 return
             }
-            setError(message)
+            setError(message, presentation: activeRun?.errorPresentation ?? errorPresentation)
             notifyFailure(for: activeOperation, message: message)
         case let .models(models, message):
             availableModels = models
@@ -1364,15 +1396,15 @@ final class ApplicationCoordinator: ObservableObject {
             status = InterfaceText.resolve("Done", language: presentationLanguage)
             generationProgress = 1
             notifySuccess(for: .modelPull)
-            refreshOllama()
+            refreshOllama(presentation: run.errorPresentation)
         case let .success(code):
             if run.backendErrorMessage == nil {
                 let message = InterfaceText.resolve("Ollama stopped the model download (exit code \(String(code))). Check Ollama, then try again.", language: presentationLanguage)
-                setError(message)
+                setError(message, presentation: run.errorPresentation)
                 notifyFailure(for: .modelPull, message: message)
             }
         case let .failure(error):
-            setError(error.localizedDescription)
+            setError(error.localizedDescription, presentation: run.errorPresentation)
             notifyFailure(for: .modelPull, message: error.localizedDescription)
         }
     }
@@ -1460,11 +1492,11 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func restoreRecentDocuments() {
+    private func restoreRecentDocuments(presentation: SettingsActionPresentation? = nil) {
         do {
             try recentDocumentStore.load()
         } catch {
-            setError(InterfaceText.resolve("Couldn't load generation history. \(error.localizedDescription)", language: presentationLanguage))
+            setError(InterfaceText.resolve("Couldn't load generation history. \(error.localizedDescription)", language: presentationLanguage), presentation: presentation)
             return
         }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
@@ -1500,9 +1532,13 @@ final class ApplicationCoordinator: ObservableObject {
         defaults.set(data, forKey: AppStorageKey.recentDocuments)
     }
 
-    private func setError(_ message: String) {
-        errorMessage = GenerationPresentation.error(message, language: presentationLanguage)
-        showError = true
+    private func setError(_ message: String, presentation: SettingsActionPresentation? = nil) {
+        let displayMessage = GenerationPresentation.error(message, language: presentationLanguage)
+        if let presentation { presentation.reportError(displayMessage) }
+        else {
+            errorMessage = displayMessage
+            showError = true
+        }
         status = InterfaceText.resolve("Error", language: presentationLanguage)
         generationProgress = nil
         if activeOperation == .generation {
@@ -1548,12 +1584,12 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func notifyStarted(for operation: RunningOperation) {
+    private func notifyStarted(for operation: RunningOperation, model: String? = nil) {
         switch operation {
         case .generation:
             sendNotification(.paperStarted(subject: selectedBoard.subjectTitle, paper: selectedPaper.title))
         case .modelPull:
-            sendNotification(.modelStarted(model: modelToPull))
+            sendNotification(.modelStarted(model: model ?? modelToPull))
         case .mlxSetup:
             sendNotification(.mlxStarted)
         case .none:
@@ -1665,6 +1701,7 @@ private struct BackendRun {
     var documents: RunDocuments
     let model: String
     let retryTarget: GenerationRetryTarget?
+    let errorPresentation: SettingsActionPresentation?
     var ownedJobID: UUID?
     var process: Process?
     var phase = BackendRunPhase.running
