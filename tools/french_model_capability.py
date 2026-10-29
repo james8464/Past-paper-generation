@@ -188,7 +188,12 @@ class ProbeClient(HostedLLMClient):
             self.calls.append(record)
             started = time.monotonic()
             try:
-                with urllib_request(url, encoded, headers, attempts=1) as response:
+                transport_options = {"attempts": 1}
+                if "timeout_seconds" in _kwargs:
+                    transport_options["timeout_seconds"] = _kwargs["timeout_seconds"]
+                with urllib_request(
+                    url, encoded, headers, **transport_options
+                ) as response:
                     raw = response.read(2_097_153)
                 record["response_sha256"] = sha256(raw).hexdigest()
                 if len(raw) > 2_097_152:

@@ -91,6 +91,9 @@ class HostedLLMClient:
     ) -> dict[str, object]:
         if not 1 <= retries <= 3:
             raise ValueError("Structured-output attempts must be between 1 and 3.")
+        if request is not None and request.operation == "french_nsi_authoring":
+            # The French pipeline owns its one recorded structural regeneration.
+            retries = 1
         current_prompt = prompt
         last_error: ValueError | None = None
         for attempt in range(retries):
@@ -103,18 +106,35 @@ class HostedLLMClient:
                             output_budget=request.output_budget,
                             seed=request.seed,
                             temperature=0 if attempt else request.temperature,
+                            **(
+                                {"french_nsi": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
                         )
                     return self._ollama(current_prompt)
                 if self.provider == "openai":
                     if request is not None:
                         return self._openai(
-                            current_prompt, output_budget=request.output_budget
+                            current_prompt,
+                            output_budget=request.output_budget,
+                            **(
+                                {"single_attempt": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
                         )
                     return self._openai(current_prompt)
                 if self.provider == "anthropic":
                     if request is not None:
                         return self._anthropic(
-                            current_prompt, output_budget=request.output_budget
+                            current_prompt,
+                            output_budget=request.output_budget,
+                            **(
+                                {"single_attempt": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
                         )
                     return self._anthropic(current_prompt)
                 if self.provider == "apple":
@@ -128,6 +148,11 @@ class HostedLLMClient:
                     return self._apple(current_prompt)
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
             except ValueError as error:
+                if (
+                    isinstance(error, GenerationEvidenceError)
+                    and error.details.get("kind") == "context_capacity"
+                ):
+                    raise
                 last_error = error
                 if attempt == retries - 1:
                     raise
@@ -165,8 +190,14 @@ class HostedLLMClient:
         request_function: Any | None = None,
         strict_json: bool = False,
         temperature: float | None = None,
+        french_nsi: bool = False,
     ) -> dict[str, object]:
         schema = _ollama_json_schema(prompt) if schema is None else schema
+        budget = (
+            _ollama_output_budget(schema) if output_budget is None else output_budget
+        )
+        if french_nsi and (type(budget) is not int or not 1 <= budget <= 16384):
+            raise ValueError("French NSI output budget must be from 1 to 16384.")
         payload = json.dumps(
             {
                 "model": self.model,
@@ -174,29 +205,62 @@ class HostedLLMClient:
                 "stream": False,
                 "think": False,
                 "format": schema,
+                **({"truncate": False, "shift": False} if french_nsi else {}),
                 "options": {
                     "temperature": _ollama_temperature(prompt)
                     if temperature is None
                     else temperature,
                     "top_p": 0.9,
                     "num_ctx": 16384,
-                    "num_predict": _ollama_output_budget(schema)
-                    if output_budget is None
-                    else output_budget,
+                    "num_predict": budget,
                     "repeat_last_n": 256,
                     "repeat_penalty": 1.15,
                     "seed": _ollama_seed(prompt) if seed is None else seed,
                 },
             }
         ).encode("utf-8")
-        request = (request_function or urllib_request)(
-            f"{self.base_url}/api/chat",
-            payload,
-            {"Content-Type": "application/json"},
-            attempts=2,
-        )
-        with request as response:
-            raw = _read_json_response(response)
+        try:
+            request = (request_function or urllib_request)(
+                f"{self.base_url}/api/chat",
+                payload,
+                {"Content-Type": "application/json"},
+                **(
+                    {"attempts": 1, "timeout_seconds": 600}
+                    if french_nsi
+                    else {"attempts": 2}
+                ),
+            )
+            with request as response:
+                raw = _read_json_response(response)
+        except RuntimeError as error:
+            from urllib.error import HTTPError
+
+            cause = error.__cause__
+            if (
+                french_nsi
+                and isinstance(cause, HTTPError)
+                and cause.code in {400, 413}
+                and any(
+                    message in str(error).lower()
+                    for message in (
+                        "prompt is longer than the context length",
+                        "input length exceeds the context length",
+                        "exceeds the available context",
+                    )
+                )
+            ):
+                raise GenerationEvidenceError(
+                    "Le contexte du modèle ne peut pas contenir cet exercice sans omission.",
+                    details={
+                        "kind": "context_capacity",
+                        "provider": "ollama",
+                        "http_status": cause.code,
+                        "context_window": 16384,
+                        "output_budget": budget,
+                        "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                    },
+                ) from error
+            raise
         raw_dict = raw if isinstance(raw, dict) else {}
         diagnostic = {
             "kind": "provider_structure",
@@ -213,6 +277,36 @@ class HostedLLMClient:
             diagnostic["raw_response_sha256"] = hashlib.sha256(
                 response_text.encode("utf-8")
             ).hexdigest()
+        if french_nsi:
+            input_count, output_count = (
+                raw_dict.get("prompt_eval_count"),
+                raw_dict.get("eval_count"),
+            )
+            diagnostic.update(
+                input_tokens=input_count,
+                output_budget=budget,
+                context_window=16384,
+                truncate=False,
+                shift=False,
+            )
+            if (
+                type(input_count) is not int
+                or input_count < 1
+                or type(output_count) is not int
+                or output_count < 0
+                or input_count + budget > 16384
+                or input_count + output_count > 16384
+                or output_count > budget
+            ):
+                diagnostic["kind"] = "context_capacity"
+                raise GenerationEvidenceError(
+                    "Capacité du contexte non vérifiée ou insuffisante pour cet exercice. Aucun brouillon accepté.",
+                    details=diagnostic,
+                )
+            emit_progress(
+                f"Contexte du modèle : {input_count} jetons d'entrée, {output_count} de sortie, limite 16384.",
+                stage="provider_context",
+            )
         if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {
             None,
             "stop",
@@ -225,7 +319,7 @@ class HostedLLMClient:
                 "Ollama returned no generated JSON text.", details=diagnostic
             )
         try:
-            if strict_json:
+            if strict_json or french_nsi:
                 if len(response_text.encode("utf-8")) > 1_048_576:
                     raise ValueError("Model response exceeded the 1 MB JSON limit.")
                 parsed = json.loads(
@@ -491,7 +585,11 @@ class HostedLLMClient:
         return response
 
     def _openai(
-        self, prompt: str, *, output_budget: int | None = None
+        self,
+        prompt: str,
+        *,
+        output_budget: int | None = None,
+        single_attempt: bool = False,
     ) -> dict[str, object]:
         values = {
             "model": self.model,
@@ -511,6 +609,7 @@ class HostedLLMClient:
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
+            **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
             raw = _read_json_response(response)
@@ -529,7 +628,11 @@ class HostedLLMClient:
         return parse_json_object(str(text))
 
     def _anthropic(
-        self, prompt: str, *, output_budget: int | None = None
+        self,
+        prompt: str,
+        *,
+        output_budget: int | None = None,
+        single_attempt: bool = False,
     ) -> dict[str, object]:
         payload = json.dumps(
             {
@@ -553,6 +656,7 @@ class HostedLLMClient:
                 "anthropic-version": "2023-06-01",
                 "Content-Type": "application/json",
             },
+            **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
             raw = _read_json_response(response)
@@ -622,15 +726,18 @@ def urllib_request(
     headers: dict[str, str],
     *,
     attempts: int = 3,
+    timeout_seconds: int = 180,
 ) -> Any:
     import urllib.error
     import urllib.request
 
+    if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 600:
+        raise ValueError("Provider timeout must be an integer from 1 to 600 seconds.")
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     last_error: Exception | None = None
     for attempt in range(attempts):
         try:
-            return urllib.request.urlopen(request, timeout=180)
+            return urllib.request.urlopen(request, timeout=timeout_seconds)
         except urllib.error.HTTPError as error:
             last_error = error
             detail = error.read(2048).decode("utf-8", errors="ignore")
