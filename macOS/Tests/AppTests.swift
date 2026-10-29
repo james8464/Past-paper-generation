@@ -544,6 +544,28 @@ final class KeldinTests: XCTestCase {
         XCTAssertEqual(malformedProvenance.authoringProvenance.kind, .unknown)
     }
 
+    func testOverflowingAuthoringProvenanceCountsAreUnknown() throws {
+        for (items, fixed, authored, stems, unreviewed, unknown) in [
+            (1, Int.max, 1, 0, 0, 0),
+            (Int.max, Int.max, 1, 0, 0, 0),
+            (Int.max, 0, 0, Int.max, 1, 0),
+            (Int.max, 0, 0, 0, Int.max, 1),
+        ] {
+            let report = try loadQualityReport("""
+            {"evidence":{"assessment_validation":{"item_count":\(items),"authoring_provenance":{"schema_version":1,"items":\(items),"reviewed_fixed_items":\(fixed),"ai_authored_items":\(authored),"ai_authored_stem_items":\(stems),"unreviewed_or_builtin_items":\(unreviewed),"unknown_items":\(unknown)}},"novelty_validation":{}},"outputs":{}}
+            """)
+            XCTAssertEqual(report.authoringProvenance.kind, .unknown)
+        }
+    }
+
+    func testLargeConsistentAuthoringProvenanceCountsRemainReadable() throws {
+        let report = try loadQualityReport("""
+        {"evidence":{"assessment_validation":{"item_count":\(Int.max),"authoring_provenance":{"schema_version":1,"items":\(Int.max),"reviewed_fixed_items":\(Int.max),"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0}},"novelty_validation":{}},"outputs":{}}
+        """)
+        XCTAssertEqual(report.authoringProvenance.kind, .reviewedFixedOnly)
+        XCTAssertEqual(report.authoringProvenance.reviewedFixedItems, Int.max)
+    }
+
     func testMissingOrContradictoryFitCountersCannotPassReferenceDemand() throws {
         let missing = try loadQualityReport(
             #"{"request":{"subject":"economics_aqa","paper":"1","seed":7,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"missing-fits","item_count":4,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":4,"failed_checks":[],"item_review_evidence":{"reviewed_items":4,"approved_items":4,"coverage":1.0}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#
