@@ -12,6 +12,31 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "macOS/Keldin"
 
 
+def test_startup_migration_failure_uses_selected_language_and_preserves_copy():
+    source = (APP / "Application/KeldinApp.swift").read_text()
+    branch = source.split("if !failures.isEmpty {", 1)[1].split(
+        "application.showError = true", 1
+    )[0]
+    assert re.search(
+        r"application\.errorMessage\s*=\s*InterfaceText\.resolve\(", branch
+    )
+    assert re.search(
+        r'language:\s*UserDefaults\.standard\.string\(forKey: "interfaceLanguage"\)\s*\?\?\s*"system"',
+        branch,
+    )
+    english = "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."
+    assert english in branch
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())
+    entry = catalog["strings"][english]
+    expected = {
+        "en": english,
+        "fr": "Certaines données de l’ancienne app n’ont pas pu être importées. Réessayez avec l’option d’import des données de l’ancienne app dans les réglages Sortie.",
+    }
+    for language, text in expected.items():
+        unit = entry.get("localizations", {}).get(language, {}).get("stringUnit", {})
+        assert unit.get("value", english) == text
+
+
 def test_native_app_copy_uses_plain_punctuation():
     offenders = [
         str(path.relative_to(ROOT))
