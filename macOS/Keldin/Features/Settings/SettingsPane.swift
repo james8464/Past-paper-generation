@@ -324,7 +324,11 @@ private struct AISettingsTab: View {
 
         case .apple:
             Section("Apple MLX") {
-                TextField("Model ID or path", text: $application.appleModel)
+                if application.distributionMode == .appStore {
+                    TextField("Hugging Face model ID", text: $application.appleModel)
+                } else {
+                    TextField("Model ID or path", text: $application.appleModel)
+                }
                 Toggle("Parallel MLX generation", isOn: Binding(
                     get: { application.settingsStore.parallelMLXGeneration },
                     set: { application.setParallelMLXGeneration($0) }
@@ -333,8 +337,13 @@ private struct AISettingsTab: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
-                Text("Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model.")
-                    .foregroundStyle(.secondary)
+                if application.distributionMode == .appStore {
+                    Text("Use a Hugging Face model ID such as owner/model. Keldin prepares models in its own storage. External model folders are not supported in the App Store version.")
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model.")
+                        .foregroundStyle(.secondary)
+                }
                 Text("Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks.")
                     .foregroundStyle(.secondary)
             }

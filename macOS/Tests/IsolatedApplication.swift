@@ -12,7 +12,8 @@ extension XCTestCase {
 
     @MainActor
     func isolatedApplication(
-        defaults suppliedDefaults: UserDefaults? = nil, backend: any BackendRunning = BackendClient()
+        defaults suppliedDefaults: UserDefaults? = nil, backend: any BackendRunning = BackendClient(),
+        distributionMode: DistributionMode = .current
     ) -> ApplicationCoordinator {
         let suite = "KeldinTests.\(UUID().uuidString)"
         let defaults = suppliedDefaults ?? isolatedDefaults()
@@ -27,7 +28,8 @@ extension XCTestCase {
             defaults: defaults,
             secrets: IsolatedSecrets(),
             historyDirectory: history,
-            backend: backend
+            backend: backend,
+            distributionMode: distributionMode
         )
     }
 }

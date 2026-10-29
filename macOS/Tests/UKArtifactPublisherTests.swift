@@ -5,6 +5,99 @@ import XCTest
 
 final class UKArtifactPublisherTests: XCTestCase {
     @MainActor
+    func testStoreMLXExternalPathsAreRetainedButBlockedBeforeSetupOrGeneration() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(AIProvider.apple.rawValue, forKey: AppStorageKey.aiProvider)
+        defaults.set("/Users/example/existing-model", forKey: AppStorageKey.appleModel)
+        let application = isolatedApplication(defaults: defaults, backend: backend, distributionMode: .appStore)
+        application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI && $0.supports(.apple) }))
+        XCTAssertNotNil(application.generationBlocker)
+        application.generate()
+        application.confirmMLXSetup()
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertTrue(application.showError)
+        XCTAssertEqual(application.appleModel, "/Users/example/existing-model")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.appleModel), "/Users/example/existing-model")
+    }
+
+    @MainActor
+    func testOccitanieActivityDoesNotStartAnotherRunWhileBusy() {
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(backend: backend)
+        application.generateOccitanieActivity()
+        application.generateOccitanieActivity()
+        application.generateFrenchPaper(largePrint: false)
+        XCTAssertEqual(backend.requests.count, 1)
+        application.cancelGeneration()
+        XCTAssertFalse(application.isRunning)
+        backend.requests[0].onFinish(.success(0))
+        XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+    }
+    @MainActor
+    func testOccitanieActivityPublishesOnlyItsTwoPDFsWithoutExamIdentity() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        let application = isolatedApplication(defaults: defaults, backend: backend)
+        application.outputFolder = directory.appendingPathComponent("activity-exports")
+        application.generateOccitanieActivity()
+        let run = try XCTUnwrap(backend.requests.first)
+        XCTAssertEqual(run.arguments.first, "generate-occitanie-case-study")
+        XCTAssertEqual(run.arguments.count, 3)
+        XCTAssertEqual(run.arguments[1], "--output")
+        XCTAssertTrue(run.environment.isEmpty)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        let working = URL(fileURLWithPath: run.arguments[2])
+        XCTAssertNotEqual(working, application.outputFolder)
+        let source = working.appendingPathComponent("occitanie-nsi-etude-de-cas")
+        try manager.createDirectory(at: source, withIntermediateDirectories: true)
+        for (role, name) in [("question_paper", "occitanie-nsi-activite.pdf"), ("mark_scheme", "occitanie-nsi-correction.pdf")] {
+            let file = source.appendingPathComponent(name)
+            try Data(name.utf8).write(to: file)
+            run.onEvent(.file(role: role, path: file.path))
+        }
+        run.onEvent(.done(message: "Activité Occitanie créée. Document indépendant, sans note d’examen."))
+        run.onFinish(.success(0))
+        XCTAssertFalse(application.showError, application.errorMessage)
+        XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+        XCTAssertEqual(application.currentGenerationFiles.count, 2)
+        XCTAssertTrue(application.currentGenerationFiles.allSatisfy { $0.subject == "Étude de cas Occitanie" && $0.paper == "Activité indépendante, sans note d’examen" })
+        let published = try manager.contentsOfDirectory(at: application.outputFolder, includingPropertiesForKeys: nil)
+        XCTAssertEqual(published.count, 1)
+        XCTAssertEqual(Set(try manager.contentsOfDirectory(atPath: published[0].path)), ["occitanie-nsi-activite.pdf", "occitanie-nsi-correction.pdf"])
+        let reopened = isolatedApplication(defaults: defaults, backend: ControlledRunBackend())
+        XCTAssertEqual(Set(reopened.generatedFiles.map(\.url)), Set(application.currentGenerationFiles.map(\.url)))
+    }
+
+    @MainActor
+    func testOccitanieActivityRefusesIncompleteOrUnexpectedArtifactsBeforePublishing() throws {
+        for invalid in ["missing", "extra", "wrong-folder", "wrong-name"] {
+            let backend = ControlledRunBackend()
+            let application = isolatedApplication(backend: backend)
+            application.outputFolder = directory.appendingPathComponent(invalid)
+            application.generateOccitanieActivity()
+            let run = try XCTUnwrap(backend.requests.first)
+            let working = URL(fileURLWithPath: run.arguments[2])
+            let source = working.appendingPathComponent(invalid == "wrong-folder" ? "other" : "occitanie-nsi-etude-de-cas")
+            try manager.createDirectory(at: source, withIntermediateDirectories: true)
+            var artifacts = [("question_paper", invalid == "wrong-name" ? "other.pdf" : "occitanie-nsi-activite.pdf")]
+            if invalid != "missing" { artifacts.append(("mark_scheme", "occitanie-nsi-correction.pdf")) }
+            if invalid == "extra" { artifacts.append(("package_manifest", "manifest.json")) }
+            for (role, name) in artifacts {
+                let file = source.appendingPathComponent(name)
+                try Data(name.utf8).write(to: file)
+                run.onEvent(.file(role: role, path: file.path))
+            }
+            run.onFinish(.success(0))
+            XCTAssertTrue(application.showError, invalid)
+            XCTAssertFalse(manager.fileExists(atPath: application.outputFolder.path), invalid)
+            XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+        }
+    }
+    @MainActor
     func testFrenchAndUKCompletionExportDocumentsButRetainPrivateManifests() throws {
         for french in [false, true] {
             let backend = ControlledRunBackend()

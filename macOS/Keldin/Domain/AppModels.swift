@@ -1171,6 +1171,20 @@ enum BackendEvent: Equatable {
     }
 }
 
+enum MLXModelAccessPolicy {
+    static func issue(model: String, distributionMode: DistributionMode) -> LocalizedStringResource? {
+        guard distributionMode == .appStore else { return nil }
+        let parts = model.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "/", omittingEmptySubsequences: false)
+        let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_.")
+        guard parts.count == 2, parts.allSatisfy({
+            !$0.isEmpty && $0 != "." && $0 != ".." && $0.unicodeScalars.allSatisfy(allowed.contains)
+        }) else {
+            return "In the App Store version, enter a Hugging Face model ID such as owner/model. Models are prepared in Keldin's own storage; external model folders are not supported."
+        }
+        return nil
+    }
+}
+
 enum MLXSetupPolicy {
     static func requiresSetup(
         provider: AIProvider,

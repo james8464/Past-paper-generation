@@ -1,6 +1,33 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Hugging Face model ID": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Identifiant du modèle Hugging Face"}}}
+    },
+    "In the App Store version, enter a Hugging Face model ID such as owner/model. Models are prepared in Keldin's own storage; external model folders are not supported.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Dans la version App Store, saisissez un identifiant Hugging Face comme propriétaire/modèle. Les modèles sont préparés dans le stockage de Keldin ; les dossiers de modèles externes ne sont pas pris en charge."}}}
+    },
+    "Use a Hugging Face model ID such as owner/model. Keldin prepares models in its own storage. External model folders are not supported in the App Store version.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Utilisez un identifiant Hugging Face comme propriétaire/modèle. Keldin prépare les modèles dans son propre stockage. Les dossiers de modèles externes ne sont pas pris en charge dans la version App Store."}}}
+    },
+    "Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Étude de cas Occitanie"}}}
+    },
+    "Create the Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Créer l’étude de cas Occitanie"}}}
+    },
+    "A separate French activity using 12 public school records from Occitanie. Includes an activity PDF and proposed answers, without an exam mark or official endorsement.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Une activité distincte en français à partir de 12 fiches publiques d’établissements d’Occitanie. Comprend l’activité et une proposition de corrigé en PDF, sans note d’examen ni approbation officielle."}}}
+    },
+    "Preparing the Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Préparation de l’étude de cas Occitanie"}}}
+    },
+    "The case study could not be saved. Try again or choose another output folder.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "L’étude de cas n’a pas pu être enregistrée. Réessayez ou choisissez un autre dossier de sortie."}}}
+    },
+    "Occitanie case study created. Separate activity, without an exam mark.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Étude de cas Occitanie créée. Activité indépendante, sans note d’examen."}}}
+    },
     "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."}}}
     },

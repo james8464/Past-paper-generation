@@ -50,7 +50,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     private(set) var pendingGenerationSeed: Int?
 
-    let distributionMode = DistributionMode.current
+    let distributionMode: DistributionMode
 
     private let backend: any BackendRunning
     private let defaults: UserDefaults
@@ -170,7 +170,7 @@ final class ApplicationCoordinator: ObservableObject {
             if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         case .apple:
-            return nil
+            return MLXModelAccessPolicy.issue(model: appleModel, distributionMode: distributionMode)
         }
     }
 
@@ -219,6 +219,7 @@ final class ApplicationCoordinator: ObservableObject {
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
         backend: any BackendRunning = BackendClient(),
+        distributionMode: DistributionMode = .current,
         outputFolderBookmark: @escaping (URL) throws -> Data = { url in
             try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
         },
@@ -228,10 +229,11 @@ final class ApplicationCoordinator: ObservableObject {
     ) {
         self.defaults = defaults
         self.backend = backend
+        self.distributionMode = distributionMode
         self.outputFolderBookmark = outputFolderBookmark
         generationRecordsFolder = (historyDirectory ?? AppDefaults.jobHistoryFolder())
             .appendingPathComponent("Generation records", isDirectory: true)
-        let settings = SettingsStore(defaults: defaults, secrets: secrets)
+        let settings = SettingsStore(defaults: defaults, secrets: secrets, distributionMode: distributionMode)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
             retentionLimit: settings.historyRetentionLimit,
@@ -371,6 +373,33 @@ final class ApplicationCoordinator: ObservableObject {
             seed: seed, largePrint: largePrint, excludedFamilies: excludedFamilies
         )
         startFrenchOperation(arguments: request.arguments, seed: seed, workingFolder: request.output)
+    }
+
+    func generateOccitanieActivity() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        progressEntries.removeAll()
+        lastQualityReport = nil
+        generationProgress = nil
+        status = InterfaceText.resolve("Preparing the Occitanie case study", language: presentationLanguage)
+        let working = generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let session = beginRunSession(
+            intent: .occitanieActivity,
+            documents: RunDocuments(
+                frameworkID: "occitanie-nsi-case-study",
+                subject: "Étude de cas Occitanie", paper: "Activité indépendante, sans note d’examen",
+                workingFolder: working
+            ), model: ""
+        )
+        do {
+            let process = try backend.run(arguments: ["generate-occitanie-case-study", "--output", working.path], environment: [:]) { [weak self] event in
+                self?.apply(event, from: session)
+            } onFinish: { [weak self] result in
+                self?.finishRun(result, from: session)
+            }
+            if activeRun?.id == session { activeRun?.process = process }
+        } catch {
+            finishRun(.failure(error), from: session)
+        }
     }
 
     /// Catalogue use survives the configurable job-history limit and output moves.
@@ -810,6 +839,11 @@ final class ApplicationCoordinator: ObservableObject {
     func confirmMLXSetup() {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
+            showMLXSetupConfirmation = false
+            setError(InterfaceText.resolve(issue, language: presentationLanguage))
+            return
+        }
         guard !model.isEmpty else {
             showMLXSetupConfirmation = false
             setError("Choose an Apple MLX model in Settings, then try again.")
@@ -1295,12 +1329,42 @@ final class ApplicationCoordinator: ObservableObject {
         switch run.intent {
         case .paper:
             finishGeneration(result, run: run)
+        case .occitanieActivity:
+            finishOccitanieActivity(result, run: run)
         case .referencePreparation, .reviewRecord:
             finishMaintenance(result, run: run)
         case .modelPull:
             finishModelPull(result, run: run)
         case .mlxSetup:
             finishMLXSetup(result, run: run)
+        }
+    }
+
+    private func finishOccitanieActivity(_ result: Result<Int32, Error>, run: BackendRun) {
+        guard case .success(0) = result, run.backendErrorMessage == nil else {
+            finishMaintenance(result, run: run)
+            return
+        }
+        do {
+            guard let working = run.documents.workingFolder else { throw CocoaError(.fileReadInvalidFileName) }
+            let source = working.appendingPathComponent("occitanie-nsi-etude-de-cas").standardizedFileURL
+            let expected = ["question_paper": "occitanie-nsi-activite.pdf", "mark_scheme": "occitanie-nsi-correction.pdf"]
+            guard currentGenerationFiles.count == expected.count,
+                  Set(currentGenerationFiles.map(\.role)) == Set(expected.keys),
+                  currentGenerationFiles.allSatisfy({
+                      $0.url.deletingLastPathComponent().standardizedFileURL == source
+                          && $0.url.lastPathComponent == expected[$0.role]
+                  }) else { throw CocoaError(.fileReadCorruptFile) }
+            try publishUKGeneratedFiles(from: source, to: outputFolder)
+            generationProgress = 1
+            persistRecentDocuments()
+            if let activity = currentGenerationFiles.first(where: { $0.role == "question_paper" }) {
+                previewedFileID = activity.id
+                sidebarSelection = .documents
+            }
+        } catch {
+            setError(InterfaceText.resolve("The case study could not be saved. Try again or choose another output folder.", language: presentationLanguage))
+            progressEntries.append(ProgressEntry(stage: "publication", message: error.localizedDescription))
         }
     }
 
@@ -1506,18 +1570,19 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
-        if !jobArtifacts.isEmpty {
-            generatedFiles = latestDocumentVersions(jobArtifacts)
-            return
-        }
         guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
               let documents = try? JSONDecoder().decode(
                 [GeneratedFile].self,
                 from: data
               ) else {
+            generatedFiles = latestDocumentVersions(jobArtifacts)
             return
         }
-        generatedFiles = latestDocumentVersions(documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) })
+        // Independent activities have no exam job identity. Keep their document
+        // records alongside the authoritative artifacts from full-paper jobs.
+        let relocated = documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) }
+        let independent = relocated.filter { $0.subject == "Étude de cas Occitanie" && $0.paper == "Activité indépendante, sans note d’examen" }
+        generatedFiles = latestDocumentVersions(jobArtifacts.isEmpty ? relocated : independent + jobArtifacts)
     }
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
@@ -1686,11 +1751,11 @@ private enum RunningOperation {
 }
 
 private enum BackendRunIntent {
-    case paper, referencePreparation, reviewRecord, modelPull, mlxSetup
+    case paper, occitanieActivity, referencePreparation, reviewRecord, modelPull, mlxSetup
 
     var operation: RunningOperation {
         switch self {
-        case .paper: .generation
+        case .paper, .occitanieActivity: .generation
         case .referencePreparation, .reviewRecord: .none
         case .modelPull: .modelPull
         case .mlxSetup: .mlxSetup

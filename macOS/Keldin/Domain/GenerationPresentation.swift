@@ -83,6 +83,9 @@ enum GenerationPresentation {
     }
 
     static func completion(_ message: String, language: String = "system") -> String {
+        if message == "Activité Occitanie créée. Document indépendant, sans note d’examen." {
+            return localized("Occitanie case study created. Separate activity, without an exam mark.", language: language)
+        }
         guard message == "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées." else {
             return message
         }

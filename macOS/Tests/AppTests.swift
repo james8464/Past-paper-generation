@@ -5,6 +5,15 @@ import XCTest
 @testable import Keldin
 
 final class KeldinTests: XCTestCase {
+    func testStoreMLXModelsUseManagedRepositoryIDsWithoutRestrictingDirectPaths() {
+        for model in ["mlx-community/Qwen2.5-3B-Instruct-4bit", " owner/model.v1 "] {
+            XCTAssertNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .appStore))
+        }
+        for model in ["/Users/test/model", "~/models/model", "./models/model", "../model", "file:///model", "owner/model/subfolder", "local-model", "owner/.."] {
+            XCTAssertNotNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .appStore), model)
+            XCTAssertNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .direct), model)
+        }
+    }
     func testOllamaAvailabilityStatusUsesFrenchTranslation() {
         let expected = [
             "Not checked": "Non vérifié",
