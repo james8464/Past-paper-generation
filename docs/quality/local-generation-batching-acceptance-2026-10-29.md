@@ -69,7 +69,33 @@ The trusted MCQ shape fix separately narrows response structure; answer correctn
 and uniqueness remain checked after decoding. Its evidence and historical limits
 are in `trusted-authoring-response-shape-review-2026-10-29.md`.
 
-## Gate status
+## Live question-quality limits
+
+Transport success does not establish model reasoning quality. A fresh parallel
+Accounting P2 source run with the cached Llama-3.2-3B model refused a question at
+independent answer reconciliation and published no paper. Qwen3-8B paired
+question trials also produced a contribution question whose correct calculated
+value was absent from all four options. The new strict solver validity signal
+rejects that case before accepting a canonical answer. It is required for typed
+provider responses and cannot be replaced by a string or numeric truth value.
+
+A later Qwen trial rejected the missing-answer question, but accepted a separate
+item with two equivalent account statements in reversed conjunction order.
+That is a real quality finding, not a successful question qualification. Its
+private raw responses and failed probe are retained. A narrow deterministic
+regression check now rejects that coordinate-account reversal during candidate
+admission and checkpoint restoration. It preserves reversed debit/credit
+instructions and different predicates; it is not general semantic-equivalence
+detection. Shared review identity v9 prevents reuse of an earlier accepted item
+under the stronger policy. Two red reproductions became green in 149 targeted
+candidate/checkpoint/solver tests.
+
+These trials do not qualify every cached model, subject or complete paper. The
+batching setting remains optional. Refusing invalid model output is intentional;
+no answer checks, private-answer boundaries or paper acceptance gates are relaxed
+to obtain a successful demonstration.
+
+## Integration gate status
 
 Subagent tests used isolated worktrees: MLX/related contracts 199 passed; trusted
 shape/related contracts 306 passed; final native tests 288 passed with one opt-in

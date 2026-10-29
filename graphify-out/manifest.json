@@ -5,8 +5,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1793294386.6794841,
-    "ast_hash": "12bbb48c82ddc71f02acf50358da5d36",
+    "mtime": 1793297386.1266994,
+    "ast_hash": "e8e77fb03596b53764f59c1042501595",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/events.py": {
-    "mtime": 1793280754.437899,
-    "ast_hash": "4fe2a254666be59770598d9075df90d5",
+    "mtime": 1793297039.8456326,
+    "ast_hash": "c0c30d36d4a5b47d7d600076b6c00fb7",
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
-    "mtime": 1793225633.067293,
-    "ast_hash": "c196aa6bff170e542ffe5275fc8250cf",
+    "mtime": 1793296581.9470067,
+    "ast_hash": "0b5beb29a95f1d411d55daa700af7422",
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793294457.010457,
-    "ast_hash": "98a18290271653c168f8c25f5933b92d",
+    "mtime": 1793296581.9472702,
+    "ast_hash": "1ed4402461fec70a50a39bb6e0fa194b",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793293111.647849,
-    "ast_hash": "0bbb8fca4edb67a92d0e445f7f686910",
+    "mtime": 1793297398.69408,
+    "ast_hash": "a4a4aef17227fa1a68261c8474cade65",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793294894.0745828,
-    "ast_hash": "677a5e204c2b0a487571780bb0e0e428",
+    "mtime": 1793297039.835451,
+    "ast_hash": "423336d6bb54ef3ae54c324c30e8e49a",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -1515,8 +1515,8 @@
     "semantic_hash": "1baa1c8e4a1cafa301759c88ca510dfd"
   },
   "tests/test_generation_diagnostics.py": {
-    "mtime": 1793225633.1482067,
-    "ast_hash": "0dd568a756d8d5ac37baff1dbe9386b0",
+    "mtime": 1793296319.6489043,
+    "ast_hash": "adb03f4b16ac958155e5a1f4fce5cd9e",
     "semantic_hash": ""
   },
   "tests/test_generator_migration.py": {
@@ -3515,8 +3515,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
-    "mtime": 1793294894.0734847,
-    "ast_hash": "4e8962fe8dfa29fe8528b6a2cefc25a6",
+    "mtime": 1793297039.8345945,
+    "ast_hash": "2713c50c20ecd76bac5f9d41b64ecb6d",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/InterfaceText.swift": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793294386.6591437,
-    "ast_hash": "ca023d730261d08850b9d0c7a164a623",
+    "mtime": 1793297039.8352013,
+    "ast_hash": "c8f03329031f10e4b97ba19016de6ed9",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793293111.5668523,
-    "ast_hash": "4ef820b055a53f7eee7b909899c4f325",
+    "mtime": 1793297398.5446491,
+    "ast_hash": "ecff6cafcb581c8858f646e7d2502fa4",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4155,8 +4155,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/solver_prompts.py": {
-    "mtime": 1793225632.869853,
-    "ast_hash": "357637fca42a9770531988aea0b3194a",
+    "mtime": 1793296581.9475543,
+    "ast_hash": "8c2bca31859f6f9d2b054e640032e0c3",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/keldin_edexcel/__init__.py": {
@@ -4595,8 +4595,8 @@
     "semantic_hash": ""
   },
   "docs/quality/local-generation-batching-acceptance-2026-10-29.md": {
-    "mtime": 1793295306.606279,
-    "ast_hash": "e8af450268de3aabc1580da92b217bdb",
+    "mtime": 1793297398.2919538,
+    "ast_hash": "199f5911175d33a3cf875b472bf33297",
     "semantic_hash": ""
   },
   "docs/quality/mlx-batching-design-2026-10-29.md": {
@@ -4607,6 +4607,36 @@
   "docs/quality/trusted-authoring-response-shape-review-2026-10-29.md": {
     "mtime": 1793294386.6807983,
     "ast_hash": "44df77fc8e1bf71958d3fb47fbdad4a6",
+    "semantic_hash": ""
+  },
+  "tests/test_events_concurrency.py": {
+    "mtime": 1793297039.8458285,
+    "ast_hash": "8d6bb45d66e79c24d181c29cf4facbcb",
+    "semantic_hash": ""
+  },
+  "tests/test_solver_choice_validity.py": {
+    "mtime": 1793297386.1271405,
+    "ast_hash": "3b70adee176bc16d2c8239c40389d58f",
+    "semantic_hash": ""
+  },
+  "docs/quality/backend-event-concurrency-2026-10-29.md": {
+    "mtime": 1793297039.845735,
+    "ast_hash": "279fb3aaff849cd9bff95cb11bb6fdcd",
+    "semantic_hash": ""
+  },
+  "docs/quality/solver-choice-validity-review-2026-10-29.md": {
+    "mtime": 1793296581.9478912,
+    "ast_hash": "43e6403e34750855733d0d782ad1f994",
+    "semantic_hash": ""
+  },
+  "tests/test_coordinate_choice_duplicates.py": {
+    "mtime": 1793297386.1269805,
+    "ast_hash": "fdbcc88e0ccde6bf108e4bb11d01e295",
+    "semantic_hash": ""
+  },
+  "docs/quality/coordinate-choice-duplicate-review-2026-10-29.md": {
+    "mtime": 1793297386.1268394,
+    "ast_hash": "2d5c4eda9d7b76eb66676825515fda40",
     "semantic_hash": ""
   }
 }

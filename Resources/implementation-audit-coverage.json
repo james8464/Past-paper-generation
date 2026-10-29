@@ -2771,6 +2771,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/backend-event-concurrency-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/calibration-tooling-boundaries-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -2790,6 +2796,12 @@
     },
     {
       "path": "docs/quality/consolidated-release-acceptance-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/coordinate-choice-duplicate-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3288,6 +3300,12 @@
     },
     {
       "path": "docs/quality/selected-response-dispatch-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/solver-choice-validity-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4745,6 +4763,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_coordinate_choice_duplicates.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_cover_fonts.py",
       "classification": "test",
       "status": "pending",
@@ -4824,6 +4848,12 @@
     },
     {
       "path": "tests/test_essay_subjects.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_events_concurrency.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5814,6 +5844,12 @@
       "source_sha256": "dc987d3fa2209ee99ded5da067d25a58a46ef8bb1fb343292cfbf50c2997bc38",
       "review_evidence": "docs/quality/core-policy-boundaries-review-2026-10-29.md",
       "review_evidence_sha256": "c472b24feceb968224a9a24e3d19c1aa0187ed66cee254f050567baa498e57e7"
+    },
+    {
+      "path": "tests/test_solver_choice_validity.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_source_candidate_paths.py",
