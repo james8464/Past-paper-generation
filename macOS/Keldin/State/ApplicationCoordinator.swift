@@ -724,7 +724,8 @@ final class ApplicationCoordinator: ObservableObject {
                 ) as? String ?? "development",
                 provider: aiProvider.backendID,
                 model: activeModelName,
-                localReviewWorkers: aiProvider == .ollama ? (settingsStore.parallelLocalReviews ? 2 : 1) : nil
+                localReviewWorkers: aiProvider == .ollama ? (settingsStore.parallelLocalReviews ? 2 : 1) : nil,
+                localGenerationWorkers: configuredLocalGenerationWorkers
             ),
             state: .pending,
             artifacts: [],
@@ -757,6 +758,7 @@ final class ApplicationCoordinator: ObservableObject {
 
         var backendEnvironment = [
             "KELDIN_PARALLEL_LOCAL_REVIEWS": settingsStore.parallelLocalReviews ? "1" : "0",
+            "KELDIN_PARALLEL_MLX_GENERATION": settingsStore.parallelMLXGeneration ? "1" : "0",
             "KELDIN_GENERATED_ON": Self.generationDateFormatter.string(from: Date()),
             "KELDIN_JOB_ID": UUID().uuidString,
             "KELDIN_APP_VERSION": Bundle.main.object(
@@ -974,6 +976,12 @@ final class ApplicationCoordinator: ObservableObject {
     func setParallelLocalReviews(_ enabled: Bool) {
         guard !isRunning else { return }
         settingsStore.parallelLocalReviews = enabled
+        _ = persistSettings(includeCredentials: false, presentation: settingsPresentation)
+    }
+
+    func setParallelMLXGeneration(_ enabled: Bool) {
+        guard !isRunning else { return }
+        settingsStore.parallelMLXGeneration = enabled
         _ = persistSettings(includeCredentials: false, presentation: settingsPresentation)
     }
 
@@ -1547,6 +1555,14 @@ final class ApplicationCoordinator: ObservableObject {
         progressEntries.append(ProgressEntry(stage: "error", message: message))
     }
 
+    private var configuredLocalGenerationWorkers: Int? {
+        switch aiProvider {
+        case .ollama: settingsStore.parallelLocalReviews ? 2 : 1
+        case .apple: settingsStore.parallelMLXGeneration ? 2 : 1
+        case .openAI, .anthropic: nil
+        }
+    }
+
     private func beginGenerationEstimate() {
         generationEstimate = GenerationEstimator.initialEstimate(
             board: selectedBoard,
@@ -1555,7 +1571,8 @@ final class ApplicationCoordinator: ObservableObject {
             model: activeModelName,
             dryRun: dryRun,
             benchmark: benchmarkCoordinator.verdict,
-            recentRuns: recentDocumentStore.records
+            recentRuns: recentDocumentStore.records,
+            localGenerationWorkers: configuredLocalGenerationWorkers ?? 1
         )
         etaTimer?.cancel()
         etaTimer = Timer.publish(every: 1, on: .main, in: .common)

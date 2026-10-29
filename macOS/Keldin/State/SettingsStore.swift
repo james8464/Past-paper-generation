@@ -13,6 +13,7 @@ final class SettingsStore {
     var appleModel: String
     var dryRun: Bool
     var parallelLocalReviews: Bool
+    var parallelMLXGeneration: Bool
     var notificationsEnabled: Bool
     var historyRetentionLimit: Int
     var openAIAPIKey = ""
@@ -42,6 +43,7 @@ final class SettingsStore {
             ?? AppDefaults.appleModel
         dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
         parallelLocalReviews = defaults.object(forKey: AppStorageKey.parallelLocalReviews) as? Bool ?? false
+        parallelMLXGeneration = defaults.object(forKey: AppStorageKey.parallelMLXGeneration) as? Bool ?? false
         notificationsEnabled = defaults.object(
             forKey: AppStorageKey.notificationsEnabled
         ) as? Bool ?? true
@@ -61,6 +63,7 @@ final class SettingsStore {
         defaults.set(appleModel, forKey: AppStorageKey.appleModel)
         defaults.set(dryRun, forKey: AppStorageKey.dryRun)
         defaults.set(parallelLocalReviews, forKey: AppStorageKey.parallelLocalReviews)
+        defaults.set(parallelMLXGeneration, forKey: AppStorageKey.parallelMLXGeneration)
         defaults.set(notificationsEnabled, forKey: AppStorageKey.notificationsEnabled)
         defaults.set(
             historyRetentionLimit,

@@ -16,6 +16,16 @@ enum GenerationPresentation {
     }
 
     static func progress(_ message: String, language: String = "system") -> String {
+        if let range = message.range(of: #"^Accepted [0-9]+ of [0-9]+ AI (items|questions)$"#, options: .regularExpression),
+           range == (message.startIndex..<message.endIndex) {
+            let words = message.split(separator: " ")
+            if let completed = Int(words[1]), let total = Int(words[3]),
+               total > 0, completed <= total {
+                return words[5] == "questions"
+                    ? localized("Questions checked: \(completed) of \(total)", language: language)
+                    : localized("Items checked: \(completed) of \(total)", language: language)
+            }
+        }
         if message == "Construction des exercices vérifiés, sans appel à un modèle." {
             return localized("Preparing the practice paper.", language: language)
         }

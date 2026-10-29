@@ -4,6 +4,28 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testAcceptedParallelProgressUsesTheSelectedLanguage() {
+        for (kind, english, french) in [
+            ("items", "Items checked: 2 of 17", "Éléments vérifiés : 2 sur 17"),
+            ("questions", "Questions checked: 2 of 17", "Questions vérifiées : 2 sur 17"),
+        ] {
+            let message = "Accepted 2 of 17 AI \(kind)"
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), english)
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "fr"), french)
+        }
+        for malformed in ["Accepted 3 of 2 AI items", "Accepted 1 of 0 AI questions",
+                          "Accepted -1 of 2 AI items", "Accepted two of 17 AI questions",
+                          "Accepted 2 of 17 AI questions: extra", "Accepted 2 of 17 AI questions\n"] {
+            XCTAssertEqual(GenerationPresentation.progress(malformed, language: "fr"), malformed)
+        }
+        let model = isolatedApplication()
+        let message = "Accepted 2 of 17 AI questions"
+        model.apply(.progress(stage: "checkpoint", message: message, progress: 0.3))
+        XCTAssertEqual(model.progressEntries.last?.message, message)
+        XCTAssertEqual(model.generationProgress, 0.3)
+    }
+
+    @MainActor
     func testDifficultyReviewProgressUsesPlainSelectedLanguageCopy() {
         for prefix in ["Calibrating difficulty", "Checking reference demand"] {
             let message = "\(prefix) 2/17: 1b"
