@@ -43,6 +43,14 @@ struct ContentView: View {
             }
             .navigationSplitViewStyle(.balanced)
         }
+        .safeAreaInset(edge: .bottom) {
+            if application.isRunning {
+                GenerationProgress()
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(.bar)
+            }
+        }
         .frame(minWidth: 720, minHeight: 560)
         .alert("Couldn't complete the action", isPresented: $application.showError) {
             Button("OK", role: .cancel) { }

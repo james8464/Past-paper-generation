@@ -248,6 +248,8 @@ private struct HelpTopicPage: View {
 
     private var creatingAPaper: some View {
         Group {
+            Text("New papers may cover familiar topics or include similar questions. Checks still reject duplicate questions within a paper.")
+                .foregroundStyle(.secondary)
             HelpSteps(
                 rows: [
                     ("Select subject and board", "Only implemented generators appear. Their papers come from the canonical generator registry."),
@@ -301,6 +303,8 @@ private struct HelpTopicPage: View {
 
     private var frenchBaccalaureat: some View {
         Group {
+            Text("Five paper families are available and can be used again for practice.")
+                .foregroundStyle(.secondary)
             Text("The French route creates original Terminale NSI written practice for the 2027 rules. It is separate from the UK exam-board generators and does not include the practical component.")
                 .foregroundStyle(.secondary)
 

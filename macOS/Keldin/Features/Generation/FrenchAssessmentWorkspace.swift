@@ -86,7 +86,7 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official practice papers. Review the questions and proposed answers before use.")
                     .foregroundStyle(.secondary)
-                Text("Five paper families are available. The app selects an unused family and blocks repeats.")
+                Text("Five paper families are available and can be used again for practice.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
@@ -146,13 +146,7 @@ struct FrenchAssessmentWorkspace: View {
                     }
                 }
             }
-            if application.isRunning {
-                Section {
-                    ProgressView()
-                    Text(application.status)
-                        .accessibilityLabel(Text("Generation status"))
-                }
-            } else if !application.progressEntries.isEmpty {
+            if !application.isRunning, !application.progressEntries.isEmpty {
                 Section("Status") { Text(application.status) }
             }
         }

@@ -1,5 +1,6 @@
 // Import earlier installations once, without deleting their files or overwriting Keldin data.
 
+import CryptoKit
 import Foundation
 
 enum KeldinMigration {
@@ -10,6 +11,7 @@ enum KeldinMigration {
     static let completionKey = "keldinIdentityMigrationVersion"
     static let artifactMappingsKey = "keldinImportedArtifactRoots"
     static let frenchFamilyImportFailedKey = "keldinFrenchFamilyImportFailed"
+    private static let verifiedArtifactCopiesKey = "keldinVerifiedImportedArtifactCopies"
     private static let migrationVersion = 2
 
     static func needsImport(defaults: UserDefaults) -> Bool {
@@ -99,18 +101,73 @@ enum KeldinMigration {
         defaults.set(mappings, forKey: artifactMappingsKey)
     }
 
-    static func relocatedArtifact(_ file: GeneratedFile, defaults: UserDefaults = .standard) -> GeneratedFile {
+    static func relocatedArtifact(
+        _ file: GeneratedFile, defaults: UserDefaults = .standard,
+        readData: (URL) throws -> Data = { try Data(contentsOf: $0, options: .mappedIfSafe) }
+    ) -> GeneratedFile {
         let path = file.url.standardizedFileURL.path
         let mappings = defaults.dictionary(forKey: artifactMappingsKey) as? [String: String] ?? [:]
         for source in mappings.keys.sorted(by: { $0.count > $1.count }) where path.hasPrefix(source + "/") {
             guard let destination = mappings[source] else { continue }
             let relative = String(path.dropFirst(source.count + 1))
             let url = URL(fileURLWithPath: destination).appendingPathComponent(relative)
-            guard FileManager.default.fileExists(atPath: url.path) else { continue }
+            guard verifiedArtifactCopy(file, destination: url, defaults: defaults, readData: readData) else { continue }
             // Change only the history pointer. Assessment packages and PDF bytes keep their hashes.
             return GeneratedFile(id: file.id, role: file.role, url: url, createdAt: file.createdAt, subject: file.subject, paper: file.paper)
         }
         return file
+    }
+
+    private static func verifiedArtifactCopy(
+        _ file: GeneratedFile, destination: URL, defaults: UserDefaults,
+        readData: (URL) throws -> Data
+    ) -> Bool {
+        let key = file.id.uuidString
+        var proofs = defaults.dictionary(forKey: verifiedArtifactCopiesKey) as? [String: [String: String]] ?? [:]
+        func revokeProof() {
+            guard proofs.removeValue(forKey: key) != nil else { return }
+            defaults.set(proofs, forKey: verifiedArtifactCopiesKey)
+        }
+        guard let copied = try? regularArtifactData(at: destination, readData: readData) else {
+            revokeProof()
+            return false
+        }
+        let digest = SHA256.hash(data: copied).map { String(format: "%02x", $0) }.joined()
+        let expected = [
+            "source": file.url.standardizedFileURL.path,
+            "destination": destination.standardizedFileURL.path,
+            "sha256": digest,
+        ]
+        do {
+            let original = try regularArtifactData(at: file.url, readData: readData)
+            guard original == copied else {
+                revokeProof()
+                return false
+            }
+            // Only a byte-verified copy may outlive its original location.
+            proofs[key] = expected
+            defaults.set(proofs, forKey: verifiedArtifactCopiesKey)
+            return true
+        } catch let error as CocoaError where [.fileNoSuchFile, .fileReadNoSuchFile].contains(error.code) {
+            guard proofs[key] == expected else {
+                revokeProof()
+                return false
+            }
+            return true
+        } catch {
+            // A present but unreadable original is not proof of a matching copy.
+            revokeProof()
+            return false
+        }
+    }
+
+    private static func regularArtifactData(at url: URL, readData: (URL) throws -> Data) throws -> Data {
+        // Inspect the current filesystem entry, including the link itself.
+        let attributes = try FileManager.default.attributesOfItem(atPath: url.path)
+        guard attributes[.type] as? FileAttributeType == .typeRegular else {
+            throw CocoaError(.fileReadUnsupportedScheme)
+        }
+        return try readData(url)
     }
 
     static func copyMissingTree(from source: URL, to destination: URL, fileManager: FileManager = .default) throws {

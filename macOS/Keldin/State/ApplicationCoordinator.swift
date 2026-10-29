@@ -360,11 +360,6 @@ final class ApplicationCoordinator: ObservableObject {
             setError(error.localizedDescription)
             return
         }
-        guard excludedFamilies.count < 5 else {
-            pendingGenerationSeed = nil
-            setError("Les cinq familles disponibles sont trop proches des sujets précédents. Aucun nouveau sujet n'a été créé.")
-            return
-        }
         let seed = pendingGenerationSeed ?? Int.random(in: 1 ... Int(Int32.max))
         pendingGenerationSeed = seed
         let request = FrenchAssessmentRequest(
@@ -1334,7 +1329,8 @@ final class ApplicationCoordinator: ObservableObject {
                 generationProgress = 1.0
                 generationEstimate = nil
                 do {
-                    try generationCoordinator.complete(expectedJobID: jobID, artifacts: currentGenerationFiles)
+                    let frenchPolicy: FrenchAssessmentRequest.PracticePolicy = run.documents.frameworkID == FrenchAssessmentRequest.assessmentID && run.model == FrenchAssessmentRequest.modelID ? .repeatPractice : .strict
+                    try generationCoordinator.complete(expectedJobID: jobID, artifacts: currentGenerationFiles, expectedFrenchPolicy: frenchPolicy)
                     if run.documents.frameworkID == FrenchAssessmentRequest.assessmentID {
                         _ = try savedFrenchFamilies()
                     }

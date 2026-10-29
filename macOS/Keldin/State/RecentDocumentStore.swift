@@ -116,13 +116,16 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
     }
 }
 
-enum RecentDocumentStoreError: LocalizedError {
+enum RecentDocumentStoreError: LocalizedError, Equatable {
     case unsupportedSchema(Int)
+    case noncanonicalFileName
 
     var errorDescription: String? {
         switch self {
         case let .unsupportedSchema(version):
             "This history item uses unsupported schema version \(version)."
+        case .noncanonicalFileName:
+            CocoaError(.fileReadInvalidFileName).localizedDescription
         }
     }
 }
@@ -189,6 +192,11 @@ final class RecentDocumentStore {
             } catch RecentDocumentStoreError.unsupportedSchema(_) {
                 try quarantine(url)
                 continue
+            }
+            guard url.lastPathComponent == fileURL(for: record.id).lastPathComponent else {
+                // A valid record under another name must not overwrite its
+                // canonical peer or reappear after removal. Keep it untouched.
+                throw RecentDocumentStoreError.noncanonicalFileName
             }
             let relocated = record.artifacts.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) }
             var needsWrite = relocated != record.artifacts

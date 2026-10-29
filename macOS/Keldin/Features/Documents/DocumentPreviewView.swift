@@ -127,7 +127,9 @@ final class DocumentActionController: ObservableObject {
 
     var canAccessDocument: Bool { loadedPDF != nil && selectedFile?.exists == true }
 
-    init(access: PDFDocumentAccess = PDFDocumentAccess()) { self.access = access }
+    init(access: PDFDocumentAccess) { self.access = access }
+
+    convenience init() { self.init(access: PDFDocumentAccess()) }
 
     func selectionBinding(selection: Binding<GeneratedFile.ID?>, files: [GeneratedFile], records: [GenerationJobRecord]) -> Binding<GeneratedFile.ID> {
         Binding(

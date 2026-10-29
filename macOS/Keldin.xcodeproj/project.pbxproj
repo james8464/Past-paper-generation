@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 110;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -87,6 +87,7 @@
 				EB87B0DB9ADE068E754390FF /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		EB87B0DB9ADE068E754390FF /* Products */ = {
 			isa = PBXGroup;
@@ -116,8 +117,6 @@
 				178798ACBEF73A9554415E41 /* Tests */,
 			);
 			name = KeldinTests;
-			packageProductDependencies = (
-			);
 			productName = KeldinTests;
 			productReference = FBE3DF670F156B7CFB63330A /* KeldinTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -132,14 +131,10 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			fileSystemSynchronizedGroups = (
 				09D71200BDC591CFAD261152 /* Keldin */,
 			);
 			name = Keldin;
-			packageProductDependencies = (
-			);
 			productName = Keldin;
 			productReference = 49AA15F163D73C4DDB8D9B7B /* Keldin.app */;
 			productType = "com.apple.product-type.application";
@@ -167,7 +162,7 @@
 			);
 			mainGroup = D7376D9BD672AB9C081AA3EE;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 110;
 			productRefGroup = EB87B0DB9ADE068E754390FF /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -181,20 +176,16 @@
 /* Begin PBXResourcesBuildPhase section */
 		3FA0E03FC64459FAB4666292 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				935DC030DA0CA72167FC5BB8 /* catalog.json in Resources */,
 				FA7A0A9B6D66EEE14ED9654B /* generator-registry.json in Resources */,
 				C991DB481431281ED4BB385C /* ollama-model-recommendations.json in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		8B00F10A49A3773FABA4D95F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
@@ -202,11 +193,6 @@
 		BB891F61274F5025F093A5F3 /* Bundle standalone backend */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
 			inputPaths = (
 				"$(SRCROOT)/../bridge.py",
 				"$(SRCROOT)/../Backend/Core/cli.py",
@@ -225,31 +211,27 @@
 				"$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml",
 			);
 			name = "Bundle standalone backend";
-			outputFileListPaths = (
-			);
 			outputPaths = (
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/KeldinBackend/.built",
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"$SRCROOT/scripts/build_backend.sh\"\n";
+			shellScript = (
+				"\"$SRCROOT/scripts/build_backend.sh\"",
+				"",
+			);
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2A89D26C4551409457D90475 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B772DB4F085E23E9B42BBABE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
@@ -262,7 +244,7 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06FA098EBC70219D6DE69554 /* Debug */ = {
+		06FA098EBC70219D6DE69554 /* Debug configuration for PBXProject "Keldin" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -328,17 +310,19 @@
 			};
 			name = Debug;
 		};
-		3129FBD99CF72F99E372C5E8 /* Release */ = {
+		3129FBD99CF72F99E372C5E8 /* Release configuration for PBXNativeTarget "Keldin" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APP_SANDBOX_ENABLED = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(CODE_SIGN_ENTITLEMENTS_FILE)";
 				CODE_SIGN_ENTITLEMENTS_FILE = Keldin/KeldinDirect.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z29CKRV8C9;
 				DISTRIBUTION_MODE = direct;
 				ENABLE_APP_SANDBOX = "$(APP_SANDBOX_ENABLED)";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -348,11 +332,13 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Keldin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Keldin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -365,7 +351,7 @@
 			};
 			name = Release;
 		};
-		3D1EE8820509A6E494B5EC1D /* Release */ = {
+		3D1EE8820509A6E494B5EC1D /* Release configuration for PBXNativeTarget "KeldinTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -382,17 +368,19 @@
 			};
 			name = Release;
 		};
-		6259793B588D843EDA81884C /* Debug */ = {
+		6259793B588D843EDA81884C /* Debug configuration for PBXNativeTarget "Keldin" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APP_SANDBOX_ENABLED = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = "$(CODE_SIGN_ENTITLEMENTS_FILE)";
 				CODE_SIGN_ENTITLEMENTS_FILE = Keldin/KeldinDirect.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Z29CKRV8C9;
 				DISTRIBUTION_MODE = direct;
 				ENABLE_APP_SANDBOX = "$(APP_SANDBOX_ENABLED)";
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -402,11 +390,13 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Keldin/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Keldin;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -419,7 +409,7 @@
 			};
 			name = Debug;
 		};
-		C4760E36B2827453CECBBFC3 /* Release */ = {
+		C4760E36B2827453CECBBFC3 /* Release configuration for PBXProject "Keldin" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -478,7 +468,7 @@
 			};
 			name = Release;
 		};
-		E0D92D50FE699BBA3495666D /* Debug */ = {
+		E0D92D50FE699BBA3495666D /* Debug configuration for PBXNativeTarget "KeldinTests" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -501,28 +491,25 @@
 		852358679ED3D4987E6D57FF /* Build configuration list for PBXNativeTarget "KeldinTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E0D92D50FE699BBA3495666D /* Debug */,
-				3D1EE8820509A6E494B5EC1D /* Release */,
+				E0D92D50FE699BBA3495666D /* Debug configuration for PBXNativeTarget "KeldinTests" */,
+				3D1EE8820509A6E494B5EC1D /* Release configuration for PBXNativeTarget "KeldinTests" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 		BD70643DB4AC9BEBC60DB6D5 /* Build configuration list for PBXProject "Keldin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06FA098EBC70219D6DE69554 /* Debug */,
-				C4760E36B2827453CECBBFC3 /* Release */,
+				06FA098EBC70219D6DE69554 /* Debug configuration for PBXProject "Keldin" */,
+				C4760E36B2827453CECBBFC3 /* Release configuration for PBXProject "Keldin" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 		DA060FFFE6306031BB79E410 /* Build configuration list for PBXNativeTarget "Keldin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6259793B588D843EDA81884C /* Debug */,
-				3129FBD99CF72F99E372C5E8 /* Release */,
+				6259793B588D843EDA81884C /* Debug configuration for PBXNativeTarget "Keldin" */,
+				3129FBD99CF72F99E372C5E8 /* Release configuration for PBXNativeTarget "Keldin" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */

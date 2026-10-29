@@ -753,6 +753,9 @@ struct GenerationQualityReport: Equatable {
     let fingerprintsVerified: Bool
     let historicComparisons: Int
     let noveltyPassed: Bool?
+    let crossGenerationPolicy: String?
+    let withinPaperPassed: Bool?
+    let historicalOverlap: Bool?
     let nearestSimilarity: Double?
     let pdfCount: Int
     let engineeringValidated: Bool?
@@ -823,6 +826,9 @@ struct GenerationQualityReport: Equatable {
             fingerprintsVerified: assessment["fingerprints_verified"] as? Bool ?? false,
             historicComparisons: novelty["historic_comparisons"] as? Int ?? 0,
             noveltyPassed: novelty["passed"] as? Bool,
+            crossGenerationPolicy: novelty["cross_generation_policy"] as? String,
+            withinPaperPassed: novelty["within_paper_passed"] as? Bool,
+            historicalOverlap: novelty["historical_overlap"] as? Bool,
             nearestSimilarity: nearest?["similarity"] as? Double,
             pdfCount: pdfCount,
             engineeringValidated: qualification?["engineering_validated"] as? Bool,
@@ -924,6 +930,14 @@ enum GenerationQualityPolicy {
         case .preview:
             originalityState = .preview
             originalityDetail = text("Preview history comparison is skipped; authorship and originality are not reviewed.")
+        case .live where report.crossGenerationPolicy == "repeat-practice-v1":
+            originalityState = .unknown
+            originalityDetail = report.withinPaperPassed == true
+                ? text("Repeat practice allows overlap with earlier papers. Questions within this paper were checked for duplicates.")
+                : text("Repeat practice allows overlap with earlier papers. Duplicate checks within this paper are incomplete.")
+        case .live where report.crossGenerationPolicy != nil && report.crossGenerationPolicy != "strict-cross-generation-v1":
+            originalityState = .unknown
+            originalityDetail = text("Saved-package originality evidence is incomplete. \(provenanceDetail(report, locale: locale))")
         case .live where report.noveltyPassed == true:
             originalityState = switch report.authoringProvenance.kind {
             case .unreviewed, .unknown: .unknown

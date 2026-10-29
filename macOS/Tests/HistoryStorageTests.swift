@@ -15,6 +15,54 @@ final class HistoryStorageTests: XCTestCase {
     }
 
     @MainActor
+    func testNoncanonicalValidRecordFailsClosedWithoutBeingQuarantinedOrRewritten() throws {
+        let valid = record()
+        let bytes = try encoded(valid)
+        let unexpected = directory.appendingPathComponent("renamed.json")
+        try bytes.write(to: unexpected)
+        let store = RecentDocumentStore(directory: directory, retentionLimit: 10)
+
+        XCTAssertThrowsError(try store.load()) { error in
+            XCTAssertEqual(error as? RecentDocumentStoreError, .noncanonicalFileName)
+        }
+
+        XCTAssertEqual(try Data(contentsOf: unexpected), bytes)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: recordURL(valid).path))
+        XCTAssertTrue(store.records.isEmpty)
+        XCTAssertEqual(store.quarantinedRecordCount, 0)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: directory.appendingPathComponent("Quarantine").path))
+    }
+
+    @MainActor
+    func testNoncanonicalRunningRecordCannotOverwriteItsCanonicalPeerOrPublishDuplicates() throws {
+        let canonical = record()
+        let canonicalBytes = try encoded(canonical)
+        try canonicalBytes.write(to: recordURL(canonical))
+        var writes = 0
+        let store = RecentDocumentStore(directory: directory, retentionLimit: 10, recordWriter: { data, url in
+            writes += 1
+            try data.write(to: url, options: .atomic)
+        })
+        try store.load()
+        let prior = store.records
+        var duplicate = canonical
+        duplicate.state = .running
+        let duplicateBytes = try encoded(duplicate)
+        let unexpected = directory.appendingPathComponent("copied-record.json")
+        try duplicateBytes.write(to: unexpected)
+
+        XCTAssertThrowsError(try store.load()) { error in
+            XCTAssertEqual(error as? RecentDocumentStoreError, .noncanonicalFileName)
+        }
+
+        XCTAssertEqual(store.records, prior)
+        XCTAssertEqual(writes, 0)
+        XCTAssertEqual(try Data(contentsOf: recordURL(canonical)), canonicalBytes)
+        XCTAssertEqual(try Data(contentsOf: unexpected), duplicateBytes)
+        XCTAssertEqual(store.quarantinedRecordCount, 0)
+    }
+
+    @MainActor
     func testRunningRecordWriteFailurePreservesValidHistory() throws {
         try assertFailedLoadPreservesRecord(record(state: .running))
     }
@@ -34,8 +82,10 @@ final class HistoryStorageTests: XCTestCase {
     func testRelocatedArtifactWriteFailurePreservesValidHistory() throws {
         let oldRoot = directory.appendingPathComponent("legacy", isDirectory: true)
         let newRoot = directory.appendingPathComponent("migrated", isDirectory: true)
+        try FileManager.default.createDirectory(at: oldRoot, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: newRoot, withIntermediateDirectories: true)
         let originalPDF = Data("unchanged PDF bytes".utf8)
+        try originalPDF.write(to: oldRoot.appendingPathComponent("question.pdf"))
         let newPDF = newRoot.appendingPathComponent("question.pdf")
         try originalPDF.write(to: newPDF)
         let defaults = isolatedDefaults()
@@ -54,9 +104,11 @@ final class HistoryStorageTests: XCTestCase {
     func testLegacyRunningRecordWithRelocationIsRewrittenOnce() throws {
         let oldRoot = directory.appendingPathComponent("legacy", isDirectory: true)
         let newRoot = directory.appendingPathComponent("migrated", isDirectory: true)
+        try FileManager.default.createDirectory(at: oldRoot, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: newRoot, withIntermediateDirectories: true)
         let newPDF = newRoot.appendingPathComponent("question.pdf")
         let pdfBytes = Data("preserved migrated PDF".utf8)
+        try pdfBytes.write(to: oldRoot.appendingPathComponent("question.pdf"))
         try pdfBytes.write(to: newPDF)
         let defaults = isolatedDefaults()
         defaults.set(

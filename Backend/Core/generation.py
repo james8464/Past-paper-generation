@@ -332,6 +332,7 @@ def finalize_generated_documents(
         else validate_package_novelty(
             assessment_path,
             history_root=output_dir,
+            cross_generation_policy="repeat-practice-v1",
         )
     )
 

@@ -80,21 +80,52 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertEqual(Array(request.arguments.suffix(10)), ["--exclude-family","0","--exclude-family","1","--exclude-family","2","--exclude-family","3","--exclude-family","4"])
         let defaults = isolatedDefaults()
         defaults.set("fr", forKey: "interfaceLanguage")
-        let application = isolatedApplication(defaults: defaults)
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend)
         for job in jobs { try application.recentDocumentStore.save(job) }
         XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
         for job in jobs { try application.recentDocumentStore.remove(job) }
         XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
         application.outputFolder = temporaryDirectory.appendingPathComponent("another-output")
         application.generateFrenchPaper(largePrint: false)
-        XCTAssertFalse(application.isRunning)
-        XCTAssertTrue(application.showError)
-        XCTAssertEqual(application.status, "Erreur")
-        XCTAssertTrue(application.errorMessage.hasPrefix("Aucune des cinq familles"))
-        XCTAssertEqual(application.recentDocumentStore.records.count, 0)
+        XCTAssertTrue(application.isRunning)
+        XCTAssertFalse(application.showError)
+        XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertTrue(backend.requests[0].arguments.contains("--repeat-practice"))
+        XCTAssertEqual(application.recentDocumentStore.records.count, 1)
         XCTAssertFalse(FileManager.default.fileExists(atPath: application.outputFolder.path))
+        application.cancelGeneration()
         defaults.set(["unknown-family"], forKey: AppStorageKey.frenchSavedFamilyIDs)
         XCTAssertThrowsError(try application.savedFrenchFamilies())
+    }
+
+    @MainActor
+    func testSixthFrenchRequestStartsWithoutClearingHistoryOrChangingRequestedSeed() throws {
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(backend: backend)
+        for seed in 0 ..< 5 {
+            let record = GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: "fr-national-nsi", paperID: "written-2027", provider: "application-owned", model: FrenchAssessmentRequest.modelID, seed: seed, dryRun: false, assessmentID: FrenchAssessmentRequest.assessmentID),
+                provenance: GenerationProvenance(appVersion: "fixture", provider: "application-owned", model: FrenchAssessmentRequest.modelID),
+                state: .completed, artifacts: [], qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+            )
+            try application.recentDocumentStore.save(record)
+        }
+        let prior = application.recentDocumentStore.records
+        application.generateFrenchPaper(largePrint: true)
+
+        let request = try XCTUnwrap(backend.requests.first)
+        let seedIndex = try XCTUnwrap(request.arguments.firstIndex(of: "--seed"))
+        let requestedSeed = try XCTUnwrap(Int(request.arguments[seedIndex + 1]))
+        XCTAssertTrue(application.isRunning)
+        XCTAssertEqual(application.pendingGenerationSeed, requestedSeed)
+        XCTAssertEqual(application.generationCoordinator.activeJob?.configuration.seed, requestedSeed)
+        XCTAssertTrue(request.arguments.contains("--repeat-practice"))
+        XCTAssertTrue(request.arguments.contains("--large-print"))
+        XCTAssertEqual(Array(request.arguments.suffix(10)), ["--exclude-family", "0", "--exclude-family", "1", "--exclude-family", "2", "--exclude-family", "3", "--exclude-family", "4"])
+        XCTAssertEqual(application.recentDocumentStore.records.filter { $0.state == .completed }, prior)
+        XCTAssertEqual(try application.savedFrenchFamilies(), [0, 1, 2, 3, 4])
+        application.cancelGeneration()
     }
 
     @MainActor
@@ -192,12 +223,22 @@ final class CoordinatorTests: XCTestCase {
         }
         try Data(payload.utf8).write(to: manifest)
         let file = GeneratedFile(role: "package_manifest", url: manifest)
+        XCTAssertThrowsError(try coordinator.complete(expectedJobID: record.id, artifacts: [file], expectedFrenchPolicy: .repeatPractice))
         try coordinator.complete(expectedJobID: record.id, artifacts: [file])
         XCTAssertEqual(store.records.first?.id, record.id)
         XCTAssertEqual(store.records.first?.configuration.seed, 270101)
         XCTAssertEqual(store.records.first?.configuration.model, "app-owned-v35")
         XCTAssertEqual(store.records.first?.qualification, record.qualification)
         XCTAssertEqual(store.records.first?.state, .completed)
+        var repeated = original
+        repeated["practice_policy"] = "repeat-practice-v1"
+        repeated["cross_history_comparison"] = "not_performed"
+        try JSONSerialization.data(withJSONObject: repeated).write(to: manifest)
+        XCTAssertEqual(try FrenchAssessmentRequest.publishedSeed(from: manifest, expectedPolicy: .repeatPractice), 270101)
+        XCTAssertThrowsError(try FrenchAssessmentRequest.publishedSeed(from: manifest))
+        repeated["practice_policy"] = "unknown-version"
+        try JSONSerialization.data(withJSONObject: repeated).write(to: manifest)
+        XCTAssertThrowsError(try FrenchAssessmentRequest.publishedSeed(from: manifest, expectedPolicy: .repeatPractice))
     }
 
     @MainActor

@@ -437,6 +437,28 @@ final class KeldinTests: XCTestCase {
         XCTAssertTrue(french.referenceDemandDetail.contains("4 éléments sur 4"))
     }
 
+    func testRepeatPracticeEvidenceDoesNotBecomePassedOriginality() throws {
+        for overlap in [true, false] {
+            for withinPaper in [true, false] {
+                let report = try loadQualityReport("""
+                {"request":{"preview_mode":false},"evidence":{"assessment_validation":{"item_count":1,"authoring_provenance":{"schema_version":1,"items":1,"reviewed_fixed_items":1,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0}},"novelty_validation":{"passed":\(!overlap),"cross_generation_policy":"repeat-practice-v1","within_paper_passed":\(withinPaper),"historical_overlap":\(overlap)}},"outputs":{}}
+                """)
+                let presentation = GenerationQualityPolicy.presentation(for: report, locale: Locale(identifier: "en"))
+                XCTAssertEqual(report.historicalOverlap, overlap)
+                XCTAssertEqual(report.withinPaperPassed, withinPaper)
+                XCTAssertEqual(presentation.originalityState, .unknown)
+                XCTAssertEqual(presentation.originalityDetail, withinPaper
+                    ? "Repeat practice allows overlap with earlier papers. Questions within this paper were checked for duplicates."
+                    : "Repeat practice allows overlap with earlier papers. Duplicate checks within this paper are incomplete.")
+            }
+        }
+    }
+
+    func testKnownStrictPolicyRetainsItsExistingSimilarityInterpretation() throws {
+        let report = try loadQualityReport(#"{"request":{"preview_mode":false},"evidence":{"assessment_validation":{"item_count":1,"authoring_provenance":{"schema_version":1,"items":1,"reviewed_fixed_items":1,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0}},"novelty_validation":{"passed":true,"cross_generation_policy":"strict-cross-generation-v1","within_paper_passed":true,"historical_overlap":false}},"outputs":{}}"#)
+        XCTAssertEqual(GenerationQualityPolicy.presentation(for: report).originalityState, .passed)
+    }
+
     func testLiveSimilarityPassDoesNotBecomeOriginalityPassWithoutReviewedProvenance() throws {
         let unknown = try loadQualityReport(
             #"{"request":{"subject":"economics_aqa","paper":"1","seed":9,"preview_mode":false},"evidence":{"assessment_validation":{"form_id":"unknown-provenance","item_count":1,"fingerprints_verified":true,"reference_demand":{"passed":true,"items_checked":1,"failed_checks":[],"item_review_evidence":{"reviewed_items":1,"approved_items":1,"coverage":1.0,"reasoning_range_fit":1,"context_fit":1,"shortcut_resistant":1}}},"novelty_validation":{"passed":true,"historic_comparisons":10}},"outputs":{}}"#

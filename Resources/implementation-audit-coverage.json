@@ -118,11 +118,8 @@
     {
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "35eebcdae545b38195b4997437347536c997ac0c67e04598edd27f8c58c491c8",
-      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
-      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": ".gitignore",
@@ -2816,6 +2813,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/foundation-subject-boundaries-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-framework-migration-ledger.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3032,6 +3035,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-repeat-practice-policy-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-policy-and-pdf-tools-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3110,6 +3119,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-migration-history-integrity-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-operation-ownership-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3146,6 +3161,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/numeric-label-validation-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/occitanie-v35-report-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3159,6 +3180,12 @@
     },
     {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/practice-workspace-test-build-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3248,7 +3275,25 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/uk-repeat-practice-policy-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/window-settings-release-acceptance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/xcode-document-initializer-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/xcode-user-configuration-integration-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3853,11 +3898,8 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialFrenchNSI.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "ece220a9828d29e503bf10663425ceb037e75b42d0c305acb4c73319a72b6cd2",
-      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
-      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png",
@@ -3868,11 +3910,8 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialModelSettings.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "40cbe15d250ed72122bec9eda99bcc86c55c836d015d4fd85a2156a914dd542d",
-      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
-      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialModelSettings.imageset/TutorialModelSettings.png",
@@ -3883,11 +3922,8 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialWorkspace.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "28642d4b6d299eef7618b88f4cac866c060c9ed11406c4c267d024252eaed641",
-      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
-      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialWorkspace.imageset/TutorialWorkspace.png",
@@ -4006,11 +4042,8 @@
     {
       "path": "macOS/Keldin/Features/Documents/DocumentPreviewView.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "4bd19687181d66d1271cbe55600e3e8903dbe85b2caa9670fb5aeb043bcd3f3f",
-      "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
-      "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
@@ -4020,6 +4053,12 @@
     },
     {
       "path": "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/Features/Generation/GenerationProgress.swift",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4039,11 +4078,8 @@
     {
       "path": "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Recovered explicit complete-file review from the recorded unchanged checkpoint; scope and unresolved findings remain in the evidence, with no whole-project clearance.",
-      "source_sha256": "20987651c2d2c2edc9dfe4dbe6dad2303c7f31cf0f140eb695892414cba9ec47",
-      "review_evidence": "docs/quality/implementation-audit-file-review-2026-10-28.md",
-      "review_evidence_sha256": "ad8cc62a31b706b0dcf8ac96da0e2a5521779475634dbd237fbcd0871f806b08"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Features/Settings/SettingsPane.swift",
@@ -4162,11 +4198,8 @@
     {
       "path": "macOS/Keldin/State/GenerationCoordinator.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "f44c66928bcf6704f6a18f17ee3bc58d1bdd409dda069f25326e8be12a7b93f4",
-      "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
-      "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
@@ -4336,11 +4369,8 @@
     {
       "path": "macOS/project.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "74d205ac5bb761deeda3fae18e4bd2012161af3f6876ad2ee3c50cf2816ec40c",
-      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
-      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/scripts/bootstrap_backend.sh",
@@ -4626,6 +4656,12 @@
     },
     {
       "path": "tests/test_checkpoint_ownership.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ci_signing.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5204,6 +5240,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_repeat_practice.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_review.py",
       "classification": "test",
       "status": "pending",
@@ -5331,6 +5373,12 @@
     },
     {
       "path": "tests/test_generation_policy_validation.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_generation_workspace_layout.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5622,6 +5670,12 @@
     },
     {
       "path": "tests/test_renderer_sharing.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_repeat_practice_policy.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

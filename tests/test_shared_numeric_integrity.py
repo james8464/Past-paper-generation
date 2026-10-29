@@ -10,6 +10,42 @@ from aqaaccountgen.syllabus import load_syllabus
 
 from Backend.Core.ai_assessment import _independently_validate_candidate, _tasks
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from Backend.Core.numeric_integrity import (
+    NUMBER,
+    CheckedNumericOutput,
+    check_published_outputs,
+)
+
+
+@pytest.mark.parametrize("alternative", ["1,000", "1000"])
+def test_comma_formatted_ratio_alternative_is_compared_canonically(alternative):
+    check = CheckedNumericOutput(
+        role="ratio",
+        unit="1",
+        decimal_places=0,
+        scheme_pattern=rf"Answer:\s*(?P<value>{NUMBER})",
+        value="1000",
+    )
+    assert (
+        check_published_outputs(
+            [check], f"Answer: 1,000:1 (accept {alternative} without :1)"
+        )
+        == []
+    )
+
+
+@pytest.mark.parametrize("alternative", ["1,001", "999", "1,000,000"])
+def test_wrong_comma_formatted_ratio_alternative_is_still_rejected(alternative):
+    check = CheckedNumericOutput(
+        role="ratio",
+        unit="1",
+        decimal_places=0,
+        scheme_pattern=rf"Answer:\s*(?P<value>{NUMBER})",
+        value="1000",
+    )
+    assert check_published_outputs(
+        [check], f"Answer: 1,000:1 (accept {alternative} without :1)"
+    )
 
 
 class GivenRateClient:

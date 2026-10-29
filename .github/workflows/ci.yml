@@ -70,9 +70,9 @@ jobs:
       - name: Bootstrap the packaged backend
         run: make -C macOS backend-env
       - name: Run Swift tests
-        run: make -C macOS test AGENT_NAME=ci
+        run: make -C macOS test AGENT_NAME=ci SIGNING_IDENTITY=- SIGNING_STYLE=Manual
       - name: Verify the App Store build
-        run: make -C macOS preflight-app-store AGENT_NAME=ci
+        run: make -C macOS preflight-app-store AGENT_NAME=ci SIGNING_IDENTITY=- SIGNING_STYLE=Manual
       - name: Upload diagnostics after failure
         if: failure()
         uses: actions/upload-artifact@v7

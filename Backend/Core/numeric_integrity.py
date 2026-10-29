@@ -127,7 +127,7 @@ def _published_unit_boundary(check: CheckedNumericOutput, suffix: str) -> bool:
         # row heading. An explicit contradictory denominator is never ignored.
     if check.unit == "1" and suffix.startswith("(accept "):
         alternative = re.match(rf"\(accept ({NUMBER}) without :1\)", suffix)
-        if not alternative or Decimal(alternative.group(1)) != rounded(
+        if not alternative or Decimal(alternative.group(1).replace(",", "")) != rounded(
             Decimal(check.value), check.decimal_places
         ):
             return False
