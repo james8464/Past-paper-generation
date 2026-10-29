@@ -5,8 +5,10 @@
 This new route responds to the explicit requirement for genuinely model-authored
 French papers. It does not select, vary or reword the finite V13-V35 families.
 Those historical modules and their package readers are unchanged. The new
-`llm_pipeline.generate` API is separate from runtime dispatch until integration.
-No live-model, installed-app or printed-page acceptance is established here.
+public `generate-assessment` command and native French workspace use the selected
+Ollama, Apple MLX, OpenAI or Anthropic model. Historical catalogue commands remain
+explicit replay paths. No successful live full-paper qualification is established
+by this engineering work alone.
 
 The author receives the Terminale capability descriptions and eligible local
 French programme and official-paper reference excerpts. It supplies the context,
@@ -36,6 +38,15 @@ not proof that the printed task, answer and contract describe the same problem.
 Unsupported or theoretical questions are recorded as `not_checked`, not passed.
 Fixed-family verification contracts are not accepted.
 
+The typed schema exposes the actual topic names, capability identifiers and
+verification-contract fields. A model should not have to guess hidden metadata
+conventions. One structurally malformed exercise may be regenerated in full with
+the original brief and validation issue. The app never patches an answer, changes
+its marks or selects a bank item to make it pass. A second malformed response
+stops generation. Successful packages retain the rejected draft and its hash;
+final structural failures keep bounded private diagnostic evidence. A negative
+correctness review or failed executable contract is not a formatting retry.
+
 A separate blind-solving request receives no proposed answers, marking criteria
 or verification contracts. A further full review compares the task, answer,
 rubric, blind solution and references, question by question. Missing fields,
@@ -52,6 +63,16 @@ The package states `model_used=true`, `generation_origin=model_authored` and
 `not_run`. Runtime integration must use the V36 notice policy rather than an old
 teacher-approval notice and must not silently fall back to a finite family.
 
+Publication renders both PDFs into private staging, checks the entire ordered
+source content, Python indentation, A4 pages, footers and directed graph edges,
+then rechecks model data, reference index and source identity before moving the
+complete package. Repeated graph labels are scoped to their exercise and figure.
+The native app requires exactly the two PDFs and two private evidence records,
+with matching typed provider/model/seed identity. Only the PDFs are exported to
+the user's selected folder. Cancelled or failed work cannot become a completed
+history item. Model-review findings and unchecked questions are shown without
+claiming that executable contract consistency proves the printed answers.
+
 ## Mocked verification
 
 Tests show different model responses produce different substantive papers, exact
@@ -63,10 +84,28 @@ schemas compile with the installed llguidance decoder without loading a model.
 These checks establish engineering behaviour, not model capability or exam
 equivalence. Source and output identity remain distinct from educational quality.
 
-## Integration boundary
+## Provider limits and recommendations
 
-The existing Ollama typed transport honours each requested token budget. The
-current Apple typed path still has a separate 4,096-token ceiling; propagating
-bounded request budgets is a provider task, not part of this module. A truncated
-exercise must remain a failure, not be converted into a fixed-catalogue paper or
-treated as evidence that another model has passed.
+Typed output budgets now reach Apple MLX's serial and per-request batched paths,
+OpenAI and Anthropic. Old untyped defaults are unchanged. V36 requests cap original
+authoring at 8,192 tokens, blind solving at 6,000 and review at 4,096. These are
+response ceilings, not estimates of actual response length or quality. The
+original 14,000-token authoring allowance could not safely fit the measured
+input in Ollama's 16,384-token window.
+
+Memory fit is shown separately from paper-quality evidence. No provider/model
+combination currently has a universal paper-quality approval or a defensible
+minimum parameter count. The scoped Accounting failure of the tested 3B MLX
+model remains visible; other unqualified combinations are labelled accordingly.
+The pinned Qwen 9B and Gemma 12B probes are recorded in
+[the model comparison](french-model-capability-2026-10-29.md). A small reasoning
+probe, malformed metadata, a timeout and a full-paper failure are different
+results. None justifies loosening correct-answer or marking constraints.
+
+The internal acceptance checklist follows the [2027 written definition](https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N)
+and [Terminale programme](https://eduscol.education.gouv.fr/sites/default/files/document/spe247annexe1158933pdf-89502.pdf).
+It considers task solvability, sustained reasoning, progression, permissible
+alternative solutions, complete marking and every rendered page. It imposes no
+page-count quota and makes no claim of observed learner timing, teacher approval
+or an unseen holdout pass. A truncated response remains a failure, never a
+fixed-catalogue replacement or evidence that a different model passed.
