@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Keldin couldn't save access to this folder. Choose it again to keep access after restarting." : {
+      "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Keldin n’a pas pu mémoriser l’accès à ce dossier. Sélectionnez-le à nouveau pour conserver l’accès après le redémarrage." } } }
+    },
     "Creating your paper" : {
       "localizations" : { "fr" : { "stringUnit" : { "state" : "translated", "value" : "Création du sujet" } } }
     },

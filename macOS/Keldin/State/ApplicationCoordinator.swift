@@ -54,6 +54,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     private let backend: any BackendRunning
     private let defaults: UserDefaults
+    private let outputFolderBookmark: (URL) throws -> Data
     private let notificationCenter = UNUserNotificationCenter.current()
     private var ollamaRefreshRevision = UUID()
     private var etaTimer: AnyCancellable?
@@ -222,12 +223,16 @@ final class ApplicationCoordinator: ObservableObject {
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
         backend: any BackendRunning = BackendClient(),
+        outputFolderBookmark: @escaping (URL) throws -> Data = { url in
+            try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+        },
         historyRecordRemover: @escaping (URL) throws -> Void = { url in
             try FileManager.default.removeItem(at: url)
         }
     ) {
         self.defaults = defaults
         self.backend = backend
+        self.outputFolderBookmark = outputFolderBookmark
         let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
@@ -490,7 +495,9 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    func chooseOutputFolder() {
+    func chooseOutputFolder() { chooseOutputFolder(presentation: nil) }
+
+    func chooseOutputFolder(presentation: SettingsActionPresentation?) {
         guard !isRunning else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
@@ -499,7 +506,7 @@ final class ApplicationCoordinator: ObservableObject {
         panel.directoryURL = outputFolder
 
         if panel.runModal() == .OK, let url = panel.url {
-            setOutputFolder(url)
+            setOutputFolder(url, presentation: presentation)
         }
     }
 
@@ -1127,21 +1134,21 @@ final class ApplicationCoordinator: ObservableObject {
         return formatter
     }()
 
-    private func setOutputFolder(_ url: URL) {
+    func setOutputFolder(_ url: URL, presentation: SettingsActionPresentation? = nil) {
         benchmarkCoordinator.outputFolder = url
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
         securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
         outputFolder = url
         defaults.set(url.path, forKey: AppStorageKey.outputFolderPath)
         do {
-            let bookmark = try url.bookmarkData(
-                options: .withSecurityScope,
-                includingResourceValuesForKeys: nil,
-                relativeTo: nil
-            )
+            let bookmark = try outputFolderBookmark(url)
             defaults.set(bookmark, forKey: AppStorageKey.outputFolderBookmark)
         } catch {
             defaults.removeObject(forKey: AppStorageKey.outputFolderBookmark)
+            setError(
+                InterfaceText.resolve("Keldin couldn't save access to this folder. Choose it again to keep access after restarting.", language: presentationLanguage),
+                presentation: presentation
+            )
         }
     }
 

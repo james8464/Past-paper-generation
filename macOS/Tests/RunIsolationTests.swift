@@ -5,6 +5,48 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testOutputFolderBookmarkFailureIsVisibleInSettings() throws {
+        let defaults = isolatedDefaults()
+        defaults.set("fr", forKey: "interfaceLanguage")
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, outputFolderBookmark: { _ in
+            throw CocoaError(.fileWriteUnknown)
+        })
+        let owner = application.settingsPresentation
+        owner.activate()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("bookmark-fixture")
+
+        application.setOutputFolder(folder, presentation: owner)
+
+        XCTAssertFalse(application.showError)
+        guard case let .error(message) = owner.request?.kind else { return XCTFail("Expected Settings bookmark failure") }
+        XCTAssertEqual(message, "Keldin n’a pas pu mémoriser l’accès à ce dossier. Sélectionnez-le à nouveau pour conserver l’accès après le redémarrage.")
+        XCTAssertNil(defaults.data(forKey: AppStorageKey.outputFolderBookmark))
+    }
+
+    @MainActor
+    func testOutputFolderBookmarkSuccessPreservesPathAndBookmark() {
+        let defaults = isolatedDefaults()
+        var requestedURLs: [URL] = []
+        let data = Data("fixture bookmark".utf8)
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, outputFolderBookmark: { url in
+            requestedURLs.append(url)
+            return data
+        })
+        let owner = application.settingsPresentation
+        owner.activate()
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("bookmark-success")
+
+        application.setOutputFolder(folder, presentation: owner)
+
+        XCTAssertEqual(requestedURLs, [folder])
+        XCTAssertEqual(application.outputFolder, folder)
+        XCTAssertEqual(application.benchmarkCoordinator.outputFolder, folder)
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.outputFolderPath), folder.path)
+        XCTAssertEqual(defaults.data(forKey: AppStorageKey.outputFolderBookmark), data)
+        XCTAssertNil(owner.request)
+    }
+
+    @MainActor
     func testSettingsConsentApprovalUsesCapturedProviderAndRechecksGeneration() throws {
         for busy in [false, true] {
             let backend = ControlledRunBackend()
@@ -1060,7 +1102,10 @@ final class RunIsolationTests: XCTestCase {
     @MainActor
     private func application(
         backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil,
-        secrets: any SecretStoring = RunIsolationSecrets()
+        secrets: any SecretStoring = RunIsolationSecrets(),
+        outputFolderBookmark: @escaping (URL) throws -> Data = { url in
+            try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
+        }
     ) -> ApplicationCoordinator {
         let defaults = defaults ?? isolatedDefaults()
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
@@ -1068,7 +1113,8 @@ final class RunIsolationTests: XCTestCase {
         let history = historyDirectory ?? FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRunIsolation-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: history) }
         return ApplicationCoordinator(
-            defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend
+            defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend,
+            outputFolderBookmark: outputFolderBookmark
         )
     }
 

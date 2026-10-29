@@ -335,7 +335,7 @@ private struct OutputSettingsTab: View {
                             .foregroundStyle(.secondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
-                        Button("Choose…", action: application.chooseOutputFolder)
+                        Button("Choose…") { application.chooseOutputFolder(presentation: application.settingsPresentation) }
                     }
                 }
             }
