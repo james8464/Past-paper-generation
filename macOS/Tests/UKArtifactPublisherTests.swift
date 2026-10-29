@@ -4,6 +4,77 @@ import XCTest
 @testable import Keldin
 
 final class UKArtifactPublisherTests: XCTestCase {
+    @MainActor
+    func testFrenchAndUKCompletionExportDocumentsButRetainPrivateManifests() throws {
+        for french in [false, true] {
+            let backend = ControlledRunBackend()
+            let defaults = isolatedDefaults()
+            defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+            defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+            let application = isolatedApplication(defaults: defaults, backend: backend)
+            application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI }))
+            application.setDryRun(true)
+            let output = directory.appendingPathComponent(french ? "french-exports" : "uk-exports")
+            application.outputFolder = output
+            if french { application.generateFrenchPaper(largePrint: false) }
+            else { application.generate() }
+            let run = try XCTUnwrap(backend.requests.first)
+            let outputIndex = try XCTUnwrap(run.arguments.firstIndex(of: "--output"))
+            let working = URL(fileURLWithPath: run.arguments[outputIndex + 1])
+            let source = french ? working.appendingPathComponent("nsi-fixture") : working
+            try manager.createDirectory(at: source, withIntermediateDirectories: true)
+            let seedIndex = try XCTUnwrap(run.arguments.firstIndex(of: "--seed"))
+            let seed = try XCTUnwrap(Int(run.arguments[seedIndex + 1]))
+            let manifest = source.appendingPathComponent("manifest.json")
+            let metadata: [String: Any] = [
+                "schema_version": 1, "assessment": FrenchAssessmentRequest.assessmentID,
+                "status": "unreviewed_draft", "generation_origin": "application_owned", "model_used": false,
+                "teacher_review": "not_run", "empirical_calibration": "not_run",
+                "practice_policy": "repeat-practice-v1", "cross_history_comparison": "not_performed",
+                "identity": ["provider": "application-owned", "model": FrenchAssessmentRequest.modelID,
+                    "prompt_version": "fr-nsi-written-2027-v35", "print_policy": "fr-nsi-v35-internal-review-v1", "seed": seed],
+            ]
+            let bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
+            try bytes.write(to: manifest)
+            for role in ["question_paper", "mark_scheme"] {
+                let pdf = source.appendingPathComponent(role + ".pdf")
+                try Data((role + " fixture").utf8).write(to: pdf)
+                run.onEvent(.file(role: role, path: pdf.path))
+            }
+            run.onEvent(.file(role: "package_manifest", path: manifest.path))
+            run.onFinish(.success(0))
+
+            XCTAssertFalse(application.showError, application.errorMessage)
+            XCTAssertEqual(application.recentDocumentStore.records.first?.state, .completed)
+            let retained = try XCTUnwrap(application.currentGenerationFiles.first { $0.role == "package_manifest" })
+            XCTAssertEqual(retained.url, manifest)
+            XCTAssertEqual(try Data(contentsOf: retained.url), bytes)
+            let folders = try manager.contentsOfDirectory(at: output, includingPropertiesForKeys: nil)
+            XCTAssertEqual(folders.count, 1)
+            XCTAssertEqual(Set(try manager.contentsOfDirectory(atPath: folders[0].path)), ["question_paper.pdf", "mark_scheme.pdf"])
+            for file in application.currentGenerationFiles where file.role != "package_manifest" {
+                XCTAssertEqual(file.url.deletingLastPathComponent().resolvingSymlinksInPath(), folders[0].resolvingSymlinksInPath())
+                XCTAssertEqual(try Data(contentsOf: file.url), try Data(contentsOf: source.appendingPathComponent(file.url.lastPathComponent)))
+            }
+        }
+    }
+
+    func testUserPublicationKeepsJSONPrivateAndCopiesOnlyUsableDocuments() throws {
+        let files = try fixtureFiles()
+        let sourceBefore = try snapshot(sourceFolder)
+        let output = directory.appendingPathComponent("documents", isDirectory: true)
+
+        let published = try UKArtifactPublisher().publishUserDocuments(files, to: output)
+
+        XCTAssertEqual(Set(published.map(\.role)), ["question_paper", "mark_scheme"])
+        XCTAssertEqual(try snapshot(sourceFolder), sourceBefore)
+        let destination = try XCTUnwrap(published.first?.url.deletingLastPathComponent())
+        XCTAssertEqual(Set(try manager.contentsOfDirectory(atPath: destination.path)), ["question.pdf", "mark-scheme.pdf"])
+        for file in published {
+            XCTAssertEqual(try Data(contentsOf: file.url), sourceBefore[file.url.lastPathComponent])
+        }
+    }
+
     private var directory: URL!
     private let manager = FileManager.default
 

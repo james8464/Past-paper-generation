@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793283896.130277,
+    "mtime": 1793285315.4281254,
     "ast_hash": "1d4d3929d94c3e5e0172793e1b78296c",
     "semantic_hash": ""
   },
@@ -3585,13 +3585,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793282051.305464,
-    "ast_hash": "bb7b7a98680baabffc3ae5a8fcbbf0fe",
+    "mtime": 1793287377.088885,
+    "ast_hash": "1fc20522590b06b98e99a301bb167342",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
-    "mtime": 1793272882.7306254,
-    "ast_hash": "033dd59872c48912af54da30838a1437",
+    "mtime": 1793287377.0896409,
+    "ast_hash": "b96b4271d7cabc161c2e42a0d3ff8df7",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/CatalogStore.swift": {
@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793281952.232093,
-    "ast_hash": "2669270718666a3ab244f3e873ab2325",
+    "mtime": 1793287377.090294,
+    "ast_hash": "8b2e28d3d0118695c457fa9cd4699069",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4025,7 +4025,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793283896.040507,
+    "mtime": 1793285315.3415434,
     "ast_hash": "650c98f93a94210b32fb4a73a1a75eaf",
     "semantic_hash": ""
   },
@@ -4035,8 +4035,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/UKArtifactPublisher.swift": {
-    "mtime": 1793225406.360041,
-    "ast_hash": "3a6e9acd9a83199ca2e37b3768934dbb",
+    "mtime": 1793287297.3875742,
+    "ast_hash": "55548f9b79c31e4a9cb4dca82739fdcf",
     "semantic_hash": ""
   },
   "macOS/Tests/HistoryDeletionTests.swift": {
@@ -4060,8 +4060,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/UKArtifactPublisherTests.swift": {
-    "mtime": 1793225406.3641257,
-    "ast_hash": "7b369bc26258017d958c42e1948489c6",
+    "mtime": 1793287518.8632827,
+    "ast_hash": "18a4822405f8001ae9495a87807d497d",
     "semantic_hash": ""
   },
   "tests/test_audit_coverage.py": {
@@ -4542,6 +4542,11 @@
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
     "mtime": 1793285298.012338,
     "ast_hash": "e09992f72fb534533f1a5e454360c824",
+    "semantic_hash": ""
+  },
+  "docs/quality/private-generation-records-2026-10-29.md": {
+    "mtime": 1793287579.7810466,
+    "ast_hash": "c889cbc77a473c5132b140747fd634cc",
     "semantic_hash": ""
   }
 }

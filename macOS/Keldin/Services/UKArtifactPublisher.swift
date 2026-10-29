@@ -16,6 +16,17 @@ struct UKArtifactPublisher {
         self.commitDirectory = commitDirectory
     }
 
+    func publishUserDocuments(_ files: [GeneratedFile], to output: URL) throws -> [GeneratedFile] {
+        let roles: Set<String> = [
+            "question_paper", "mark_scheme", "source_booklet", "preliminary_material",
+            "electronic_answer_document", "skeleton_program", "data_file",
+        ]
+        let documents = files.filter {
+            roles.contains($0.role) && $0.url.pathExtension.lowercased() != "json"
+        }
+        return try publish(documents, to: output)
+    }
+
     func publish(_ files: [GeneratedFile], to output: URL) throws -> [GeneratedFile] {
         guard !files.isEmpty else { return [] }
         let manager = FileManager.default

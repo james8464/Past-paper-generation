@@ -5,6 +5,40 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testBenchmarkRecordsDoNotFollowTheUserExportFolder() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let privateFolder = application.benchmarkCoordinator.outputFolder
+        application.setOutputFolder(FileManager.default.temporaryDirectory.appendingPathComponent("exports"))
+        application.startBenchmark()
+        let request = try XCTUnwrap(backend.requests.first)
+        let index = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
+        XCTAssertEqual(request.arguments[index + 1], privateFolder.path)
+        XCTAssertNotEqual(privateFolder, application.outputFolder)
+        application.benchmarkCoordinator.cancel()
+    }
+
+    @MainActor
+    func testPaperGenerationUsesPrivateUniqueFoldersInsteadOfDownloads() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.outputFolder = FileManager.default.temporaryDirectory.appendingPathComponent("user-downloads")
+        application.setDryRun(true)
+        var folders = Set<String>()
+        for french in [false, true] {
+            if french { application.generateFrenchPaper(largePrint: false) }
+            else { application.generate() }
+            let request = try XCTUnwrap(backend.requests.last)
+            let index = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
+            let path = request.arguments[index + 1]
+            XCTAssertNotEqual(path, application.outputFolder.path)
+            XCTAssertFalse(path.hasPrefix(application.outputFolder.path + "/"))
+            XCTAssertTrue(folders.insert(path).inserted)
+            application.cancelGeneration()
+        }
+    }
+
+    @MainActor
     func testBrowsingWhileGeneratingPreservesTheRunningPaper() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
@@ -81,7 +115,7 @@ final class RunIsolationTests: XCTestCase {
 
         XCTAssertEqual(requestedURLs, [folder])
         XCTAssertEqual(application.outputFolder, folder)
-        XCTAssertEqual(application.benchmarkCoordinator.outputFolder, folder)
+        XCTAssertNotEqual(application.benchmarkCoordinator.outputFolder, folder)
         XCTAssertEqual(defaults.string(forKey: AppStorageKey.outputFolderPath), folder.path)
         XCTAssertEqual(defaults.data(forKey: AppStorageKey.outputFolderBookmark), data)
         XCTAssertNil(owner.request)
@@ -448,11 +482,17 @@ final class RunIsolationTests: XCTestCase {
         application.generate()
         let job = try XCTUnwrap(application.generationCoordinator.activeJob)
         let run = try XCTUnwrap(backend.requests.first)
+        let outputIndex = try XCTUnwrap(run.arguments.firstIndex(of: "--output"))
+        let workingFolder = URL(fileURLWithPath: run.arguments[outputIndex + 1])
+        try FileManager.default.createDirectory(at: workingFolder, withIntermediateDirectories: true)
+        let source = workingFolder.appendingPathComponent("current-paper.pdf")
+        try Data("controlled PDF fixture".utf8).write(to: source)
+        application.outputFolder = workingFolder.deletingLastPathComponent().appendingPathComponent("exports")
         let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != board.id })
         // Exercise the ownership boundary directly; normal UI changes are locked.
         application.catalogStore.selectedBoardID = other.id
         application.catalogStore.selectedPaperID = try XCTUnwrap(other.papers.first).id
-        run.onEvent(.file(role: "question_paper", path: "/fixture/current-paper.pdf"))
+        run.onEvent(.file(role: "question_paper", path: source.path))
         run.onFinish(.success(0))
 
         let file = try XCTUnwrap(application.currentGenerationFiles.first)
