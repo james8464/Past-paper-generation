@@ -400,3 +400,40 @@ the route covered by native ordering/recovery tests. A real-repository ledger
 check additionally rejects stale reviewed source; its red case caught the changed
 Settings service before its explicit re-review. Final gates must use the refreshed
 ledger and rebuilt interface, not the preceding frontend's results.
+
+### 29 October PDF, tooling and native safety follow-up
+
+Protected PR116 merged at `4427e1c642c5ffe36eb26f9529eae5bd3ea0652e`.
+Its installed Apple MLX Qwen3 8B Accounting Paper 1 run completed a real paper,
+with all 60 pages visually reviewed and 55 independent numerical checks. The
+smaller default model failed the quality process and published nothing. The
+separate installed-MLX acceptance report records both attempts, exact bytes,
+repairs and remaining editorial/calibration limits. Neither attempt certifies
+the newer source changes described here.
+
+The next bounded implementation package fixes PDF deadline restoration,
+exception cleanup, finite dimensions, split-fragment bounds, actual-font text
+wrapping and validation before standalone PDF replacement. Six short-component
+layouts retain byte and raster equality; long instructions and tokens now wrap
+to their measured bounds. Focused Python tests pass 98 cases. The scoped PDF
+safety report records the full-file review hashes and intentional differences.
+
+The tooling package constrains build cleanup to its own validated targets and
+uses separate path arguments in its Finder fallback. Its tests use fake tools;
+no retained build or user file was deleted. The AQA CS console now prepares the
+shared runtime from a complete checkout when launched from another directory.
+Strict mypy checks cover three dependency leaves and typed-client fixtures.
+P5 remains partial: this does not check every family adapter or remove its Any
+boundaries. The tooling report records 18 focused and 26 related passing tests.
+
+Native follow-up addresses finite benchmark/ETA values, recovery from a failed
+explicit credential clear, and truthful MLX setup copy. Actual long-history
+testing also found the segmented document selector overflowing with 30 PDFs.
+A bounded contextual menu replaces it; immediate selection-to-action consistency
+needs its own regression proof before release. Final combined native tests,
+source/frozen French comparison, signed builds and protected CI remain required.
+
+These scoped reviews add file-level evidence; they do not finish the remaining
+repository-wide semantic audit. Keep the ledger's pending files visible. No
+performance gain, teacher validation, learner timing, whole-HIG compliance or
+Store approval follows from this checkpoint.

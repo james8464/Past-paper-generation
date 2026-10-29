@@ -4,8 +4,11 @@
     {
       "path": ".codex/hooks.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "3847c5f5ccd075d965728ee0d497e74b6b76ff8f080f0cb9081b39e9ca382311",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".codex/skills/graphify/SKILL.md",
@@ -64,32 +67,47 @@
     {
       "path": ".github/CODEOWNERS",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "84b78abad959192c67d3ac7c433e333bf6cfd63ca756d335ac962c45b964a42e",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/bug.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "8b6f233103aa0e09548445ecad065a2b848494d7b9533b56314c8eeda47c5345",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/config.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "abc40854e7671a899bf3396ef0b65bfadf28e28c55b0dcc6ac68cbf51ed33594",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".github/ISSUE_TEMPLATE/improvement.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "4a5fcc2b07c2719071da6cd12ac78618fe1c9a4a94bb05c161445a1d33dc8be1",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".github/dependabot.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "5e54c7e473646e7b15345ac8dc7749922495be1cac57135cdf3cde5e4d20911f",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": ".github/pull_request_template.md",
@@ -101,10 +119,10 @@
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",
-      "reason": "Reviewed read-only permissions, per-ref concurrency cancellation, explicit seven-generator installation, lint/format/test steps, separate macOS tests/Store-mode build and failure-only diagnostics. Both jobs have deadlines. Action references use version tags, not immutable commit pins; pinning them is a separate supply-chain improvement. No protection settings were changed.",
-      "source_sha256": "77b45688f869e4312d389163c9f4ee8f850f134b19b0a57bf0325f8383f855fa",
-      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
-      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "35eebcdae545b38195b4997437347536c997ac0c67e04598edd27f8c58c491c8",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": ".gitignore",
@@ -259,50 +277,83 @@
     {
       "path": "Backend/Core/document_dsl/components.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "3f30e65507166afa66e7c7385fbf5d5e06a66f3b997cc8fd1870b88b38daa7b0",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/model.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "ff809b146e150916d259823307630d274689ee76b0e0201e3da8c85ccca313ac",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/paginator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "a41c5f620fbcdf47c771cfe890d11d5a0aa258556b3cb426bcadf8b62a27f514",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/profiles.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "e34906a1d87d6640d77b20cc8ead08871cb8dd80eebb00656c3b9e78232dc869",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/reportlab_backend.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "f2fd714c616339b6cb170c2dd8fe94fdddeb59c1f8cadd43d6b29b7789983c35",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/reportlab_canvas.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "3073737332cca2fdadeb54e3db73a9a7f75f52f8b216658abf06ba5024fbda48",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/reportlab_flowables.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "110a0065f9dc8bca72865420a28d54e459cc7003159ee561182d22e16a32cdfa",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
+    },
+    {
+      "path": "Backend/Core/document_dsl/text_layout.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "dd9b835a29746b53973668705693498782dfc9249e20bcbb053898850c1ed9e1",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/document_dsl/vector_components.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "14fb7cb5c438db9198431810aef3299964a7a1da1d2e7a10b623007c80d720bc",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/education_context.py",
@@ -349,8 +400,11 @@
     {
       "path": "Backend/Core/fonts/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "2fd91353a3fbc75c5d75f59a0ae549af5bb8c9768825195e9fcff563118cb532",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/fonts/arimo/Arimo-Bold.ttf",
@@ -1045,8 +1099,11 @@
     {
       "path": "Backend/Core/json_client.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "f1c48f8deb2fed4b7534ef62ffa7a445115cf12a3570a98166cb067a5af66a62",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "Backend/Core/layout_conformance.py",
@@ -1153,8 +1210,11 @@
     {
       "path": "Backend/Core/overlay/layouts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "161f58a129acdd74a31255b79c85d46838953e2d8a4d872618155ecfef416943",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/overlay/science.py",
@@ -1171,14 +1231,20 @@
     {
       "path": "Backend/Core/pdf_accessibility.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "ca21a7bd7e82db9b000f4e5759a2edef8981b834368383b6ea59bd9d6b12625d",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/pdf_text.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "40e982b1cda2415dc50c7b9c4bcee56a80590af378dcd893917c116637998b55",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/pdf_validation.py",
@@ -1228,14 +1294,20 @@
     {
       "path": "Backend/Core/render_transaction.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "d78662bf3fb09cfc42fe68827de0f827ac7ea8ead3c1541309def336603259da",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/reportlab_theme.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "ec1cfb1ae97c7d955c0f9d2cf05634440c256c35adb78ff94ae20b6f10b028ec",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/response_simulation.py",
@@ -1350,6 +1422,15 @@
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/temporary_cleanup.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "2b5a020106471d1c547b3330dcba0573e8bce2d055adbb009791767b27a92a48",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "Backend/Core/topic_reference_evidence.py",
@@ -1580,10 +1661,22 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/computer-science/aqa/generator/cspapergen/_cli_runtime.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "a6da5be13ca684c12a00b3440e304fe32ca8cdfe8595ec9d4737c7a6c6a00ee5",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+    },
+    {
       "path": "Resources/computer-science/aqa/generator/cspapergen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "b8f6e209d8c0fed7e83c2a8cdea308681c1d11c378f5ebcafc8a064e729ef09e",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/exam_dates.py",
@@ -2086,8 +2179,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/_cli_runtime.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "5757563fc12b27c690b1a18572351468678428fdfb68b72b81b2217adf58aa85",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py",
@@ -2954,6 +3050,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/mlx-installed-accounting-acceptance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/model-guidance-copy-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3039,6 +3141,24 @@
     },
     {
       "path": "docs/quality/reference-live-fidelity-2026-09-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/release-safety-tooling-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3466,14 +3586,20 @@
     {
       "path": "macOS/.gitignore",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "7a57880ddd4081712335c6d56fba80beb420892c1c293accb2ed3679c4b51e7b",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Branding/icon-design.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "2bfd35ff333f20cdba1229868bbd25f0b55beffed119dcc2e0d73732c6b25946",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin.xcodeproj/project.pbxproj",
@@ -3484,14 +3610,20 @@
     {
       "path": "macOS/Keldin.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "7f3b00b5c3fdb45242d7b87e1e5c4e25d1fa8129a16c94295ecc4e8ea2235c5f",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin.xcodeproj/xcshareddata/xcschemes/Keldin.xcscheme",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "f8484b40ca716ee2382d90cdfda2f2efb3c82a1da1ac0eb60e7b59fe4294559b",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/AppIcon.icon/Assets/01-RearLeft.svg",
@@ -3538,8 +3670,11 @@
     {
       "path": "macOS/Keldin/AppIcon.icon/icon.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "6a4ab129fb75fb17704bae146a7ecb023d34bafe9492aac9dbcded9dc7f12122",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Application/AppCommands.swift",
@@ -3580,8 +3715,11 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/AccentColor.colorset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "2e1ef28e55fc721e195b1f0aa7caddf27b489eb4bc38f95a0a298d0eeff76874",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-128x128@1x.png",
@@ -3646,20 +3784,29 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "84b151d2ff91504e722d6d188de9d9b4a56e733b3b4346c641fc676b3a939b3e",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialFrenchNSI.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "ece220a9828d29e503bf10663425ceb037e75b42d0c305acb4c73319a72b6cd2",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialFrenchNSI.imageset/TutorialFrenchNSI.png",
@@ -3670,8 +3817,11 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialModelSettings.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "40cbe15d250ed72122bec9eda99bcc86c55c836d015d4fd85a2156a914dd542d",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialModelSettings.imageset/TutorialModelSettings.png",
@@ -3682,8 +3832,11 @@
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialWorkspace.imageset/Contents.json",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "28642d4b6d299eef7618b88f4cac866c060c9ed11406c4c267d024252eaed641",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/TutorialWorkspace.imageset/TutorialWorkspace.png",
@@ -4078,8 +4231,11 @@
     {
       "path": "macOS/project.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "74d205ac5bb761deeda3fae18e4bd2012161af3f6876ad2ee3c50cf2816ec40c",
+      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
+      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
       "path": "macOS/scripts/bootstrap_backend.sh",
@@ -4096,8 +4252,11 @@
     {
       "path": "macOS/scripts/clean.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "4cd521d6631e240dec5e4607bbcd8197e64264132d5cb128ccf86a90609b61d1",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "macOS/scripts/diagnose.sh",
@@ -4108,14 +4267,20 @@
     {
       "path": "macOS/scripts/move_to_trash.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "19043928a36808bf0141cae1e58f0cf10451a53a421924d24426f35846c36976",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "macOS/scripts/resolve_agent_name.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "848152f429cea8d3d88e784ccfa9c57db1d865ae5d4a7318301d17bfe070c768",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "macOS/scripts/run_app_macos.sh",
@@ -4148,10 +4313,10 @@
       "path": "requirements-test.txt",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",
-      "reason": "Reviewed the explicit setuptools build-backend dependency needed by clean Python 3.12 wheel-parity tests, test-only dependencies and bounded major versions. A version range is not a reproducible lock or a dependency security audit.",
-      "source_sha256": "2fe9b6b76fb673296113eb2cc27e50afa6974d2e7053e6c93385dee33b417c70",
-      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
-      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "54ea1e390e4228fe315b5c60967f5cc9f30d775b19d7491824a102b5b3647d3f",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "ruff.toml",
@@ -4313,6 +4478,15 @@
       "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
+      "path": "tests/test_build_cleanup_safety.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "a3d17fdd561200a55bd71e3801804bb8acca6cab81ec354ddba56f6c205a1e4b",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+    },
+    {
       "path": "tests/test_build_script_integrity.py",
       "classification": "test",
       "status": "pending",
@@ -4339,8 +4513,11 @@
     {
       "path": "tests/test_canvas_furniture.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "232c4713510da0f35ccdd988f897c9cfc4eb97ace6354af46d51f9c16f5a5175",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_checkpoint_ownership.py",
@@ -4400,6 +4577,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_cspapergen_console_runtime.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "a334c53011454b2b611350f3e1e1f32dd19540d47a175152ebdd397263e13d32",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+    },
+    {
       "path": "tests/test_difficulty_calibration.py",
       "classification": "test",
       "status": "pending",
@@ -4408,14 +4594,20 @@
     {
       "path": "tests/test_document_dsl.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "178a0d45d74bd7589d952ce3d5b3f99aa90ff8c409f7ad725d5bb0868298829a",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_document_paginator.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "e209ded5d13c97c830ffb08e4ea32359ef9c94a8b685d15eab4f2bf35fb1d8a5",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_edexcel_branding_facade.py",
@@ -4462,8 +4654,11 @@
     {
       "path": "tests/test_fonts.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "1480ef686bde1cbd4c7320ffaa75a42899f97adab44e5ef19405077ea81266f3",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_formatter_boundaries.py",
@@ -5230,8 +5425,11 @@
     {
       "path": "tests/test_pdf_process.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "f3536465138242f449c53530cd1dfc6153fb9ff100a50d1835ddab77b7d057c0",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_pdf_validation.py",
@@ -5299,14 +5497,20 @@
     {
       "path": "tests/test_render_transaction.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "e2a9410b1dd68a7aff97ac3a1dd6b31c6d486c4452df41d7bb3f228fbbdc93e2",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_renderer_contracts.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "483ff9c2a330de63cbffa872d61a4695c5c55b1e6145aeddf090883f974bae0f",
+      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
+      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
       "path": "tests/test_renderer_sharing.py",
@@ -5361,6 +5565,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_static_type_contracts.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "18a69a44d1c92e904effc1732b68193740b18a807ad3a107ead0a73447d3bca9",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "tests/test_subject_plugins.py",
@@ -5530,8 +5743,11 @@
     {
       "path": "tools/pdf_process.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "03e744b9a568541c91ffa7234950754210bdf5e41b1b8319bfa3aefc22790904",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "tools/reconcile_french_nsi_archive.py",
@@ -5592,6 +5808,15 @@
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tools/typecheck.ini",
+      "classification": "configuration-or-runtime-data",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "source_sha256": "66b08cc8de591929e54a4da500f875fafecdd859ce0475d32eeb74bab9b223fb",
+      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
+      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
       "path": "tools/validate_generator_migration.py",
