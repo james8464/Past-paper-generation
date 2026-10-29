@@ -443,7 +443,7 @@ def verify_accounting_scheme(
                 )
         for question in questions:
             if question.kind == "multiple_choice":
-                expected = question.choices[question.correct_choice]
+                expected = printed_mcq_rows([question])[0][1]
                 if _compact(expected) not in _compact(texts[7]):
                     raise LayoutConformanceError(
                         f"Accounting scheme omits choice credit for {question.number}"
