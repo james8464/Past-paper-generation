@@ -1,4 +1,4 @@
-# Keep visible French authoring claims aligned with the current catalogue.
+# Keep visible French authoring claims aligned with the model-authored route.
 
 import json
 from pathlib import Path
@@ -19,15 +19,15 @@ def test_fixed_assessment_values_defer_localization_to_swiftui():
         assert f'.id("{row}-\\(interfaceLanguage)")' in workspace
 
 
-def test_french_workspace_explains_application_owned_cases_in_both_languages():
+def test_french_workspace_explains_model_authoring_in_both_languages():
     workspace = (
         ROOT / "Features/Generation/FrenchAssessmentWorkspace.swift"
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "Five paper families are available and can be used again for practice.",
-        "This catalogue runs locally without an AI model or Ollama. It does not test model quality.",
-        "Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation.",
+        "The selected AI model writes a new draft from French references. Answers and difficulty still need review.",
+        "Local models run on this Mac. Hosted providers receive the generation prompts only after your consent.",
+        "Official sources are downloaded with your permission. The chosen provider creates the draft; no official approval or calibrated difficulty is implied.",
     ):
         assert f'Text("{key}")' in workspace
         unit = catalog[key]["localizations"]["fr"]["stringUnit"]
@@ -36,25 +36,46 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     assert "French generation uses Ollama" not in workspace
     assert "Gemma 4 12B is the comparison baseline" not in workspace
     assert "blocks repeats" not in workspace
+    assert "This catalogue runs locally without an AI model" not in workspace
+    assert "ModelQualityAdviceView" in workspace
 
 
-def test_french_help_does_not_claim_ollama_authors_current_papers():
+def test_french_help_explains_provider_readiness_without_fixed_catalogue_claim():
     source = (ROOT / "Features/Onboarding/WelcomeHelpViews.swift").read_text()
     french = source.split("private var frenchBaccalaureat:", 1)[1].split(
         "private var", 1
     )[0]
-    assert "French papers are built locally from a fixed catalogue." in french
+    assert "French papers are built locally from a fixed catalogue." not in french
     assert "Ollama generation uses" not in french
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     key = (
-        "French papers are built locally from a fixed catalogue. "
-        "No AI model, Ollama installation or cloud service is needed."
+        "French drafts use the provider and model selected in Settings. "
+        "Local providers run on this Mac; hosted providers require consent and an API key."
     )
     assert key in french
     unit = catalog[key]["localizations"]["fr"]["stringUnit"]
     assert unit["state"] == "translated"
-    assert "catalogue fixe" in unit["value"]
-    assert "Aucun modèle" in unit["value"]
+    assert "modèle" in unit["value"]
+    assert "clé API" in unit["value"]
+
+
+def test_public_french_request_uses_model_without_family_fallback_and_verifies_identity():
+    request = (ROOT / "Domain/FrenchLLMAssessmentRequest.swift").read_text()
+    application = (ROOT / "State/ApplicationCoordinator.swift").read_text()
+    public = application.split("func generateFrenchPaper", 1)[1].split(
+        "func generateOccitanieActivity", 1
+    )[0]
+    for flag in ('"--provider"', '"--model"', '"--authoring-version", "v36"'):
+        assert flag in request
+    assert "savedFrenchFamilies" not in public
+    assert "excludedFamilies" not in public
+    assert "KELDIN_API_KEY" in public
+    assert "--api-key" not in request
+    for field in ("provider", "model", "seed"):
+        assert f"publication.identity.{field} == configuration.{field}" in request
+    assert 'generationOrigin == "model_authored"' in request
+    assert "publication.modelUsed" in request
+    assert "target.frenchLargePrint" in application
 
 
 def test_french_local_progress_has_selected_language_copy():

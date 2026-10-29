@@ -43,7 +43,7 @@ struct AppCommands: Commands {
     private var canCreate: Bool {
         canNavigate && creationContext?.canCreate(
             boardCanGenerate: application.canGenerate,
-            hasFrenchReferences: application.hasFrenchReferences,
+            hasFrenchReferences: application.hasFrenchReferences && application.frenchGenerationBlockerResource == nil,
             isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome || application.showHelp
         ) == true
     }

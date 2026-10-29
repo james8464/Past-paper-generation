@@ -221,11 +221,12 @@ final class CoordinatorTests: XCTestCase {
         for job in jobs { try application.recentDocumentStore.remove(job) }
         XCTAssertEqual(try application.savedFrenchFamilies(), [0,1,2,3,4])
         application.outputFolder = temporaryDirectory.appendingPathComponent("another-output")
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         XCTAssertTrue(application.isRunning)
         XCTAssertFalse(application.showError)
         XCTAssertEqual(backend.requests.count, 1)
-        XCTAssertTrue(backend.requests[0].arguments.contains("--repeat-practice"))
+        XCTAssertTrue(backend.requests[0].arguments.contains("v36"))
+        XCTAssertFalse(backend.requests[0].arguments.contains("--repeat-practice"))
         XCTAssertEqual(application.recentDocumentStore.records.count, 1)
         XCTAssertFalse(FileManager.default.fileExists(atPath: application.outputFolder.path))
         application.cancelGeneration()
@@ -246,7 +247,7 @@ final class CoordinatorTests: XCTestCase {
             try application.recentDocumentStore.save(record)
         }
         let prior = application.recentDocumentStore.records
-        application.generateFrenchPaper(largePrint: true)
+        application.generateFrenchFixture(largePrint: true)
 
         let request = try XCTUnwrap(backend.requests.first)
         let seedIndex = try XCTUnwrap(request.arguments.firstIndex(of: "--seed"))
@@ -254,9 +255,10 @@ final class CoordinatorTests: XCTestCase {
         XCTAssertTrue(application.isRunning)
         XCTAssertEqual(application.pendingGenerationSeed, requestedSeed)
         XCTAssertEqual(application.generationCoordinator.activeJob?.configuration.seed, requestedSeed)
-        XCTAssertTrue(request.arguments.contains("--repeat-practice"))
+        XCTAssertFalse(request.arguments.contains("--repeat-practice"))
         XCTAssertTrue(request.arguments.contains("--large-print"))
-        XCTAssertEqual(Array(request.arguments.suffix(10)), ["--exclude-family", "0", "--exclude-family", "1", "--exclude-family", "2", "--exclude-family", "3", "--exclude-family", "4"])
+        XCTAssertFalse(request.arguments.contains("--exclude-family"))
+        XCTAssertTrue(request.arguments.contains("--model"))
         XCTAssertEqual(application.recentDocumentStore.records.filter { $0.state == .completed }, prior)
         XCTAssertEqual(try application.savedFrenchFamilies(), [0, 1, 2, 3, 4])
         application.cancelGeneration()

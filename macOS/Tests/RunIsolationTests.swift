@@ -188,7 +188,7 @@ final class RunIsolationTests: XCTestCase {
         application.setDryRun(true)
         var folders = Set<String>()
         for french in [false, true] {
-            if french { application.generateFrenchPaper(largePrint: false) }
+            if french { application.generateFrenchFixture(largePrint: false) }
             else { application.generate() }
             let request = try XCTUnwrap(backend.requests.last)
             let index = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
@@ -204,7 +204,7 @@ final class RunIsolationTests: XCTestCase {
     func testBrowsingWhileGeneratingPreservesTheRunningPaper() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let original = try XCTUnwrap(application.generationCoordinator.activeJob)
         let status = application.status
         let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != application.selectedBoardID })
@@ -294,7 +294,7 @@ final class RunIsolationTests: XCTestCase {
             owner.activate()
             application.selectAIProvider(.openAI, presentation: owner)
             let request = try XCTUnwrap(owner.request)
-            if busy { application.generateFrenchPaper(largePrint: false) }
+            if busy { application.generateFrenchFixture(largePrint: false) }
             let originalProvider = application.aiProvider
             let originalJob = application.generationCoordinator.activeJob
             guard let approved = owner.consume(id: request.id), case let .hostedConsent(provider) = approved.kind else { return XCTFail("Expected owned consent") }
@@ -469,7 +469,7 @@ final class RunIsolationTests: XCTestCase {
             let backend = ControlledRunBackend()
             let application = application(backend: backend, defaults: defaults)
             if benchmark { application.startBenchmark() }
-            else { application.generateFrenchPaper(largePrint: false) }
+            else { application.generateFrenchFixture(largePrint: false) }
             application.modelToPull = "fixture/draft-tag"
             XCTAssertFalse(application.canRequestModelDownload)
 
@@ -882,7 +882,7 @@ final class RunIsolationTests: XCTestCase {
     func testModelLaunchConfirmationsCannotReplaceGenerationOwnership() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let job = try XCTUnwrap(application.generationCoordinator.activeJob)
         let status = application.status
         application.modelToPull = "fixture-model"
@@ -1051,7 +1051,7 @@ final class RunIsolationTests: XCTestCase {
         try Data("not a directory".utf8).write(to: history)
         let application = application(backend: backend, historyDirectory: history)
 
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
 
         XCTAssertTrue(backend.requests.isEmpty)
         XCTAssertFalse(application.isRunning)
@@ -1066,7 +1066,7 @@ final class RunIsolationTests: XCTestCase {
             let backend = ControlledRunBackend()
             let application = application(backend: backend)
             if french {
-                application.generateFrenchPaper(largePrint: false)
+                application.generateFrenchFixture(largePrint: false)
             } else {
                 let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
                 application.selectBoard(board)
@@ -1075,7 +1075,7 @@ final class RunIsolationTests: XCTestCase {
             }
             let cancelled = try XCTUnwrap(backend.requests.first)
             application.cancelGeneration()
-            application.generateFrenchPaper(largePrint: true)
+            application.generateFrenchFixture(largePrint: true)
             XCTAssertEqual(backend.requests.count, 2)
             let replacementID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
             let replacementStatus = application.status
@@ -1102,7 +1102,7 @@ final class RunIsolationTests: XCTestCase {
     func testCancelledGenerationIgnoresBufferedEventsBeforeAnotherRun() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let cancelled = try XCTUnwrap(backend.requests.first)
         application.cancelGeneration()
         let status = application.status
@@ -1124,7 +1124,7 @@ final class RunIsolationTests: XCTestCase {
     func testFinishedGenerationIgnoresRepeatedCallbacks() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let finished = try XCTUnwrap(backend.requests.first)
         finished.onFinish(.success(1))
         let status = application.status
@@ -1149,7 +1149,7 @@ final class RunIsolationTests: XCTestCase {
         application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         let cancelled = try XCTUnwrap(backend.requests.first)
         application.cancelGeneration()
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let replacementID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
 
         cancelled.onFinish(.success(0))
@@ -1178,7 +1178,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertFalse(application.showError)
         XCTAssertEqual(backend.requests.count, 2)
         XCTAssertNil(defaults.object(forKey: AppStorageKey.preparedMLXModels))
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let replacementID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
         cancelled.onFinish(.success(0))
         XCTAssertTrue(application.isRunning)
@@ -1242,7 +1242,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend)
         application.refreshOllama()
         await fulfillment(of: [backend.statusStarted], timeout: 2)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let status = application.status
         let jobID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
 
@@ -1266,7 +1266,7 @@ final class RunIsolationTests: XCTestCase {
         await fulfillment(of: [backend.statusStarted], timeout: 2)
         backend.resumeNext(.success([]))
         await fulfillment(of: [backend.modelsStarted], timeout: 2)
-        application.generateFrenchPaper(largePrint: true)
+        application.generateFrenchFixture(largePrint: true)
         let status = application.status
 
         backend.resumeNext(.success([.error(message: "Stale Ollama models", code: "ollama_failed")]))
@@ -1285,7 +1285,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend)
         application.refreshOllama()
         await fulfillment(of: [backend.statusStarted], timeout: 2)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let status = application.status
 
         backend.resumeNext(.failure(CocoaError(.fileReadUnknown)))
@@ -1304,7 +1304,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend)
         application.refreshOllama()
         await fulfillment(of: [backend.statusStarted], timeout: 2)
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         let generation = try XCTUnwrap(backend.runs.requests.first)
         generation.onFinish(.success(1))
         XCTAssertFalse(application.isRunning)

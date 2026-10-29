@@ -1,6 +1,10 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "The selected AI model writes a new draft from French references. Answers and difficulty still need review.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le modèle d’IA choisi rédige un nouveau brouillon à partir des références françaises. Les réponses et la difficulté restent à vérifier."}}}},
+    "Local models run on this Mac. Hosted providers receive the generation prompts only after your consent.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les modèles locaux fonctionnent sur ce Mac. Les services hébergés reçoivent les consignes de génération uniquement après votre accord."}}}},
+    "Official sources are downloaded with your permission. The chosen provider creates the draft; no official approval or calibrated difficulty is implied.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les sources officielles sont téléchargées avec votre accord. Le moteur choisi crée le brouillon, sans validation officielle ni difficulté étalonnée."}}}},
+    "French drafts use the provider and model selected in Settings. Local providers run on this Mac; hosted providers require consent and an API key.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les brouillons français utilisent le moteur et le modèle choisis dans Réglages. Les moteurs locaux fonctionnent sur ce Mac ; les services hébergés demandent votre accord et une clé API."}}}},
     "Known answer-check failure": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Échec constaté du contrôle des réponses"}}}},
     "Paper-quality review incomplete": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Évaluation de la qualité incomplète"}}}},
     "Paper quality unverified": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Qualité des sujets non vérifiée"}}}},

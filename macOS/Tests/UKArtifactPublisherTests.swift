@@ -28,7 +28,7 @@ final class UKArtifactPublisherTests: XCTestCase {
         let application = isolatedApplication(backend: backend)
         application.generateOccitanieActivity()
         application.generateOccitanieActivity()
-        application.generateFrenchPaper(largePrint: false)
+        application.generateFrenchFixture(largePrint: false)
         XCTAssertEqual(backend.requests.count, 1)
         application.cancelGeneration()
         XCTAssertFalse(application.isRunning)
@@ -109,7 +109,7 @@ final class UKArtifactPublisherTests: XCTestCase {
             application.setDryRun(true)
             let output = directory.appendingPathComponent(french ? "french-exports" : "uk-exports")
             application.outputFolder = output
-            if french { application.generateFrenchPaper(largePrint: false) }
+            if french { application.generateFrenchFixture(largePrint: false) }
             else { application.generate() }
             let run = try XCTUnwrap(backend.requests.first)
             let outputIndex = try XCTUnwrap(run.arguments.firstIndex(of: "--output"))
@@ -121,11 +121,10 @@ final class UKArtifactPublisherTests: XCTestCase {
             let manifest = source.appendingPathComponent("manifest.json")
             let metadata: [String: Any] = [
                 "schema_version": 1, "assessment": FrenchAssessmentRequest.assessmentID,
-                "status": "unreviewed_draft", "generation_origin": "application_owned", "model_used": false,
+                "status": "unreviewed_draft", "generation_origin": "model_authored", "model_used": true,
                 "teacher_review": "not_run", "empirical_calibration": "not_run",
-                "practice_policy": "repeat-practice-v1", "cross_history_comparison": "not_performed",
-                "identity": ["provider": "application-owned", "model": FrenchAssessmentRequest.modelID,
-                    "prompt_version": "fr-nsi-written-2027-v35", "print_policy": "fr-nsi-v35-internal-review-v1", "seed": seed],
+                "identity": ["provider": application.aiProvider.backendID, "model": application.activeModelName,
+                    "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy, "seed": seed],
             ]
             let bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
             try bytes.write(to: manifest)

@@ -60,6 +60,13 @@ final class GenerationCoordinator {
         guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         if let artifacts { generatedFiles = artifacts }
         if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
+           job.configuration.authoringVersion == "v36" {
+            guard let manifest = generatedFiles.first(where: { $0.role == "package_manifest" }) else {
+                throw CocoaError(.fileReadNoSuchFile)
+            }
+            try FrenchLLMAssessmentRequest.validatePublication(at: manifest.url, configuration: job.configuration)
+        }
+        if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
            job.configuration.model == FrenchAssessmentRequest.modelID {
             guard let manifest = generatedFiles.first(where: { $0.role == "package_manifest" }) else {
                 throw CocoaError(.fileReadNoSuchFile)
