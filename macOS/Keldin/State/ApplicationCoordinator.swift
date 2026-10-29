@@ -58,6 +58,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var notificationsEnabled = true
     @Published var generationEstimate: GenerationEstimate?
     @Published var lastQualityReport: GenerationQualityReport?
+    @Published var lastFrenchDraftQualityReport: FrenchDraftQualityReport?
     @Published private(set) var previewedFileID: UUID?
 
     private(set) var pendingGenerationSeed: Int?
@@ -426,6 +427,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func startFrenchLLMGeneration(_ request: FrenchLLMAssessmentRequest) {
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         mlxRecoveryState.beginGeneration()
         status = "Starting"
         generationProgress = 0.02
@@ -469,6 +471,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         generationProgress = nil
         status = InterfaceText.resolve("Preparing the Occitanie case study", language: presentationLanguage)
         let working = generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -569,6 +572,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         status = statusMessage
         generationProgress = nil
         let session = beginRunSession(
@@ -646,6 +650,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         status = board.isReady ? "Ready" : "Coming Soon"
     }
 
@@ -653,6 +658,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard catalogStore.selectPaperID(paperID, isLocked: isRunning) else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
     }
 
     func selectAssessmentKind(_ kind: AssessmentKind) {
@@ -764,6 +770,7 @@ final class ApplicationCoordinator: ObservableObject {
             }
             pendingGenerationSeed = seed
             lastQualityReport = nil
+            lastFrenchDraftQualityReport = nil
             sidebarSelection = .frenchBaccalaureat
             return
         }
@@ -824,6 +831,7 @@ final class ApplicationCoordinator: ObservableObject {
 
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         mlxRecoveryState.beginGeneration()
         status = "Starting"
         generationProgress = 0.02
@@ -1430,6 +1438,9 @@ final class ApplicationCoordinator: ObservableObject {
             currentGenerationFileIDs.insert(file.id)
             if role == "package_manifest" {
                 lastQualityReport = GenerationQualityReport.load(from: file.url)
+            }
+            if role == "assessment_package" {
+                lastFrenchDraftQualityReport = FrenchDraftQualityReport.load(from: file.url)
             }
         case let .done(message):
             status = GenerationPresentation.completion(message, language: presentationLanguage)

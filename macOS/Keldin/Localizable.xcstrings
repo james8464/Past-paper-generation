@@ -1,6 +1,12 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Model review is not proof. Executable contract checks do not certify the printed answers.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’avis d’un modèle n’est pas une preuve. Les contrôles de contrats exécutables ne certifient pas les réponses imprimées."}}}},
+    "Model-reviewed questions: %lld of %lld": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Questions examinées par un modèle : %1$lld sur %2$lld"}}}},
+    "Executable contracts checked: %lld of %lld": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Contrats exécutables vérifiés : %1$lld sur %2$lld"}}}},
+    "Printed-answer correctness, difficulty and completion time are not certified.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’exactitude des réponses imprimées, la difficulté et la durée ne sont pas certifiées."}}}},
+    "No entries in this part of the record. This is not an all-clear.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Aucune entrée dans cette partie du relevé. Cela ne vaut pas validation générale."}}}},
+    "Exercise %@, question %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Exercice %1$@, question %2$@"}}}},
     "The selected AI model writes a new draft from French references. Answers and difficulty still need review.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le modèle d’IA choisi rédige un nouveau brouillon à partir des références françaises. Les réponses et la difficulté restent à vérifier."}}}},
     "Local models run on this Mac. Hosted providers receive the generation prompts only after your consent.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les modèles locaux fonctionnent sur ce Mac. Les services hébergés reçoivent les consignes de génération uniquement après votre accord."}}}},
     "Official sources are downloaded with your permission. The chosen provider creates the draft; no official approval or calibrated difficulty is implied.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les sources officielles sont téléchargées avec votre accord. Le moteur choisi crée le brouillon, sans validation officielle ni difficulté étalonnée."}}}},

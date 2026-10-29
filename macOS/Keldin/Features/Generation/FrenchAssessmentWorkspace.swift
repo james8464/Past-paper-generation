@@ -162,7 +162,7 @@ struct FrenchAssessmentWorkspace: View {
                 Section("Status") { Text(application.status) }
             }
             if !application.isRunning, !application.currentGenerationFiles.isEmpty {
-                PaperQualitySummarySection(report: application.lastQualityReport)
+                PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
             }
         }
         .formStyle(.grouped)

@@ -201,7 +201,7 @@ private struct PaperConfiguration: View {
 
             if !application.isRunning,
                application.lastQualityReport != nil || !application.currentGenerationFiles.isEmpty {
-                PaperQualitySummarySection(report: application.lastQualityReport)
+                PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
             }
 
             if !application.isRunning, let blocker = application.generationBlockerResource {
@@ -265,7 +265,7 @@ private struct QualityReviewView: View {
 
     var body: some View {
         Form {
-            PaperQualitySummarySection(report: application.lastQualityReport)
+            PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
             Section("Qualification") {
                 qualityRow(
                     "Engineering",

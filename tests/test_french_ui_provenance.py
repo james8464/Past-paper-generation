@@ -78,6 +78,25 @@ def test_public_french_request_uses_model_without_family_fallback_and_verifies_i
     assert "target.frenchLargePrint" in application
 
 
+def test_french_review_discloses_model_and_contract_limits_with_question_warnings():
+    source = (ROOT / "Features/Generation/GenerationGuidanceViews.swift").read_text()
+    report = (ROOT / "Domain/FrenchDraftQualityReport.swift").read_text()
+    catalogue = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
+    for key in (
+        "Model review is not proof. Executable contract checks do not certify the printed answers.",
+        "Printed-answer correctness, difficulty and completion time are not certified.",
+        "No entries in this part of the record. This is not an all-clear.",
+    ):
+        assert key in source
+        assert catalogue[key]["localizations"]["fr"]["stringUnit"]["value"]
+    assert 'package["checks"]' in report
+    assert 'package["reviews"]' in report
+    assert 'package["warnings"]' in report
+    assert "expected.subtracting(checked)" in report
+    assert '"sql", "python_trace", "shortest_path"' in report
+    assert 'findings("Not checked", report.notChecked)' in source
+
+
 def test_french_local_progress_has_selected_language_copy():
     source = (ROOT / "Domain/GenerationPresentation.swift").read_text()
     assert '"Construction des exercices vérifiés, sans appel à un modèle."' in source
