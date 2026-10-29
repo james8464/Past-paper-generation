@@ -44,12 +44,14 @@ struct Keldin: App {
     }
 
     var body: some Scene {
-        WindowGroup("Keldin", id: "main") {
+        WindowGroup("Keldin", id: MainWindowRouting.sceneID, for: MainWindowIdentity.self) { _ in
             ContentView()
                 .environmentObject(application)
                 .environment(application.catalogStore)
                 .environment(application.benchmarkCoordinator)
                 .environment(application.generationCoordinator)
+        } defaultValue: {
+            MainWindowIdentity.primary
         }
         .defaultLaunchBehavior(AppLaunchPolicy.presentsMainWindow() ? .presented : .suppressed)
         .commands {
