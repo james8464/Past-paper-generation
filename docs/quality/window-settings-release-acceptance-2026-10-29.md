@@ -1,14 +1,13 @@
 # Window and Settings release acceptance
 
-Status: pending final source freeze, full regression tests, signed builds and
-actual computer-control verification. This file reserves the release-evidence
-path before identity-bearing model checks. It is not a passing acceptance record.
+Local acceptance for this engineering batch passed on code commit
+`990ace28945efa6621ef0fe12f55ebd07d45fd85`. Protected publication is tracked in
+PR116; both latest-head checks are required before merge. This is not completion
+of the whole application, paper/provider matrix or implementation audit.
 
-The scoped native gate passed 129 tests and the Python wiring gate passed seven.
-Static review is recorded separately in the native scene boundary audit. Planned
-actual checks include Settings-only cancellation, hosted disclosure cancellation
-without consent or credentials, Help reopening Main, repeated menu navigation,
-correct disabled states and preservation of user data and settings.
+The earlier scoped native gate passed 129 tests and the Python wiring gate passed
+seven. Static review is recorded separately in the native scene boundary audit.
+The final signed-app observations and final full test results follow below.
 
 The Accounting retained-attempt review and qualification-boundary audit remain
 separate. App-owned French trials must not be labelled live AI qualification.
@@ -71,3 +70,58 @@ and unchanged existing files. Frozen helper SHA-256 was
 `6158ff7cf0fe4c05d2b1b940b66ed1648a855c339427bae17fd35df528cfc25e`.
 These trials made no model calls. Recheck the rebuilt helper pin before inheriting
 this frozen-artifact result.
+
+## Final local results
+
+| Gate | Result |
+| --- | --- |
+| Full Python, fixed source | 4,556 passed, two skipped, five third-party PyMuPDF warnings in 532.07 seconds; `tmp/final-window-qualification-full-python-final2.log` |
+| Full native | 248 tests, zero failures; `tmp/final-window-qualification-native-final2.log` |
+| Direct Release | Personal-development signed build and strict deep signature passed; `tmp/final-window-qualification-direct-final2.log` |
+| Store-mode Release | Personal-development signed preflight, compliance, plist, strict signature, sandbox and helper-inheritance checks passed; `tmp/final-window-qualification-store-final2.log` |
+
+Direct frontend SHA-256:
+`b5bca6515aed65c2c890354446af0fd186cad4a2591a34dbc30b2c15f96d37d8`.
+Its helper still exactly matches the qualified `6158ff7c` pin above after the final
+build, so the frozen 341-page result applies to this same executable.
+Store frontend SHA-256:
+`dd5b02a8b160c06fddb0cce25f3f61a2377bc7867919de00185aa827b21c3a4c`.
+Store helper SHA-256:
+`64939977c68572c99b7f1c97849beb520bed148fa019573511e4b2d07c4fd9ed`.
+Store-mode compilation is not distribution signing or Store approval.
+
+The final Core pin remains `15ad925d` above. The final matrix-runtime pin is
+`605cb2f99ca371503abaac72bd8dc0ef6f2860378c9e765ae2119fafb30191bf`.
+Both were checked again after the gates. No identity-bearing source changed
+during the final full Python run.
+
+## Final signed-app observations
+
+Computer control launched the direct Release alone as PID30637. Its executable
+path was verified independently. With Main closed, Settings-only disclosure and
+Cancel restored the visible Ollama selection (1), with OpenAI (0), correct local
+detail text and unchanged `gemma4:12b`. A screenshot also confirmed the corrected
+highlight. The Settings-owned download prompt opened and cancelled without a
+download or selection change.
+
+In Settings, Create Paper, Print, Export, Quick Look, Reveal and Copy Provenance
+were disabled. New Paper remained available to reopen Main. The model guide
+opened Main on Choosing a Model. Done and History navigation used
+`main-AppWindow-1`; the Window menu listed only Settings and one Main window.
+After Main closed again, the History command reopened it successfully. Benchmark
+and Privacy were restored. Privacy still showed hosted consent as Not accepted.
+
+The app was normally quit, and process inspection confirmed no Keldin executable
+remained. No model download, hosted consent, credential edit, paper generation,
+benchmark, clipboard change, export or history deletion occurred in these final
+checks. This verifies the stated paths, not every possible interaction or all HIG
+requirements. The canonical installed app still needs updating after merge.
+
+## Remaining acceptance
+
+The complete supported UK paper/provider matrix, current MLX complete-paper
+quality checks, remaining file-level implementation reviews, distribution identity
+and third-party rights remain open. French output retains its finite catalogue
+and uncalibrated notices. Teacher review and observed learner calibration remain
+`not_run`. Original failed attempts and all ignored qualification artifacts stay
+retained.
