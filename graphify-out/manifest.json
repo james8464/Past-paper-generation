@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793225633.0795157,
-    "ast_hash": "dbd8d6bfba40f356d1e4a462760412d4",
+    "mtime": 1793290329.1519246,
+    "ast_hash": "f700c4f6ff07c6f5061b369391ca8e6b",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -980,8 +980,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1793225633.11142,
-    "ast_hash": "cb40af4aa5c56f5b909f84d229e41bcf",
+    "mtime": 1793290329.151764,
+    "ast_hash": "d7345efa9bbc8f51b0231130e2813434",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -1065,8 +1065,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_generation.py": {
-    "mtime": 1793225633.115429,
-    "ast_hash": "3e2d89f6226e1a74928a15ecb6a5ec9d",
+    "mtime": 1793290514.5042143,
+    "ast_hash": "e8f78fd40c7b2941d5b2790a0ad34d47",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/tests/test_ollama_prompt.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793285315.4281254,
-    "ast_hash": "1d4d3929d94c3e5e0172793e1b78296c",
+    "mtime": 1793287597.7043498,
+    "ast_hash": "3a2fbc22cef0ac3b8fe20b08a7f97743",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1655,8 +1655,8 @@
     "semantic_hash": "eac91ddb7dedb29ce39f58f8a2a45b2c"
   },
   "tests/test_providers.py": {
-    "mtime": 1793225633.1545725,
-    "ast_hash": "e7db0603531cd6feaa6532188152ccb7",
+    "mtime": 1793290329.151492,
+    "ast_hash": "f8226e914993c462fe6b6ab32aa1b1a1",
     "semantic_hash": ""
   },
   "tests/test_psychometrics.py": {
@@ -3435,8 +3435,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/AppConfiguration.swift": {
-    "mtime": 1793225406.3550732,
-    "ast_hash": "a96d93ef2ac27f91932cee13c1b3d5e2",
+    "mtime": 1793290328.951961,
+    "ast_hash": "14442485ca18a419c871df29de38aecb",
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/KeldinApp.swift": {
@@ -3560,8 +3560,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793239793.9788792,
-    "ast_hash": "b0bd2e4b8f309c420bdbb83d3a778ea5",
+    "mtime": 1793290328.953328,
+    "ast_hash": "691537f7874c4b1a72eff54c4ec14b4f",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793287377.088885,
-    "ast_hash": "1fc20522590b06b98e99a301bb167342",
+    "mtime": 1793290328.9530928,
+    "ast_hash": "394cb43fd36cff837b454aa0f7a6b062",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3615,13 +3615,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/RecentDocumentStore.swift": {
-    "mtime": 1793277916.4052148,
-    "ast_hash": "3920273b1b498a0b44ac4e3b1456ef21",
+    "mtime": 1793290328.9526117,
+    "ast_hash": "276cfc9308b7bdc5eca07baa85003b0c",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/SettingsStore.swift": {
-    "mtime": 1793272359.989112,
-    "ast_hash": "256ee518db09e0a163c021664690aed6",
+    "mtime": 1793290328.952394,
+    "ast_hash": "f326e2aaab471f434c707437d752be6c",
     "semantic_hash": ""
   },
   "macOS/Tests/MigrationTests.swift": {
@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793287377.090294,
-    "ast_hash": "8b2e28d3d0118695c457fa9cd4699069",
+    "mtime": 1793290514.3692431,
+    "ast_hash": "b1349e7985fef74cc72a8d78adcd2b0a",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793285315.3415434,
-    "ast_hash": "650c98f93a94210b32fb4a73a1a75eaf",
+    "mtime": 1793287597.6301584,
+    "ast_hash": "43f0c823ce39681e5b3845e2211a96dc",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4547,6 +4547,21 @@
   "docs/quality/private-generation-records-2026-10-29.md": {
     "mtime": 1793287579.7810466,
     "ast_hash": "c889cbc77a473c5132b140747fd634cc",
+    "semantic_hash": ""
+  },
+  "Backend/Core/review_workers.py": {
+    "mtime": 1793290514.3687332,
+    "ast_hash": "b7daaa97a710bb8a173e74db250b45b6",
+    "semantic_hash": ""
+  },
+  "tests/test_review_workers.py": {
+    "mtime": 1793290329.151495,
+    "ast_hash": "b43b37ff1c79de13df3112d556e015ff",
+    "semantic_hash": ""
+  },
+  "docs/quality/local-parallel-reviews-2026-10-29.md": {
+    "mtime": 1793290744.8450005,
+    "ast_hash": "76e97a362e44d78450063856c2e5e433",
     "semantic_hash": ""
   }
 }

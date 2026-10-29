@@ -28,6 +28,7 @@ from Backend.Core.model_review import (
 )
 from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
+from Backend.Core.review_workers import map_reviews
 from pastpapergen.extended_scenarios import SCENARIOS
 from pastpapergen.models import (
     MultipleChoiceOption,
@@ -363,40 +364,55 @@ def review_blueprint_difficulty(
     item_count = sum(
         len(_question_demand_items(question)) for question in blueprint.questions
     )
-    item_index = 0
-    reviewed_questions: list[QuestionBlueprint] = []
+    jobs = []
     for question in blueprint.questions:
-        topic = syllabus.get_topic(question.topic_id)
         items = _question_demand_items(question)
-        evidences: list[dict[str, object]] = []
         for item, part in zip(items, question.parts or [question], strict=True):
-            item_index += 1
             label = str(item.get("label") or question.number)
-            emit(
-                f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}"
-            )
-            projection = _question_solver_projection(question, part)
-            solver_item = projection.item
-            solution = IndependentSolver(client).solve(solver_item, projection.evidence)
-            require_solution_matches_scheme(
-                solution,
-                solver_item,
-                expected_choice=projection.expected_choice,
-            )
-            evidence = require_difficulty_review(
-                client,
-                item_id=f"question-{question.number}-{label}",
-                subject="Edexcel A-level Economics A",
-                candidate=_difficulty_candidate(
-                    question,
-                    part,
-                    solver_item=solver_item,
-                ),
-                target=build_item_demand_target(item, profile),
-                specification=_review_specification(topic, question),
-                canonical_solution=solution,
-            )
-            evidences.append(evidence.model_dump(mode="json"))
+            jobs.append((question, part, item, label))
+
+    def review(job):
+        question, part, item, label = job
+        topic = syllabus.get_topic(question.topic_id)
+        projection = _question_solver_projection(question, part)
+        solver_item = projection.item
+        solution = IndependentSolver(client).solve(solver_item, projection.evidence)
+        require_solution_matches_scheme(
+            solution, solver_item, expected_choice=projection.expected_choice
+        )
+        return require_difficulty_review(
+            client,
+            item_id=f"question-{question.number}-{label}",
+            subject="Edexcel A-level Economics A",
+            candidate=_difficulty_candidate(question, part, solver_item=solver_item),
+            target=build_item_demand_target(item, profile),
+            specification=_review_specification(topic, question),
+            canonical_solution=solution,
+        ).model_dump(mode="json")
+
+    def report(index, completed):
+        question, _, _, label = jobs[index]
+        emit(
+            f"Calibrating difficulty {completed}/{item_count}: {question.number}{label}"
+        )
+
+    workers = getattr(client, "parallel_review_workers", 1)
+    if workers == 1:
+        evidence_rows = []
+        for index, job in enumerate(jobs):
+            report(index, index + 1)
+            evidence_rows.append(review(job))
+    else:
+        if jobs:
+            report(0, 1)
+        evidence_rows = map_reviews(jobs, review, workers=workers, progress=report)
+
+    reviewed_questions: list[QuestionBlueprint] = []
+    position = 0
+    for question in blueprint.questions:
+        count = len(question.parts) if question.parts else 1
+        evidences = evidence_rows[position : position + count]
+        position += count
         if question.parts:
             parts = [
                 part.model_copy(update={"difficulty_evidence": evidence})

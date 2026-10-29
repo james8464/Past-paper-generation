@@ -1331,6 +1331,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/review_workers.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/scoped_references.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -3095,6 +3101,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/local-parallel-reviews-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/merged-native-integrity-acceptance-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3790,11 +3802,8 @@
     {
       "path": "macOS/Keldin/Application/AppConfiguration.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Recovered explicit complete-file review from the recorded unchanged checkpoint; scope and unresolved findings remain in the evidence, with no whole-project clearance.",
-      "source_sha256": "5467ca1aa79567353eee1683a8d812a3faa137b78b20e18f96b748f87409803c",
-      "review_evidence": "docs/quality/implementation-audit-file-review-2026-10-28.md",
-      "review_evidence_sha256": "ad8cc62a31b706b0dcf8ac96da0e2a5521779475634dbd237fbcd0871f806b08"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
@@ -4237,11 +4246,8 @@
     {
       "path": "macOS/Keldin/State/SettingsStore.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "a6f639f5dc3debb97502e4d1a3d2d4ce6cd96ac38065b0e43d2716ea4db2f528",
-      "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
-      "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Makefile",
@@ -5706,6 +5712,12 @@
     },
     {
       "path": "tests/test_response_simulation.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_review_workers.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

@@ -5,6 +5,25 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testParallelReviewSettingIsSavedAndCapturedWithoutChangingAnActiveJob() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        let application = application(backend: backend, defaults: defaults)
+        XCTAssertFalse(application.settingsStore.parallelLocalReviews)
+        application.setParallelLocalReviews(true)
+        XCTAssertTrue(defaults.bool(forKey: AppStorageKey.parallelLocalReviews))
+        application.setDryRun(true)
+        application.generate()
+        let request = try XCTUnwrap(backend.requests.first)
+        XCTAssertEqual(request.environment["KELDIN_PARALLEL_LOCAL_REVIEWS"], "1")
+        XCTAssertEqual(application.generationCoordinator.activeJob?.provenance.localReviewWorkers, 2)
+        application.setParallelLocalReviews(false)
+        XCTAssertTrue(application.settingsStore.parallelLocalReviews)
+        application.cancelGeneration()
+        application.setParallelLocalReviews(false)
+        XCTAssertFalse(defaults.bool(forKey: AppStorageKey.parallelLocalReviews))
+    }
+    @MainActor
     func testBenchmarkRecordsDoNotFollowTheUserExportFolder() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
@@ -1231,6 +1250,7 @@ private final class FailingSettingsSecrets: SecretStoring {
 final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     struct Request {
         let arguments: [String]
+        let environment: [String: String]
         let onEvent: @Sendable @MainActor (BackendEvent) -> Void
         let onFinish: @Sendable @MainActor (Result<Int32, Error>) -> Void
     }
@@ -1244,7 +1264,7 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
         onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void
     ) throws -> Process {
         if let launchError { throw launchError }
-        requests.append(Request(arguments: arguments, onEvent: onEvent, onFinish: onFinish))
+        requests.append(Request(arguments: arguments, environment: environment, onEvent: onEvent, onFinish: onFinish))
         return ControlledProcess()
     }
 

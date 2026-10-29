@@ -12,6 +12,7 @@ final class SettingsStore {
     var anthropicModel: String
     var appleModel: String
     var dryRun: Bool
+    var parallelLocalReviews: Bool
     var notificationsEnabled: Bool
     var historyRetentionLimit: Int
     var openAIAPIKey = ""
@@ -40,6 +41,7 @@ final class SettingsStore {
         appleModel = defaults.string(forKey: AppStorageKey.appleModel)
             ?? AppDefaults.appleModel
         dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
+        parallelLocalReviews = defaults.object(forKey: AppStorageKey.parallelLocalReviews) as? Bool ?? false
         notificationsEnabled = defaults.object(
             forKey: AppStorageKey.notificationsEnabled
         ) as? Bool ?? true
@@ -58,6 +60,7 @@ final class SettingsStore {
         defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
         defaults.set(appleModel, forKey: AppStorageKey.appleModel)
         defaults.set(dryRun, forKey: AppStorageKey.dryRun)
+        defaults.set(parallelLocalReviews, forKey: AppStorageKey.parallelLocalReviews)
         defaults.set(notificationsEnabled, forKey: AppStorageKey.notificationsEnabled)
         defaults.set(
             historyRetentionLimit,
