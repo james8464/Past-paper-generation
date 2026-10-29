@@ -383,8 +383,10 @@ def test_generation_reviews_fixed_stimuli_and_reauthors_extended_questions() -> 
     assert events[-1].startswith("Generated and reviewed question 12/12: 8 ")
 
 
+@pytest.mark.parametrize("workers", [0, 1, 2])
 def test_generation_resumes_family_questions_from_checkpoint(
     tmp_path: Path,
+    workers: int,
 ) -> None:
     syllabus, blueprint = _paper()
     identity = identity_for_blueprint(
@@ -398,14 +400,20 @@ def test_generation_resumes_family_questions_from_checkpoint(
         prompt_version="edexcel-economics-v1",
     )
     store = AssessmentCheckpointStore(tmp_path / "job.json", identity)
+
+    class Client(BlueprintAwareClient):
+        provider = "ollama" if workers else "openai"
+        supports_parallel_generation = not workers
+        parallel_review_workers = workers or 1
+
     generated = generate_questions_with_ollama(
-        BlueprintAwareClient(),
+        Client(),
         blueprint,
         syllabus,
         checkpoint_store=store,
     )
 
-    class NoCallsClient(BlueprintAwareClient):
+    class NoCallsClient(Client):
         def generate_json(self, _prompt: str) -> dict[str, object]:
             raise AssertionError("accepted Edexcel questions must resume")
 

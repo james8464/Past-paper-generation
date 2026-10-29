@@ -256,11 +256,11 @@ private struct AISettingsTab: View {
                     }
                 }
 
-                Toggle("Parallel Edexcel reviews", isOn: Binding(
+                Toggle("Parallel Ollama generation", isOn: Binding(
                     get: { application.settingsStore.parallelLocalReviews },
                     set: { application.setParallelLocalReviews($0) }
                 ))
-                Text("Review two independent Economics Edexcel questions at once. Requires Ollama configured for two parallel requests and uses more memory. Other providers keep their current scheduling.")
+                Text("Generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. Apple MLX and other providers keep their current scheduling.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)

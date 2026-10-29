@@ -1,11 +1,11 @@
 {
   "sourceLanguage": "en",
   "strings": {
-    "Parallel Edexcel reviews": {
-      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérifications Edexcel en parallèle"}}}
+    "Parallel Ollama generation": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération Ollama en parallèle"}}}
     },
-    "Review two independent Economics Edexcel questions at once. Requires Ollama configured for two parallel requests and uses more memory. Other providers keep their current scheduling.": {
-      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérifie simultanément deux questions indépendantes d’économie Edexcel. Ollama doit autoriser deux requêtes en parallèle, ce qui utilise davantage de mémoire. Les autres moteurs conservent leur fonctionnement actuel."}}}
+    "Generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. Apple MLX and other providers keep their current scheduling.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génère et vérifie deux groupes de questions indépendants à la fois. Ollama doit autoriser deux requêtes en parallèle, ce qui utilise davantage de mémoire. Apple MLX et les autres moteurs conservent leur fonctionnement actuel."}}}
     },
     "": {},
     "%@": {
