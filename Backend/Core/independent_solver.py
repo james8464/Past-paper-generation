@@ -75,6 +75,7 @@ class SolverResponseEnvelope(BaseModel):
     alternatives: list[str]
     partial_credit_boundaries: list[str]
     follow_through_rules: list[str]
+    has_single_valid_choice: bool | None = None
 
 
 class CanonicalSolution(BaseModel):
@@ -233,6 +234,32 @@ class IndependentSolver:
                 derived_context=derived_context,
                 output_contract=solver_output_contract(solver_item, response_slots),
             )
+            is_model_choice = (
+                raw_item.get("kind") == "multiple_choice"
+                and isinstance(raw_item.get("choices"), list)
+                and bool(raw_item["choices"])
+                and not response_slots
+            )
+            choice_validity = raw_result.get("has_single_valid_choice")
+            if is_model_choice:
+                # Old generate_json-only doubles predate this field. Real typed
+                # providers must report validity, not pick a forced wrong option.
+                typed_client = callable(
+                    getattr(type(self.client), "generate_request", None)
+                )
+                if "has_single_valid_choice" in raw_result or typed_client:
+                    if type(choice_validity) is not bool:
+                        raise ValueError(
+                            f"{item_id} solver requires a Boolean choice-validity result"
+                        )
+                    if not choice_validity:
+                        raise ValueError(
+                            f"{item_id} independent solver found no single valid choice"
+                        )
+            elif "has_single_valid_choice" in raw_result:
+                raise ValueError(
+                    f"{item_id} choice-validity result requires a multiple-choice item"
+                )
             try:
                 envelope = SolverResponseEnvelope.model_validate(
                     raw_result, strict=True

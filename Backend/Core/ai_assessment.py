@@ -73,7 +73,7 @@ _question_uses_option_source = _assessment_prompts.question_uses_option_source
 _SEMANTIC_STOPWORDS = _assessment_prompts._SEMANTIC_STOPWORDS
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v7-trusted-generation-requests"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v8-single-valid-choice"
 
 
 class AssessmentLLMClient(JSONGenerationClient, Protocol):

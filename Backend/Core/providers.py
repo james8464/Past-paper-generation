@@ -755,12 +755,14 @@ def _ollama_json_schema(
         choices = solver_item.get("choices")
         if (
             solver_item.get("kind") == "multiple_choice"
+            and not solver_item.get("response_slots")
             and isinstance(choices, list)
             and choices
             and all(isinstance(choice, str) and choice.strip() for choice in choices)
         ):
             # Constrain the format to public options, never to the private key.
             # Reconciliation still rejects a wrong answer or contradictory point.
+            properties["has_single_valid_choice"] = {"type": "boolean"}
             option = {"type": "string", "enum": choices}
             properties["answer"] = option
             properties["mark_points"] = {
