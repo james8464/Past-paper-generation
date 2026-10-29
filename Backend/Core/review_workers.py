@@ -9,9 +9,14 @@ from typing import cast
 
 
 def local_generation_workers(client: object) -> int:
-    if getattr(client, "provider", None) != "ollama":
+    provider = getattr(client, "provider", None)
+    if provider not in {"ollama", "apple"}:
         return 1
-    workers = getattr(client, "parallel_review_workers", 1)
+    workers = getattr(
+        client,
+        "parallel_generation_workers",
+        getattr(client, "parallel_review_workers", 1) if provider == "ollama" else 1,
+    )
     if type(workers) is not int or workers not in (1, 2):
         raise ValueError("Local generation supports one or two workers.")
     return workers

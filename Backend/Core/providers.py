@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 from Backend.Core.events import emit_progress
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, OutputContract
+from Backend.Core.mlx_batching import BatchUnavailable, CoalescingRunner, generate_batch
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
@@ -38,10 +39,20 @@ class HostedLLMClient:
             and os.environ.get("KELDIN_PARALLEL_LOCAL_REVIEWS") == "1"
             else 1
         )
+        self.parallel_generation_workers = (
+            self.parallel_review_workers
+            if provider == "ollama"
+            else 2
+            if provider == "apple"
+            and os.environ.get("KELDIN_PARALLEL_MLX_GENERATION") == "1"
+            else 1
+        )
         self._apple_model: Any | None = None
         self._apple_tokenizer: Any | None = None
         self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
+        self._apple_batcher_lock = threading.Lock()
+        self._apple_batcher: CoalescingRunner[tuple[str, dict], str] | None = None
 
     # Whether independent prompts may safely share this client.
     @property
@@ -227,36 +238,14 @@ class HostedLLMClient:
             prompt += "\n\nReturn JSON only, following OUTPUT_SCHEMA=" + json.dumps(
                 schema, separators=(",", ":")
             )
-        try:
-            from mlx_lm import generate, load
-        except ImportError:
-            raise RuntimeError(
-                "Apple MLX support is not ready. Open Settings, choose Apple "
-                "MLX, then run the guided setup and try again."
-            ) from None
-        # MLX model loading is expensive and can consume several gigabytes. Keep one
-        # model per generation client, and serialize use because mlx-lm generation
-        # mutates shared inference state.
-        with self._apple_lock:
-            if self._apple_model is None or self._apple_tokenizer is None:
-                local_model = resolve_local_mlx_model(self.model)
-                self._apple_model, self._apple_tokenizer = load(
-                    local_model,
-                    tokenizer_config={
-                        "trust_remote_code": False,
-                        "local_files_only": True,
-                    },
-                )
-            if schema.get("required"):
-                response = self._mlx_structured_response(prompt, schema)
-            else:
-                response = generate(
-                    self._apple_model,
-                    self._apple_tokenizer,
-                    prompt=_mlx_json_prompt(self._apple_tokenizer, prompt),
-                    max_tokens=4096,
-                    verbose=False,
-                )
+        if self.parallel_generation_workers == 2:
+            # Only the owner thread loads or uses the shared MLX model/tokenizer.
+            with self._apple_batcher_lock:
+                if self._apple_batcher is None:
+                    self._apple_batcher = CoalescingRunner(self._run_apple_batch)
+            response = self._apple_batcher.call((prompt, schema))
+        else:
+            response = self._apple_response(prompt, schema)
         if schema.get("required"):
             # Never salvage a truncated constrained response or duplicate fields.
             if len(response.encode("utf-8")) > 1_048_576:
@@ -294,7 +283,106 @@ class HostedLLMClient:
                             "provider": "apple",
                         },
                     )
+        if self.parallel_generation_workers == 2 and schema.get("required"):
+            from jsonschema import Draft202012Validator, ValidationError
+
+            try:
+                Draft202012Validator(schema).validate(parsed)
+            except ValidationError as error:
+                raise ValueError(
+                    "MLX response did not match the required output schema."
+                ) from error
         return parsed
+
+    def _load_apple_model(self) -> None:
+        try:
+            from mlx_lm import load
+        except ImportError:
+            raise RuntimeError(
+                "Apple MLX support is not ready. Open Settings, choose Apple "
+                "MLX, then run the guided setup and try again."
+            ) from None
+        if self._apple_model is None or self._apple_tokenizer is None:
+            self._apple_model, self._apple_tokenizer = load(
+                resolve_local_mlx_model(self.model),
+                tokenizer_config={"trust_remote_code": False, "local_files_only": True},
+            )
+
+    def _apple_response(self, prompt: str, schema: dict) -> str:
+        with self._apple_lock:
+            self._load_apple_model()
+            if schema.get("required"):
+                return self._mlx_structured_response(prompt, schema)
+            from mlx_lm import generate
+
+            return generate(
+                self._apple_model,
+                self._apple_tokenizer,
+                prompt=_mlx_json_prompt(self._apple_tokenizer, prompt),
+                max_tokens=4096,
+                verbose=False,
+            )
+
+    def _run_apple_batch(
+        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+    ) -> list[str | BaseException]:
+        if len(requests) == 2 and all(schema.get("required") for _, schema in requests):
+            with self._apple_lock:
+                self._load_apple_model()
+                try:
+                    return self._mlx_batch_structured_responses(requests, cancelled)
+                except BatchUnavailable:
+                    emit_progress(
+                        "Apple MLX is using serial decoding for this model or prompt pair.",
+                        stage="provider_serial_fallback",
+                    )
+        results: list[str | BaseException] = []
+        for prompt, schema in requests:
+            if cancelled.is_set():
+                from concurrent.futures import CancelledError
+
+                results.append(CancelledError("MLX generation was cancelled."))
+                continue
+            try:
+                results.append(self._apple_response(prompt, schema))
+            except Exception as error:
+                results.append(error)
+        return results
+
+    def _mlx_batch_structured_responses(
+        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+    ) -> list[str | BaseException]:
+        try:
+            import llguidance
+            import outlines
+            from outlines.backends.llguidance import LLGuidanceBackend
+        except ImportError:
+            raise RuntimeError(
+                "Apple MLX structured output is not ready. Open Settings and run "
+                "the guided setup, or update the app, then try again."
+            ) from None
+        if self._apple_structured_model is None:
+            self._apple_structured_model = outlines.from_mlxlm(
+                self._apple_model, self._apple_tokenizer
+            )
+            self._apple_structured_model.type_adapter.has_chat_template = False
+        backend = LLGuidanceBackend(self._apple_structured_model)
+        processors = []
+        prompts = []
+        for prompt, schema in requests:
+            decoder_schema = json.dumps(_mlx_decoder_schema(schema))
+            grammar_error = llguidance.LLMatcher.validate_grammar(
+                llguidance.grammar_from("json_schema", decoder_schema)
+            )
+            if grammar_error:
+                # Retry individually so one invalid grammar cannot poison its
+                # neighbour. The serial path applies the same strict decoder.
+                raise BatchUnavailable("A request grammar needs individual validation.")
+            processors.append(backend.get_json_schema_logits_processor(decoder_schema))
+            prompts.append(_mlx_json_prompt(self._apple_tokenizer, prompt))
+        return generate_batch(
+            self._apple_model, self._apple_tokenizer, prompts, processors, cancelled
+        )
 
     # Constrain syntax, public option values and batch IDs; validate correctness separately.
     def _mlx_structured_response(self, prompt: str, schema: dict) -> str:
