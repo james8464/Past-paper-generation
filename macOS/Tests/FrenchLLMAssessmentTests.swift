@@ -37,6 +37,20 @@ final class FrenchLLMAssessmentTests: XCTestCase {
             try FrenchLLMAssessmentRequest.validatePublication(at: file, configuration: configuration)
         }
         XCTAssertNoThrow(try validate(publication))
+        let artifacts = [GeneratedFile(role: "package_manifest", url: file)] + ["assessment_package", "question_paper", "mark_scheme"].map {
+            GeneratedFile(role: $0, url: FileManager.default.temporaryDirectory.appendingPathComponent("FrenchLLM-\(UUID().uuidString)-\($0)"))
+        }
+        defer { for artifact in artifacts.dropFirst() { try? FileManager.default.removeItem(at: artifact.url) } }
+        for artifact in artifacts.dropFirst() { try Data("fixture".utf8).write(to: artifact.url) }
+        XCTAssertNoThrow(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+        for missing in artifacts.indices {
+            XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(
+                artifacts: artifacts.enumerated().filter { $0.offset != missing }.map(\.element), configuration: configuration))
+        }
+        var duplicateRoles = artifacts
+        duplicateRoles[3] = GeneratedFile(role: "question_paper", url: artifacts[3].url)
+        XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: duplicateRoles, configuration: configuration))
+        XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts + [artifacts[0]], configuration: configuration))
         for (key, value) in [("provider", "ollama" as Any), ("model", "other"), ("seed", 43), ("seed", true),
                              ("prompt_version", "fr-nsi-written-2027-v35"), ("print_policy", "old")] {
             var changed = publication
@@ -47,6 +61,23 @@ final class FrenchLLMAssessmentTests: XCTestCase {
         }
         publication["model_used"] = false
         XCTAssertThrowsError(try validate(publication))
+    }
+
+    @MainActor
+    func testDuplicateFrenchFileEventCannotBeHiddenByDocumentDeduplication() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        let app = isolatedApplication(defaults: defaults, backend: backend)
+        app.aiProvider = .ollama
+        app.generateFrenchFixture(largePrint: false)
+        let generation = try XCTUnwrap(backend.requests.last)
+        generation.onEvent(.file(role: "question_paper", path: "/private/duplicate/sujet.pdf"))
+        generation.onEvent(.file(role: "question_paper", path: "/private/duplicate/sujet.pdf"))
+        generation.onFinish(.success(0))
+        XCTAssertTrue(app.showError)
+        XCTAssertEqual(app.recentDocumentStore.records.first?.state, .failed)
+        XCTAssertFalse(app.recentDocumentStore.records.contains { $0.state == .completed })
     }
 
     @MainActor

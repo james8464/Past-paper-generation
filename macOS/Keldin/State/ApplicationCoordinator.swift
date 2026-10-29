@@ -1420,6 +1420,17 @@ final class ApplicationCoordinator: ObservableObject {
         case let .file(role, path):
             // Setup and model-management output cannot become paper artifacts.
             if let intent = activeRun?.intent, intent == .mlxSetup || intent == .mlxDownloadInfo || intent == .modelPull { return }
+            if generationCoordinator.activeJob?.configuration.authoringVersion == "v36", var run = activeRun {
+                let inserted = run.receivedArtifactRoles.insert(role).inserted
+                if !inserted {
+                    let message = "The generation service returned duplicate document records. No paper was saved."
+                    run.backendErrorMessage = message
+                    activeRun = run
+                    setError(InterfaceText.resolve("The generation service returned duplicate document records. No paper was saved.", language: presentationLanguage))
+                    return
+                }
+                activeRun = run
+            }
             var hidden = hiddenRecentPaths
             hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
             defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
@@ -1599,10 +1610,7 @@ final class ApplicationCoordinator: ObservableObject {
                 do {
                     if let configuration = generationCoordinator.activeJob?.configuration,
                        configuration.authoringVersion == "v36" {
-                        guard let manifest = currentGenerationFiles.first(where: { $0.role == "package_manifest" }) else {
-                            throw CocoaError(.fileReadNoSuchFile)
-                        }
-                        try FrenchLLMAssessmentRequest.validatePublication(at: manifest.url, configuration: configuration)
+                        try FrenchLLMAssessmentRequest.validatePublication(artifacts: currentGenerationFiles, configuration: configuration)
                     }
                     try moveGeneratedFilesToOutputFolderIfNeeded(documents: run.documents)
                 } catch {
@@ -1995,6 +2003,7 @@ private struct BackendRun {
     var phase = BackendRunPhase.running
     var backendErrorMessage: String?
     var mlxDownloadInfo: MLXDownloadInfo?
+    var receivedArtifactRoles = Set<String>()
 }
 
 private struct GenerationRetryTarget: Equatable {

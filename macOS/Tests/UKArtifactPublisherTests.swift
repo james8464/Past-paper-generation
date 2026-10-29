@@ -133,6 +133,11 @@ final class UKArtifactPublisherTests: XCTestCase {
                 try Data((role + " fixture").utf8).write(to: pdf)
                 run.onEvent(.file(role: role, path: pdf.path))
             }
+            if french {
+                let assessment = source.appendingPathComponent("assessment.json")
+                try Data("{}".utf8).write(to: assessment)
+                run.onEvent(.file(role: "assessment_package", path: assessment.path))
+            }
             run.onEvent(.file(role: "package_manifest", path: manifest.path))
             run.onFinish(.success(0))
 
@@ -144,7 +149,7 @@ final class UKArtifactPublisherTests: XCTestCase {
             let folders = try manager.contentsOfDirectory(at: output, includingPropertiesForKeys: nil)
             XCTAssertEqual(folders.count, 1)
             XCTAssertEqual(Set(try manager.contentsOfDirectory(atPath: folders[0].path)), ["question_paper.pdf", "mark_scheme.pdf"])
-            for file in application.currentGenerationFiles where file.role != "package_manifest" {
+            for file in application.currentGenerationFiles where ["question_paper", "mark_scheme"].contains(file.role) {
                 XCTAssertEqual(file.url.deletingLastPathComponent().resolvingSymlinksInPath(), folders[0].resolvingSymlinksInPath())
                 XCTAssertEqual(try Data(contentsOf: file.url), try Data(contentsOf: source.appendingPathComponent(file.url.lastPathComponent)))
             }

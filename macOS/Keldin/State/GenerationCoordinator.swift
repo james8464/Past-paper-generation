@@ -61,10 +61,7 @@ final class GenerationCoordinator {
         if let artifacts { generatedFiles = artifacts }
         if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
            job.configuration.authoringVersion == "v36" {
-            guard let manifest = generatedFiles.first(where: { $0.role == "package_manifest" }) else {
-                throw CocoaError(.fileReadNoSuchFile)
-            }
-            try FrenchLLMAssessmentRequest.validatePublication(at: manifest.url, configuration: job.configuration)
+            try FrenchLLMAssessmentRequest.validatePublication(artifacts: generatedFiles, configuration: job.configuration)
         }
         if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
            job.configuration.model == FrenchAssessmentRequest.modelID {

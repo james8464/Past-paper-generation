@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "The generation service returned duplicate document records. No paper was saved.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le service de génération a renvoyé des documents en double. Aucun sujet n’a été enregistré."}}}},
     "Model review is not proof. Executable contract checks do not certify the printed answers.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’avis d’un modèle n’est pas une preuve. Les contrôles de contrats exécutables ne certifient pas les réponses imprimées."}}}},
     "Model-reviewed questions: %lld of %lld": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Questions examinées par un modèle : %1$lld sur %2$lld"}}}},
     "Executable contracts checked: %lld of %lld": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Contrats exécutables vérifiés : %1$lld sur %2$lld"}}}},

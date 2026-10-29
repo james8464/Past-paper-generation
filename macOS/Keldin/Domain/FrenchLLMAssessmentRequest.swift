@@ -40,6 +40,24 @@ struct FrenchLLMAssessmentRequest {
         }
     }
 
+    static func validatePublication(artifacts: [GeneratedFile], configuration: GenerationConfiguration) throws {
+        let required: Set<String> = ["assessment_package", "package_manifest", "question_paper", "mark_scheme"]
+        guard artifacts.count == required.count,
+              Set(artifacts.map(\.role)) == required,
+              Set(artifacts.map { $0.url.standardizedFileURL }).count == required.count,
+              let manifest = artifacts.first(where: { $0.role == "package_manifest" }) else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        for artifact in artifacts {
+            let attributes = try FileManager.default.attributesOfItem(atPath: artifact.url.path)
+            guard attributes[.type] as? FileAttributeType == .typeRegular,
+                  let size = attributes[.size] as? NSNumber, size.int64Value > 0 else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+        }
+        try validatePublication(at: manifest.url, configuration: configuration)
+    }
+
     private struct Publication: Decodable {
         let schemaVersion: Int
         let assessment: String
