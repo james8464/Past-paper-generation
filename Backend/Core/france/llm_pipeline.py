@@ -344,6 +344,25 @@ def _verification_evidence(
                     "reason": "Les étiquettes déclarées ne couvrent pas le profil cognitif indicatif du logiciel. Elles ne mesurent pas la difficulté réelle des questions.",
                 }
             )
+        objective_domains = {
+            CURRICULUM_OBJECTIVES[code][0]
+            for question in exercise.questions
+            for code in question.curriculum_codes
+        }
+        omitted_domains = sorted(objective_domains - set(exercise.topics))
+        unevaluated_domains = sorted(set(exercise.topics) - objective_domains)
+        if omitted_domains or unevaluated_domains:
+            warnings.append(
+                {
+                    "exercise_id": exercise.id,
+                    "question_id": exercise.questions[0].id,
+                    "state": "profile_warning",
+                    "code": "declared_domain_profile",
+                    "objective_domains_not_declared": omitted_domains,
+                    "declared_domains_not_evaluated": unevaluated_domains,
+                    "reason": "Les domaines déclarés et les capacités indiquées ne coïncident pas. Ce signal de métadonnées ne prouve pas un écart au programme.",
+                }
+            )
         if not set(exercise.topics) - covered_topics:
             warnings.append(
                 {

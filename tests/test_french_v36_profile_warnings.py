@@ -114,15 +114,73 @@ def test_profile_warnings_cannot_be_removed_from_rehashed_package(tmp_path):
         subject.validate_package(package)
 
 
-def test_low_labels_do_not_override_negative_answer_review(tmp_path):
+@pytest.mark.parametrize("review_field", ["answer_complete", "curriculum_aligned"])
+def test_low_labels_do_not_override_negative_answer_review(tmp_path, review_field):
     class Negative(Client):
         def generate_request(self, request):
             result = super().generate_request(request)
             if "1" in result:
-                result["1"]["answer_complete"] = False
+                result["1"][review_field] = False
             return result
 
     client = Negative(mutate=low_labels)
     with pytest.raises(ValueError, match="refuse"):
         generate(tmp_path, client)
     assert len(client.requests) == 3
+
+
+@pytest.mark.parametrize(
+    "mode", ["objective_domain_omitted", "declared_domain_uncovered"]
+)
+def test_domain_label_mismatch_warns_only_in_v36_and_preserves_model_fields(
+    tmp_path, mode
+):
+    def mismatch(raw):
+        if mode == "objective_domain_omitted":
+            raw["questions"][0]["curriculum_codes"] = ["ALG-GRAPHES"]
+        else:
+            raw["topics"].append("algorithmique")
+
+    raw = raw_exercise()
+    mismatch(raw)
+    with pytest.raises(ValueError, match=r"Capacité incompatible|thème annoncé"):
+        NSIExercise.model_validate(raw)
+    assert (
+        subject.validate_authored_exercise(raw, "1").model_dump(mode="json")["topics"]
+        == raw["topics"]
+    )
+    package = generate(tmp_path, Client(mutate=mismatch))
+    warnings = [
+        item
+        for item in package["warnings"]
+        if item.get("code") == "declared_domain_profile"
+    ]
+    assert len(warnings) == 3
+    assert all(
+        item["state"] == "profile_warning" and item["question_id"] == "1"
+        for item in warnings
+    )
+    assert package["exercises"][0]["topics"] == raw["topics"]
+    assert (
+        package["exercises"][0]["questions"][0]["curriculum_codes"]
+        == raw["questions"][0]["curriculum_codes"]
+    )
+    assert len(subject.validate_package(package)) == 3
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda raw: raw.update(topics=["comptabilité"]),
+        lambda raw: raw["questions"][0].update(curriculum_codes=["UK-AO1"]),
+        lambda raw: raw["questions"][0].update(material_ids=["document_absent"]),
+    ],
+)
+def test_domain_warning_context_still_refuses_unknown_taxonomy_and_missing_documents(
+    change,
+):
+    raw = raw_exercise()
+    raw["questions"][0]["curriculum_codes"] = ["ALG-GRAPHES"]
+    change(raw)
+    with pytest.raises((ValueError, SchemaValidationError)):
+        subject.validate_authored_exercise(raw, "1")

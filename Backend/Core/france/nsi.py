@@ -295,6 +295,10 @@ class NSIExercise(BaseModel):
 
     @model_validator(mode="after")
     def validate_structure(self, info: ValidationInfo):
+        v36_profile = (
+            isinstance(info.context, dict)
+            and info.context.get("authoring_profile") == "v36-model-authored"
+        )
         if set(self.topics) - TOPICS or len(set(self.topics)) != len(self.topics):
             raise ValueError("Thème absent du programme NSI")
         identifiers = [question.id for question in self.questions]
@@ -304,7 +308,7 @@ class NSIExercise(BaseModel):
         if len(material_by_id) != len(self.materials):
             raise ValueError("Les identifiants de figures doivent être uniques")
         for question in self.questions:
-            if any(
+            if not v36_profile and any(
                 CURRICULUM_OBJECTIVES[code][0] not in self.topics
                 for code in question.curriculum_codes
             ):
@@ -336,17 +340,13 @@ class NSIExercise(BaseModel):
             for question in self.questions
             for code in question.curriculum_codes
         }
-        if set(self.topics) - covered_topics:
+        if not v36_profile and set(self.topics) - covered_topics:
             raise ValueError("Un thème annoncé du programme n'est pas évalué")
         if (
             sum(question.estimated_minutes for question in self.questions)
             != self.minutes
         ):
             raise ValueError("Le temps des questions ne correspond pas à l'exercice")
-        v36_profile = (
-            isinstance(info.context, dict)
-            and info.context.get("authoring_profile") == "v36-model-authored"
-        )
         if cognitive_profile_findings(self.questions) and not v36_profile:
             raise ValueError("Progression et demande cognitive insuffisantes")
         return self
