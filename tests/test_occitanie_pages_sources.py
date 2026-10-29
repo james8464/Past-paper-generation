@@ -1,56 +1,56 @@
+from xml.etree import ElementTree
+
 import pytest
 
 from tools import build_occitanie_pages_sources as sources
 
 
-def test_three_editable_rtf_sources_have_explicit_page_plans(tmp_path):
+def test_english_rtf_has_explicit_pages_and_no_tables(tmp_path):
     paths = sources.build(tmp_path)
     assert len(paths) == 3
-    assert all(path.suffix == ".rtf" for path in paths)
     assert [
         sources.render(report).count(r"\page" + "\n") + 1 for report in sources.REPORTS
     ] == [3, 4, 3]
     for path in paths:
         content = path.read_text("ascii")
         assert content.startswith(r"{\rtf1")
-        assert r"\fs21" in content and r"\fs40" in content
-        assert r"\trftsWidth3\trwWidth9600" in content
-        assert r"\clftsWidth3\clwWidth2700" in content
-        assert r"\clftsWidth3\clwWidth6900" in content
-        assert (
-            r"\clbrdrt\brdrnil\clbrdrl\brdrnil\clbrdrb\brdrnil\clbrdrr\brdrnil"
-            in content
-        )
+        assert r"\fs20" in content and r"\fs40" in content
+        assert r"\trowd" not in content and r"\cell" not in content
+        assert r"\intbl" not in content and r"\pict" not in content
+        assert "SF Pro Text" in content and r"\lang2057" in content
         assert r"\fldinst PAGE" in content
-        assert "SF Pro Text" in content
-        assert r"\pict" not in content and "docx" not in content
+    for report in (sources.TECHNICAL, sources.RELIABILITY):
+        content = sources.render(report)
+        assert r"\li3800" in content and r"\li3500" in content
+        assert r"\sb3400" in content and r"\fs56" in content
+        assert all(
+            len(" ".join(text for _, text in page.sections).split()) <= 250
+            for page in report.pages
+        )
 
 
-def test_form_preserves_required_headings_and_only_personal_unknowns():
-    labels = [label for page in sources.APPLICATION.pages for label, _ in page.rows]
+def test_form_has_translated_official_headings_and_language_notice():
+    labels = [label for page in sources.APPLICATION.pages for label, _ in page.sections]
     assert labels == [
-        "Identité",
-        "Présentez-vous brièvement",
-        "Titre du projet",
-        "Description synthétique de votre projet",
-        "Quelle est l'originalité de votre projet ?",
-        "A qui pourra bénéficier le projet que vous proposez ?",
-        "A quel stade de développement en est votre projet ?",
-        "Avez-vous déjà eu l’opportunité de présenter ce projet ? et ce projet a-t-il déjà fait l’objet d’une demande d’aide ?",
-        "Eléments complémentaires que vous souhaitez apporter pour préciser votre projet",
+        "Identity",
+        "Briefly introduce yourself",
+        "Project title",
+        "Summary of your project",
+        "What is original about your project?",
+        "Who could benefit from your project?",
+        "What stage of development has your project reached?",
+        "Have you already presented this project, and has it been the subject of a request for support?",
+        "Additional information to explain your project",
     ]
-    assert sources.APPLICATION.cover is None
+    assert sources.APPLICATION.subtitle is None
+    assert "English working draft" in sources.render(sources.APPLICATION)
     for report in sources.REPORTS:
         text = " ".join(
-            value for page in report.pages for pair in page.rows for value in pair
+            value for page in report.pages for pair in page.sections for value in pair
         )
         assert "V35" in text
         assert "—" not in text and "–" not in text
-        assert (
-            "teacher approval" not in text
-            or "No examiner approval" in text
-            or "Teacher review" in text
-        )
+        assert "à compléter" not in text and "Présentation" not in text
 
 
 def test_rtf_unicode_and_control_characters_are_escaped():
@@ -65,3 +65,14 @@ def test_existing_personal_documents_are_not_overwritten(tmp_path):
         sources.build(tmp_path)
     assert path.read_text() == "personal edits"
     assert len(list(tmp_path.iterdir())) == 1
+
+
+def test_original_diagrams_are_valid_bounded_svg(tmp_path):
+    sources.build(tmp_path)
+    assert len(list(tmp_path.glob("*.svg"))) == 4
+    for path in tmp_path.glob("*.svg"):
+        svg = ElementTree.parse(path).getroot()
+        assert svg.attrib["viewBox"] == "0 0 150 360"
+        content = path.read_text()
+        assert "#FF9500" in content
+        assert "<image" not in content and "href=" not in content
