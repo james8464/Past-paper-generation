@@ -62,6 +62,18 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertFalse(backend.requests.contains { $0.arguments.first == "setup-mlx" })
         application.cancelGeneration()
     }
+
+    @MainActor
+    func testMLXMetadataLaunchFailurePreservesInfrastructureErrorAndDiagnostics() {
+        let backend = ControlledRunBackend()
+        backend.launchError = BackendClientError.backendMissing
+        let application = application(backend: backend)
+        application.requestMLXDownloadInfo()
+        XCTAssertEqual(application.errorMessage, BackendClientError.backendMissing.localizedDescription)
+        XCTAssertTrue(application.progressEntries.contains { $0.message == BackendClientError.backendMissing.localizedDescription })
+        XCTAssertFalse(application.showMLXSetupConfirmation)
+        XCTAssertFalse(application.isRunning)
+    }
     @MainActor
     func testMLXParallelSettingIsIndependentSavedAndCapturedBeforeAnActiveJob() throws {
         for enabled in [false, true] {

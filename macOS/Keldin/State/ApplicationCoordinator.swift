@@ -1409,6 +1409,13 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func finishMLXDownloadInfo(_ result: Result<Int32, Error>, run: BackendRun) {
         guard run.model == appleModel.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        if case let .failure(error) = result {
+            pendingMLXDownloadInfo = nil
+            showMLXSetupConfirmation = false
+            progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: error.localizedDescription))
+            setError(error.localizedDescription)
+            return
+        }
         guard case .success(0) = result, run.backendErrorMessage == nil, let info = run.mlxDownloadInfo else {
             pendingMLXDownloadInfo = nil
             showMLXSetupConfirmation = false
