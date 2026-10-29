@@ -4,6 +4,59 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testExplicitGenerationQualityRefusalsShowRecoveryCopyWithoutLosingDetails() throws {
+        let english = "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools."
+        let french = "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."
+        for firstLine in [
+            "question 01 failed independent solution reconciliation: answer mismatch",
+            "0/0/0 failed reference-demand review: context check failed",
+            "question-2b failed second-pass assessment review: marking issue",
+            "verified contract 15.1 failed assessment review: not approved",
+            "question-1a independent answer disagrees with the keyed option",
+            "AI could not produce a valid, second-pass reviewed item for question 01: rejected",
+        ] {
+            let raw = firstLine + "\nA private diagnostic report was saved to /private/test/model-diagnostic.json"
+            XCTAssertEqual(GenerationPresentation.error(raw, code: "generation_failed", language: "en"), english)
+            XCTAssertEqual(GenerationPresentation.error(raw, code: "generation_failed", language: "fr"), french)
+            let defaults = isolatedDefaults()
+            defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+            defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+            defaults.set("en", forKey: "interfaceLanguage")
+            let backend = ControlledRunBackend()
+            let model = isolatedApplication(defaults: defaults, backend: backend)
+            model.setDryRun(true)
+            model.generate()
+            let request = try XCTUnwrap(backend.requests.first)
+            request.onEvent(.error(message: raw, code: "generation_failed"))
+            XCTAssertEqual(model.errorMessage, english)
+            XCTAssertEqual(model.progressEntries.last?.message, raw)
+            XCTAssertTrue(model.diagnosticSummary.contains(raw))
+            request.onFinish(.success(1))
+            XCTAssertEqual(model.generationCoordinator.status, raw)
+            XCTAssertEqual(model.recentDocumentStore.records.first?.state, .failed)
+        }
+    }
+
+    @MainActor
+    func testQualityPresentationDoesNotHideOtherFailureTypes() {
+        let quality = "question 01 failed independent solution reconciliation: mismatch"
+        for code in ["output_error", "mlx_setup_required", "provider_error", "network_error", "cancelled"] {
+            XCTAssertEqual(GenerationPresentation.error(quality, code: code, language: "fr"), quality)
+        }
+        XCTAssertEqual(GenerationPresentation.error(quality, language: "fr"), quality)
+        for message in [
+            "Could not write to /private/test/output: Permission denied",
+            "Connection refused by the local provider",
+            "Apple MLX support is not ready. Run the guided setup.",
+            "Creation cancelled",
+            "Ollama returned incomplete structured output.",
+            "Unknown failure\nquestion 01 failed independent solution reconciliation: mismatch",
+        ] {
+            XCTAssertEqual(GenerationPresentation.error(message, code: "generation_failed", language: "fr"), message)
+        }
+    }
+
+    @MainActor
     func testMLXBatchProgressUsesPlainLocalizedCopyAndKeepsDiagnostics() {
         for (stage, message, english, french) in [
             ("provider_batch", "Apple MLX is decoding two tasks together.",
@@ -62,7 +115,7 @@ final class CoordinatorTests: XCTestCase {
         let model = isolatedApplication()
         let diagnostic = "AI could not produce a valid, second-pass reviewed item for question 05: context check failed"
         model.apply(.error(message: diagnostic, code: "generation_failed"))
-        XCTAssertEqual(model.errorMessage, String(localized: "This model couldn't create a paper that passed the quality checks. No new paper was published. Try another model. You can copy diagnostics from Tools."))
+        XCTAssertEqual(model.errorMessage, String(localized: "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools."))
         XCTAssertEqual(model.progressEntries.last?.message, diagnostic)
         XCTAssertTrue(model.diagnosticSummary.contains(diagnostic))
 
@@ -93,7 +146,7 @@ final class CoordinatorTests: XCTestCase {
         model.apply(.done(message: "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées."))
         XCTAssertEqual(model.status, "Sujet d’entraînement créé. Barème indicatif, difficulté et durée non calibrées.")
         model.apply(.error(message: "AI could not produce a valid, second-pass reviewed item for question 01: rejected", code: "generation_failed"))
-        XCTAssertTrue(model.errorMessage.hasPrefix("Ce modèle n'a pas pu créer une épreuve"))
+        XCTAssertTrue(model.errorMessage.hasPrefix("Le résultat du modèle ne passe pas les contrôles"))
         XCTAssertEqual(model.status, "Erreur")
     }
 

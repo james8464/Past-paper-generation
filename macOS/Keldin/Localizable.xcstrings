@@ -1,6 +1,9 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."}}}
+    },
     "Apple MLX is working on two tasks.": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Apple MLX traite deux tâches en parallèle."}}}
     },

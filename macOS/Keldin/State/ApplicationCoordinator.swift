@@ -1267,8 +1267,8 @@ final class ApplicationCoordinator: ObservableObject {
                 status = "Apple MLX setup required"
                 return
             }
-            setError(message, presentation: activeRun?.errorPresentation ?? errorPresentation)
-            notifyFailure(for: activeOperation, message: message)
+            setError(message, code: code, presentation: activeRun?.errorPresentation ?? errorPresentation)
+            notifyFailure(for: activeOperation, message: GenerationPresentation.error(message, code: code, language: presentationLanguage))
         case let .models(models, message):
             availableModels = models
             modelCoordinator.receiveModels(models)
@@ -1538,8 +1538,8 @@ final class ApplicationCoordinator: ObservableObject {
         defaults.set(data, forKey: AppStorageKey.recentDocuments)
     }
 
-    private func setError(_ message: String, presentation: SettingsActionPresentation? = nil) {
-        let displayMessage = GenerationPresentation.error(message, language: presentationLanguage)
+    private func setError(_ message: String, code: String? = nil, presentation: SettingsActionPresentation? = nil) {
+        let displayMessage = GenerationPresentation.error(message, code: code, language: presentationLanguage)
         if let presentation { presentation.reportError(displayMessage) }
         else {
             errorMessage = displayMessage
