@@ -69,7 +69,8 @@ def test_new_command_keeps_legacy_generate_arguments():
             "5",
         ]
     )
-    assert args.provider == "application-owned"
+    assert args.provider == "ollama"
+    assert args.authoring_version == "v36"
     assert args.assessment == "fr-bac-general-nsi-written-2027"
     old = parser.parse_args(
         ["generate", "--subject", "computer_science", "--paper", "1"]

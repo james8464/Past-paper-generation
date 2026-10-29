@@ -172,13 +172,12 @@ def test_generation_recovery_and_preview_limits_have_french_copy():
 
 def test_workspace_model_warning_keeps_the_guides_quality_limit():
     source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
-    guide = json.loads(
-        (ROOT / "Resources/ollama-model-recommendations.json").read_text()
-    )
-    warning = guide["other_model_warning"]
-    assert f'"{warning}"' in source
+    guidance = (APP / "Domain/PaperQualityGuidance.swift").read_text()
+    warning = "Paper quality is unverified for this provider and model. Smaller models may fail multi-step questions; model size alone does not establish accuracy."
+    assert "ModelQualityAdviceView" in source
+    assert f'"{warning}"' in guidance
     assert "for the checked workflow" not in source
-    assert "pas encore passé un contrôle de qualité complet" in translated(warning)
+    assert "taille" in translated(warning)
 
 
 def test_quality_notice_does_not_claim_reference_rights_are_cleared():
