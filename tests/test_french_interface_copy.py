@@ -179,3 +179,11 @@ def test_workspace_model_warning_keeps_the_guides_quality_limit():
     assert f'"{warning}"' in source
     assert "for the checked workflow" not in source
     assert "pas encore passé un contrôle de qualité complet" in translated(warning)
+
+
+def test_quality_notice_does_not_claim_reference_rights_are_cleared():
+    source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    notice = "Unofficial practice material. Review the questions and reference permissions before sharing."
+    assert notice in source
+    assert "not copyrighted paper content" not in source
+    assert "autorisations des sources" in translated(notice)

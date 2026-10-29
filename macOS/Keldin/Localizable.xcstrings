@@ -5403,7 +5403,16 @@
         }
       }
     },
-    "Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content.": {},
+    "Unofficial practice material. Review the questions and reference permissions before sharing.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Document d’entraînement non officiel. Relisez les questions et vérifiez les autorisations des sources avant de le partager."
+          }
+        }
+      }
+    },
     "Unreviewed and non-official": {
       "localizations": {
         "fr": {

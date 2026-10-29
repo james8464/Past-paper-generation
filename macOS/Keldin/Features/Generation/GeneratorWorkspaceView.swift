@@ -436,7 +436,7 @@ private struct QualityReviewView: View {
             }
 
             Section {
-                Text("Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content.")
+                Text("Unofficial practice material. Review the questions and reference permissions before sharing.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
