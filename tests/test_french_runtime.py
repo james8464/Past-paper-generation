@@ -3,6 +3,16 @@ from argparse import Namespace
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def historical_tests_never_start_live_model_generation(monkeypatch):
+    def refuse(_args):
+        pytest.fail("Historical replay tests must select their provider explicitly")
+
+    monkeypatch.setattr(
+        "Backend.Core.france.llm_runtime.handle_generate_llm_assessment", refuse
+    )
+
+
 def _pin_v17_generation(monkeypatch, runtime):
     generate = runtime.generate_assessment
     monkeypatch.setattr(

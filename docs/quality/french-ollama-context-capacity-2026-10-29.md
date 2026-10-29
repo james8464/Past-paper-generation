@@ -1,5 +1,12 @@
 # French Ollama context capacity policy, 29 October 2026
 
+French requests use `think: null`, which preserves the selected model's own
+[reasoning default](https://docs.ollama.com/capabilities/thinking). Non-reasoning
+models continue without a reasoning trace. Historical operations retain their
+existing `think: false` behaviour. Reasoning tokens share the response ceiling;
+an exhausted allowance or timeout is incomplete evidence, not a wrong answer.
+No model-specific sampling or answer patches are introduced.
+
 Requests with trusted operation `french_nsi_authoring` now ask Ollama not to truncate input or shift away earlier context. The local server reports version 0.40.5; its [tagged ChatRequest definition](https://raw.githubusercontent.com/ollama/ollama/v0.40.5/api/types.go) exposes both controls. This is not a blanket compatibility claim for every older or third-party server.
 
 The context remains 16,384. After a response, the provider requires a positive integer input count and nonnegative integer output count. It refuses a candidate if input plus its requested output allowance exceeds the context, if actual input plus output exceeds it, or if output exceeds the requested limit. Missing, boolean or invalid counts also refuse acceptance. [Ollama documents](https://docs.ollama.com/api/usage) input/output usage counts separately from cached input counts. The provider logs actual counts in a normal progress event, with no candidate answers in that event.

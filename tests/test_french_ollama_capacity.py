@@ -42,6 +42,7 @@ def test_french_uses_no_truncation_no_shift_one_http_attempt_and_scoped_timeout(
     client = HostedLLMClient(provider="ollama", model="fixture", api_key="")
     assert client.generate_request(request()) == {"answer": "ready"}
     payload, options = calls[0]
+    assert payload["think"] is None  # Use the selected model's reasoning default.
     assert payload["truncate"] is False and payload["shift"] is False
     assert payload["options"]["num_ctx"] == 16384
     assert payload["options"]["num_predict"] == 8192
@@ -95,6 +96,7 @@ def test_legacy_ollama_keeps_transport_and_does_not_require_counts(monkeypatch):
         provider="ollama", model="fixture", api_key=""
     ).generate_json("prompt") == {"answer": "ready"}
     assert "truncate" not in calls[0][0] and "shift" not in calls[0][0]
+    assert calls[0][0]["think"] is False
     assert calls[0][1] == {"attempts": 2}
 
 

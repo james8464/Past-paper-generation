@@ -203,7 +203,7 @@ class HostedLLMClient:
                 "model": self.model,
                 "messages": [{"role": "user", "content": prompt}],
                 "stream": False,
-                "think": False,
+                "think": None if french_nsi else False,
                 "format": schema,
                 **({"truncate": False, "shift": False} if french_nsi else {}),
                 "options": {
