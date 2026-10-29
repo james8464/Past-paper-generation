@@ -97,7 +97,7 @@ final class SecretStoreTests: XCTestCase {
         XCTAssertEqual(try SecretStore.read(account, keychain: keychain), "")
     }
 
-    func testPartialDeleteFailureLeavesAnEmptyCurrentMarkerSoLegacyCannotReturn() throws {
+    func testPartialDeleteFailureLeavesAnEmptyCurrentMarkerUntilReadFinishesCleanup() throws {
         for service in ["Keldin", KeldinMigration.legacyKeychainService] {
             let keychain = populatedKeychain()
             keychain.enqueue(.delete, service: service, status: errSecAuthFailed)
@@ -107,12 +107,41 @@ final class SecretStoreTests: XCTestCase {
             XCTAssertEqual(keychain.value(account, service: "Keldin"), "")
             keychain.calls.removeAll()
             XCTAssertEqual(try SecretStore.read(account, keychain: keychain), "")
-            XCTAssertEqual(keychain.calls.map(\.service), ["Keldin"])
-            // Retrying the explicit clear can finish cleanup without reviving data.
-            try SecretStore.save("", account: account, keychain: keychain)
+            XCTAssertFalse(keychain.calls.contains { $0.action == .read && $0.service == KeldinMigration.legacyKeychainService })
+            XCTAssertEqual(keychain.calls.filter { $0.action == .delete }.count, 2)
             XCTAssertNil(keychain.value(account, service: "Keldin"))
             XCTAssertNil(keychain.value(account, service: KeldinMigration.legacyKeychainService))
         }
+    }
+
+    @MainActor
+    func testFreshSettingsStoreRetainsAndRetriesAnIncompleteCredentialClear() {
+        let account = SecretAccount.openAIAPIKey
+        let keychain = FakeKeychainAccess()
+        keychain.put("current-fixture", account: account, service: "Keldin")
+        keychain.put("legacy-fixture", account: account, service: KeldinMigration.legacyKeychainService)
+        let defaults = isolatedDefaults()
+        let secrets = KeychainSecretStore(keychain: keychain)
+        let first = SettingsStore(defaults: defaults, secrets: secrets)
+        keychain.enqueue(.delete, service: KeldinMigration.legacyKeychainService, status: errSecAuthFailed)
+        first.openAIAPIKey = ""
+        XCTAssertFalse(first.save())
+        XCTAssertEqual(keychain.value(account, service: "Keldin"), "")
+
+        // Simulate another launch while cleanup is still denied. The empty
+        // marker suppresses the legacy value, but must not erase its failure.
+        keychain.enqueue(.delete, service: KeldinMigration.legacyKeychainService, status: errSecAuthFailed)
+        let reopened = SettingsStore(defaults: defaults, secrets: secrets)
+        XCTAssertEqual(reopened.openAIAPIKey, "")
+        XCTAssertNotNil(reopened.credentialFailure(for: account))
+        XCTAssertFalse(reopened.save(includeCredentials: false))
+
+        // Retrying the unchanged empty field once access returns finishes the
+        // same explicit clear, without writing the old credential back.
+        XCTAssertTrue(reopened.save())
+        XCTAssertNil(reopened.credentialFailure(for: account))
+        XCTAssertNil(keychain.value(account, service: "Keldin"))
+        XCTAssertNil(keychain.value(account, service: KeldinMigration.legacyKeychainService))
     }
 
     func testClearWriteFailureLeavesBothOriginalsAndDoesNotAttemptDeletion() throws {

@@ -597,6 +597,71 @@ final class KeldinTests: XCTestCase {
         XCTAssertGreaterThan(large.totalSeconds, small.totalSeconds)
     }
 
+    // Run this regression alone in a controlled test process before the bounds
+    // fix: the former Int conversion terminates the process for these inputs.
+    func testGenerationEstimateIgnoresUnrepresentableModelSizeHints() throws {
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first(where: { $0.usesAI }))
+        let paper = try XCTUnwrap(board.papers.first)
+        for model in ["fixture/999999999999999999999999999999b", "fixture/" + String(repeating: "9", count: 400) + "b"] {
+            let estimate = GenerationEstimator.initialEstimate(
+                board: board, paper: paper, provider: .apple, model: model,
+                dryRun: false, benchmark: nil
+            )
+            XCTAssertTrue(estimate.totalSeconds.isFinite)
+            XCTAssertGreaterThan(estimate.totalSeconds, 0)
+            let modelFactor = try XCTUnwrap(estimate.factors.first(where: { $0.title == "Model" }))
+            XCTAssertEqual(modelFactor.impact, 1)
+            XCTAssertEqual(modelFactor.detail, "Unknown model size; using neutral estimate.")
+        }
+    }
+
+    func testGenerationEstimateIgnoresInvalidBenchmarkScores() throws {
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first(where: { $0.usesAI }))
+        let paper = try XCTUnwrap(board.papers.first)
+        for score in [Double.nan, .infinity, -.infinity, Double.greatestFiniteMagnitude, -1, 2] {
+            let estimate = GenerationEstimator.initialEstimate(
+                board: board, paper: paper, provider: .apple, model: "fixture/model-3b",
+                dryRun: false, benchmark: BenchmarkVerdict(score: score, verdict: "fixture", detail: "fixture")
+            )
+            XCTAssertTrue(estimate.totalSeconds.isFinite)
+            XCTAssertEqual(estimate.confidence, 0.58)
+            let factor = try XCTUnwrap(estimate.factors.first(where: { $0.title == "Benchmark" }))
+            XCTAssertEqual(factor.impact, 1)
+            XCTAssertEqual(factor.detail, "No recent benchmark; using device defaults.")
+        }
+    }
+
+    @MainActor
+    func testBenchmarkRejectsInvalidScoresAtTheEventAndOwnerBoundaries() throws {
+        for scoreField in ["", ",\"score\":1e100", ",\"score\":-0.1", ",\"score\":1.1"] {
+            let event = try BackendEvent(jsonLine: "{\"type\":\"benchmark_done\",\"verdict\":\"fixture\"\(scoreField)}")
+            if case let .error(message, code) = event {
+                XCTAssertEqual(code, "invalid_benchmark_score")
+                XCTAssertEqual(message, "The benchmark returned an invalid score.")
+            } else {
+                XCTFail("Expected invalid benchmark score error for \(scoreField)")
+            }
+        }
+        for score in [Double.nan, .infinity, -.infinity, Double.greatestFiniteMagnitude, -1, 2] {
+            let benchmark = BenchmarkCoordinator()
+            benchmark.receive(.benchmarkDone(BenchmarkVerdict(score: 1, verdict: "prior", detail: "fixture")))
+            benchmark.receive(.benchmarkDone(BenchmarkVerdict(score: score, verdict: "invalid", detail: "fixture")))
+            XCTAssertNil(benchmark.verdict)
+            XCTAssertEqual(benchmark.errorMessage, "The benchmark returned an invalid score.")
+        }
+    }
+
+    @MainActor
+    func testBenchmarkAcceptsScoreBoundaryValuesWithoutChangingFacts() throws {
+        for score in [0.0, 1.0] {
+            let event = try BackendEvent(jsonLine: "{\"type\":\"benchmark_done\",\"verdict\":\"fixture\",\"detail\":\"original detail\",\"score\":\(score)}")
+            let benchmark = BenchmarkCoordinator()
+            benchmark.receive(event)
+            XCTAssertEqual(benchmark.verdict, BenchmarkVerdict(score: score, verdict: "fixture", detail: "original detail"))
+            XCTAssertNil(benchmark.errorMessage)
+        }
+    }
+
     func testExpiredGenerationEstimateDoesNotPromiseZeroSeconds() {
         let start = Date(timeIntervalSince1970: 1_000)
         let estimate = GenerationEstimate(

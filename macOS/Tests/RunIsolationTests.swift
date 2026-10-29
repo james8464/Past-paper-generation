@@ -5,6 +5,27 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testBundledMLXSetupExplanationDescribesChecksAndModelPreparationInSelectedLanguage() {
+        for (language, expected) in [
+            ("en", "Keldin will check Apple MLX support, then download and prepare fixture/model-3B if needed. Models can use several gigabytes of storage. Generation stays on this Mac."),
+            ("fr", "Keldin vérifiera la prise en charge d’Apple MLX, puis téléchargera et préparera fixture/model-3B si nécessaire. Les modèles peuvent occuper plusieurs gigaoctets. La génération reste sur ce Mac."),
+        ] {
+            let defaults = isolatedDefaults()
+            defaults.set(language, forKey: "interfaceLanguage")
+            let application = application(backend: ControlledRunBackend(), defaults: defaults)
+            application.appleModel = "  fixture/model-3B  "
+
+            // The same truthful explanation is used by bundled direct and
+            // Store builds; neither installs a runtime in the running app.
+            XCTAssertEqual(application.mlxSetupExplanation, expected)
+            XCTAssertFalse(application.mlxSetupExplanation.contains("install"))
+            XCTAssertFalse(application.mlxSetupExplanation.contains("Terminal"))
+            XCTAssertFalse(application.mlxSetupExplanation.contains("password"))
+            XCTAssertFalse(application.isRunning)
+        }
+    }
+
+    @MainActor
     func testOutputFolderBookmarkFailureIsVisibleInSettings() throws {
         let defaults = isolatedDefaults()
         defaults.set("fr", forKey: "interfaceLanguage")
@@ -596,7 +617,7 @@ final class RunIsolationTests: XCTestCase {
         let benchmark = BenchmarkCoordinator(backend: backend)
         benchmark.start(generationIsRunning: false)
         let run = try XCTUnwrap(backend.requests.first)
-        run.onEvent(.benchmarkDone(BenchmarkVerdict(score: 2, verdict: "Ready", detail: "Fixture result")))
+        run.onEvent(.benchmarkDone(BenchmarkVerdict(score: 0.8, verdict: "Ready", detail: "Fixture result")))
 
         XCTAssertTrue(benchmark.isRunning)
         XCTAssertEqual(benchmark.progress, 1)
@@ -978,10 +999,10 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertNil(benchmark.errorMessage)
         XCTAssertNil(benchmark.verdict)
         XCTAssertEqual(benchmark.progress, 0)
-        backend.requests[1].onEvent(.benchmarkDone(BenchmarkVerdict(score: 2, verdict: "Current", detail: "Current result")))
+        backend.requests[1].onEvent(.benchmarkDone(BenchmarkVerdict(score: 0.8, verdict: "Current", detail: "Current result")))
         backend.requests[1].onFinish(.success(0))
         XCTAssertFalse(benchmark.isRunning)
-        XCTAssertEqual(benchmark.verdict?.score, 2)
+        XCTAssertEqual(benchmark.verdict?.score, 0.8)
         XCTAssertNil(benchmark.errorMessage)
     }
 

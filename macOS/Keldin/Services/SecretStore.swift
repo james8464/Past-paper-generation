@@ -8,6 +8,7 @@ enum SecretStoreOperation: Equatable { case read, write, clear }
 enum SecretStoreError: Error, LocalizedError, Equatable {
     case status(operation: SecretStoreOperation, status: OSStatus)
     case invalidData
+    case incompleteClear
     case unexpected(operation: SecretStoreOperation)
 
     func message(language: String) -> String {
@@ -18,6 +19,8 @@ enum SecretStoreError: Error, LocalizedError, Equatable {
             case .write: InterfaceText.resolve("The API key couldn't be saved in Keychain. Check Keychain access and try again.", language: language)
             case .clear: InterfaceText.resolve("The API key couldn't be fully removed from Keychain. Retry to finish removing the saved entries.", language: language)
             }
+        case .incompleteClear:
+            InterfaceText.resolve("The API key couldn't be fully removed from Keychain. Retry to finish removing the saved entries.", language: language)
         case .invalidData:
             InterfaceText.resolve("The saved API key couldn't be read. Replace it in Settings.", language: language)
         }
@@ -62,7 +65,15 @@ enum SecretStore {
     static func read(_ account: String, keychain: any KeychainAccessing = SystemKeychainAccess()) throws -> String {
         // An empty current item records a clear that still needs cleanup. Never
         // treat it, an access denial, or malformed data as a missing credential.
-        if let current = try value(account, service: "Keldin", keychain: keychain) { return current }
+        if let current = try value(account, service: "Keldin", keychain: keychain) {
+            if current.isEmpty {
+                // This marker follows an explicit clear, unlike an unreadable
+                // key. Finish that request without consulting the legacy value.
+                do { try save("", account: account, keychain: keychain) }
+                catch { throw SecretStoreError.incompleteClear }
+            }
+            return current
+        }
         guard let legacy = try value(account, service: KeldinMigration.legacyKeychainService, keychain: keychain) else { return "" }
         try writeCurrent(legacy, account: account, keychain: keychain)
         return legacy

@@ -20,6 +20,7 @@ enum NativeInterfaceCopy {
     // Only copy emitted by the supported benchmark protocol is translated.
     // Device descriptions, power-source values and unknown diagnostics stay verbatim.
     private static let benchmarkResources: [String: LocalizedStringResource] = [
+        "The benchmark returned an invalid score.": "The benchmark returned an invalid score.",
         "Benchmark failed": "Benchmark failed",
         "No samples were collected.": "No samples were collected.",
         "Ready for local generation": "Ready for local generation",

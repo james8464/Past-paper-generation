@@ -1,5 +1,6 @@
 import Foundation
 import PDFKit
+import SwiftUI
 import XCTest
 @testable import Keldin
 
@@ -12,6 +13,61 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     override func tearDownWithError() throws { try FileManager.default.removeItem(at: root) }
+
+    @MainActor
+    func testPickerSelectionUpdatesTheActionDocumentBeforeDeferredViewChanges() throws {
+        let scheme = GeneratedFile(role: "mark_scheme", url: try makePDF(name: "scheme.pdf", pages: 24))
+        let subject = GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 36))
+        func record(for file: GeneratedFile) -> GenerationJobRecord {
+            GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: "accounting-aqa", paperID: "1", provider: "fixture", model: "fixture", seed: 1, dryRun: false),
+                provenance: GenerationProvenance(appVersion: "fixture", provider: "fixture", model: "fixture"),
+                state: .completed, artifacts: [file],
+                qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+            )
+        }
+        let records = [record(for: scheme), record(for: subject)]
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
+        controller.update(file: scheme, provenance: records[0])
+        var selectedID: GeneratedFile.ID? = scheme.id
+        let binding = controller.selectionBinding(
+            selection: Binding(get: { selectedID }, set: { selectedID = $0 }),
+            files: [scheme, subject], records: records
+        )
+
+        binding.wrappedValue = subject.id
+        // An immediate Print/Quick Look action refreshes before opening its
+        // panel. No SwiftUI onChange or run-loop turn has occurred here.
+        controller.refresh()
+
+        XCTAssertEqual(selectedID, subject.id)
+        XCTAssertEqual(controller.selectedFile?.id, subject.id)
+        XCTAssertEqual(controller.loadedPDF?.document.pageCount, 36)
+        XCTAssertEqual(controller.provenance?.id, records[1].id)
+        XCTAssertTrue(controller.canAccessDocument)
+        binding.wrappedValue = scheme.id
+        XCTAssertEqual(controller.loadedPDF?.document.pageCount, 24)
+        XCTAssertEqual(controller.provenance?.id, records[0].id)
+    }
+
+    @MainActor
+    func testPickerSelectionCannotActOnThePriorPDFWhenTheNewFileIsUnreadable() throws {
+        let readable = GeneratedFile(role: "mark_scheme", url: try makePDF())
+        let unreadable = GeneratedFile(role: "question_paper", url: root.appendingPathComponent("missing.pdf"))
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
+        controller.update(file: readable, provenance: nil)
+        var selectedID: GeneratedFile.ID? = readable.id
+        let binding = controller.selectionBinding(
+            selection: Binding(get: { selectedID }, set: { selectedID = $0 }),
+            files: [readable, unreadable], records: []
+        )
+
+        binding.wrappedValue = unreadable.id
+
+        XCTAssertEqual(controller.selectedFile?.id, unreadable.id)
+        XCTAssertNil(controller.loadedPDF)
+        XCTAssertFalse(controller.canAccessDocument)
+    }
 
     @MainActor
     func testExistingButDeniedPDFHasAnHonestFailureAndDisabledActions() throws {
@@ -221,10 +277,10 @@ final class PDFDocumentAccessTests: XCTestCase {
 
     private func defaults() -> UserDefaults { UserDefaults(suiteName: "PDFAccessTests-\(UUID().uuidString)")! }
 
-    private func makePDF(name: String = "paper.pdf") throws -> URL {
+    private func makePDF(name: String = "paper.pdf", pages: Int = 1) throws -> URL {
         let url = root.appendingPathComponent(name)
         let pdf = PDFDocument()
-        pdf.insert(PDFPage(), at: 0)
+        for index in 0 ..< pages { pdf.insert(PDFPage(), at: index) }
         XCTAssertTrue(pdf.write(to: url))
         return url
     }

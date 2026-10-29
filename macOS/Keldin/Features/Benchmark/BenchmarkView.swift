@@ -76,6 +76,7 @@ struct BenchmarkWorkspace: View {
 }
 
 private struct BenchmarkOverviewPanel: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(BenchmarkCoordinator.self) private var benchmark
 
@@ -99,7 +100,7 @@ private struct BenchmarkOverviewPanel: View {
                 VStack(alignment: .leading, spacing: 10) {
                     Label("The benchmark couldn't finish", systemImage: "exclamationmark.triangle")
                     Text("Try again, or copy diagnostics from Tools if the problem continues.")
-                    Text(error).font(.caption).foregroundStyle(.secondary)
+                    Text(NativeInterfaceCopy.benchmarkText(error, locale: locale)).font(.caption).foregroundStyle(.secondary)
                     Button("Try Again", action: application.startBenchmark)
                         .disabled(application.isRunning)
                 }
