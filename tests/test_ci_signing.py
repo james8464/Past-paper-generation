@@ -10,6 +10,12 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_backend_job_has_room_for_the_full_suite_and_setup():
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    backend = workflow.split("  backend:", 1)[1].split("  macos:", 1)[0]
+    assert "timeout-minutes: 30" in backend
+
+
 @pytest.mark.parametrize("target", ["test", "preflight-app-store"])
 def test_ci_uses_explicit_ad_hoc_manual_signing_despite_personal_project_team(target):
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")

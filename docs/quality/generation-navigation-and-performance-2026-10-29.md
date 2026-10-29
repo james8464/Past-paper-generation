@@ -40,6 +40,12 @@ nodes and renamed communities after structural changes; the graph does not cover
 those files. The inventory keeps changed file-review attestations pending rather
 than certifying them with old hashes.
 
+The first final-head Backend job reported 4,730 passed and two skipped in
+1,146.13 seconds, but the job hit its 20-minute limit during shutdown after setup.
+The macOS check passed. The Backend job limit is now 30 minutes, with a regression
+check for that budget; every test and protected check remains required. Logs are
+retained in `tmp/navigation-eta-final-ci-all.log`. The rerun must pass before merge.
+
 ## Resource-setting plan, not implemented
 
 A single slider cannot honestly promise a hard memory or power limit across

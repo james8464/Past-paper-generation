@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793283414.4920318,
+    "mtime": 1793283896.130277,
     "ast_hash": "1d4d3929d94c3e5e0172793e1b78296c",
     "semantic_hash": ""
   },
@@ -1915,8 +1915,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1793278080.7852886,
-    "ast_hash": "a8750bb92ba32576325c1f091bed9a75",
+    "mtime": 1793285298.0118957,
+    "ast_hash": "aac5725b9309725740133cedc33bce26",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -4025,7 +4025,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793283414.3869703,
+    "mtime": 1793283896.040507,
     "ast_hash": "650c98f93a94210b32fb4a73a1a75eaf",
     "semantic_hash": ""
   },
@@ -4465,8 +4465,8 @@
     "semantic_hash": ""
   },
   "tests/test_ci_signing.py": {
-    "mtime": 1793278080.123448,
-    "ast_hash": "617e21fac2e30c495d6935f83559046e",
+    "mtime": 1793285298.0121148,
+    "ast_hash": "463da71d5931dd3f6991d5309e74972c",
     "semantic_hash": ""
   },
   "tests/test_french_repeat_practice.py": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
-    "mtime": 1793283876.124828,
-    "ast_hash": "b89cdade79cd6c25917517207e5648f3",
+    "mtime": 1793285298.012338,
+    "ast_hash": "e09992f72fb534533f1a5e454360c824",
     "semantic_hash": ""
   }
 }
