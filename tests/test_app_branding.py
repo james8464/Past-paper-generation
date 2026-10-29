@@ -1,8 +1,10 @@
 # Public identity changes must not orphan existing documents or credentials.
 
+import hashlib
 import json
 import plistlib
 import re
+import struct
 import subprocess
 from pathlib import Path
 
@@ -121,6 +123,53 @@ def test_native_icon_has_seven_editable_glass_layers():
         assert "<svg" in source
         fills = set(re.findall(r'fill="(#[A-Fa-f0-9]{6})"', source))
         assert fills and fills <= palette
+
+
+def test_fallback_icons_and_design_master_match_current_composer_export():
+    manifest = json.loads((ROOT / "macOS/Branding/icon-export.json").read_text())
+    assert manifest["schema_version"] == 1
+    assert manifest["source"] == "macOS/Keldin/AppIcon.icon"
+    source_files = {
+        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted((APP / "AppIcon.icon").rglob("*"))
+        if path.is_file()
+    }
+    assert manifest["source_files"] == source_files
+    assert (
+        manifest["source_sha256"]
+        == hashlib.sha256(
+            json.dumps(source_files, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
+    assert manifest["rendition"] == {"platform": "macOS", "appearance": "Default"}
+    fallback = APP / "Assets.xcassets/AppIcon.appiconset"
+    images = json.loads((fallback / "Contents.json").read_text())["images"]
+    expected = {
+        str((fallback / item["filename"]).relative_to(ROOT)): int(
+            item["size"].split("x")[0]
+        )
+        * int(item["scale"].removesuffix("x"))
+        for item in images
+    }
+    expected["Design/AppIcon/Keldin-AppIcon-Master.png"] = 1024
+    assert set(manifest["outputs"]) == set(expected)
+    for relative, pixels in expected.items():
+        data = (ROOT / relative).read_bytes()
+        assert data[:8] == b"\x89PNG\r\n\x1a\n", relative
+        assert struct.unpack("!II", data[16:24]) == (pixels, pixels), relative
+        assert manifest["outputs"][relative] == {
+            "pixels": pixels,
+            "sha256": hashlib.sha256(data).hexdigest(),
+        }
+    master = "Design/AppIcon/Keldin-AppIcon-Master.png"
+    largest = "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-512x512@2x.png"
+    assert (
+        manifest["outputs"][master]["sha256"] == manifest["outputs"][largest]["sha256"]
+    )
+    assert manifest["outputs"][master]["sha256"] not in {
+        "731f3eccd049e015ffa4d925b6845be7b3e75ad5da5c111ea1522a84c1625f7e",
+        "4c5dbf3721c98200c5eb61cb9d543454dc81bbc01639c12f700f608ad7d41b3f",
+    }
 
 
 def test_warm_accent_has_hig_appearance_and_contrast_variants():

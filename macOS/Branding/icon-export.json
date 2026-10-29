@@ -1,0 +1,65 @@
+{
+  "outputs": {
+    "Design/AppIcon/Keldin-AppIcon-Master.png": {
+      "pixels": 1024,
+      "sha256": "86a778c32903a3b7fa13f8f20c27448b727fba99a1a06f891a74761b3108458c"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-128x128@1x.png": {
+      "pixels": 128,
+      "sha256": "294d75550e92f2ab2e8170bcb80fdf735b200554024501e764d5b03982d88d11"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-128x128@2x.png": {
+      "pixels": 256,
+      "sha256": "5771aa4580ec7786896a6eb006c948aaa8cf1d747c97542b26a2849bfd3bcfdb"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-16x16@1x.png": {
+      "pixels": 16,
+      "sha256": "27a46ec584e6613cdf0dca8544b395b9b730236a0c7b3664fbccc43f1d038014"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-16x16@2x.png": {
+      "pixels": 32,
+      "sha256": "583e142f1a7f587319e137beca2e962322aae8dee473eff2fd1f393a8feef2c5"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-256x256@1x.png": {
+      "pixels": 256,
+      "sha256": "5771aa4580ec7786896a6eb006c948aaa8cf1d747c97542b26a2849bfd3bcfdb"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-256x256@2x.png": {
+      "pixels": 512,
+      "sha256": "1df9973bc75f818d1a3d5f3a482feba949325189aedf7e924395ddd708cc7e58"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-32x32@1x.png": {
+      "pixels": 32,
+      "sha256": "583e142f1a7f587319e137beca2e962322aae8dee473eff2fd1f393a8feef2c5"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-32x32@2x.png": {
+      "pixels": 64,
+      "sha256": "37c89374d46f5716fe528b37eb90e7a9001b71fde641f20f4290e9c690ef6047"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-512x512@1x.png": {
+      "pixels": 512,
+      "sha256": "1df9973bc75f818d1a3d5f3a482feba949325189aedf7e924395ddd708cc7e58"
+    },
+    "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-512x512@2x.png": {
+      "pixels": 1024,
+      "sha256": "86a778c32903a3b7fa13f8f20c27448b727fba99a1a06f891a74761b3108458c"
+    }
+  },
+  "rendition": {
+    "appearance": "Default",
+    "platform": "macOS"
+  },
+  "schema_version": 1,
+  "source": "macOS/Keldin/AppIcon.icon",
+  "source_files": {
+    "macOS/Keldin/AppIcon.icon/Assets/01-RearLeft.svg": "463536951e36995ea4410f990149b08bf8e3bb060ef245c2aa8999ef0f3c08c5",
+    "macOS/Keldin/AppIcon.icon/Assets/02-RearRight.svg": "e1d02d1fc1a541f03170825b0e2bb2ec58c5a4d2dc6a4c161534078c41a12f59",
+    "macOS/Keldin/AppIcon.icon/Assets/03-MiddleLeft.svg": "51d83dd8d4bdfd2ea99472a28b22c7c19184692e84022f1db858dfa89999a4e5",
+    "macOS/Keldin/AppIcon.icon/Assets/04-MiddleRight.svg": "4dd0f0ad6e146273154302f7e280174721e56fb7109270815c6c611fb15f8171",
+    "macOS/Keldin/AppIcon.icon/Assets/05-FrontLeft.svg": "ba6b423a80cd7f78a3eff5f24e23df5fcdd9c9c1f3e1dfe91d97615e7422de55",
+    "macOS/Keldin/AppIcon.icon/Assets/06-FrontRight.svg": "b288c0ef71e3f5ea867bf0ba660ad4c727d4ce29d7b0aea9f6236f464026224c",
+    "macOS/Keldin/AppIcon.icon/Assets/07-Binding.svg": "30d3676535e45cae307526d2fae27003832f63eeb0b723b3bf6cb444e6bb77f9",
+    "macOS/Keldin/AppIcon.icon/icon.json": "6a4ab129fb75fb17704bae146a7ecb023d34bafe9492aac9dbcded9dc7f12122"
+  },
+  "source_sha256": "b3ca1fd23b08a9e0b9d043e7e93cce1449f73020fd9e5a1cf2827ec22756acd4"
+}
