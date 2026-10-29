@@ -4185,13 +4185,13 @@
     "semantic_hash": ""
   },
   "tests/fixtures/assessment_prompt_snapshots.json": {
-    "mtime": 1793225632.8703744,
-    "ast_hash": "3f5e342dc0f5266280cdbbd9706c2d63",
+    "mtime": 1793298086.080482,
+    "ast_hash": "a7fef0290ccc22354d87806c38a0c091",
     "semantic_hash": ""
   },
   "tests/test_assessment_prompt_characterisation.py": {
-    "mtime": 1793225632.8705544,
-    "ast_hash": "2c5372f03ddb0c88489f80443aa49924",
+    "mtime": 1793298086.0807304,
+    "ast_hash": "50c4b6494d6d292f8efb3d10117d5499",
     "semantic_hash": ""
   },
   "tests/test_calibration_helpers.py": {
@@ -4595,8 +4595,8 @@
     "semantic_hash": ""
   },
   "docs/quality/local-generation-batching-acceptance-2026-10-29.md": {
-    "mtime": 1793297398.2919538,
-    "ast_hash": "199f5911175d33a3cf875b472bf33297",
+    "mtime": 1793298087.1903062,
+    "ast_hash": "8789f3edeedc83958e8aaaa31ca3139f",
     "semantic_hash": ""
   },
   "docs/quality/mlx-batching-design-2026-10-29.md": {

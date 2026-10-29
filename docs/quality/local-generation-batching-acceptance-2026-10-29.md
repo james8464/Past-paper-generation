@@ -97,8 +97,39 @@ to obtain a successful demonstration.
 
 ## Integration gate status
 
-Subagent tests used isolated worktrees: MLX/related contracts 199 passed; trusted
-shape/related contracts 306 passed; final native tests 288 passed with one opt-in
-skip. Root integration, complete fixed-source tests, rebuilt-helper probes,
-protected CI and installed acceptance must all use the final combined head.
-These isolated results do not certify later source edits or a whole live paper.
+Root native tests passed 290 tests with one opt-in skip. The signed direct
+Release build and personal-development-signed Store-mode preflight passed.
+The rebuilt helper performed actual paired MLX decoding and cancelled normally
+with exit 130, no forced kill and no published PDFs, 0.269 seconds after SIGTERM.
+The separate default-off Apple switch was enabled, persisted through relaunch,
+then restored off. Ollama remained selected with its parallel setting on, and
+its availability check passed. No native jobs were added to user history.
+
+The first complete final-source Python run passed 4,839 tests with two skips,
+but failed an old typed MCQ test double that omitted the now-required validity
+field. The fixture now supplies that field only for its MCQ schema. Only the
+MCQ prompt/schema golden section changed; the other six sections remain byte
+identical. A fresh complete run and latest-head protected checks are required
+after that test-only correction. Core source and tested app bytes did not change.
+
+Current-source French acceptance generated ten normal/enlarged packages and
+20 PDFs with 341 pages. The rebuilt helper independently generated the same ten
+packages. All 341 full pages in each runtime match the previously reviewed V35
+baseline at 100 dpi, with ordered-content, A4, footer, nonempty-body and graph
+checks. Runtime identities remain distinct; an initial cross-runtime replay
+correctly refused. Independent content checks do not replace either identity or
+weaken production validation. Explicit repeat practice also generated selected
+seed 270105 without changing prior files. Its 12 changed pages were freshly viewed;
+the other 12 full pages were raster-identical. No new layout or arithmetic defect
+was found. All attempts, including harness mistakes, remain retained under
+`tmp/pdfs/local-batching-french-20261029`.
+
+This is application-owned French validation, not live AI qualification. French
+difficulty/duration remain uncalibrated. The catalogue still covers five finite
+families, not the full syllabus. Some correction pages are sparse. These results
+do not establish complete-paper quality for every local model or subject.
+
+Graphify AST was refreshed; 44 pre-existing resource files produced zero nodes
+and remain absent from its graph. The implementation coverage ledger remains
+partial, with no whole-project semantic-audit completion claim. Protected CI,
+merge and installed final-byte verification remain release gates.
