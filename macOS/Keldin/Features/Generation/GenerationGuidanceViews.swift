@@ -33,7 +33,7 @@ struct PaperQualitySummarySection: View {
 
     private var standardSummary: some View {
         let summary = GenerationIssueSummary(report: report)
-        Section("Last result checks") {
+        return Section("Last result checks") {
             Text("\(summary.issues.count) issues · \(summary.warnings.count) warnings · \(summary.notChecked.count) not checked")
                 .font(.callout)
             DisclosureGroup("Show check details") {
