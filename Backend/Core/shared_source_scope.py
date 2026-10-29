@@ -49,10 +49,12 @@ def uses_shared_option_source(question: dict[str, Any], option: dict[str, Any]) 
     prompt = str(question.get("prompt", ""))
     if _OPTION_SOURCE_CUE.search(prompt):
         return True
+    title = str(option.get("title", "")).strip()
     return (
         question.get("kind") != "multiple_choice"
         and not numeric_tokens(prompt)
-        and str(option.get("title", "")).casefold() in prompt.casefold()
+        and bool(title)
+        and title.casefold() in prompt.casefold()
     )
 
 

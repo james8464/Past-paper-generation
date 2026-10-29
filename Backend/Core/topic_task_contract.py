@@ -110,7 +110,12 @@ def derive_task_semantics(
     }:
         return operation, "sequence" if len(slots) > 1 else "result"  # type: ignore[return-value]
     if operation == "program":
-        return "program", "query" if "select" in text else "code"
+        retrieval_query = (
+            re.search(r"\bsql\s+query\b|\bselect\s+(?:query|statement)\b", text)
+            or re.search(r"\bSELECT\b[\s\S]*\bFROM\b", str(prompt))
+            or re.search(r"(?:^|[:\n])\s*select\b[^;]*\bfrom\b", text)
+        )
+        return "program", "query" if retrieval_query else "code"
     if operation in {"retrieve", "describe", "explain", "analyse", "judge"}:
         return operation, "prose"  # type: ignore[return-value]
     return None
