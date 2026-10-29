@@ -6,6 +6,29 @@ import XCTest
 final class SecretStoreTests: XCTestCase {
     private let account = "fixture-account"
 
+    @MainActor
+    func testFreshProviderDefaultUsesBundledEngineOnlyForStoreDistribution() {
+        for (mode, expected) in [(DistributionMode.appStore, AIProvider.apple), (.direct, .ollama)] {
+            let defaults = isolatedDefaults()
+            let settings = SettingsStore(defaults: defaults, secrets: FakeCredentialStore(), distributionMode: mode)
+            XCTAssertEqual(settings.provider, expected)
+            XCTAssertNil(defaults.object(forKey: AppStorageKey.aiProvider))
+        }
+    }
+
+    @MainActor
+    func testDistributionDefaultPreservesEverySavedProviderChoice() {
+        for mode in [DistributionMode.appStore, .direct] {
+            for provider in AIProvider.allCases {
+                let defaults = isolatedDefaults()
+                defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
+                let settings = SettingsStore(defaults: defaults, secrets: FakeCredentialStore(), distributionMode: mode)
+                XCTAssertEqual(settings.provider, provider)
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.aiProvider), provider.rawValue)
+            }
+        }
+    }
+
     func testMissingItemsAreDifferentFromReadFailures() throws {
         let missing = FakeKeychainAccess()
         XCTAssertEqual(try SecretStore.read(account, keychain: missing), "")
