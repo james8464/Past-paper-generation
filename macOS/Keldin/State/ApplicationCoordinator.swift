@@ -55,6 +55,7 @@ final class ApplicationCoordinator: ObservableObject {
     private let backend: any BackendRunning
     private let defaults: UserDefaults
     private let outputFolderBookmark: (URL) throws -> Data
+    private let generationRecordsFolder: URL
     private let notificationCenter = UNUserNotificationCenter.current()
     private var ollamaRefreshRevision = UUID()
     private var etaTimer: AnyCancellable?
@@ -228,6 +229,8 @@ final class ApplicationCoordinator: ObservableObject {
         self.defaults = defaults
         self.backend = backend
         self.outputFolderBookmark = outputFolderBookmark
+        generationRecordsFolder = (historyDirectory ?? AppDefaults.jobHistoryFolder())
+            .appendingPathComponent("Generation records", isDirectory: true)
         let settings = SettingsStore(defaults: defaults, secrets: secrets)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
@@ -276,7 +279,7 @@ final class ApplicationCoordinator: ObservableObject {
         restoreRecentDocuments()
         // Invalid saved usage stays untouched; the creation action reports it.
         _ = try? savedFrenchFamilies()
-        benchmarkCoordinator.outputFolder = outputFolder
+        benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
     }
 
@@ -364,10 +367,10 @@ final class ApplicationCoordinator: ObservableObject {
         pendingGenerationSeed = seed
         let request = FrenchAssessmentRequest(
             referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
-            output: distributionMode == .appStore ? AppDefaults.appStoreWorkingFolder() : outputFolder,
+            output: generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true),
             seed: seed, largePrint: largePrint, excludedFamilies: excludedFamilies
         )
-        startFrenchOperation(arguments: request.arguments, seed: seed)
+        startFrenchOperation(arguments: request.arguments, seed: seed, workingFolder: request.output)
     }
 
     /// Catalogue use survives the configurable job-history limit and output moves.
@@ -440,6 +443,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func startFrenchOperation(
         arguments: [String],
         seed: Int?,
+        workingFolder: URL? = nil,
         intent: BackendRunIntent = .referencePreparation,
         statusMessage: String = String(localized: "Preparing French assessment")
     ) {
@@ -452,7 +456,8 @@ final class ApplicationCoordinator: ObservableObject {
             intent: seed == nil ? intent : .paper,
             documents: RunDocuments(
                 frameworkID: FrenchAssessmentRequest.assessmentID,
-                subject: "Baccalauréat général · NSI", paper: "Partie écrite · 2027"
+                subject: "Baccalauréat général · NSI", paper: "Partie écrite · 2027",
+                workingFolder: workingFolder
             ),
             model: FrenchAssessmentRequest.modelID
         )
@@ -728,9 +733,8 @@ final class ApplicationCoordinator: ObservableObject {
                 empiricallyCalibrated: readiness.empiricallyCalibrated
             )
         )
-        let processOutputFolder = distributionMode == .appStore
-            ? AppDefaults.appStoreWorkingFolder()
-            : outputFolder
+        let processOutputFolder = generationRecordsFolder
+            .appendingPathComponent(record.id.uuidString, isDirectory: true)
 
         var arguments = [
             "generate",
@@ -779,7 +783,8 @@ final class ApplicationCoordinator: ObservableObject {
         let session = beginRunSession(
             intent: .paper,
             documents: RunDocuments(
-                subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)", paper: selectedPaper.title
+                subject: "\(selectedBoard.subjectTitle) \(selectedBoard.shortTitle)", paper: selectedPaper.title,
+                workingFolder: processOutputFolder
             ),
             model: activeModelName
         )
@@ -1127,7 +1132,6 @@ final class ApplicationCoordinator: ObservableObject {
     }()
 
     func setOutputFolder(_ url: URL, presentation: SettingsActionPresentation? = nil) {
-        benchmarkCoordinator.outputFolder = url
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()
         securityScopedOutputFolder = url.startAccessingSecurityScopedResource() ? url : nil
         outputFolder = url
@@ -1318,7 +1322,7 @@ final class ApplicationCoordinator: ObservableObject {
                     return
                 }
                 do {
-                    try moveGeneratedFilesToOutputFolderIfNeeded(frameworkID: run.documents.frameworkID)
+                    try moveGeneratedFilesToOutputFolderIfNeeded(documents: run.documents)
                 } catch {
                     let message = "The paper was created, but it could not be saved to the selected folder: \(error.localizedDescription)"
                     setError(message)
@@ -1435,31 +1439,24 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func moveGeneratedFilesToOutputFolderIfNeeded(frameworkID: String?) throws {
-        guard distributionMode == .appStore else { return }
-        // Save review records beside the user-selected manifest so they stay
-        // with that assessment instead of the app's temporary working files.
+    private func moveGeneratedFilesToOutputFolderIfNeeded(documents: RunDocuments) throws {
+        // Technical records and their original relative-path artifacts stay private.
+        // Only usable documents are copied to the selected output folder.
         guard currentGenerationFiles.contains(where: { $0.role != "teacher_review" }) else { return }
-        let workingFolder = AppDefaults.appStoreWorkingFolder().standardizedFileURL
+        guard let workingFolder = documents.workingFolder?.standardizedFileURL else {
+            throw CocoaError(.fileReadInvalidFileName)
+        }
         let destinationFolder = outputFolder.standardizedFileURL
         guard workingFolder != destinationFolder else { return }
 
-        if frameworkID == FrenchAssessmentRequest.assessmentID,
+        if documents.frameworkID == FrenchAssessmentRequest.assessmentID,
            let first = currentGenerationFiles.first {
             let source = first.url.deletingLastPathComponent().standardizedFileURL
             guard source.deletingLastPathComponent() == workingFolder,
                   currentGenerationFiles.allSatisfy({ $0.url.deletingLastPathComponent().standardizedFileURL == source }) else {
                 throw CocoaError(.fileReadInvalidFileName)
             }
-            let destination = try AssessmentBundleExporter.export(source: source, to: destinationFolder)
-            generatedFiles = generatedFiles.map { file in
-                guard currentGenerationFileIDs.contains(file.id) else { return file }
-                return GeneratedFile(
-                    id: file.id, role: file.role,
-                    url: destination.appendingPathComponent(file.url.lastPathComponent),
-                    createdAt: file.createdAt, subject: file.subject, paper: file.paper
-                )
-            }
+            try publishUKGeneratedFiles(from: source, to: destinationFolder)
             return
         }
 
@@ -1478,7 +1475,7 @@ final class ApplicationCoordinator: ObservableObject {
         }) else {
             throw CocoaError(.fileReadInvalidFileName)
         }
-        let published = try publisher.publish(files, to: destinationFolder)
+        let published = try publisher.publishUserDocuments(files, to: destinationFolder)
         let byID = Dictionary(uniqueKeysWithValues: published.map { ($0.id, $0) })
         generatedFiles = generatedFiles.map { file in
             byID[file.id] ?? file
@@ -1680,12 +1677,14 @@ private struct RunDocuments {
     let frameworkID: String?
     let subject: String?
     let paper: String?
+    let workingFolder: URL?
     var fileIDs = Set<UUID>()
 
-    init(frameworkID: String? = nil, subject: String? = nil, paper: String? = nil) {
+    init(frameworkID: String? = nil, subject: String? = nil, paper: String? = nil, workingFolder: URL? = nil) {
         self.frameworkID = frameworkID
         self.subject = subject
         self.paper = paper
+        self.workingFolder = workingFolder
     }
 }
 

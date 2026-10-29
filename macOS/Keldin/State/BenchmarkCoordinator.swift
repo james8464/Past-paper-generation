@@ -12,7 +12,7 @@ final class BenchmarkCoordinator {
     private(set) var metrics: [BenchmarkMetric] = []
     private(set) var verdict: BenchmarkVerdict?
     private(set) var errorMessage: String?
-    var outputFolder = AppDefaults.defaultOutputFolder()
+    var outputFolder = AppDefaults.jobHistoryFolder().appendingPathComponent("Benchmarks", isDirectory: true)
 
     @ObservationIgnored private let backend: any BackendRunning
     @ObservationIgnored private var process: Process?
