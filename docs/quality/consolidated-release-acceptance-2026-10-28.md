@@ -174,6 +174,34 @@ did not merge contribution art or change repository protections. The following
 documentation-only evidence update does not change application/runtime files;
 both protected checks must nevertheless pass on its final head.
 
+## Clean CI packaging-test dependency, 29 October
+
+The first aligned Backend gate failed one wheel test while 4,505 tests passed
+and two skipped; macOS passed in 7m39s. The wheel test called
+`setuptools.build_meta` directly but test requirements did not declare setuptools.
+Local developer tooling had supplied it incidentally. A clean temporary Python
+3.12 environment with the actual test requirements and all seven editable
+generators reproduced `ModuleNotFoundError: setuptools`.
+
+`86c7085c` declares bounded `setuptools>=84,<85` test tooling and makes a wheel
+failure print its captured diagnostics. Package contents, both CLI entry points
+and legacy import assertions are unchanged; nothing is skipped to pass. Two red
+tests then passed, and all ten clean-environment facade/console cases passed in
+11.15 seconds. Only setuptools 84.2.1 was added to that temporary environment.
+The active generator/test environments, Core, Resources, native code, helper and
+model run were untouched. Logs: `tmp/wheel-ci-clean-test-{red,green}.log` and
+`tmp/consolidated-release-final-ci-failure.log`.
+
+This is consistent with the official [Python 3.12 virtual-environment
+documentation](https://docs.python.org/3.12/library/venv.html), which no longer
+promises setuptools in a new environment. [pip's build-isolation
+documentation](https://pip.pypa.io/en/stable/reference/build-system/index.html)
+explains why installing editable generators did not populate that backend in
+the test process. [Setuptools' build backend](https://setuptools.pypa.io/en/stable/build_meta.html)
+supplies the wheel operation used here. A separate wheel distribution was not
+needed for this tested setuptools version. Fresh latest-head protected checks
+remain mandatory after this development-dependency fix.
+
 The canonical local app currently contains protected PR112, matching its tested
 direct Release frontend/helper bytes and strict signature. Its predecessor is
 recoverable as `Keldin-before-PR112-20261028.app` in Trash; user data is retained.
