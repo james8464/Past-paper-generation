@@ -10,9 +10,9 @@ enum KeldinCreationTips {
 }
 
 struct ModelRecommendationTip: Tip {
-    var title: Text { Text("Use the recommended local model") }
+    var title: Text { Text("Check memory fit and paper quality") }
     var message: Text? {
-        Text("Other Ollama models and quantisations can change question and mark-scheme quality.")
+        Text("Model suggestions concern this Mac's memory. Paper-quality evidence is shown separately.")
     }
     var image: Image? { Image(systemName: "cpu") }
 }
