@@ -76,6 +76,12 @@ def test_public_french_request_uses_model_without_family_fallback_and_verifies_i
     assert 'generationOrigin == "model_authored"' in request
     assert "publication.modelUsed" in request
     assert "target.frenchLargePrint" in application
+    assert "metadata.artifacts[artifact.role]" in request
+    assert "hash == record.sha256" in request
+    assert "packageIdentity" in request and "manifestIdentity" in request
+    assert "record.file == artifact.url.lastPathComponent" in request
+    publisher = (ROOT / "Services/UKArtifactPublisher.swift").read_text()
+    assert "try fileHash(copy) == sourceHash" in publisher
 
 
 def test_french_review_discloses_model_and_contract_limits_with_question_warnings():

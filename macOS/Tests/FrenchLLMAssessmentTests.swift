@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 import XCTest
 @testable import Keldin
@@ -41,8 +42,52 @@ final class FrenchLLMAssessmentTests: XCTestCase {
             GeneratedFile(role: $0, url: FileManager.default.temporaryDirectory.appendingPathComponent("FrenchLLM-\(UUID().uuidString)-\($0)"))
         }
         defer { for artifact in artifacts.dropFirst() { try? FileManager.default.removeItem(at: artifact.url) } }
-        for artifact in artifacts.dropFirst() { try Data("fixture".utf8).write(to: artifact.url) }
+        var records: [String: [String: String]] = [:]
+        for artifact in artifacts.dropFirst() {
+            let data = artifact.role == "assessment_package"
+                ? try JSONSerialization.data(withJSONObject: ["identity": try XCTUnwrap(publication["identity"])])
+                : Data("%PDF-1.7\nfixture \(artifact.role)".utf8)
+            try data.write(to: artifact.url)
+            records[artifact.role] = ["file": artifact.url.lastPathComponent, "sha256": digest(data)]
+        }
+        publication["artifacts"] = records
+        try validate(publication)
         XCTAssertNoThrow(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+        for artifact in artifacts.dropFirst() {
+            let original = try Data(contentsOf: artifact.url)
+            try (original + Data("changed".utf8)).write(to: artifact.url)
+            XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+            try original.write(to: artifact.url)
+        }
+        for name in ["wrong.pdf", "../sujet.pdf", "/tmp/sujet.pdf", "..\\sujet.pdf"] {
+            var changedRecords = records
+            changedRecords["question_paper"]?["file"] = name
+            var changedPublication = publication
+            changedPublication["artifacts"] = changedRecords
+            try validate(changedPublication)
+            XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+        }
+        try validate(publication)
+        let packageFile = try XCTUnwrap(artifacts.first { $0.role == "assessment_package" })
+        let originalPackage = try Data(contentsOf: packageFile.url)
+        var wrongIdentity = try XCTUnwrap(publication["identity"] as? [String: Any])
+        wrongIdentity["seed"] = 43
+        let wrongPackage = try JSONSerialization.data(withJSONObject: ["identity": wrongIdentity])
+        try wrongPackage.write(to: packageFile.url)
+        var wrongRecords = records
+        wrongRecords["assessment_package"]?["sha256"] = digest(wrongPackage)
+        var wrongPublication = publication
+        wrongPublication["artifacts"] = wrongRecords
+        try validate(wrongPublication)
+        XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+        let malformedPackage = Data("not JSON".utf8)
+        try malformedPackage.write(to: packageFile.url)
+        wrongRecords["assessment_package"]?["sha256"] = digest(malformedPackage)
+        wrongPublication["artifacts"] = wrongRecords
+        try validate(wrongPublication)
+        XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts, configuration: configuration))
+        try originalPackage.write(to: packageFile.url)
+        try validate(publication)
         for missing in artifacts.indices {
             XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(
                 artifacts: artifacts.enumerated().filter { $0.offset != missing }.map(\.element), configuration: configuration))
@@ -61,6 +106,10 @@ final class FrenchLLMAssessmentTests: XCTestCase {
         }
         publication["model_used"] = false
         XCTAssertThrowsError(try validate(publication))
+    }
+
+    private func digest(_ data: Data) -> String {
+        SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
     }
 
     @MainActor

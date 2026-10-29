@@ -119,14 +119,14 @@ final class UKArtifactPublisherTests: XCTestCase {
             let seedIndex = try XCTUnwrap(run.arguments.firstIndex(of: "--seed"))
             let seed = try XCTUnwrap(Int(run.arguments[seedIndex + 1]))
             let manifest = source.appendingPathComponent("manifest.json")
-            let metadata: [String: Any] = [
+            var metadata: [String: Any] = [
                 "schema_version": 1, "assessment": FrenchAssessmentRequest.assessmentID,
                 "status": "unreviewed_draft", "generation_origin": "model_authored", "model_used": true,
                 "teacher_review": "not_run", "empirical_calibration": "not_run",
                 "identity": ["provider": application.aiProvider.backendID, "model": application.activeModelName,
                     "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy, "seed": seed],
             ]
-            let bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
+            var bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
             try bytes.write(to: manifest)
             for role in ["question_paper", "mark_scheme"] {
                 let pdf = source.appendingPathComponent(role + ".pdf")
@@ -135,7 +135,16 @@ final class UKArtifactPublisherTests: XCTestCase {
             }
             if french {
                 let assessment = source.appendingPathComponent("assessment.json")
-                try Data("{}".utf8).write(to: assessment)
+                try JSONSerialization.data(withJSONObject: ["identity": try XCTUnwrap(metadata["identity"])]).write(to: assessment)
+                var artifactRecords: [String: [String: String]] = [:]
+                for (role, url) in [("question_paper", source.appendingPathComponent("question_paper.pdf")),
+                                    ("mark_scheme", source.appendingPathComponent("mark_scheme.pdf")),
+                                    ("assessment_package", assessment)] {
+                    artifactRecords[role] = ["file": url.lastPathComponent, "sha256": hash(try Data(contentsOf: url))]
+                }
+                metadata["artifacts"] = artifactRecords
+                bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
+                try bytes.write(to: manifest)
                 run.onEvent(.file(role: "assessment_package", path: assessment.path))
             }
             run.onEvent(.file(role: "package_manifest", path: manifest.path))
@@ -202,6 +211,21 @@ final class UKArtifactPublisherTests: XCTestCase {
         XCTAssertEqual(try snapshot(output), before)
         XCTAssertEqual(try snapshot(sourceFolder), sourceBefore)
         XCTAssertFalse(try manager.contentsOfDirectory(atPath: output.path).contains { $0.hasPrefix(".keldin-export-") })
+    }
+
+    func testCorruptedStagedCopyIsRefusedBeforePublicationAndKeepsOriginals() throws {
+        let files = try fixtureFiles()
+        let output = try outputWithExistingFiles(files)
+        let before = try snapshot(output)
+        let sourceBefore = try snapshot(sourceFolder)
+        var committed = false
+        let publisher = UKArtifactPublisher(copyFile: { _, destination in
+            try Data("wrong copied bytes".utf8).write(to: destination)
+        }, commitDirectory: { _, _ in committed = true })
+        XCTAssertThrowsError(try publisher.publish(files, to: output))
+        XCTAssertFalse(committed)
+        XCTAssertEqual(try snapshot(output), before)
+        XCTAssertEqual(try snapshot(sourceFolder), sourceBefore)
     }
 
     func testCommitFailurePreservesExistingDestinationAndCleansOnlyItsStaging() throws {

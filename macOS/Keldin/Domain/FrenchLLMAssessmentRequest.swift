@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// A model-authored draft. The older catalogue request remains available for saved-package replay.
@@ -49,6 +50,7 @@ struct FrenchLLMAssessmentRequest {
             throw CocoaError(.fileReadCorruptFile)
         }
         for artifact in artifacts {
+            guard artifact.url.isFileURL else { throw CocoaError(.fileReadInvalidFileName) }
             let attributes = try FileManager.default.attributesOfItem(atPath: artifact.url.path)
             guard attributes[.type] as? FileAttributeType == .typeRegular,
                   let size = attributes[.size] as? NSNumber, size.int64Value > 0 else {
@@ -56,6 +58,42 @@ struct FrenchLLMAssessmentRequest {
             }
         }
         try validatePublication(at: manifest.url, configuration: configuration)
+        let manifestData = try Data(contentsOf: manifest.url)
+        let decoder = JSONDecoder()
+        let metadata = try decoder.decode(ArtifactManifest.self, from: manifestData)
+        let recordedRoles = required.subtracting(["package_manifest"])
+        guard Set(metadata.artifacts.keys) == recordedRoles,
+              Set(metadata.artifacts.values.map(\.file)).count == recordedRoles.count else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        for artifact in artifacts where artifact.role != "package_manifest" {
+            guard let record = metadata.artifacts[artifact.role],
+                  !record.file.isEmpty, ![".", ".."].contains(record.file),
+                  !record.file.contains("/"), !record.file.contains("\\"),
+                  record.file == artifact.url.lastPathComponent,
+                  record.sha256.count == 64,
+                  record.sha256.allSatisfy({ "0123456789abcdef".contains($0) }) else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            let data = try Data(contentsOf: artifact.url)
+            let hash = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
+            guard hash == record.sha256 else { throw CocoaError(.fileReadCorruptFile) }
+            if artifact.role == "assessment_package" {
+                guard artifact.url.deletingLastPathComponent().standardizedFileURL == manifest.url.deletingLastPathComponent().standardizedFileURL,
+                      let package = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                      let publication = try JSONSerialization.jsonObject(with: manifestData) as? [String: Any],
+                      let packageIdentity = package["identity"] as? [String: Any],
+                      let manifestIdentity = publication["identity"] as? [String: Any],
+                      try JSONSerialization.data(withJSONObject: packageIdentity, options: [.sortedKeys]) == JSONSerialization.data(withJSONObject: manifestIdentity, options: [.sortedKeys]) else {
+                    throw CocoaError(.fileReadCorruptFile)
+                }
+            }
+        }
+    }
+
+    private struct ArtifactManifest: Decodable {
+        let artifacts: [String: Artifact]
+        struct Artifact: Decodable { let file: String; let sha256: String }
     }
 
     private struct Publication: Decodable {
