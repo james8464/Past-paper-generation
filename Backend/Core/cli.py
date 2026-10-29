@@ -114,6 +114,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     assessment.add_argument("--allow-remote", action="store_true")
     assessment.set_defaults(handler=handle_framework_generate)
+    from Backend.Core.france.occitanie_case_study import handle_generate_case_study
+
+    case_study = subparsers.add_parser(
+        "generate-occitanie-case-study",
+        help="Create an offline NSI activity from public Occitanie data",
+    )
+    case_study.add_argument("--output", required=True)
+    case_study.set_defaults(handler=handle_generate_case_study)
     references = subparsers.add_parser(
         "prepare-french-references",
         help="Download the registered official French reference PDFs",
