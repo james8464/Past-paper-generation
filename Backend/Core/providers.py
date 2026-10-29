@@ -15,7 +15,14 @@ from urllib.parse import urlparse
 from Backend.Core.events import emit_progress
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, OutputContract
-from Backend.Core.mlx_batching import BatchUnavailable, CoalescingRunner, generate_batch
+from Backend.Core.mlx_batching import (
+    BatchUnavailable,
+    CoalescingRunner,
+    generate_batch,
+)
+from Backend.Core.mlx_batching import (
+    output_budget as mlx_output_budget,
+)
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
@@ -52,7 +59,9 @@ class HostedLLMClient:
         self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
         self._apple_batcher_lock = threading.Lock()
-        self._apple_batcher: CoalescingRunner[tuple[str, dict], str] | None = None
+        self._apple_batcher: (
+            CoalescingRunner[tuple[str, dict] | tuple[str, dict, int], str] | None
+        ) = None
 
     # Whether independent prompts may safely share this client.
     @property
@@ -97,8 +106,16 @@ class HostedLLMClient:
                         )
                     return self._ollama(current_prompt)
                 if self.provider == "openai":
+                    if request is not None:
+                        return self._openai(
+                            current_prompt, output_budget=request.output_budget
+                        )
                     return self._openai(current_prompt)
                 if self.provider == "anthropic":
+                    if request is not None:
+                        return self._anthropic(
+                            current_prompt, output_budget=request.output_budget
+                        )
                     return self._anthropic(current_prompt)
                 if self.provider == "apple":
                     if request is not None:
@@ -106,6 +123,7 @@ class HostedLLMClient:
                             current_prompt,
                             schema=request.schema,
                             identifiers=request.expected_ids,
+                            output_budget=request.output_budget,
                         )
                     return self._apple(current_prompt)
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
@@ -230,7 +248,9 @@ class HostedLLMClient:
         *,
         schema: dict | None = None,
         identifiers: tuple[str, ...] | None = None,
+        output_budget: int | None = None,
     ) -> dict[str, object]:
+        mlx_output_budget(output_budget)
         source_prompt = prompt
         schema = _ollama_json_schema(prompt) if schema is None else schema
         if schema.get("required"):
@@ -243,9 +263,18 @@ class HostedLLMClient:
             with self._apple_batcher_lock:
                 if self._apple_batcher is None:
                     self._apple_batcher = CoalescingRunner(self._run_apple_batch)
-            response = self._apple_batcher.call((prompt, schema))
+            job = (
+                (prompt, schema)
+                if output_budget is None
+                else (prompt, schema, output_budget)
+            )
+            response = self._apple_batcher.call(job)
         else:
-            response = self._apple_response(prompt, schema)
+            response = (
+                self._apple_response(prompt, schema)
+                if output_budget is None
+                else self._apple_response(prompt, schema, output_budget)
+            )
         if schema.get("required"):
             # Never salvage a truncated constrained response or duplicate fields.
             if len(response.encode("utf-8")) > 1_048_576:
@@ -308,25 +337,36 @@ class HostedLLMClient:
                 tokenizer_config={"trust_remote_code": False, "local_files_only": True},
             )
 
-    def _apple_response(self, prompt: str, schema: dict) -> str:
+    def _apple_response(
+        self, prompt: str, schema: dict, output_budget: int | None = None
+    ) -> str:
+        budget = mlx_output_budget(output_budget)
         with self._apple_lock:
             self._load_apple_model()
             if schema.get("required"):
-                return self._mlx_structured_response(prompt, schema)
+                return (
+                    self._mlx_structured_response(prompt, schema)
+                    if output_budget is None
+                    else self._mlx_structured_response(prompt, schema, budget)
+                )
             from mlx_lm import generate
 
             return generate(
                 self._apple_model,
                 self._apple_tokenizer,
                 prompt=_mlx_json_prompt(self._apple_tokenizer, prompt),
-                max_tokens=4096,
+                max_tokens=budget,
                 verbose=False,
             )
 
     def _run_apple_batch(
-        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+        self,
+        requests: list[tuple[str, dict] | tuple[str, dict, int]],
+        cancelled: threading.Event,
     ) -> list[str | BaseException]:
-        if len(requests) == 2 and all(schema.get("required") for _, schema in requests):
+        if len(requests) == 2 and all(
+            request[1].get("required") for request in requests
+        ):
             with self._apple_lock:
                 self._load_apple_model()
                 try:
@@ -337,20 +377,22 @@ class HostedLLMClient:
                         stage="provider_serial_fallback",
                     )
         results: list[str | BaseException] = []
-        for prompt, schema in requests:
+        for request in requests:
             if cancelled.is_set():
                 from concurrent.futures import CancelledError
 
                 results.append(CancelledError("MLX generation was cancelled."))
                 continue
             try:
-                results.append(self._apple_response(prompt, schema))
+                results.append(self._apple_response(*request))
             except Exception as error:
                 results.append(error)
         return results
 
     def _mlx_batch_structured_responses(
-        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+        self,
+        requests: list[tuple[str, dict] | tuple[str, dict, int]],
+        cancelled: threading.Event,
     ) -> list[str | BaseException]:
         try:
             import llguidance
@@ -369,7 +411,8 @@ class HostedLLMClient:
         backend = LLGuidanceBackend(self._apple_structured_model)
         processors = []
         prompts = []
-        for prompt, schema in requests:
+        for request in requests:
+            prompt, schema = request[:2]
             decoder_schema = json.dumps(_mlx_decoder_schema(schema))
             grammar_error = llguidance.LLMatcher.validate_grammar(
                 llguidance.grammar_from("json_schema", decoder_schema)
@@ -380,12 +423,26 @@ class HostedLLMClient:
                 raise BatchUnavailable("A request grammar needs individual validation.")
             processors.append(backend.get_json_schema_logits_processor(decoder_schema))
             prompts.append(_mlx_json_prompt(self._apple_tokenizer, prompt))
+        options = {}
+        if any(len(request) == 3 for request in requests):
+            options["output_budgets"] = [
+                mlx_output_budget(request[2] if len(request) == 3 else None)
+                for request in requests
+            ]
         return generate_batch(
-            self._apple_model, self._apple_tokenizer, prompts, processors, cancelled
+            self._apple_model,
+            self._apple_tokenizer,
+            prompts,
+            processors,
+            cancelled,
+            **options,
         )
 
     # Constrain syntax, public option values and batch IDs; validate correctness separately.
-    def _mlx_structured_response(self, prompt: str, schema: dict) -> str:
+    def _mlx_structured_response(
+        self, prompt: str, schema: dict, output_budget: int | None = None
+    ) -> str:
+        budget = mlx_output_budget(output_budget)
 
         try:
             import llguidance
@@ -419,7 +476,7 @@ class HostedLLMClient:
             _mlx_json_prompt(self._apple_tokenizer, prompt),
             JsonSchema(decoder_schema),
             backend="llguidance",
-            max_tokens=4096,
+            max_tokens=budget,
             verbose=False,
         )
         if len(response.encode("utf-8")) > 1_048_576:
@@ -433,15 +490,20 @@ class HostedLLMClient:
             ) from error
         return response
 
-    def _openai(self, prompt: str) -> dict[str, object]:
-        payload = json.dumps(
-            {
-                "model": self.model,
-                "input": prompt,
-                "store": False,
-                "text": {"format": {"type": "json_object"}},
-            }
-        ).encode("utf-8")
+    def _openai(
+        self, prompt: str, *, output_budget: int | None = None
+    ) -> dict[str, object]:
+        values = {
+            "model": self.model,
+            "input": prompt,
+            "store": False,
+            "text": {"format": {"type": "json_object"}},
+        }
+        if output_budget is not None:
+            values["max_output_tokens"] = _hosted_output_budget(
+                output_budget, minimum=16
+            )
+        payload = json.dumps(values).encode("utf-8")
         request = urllib_request(
             "https://api.openai.com/v1/responses",
             payload,
@@ -466,11 +528,15 @@ class HostedLLMClient:
             )
         return parse_json_object(str(text))
 
-    def _anthropic(self, prompt: str) -> dict[str, object]:
+    def _anthropic(
+        self, prompt: str, *, output_budget: int | None = None
+    ) -> dict[str, object]:
         payload = json.dumps(
             {
                 "model": self.model,
-                "max_tokens": 4096,
+                "max_tokens": 4096
+                if output_budget is None
+                else _hosted_output_budget(output_budget),
                 "messages": [
                     {
                         "role": "user",
@@ -622,6 +688,14 @@ def parse_json_object(text: str) -> dict[str, object]:
             ) from None
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
+    return value
+
+
+def _hosted_output_budget(value: int, *, minimum: int = 1) -> int:
+    if type(value) is not int or not minimum <= value <= 16384:
+        raise ValueError(
+            f"Hosted output budget must be an integer from {minimum} to 16384."
+        )
     return value
 
 

@@ -394,7 +394,8 @@ def test_parallel_mode_never_salvages_malformed_structured_output(monkeypatch, t
         client._apple_batcher.close()
 
 
-def test_batch_builds_a_fresh_decoder_for_each_original_schema(monkeypatch):
+@pytest.mark.parametrize("budgets", [None, [6000, 1200]])
+def test_batch_builds_a_fresh_decoder_for_each_original_schema(monkeypatch, budgets):
     from Backend.Core import providers
 
     schemas = [
@@ -424,18 +425,27 @@ def test_batch_builds_a_fresh_decoder_for_each_original_schema(monkeypatch):
     monkeypatch.setitem(sys.modules, "outlines.backends.llguidance", backend_module)
     monkeypatch.setattr(providers, "_mlx_json_prompt", lambda tokenizer, prompt: prompt)
     captured = []
+    options = []
     monkeypatch.setattr(
         providers,
         "generate_batch",
-        lambda model, tokenizer, prompts, decoders, cancelled: (
-            captured.append(decoders) or ["left", "right"]
+        lambda model, tokenizer, prompts, decoders, cancelled, **kwargs: (
+            options.append(kwargs) or captured.append(decoders) or ["left", "right"]
         ),
     )
     client = HostedLLMClient(provider="apple", model="fixture", api_key="")
     client._apple_structured_model = object()
-    assert client._mlx_batch_structured_responses(
-        [("first", schemas[0]), ("second", schemas[1])], Event()
-    ) == ["left", "right"]
+    requests = [("first", schemas[0]), ("second", schemas[1])]
+    if budgets is not None:
+        requests = [
+            (*request, budget)
+            for request, budget in zip(requests, budgets, strict=True)
+        ]
+    assert client._mlx_batch_structured_responses(requests, Event()) == [
+        "left",
+        "right",
+    ]
     assert decoded_schemas == schemas
     assert processors[0] is not processors[1]
     assert captured == [processors]
+    assert options == [{} if budgets is None else {"output_budgets": budgets}]

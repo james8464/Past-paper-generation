@@ -352,8 +352,9 @@ def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, p
 
 @pytest.mark.parametrize("duplicate", [False, True])
 @pytest.mark.parametrize("chat", [False, True])
+@pytest.mark.parametrize("budget", [None, 14000])
 def test_apple_structured_decoder_caches_adapter_not_generation_state(
-    monkeypatch, duplicate, chat
+    monkeypatch, duplicate, chat, budget
 ):
     calls = []
     adapters = []
@@ -406,11 +407,11 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(
     if duplicate:
         schema["properties"] = {"answer": {"type": "array", "uniqueItems": True}}
         with pytest.raises(ValueError, match="required output schema"):
-            client._mlx_structured_response("prompt", schema)
+            client._mlx_structured_response("prompt", schema, budget)
         return
     for _ in range(2):
         assert (
-            client._mlx_structured_response("unformatted prompt", schema)
+            client._mlx_structured_response("unformatted prompt", schema, budget)
             == '{"answer":"ready"}'
         )
     assert len(adapters) == 1
@@ -419,7 +420,7 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(
     assert calls[0] == (
         "formatted conversation" if chat else "unformatted prompt",
         {"schema": schema},
-        {"backend": "llguidance", "max_tokens": 4096, "verbose": False},
+        {"backend": "llguidance", "max_tokens": budget or 4096, "verbose": False},
     )
 
 

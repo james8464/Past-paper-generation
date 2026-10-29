@@ -249,7 +249,9 @@ def test_ordinary_positive_authoring_payload_and_repair_settings_match_legacy(
         ),
     ],
 )
-def test_hosted_api_payloads_remain_identical(provider, response, monkeypatch):
+def test_hosted_api_payloads_preserve_transport_except_owned_budget(
+    provider, response, monkeypatch
+):
     _, Contract, make, call = api()
     captured = []
 
@@ -262,7 +264,14 @@ def test_hosted_api_payloads_remain_identical(provider, response, monkeypatch):
         provider=provider, model="fixture", api_key="fixture-only-not-a-real-key"
     )
     client.generate_json("Exact prompt")
-    call(client, make("Exact prompt", Contract("review")))
+    request = make("Exact prompt", Contract("review"))
+    call(client, request)
+    key = "max_output_tokens" if provider == "openai" else "max_tokens"
+    assert captured[1][1].pop(key) == request.output_budget
+    if provider == "openai":
+        assert key not in captured[0][1]
+    else:
+        assert captured[0][1].pop(key) == 4096
     assert captured[0] == captured[1]
 
 
@@ -302,7 +311,8 @@ def test_mlx_uses_owned_ids_and_keeps_them_during_repair(monkeypatch):
     _, Contract, make, call = api()
     schemas, prompts = [], []
 
-    def structured(_self, prompt, schema):
+    def structured(_self, prompt, schema, output_budget):
+        assert output_budget == 1024
         schemas.append(schema)
         prompts.append(prompt)
         ids = ["9/9/9"] if len(schemas) == 1 else ["0/0/0", "0/0/1"]
