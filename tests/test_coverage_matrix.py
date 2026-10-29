@@ -156,3 +156,43 @@ def test_catalog_availability_is_owned_only_by_registry() -> None:
         if family["advertised"]
     }
     assert advertised_keys <= catalog_keys
+
+
+@pytest.mark.parametrize(
+    "engineering, visual, empirical, expected",
+    [
+        ("passed", "passed", "passed", "empirically-calibrated"),
+        ("not_applicable", "not_applicable", "not_applicable", "implemented"),
+        ("passed", "not_applicable", "not_applicable", "engineering-validated"),
+        ("passed", "passed", "not_applicable", "visually-calibrated"),
+        ("not_applicable", "passed", "not_applicable", "visually-calibrated"),
+        ("not_applicable", "not_applicable", "passed", "empirically-calibrated"),
+        ("passed", "not_applicable", "passed", "empirically-calibrated"),
+        ("failed", "passed", "passed", "implemented"),
+        ("not_run", "passed", "passed", "implemented"),
+        ("passed", "failed", "passed", "engineering-validated"),
+        ("passed", "not_run", "passed", "engineering-validated"),
+        ("not_applicable", "not_run", "passed", "implemented"),
+    ],
+)
+def test_qualification_labels_require_observation_and_satisfied_prerequisites(
+    engineering, visual, empirical, expected
+):
+    registry = copy.deepcopy(load_json(GENERATOR_REGISTRY))
+    implementation = registry["families"][0]
+    for paper in implementation["papers"]:
+        for level, state in zip(
+            ("engineering", "visual", "empirical"),
+            (engineering, visual, empirical),
+            strict=True,
+        ):
+            paper["qualification"][level]["state"] = state
+    original = copy.deepcopy(registry)
+    result = family(
+        build_matrix(load_json(LAYOUT_PROFILES), registry), implementation["id"]
+    )
+    assert all(paper["status"] == expected for paper in result["papers"])
+    assert result["status"] == (
+        "verified" if expected == "empirically-calibrated" else "implemented"
+    )
+    assert registry == original
