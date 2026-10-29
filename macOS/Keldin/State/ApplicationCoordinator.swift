@@ -339,7 +339,7 @@ final class ApplicationCoordinator: ObservableObject {
         let scoped = source.startAccessingSecurityScopedResource()
         defer { if scoped { source.stopAccessingSecurityScopedResource() } }
         do {
-            try KeldinMigration.importData(from: source, defaults: defaults)
+            try KeldinMigration.importData(from: source, defaults: defaults, distributionMode: distributionMode)
             restoreRecentDocuments(presentation: presentation)
             status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
         } catch {

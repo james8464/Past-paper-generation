@@ -5,6 +5,37 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    func testStoreMigrationNeverReadsLegacyPreferenceDomainAndStillImportsSelectedFiles() throws {
+        for mode in [DistributionMode.appStore, .direct] {
+            for manualImport in [false, true] {
+                let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationDomain-\(UUID().uuidString)")
+                defer { try? FileManager.default.removeItem(at: root) }
+                let manager = MigrationTestFileManager(root: root)
+                let source = root.appendingPathComponent("selected-old-folder")
+                try manager.createDirectory(at: source, withIntermediateDirectories: true)
+                let original = Data("retained original PDF".utf8)
+                try original.write(to: source.appendingPathComponent("paper.pdf"))
+                let defaults = isolatedDefaults()
+                defaults.set(AIProvider.apple.rawValue, forKey: AppStorageKey.aiProvider)
+                var queriedDomains: [String] = []
+                let readLegacy: (UserDefaults, String) -> [String: Any]? = { _, domain in
+                    queriedDomains.append(domain)
+                    return [AppStorageKey.aiProvider: AIProvider.ollama.rawValue, AppStorageKey.ollamaModel: "legacy-fixture"]
+                }
+                if manualImport {
+                    try KeldinMigration.importData(from: source, defaults: defaults, fileManager: manager, distributionMode: mode, legacyDomainReader: readLegacy)
+                    let destination = root.appendingPathComponent("Library/Application Support/Keldin/paper.pdf")
+                    XCTAssertEqual(try Data(contentsOf: destination), original)
+                    XCTAssertEqual(try Data(contentsOf: source.appendingPathComponent("paper.pdf")), original)
+                } else {
+                    XCTAssertTrue(KeldinMigration.prepare(defaults: defaults, fileManager: manager, distributionMode: mode, legacyDomainReader: readLegacy).isEmpty)
+                }
+                XCTAssertEqual(queriedDomains, mode == .direct ? [KeldinMigration.legacyBundleID] : [])
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.aiProvider), AIProvider.apple.rawValue)
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), mode == .direct ? "legacy-fixture" : nil)
+            }
+        }
+    }
     func testArtifactCollisionNeverSubstitutesDifferentDestinationBytes() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationCollision-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
@@ -268,4 +299,21 @@ final class MigrationTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: destination), bytes)
     }
 
+}
+
+private final class MigrationTestFileManager: FileManager, @unchecked Sendable {
+    private let root: URL
+
+    init(root: URL) {
+        self.root = root
+        super.init()
+    }
+
+    override var homeDirectoryForCurrentUser: URL { root }
+
+    override func homeDirectory(forUser userName: String) -> URL? { root }
+
+    override func urls(for directory: SearchPathDirectory, in domainMask: SearchPathDomainMask) -> [URL] {
+        [root.appendingPathComponent("Library/Application Support")]
+    }
 }
