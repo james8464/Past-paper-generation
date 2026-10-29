@@ -172,13 +172,22 @@ class QualificationManifest(BaseModel):
             dir=path.parent,
         )
         temporary = Path(temporary_name)
+        stream = None
         try:
-            with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            stream = os.fdopen(descriptor, "w", encoding="utf-8")
+            with stream:
                 stream.write(self.canonical_json() + "\n")
                 stream.flush()
                 os.fsync(stream.fileno())
             os.replace(temporary, path)
         except BaseException as error:
+            if stream is None:
+                try:
+                    os.close(descriptor)
+                except OSError as close_error:
+                    error.add_note(
+                        f"Temporary manifest descriptor cleanup failed: {close_error}"
+                    )
             try:
                 temporary.unlink(missing_ok=True)
             except OSError as cleanup_error:
