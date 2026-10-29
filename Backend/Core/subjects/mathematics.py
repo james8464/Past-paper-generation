@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ast
+import math
 import re
 from dataclasses import dataclass
 from decimal import Decimal, localcontext
@@ -84,6 +86,18 @@ def compare_mathematical_answers(
             (
                 f"unit {candidate.unit or 'none'} does not match {expected.unit or 'none'}",
             ),
+        )
+
+    required_figures = expected.significant_figures
+    if required_figures is None:
+        required_figures = candidate.significant_figures
+    if required_figures is not None and (
+        type(required_figures) is not int
+        or required_figures <= 0
+        or _literal_significant_figures(candidate.expression) != required_figures
+    ):
+        return AnswerComparison(
+            False, ("answer does not use the required significant figures",)
         )
 
     try:
@@ -206,6 +220,7 @@ def _parse(expression: str, variables: tuple[str, ...] = ()) -> sympy.Expr:
     normalized = expression.replace("^", "**").strip()
     if not normalized or not _SAFE_EXPRESSION.fullmatch(normalized):
         raise ValueError("expression contains unsupported characters")
+    _validate_expression_syntax(normalized, variables)
     inferred_names = set(re.findall(r"\b[A-Za-z][A-Za-z0-9_]*\b", normalized))
     inferred_names -= {"sin", "cos", "tan", "log", "exp", "sqrt", "pi", "E"}
     declared_names = set(variables) or inferred_names
@@ -226,6 +241,7 @@ def _parse(expression: str, variables: tuple[str, ...] = ()) -> sympy.Expr:
         normalized,
         local_dict=local_symbols,
         global_dict={
+            "__builtins__": {},
             "Symbol": sympy.Symbol,
             "Integer": sympy.Integer,
             "Float": sympy.Float,
@@ -239,6 +255,55 @@ def _parse(expression: str, variables: tuple[str, ...] = ()) -> sympy.Expr:
     if variables and undeclared:
         raise ValueError(f"undeclared symbol: {sorted(undeclared)[0]}")
     return parsed
+
+
+def _validate_expression_syntax(expression: str, variables: tuple[str, ...]) -> None:
+    tree = ast.parse(expression, mode="eval")
+    allowed = (
+        ast.Expression,
+        ast.BinOp,
+        ast.UnaryOp,
+        ast.Add,
+        ast.Sub,
+        ast.Mult,
+        ast.Div,
+        ast.Pow,
+        ast.UAdd,
+        ast.USub,
+        ast.Name,
+        ast.Load,
+        ast.Call,
+        ast.Constant,
+    )
+    functions = {"sin", "cos", "tan", "log", "exp", "sqrt"}
+    for name in variables:
+        if not name.isidentifier() or name.startswith("_") or "__" in name:
+            raise ValueError("unsupported mathematical variable name")
+    for node in ast.walk(tree):
+        if not isinstance(node, allowed):
+            raise ValueError("expression contains unsupported mathematical syntax")
+        if isinstance(node, ast.Name) and (node.id.startswith("_") or "__" in node.id):
+            raise ValueError("private names are not mathematical variables")
+        if isinstance(node, ast.Call) and (
+            not isinstance(node.func, ast.Name)
+            or node.func.id not in functions
+            or node.keywords
+        ):
+            raise ValueError("only declared mathematical functions may be called")
+        if isinstance(node, ast.Constant) and (
+            type(node.value) not in {int, float}
+            or (isinstance(node.value, float) and not math.isfinite(node.value))
+        ):
+            raise ValueError("mathematical literals must be finite numbers")
+
+
+def _literal_significant_figures(expression: str) -> int | None:
+    value = expression.strip()
+    if not re.fullmatch(r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?", value):
+        return None
+    mantissa = value.lower().split("e", 1)[0].lstrip("+-")
+    digits = mantissa.replace(".", "").lstrip("0")
+    return len(digits) if digits else 1
 
 
 def _marking_rules(value: Any) -> tuple[MarkingRule, ...]:
