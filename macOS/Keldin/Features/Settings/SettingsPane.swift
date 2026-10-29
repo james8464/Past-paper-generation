@@ -12,7 +12,7 @@ struct SettingsPane: View {
 
     var body: some View {
         TabView(selection: $selectedPane) {
-            AISettingsTab()
+            AISettingsTab(presentation: application.settingsPresentation)
                 .tabItem {
                     Label("AI", systemImage: "sparkles")
                 }
@@ -162,6 +162,7 @@ private struct SettingsWindowConfiguration: NSViewRepresentable {
 }
 
 private struct AISettingsTab: View {
+    @ObservedObject var presentation: SettingsActionPresentation
     @Environment(\.openWindow) private var openWindow
     @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
@@ -171,8 +172,8 @@ private struct AISettingsTab: View {
         Form {
             Section("Provider") {
                 Picker("Provider", selection: Binding(
-                    get: { application.aiProvider },
-                    set: { application.selectAIProvider($0, presentation: application.settingsPresentation) }
+                    get: { presentation.providerSelection(active: application.aiProvider) },
+                    set: { application.selectAIProvider($0, presentation: presentation) }
                 )) {
                     ForEach(AIProvider.allCases) { provider in
                         Text(provider.title).tag(provider)

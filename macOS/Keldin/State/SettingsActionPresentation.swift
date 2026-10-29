@@ -32,6 +32,11 @@ final class SettingsActionPresentation: ObservableObject {
         return false
     }
 
+    func providerSelection(active: AIProvider) -> AIProvider {
+        if case let .hostedConsent(provider) = request?.kind { return provider }
+        return active
+    }
+
     func activate() {
         guard case let .inactive(error) = phase else { return }
         phase = error.map(Phase.presented) ?? .idle

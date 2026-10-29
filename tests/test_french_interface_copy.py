@@ -77,6 +77,9 @@ def test_document_commands_do_not_target_the_document_behind_a_guide():
     assert "downloadPresentation.presentationDidDismiss(id: requestID)" in settings
     assert ".focusedSceneObject(presentation)" in settings
     assert "presentation: application.settingsPresentation" in settings
+    assert "AISettingsTab(presentation: application.settingsPresentation)" in settings
+    assert "@ObservedObject var presentation: SettingsActionPresentation" in settings
+    assert "presentation.providerSelection(active: application.aiProvider)" in settings
     assert "MainWindowRouting.navigate(.help(.choosingAModel)" in settings
     main = (APP / "Navigation/ContentView.swift").read_text()
     assert "showPullConfirmation" not in main

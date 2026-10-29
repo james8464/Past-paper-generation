@@ -2,6 +2,31 @@ import XCTest
 @testable import Keldin
 
 final class FinalInterfaceGuardTests: XCTestCase {
+    @MainActor
+    func testSettingsProviderSelectionTracksPendingConsentWithoutChangingActiveProvider() throws {
+        let presentation = SettingsActionPresentation()
+        let active = AIProvider.ollama
+        presentation.activate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+        presentation.requestConsent(for: .openAI)
+        let first = try XCTUnwrap(presentation.request)
+        XCTAssertEqual(presentation.providerSelection(active: active), .openAI)
+        presentation.presentationDidDismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .openAI)
+        presentation.dismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+
+        presentation.requestConsent(for: .anthropic)
+        let second = try XCTUnwrap(presentation.request)
+        presentation.dismiss(id: first.id)
+        XCTAssertEqual(presentation.providerSelection(active: active), .anthropic)
+        XCTAssertEqual(presentation.request?.id, second.id)
+        presentation.deactivate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+        presentation.activate()
+        XCTAssertEqual(presentation.providerSelection(active: active), .ollama)
+    }
+
     func testMainOwnedPresentationAllowsRecoveryFromAnotherScene() {
         XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: true, mainSceneIsFocused: false))
         XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: .board, applicationModal: true, mainSceneIsFocused: true))
