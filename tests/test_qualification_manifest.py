@@ -182,3 +182,24 @@ def test_manifest_closes_descriptor_when_stream_construction_fails(tmp_path):
     with pytest.raises(OSError, match="Bad file descriptor"):
         os.fstat(descriptors[0])
     assert list(tmp_path.iterdir()) == []
+
+
+@pytest.mark.parametrize("gates", [(), ("",), ("   ",), ("pdf", "pdf")])
+def test_policy_rejects_empty_blank_or_duplicate_gates(gates):
+    with pytest.raises(ValidationError):
+        QualificationPolicy(levels={"engineering": gates})
+
+
+def test_policy_rejects_an_empty_level_mapping():
+    with pytest.raises(ValidationError):
+        QualificationPolicy(levels={})
+
+
+@pytest.mark.parametrize("bypass", ["mutation", "construct"])
+def test_empty_policy_never_qualifies_through_constructor_bypass(bypass):
+    if bypass == "construct":
+        policy = QualificationPolicy.model_construct(levels={"engineering": ()})
+    else:
+        policy = QualificationPolicy(levels={"engineering": ("generation",)})
+        policy.levels["engineering"] = ()
+    assert manifest().is_qualified("engineering", policy) is False

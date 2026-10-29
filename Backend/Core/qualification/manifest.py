@@ -93,6 +93,20 @@ class QualificationPolicy(BaseModel):
     schema_version: int = 1
     levels: dict[QualificationLevel, tuple[str, ...]]
 
+    @field_validator("levels")
+    @classmethod
+    def require_nonempty_distinct_gates(
+        cls, value: dict[QualificationLevel, tuple[str, ...]]
+    ) -> dict[QualificationLevel, tuple[str, ...]]:
+        if not value:
+            raise ValueError("qualification policy must define at least one level")
+        for level, gates in value.items():
+            if not gates or any(not gate.strip() for gate in gates):
+                raise ValueError(f"qualification {level} requires nonempty gate names")
+            if len(set(gates)) != len(gates):
+                raise ValueError(f"qualification {level} contains duplicate gates")
+        return value
+
     @classmethod
     def load(cls, path: Path) -> QualificationPolicy:
         return cls.model_validate_json(path.read_text(encoding="utf-8"))
@@ -147,13 +161,14 @@ class QualificationManifest(BaseModel):
         level: QualificationLevel,
         policy: QualificationPolicy,
     ) -> bool:
-        return all(
+        required = policy.required_gates(level)
+        return bool(required) and all(
             self.gate_results.get(gate)
             in {
                 GateState.PASSED,
                 GateState.NOT_APPLICABLE,
             }
-            for gate in policy.required_gates(level)
+            for gate in required
         )
 
     def canonical_json(self) -> str:
