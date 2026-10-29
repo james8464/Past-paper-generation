@@ -383,3 +383,9 @@ The separate six-file review/build-boundary record covers the ledger producer,
 its tests, Ruff, dependency lists and CI. It records remaining limits such as
 version-tagged Actions and direct writes of regenerable ledger metadata. These
 reviews can support exact-byte ledger entries; they do not clear unreviewed files.
+
+The separate bookmark follow-up at `7fc9f427` reports failure to save output-folder
+access in the initiating scene. Its injected failure regression failed before
+the fix; the focused native gate passed 76 tests. Successful saved bytes, selected
+path and security-scope options are unchanged. This fixes the silent failure
+recorded as outside the earlier scene-routing package.

@@ -3560,8 +3560,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793238437.6776009,
-    "ast_hash": "54e15af1854ff15ba04b88b2def25923",
+    "mtime": 1793238957.1515105,
+    "ast_hash": "eea6823e8a032a2666f03eb09e0436f5",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793237889.8008692,
-    "ast_hash": "00bf9b3f908d9487e559c906807e92a6",
+    "mtime": 1793239022.6950715,
+    "ast_hash": "f6b8fa8c7d4723394738edbc7f4220cb",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793238130.6880934,
-    "ast_hash": "f608183c9810329b1f0be7a396d9e88e",
+    "mtime": 1793239022.6961925,
+    "ast_hash": "51d830fcbbd3fd90336a22fbd2fd03d6",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -3885,8 +3885,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-28-implementation-quality-audit.md": {
-    "mtime": 1793238671.0116146,
-    "ast_hash": "9dc45988d026ecdac809316aee3ad5dd",
+    "mtime": 1793239148.298314,
+    "ast_hash": "6ebe2fe2a65536623ce09e59dffe30e5",
     "semantic_hash": ""
   },
   "macOS/Tests/HistoryStorageTests.swift": {
@@ -4370,8 +4370,8 @@
     "semantic_hash": ""
   },
   "docs/quality/window-settings-release-acceptance-2026-10-29.md": {
-    "mtime": 1793238671.011143,
-    "ast_hash": "38d9102fb73ac7fde75f7922bd2e8a07",
+    "mtime": 1793239148.2988832,
+    "ast_hash": "e5bcbf152f36bc8a4893be039931d0d9",
     "semantic_hash": ""
   }
 }
