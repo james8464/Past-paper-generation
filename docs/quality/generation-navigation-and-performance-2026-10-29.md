@@ -20,8 +20,12 @@ runtime, not learner completion time.
 
 - The initial native regression run reproduced three failures. The implementation
   and additional boundary tests then passed.
-- Final native run: 278 tests, one opt-in interaction test skipped, no failures.
-  Log: `tmp/navigation-eta-final2.log`.
+- Final native run: 279 tests, one opt-in interaction test skipped, no failures.
+  Log: `tmp/navigation-eta-rapid-green.log`. A later regression test reproduced
+  a three-second ETA jump after only 0.05 seconds between progress events. The
+  smoothing interval now uses actual elapsed time, without rounding up to one
+  second. Red log: `tmp/navigation-eta-rapid-red.log`. The earlier 278-test run is
+  retained in `tmp/navigation-eta-final2.log`.
 - A separate opt-in run used the real ContentView with an isolated defaults suite,
   temporary history and a controlled backend. Computer control selected History,
   Documents, French practice and a different UK board while generation remained

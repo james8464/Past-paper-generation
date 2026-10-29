@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793281093.7717357,
-    "ast_hash": "b07f1e6024a5f8b55951e47168ca0218",
+    "mtime": 1793283414.4920318,
+    "ast_hash": "1d4d3929d94c3e5e0172793e1b78296c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3510,8 +3510,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationEstimator.swift": {
-    "mtime": 1793282051.3075264,
-    "ast_hash": "7d5211d14d27823c622425f6136cddb5",
+    "mtime": 1793283836.85985,
+    "ast_hash": "71215926335b9e14efda55729a84441b",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793281093.6901813,
-    "ast_hash": "f33d442359a485481ac49982747699dd",
+    "mtime": 1793283414.3869703,
+    "ast_hash": "650c98f93a94210b32fb4a73a1a75eaf",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4530,8 +4530,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationEstimatorTests.swift": {
-    "mtime": 1793283170.2717803,
-    "ast_hash": "6483ee6bca5135ebc98e59257527272b",
+    "mtime": 1793283774.9998598,
+    "ast_hash": "60844b9b59cdf7a19b964c331ebb4820",
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
@@ -4540,8 +4540,8 @@
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
-    "mtime": 1793283393.9667287,
-    "ast_hash": "e9b07e3bfd5bd0f7f212c3fc97e86289",
+    "mtime": 1793283876.124828,
+    "ast_hash": "b89cdade79cd6c25917517207e5648f3",
     "semantic_hash": ""
   }
 }

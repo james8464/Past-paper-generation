@@ -3,6 +3,17 @@ import XCTest
 @testable import Keldin
 
 final class GenerationEstimatorTests: XCTestCase {
+    func testRapidProgressEventsUseActualElapsedTimeForSmoothing() {
+        let start = Date(timeIntervalSince1970: 1_000)
+        let initial = GenerationEstimate(startedAt: start, totalSeconds: 600,
+            remainingSeconds: 600, confidence: 0.5, factors: [])
+        let first = GenerationEstimator.update(estimate: initial, progress: 0.1,
+            now: start.addingTimeInterval(100))
+        let next = GenerationEstimator.update(estimate: first, progress: 0.9,
+            now: start.addingTimeInterval(100.05))
+        XCTAssertLessThanOrEqual(abs(next.remainingSeconds - first.remainingSeconds), 0.151)
+    }
+
     func testSlowReviewDoesNotKeepPromisingOneSecondRemaining() {
         let estimate = GenerationEstimate(startedAt: Date(), totalSeconds: 60,
             remainingSeconds: 0.5, confidence: 0.5, factors: [],

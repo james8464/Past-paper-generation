@@ -133,7 +133,7 @@ enum GenerationEstimator {
         let changed = estimate.lastObservedProgress != currentProgress
         guard now != previousUpdate || changed else { return estimate }
         let elapsed = max(0, now.timeIntervalSince(estimate.startedAt))
-        let interval = max(changed ? 1 : 0, now.timeIntervalSince(previousUpdate))
+        let interval = now.timeIntervalSince(previousUpdate)
         var updated = estimate
         var targetRemaining = max(0, estimate.totalSeconds - elapsed)
         if currentProgress > EstimateTuning.observedProgressThreshold {
