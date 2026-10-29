@@ -11,18 +11,22 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError as SchemaValidationError
+from pydantic import ValidationError as ModelValidationError
 
 from Backend.Core.education_context import NSI_2027, NSI_CONTEXT
 from Backend.Core.france.corpus import HOSTS
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
+    TOPICS,
     NSIExercise,
     authoring_schema,
     require_authoring_fields,
 )
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
+from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, request_json
 from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.scoped_references import ReferenceIndex
@@ -84,6 +88,44 @@ def exercise_request(
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
     schema["properties"]["minutes"] = {"type": "integer", "const": 70}
     schema["properties"]["target_points"] = {"type": "string", "const": "6"}
+    schema["properties"]["topics"]["items"] = {"type": "string", "enum": sorted(TOPICS)}
+    question = schema["$defs"]["NSIQuestion"]["properties"]
+    question["curriculum_codes"]["items"] = {
+        "type": "string",
+        "enum": sorted(CURRICULUM_OBJECTIVES),
+    }
+    contracts = []
+    for kind, fields in {
+        "human": {},
+        "sql": {
+            "schema": {"type": "string", "maxLength": 8000},
+            "query": {"type": "string", "maxLength": 8000},
+            "expected": {},
+        },
+        "python_trace": {
+            "code": {"type": "string", "maxLength": 8000},
+            "variable": {"type": "string"},
+            "expected": {},
+        },
+        "shortest_path": {
+            "edges": schema["$defs"]["NSIWeightedGraphMaterial"]["properties"]["edges"],
+            "start": {"type": "string"},
+            "end": {"type": "string"},
+            "directed": {"type": "boolean"},
+            "material_id": {"type": "string"},
+            "expected": {"type": "integer", "minimum": 0},
+        },
+    }.items():
+        properties = {"kind": {"type": "string", "const": kind}, **fields}
+        contracts.append(
+            {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": properties,
+                "required": list(properties),
+            }
+        )
+    question["verification"] = {"oneOf": contracts}
     prompt = (
         "Rédige entièrement un exercice ORIGINAL de NSI, Terminale générale, en français. "
         "Invente le contexte, les données, les documents, les questions, leurs réponses "
@@ -94,7 +136,12 @@ def exercise_request(
         "indicatifs de langue sont séparés et ne figurent pas dans ces 6 points. "
         "Évalue un domaine principal différent de ceux déjà couverts, avec des étapes "
         "de raisonnement, construction et justification, sans remplir des pages à vide. "
-        "Respecte les capacités du programme et les bornes du schéma. Donne les données "
+        "Respecte les capacités du programme et les bornes du schéma. "
+        "Dans topics, utilise les noms des domaines, pas les codes des capacités. "
+        "La somme des points des questions doit valoir 6 et chaque barème doit totaliser "
+        "les points de sa question. La somme estimated_minutes doit valoir 70. Prévois "
+        "au moins trois opérations différentes, dont deux parmi analyse, design, debug, "
+        "justify; au plus une question recall et au moins une difficulté 4. Donne les données "
         "nécessaires, des tableaux ou graphes structurés, et des fragments Python "
         "syntaxiquement complets dans des blocs ```python. Aucun import, accès fichier, "
         "réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
@@ -123,7 +170,7 @@ def exercise_request(
         schema,
         generation_seed=seed,
         temperature=0.6,
-        output_budget=14000,
+        output_budget=8192,
     )
 
 
@@ -144,8 +191,8 @@ def _safe_python(text: str) -> None:
 def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
     if not isinstance(raw, dict) or len(json.dumps(raw, ensure_ascii=False)) > 160000:
         raise ValueError("Exercice NSI absent ou trop volumineux")
-    require_authoring_fields(raw)
     Draft202012Validator(exercise_request(exercise_id, 0, []).schema).validate(raw)
+    require_authoring_fields(raw)
     exercise = NSIExercise.model_validate(raw)
     if (
         exercise.id != exercise_id
@@ -310,6 +357,69 @@ def _validate_references(references: list[dict]) -> None:
         raise ValueError("Programme et sujet officiel requis")
 
 
+def _author(client, request, exercise_id):
+    """Regenerate one malformed structure; never patch its answer or rubric."""
+    rejected = []
+    for attempt in (1, 2):
+        raw = request_json(client, request)
+        try:
+            exercise = validate_authored_exercise(raw, exercise_id)
+        except (SchemaValidationError, ModelValidationError) as error:
+            issue = str(error).split("\n\n")[0][:1800]
+            if attempt == 2:
+                raise GenerationEvidenceError(
+                    f"L'exercice {exercise_id} reste mal structuré après deux tentatives : {issue}",
+                    details={
+                        "kind": "french_authoring_structure",
+                        "exercise_id": exercise_id,
+                        "attempts": [
+                            {
+                                "attempt": i + 1,
+                                "response_sha256": item["response_sha256"],
+                                "raw_response": json.dumps(
+                                    item["response"], ensure_ascii=False
+                                ),
+                                "issue": item["issue"],
+                            }
+                            for i, item in enumerate(
+                                [
+                                    *rejected,
+                                    {
+                                        "response": raw,
+                                        "response_sha256": _digest(raw),
+                                        "issue": issue,
+                                    },
+                                ]
+                            )
+                        ],
+                    },
+                ) from error
+            rejected.append(
+                {"response": raw, "response_sha256": _digest(raw), "issue": issue}
+            )
+            request = GenerationRequest(
+                request.prompt
+                + "\nREGENERATION: Le brouillon ne respecte pas le contrat: "
+                + issue
+                + ". Rédige un nouvel exercice entier conforme aux mêmes contraintes. "
+                "Ne complète pas les données manquantes avec un sujet prédéfini.",
+                request.operation,
+                request.schema,
+                generation_seed=request.generation_seed,
+                attempt=2,
+                temperature=request.temperature,
+                output_budget=request.output_budget,
+            )
+            continue
+        return exercise, {
+            "exercise_id": exercise_id,
+            "attempts": attempt,
+            "accepted_sha256": _digest(exercise.model_dump(mode="json")),
+            "rejected": rejected,
+        }
+    raise AssertionError("unreachable authoring attempt")
+
+
 def _review(
     client: JSONGenerationClient,
     exercise: NSIExercise,
@@ -322,11 +432,13 @@ def _review(
         GenerationRequest(
             "Résous indépendamment cet exercice NSI en français. Aucun corrigé n'est fourni. "
             "Signale dans issues toute ambiguïté ou donnée manquante, sans l'inventer.\n"
-            + json.dumps(exercise.candidate_view(), ensure_ascii=False),
+            + json.dumps(exercise.candidate_view(), ensure_ascii=False)
+            + "\nOUTPUT_SCHEMA="
+            + json.dumps(blind_schema, ensure_ascii=False),
             "french_nsi_authoring",
             blind_schema,
             generation_seed=seed,
-            output_budget=12000,
+            output_budget=6000,
         ),
     )
     Draft202012Validator(blind_schema).validate(blind)
@@ -349,11 +461,13 @@ def _review(
                     "references": references,
                 },
                 ensure_ascii=False,
-            ),
+            )
+            + "\nOUTPUT_SCHEMA="
+            + json.dumps(review_schema, ensure_ascii=False),
             "french_nsi_authoring",
             review_schema,
             generation_seed=seed,
-            output_budget=6000,
+            output_budget=4096,
         ),
     )
     Draft202012Validator(review_schema).validate(review)
@@ -393,23 +507,22 @@ def generate(
                 )
             )
     _validate_references(references)
-    exercises, reviews = [], []
+    exercises, reviews, attempts = [], [], []
     topics: set[str] = set()
     for identifier in ("1", "2", "3"):
         if progress:
             progress(f"Rédaction originale de l'exercice {identifier} par {model}")
-        exercise = validate_authored_exercise(
-            request_json(
-                client,
-                exercise_request(
-                    identifier,
-                    seed + int(identifier),
-                    references,
-                    previous_topics=sorted(topics),
-                ),
+        exercise, authoring = _author(
+            client,
+            exercise_request(
+                identifier,
+                seed + int(identifier),
+                references,
+                previous_topics=sorted(topics),
             ),
             identifier,
         )
+        attempts.append(authoring)
         if not set(exercise.topics) - topics:
             raise ValueError("Les exercices ne couvrent pas trois domaines distincts")
         topics.update(exercise.topics)
@@ -424,6 +537,7 @@ def generate(
         "exercises": [item.model_dump(mode="json") for item in exercises],
         "references": references,
         "reviews": reviews,
+        "authoring_attempts": attempts,
         "checks": checks,
         "warnings": warnings,
         "language_rubric": LANGUAGE_RUBRIC_2027,
@@ -499,6 +613,30 @@ def validate_package(package: dict) -> list[NSIExercise]:
         raise ValueError("Trois contrôles indépendants requis")
     for exercise, review in zip(exercises, reviews, strict=True):
         _validate_review(exercise, review)
+    attempts = package.get("authoring_attempts")
+    if not isinstance(attempts, list) or len(attempts) != 3:
+        raise ValueError("Historique de rédaction absent")
+    for exercise, record in zip(exercises, attempts, strict=True):
+        if (
+            not isinstance(record, dict)
+            or record.get("exercise_id") != exercise.id
+            or type(record.get("attempts")) is not int
+            or record["attempts"] not in (1, 2)
+            or record.get("accepted_sha256")
+            != _digest(exercise.model_dump(mode="json"))
+            or not isinstance(record.get("rejected"), list)
+            or len(record["rejected"]) != record["attempts"] - 1
+        ):
+            raise ValueError("Historique de rédaction incohérent")
+        for rejected in record["rejected"]:
+            if (
+                not isinstance(rejected, dict)
+                or not isinstance(rejected.get("issue"), str)
+                or not rejected["issue"]
+                or len(rejected["issue"]) > 1800
+                or rejected.get("response_sha256") != _digest(rejected.get("response"))
+            ):
+                raise ValueError("Premier brouillon modifié")
     checks, warnings = _verification_evidence(exercises)
     if package.get("checks") != checks or package.get("warnings") != warnings:
         raise ValueError("Résultats des vérifications ou limites modifiés")

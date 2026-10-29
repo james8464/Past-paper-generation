@@ -136,11 +136,60 @@ def test_requests_use_typed_schema_and_no_fixed_question_or_answer_bank(tmp_path
     for request in client.requests[::3]:
         assert "Invente le contexte" in request.prompt
         assert "Réponse développée" not in request.prompt
-        assert request.output_budget == 14000
+        assert request.output_budget == 8192
     assert {item["category"] for item in package["references"]} == {
         "programme",
         "official_paper",
     }
+
+
+def test_authoring_grammar_exposes_the_taxonomy_and_contract_keys():
+    from jsonschema import Draft202012Validator
+
+    from Backend.Core.france.nsi import CURRICULUM_OBJECTIVES, TOPICS
+
+    schema = subject.exercise_request("1", 42, []).schema
+    assert set(schema["properties"]["topics"]["items"]["enum"]) == TOPICS
+    question = schema["$defs"]["NSIQuestion"]["properties"]
+    assert set(question["curriculum_codes"]["items"]["enum"]) == set(
+        CURRICULUM_OBJECTIVES
+    )
+    raw = raw_exercise()
+    raw["questions"][0]["verification"] = {"type": "human"}
+    assert list(Draft202012Validator(schema).iter_errors(raw))
+
+
+def test_one_structural_regeneration_does_not_patch_answers_or_relax_marks(tmp_path):
+    class Retry(Client):
+        def generate_request(self, request):
+            result = super().generate_request(request)
+            if "id" in request.schema["properties"] and request.attempt == 1:
+                result["topics"] = ["SD-LINEAIRE"]
+            return result
+
+    client = Retry()
+    package = generate(tmp_path, client)
+    authors = [
+        request for request in client.requests if "id" in request.schema["properties"]
+    ]
+    assert [request.attempt for request in authors] == [1, 2] * 3
+    assert all(
+        "REGENERATION" in request.prompt for request in authors if request.attempt == 2
+    )
+    assert all("Réponse développée" not in request.prompt for request in authors)
+    assert [item["attempts"] for item in package["authoring_attempts"]] == [2, 2, 2]
+    assert len(subject.validate_package(package)) == 3
+
+
+def test_second_invalid_structural_response_stops_without_review_or_catalogue(tmp_path):
+    from Backend.Core.generation_diagnostics import GenerationEvidenceError
+
+    client = Client(mutate=lambda raw: raw.update(topics=["not-a-topic"]))
+    with pytest.raises(GenerationEvidenceError) as failure:
+        generate(tmp_path, client)
+    assert len(client.requests) == 2
+    assert len(failure.value.details["attempts"]) == 2
+    assert isinstance(failure.value.__cause__, SchemaValidationError)
 
 
 @pytest.mark.parametrize(
