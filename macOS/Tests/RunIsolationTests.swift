@@ -5,6 +5,35 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testMLXParallelSettingIsIndependentSavedAndCapturedBeforeAnActiveJob() throws {
+        for enabled in [false, true] {
+            let backend = ControlledRunBackend()
+            let defaults = isolatedDefaults()
+            let application = application(backend: backend, defaults: defaults)
+            XCTAssertFalse(application.settingsStore.parallelMLXGeneration)
+            application.setParallelLocalReviews(true)
+            application.setParallelMLXGeneration(enabled)
+            XCTAssertEqual(defaults.bool(forKey: AppStorageKey.parallelMLXGeneration), enabled)
+            let restored = self.application(backend: ControlledRunBackend(), defaults: defaults)
+            XCTAssertEqual(restored.settingsStore.parallelMLXGeneration, enabled)
+            application.aiProvider = .apple
+            application.setDryRun(true)
+            application.generate()
+            let request = try XCTUnwrap(backend.requests.first)
+            XCTAssertEqual(request.environment["KELDIN_PARALLEL_MLX_GENERATION"], enabled ? "1" : "0")
+            XCTAssertEqual(request.environment["KELDIN_PARALLEL_LOCAL_REVIEWS"], "1")
+            let provenance = try XCTUnwrap(application.generationCoordinator.activeJob?.provenance)
+            XCTAssertNil(provenance.localReviewWorkers)
+            XCTAssertEqual(provenance.localGenerationWorkers, enabled ? 2 : 1)
+            application.setParallelMLXGeneration(!enabled)
+            XCTAssertEqual(application.settingsStore.parallelMLXGeneration, enabled)
+            application.cancelGeneration()
+            application.setParallelMLXGeneration(!enabled)
+            XCTAssertEqual(defaults.bool(forKey: AppStorageKey.parallelMLXGeneration), !enabled)
+        }
+    }
+
+    @MainActor
     func testParallelReviewSettingIsSavedAndCapturedWithoutChangingAnActiveJob() throws {
         let backend = ControlledRunBackend()
         let defaults = isolatedDefaults()
@@ -17,6 +46,7 @@ final class RunIsolationTests: XCTestCase {
         let request = try XCTUnwrap(backend.requests.first)
         XCTAssertEqual(request.environment["KELDIN_PARALLEL_LOCAL_REVIEWS"], "1")
         XCTAssertEqual(application.generationCoordinator.activeJob?.provenance.localReviewWorkers, 2)
+        XCTAssertEqual(application.generationCoordinator.activeJob?.provenance.localGenerationWorkers, 2)
         application.setParallelLocalReviews(false)
         XCTAssertTrue(application.settingsStore.parallelLocalReviews)
         application.cancelGeneration()

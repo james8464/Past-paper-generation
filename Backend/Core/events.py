@@ -9,6 +9,7 @@ import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from threading import RLock
 from typing import Any
 
 from Backend.Core.legacy_migration import environment_value
@@ -16,6 +17,7 @@ from Backend.Core.legacy_migration import environment_value
 PROTOCOL_VERSION = 2
 BACKEND_VERSION = "2.0.0"
 _EVENT_IDS = itertools.count(1)
+_EMIT_LOCK = RLock()
 
 
 @dataclass(frozen=True)
@@ -36,15 +38,17 @@ class GenerationUpdate:
 
 
 def emit(event_type: str, **payload: Any) -> None:
-    envelope = {
-        "protocol": PROTOCOL_VERSION,
-        "type": event_type,
-        "event_id": next(_EVENT_IDS),
-        "timestamp": datetime.now(UTC).isoformat(),
-        "job_id": environment_value("KELDIN_JOB_ID", ""),
-        **payload,
-    }
-    print(json.dumps(envelope, ensure_ascii=False), flush=True)
+    # One event owns its ID and the whole JSON line, including newline/flush.
+    with _EMIT_LOCK:
+        envelope = {
+            "protocol": PROTOCOL_VERSION,
+            "type": event_type,
+            "event_id": next(_EVENT_IDS),
+            "timestamp": datetime.now(UTC).isoformat(),
+            "job_id": environment_value("KELDIN_JOB_ID", ""),
+            **payload,
+        }
+        print(json.dumps(envelope, ensure_ascii=False), flush=True)
 
 
 def emit_progress(

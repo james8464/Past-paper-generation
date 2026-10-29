@@ -26,7 +26,8 @@ enum GenerationEstimator {
         model: String,
         dryRun: Bool,
         benchmark: BenchmarkVerdict?,
-        recentRuns: [GenerationJobRecord] = []
+        recentRuns: [GenerationJobRecord] = [],
+        localGenerationWorkers: Int = 1
     ) -> GenerationEstimate {
         let benchmark = benchmark.flatMap { verdict in
             verdict.validatedScore != nil ? verdict : nil
@@ -94,6 +95,7 @@ enum GenerationEstimator {
                     && $0.configuration.paperID == paper.id
                     && $0.configuration.provider == provider.backendID
                     && $0.configuration.model == model && $0.configuration.dryRun == dryRun
+                    && $0.provenance.effectiveLocalGenerationWorkers == localGenerationWorkers
             }
             .sorted { $0.createdAt > $1.createdAt }
             .compactMap { run -> TimeInterval? in

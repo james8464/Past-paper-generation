@@ -48,6 +48,24 @@ def _batch_schema_object(schema: dict[str, Any], *path: str) -> dict[str, Any]:
     return value
 
 
+def _batch_schema_identifiers(array: dict[str, Any]) -> object:
+    item = _batch_schema_object(array, "items")
+    if "anyOf" not in item:
+        return _batch_schema_object(item, "properties", "id").get("enum")
+    variants = item.get("anyOf")
+    if not isinstance(variants, list) or not variants:
+        raise ValueError("batch schema must match its owned identifiers")
+    identifiers = []
+    for variant in variants:
+        if not isinstance(variant, dict) or variant.get("type") != "object":
+            raise ValueError("batch schema must match its owned identifiers")
+        values = _batch_schema_object(variant, "properties", "id").get("enum")
+        if not isinstance(values, list) or len(values) != 1:
+            raise ValueError("batch schema must match its owned identifiers")
+        identifiers.extend(values)
+    return identifiers
+
+
 @dataclass(frozen=True)
 class OutputContract:
     operation: str
@@ -61,6 +79,7 @@ class OutputContract:
     part_count: int = 0
     scenario_only: bool = False
     credit_allocations: tuple[tuple[str, int, int], ...] = ()
+    authoring_shapes: tuple[tuple[str, str], ...] = ()
 
     def __post_init__(self) -> None:
         if not isinstance(self.operation, str) or self.operation not in OPERATIONS:
@@ -75,6 +94,24 @@ class OutputContract:
                 raise ValueError("batch contract requires one to six owned identifiers")
         elif self.identifiers:
             raise ValueError("identifiers require a batch operation")
+        if type(self.authoring_shapes) is not tuple:
+            raise ValueError("authoring shapes must be an immutable tuple")
+        if self.authoring_shapes:
+            if self.operation != "authoring" or any(
+                type(row) is not tuple
+                or len(row) != 2
+                or not isinstance(row[0], str)
+                or not isinstance(row[1], str)
+                or row[1] not in {"multiple_choice", "constructed_response"}
+                for row in self.authoring_shapes
+            ):
+                raise ValueError(
+                    "authoring shapes require owned IDs and supported response kinds"
+                )
+            if tuple(row[0] for row in self.authoring_shapes) != self.identifiers:
+                raise ValueError(
+                    "authoring shapes must match every owned identifier in order"
+                )
         for name in ("mark_schemes_locked", "immutable_marking", "scenario_only"):
             if type(getattr(self, name)) is not bool:
                 raise ValueError(f"{name} must be Boolean")
@@ -190,9 +227,7 @@ class GenerationRequest:
             OutputContract(operation, identifiers=expected_ids)
             field_name = "questions" if operation == "authoring" else "reviews"
             array = _batch_schema_object(schema, "properties", field_name)
-            identifiers = _batch_schema_object(array, "items", "properties", "id").get(
-                "enum"
-            )
+            identifiers = _batch_schema_identifiers(array)
             _integer(array.get("minItems"), "batch minItems", minimum=1)
             _integer(array.get("maxItems"), "batch maxItems", minimum=1)
             if (

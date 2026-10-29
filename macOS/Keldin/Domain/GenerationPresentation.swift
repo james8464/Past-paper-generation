@@ -16,6 +16,24 @@ enum GenerationPresentation {
     }
 
     static func progress(_ message: String, language: String = "system") -> String {
+        switch message {
+        case "Apple MLX is decoding two tasks together.":
+            return localized("Apple MLX is working on two tasks.", language: language)
+        case "Apple MLX is using serial decoding for this model or prompt pair.":
+            return localized("Apple MLX is working on one task at a time for this model or these prompts.", language: language)
+        default:
+            break
+        }
+        if let range = message.range(of: #"^Accepted [0-9]+ of [0-9]+ AI (items|questions)$"#, options: .regularExpression),
+           range == (message.startIndex..<message.endIndex) {
+            let words = message.split(separator: " ")
+            if let completed = Int(words[1]), let total = Int(words[3]),
+               total > 0, completed <= total {
+                return words[5] == "questions"
+                    ? localized("Questions checked: \(completed) of \(total)", language: language)
+                    : localized("Items checked: \(completed) of \(total)", language: language)
+            }
+        }
         if message == "Construction des exercices vérifiés, sans appel à un modèle." {
             return localized("Preparing the practice paper.", language: language)
         }
@@ -40,17 +58,28 @@ enum GenerationPresentation {
         return localized("Rechecking question \(number)", language: language)
     }
 
-    static func error(_ message: String, language: String = "system") -> String {
+    static func error(_ message: String, code: String? = nil, language: String = "system") -> String {
         if message.hasPrefix("Les cinq familles disponibles sont trop proches des sujets précédents.") {
             return localized("None of the five paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
         }
         if message.hasPrefix("Les quatre familles disponibles sont trop proches des sujets précédents.") {
             return localized("None of the four paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
         }
-        guard message.hasPrefix("AI could not produce a valid, second-pass reviewed item for question ") else {
+        guard isGenerationQualityFailure(message, code: code) else {
             return message
         }
-        return localized("This model couldn't create a paper that passed the quality checks. No new paper was published. Try another model. You can copy diagnostics from Tools.", language: language)
+        return localized("The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.", language: language)
+    }
+
+    private static func isGenerationQualityFailure(_ message: String, code: String?) -> Bool {
+        guard code == "generation_failed" else { return false }
+        // Only the actual failure line classifies the error, never a path or
+        // diagnostic body that happens to mention an assessment check.
+        let line = String(message.prefix(while: { $0 != "\n" && $0 != "\r" }))
+        let identifier = #"(?:question |question-|verified contract )?[0-9][0-9A-Za-z()./_-]{0,63}"#
+        let failures = #"(?:failed independent solution reconciliation:|failed reference-demand review:|failed second-pass assessment review:|failed assessment review:|independent answer disagrees with the keyed option(?:$|:))"#
+        return line.range(of: "^\(identifier) \(failures)", options: .regularExpression) != nil
+            || line.range(of: #"^AI could not produce a valid, second-pass reviewed item for question [0-9][0-9A-Za-z()./_-]{0,63}:"#, options: .regularExpression) != nil
     }
 
     static func completion(_ message: String, language: String = "system") -> String {

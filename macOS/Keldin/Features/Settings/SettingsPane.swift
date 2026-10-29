@@ -264,6 +264,7 @@ private struct AISettingsTab: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                Link("Configure parallel requests in Ollama", destination: URL(string: "https://docs.ollama.com/faq")!)
 
                 if application.selectedModelIsRecommended {
                     Label("Recommended model selected", systemImage: "checkmark.seal.fill")
@@ -324,6 +325,14 @@ private struct AISettingsTab: View {
         case .apple:
             Section("Apple MLX") {
                 TextField("Model ID or path", text: $application.appleModel)
+                Toggle("Parallel MLX generation", isOn: Binding(
+                    get: { application.settingsStore.parallelMLXGeneration },
+                    set: { application.setParallelMLXGeneration($0) }
+                ))
+                Text("Run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
                 Text("Use a Hugging Face model ID or the path to a model already on this Mac. Keldin offers guided setup before the first live generation with each model.")
                     .foregroundStyle(.secondary)
                 Text("Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks.")

@@ -1163,6 +1163,12 @@
       "review_evidence_sha256": "c472b24feceb968224a9a24e3d19c1aa0187ed66cee254f050567baa498e57e7"
     },
     {
+      "path": "Backend/Core/mlx_batching.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/mlx_setup.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -2765,6 +2771,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/backend-event-concurrency-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/calibration-tooling-boundaries-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -2784,6 +2796,12 @@
     },
     {
       "path": "docs/quality/consolidated-release-acceptance-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/coordinate-choice-duplicate-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3101,6 +3119,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/local-generation-batching-acceptance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/local-parallel-reviews-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3108,6 +3132,12 @@
     },
     {
       "path": "docs/quality/merged-native-integrity-acceptance-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/mlx-batching-design-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3275,6 +3305,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/solver-choice-validity-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/teacher-feedback-review-2026-09-27.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3294,6 +3330,12 @@
     },
     {
       "path": "docs/quality/topic-reference-support-2026-09-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/trusted-authoring-response-shape-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4637,6 +4679,12 @@
       "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
     },
     {
+      "path": "tests/test_authoring_response_shapes.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_build_cleanup_safety.py",
       "classification": "test",
       "status": "reviewed",
@@ -4710,6 +4758,12 @@
     },
     {
       "path": "tests/test_configured_family.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_coordinate_choice_duplicates.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4794,6 +4848,12 @@
     },
     {
       "path": "tests/test_essay_subjects.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_events_concurrency.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5525,6 +5585,18 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_mlx_batching.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_mlx_matrix_identity.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_mlx_setup.py",
       "classification": "test",
       "status": "pending",
@@ -5774,6 +5846,12 @@
       "review_evidence_sha256": "c472b24feceb968224a9a24e3d19c1aa0187ed66cee254f050567baa498e57e7"
     },
     {
+      "path": "tests/test_solver_choice_validity.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_source_candidate_paths.py",
       "classification": "test",
       "status": "pending",
@@ -5941,11 +6019,8 @@
     {
       "path": "tools/live_generation_matrix.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Fixed acceptance of contradictory events. Fresh and resumed results now require an error-free parsed-event stream with exactly one final completion. A zero exit code does not override an error event or timeout. Retained request, model, event and artifact identities remain checked.",
-      "source_sha256": "0d9f36b5379bcf8ab38e0d2dcabf8592a3409851757678c82a5dd30eb772aa01",
-      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tools/live_process.py",

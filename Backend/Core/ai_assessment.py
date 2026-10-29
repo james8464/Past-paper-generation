@@ -73,7 +73,7 @@ _question_uses_option_source = _assessment_prompts.question_uses_option_source
 _SEMANTIC_STOPWORDS = _assessment_prompts._SEMANTIC_STOPWORDS
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v7-trusted-generation-requests"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v9-coordinate-choice-duplicates"
 
 
 class AssessmentLLMClient(JSONGenerationClient, Protocol):
@@ -506,6 +506,8 @@ def _validate_checkpoint_item(
     demand_profile: ReferenceDemandProfile | None = None,
 ) -> None:
     original = task.question
+    if candidate.kind == "multiple_choice":
+        _require_unique_mcq_choices(candidate.choices, candidate.number)
     if (
         original.authoring_context.get("preserve_prompt")
         and candidate.prompt != original.prompt
@@ -649,6 +651,14 @@ def _generate_item_transaction(
                             "preserve_mark_scheme"
                         )
                         is True,
+                        authoring_shapes=(
+                            (
+                                task.id,
+                                "multiple_choice"
+                                if task.question.kind == "multiple_choice"
+                                else "constructed_response",
+                            ),
+                        ),
                     ),
                     generation_seed=seed,
                     attempt=attempt,
@@ -983,6 +993,27 @@ def _parse_batch(
     return candidates
 
 
+def _choice_identity(choice: str) -> tuple[str, ...]:
+    normalised = " ".join(choice.casefold().split())
+    # Only these two account noun phrases share one explicit predicate. Do not
+    # reorder debit/credit clauses or treat a whole sentence as a bag of words.
+    coordinate = re.fullmatch(
+        r"(.+\b(?:increases|decreases)) "
+        r"(the (?:[a-z]+ ){0,4}account) and "
+        r"(the (?:[a-z]+ ){0,4}account)\.?",
+        normalised,
+    )
+    if coordinate:
+        prefix, left, right = coordinate.groups()
+        return (prefix, *sorted((left, right)))
+    return (normalised,)
+
+
+def _require_unique_mcq_choices(choices: list[str], number: str) -> None:
+    if len({_choice_identity(choice) for choice in choices}) != len(choices):
+        raise ValueError(f"question {number} requires four unique choices")
+
+
 def _candidate_question(
     task: _Task,
     raw: dict[str, Any],
@@ -1146,6 +1177,7 @@ def _candidate_question(
                     rendered_choices[correct_choice],
                 )
         _validate_mcq_prompt_options(original, prompt, rendered_choices)
+        _require_unique_mcq_choices(rendered_choices, original.number)
     else:
         rendered_choices = []
         correct_choice = None

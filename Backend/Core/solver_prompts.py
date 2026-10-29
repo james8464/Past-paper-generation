@@ -18,6 +18,17 @@ def build_solver_prompt(
     correction_findings: Sequence[dict[str, Any]] | None = None,
     sql_contract_present: bool = False,
 ) -> str:
+    is_choice = (
+        solver_item.get("kind") == "multiple_choice"
+        and bool(solver_item.get("choices"))
+        and not response_slots
+    )
+    fields = (
+        "steps, answer, mark_points, evidence_ids, alternatives, "
+        "partial_credit_boundaries, follow_through_rules"
+    )
+    if is_choice:
+        fields += ", has_single_valid_choice"
     response_instructions = (
         " For a closed response (response_slots supplied), answer and "
         "mark_points must EACH be a JSON object mapping EVERY supplied "
@@ -35,6 +46,16 @@ def build_solver_prompt(
         else " For multiple choice, mark_points must contain exactly one string: "
         "the same selected option as answer. Put reasoning in steps."
     )
+    if is_choice:
+        response_instructions += (
+            " Independently derive the result before checking ALL public options. "
+            "Set has_single_valid_choice to true only if exactly one option is valid. "
+            "Set it to false if none is correct or more than one is correct, even "
+            "when the options are worded differently. Never choose a closest answer "
+            "to conceal invalid options. With false, use any supplied option as the "
+            "required answer/mark_points placeholder; this response is rejected, "
+            "not treated as a solution. Explain the defect in steps."
+        )
     correction = ""
     if correction_findings:
         if not sql_contract_present:
@@ -52,9 +73,11 @@ def build_solver_prompt(
         "result and cite only the supplied evidence IDs; when sources is "
         "empty, evidence_ids must be an empty array. For multiple choice, "
         "return the complete option text rather than its number or letter. "
-        "Return exactly one JSON object with these seven top-level fields, "
-        "and no others: steps, answer, mark_points, evidence_ids, alternatives, "
-        "partial_credit_boundaries, follow_through_rules. Every field is required; "
+        "Return exactly one JSON object with these "
+        + ("eight" if is_choice else "seven")
+        + " top-level fields, and no others: "
+        + fields
+        + ". Every field is required; "
         "every array must be present explicitly even when empty; do not return null. "
         "Follow every independent_solver_instructions entry in authoring_context; "
         "derive its requested facts solely from candidate-visible inputs and show "

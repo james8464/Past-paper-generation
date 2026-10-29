@@ -58,7 +58,7 @@ class CapturingClient:
 
     def generate_request(self, request):
         self.requests.append(request)
-        return {
+        result = {
             "steps": ["Use the supplied public information."],
             "answer": copy.deepcopy(self.answer),
             "mark_points": copy.deepcopy(self.answer)
@@ -69,6 +69,9 @@ class CapturingClient:
             "partial_credit_boundaries": [],
             "follow_through_rules": [],
         }
+        if "has_single_valid_choice" in request.schema.get("properties", {}):
+            result["has_single_valid_choice"] = True
+        return result
 
 
 def capture_snapshots():
@@ -172,7 +175,7 @@ def capture_snapshots():
     return {name: _snapshot(request) for name, request in prompts.items()}
 
 
-def test_exact_prompt_bytes_and_trusted_metadata_match_pre_refactor_snapshot():
+def test_exact_prompt_bytes_and_trusted_metadata_match_current_policy_snapshot():
     expected = json.loads(GOLDEN.read_text(encoding="utf-8"))
     assert capture_snapshots() == expected
 

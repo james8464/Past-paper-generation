@@ -1,6 +1,30 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."}}}
+    },
+    "Apple MLX is working on two tasks.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Apple MLX traite deux tâches en parallèle."}}}
+    },
+    "Apple MLX is working on one task at a time for this model or these prompts.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Apple MLX traite une tâche à la fois pour ce modèle ou ces consignes."}}}
+    },
+    "Parallel MLX generation": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération MLX en parallèle"}}}
+    },
+    "Run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Exécute jusqu’à deux tâches MLX avec un seul modèle. Cette option utilise plus de mémoire ; les modèles non compatibles traitent une tâche à la fois."}}}
+    },
+    "Configure parallel requests in Ollama": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Configurer les requêtes parallèles dans Ollama"}}}
+    },
+    "Questions checked: %lld of %lld": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Questions vérifiées : %1$lld sur %2$lld"}}}
+    },
+    "Items checked: %lld of %lld": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Éléments vérifiés : %1$lld sur %2$lld"}}}
+    },
     "Parallel Ollama generation": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération Ollama en parallèle"}}}
     },

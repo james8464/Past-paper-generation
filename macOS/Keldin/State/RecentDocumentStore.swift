@@ -30,6 +30,12 @@ struct GenerationProvenance: Codable, Equatable {
     let provider: String
     let model: String
     var localReviewWorkers: Int? = nil
+    // Requested cap; the provider may fall back to serial execution.
+    var localGenerationWorkers: Int? = nil
+
+    var effectiveLocalGenerationWorkers: Int {
+        localGenerationWorkers ?? localReviewWorkers ?? 1
+    }
 }
 
 struct QualificationSnapshot: Codable, Equatable {

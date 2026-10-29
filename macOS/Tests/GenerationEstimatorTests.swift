@@ -3,6 +3,35 @@ import XCTest
 @testable import Keldin
 
 final class GenerationEstimatorTests: XCTestCase {
+    func testRuntimeHistorySeparatesSerialAndParallelModesWithLegacyFallback() throws {
+        let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
+        let paper = try XCTUnwrap(board.papers.first)
+        func record(_ seconds: Double, current: Int? = nil, legacy: Int? = nil) -> GenerationJobRecord {
+            let start = Date(timeIntervalSince1970: 1_000)
+            return GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: board.id, paperID: paper.id,
+                    provider: "ollama", model: "fixture", seed: 1, dryRun: false),
+                provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture",
+                    localReviewWorkers: legacy, localGenerationWorkers: current),
+                state: .completed, artifacts: [],
+                qualification: QualificationSnapshot(engineeringValidated: true, visuallyCalibrated: false, empiricallyCalibrated: false),
+                createdAt: start, updatedAt: start.addingTimeInterval(seconds))
+        }
+        let records = [record(600), record(660, current: 1), record(300, current: 2),
+                       record(360, legacy: 2), record(340, current: 2, legacy: 1)]
+        let serial = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: false, benchmark: nil,
+            recentRuns: records, localGenerationWorkers: 1)
+        let parallel = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: false, benchmark: nil,
+            recentRuns: records, localGenerationWorkers: 2)
+        XCTAssertEqual(serial.totalSeconds, 630)
+        XCTAssertEqual(parallel.totalSeconds, 340)
+        let oldJSON = #"{"appVersion":"test","provider":"ollama","model":"fixture"}"#.data(using: .utf8)!
+        let old = try JSONDecoder().decode(GenerationProvenance.self, from: oldJSON)
+        XCTAssertEqual(old.effectiveLocalGenerationWorkers, 1)
+    }
+
     func testRapidProgressEventsUseActualElapsedTimeForSmoothing() {
         let start = Date(timeIntervalSince1970: 1_000)
         let initial = GenerationEstimate(startedAt: start, totalSeconds: 600,
