@@ -62,6 +62,13 @@ def test_rtf_unicode_and_control_characters_are_escaped():
     assert sources.rtf_text("😀") == r"\u-10179?\u-8704?"
 
 
+def test_bold_lead_in_has_an_explicit_visible_separator():
+    content = sources.body_section(
+        "Regional source", "A separate activity", formal=False
+    )
+    assert r"Regional source.\b0\~ A separate activity" in content
+
+
 def test_existing_personal_documents_are_not_overwritten(tmp_path):
     path = tmp_path / sources.APPLICATION.filename
     path.write_text("personal edits", encoding="utf-8")

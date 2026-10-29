@@ -295,7 +295,7 @@ def body_section(label: str, text: str, *, formal: bool) -> str:
         r"\pard\f0\fs20\li3800\ri0\fi-180\tx3800\sb0\sa240\sl280\slmult0 "
         + r"\u8226?\tab\b "
         + rtf_text(label)
-        + r".\b0 "
+        + r".\b0\~ "
         + rtf_text(text)
         + r"\par"
         + "\n"
