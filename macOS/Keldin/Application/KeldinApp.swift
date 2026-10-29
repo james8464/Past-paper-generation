@@ -37,6 +37,7 @@ private final class TestHostSecrets: SecretStoring {
 
 @main
 struct Keldin: App {
+    @NSApplicationDelegateAdaptor(BackendTerminationDelegate.self) private var terminationDelegate
     @StateObject private var application = AppLaunchPolicy.makeApplication()
 
     init() {

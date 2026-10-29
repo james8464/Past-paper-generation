@@ -6,6 +6,7 @@ enum BackendClientError: LocalizedError {
     case backendMissing
     case pythonMissing
     case pythonVenvUnreadable(String)
+    case shuttingDown
 
     var errorDescription: String? {
         switch self {
@@ -13,6 +14,8 @@ enum BackendClientError: LocalizedError {
             "Keldin’s generation service is missing. Reinstall the app."
         case .pythonMissing:
             "Could not find a Python interpreter."
+        case .shuttingDown:
+            String(localized: "Keldin is closing. No new generation tasks can start.")
         case let .pythonVenvUnreadable(path):
             """
             The local Python environment is not readable: \(path). \
@@ -74,15 +77,18 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
     private let bundleURL: URL
     private let distributionMode: DistributionMode
     private let developmentRoot: URL?
+    private let lifecycle: BackendProcessLifecycle
 
     init(
         bundleURL: URL = Bundle.main.bundleURL,
         distributionMode: DistributionMode = .current,
-        developmentRoot: URL? = nil
+        developmentRoot: URL? = nil,
+        lifecycle: BackendProcessLifecycle = .shared
     ) {
         self.bundleURL = bundleURL
         self.distributionMode = distributionMode
         self.developmentRoot = developmentRoot
+        self.lifecycle = lifecycle
     }
 
     func run(
@@ -103,7 +109,7 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
         process.standardOutput = pipe
         process.standardError = errorPipe
 
-        try process.run()
+        try lifecycle.launch(process)
 
         Task.detached(priority: .userInitiated) {
             let errorTask = Task.detached {
@@ -123,6 +129,7 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             await Self.emitLine(buffer.finish(), onEvent: onEvent)
 
             process.waitUntilExit()
+            self.lifecycle.finished(process)
             let stderr = await errorTask.value.trimmingCharacters(in: .whitespacesAndNewlines)
             if process.terminationStatus != 0, !stderr.isEmpty {
                 await onEvent(.error(message: Self.displayMessage(forBackendError: stderr)))
@@ -146,7 +153,7 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             process.standardOutput = pipe
             process.standardError = errorPipe
 
-            try process.run()
+            try self.lifecycle.launch(process)
 
             // Drain both pipes while the helper is running. Reading them one after
             // another can deadlock if the helper fills stderr before stdout closes.
@@ -157,6 +164,7 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
                 errorPipe.fileHandleForReading.readDataToEndOfFile()
             }
             process.waitUntilExit()
+            self.lifecycle.finished(process)
             let data = await outputTask.value
             let errorData = await errorTask.value
 
