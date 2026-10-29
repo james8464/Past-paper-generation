@@ -158,6 +158,8 @@ targets:
         type: syncedFolder
     settings:
       base:
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: Z29CKRV8C9
         INFOPLIST_FILE: Tests/Info.plist
         PRODUCT_BUNDLE_IDENTIFIER: com.jamesdurup.Keldin.Tests
     dependencies:

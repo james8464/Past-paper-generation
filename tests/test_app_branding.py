@@ -12,6 +12,27 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "macOS/Keldin"
 
 
+def test_native_test_host_and_bundle_share_the_personal_signing_team():
+    source = (ROOT / "macOS/project.yml").read_text()
+    test_target = source.split("  KeldinTests:", 1)[1]
+    assert "DEVELOPMENT_TEAM: Z29CKRV8C9" in test_target
+    assert "CODE_SIGN_STYLE: Automatic" in test_target
+    project = (ROOT / "macOS/Keldin.xcodeproj/project.pbxproj").read_text()
+    configurations = re.findall(
+        r'/\* (Debug|Release) configuration for PBXNativeTarget "(Keldin(?:Tests)?)" \*/ = \{'
+        r".*?buildSettings = \{(.*?)\n\t\t\t\};",
+        project,
+        re.DOTALL,
+    )
+    assert len(configurations) == 4
+    for configuration, target, settings in configurations:
+        assert "DEVELOPMENT_TEAM = Z29CKRV8C9;" in settings, (
+            configuration,
+            target,
+        )
+        assert "CODE_SIGN_STYLE = Automatic;" in settings
+
+
 def test_startup_migration_failure_uses_selected_language_and_preserves_copy():
     source = (APP / "Application/KeldinApp.swift").read_text()
     branch = source.split("if !failures.isEmpty {", 1)[1].split(
