@@ -899,7 +899,8 @@ final class ApplicationCoordinator: ObservableObject {
             setError("Choose an Apple MLX model in Settings, then try again.")
             return
         }
-        guard showMLXSetupConfirmation, pendingMLXDownloadInfo?.model == model else {
+        guard showMLXSetupConfirmation, let approved = pendingMLXDownloadInfo,
+              approved.model == model, approved.isValid else {
             requestMLXDownloadInfo()
             return
         }
@@ -914,9 +915,12 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer = nil
 
         let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: generationRetryTarget)
+        var arguments = ["setup-mlx", "--model", model]
+        if approved.cached { arguments.append("--local-only") }
+        if let revision = approved.revision { arguments += ["--revision", revision] }
         do {
             let process = try backend.run(
-                arguments: ["setup-mlx", "--model", model],
+                arguments: arguments,
                 environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
             ) { [weak self] event in
                 self?.apply(event, from: session)

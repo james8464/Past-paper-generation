@@ -1084,9 +1084,14 @@ struct MLXDownloadInfo: Equatable {
     let revision: String?
 
     var isValid: Bool {
-        !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        guard !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             && (0...9_007_199_254_740_991).contains(downloadBytes)
-            && (!cached || downloadBytes == 0)
+            && (!cached || downloadBytes == 0) else { return false }
+        if let revision {
+            return (40...64).contains(revision.utf8.count)
+                && revision.utf8.allSatisfy { (48...57).contains($0) || (97...102).contains($0) }
+        }
+        return cached
     }
 }
 

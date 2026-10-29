@@ -14,7 +14,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(metadata.arguments, ["mlx-download-info", "--model", "fixture/model"])
         XCTAssertEqual(metadata.environment["HF_HOME"], AppDefaults.mlxCacheFolder().path)
         XCTAssertFalse(application.showMLXSetupConfirmation)
-        metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 2_000_000_000, cached: false, revision: "abc")))
+        metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 2_000_000_000, cached: false, revision: String(repeating: "a", count: 40))))
         XCTAssertFalse(application.showMLXSetupConfirmation)
         metadata.onFinish(.success(0))
         XCTAssertTrue(application.showMLXSetupConfirmation)
@@ -22,8 +22,26 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertTrue(application.mlxSetupExplanation.contains("GB"))
         XCTAssertEqual(backend.requests.count, 1)
         application.confirmMLXSetup()
-        XCTAssertEqual(backend.requests.last?.arguments, ["setup-mlx", "--model", "fixture/model"])
+        XCTAssertEqual(backend.requests.last?.arguments, ["setup-mlx", "--model", "fixture/model", "--revision", String(repeating: "a", count: 40)])
         application.cancelGeneration()
+    }
+
+    @MainActor
+    func testCachedMLXConsentRestrictsSetupToApprovedLocalData() throws {
+        for (model, revision) in [("fixture/model", String(repeating: "a", count: 40) as String?), ("/fixture/local-model", nil)] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            application.appleModel = model
+            application.requestMLXDownloadInfo()
+            let metadata = try XCTUnwrap(backend.requests.last)
+            metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: model, downloadBytes: 0, cached: true, revision: revision)))
+            metadata.onFinish(.success(0))
+            application.confirmMLXSetup()
+            var expected = ["setup-mlx", "--model", model, "--local-only"]
+            if let revision { expected += ["--revision", revision] }
+            XCTAssertEqual(backend.requests.last?.arguments, expected)
+            application.cancelGeneration()
+        }
     }
 
     @MainActor
@@ -35,9 +53,9 @@ final class RunIsolationTests: XCTestCase {
             application.requestMLXDownloadInfo()
             let metadata = try XCTUnwrap(backend.requests.first)
             if outcome == "error" { metadata.onEvent(.error(message: "metadata unavailable", code: "mlx_download_info_failed")) }
-            if outcome == "wrong-model" { metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "other/model", downloadBytes: 4, cached: false, revision: nil))) }
+            if outcome == "wrong-model" { metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "other/model", downloadBytes: 4, cached: false, revision: String(repeating: "a", count: 40)))) }
             if outcome == "change" || outcome == "change-back" {
-                metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 4, cached: false, revision: nil)))
+                metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 4, cached: false, revision: String(repeating: "a", count: 40))))
                 application.appleModel = "changed/model"
                 if outcome == "change-back" { application.appleModel = "fixture/model" }
             }
@@ -1314,7 +1332,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(request.arguments.first, "mlx-download-info")
         request.onEvent(.mlxDownloadInfo(MLXDownloadInfo(
             model: application.appleModel.trimmingCharacters(in: .whitespacesAndNewlines),
-            downloadBytes: cached ? 0 : 1024, cached: cached, revision: "fixture"
+            downloadBytes: cached ? 0 : 1024, cached: cached, revision: String(repeating: "a", count: 40)
         )))
         request.onFinish(.success(0))
         XCTAssertTrue(application.showMLXSetupConfirmation)
