@@ -179,7 +179,9 @@ def test_choice_validity_gate_changes_checkpoint_identity(monkeypatch, tmp_path)
         provider="apple",
         model="fixture",
     )
-    assert ASSESSMENT_REVIEW_VERSION == "assessment-review-v8-single-valid-choice"
+    assert (
+        ASSESSMENT_REVIEW_VERSION == "assessment-review-v9-coordinate-choice-duplicates"
+    )
     current = generation.checkpoint_path_for_job(args, tmp_path)
     monkeypatch.setattr(
         generation,
