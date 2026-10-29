@@ -3,6 +3,7 @@
 import SwiftUI
 
 struct GenerationProgress: View {
+    @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
 
     var body: some View {
@@ -18,7 +19,7 @@ struct GenerationProgress: View {
                     ProgressView(application.status)
                 }
                 if let estimate = application.generationEstimate {
-                    Text(estimate.remainingText)
+                    Text(GenerationPresentation.estimatedTime(estimate, locale: locale))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -39,7 +40,7 @@ struct GenerationProgress: View {
             parts.append(progress.formatted(.percent.precision(.fractionLength(0))))
         }
         if let estimate = application.generationEstimate {
-            parts.append(estimate.remainingText)
+            parts.append(GenerationPresentation.estimatedTime(estimate, locale: locale))
         }
         return parts.joined(separator: ", ")
     }

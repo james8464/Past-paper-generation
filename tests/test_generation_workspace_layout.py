@@ -6,6 +6,11 @@ ROOT = Path(__file__).resolve().parents[1]
 GENERATION = ROOT / "macOS/Keldin/Features/Generation"
 
 
+def test_sidebar_navigation_is_not_disabled_during_generation():
+    sidebar = (ROOT / "macOS/Keldin/Navigation/SidebarView.swift").read_text()
+    assert ".disabled(application.isRunning)" not in sidebar
+
+
 def test_progress_is_not_inside_the_disabled_configuration_form():
     source = (GENERATION / "GeneratorWorkspaceView.swift").read_text()
     workspace, configuration = source.split("private struct PaperConfiguration:", 1)

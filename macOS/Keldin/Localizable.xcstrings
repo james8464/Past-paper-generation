@@ -4665,6 +4665,26 @@
         }
       }
     },
+    "Updating time estimate…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualisation de l’estimation…"
+          }
+        }
+      }
+    },
+    "Estimated time left: %@": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temps restant estimé : %@"
+          }
+        }
+      }
+    },
     "Taking longer than estimated": {
       "localizations": {
         "fr": {

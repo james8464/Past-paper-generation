@@ -2,6 +2,19 @@ import Foundation
 
 /// Short status text belongs in the workspace; original messages stay in diagnostics.
 enum GenerationPresentation {
+    static func estimatedTime(_ estimate: GenerationEstimate, locale: Locale) -> String {
+        let resource: LocalizedStringResource
+        if estimate.remainingSeconds <= 0 {
+            resource = "Taking longer than estimated"
+        } else if estimate.lastUpdatedAt != nil, estimate.remainingSeconds < 5,
+                  (estimate.lastObservedProgress ?? 0) < 0.9 {
+            resource = "Updating time estimate…"
+        } else {
+            resource = "Estimated time left: \(estimate.remainingText)"
+        }
+        return String(localized: InterfaceText.localizedResource(resource, locale: locale))
+    }
+
     static func progress(_ message: String, language: String = "system") -> String {
         if message == "Construction des exercices vérifiés, sans appel à un modèle." {
             return localized("Preparing the practice paper.", language: language)

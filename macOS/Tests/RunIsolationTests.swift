@@ -5,6 +5,26 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testBrowsingWhileGeneratingPreservesTheRunningPaper() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.generateFrenchPaper(largePrint: false)
+        let original = try XCTUnwrap(application.generationCoordinator.activeJob)
+        let status = application.status
+        let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != application.selectedBoardID })
+
+        application.catalogStore.show(.history)
+        XCTAssertEqual(application.sidebarSelection, .history)
+        application.selectBoard(other)
+
+        XCTAssertEqual(application.selectedBoardID, other.id)
+        XCTAssertEqual(application.generationCoordinator.activeJob, original)
+        XCTAssertEqual(application.status, status)
+        XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertTrue(application.isRunning)
+        application.cancelGeneration()
+    }
+    @MainActor
     func testBundledMLXSetupExplanationDescribesChecksAndModelPreparationInSelectedLanguage() {
         for (language, expected) in [
             ("en", "Keldin will check Apple MLX support, then download and prepare fixture/model-3B if needed. Models can use several gigabytes of storage. Generation stays on this Mac."),
