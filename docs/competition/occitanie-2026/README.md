@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 27 October 2026.
+Updated 29 October 2026.
 
 ## Formal requirement
 
@@ -10,19 +10,20 @@ The jury evaluates the relationship with Occitanie, originality, engineering cha
 
 ## Prepared files
 
-Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate the templates. Use `--output` with a fresh directory to avoid replacing completed personal forms:
+The current working dossier is in English, as requested by James. Its native Pages documents and PDF exports belong in `output/occitanie-2026/pages-english-final/`. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the technical/user and reliability/mathematical reports are supporting documents. `tools/build_occitanie_pages_sources.py` prepares the English source material for the Pages workflow. Final acceptance requires inspecting every exported page and checking the formal application's three-page limit after personal details are filled in. The English draft is not a claim that the organiser has approved its language or accepted a submission.
+
+The earlier Word templates are retained separately. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate them. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
 - `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal application (two pages before personal details; three-page maximum);
 - `Keldin-NSI-Technical-and-User-Report.docx` — technical and user dossier;
 - `Keldin-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
 
-The formal application is in French, following the organiser's form. The
-supporting technical/user and mathematical reports are in English, as requested
-by James. Matching PDFs have been rendered and visually checked page by page in
+In that older Word set, the formal application is in French and the supporting
+reports are in English. Matching PDFs were rendered and visually checked page by page in
 `output/occitanie-2026/current-20261028/`: two A4 pages for the formal application, four for
 the technical/user dossier and three for the mathematical analysis. The directory
 is intentionally ignored by Git so personal submission copies are not published
-automatically. Regenerate and reinspect the formal PDF after filling personal facts.
+automatically. These older exports do not certify the current Pages dossier.
 
 Only the three-page application is formally required. The two appendices and the demonstration video should be provided through a private link if the organisers accept supporting material. They must not cause the formal application to exceed three pages.
 
@@ -39,7 +40,7 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 ## Submission checklist
 
-- [ ] Fill the four personal facts above in the DOCX.
+- [ ] Fill the four personal facts above in the current editable application.
 - [ ] Confirm no disqualifying prior outside funding.
 - [ ] Export the edited formal application to PDF and confirm it remains at most three A4 pages.
 - [ ] Search the final PDF for comments, tracked changes and placeholders.
