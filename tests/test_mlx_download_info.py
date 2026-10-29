@@ -10,6 +10,16 @@ from Backend.Core.mlx_download_info import handle_mlx_download_info, model_downl
 from Backend.Core.mlx_setup import MLXSetupError
 
 
+def test_cli_routes_metadata_without_starting_setup():
+    from Backend.Core.cli import build_parser
+
+    args = build_parser().parse_args(
+        ["mlx-download-info", "--model", "mlx-community/example"]
+    )
+    assert args.handler is handle_mlx_download_info
+    assert args.model == "mlx-community/example"
+
+
 def no_cache(_model):
     raise MLXSetupError("not cached")
 
@@ -56,6 +66,24 @@ def test_complete_cache_works_offline_without_metadata_or_model_import(tmp_path)
     )
     assert result["cached"] is True and result["download_bytes"] == 0
     assert result["model_data_bytes"] == 7
+
+
+def test_missing_indexed_weight_shard_is_not_reported_as_cached(tmp_path):
+    (tmp_path / "config.json").write_text("{}")
+    (tmp_path / "tokenizer.json").write_text("{}")
+    (tmp_path / "model-00001-of-00002.safetensors").write_bytes(b"123")
+    (tmp_path / "model.safetensors.index.json").write_text(
+        json.dumps(
+            {
+                "weight_map": {
+                    "a": "model-00001-of-00002.safetensors",
+                    "b": "model-00002-of-00002.safetensors",
+                }
+            }
+        )
+    )
+    with pytest.raises(MLXSetupError, match="incomplete"):
+        model_download_info(str(tmp_path))
 
 
 @pytest.mark.parametrize("size", [None, True, -1, 0, 1.5, "300", 2**63])

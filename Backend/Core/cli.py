@@ -14,6 +14,7 @@ from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
 from Backend.Core.generator_registry import generator_capabilities, generator_subjects
 from Backend.Core.legacy_migration import environment_value
+from Backend.Core.mlx_download_info import handle_mlx_download_info
 from Backend.Core.mlx_setup import handle_mlx_status, handle_setup_mlx
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.ollama import (
@@ -55,6 +56,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     mlx_status = subparsers.add_parser("mlx-status")
     mlx_status.set_defaults(handler=handle_mlx_status)
+
+    mlx_info = subparsers.add_parser("mlx-download-info")
+    mlx_info.add_argument("--model", required=True)
+    mlx_info.set_defaults(handler=handle_mlx_download_info)
 
     benchmark = subparsers.add_parser("benchmark")
     benchmark.add_argument(

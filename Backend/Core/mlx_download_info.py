@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 from collections.abc import Callable
 from fnmatch import fnmatchcase
@@ -54,6 +55,26 @@ def _complete_cache(path: Path) -> tuple[bool, int]:
             for file in files
         )
     )
+    index = path / "model.safetensors.index.json"
+    if complete and index.exists():
+        # A snapshot directory can exist before every shard has arrived.
+        # Do not describe a partial download as an offline-ready cache.
+        try:
+            weights = json.loads(index.read_text(encoding="utf-8"))["weight_map"]
+            complete = (
+                isinstance(weights, dict)
+                and bool(weights)
+                and all(
+                    isinstance(name, str)
+                    and _data_file(name)
+                    and name.endswith(".safetensors")
+                    and name in names
+                    and (path / name).stat().st_size > 0
+                    for name in weights.values()
+                )
+            )
+        except (OSError, ValueError, KeyError, TypeError):
+            complete = False
     size = sum(file.stat().st_size for file in files)
     return complete and size <= _MAX_MODEL_BYTES, size
 
