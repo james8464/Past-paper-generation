@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from Backend.Core.assessment_checkpoints import (
@@ -31,7 +30,11 @@ from Backend.Core.model_review import (
 )
 from Backend.Core.providers import OllamaClient
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
-from Backend.Core.review_workers import local_generation_workers, map_reviews
+from Backend.Core.review_workers import (
+    local_generation_workers,
+    map_hosted_jobs,
+    map_reviews,
+)
 from pastpapergen.extended_scenarios import SCENARIOS
 from pastpapergen.models import (
     MultipleChoiceOption,
@@ -330,7 +333,9 @@ def generate_questions_with_ollama(
             f"{question.number} ({topic.title})",
         )
 
-    if local_workers > 1:
+    if local_workers > 1 or max_workers > 1:
+        completed_messages: dict[int, str] = {}
+        next_message = 0
         jobs = [
             (
                 index,
@@ -343,12 +348,20 @@ def generate_questions_with_ollama(
         ]
 
         def accept(index, result):
+            nonlocal next_message
             deferred = jobs[index][2]
             if deferred is not None:
                 deferred.commit()
             results[index] = result[0]
+            if local_workers == 1:
+                completed_messages[index] = result[1]
+                while next_message in completed_messages:
+                    emit(completed_messages.pop(next_message))
+                    next_message += 1
 
         def report(_index, completed):
+            if local_workers == 1:
+                return
             emit(
                 GenerationUpdate(
                     stage="checkpoint",
@@ -358,10 +371,11 @@ def generate_questions_with_ollama(
                 )
             )
 
-        map_reviews(
+        mapper = map_reviews if local_workers > 1 else map_hosted_jobs
+        mapper(
             jobs,
             lambda job: _build_task(*job),
-            workers=local_workers,
+            workers=local_workers if local_workers > 1 else max_workers,
             on_result=accept,
             progress=report,
         )
@@ -369,22 +383,6 @@ def generate_questions_with_ollama(
         for index, question in enumerate(blueprint.questions):
             results[index], message = _build_task(index, question)
             emit(message)
-    else:
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = {
-                executor.submit(_build_task, i, question): i
-                for i, question in enumerate(blueprint.questions)
-            }
-            completed_messages: dict[int, str] = {}
-            next_message = 0
-            for future in as_completed(futures):
-                question_index = futures[future]
-                results[question_index], completed_messages[question_index] = (
-                    future.result()
-                )
-                while next_message in completed_messages:
-                    emit(completed_messages.pop(next_message))
-                    next_message += 1
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
 
