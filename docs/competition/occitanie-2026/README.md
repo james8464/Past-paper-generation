@@ -51,7 +51,8 @@ Before sending, James must also confirm that he remains eligible under the exact
 ## Evidence boundaries
 
 The public French V35 path is a working prototype with five finite whole-paper
-families. It makes no AI-provider call and refuses repeated families. The
+families. It makes no AI-provider call, prefers unused families and permits
+explicitly requested repeat practice. The
 [local corpus audit](../../quality/french-nsi-corpus-rights-audit-2026-10-11.md)
 verified 81 registered files. Its 79 indexed sources comprise 77 distinct paper
 contents and two foundational documents, with 66 reference / 13 holdout sources.
@@ -73,6 +74,12 @@ graphs, backtracking allocation and blocking-channel reasoning. Sparse tails rem
 Difficulty and duration are uncalibrated. No model qualification, teacher recommendation or learner
 calibration is claimed. The technical report labels its retained screenshot as
 an earlier interface, not the current V35 workflow.
+
+An additional offline activity uses a licensed twelve-record extract from the
+Région Occitanie's 2025–2026 school dataset. Duplicate names and inconsistent
+capitalisation lead to concrete Python and SQL tasks. It exports two PDFs and
+is separate from exam generation. Source attribution and limits appear in both.
+See the [activity review](../../quality/occitanie-case-study-review-2026-10-29.md).
 
 The project does not claim endorsement by the Ministry, the Région Occitanie, the Toulouse or Montpellier academies, CentraleSupélec or any examination board. Generated files remain independently branded and marked non-official.
 
