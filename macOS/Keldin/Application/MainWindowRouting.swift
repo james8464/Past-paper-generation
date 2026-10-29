@@ -17,6 +17,7 @@ enum MainWindowRoute: Equatable {
 
 @MainActor
 protocol MainWindowNavigating: AnyObject {
+    var hasCommandBlockingPresentation: Bool { get }
     func showCreationWorkspace()
     func showDocuments()
     func showHistory()
@@ -38,6 +39,11 @@ enum MainWindowRouting {
         application: any MainWindowNavigating,
         openWindow: (MainWindowIdentity) -> Void
     ) {
+        // Reopen the existing prompt's host before accepting another action.
+        guard !application.hasCommandBlockingPresentation else {
+            openWindow(.primary)
+            return
+        }
         switch route {
         case .creation: application.showCreationWorkspace()
         case .documents: application.showDocuments()

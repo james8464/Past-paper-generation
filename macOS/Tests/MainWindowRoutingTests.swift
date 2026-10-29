@@ -4,6 +4,24 @@ import XCTest
 
 final class MainWindowRoutingTests: XCTestCase {
     @MainActor
+    func testPendingMainPresentationOnlyReopensItsHostForEveryRoute() {
+        let routes: [MainWindowRoute] = [
+            .creation, .documents, .history, .benchmark,
+            .help(.choosingAModel), .welcome,
+            .latestPreview(role: "question_paper"), .runBenchmark,
+        ]
+        for route in routes {
+            let navigator = NavigationRecorder()
+            navigator.hasCommandBlockingPresentation = true
+            MainWindowRouting.navigate(route, application: navigator) { identity in
+                XCTAssertEqual(identity, .primary)
+                navigator.calls.append("open")
+            }
+            XCTAssertEqual(navigator.calls, ["open"])
+        }
+    }
+
+    @MainActor
     func testDestinationsOpenTheStableMainIdentityAfterUpdatingSelection() {
         let cases: [(MainWindowRoute, String)] = [
             (.creation, "creation"),
@@ -55,6 +73,7 @@ final class MainWindowRoutingTests: XCTestCase {
 @MainActor
 private final class NavigationRecorder: MainWindowNavigating {
     var calls: [String] = []
+    var hasCommandBlockingPresentation = false
 
     func showCreationWorkspace() { calls.append("creation") }
     func showDocuments() { calls.append("documents") }
