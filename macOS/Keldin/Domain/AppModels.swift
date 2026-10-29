@@ -875,10 +875,15 @@ struct GenerationQualityReport: Equatable {
               let unreviewed = value["unreviewed_or_builtin_items"] as? Int,
               let unknown = value["unknown_items"] as? Int,
               items >= 0,
-              items == expectedItems,
-              [fixed, authored, stems, unreviewed, unknown].allSatisfy({ $0 >= 0 }),
-              fixed + authored + stems + unreviewed + unknown == items
+              items == expectedItems
         else { return .unknown }
+        // Consume the declared total so malformed counts cannot overflow a sum.
+        var remaining = items
+        for count in [fixed, authored, stems, unreviewed, unknown] {
+            guard count >= 0, count <= remaining else { return .unknown }
+            remaining -= count
+        }
+        guard remaining == 0 else { return .unknown }
         let kind: AuthoringProvenanceKind
         if unknown > 0 {
             kind = .unknown

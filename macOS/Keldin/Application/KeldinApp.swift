@@ -14,7 +14,10 @@ enum AppLaunchPolicy {
             let failures = KeldinMigration.prepare()
             let application = ApplicationCoordinator()
             if !failures.isEmpty {
-                application.errorMessage = "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."
+                application.errorMessage = InterfaceText.resolve(
+                    "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry.",
+                    language: UserDefaults.standard.string(forKey: "interfaceLanguage") ?? "system"
+                )
                 application.showError = true
             }
             return application
