@@ -136,7 +136,7 @@ private struct AISettingsTab: View {
                             .disabled(application.selectedModelIsRecommended)
                     } else if application.distributionMode.canManageOllama {
                         Button("Download Recommended Model…", action: application.requestRecommendedOllamaModel)
-                            .disabled(application.isRunning)
+                            .disabled(!application.canRequestModelDownload)
                     }
 
                     Button("Open Model Guide") {
@@ -183,7 +183,7 @@ private struct AISettingsTab: View {
                             TextField("Model name", text: $application.modelToPull)
                                 .frame(minWidth: 190)
                             Button("Download", action: application.requestPullModel)
-                                .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || application.isRunning || application.benchmarkCoordinator.isRunning)
+                                .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !application.canRequestModelDownload)
                         }
                     }
                 } else {

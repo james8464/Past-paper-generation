@@ -863,12 +863,14 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func pullSelectedModel() {
+        guard canRequestModelDownload else { return }
         modelToPull = selectedModel
         showPullConfirmation = true
     }
 
     func requestPullModel() {
-        guard !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard canRequestModelDownload,
+              !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         showPullConfirmation = true
     }
 
@@ -993,8 +995,13 @@ final class ApplicationCoordinator: ObservableObject {
         saveAISettings()
     }
 
+    var canRequestModelDownload: Bool {
+        distributionMode.canManageOllama && !isRunning && !benchmarkCoordinator.isRunning
+    }
+
     func requestRecommendedOllamaModel() {
-        useRecommendedOllamaModel()
+        guard canRequestModelDownload else { return }
+        modelToPull = ollamaRecommendation.model
         requestPullModel()
     }
 

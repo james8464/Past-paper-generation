@@ -5,6 +5,100 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testRecommendedDownloadRequestAndCancelPreserveTheSelectedModel() {
+        let defaults = isolatedDefaults()
+        defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, defaults: defaults)
+
+        XCTAssertTrue(application.canRequestModelDownload)
+        application.requestRecommendedOllamaModel()
+
+        XCTAssertEqual(application.modelToPull, application.ollamaRecommendation.model)
+        XCTAssertTrue(application.showPullConfirmation)
+        XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+        XCTAssertEqual(application.settingsStore.ollamaModel, "fixture/previous-model")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+        application.showPullConfirmation = false // The native Cancel dismisses this binding.
+        XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+        XCTAssertTrue(backend.requests.isEmpty)
+    }
+
+    @MainActor
+    func testExplicitUseRecommendedModelStillPersistsWithoutDownloading() {
+        let defaults = isolatedDefaults()
+        defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, defaults: defaults)
+
+        application.useRecommendedOllamaModel()
+
+        XCTAssertEqual(application.selectedModel, application.ollamaRecommendation.model)
+        XCTAssertEqual(application.settingsStore.ollamaModel, application.ollamaRecommendation.model)
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), application.ollamaRecommendation.model)
+        XCTAssertFalse(application.showPullConfirmation)
+        XCTAssertTrue(backend.requests.isEmpty)
+    }
+
+    @MainActor
+    func testModelDownloadRequestsDoNotChangeAnythingWhileWorkIsBusy() {
+        for benchmark in [false, true] {
+            let defaults = isolatedDefaults()
+            defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend, defaults: defaults)
+            if benchmark { application.startBenchmark() }
+            else { application.generateFrenchPaper(largePrint: false) }
+            application.modelToPull = "fixture/draft-tag"
+            XCTAssertFalse(application.canRequestModelDownload)
+
+            application.requestRecommendedOllamaModel()
+            application.requestPullModel()
+            application.pullSelectedModel()
+
+            XCTAssertFalse(application.showPullConfirmation)
+            XCTAssertEqual(application.modelToPull, "fixture/draft-tag")
+            XCTAssertEqual(application.selectedModel, "fixture/previous-model")
+            XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
+            XCTAssertEqual(backend.requests.count, 1)
+            if benchmark { application.cancelBenchmark() }
+            else { application.cancelGeneration() }
+        }
+    }
+
+    @MainActor
+    func testRecommendedDownloadSelectsOnlyItsCapturedSuccessfulModel() throws {
+        for outcome in ["success", "nonzero", "throw", "error", "cancel"] {
+            let defaults = isolatedDefaults()
+            defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend, defaults: defaults)
+            application.requestRecommendedOllamaModel()
+            let requested = application.modelToPull
+            application.showPullConfirmation = false
+            application.confirmPullModel()
+            let run = try XCTUnwrap(backend.requests.first)
+            application.modelToPull = "fixture/later-draft"
+            switch outcome {
+            case "success": run.onFinish(.success(0))
+            case "nonzero": run.onFinish(.success(7))
+            case "throw": run.onFinish(.failure(CocoaError(.fileReadUnknown)))
+            case "error":
+                run.onEvent(.error(message: "Fixture download failure", code: "fixture"))
+                run.onFinish(.success(0))
+            default:
+                application.cancelGeneration()
+                run.onFinish(.success(0))
+            }
+            let expected = outcome == "success" ? requested : "fixture/previous-model"
+            XCTAssertEqual(application.selectedModel, expected, outcome)
+            XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), expected, outcome)
+            XCTAssertFalse(application.isRunning)
+        }
+    }
+
+    @MainActor
     func testMLXSetupContinuesOnlyTheUnchangedLaunchTarget() throws {
         for change in ["none", "board", "paper", "provider", "model", "dryRun", "output"] {
             let backend = ControlledRunBackend()
