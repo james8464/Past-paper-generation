@@ -8,12 +8,12 @@
     "durable-derived-metadata": 14,
     "runtime-resource": 169,
     "runtime-source": 280,
-    "test": 296,
+    "test": 297,
     "test-configuration": 2,
     "tooling": 34
   },
   "forbidden": [],
   "schema_version": 1,
-  "tracked_files": 1022,
+  "tracked_files": 1023,
   "unclassified": []
 }
