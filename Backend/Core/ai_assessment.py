@@ -7,7 +7,6 @@ import logging
 import math
 import re
 from collections.abc import Callable, Iterable
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -56,7 +55,11 @@ from Backend.Core.reference_demand import (
     ReferenceDemandProfile,
     build_item_demand_target,
 )
-from Backend.Core.review_workers import local_generation_workers, map_reviews
+from Backend.Core.review_workers import (
+    local_generation_workers,
+    map_hosted_jobs,
+    map_reviews,
+)
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 # Keep established helper entry points while prompt construction has one owner.
@@ -73,7 +76,7 @@ _question_uses_option_source = _assessment_prompts.question_uses_option_source
 _SEMANTIC_STOPWORDS = _assessment_prompts._SEMANTIC_STOPWORDS
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v9-coordinate-choice-duplicates"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v11-accounting-equal-priority"
 
 
 class AssessmentLLMClient(JSONGenerationClient, Protocol):
@@ -149,7 +152,10 @@ def generate_unique_paper(
 
     generated: dict[tuple[int, int, int], GeneratedQuestion] = {}
     local_workers = local_generation_workers(client)
-    if local_workers > 1 and len(batches) > 1:
+    hosted_parallel = local_workers == 1 and getattr(
+        client, "supports_parallel_generation", False
+    )
+    if (local_workers > 1 or hosted_parallel) and len(batches) > 1:
         jobs = [
             (
                 batch,
@@ -160,6 +166,7 @@ def generate_unique_paper(
             for batch in batches
         ]
         completed_items = 0
+        completed_batches = 0
 
         def run_local(job):
             batch, deferred = job
@@ -175,12 +182,13 @@ def generate_unique_paper(
             )
 
         def accept_local(index, result):
-            nonlocal completed_items
+            nonlocal completed_items, completed_batches
             deferred = jobs[index][1]
             if deferred is not None:
                 deferred.commit()
             generated.update(result)
             completed_items += len(result)
+            completed_batches += 1
             emit(
                 GenerationUpdate(
                     stage="checkpoint",
@@ -189,48 +197,16 @@ def generate_unique_paper(
                     total_units=len(tasks),
                 )
             )
+            if hosted_parallel:
+                emit(f"Validated AI item batch {completed_batches} of {len(batches)}")
 
-        map_reviews(
+        mapper = map_hosted_jobs if hosted_parallel else map_reviews
+        mapper(
             jobs,
             run_local,
-            workers=min(local_workers, policy.max_workers),
+            workers=min(4 if hosted_parallel else local_workers, policy.max_workers),
             on_result=accept_local,
         )
-    elif getattr(client, "supports_parallel_generation", False) and len(batches) > 1:
-        with ThreadPoolExecutor(
-            max_workers=min(policy.max_workers, len(batches)),
-            thread_name_prefix="paper-items",
-        ) as executor:
-            futures = {
-                executor.submit(
-                    _generate_batch,
-                    batch,
-                    client=client,
-                    subject=subject,
-                    seed=paper.seed,
-                    policy=policy,
-                    progress=None,
-                    checkpoint_store=checkpoint_store,
-                    demand_profile=demand_profile,
-                ): batch
-                for batch in batches
-            }
-            completed_items = 0
-            for completed, future in enumerate(as_completed(futures), start=1):
-                batch_result = future.result()
-                generated.update(batch_result)
-                completed_items += len(batch_result)
-                emit(
-                    GenerationUpdate(
-                        stage="checkpoint",
-                        message=(
-                            f"Accepted {completed_items} of {len(tasks)} AI items"
-                        ),
-                        completed_units=completed_items,
-                        total_units=len(tasks),
-                    )
-                )
-                emit(f"Validated AI item batch {completed} of {len(batches)}")
     else:
         completed_items = 0
         for index, batch in enumerate(batches, start=1):

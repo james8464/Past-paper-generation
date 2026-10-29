@@ -4,6 +4,33 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testOccitanieBackendStatusesFollowInterfaceLanguageAndKeepRawDiagnostics() {
+        let preparation = "Préparation de l'extrait public d'Occitanie"
+        let cancellation = "Création de l'activité annulée"
+        for (language, preparing, cancelled, completed) in [
+            ("en", "Preparing the Occitanie case study", "Occitanie case study cancelled.", "Occitanie case study created. Separate activity, without an exam mark."),
+            ("fr", "Préparation de l’étude de cas Occitanie", "Création de l’activité annulée.", "Étude de cas Occitanie créée. Activité indépendante, sans note d’examen."),
+        ] {
+            let defaults = isolatedDefaults()
+            defaults.set(language, forKey: "interfaceLanguage")
+            let application = isolatedApplication(defaults: defaults)
+            application.apply(.progress(stage: "occitanie_case_study", message: preparation, progress: 0.1))
+            XCTAssertEqual(application.status, preparing)
+            XCTAssertEqual(application.progressEntries.last?.message, preparation)
+            application.apply(.progress(stage: "cancel", message: cancellation, progress: 0))
+            XCTAssertEqual(application.status, cancelled)
+            XCTAssertEqual(application.progressEntries.last?.message, cancellation)
+            for completion in [
+                "Activité Occitanie créée. Document indépendant, sans note d'examen.",
+                "Activité Occitanie créée. Document indépendant, sans note d’examen.",
+            ] {
+                application.apply(.done(message: completion))
+                XCTAssertEqual(application.status, completed)
+                XCTAssertEqual(application.progressEntries.last?.message, completion)
+            }
+        }
+    }
+    @MainActor
     func testExplicitGenerationQualityRefusalsShowRecoveryCopyWithoutLosingDetails() throws {
         let english = "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools."
         let french = "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."

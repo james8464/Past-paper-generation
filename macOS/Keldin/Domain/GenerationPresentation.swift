@@ -17,6 +17,10 @@ enum GenerationPresentation {
 
     static func progress(_ message: String, language: String = "system") -> String {
         switch message {
+        case "Préparation de l'extrait public d'Occitanie", "Préparation de l’extrait public d’Occitanie":
+            return localized("Preparing the Occitanie case study", language: language)
+        case "Création de l'activité annulée", "Création de l’activité annulée":
+            return localized("Occitanie case study cancelled.", language: language)
         case "Apple MLX is decoding two tasks together.":
             return localized("Apple MLX is working on two tasks.", language: language)
         case "Apple MLX is using serial decoding for this model or prompt pair.":
@@ -83,6 +87,12 @@ enum GenerationPresentation {
     }
 
     static func completion(_ message: String, language: String = "system") -> String {
+        if [
+            "Activité Occitanie créée. Document indépendant, sans note d'examen.",
+            "Activité Occitanie créée. Document indépendant, sans note d’examen.",
+        ].contains(message) {
+            return localized("Occitanie case study created. Separate activity, without an exam mark.", language: language)
+        }
         guard message == "Sujet d'entraînement créé. Barème indicatif, difficulté et durée non calibrées." else {
             return message
         }

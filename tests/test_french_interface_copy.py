@@ -148,3 +148,42 @@ def test_alerts_sheets_and_settings_receive_the_selected_locale():
     settings = (APP / "Features/Settings/SettingsPane.swift").read_text()
     assert '@AppStorage("interfaceLanguage")' in settings
     assert ".environment(\\.locale" in settings
+
+
+def test_generation_recovery_and_preview_limits_have_french_copy():
+    expected = {
+        "Action required": "Action nécessaire",
+        "Cancel paper creation": "Annuler la création du sujet",
+        "Create Again with New Questions": "Créer un autre sujet avec de nouvelles questions",
+        "Create a layout preview": "Créer un aperçu de la mise en page",
+        "Open Settings…": "Ouvrir Réglages…",
+        "Ollama is not running.": "Ollama n’est pas en cours d’exécution.",
+    }
+    for key, french in expected.items():
+        assert translated(key) == french
+    for key in (
+        "Preview layout without contacting an AI provider. Preview questions are not release output.",
+        "Layout preview checks pagination without using AI. Its placeholder questions are not finished papers.",
+    ):
+        french = translated(key)
+        assert "sans" in french
+        assert "ne constituent pas un sujet final" in french
+
+
+def test_workspace_model_warning_keeps_the_guides_quality_limit():
+    source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    guide = json.loads(
+        (ROOT / "Resources/ollama-model-recommendations.json").read_text()
+    )
+    warning = guide["other_model_warning"]
+    assert f'"{warning}"' in source
+    assert "for the checked workflow" not in source
+    assert "pas encore passé un contrôle de qualité complet" in translated(warning)
+
+
+def test_quality_notice_does_not_claim_reference_rights_are_cleared():
+    source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    notice = "Unofficial practice material. Review the questions and reference permissions before sharing."
+    assert notice in source
+    assert "not copyrighted paper content" not in source
+    assert "autorisations des sources" in translated(notice)

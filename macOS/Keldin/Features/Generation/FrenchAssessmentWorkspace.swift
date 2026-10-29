@@ -128,6 +128,12 @@ struct FrenchAssessmentWorkspace: View {
                         .disabled(application.isRunning)
                 }
             }
+            Section("Occitanie case study") {
+                Text("A separate French activity using 12 public school records from Occitanie. Includes an activity PDF and proposed answers, without an exam mark or official endorsement.")
+                    .foregroundStyle(.secondary)
+                Button("Create the Occitanie case study", action: application.generateOccitanieActivity)
+                    .disabled(application.isRunning || application.benchmarkCoordinator.isRunning)
+            }
             Section("Review and guidance") {
                 Text("Read both PDFs and the validation record. Check the difficulty and timing before use. Automated checks do not establish classroom suitability.")
                 Button("Record a teacher review…") { showTeacherReview = true }

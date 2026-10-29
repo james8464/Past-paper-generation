@@ -14,6 +14,7 @@ from Backend.Core.events import BACKEND_VERSION, emit
 from Backend.Core.generation import handle_generate
 from Backend.Core.generator_registry import generator_capabilities, generator_subjects
 from Backend.Core.legacy_migration import environment_value
+from Backend.Core.mlx_download_info import handle_mlx_download_info
 from Backend.Core.mlx_setup import handle_mlx_status, handle_setup_mlx
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.ollama import (
@@ -51,10 +52,16 @@ def build_parser() -> argparse.ArgumentParser:
 
     mlx_setup = subparsers.add_parser("setup-mlx")
     mlx_setup.add_argument("--model", required=True)
+    mlx_setup.add_argument("--revision")
+    mlx_setup.add_argument("--local-only", action="store_true")
     mlx_setup.set_defaults(handler=handle_setup_mlx)
 
     mlx_status = subparsers.add_parser("mlx-status")
     mlx_status.set_defaults(handler=handle_mlx_status)
+
+    mlx_info = subparsers.add_parser("mlx-download-info")
+    mlx_info.add_argument("--model", required=True)
+    mlx_info.set_defaults(handler=handle_mlx_download_info)
 
     benchmark = subparsers.add_parser("benchmark")
     benchmark.add_argument(
@@ -114,6 +121,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     assessment.add_argument("--allow-remote", action="store_true")
     assessment.set_defaults(handler=handle_framework_generate)
+    from Backend.Core.france.occitanie_case_study import handle_generate_case_study
+
+    case_study = subparsers.add_parser(
+        "generate-occitanie-case-study",
+        help="Create an offline NSI activity from public Occitanie data",
+    )
+    case_study.add_argument("--output", required=True)
+    case_study.set_defaults(handler=handle_generate_case_study)
     references = subparsers.add_parser(
         "prepare-french-references",
         help="Download the registered official French reference PDFs",

@@ -32,6 +32,18 @@ TEXT_SUFFIXES = {
     ".yaml",
 }
 
+# Apple's current reason definitions:
+# https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacyaccessedapitypes/nsprivacyaccessedapitype
+# The bundled Python imports stat/fstat, statvfs and mach_absolute_time.
+# Artifact metadata stays in app/user-selected storage; MLX checks free space,
+# benchmarks display it, and performance clocks measure local elapsed events.
+REQUIRED_RUNTIME_PRIVACY_REASONS = {
+    "NSPrivacyAccessedAPICategoryUserDefaults": {"CA92.1"},
+    "NSPrivacyAccessedAPICategoryFileTimestamp": {"C617.1", "3B52.1"},
+    "NSPrivacyAccessedAPICategoryDiskSpace": {"E174.1", "85F4.1"},
+    "NSPrivacyAccessedAPICategorySystemBootTime": {"35F9.1"},
+}
+
 
 def inspect_release_compliance(
     root: Path,
@@ -135,6 +147,30 @@ def _check_privacy_manifest(root: Path, failures: list[str]) -> bool:
         accessed = payload.get("NSPrivacyAccessedAPITypes")
         if not isinstance(accessed, list) or not accessed:
             failures.append("privacy manifest must declare required-reason APIs")
+        else:
+            declared: dict[str, set[str]] = {}
+            for entry in accessed:
+                if not isinstance(entry, dict):
+                    failures.append("privacy manifest API entries must be dictionaries")
+                    continue
+                category = entry.get("NSPrivacyAccessedAPIType")
+                reasons = entry.get("NSPrivacyAccessedAPITypeReasons")
+                if (
+                    not isinstance(category, str)
+                    or not isinstance(reasons, list)
+                    or not all(isinstance(reason, str) for reason in reasons)
+                ):
+                    failures.append(
+                        "privacy manifest API entries must contain a category and reason strings"
+                    )
+                    continue
+                declared.setdefault(category, set()).update(reasons)
+            for category, required in REQUIRED_RUNTIME_PRIVACY_REASONS.items():
+                missing = required - declared.get(category, set())
+                if missing:
+                    failures.append(
+                        f"privacy manifest {category} is missing reasons: {', '.join(sorted(missing))}"
+                    )
     return len(failures) == before
 
 

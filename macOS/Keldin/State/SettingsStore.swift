@@ -26,13 +26,14 @@ final class SettingsStore {
 
     init(
         defaults: UserDefaults = .standard,
-        secrets: SecretStoring = KeychainSecretStore()
+        secrets: SecretStoring = KeychainSecretStore(),
+        distributionMode: DistributionMode = .current
     ) {
         self.defaults = defaults
         self.secrets = secrets
         provider = AIProvider(
             rawValue: defaults.string(forKey: AppStorageKey.aiProvider) ?? ""
-        ) ?? .ollama
+        ) ?? (distributionMode == .appStore ? .apple : .ollama)
         ollamaModel = defaults.string(forKey: AppStorageKey.ollamaModel)
             ?? AppDefaults.ollamaModel
         openAIModel = defaults.string(forKey: AppStorageKey.openAIModel)

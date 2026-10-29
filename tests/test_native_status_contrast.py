@@ -15,9 +15,10 @@ def test_model_status_labels_use_semantic_primary_text():
         settings.split("OllamaModelGuide.document.otherModelWarningResource,", 1)[
             1
         ].split("HStack", 1)[0],
-        workspace.split('"Results may vary with other Ollama models.', 1)[1].split(
-            'LabeledContent("Save to")', 1
-        )[0],
+        workspace.split(
+            "if application.aiProvider == .ollama && !application.selectedModelIsRecommended {",
+            1,
+        )[1].split('LabeledContent("Save to")', 1)[0],
     )
     for label in labels:
         assert ".foregroundStyle(.primary)" in label

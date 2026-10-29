@@ -176,7 +176,7 @@ private struct PaperConfiguration: View {
 
                 if application.aiProvider == .ollama && !application.selectedModelIsRecommended {
                     Label(
-                        "Results may vary with other Ollama models. Use the recommendation in Settings for the checked workflow.",
+                        "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation.",
                         systemImage: "exclamationmark.triangle.fill"
                     )
                     .font(.caption)
@@ -436,7 +436,7 @@ private struct QualityReviewView: View {
             }
 
             Section {
-                Text("Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content.")
+                Text("Unofficial practice material. Review the questions and reference permissions before sharing.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

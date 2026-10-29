@@ -917,6 +917,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/occitanie_case_study.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/originality.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -1164,6 +1170,12 @@
     },
     {
       "path": "Backend/Core/mlx_batching.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/mlx_download_info.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -2519,6 +2531,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/france/occitanie-case-study-v1.json",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Resources/generator-capability.schema.json",
       "classification": "configuration-or-runtime-data",
       "status": "pending",
@@ -2729,6 +2747,18 @@
       "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
     },
     {
+      "path": "docs/quality/accounting-equal-priority-correction-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/accounting-paper-two-public-choice-binding-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/accounting-solver-completeness-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -2772,6 +2802,12 @@
     },
     {
       "path": "docs/quality/backend-event-concurrency-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/backend-owned-process-shutdown-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3083,6 +3119,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/hosted-generation-cancellation-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3138,6 +3180,12 @@
     },
     {
       "path": "docs/quality/mlx-batching-design-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/mlx-download-consent-binding-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3210,6 +3258,12 @@
     },
     {
       "path": "docs/quality/numeric-label-validation-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/occitanie-case-study-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3767,6 +3821,12 @@
       "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
+      "path": "macOS/Branding/icon-export.json",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin.xcodeproj/project.pbxproj",
       "classification": "configuration-or-runtime-data",
       "status": "pending",
@@ -3856,11 +3916,8 @@
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Reviewed launch/test-host separation, scene ownership and the value-keyed Main window. The stable primary value keeps menu-open requests directed at one logical Main scene. Existing test-host defaults avoid real Keychain access. Optional TipKit setup still tolerates failure. Migration errors and Main presentations retain their existing flags.",
-      "source_sha256": "2821fa012ef36bd50630f157a2c0af4399c1658518abebd83059e4024500378c",
-      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
@@ -4205,6 +4262,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Keldin/Services/BackendProcessLifecycle.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
       "status": "pending",
@@ -4311,6 +4374,18 @@
     },
     {
       "path": "macOS/Tests/AppTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/BackendLifecycleClientTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/BackendProcessLifecycleTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4466,6 +4541,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/scripts/export_app_icon.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/scripts/move_to_trash.sh",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -4553,6 +4634,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_accounting_equal_priority.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_accounting_marking_policy.py",
       "classification": "test",
       "status": "pending",
@@ -4560,6 +4647,12 @@
     },
     {
       "path": "tests/test_accounting_objectives.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_accounting_paper_two_source_choices.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5498,6 +5591,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_hosted_generation_cancellation.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_humanities_overlay.py",
       "classification": "test",
       "status": "pending",
@@ -5591,6 +5690,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_mlx_download_info.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_mlx_matrix_identity.py",
       "classification": "test",
       "status": "pending",
@@ -5598,6 +5703,12 @@
     },
     {
       "path": "tests/test_mlx_setup.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_mlx_setup_consent_binding.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5628,6 +5739,18 @@
     },
     {
       "path": "tests/test_nsi_pipeline.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_occitanie_case_study.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_occitanie_pages_sources.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5952,6 +6075,12 @@
     },
     {
       "path": "tools/build_layout_masters.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tools/build_occitanie_pages_sources.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

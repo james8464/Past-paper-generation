@@ -1,6 +1,60 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Occitanie case study cancelled.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Création de l’activité annulée."}}}
+    },
+    "Checking a model's download size contacts Hugging Face. No prompts are sent. Model data is downloaded only after you confirm.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "La vérification de la taille du modèle contacte Hugging Face. Aucune consigne n’est envoyée. Les données du modèle ne sont téléchargées qu’après votre confirmation."}}}
+    },
+    "Keldin is closing. No new generation tasks can start.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Keldin est en cours de fermeture. Aucune nouvelle génération ne peut démarrer."}}}
+    },
+    "Check the selected model's download size before setup.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérifiez la taille du téléchargement du modèle sélectionné avant sa préparation."}}}
+    },
+    "Checking model download size": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérification de la taille du modèle à télécharger"}}}
+    },
+    "Model download size checked": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Taille du modèle à télécharger vérifiée"}}}
+    },
+    "Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Keldin n’a pas pu vérifier la taille de ce modèle. Vérifiez votre connexion et l’identifiant du modèle, puis réessayez. Aucun téléchargement de modèle n’a commencé."}}}
+    },
+    "%@ is already on this Mac. Keldin will check Apple MLX support and prepare it without downloading model data. Generation stays on this Mac.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "%@ est déjà sur ce Mac. Keldin vérifiera la prise en charge d’Apple MLX et le préparera sans télécharger les données du modèle. La génération reste sur ce Mac."}}}
+    },
+    "%@: estimated full model data %@. Files already cached may reduce the download. Keldin will check Apple MLX support and prepare the model. Generation stays on this Mac.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "%1$@ : volume total estimé des données du modèle, %2$@. Les fichiers déjà en cache peuvent réduire le téléchargement. Keldin vérifiera la prise en charge d’Apple MLX et préparera le modèle. La génération reste sur ce Mac."}}}
+    },
+    "Hugging Face model ID": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Identifiant du modèle Hugging Face"}}}
+    },
+    "In the App Store version, enter a Hugging Face model ID such as owner/model. Models are prepared in Keldin's own storage; external model folders are not supported.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Dans la version App Store, saisissez un identifiant Hugging Face comme propriétaire/modèle. Les modèles sont préparés dans le stockage de Keldin ; les dossiers de modèles externes ne sont pas pris en charge."}}}
+    },
+    "Use a Hugging Face model ID such as owner/model. Keldin prepares models in its own storage. External model folders are not supported in the App Store version.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Utilisez un identifiant Hugging Face comme propriétaire/modèle. Keldin prépare les modèles dans son propre stockage. Les dossiers de modèles externes ne sont pas pris en charge dans la version App Store."}}}
+    },
+    "Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Étude de cas Occitanie"}}}
+    },
+    "Create the Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Créer l’étude de cas Occitanie"}}}
+    },
+    "A separate French activity using 12 public school records from Occitanie. Includes an activity PDF and proposed answers, without an exam mark or official endorsement.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Une activité distincte en français à partir de 12 fiches publiques d’établissements d’Occitanie. Comprend l’activité et une proposition de corrigé en PDF, sans note d’examen ni approbation officielle."}}}
+    },
+    "Preparing the Occitanie case study": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Préparation de l’étude de cas Occitanie"}}}
+    },
+    "The case study could not be saved. Try again or choose another output folder.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "L’étude de cas n’a pas pu être enregistrée. Réessayez ou choisissez un autre dossier de sortie."}}}
+    },
+    "Occitanie case study created. Separate activity, without an exam mark.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Étude de cas Occitanie créée. Activité indépendante, sans note d’examen."}}}
+    },
     "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."}}}
     },
@@ -361,7 +415,16 @@
         }
       }
     },
-    "Action required": {},
+    "Action required": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Action nécessaire"
+          }
+        }
+      }
+    },
     "Activity": {},
     "Add to Favourites": {},
     "Aggregate profile fit is preview-only; validated item depth covers %@.": {
@@ -641,7 +704,16 @@
         }
       }
     },
-    "Cancel paper creation": {},
+    "Cancel paper creation": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Annuler la création du sujet"
+          }
+        }
+      }
+    },
     "Cancelled": {
       "localizations": {
         "fr": {
@@ -1252,7 +1324,16 @@
         }
       }
     },
-    "Create Again with New Questions": {},
+    "Create Again with New Questions": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer un autre sujet avec de nouvelles questions"
+          }
+        }
+      }
+    },
     "Create Paper": {
       "localizations": {
         "fr": {
@@ -1283,7 +1364,16 @@
         }
       }
     },
-    "Create a layout preview": {},
+    "Create a layout preview": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer un aperçu de la mise en page"
+          }
+        }
+      }
+    },
     "Create a layout preview only when checking document geometry. Preview content has no live item-review or originality evidence, and missing saved evidence is reported as unknown rather than passed.": {
       "localizations": {
         "fr": {
@@ -2567,7 +2657,16 @@
         }
       }
     },
-    "Layout preview checks pagination without using AI. Its placeholder questions are not finished papers.": {},
+    "Layout preview checks pagination without using AI. Its placeholder questions are not finished papers.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L’aperçu vérifie la pagination sans utiliser d’IA. Ses questions provisoires ne constituent pas un sujet final."
+          }
+        }
+      }
+    },
     "Layout review": {
       "localizations": {
         "fr": {
@@ -3152,7 +3251,15 @@
     },
     "Ollama is not running.": {
       "comment": "Error message when Ollama is not running.",
-      "isCommentAutoGenerated": true
+      "isCommentAutoGenerated": true,
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ollama n’est pas en cours d’exécution."
+          }
+        }
+      }
     },
     "Ollama is unavailable": {
       "localizations": {
@@ -3274,7 +3381,16 @@
         }
       }
     },
-    "Open Settings…": {},
+    "Open Settings…": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Réglages…"
+          }
+        }
+      }
+    },
     "Open User Guide": {
       "localizations": {
         "fr": {
@@ -3642,7 +3758,16 @@
         }
       }
     },
-    "Preview layout without contacting an AI provider. Preview questions are not release output.": {},
+    "Preview layout without contacting an AI provider. Preview questions are not release output.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérifiez la mise en page sans contacter de fournisseur d’IA. Les questions de l’aperçu ne constituent pas un sujet final."
+          }
+        }
+      }
+    },
     "Preview mode is not a finished paper": {
       "localizations": {
         "fr": {
@@ -5281,7 +5406,16 @@
         }
       }
     },
-    "Unofficial practice material. The app reproduces measured document conventions, not copyrighted paper content.": {},
+    "Unofficial practice material. Review the questions and reference permissions before sharing.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Document d’entraînement non officiel. Relisez les questions et vérifiez les autorisations des sources avant de le partager."
+          }
+        }
+      }
+    },
     "Unreviewed and non-official": {
       "localizations": {
         "fr": {

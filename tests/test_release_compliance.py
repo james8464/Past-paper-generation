@@ -3,9 +3,56 @@ from __future__ import annotations
 import plistlib
 from pathlib import Path
 
-from tools.release_compliance import inspect_release_compliance
+import pytest
+
+from tools.release_compliance import _check_privacy_manifest, inspect_release_compliance
 
 ROOT = Path(__file__).resolve().parents[1]
+
+REQUIRED_RUNTIME_REASONS = {
+    "NSPrivacyAccessedAPICategoryUserDefaults": {"CA92.1"},
+    "NSPrivacyAccessedAPICategoryFileTimestamp": {"C617.1", "3B52.1"},
+    "NSPrivacyAccessedAPICategoryDiskSpace": {"E174.1", "85F4.1"},
+    "NSPrivacyAccessedAPICategorySystemBootTime": {"35F9.1"},
+}
+
+
+def test_privacy_manifest_covers_actual_packaged_runtime_api_use():
+    payload = plistlib.loads((ROOT / "macOS/Keldin/PrivacyInfo.xcprivacy").read_bytes())
+    declared = {
+        item["NSPrivacyAccessedAPIType"]: set(item["NSPrivacyAccessedAPITypeReasons"])
+        for item in payload["NSPrivacyAccessedAPITypes"]
+    }
+    assert declared == REQUIRED_RUNTIME_REASONS
+
+
+@pytest.mark.parametrize(
+    ("category", "reason"),
+    [
+        (category, reason)
+        for category, reasons in REQUIRED_RUNTIME_REASONS.items()
+        for reason in sorted(reasons)
+    ],
+)
+def test_preflight_rejects_missing_packaged_runtime_reason(
+    tmp_path: Path, category: str, reason: str
+):
+    payload = plistlib.loads((ROOT / "macOS/Keldin/PrivacyInfo.xcprivacy").read_bytes())
+    payload["NSPrivacyAccessedAPITypes"] = [
+        {
+            "NSPrivacyAccessedAPIType": name,
+            "NSPrivacyAccessedAPITypeReasons": sorted(reasons - {reason})
+            if name == category
+            else sorted(reasons),
+        }
+        for name, reasons in REQUIRED_RUNTIME_REASONS.items()
+    ]
+    manifest = tmp_path / "macOS/Keldin/PrivacyInfo.xcprivacy"
+    manifest.parent.mkdir(parents=True)
+    manifest.write_bytes(plistlib.dumps(payload))
+    failures: list[str] = []
+    assert not _check_privacy_manifest(tmp_path, failures)
+    assert any(category in failure for failure in failures)
 
 
 def test_sandbox_allows_the_apps_print_command():

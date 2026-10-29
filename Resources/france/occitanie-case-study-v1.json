@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "dataset_id": "lycees-occitanie",
+  "title": "Lycées d'Occitanie année scolaire 2025-2026",
+  "publisher": "Région Occitanie",
+  "source_url": "https://data.laregion.fr/explore/dataset/lycees-occitanie/",
+  "api_url": "https://data.laregion.fr/api/explore/v2.1/catalog/datasets/lycees-occitanie/records",
+  "license_id": "etalab-2.0",
+  "license_name": "Licence Ouverte v2.0 (Etalab)",
+  "license_url": "https://www.etalab.gouv.fr/wp-content/uploads/2017/04/ETALAB-Licence-Ouverte-v2.0.pdf",
+  "source_last_updated": "2026-05-12T12:46:56+00:00",
+  "retrieved_on": "2026-10-29",
+  "source_attributions": ["DRAAF", "MENJS", "INSEE IGN NaturalEarth DGCL - BANATIC MEFR MAA"],
+  "selection": {
+    "reason": "Extrait pédagogique limité : trois établissements publics dans chacune des quatre communes retenues. Il ne représente pas l'ensemble de la région.",
+    "record_ids": ["0300021K", "0300026R", "0300057Z", "0310036W", "0310038Y", "0310047H", "0340038G", "0340039H", "0340040J", "0460007H", "0460051F", "0460493L"],
+    "fields": ["codeetab", "denomination_lycee", "lib_type_nom_lycee", "commune", "code_departement", "departement", "secteur", "internat"],
+    "order_by": "codeetab",
+    "limit": 12,
+    "rows_sha256": "8a6a75c869d444fbd637af4976702dc7f2c436e08db5af0faa656df8ccd866f0"
+  },
+  "field_notes": {
+    "codeetab": "Identifiant textuel recopié depuis la source.",
+    "commune": "Libellé et casse de la source conservés.",
+    "code_departement": "Code textuel, pas une quantité.",
+    "internat": "Présence d'un internat sur le site : oui ou non. Aucune capacité ni disponibilité n'est indiquée."
+  },
+  "records": [
+    {"codeetab":"0300021K","denomination_lycee":"ALPHONSE DAUDET","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE ALPHONSE DAUDET","commune":"Nîmes","code_departement":"30","departement":"Gard","secteur":"Public","internat":"oui"},
+    {"codeetab":"0300026R","denomination_lycee":"DHUODA","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE DHUODA","commune":"Nîmes","code_departement":"30","departement":"Gard","secteur":"Public","internat":"oui"},
+    {"codeetab":"0300057Z","denomination_lycee":"GASTON DARBOUX","lib_type_nom_lycee":"LYCEE PROFESSIONNEL GASTON DARBOUX","commune":"Nîmes","code_departement":"30","departement":"Gard","secteur":"Public","internat":"non"},
+    {"codeetab":"0310036W","denomination_lycee":"PIERRE DE FERMAT","lib_type_nom_lycee":"LYCEE GENERAL PIERRE DE FERMAT","commune":"TOULOUSE","code_departement":"31","departement":"Haute Garonne","secteur":"Public","internat":"oui"},
+    {"codeetab":"0310038Y","denomination_lycee":"BELLEVUE","lib_type_nom_lycee":"LYCEE POLYVALENT BELLEVUE","commune":"TOULOUSE","code_departement":"31","departement":"Haute Garonne","secteur":"Public","internat":"non"},
+    {"codeetab":"0310047H","denomination_lycee":"OZENNE","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE OZENNE","commune":"TOULOUSE","code_departement":"31","departement":"Haute Garonne","secteur":"Public","internat":"non"},
+    {"codeetab":"0340038G","denomination_lycee":"JOFFRE","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE JOFFRE","commune":"Montpellier","code_departement":"34","departement":"Hérault","secteur":"Public","internat":"oui"},
+    {"codeetab":"0340039H","denomination_lycee":"GEORGES CLEMENCEAU","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE GEORGES CLEMENCEAU","commune":"Montpellier","code_departement":"34","departement":"Hérault","secteur":"Public","internat":"non"},
+    {"codeetab":"0340040J","denomination_lycee":"JULES GUESDE","lib_type_nom_lycee":"LYCEE POLYVALENT JULES GUESDE","commune":"Montpellier","code_departement":"34","departement":"Hérault","secteur":"Public","internat":"oui"},
+    {"codeetab":"0460007H","denomination_lycee":"CLEMENT MAROT","lib_type_nom_lycee":"LYCEE GENERAL ET TECHNOLOGIQUE CLEMENT MAROT","commune":"CAHORS","code_departement":"46","departement":"Lot","secteur":"Public","internat":"oui"},
+    {"codeetab":"0460051F","denomination_lycee":"CLEMENT MAROT","lib_type_nom_lycee":"LYCEE PROFESSIONNEL CLEMENT MAROT","commune":"CAHORS","code_departement":"46","departement":"Lot","secteur":"Public","internat":"non"},
+    {"codeetab":"0460493L","denomination_lycee":"GASTON MONNERVILLE","lib_type_nom_lycee":"LYCEE POLYVALENT GASTON MONNERVILLE","commune":"CAHORS","code_departement":"46","departement":"Lot","secteur":"Public","internat":"oui"}
+  ]
+}

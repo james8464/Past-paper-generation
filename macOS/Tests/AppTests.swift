@@ -5,6 +5,26 @@ import XCTest
 @testable import Keldin
 
 final class KeldinTests: XCTestCase {
+    func testMLXDownloadMetadataEventRequiresTypedNonnegativeSizeAndCacheState() throws {
+        let event = try BackendEvent(jsonLine: #"{"type":"mlx_download_info","model":"owner/model","download_bytes":2048,"cached":false,"revision":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#)
+        XCTAssertEqual(event, .mlxDownloadInfo(MLXDownloadInfo(model: "owner/model", downloadBytes: 2048, cached: false, revision: String(repeating: "a", count: 40))))
+        for body in [#""download_bytes":-1,"cached":false"#, #""download_bytes":true,"cached":false"#, #""download_bytes":1"#, #""download_bytes":1,"cached":"false"#] {
+            XCTAssertThrowsError(try BackendEvent(jsonLine: "{\"type\":\"mlx_download_info\",\"model\":\"owner/model\",\"revision\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\(body)}"))
+        }
+        for revision in [nil, "main", "abc", String(repeating: "A", count: 40), String(repeating: "a", count: 65), String(repeating: "a", count: 40) + "\n"] {
+            XCTAssertFalse(MLXDownloadInfo(model: "owner/model", downloadBytes: 2048, cached: false, revision: revision).isValid)
+        }
+        XCTAssertTrue(MLXDownloadInfo(model: "/fixture/local-model", downloadBytes: 0, cached: true, revision: nil).isValid)
+    }
+    func testStoreMLXModelsUseManagedRepositoryIDsWithoutRestrictingDirectPaths() {
+        for model in ["mlx-community/Qwen2.5-3B-Instruct-4bit", " owner/model.v1 "] {
+            XCTAssertNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .appStore))
+        }
+        for model in ["/Users/test/model", "~/models/model", "./models/model", "../model", "file:///model", "owner/model/subfolder", "local-model", "owner/.."] {
+            XCTAssertNotNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .appStore), model)
+            XCTAssertNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .direct), model)
+        }
+    }
     func testOllamaAvailabilityStatusUsesFrenchTranslation() {
         let expected = [
             "Not checked": "Non vérifié",

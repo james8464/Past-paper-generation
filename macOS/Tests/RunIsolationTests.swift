@@ -5,6 +5,119 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testMLXPreflightDisclosesModelSizeBeforeAnySetupLaunch() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.appleModel = "fixture/model"
+        application.requestMLXDownloadInfo()
+        let metadata = try XCTUnwrap(backend.requests.first)
+        XCTAssertEqual(metadata.arguments, ["mlx-download-info", "--model", "fixture/model"])
+        XCTAssertEqual(metadata.environment["HF_HOME"], AppDefaults.mlxCacheFolder().path)
+        XCTAssertFalse(application.showMLXSetupConfirmation)
+        metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 2_000_000_000, cached: false, revision: String(repeating: "a", count: 40))))
+        XCTAssertFalse(application.showMLXSetupConfirmation)
+        metadata.onFinish(.success(0))
+        XCTAssertTrue(application.showMLXSetupConfirmation)
+        XCTAssertTrue(application.mlxSetupExplanation.contains("fixture/model"))
+        XCTAssertTrue(application.mlxSetupExplanation.contains("GB"))
+        XCTAssertEqual(backend.requests.count, 1)
+        application.confirmMLXSetup()
+        XCTAssertEqual(backend.requests.last?.arguments, ["setup-mlx", "--model", "fixture/model", "--revision", String(repeating: "a", count: 40)])
+        application.cancelGeneration()
+    }
+
+    @MainActor
+    func testCachedMLXConsentRestrictsSetupToApprovedLocalData() throws {
+        for (model, revision) in [("fixture/model", String(repeating: "a", count: 40) as String?), ("/fixture/local-model", nil)] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            application.appleModel = model
+            application.requestMLXDownloadInfo()
+            let metadata = try XCTUnwrap(backend.requests.last)
+            metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: model, downloadBytes: 0, cached: true, revision: revision)))
+            metadata.onFinish(.success(0))
+            application.confirmMLXSetup()
+            var expected = ["setup-mlx", "--model", model, "--local-only"]
+            if let revision { expected += ["--revision", revision] }
+            XCTAssertEqual(backend.requests.last?.arguments, expected)
+            application.cancelGeneration()
+        }
+    }
+
+    @MainActor
+    func testBrowsingDuringMLXMetadataCannotChangeTheRequestedGenerationTarget() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let boards = ExamCatalog.readyBoards.filter { $0.usesAI && $0.supports(.apple) }
+        let original = try XCTUnwrap(boards.first)
+        let browsed = try XCTUnwrap(boards.first { $0.id != original.id })
+        application.selectBoard(original)
+        application.aiProvider = .apple
+        application.appleModel = "fixture/model"
+        application.generate()
+        XCTAssertTrue(application.isRunning)
+        application.selectBoard(browsed)
+        XCTAssertEqual(application.selectedBoardID, browsed.id)
+        try approveMLXMetadata(application, backend: backend)
+        application.confirmMLXSetup()
+        let setup = try XCTUnwrap(backend.requests.last)
+        XCTAssertEqual(setup.arguments.first, "setup-mlx")
+        setup.onFinish(.success(0))
+        XCTAssertEqual(backend.requests.count, 2, "Metadata and model setup must not generate the newly browsed paper.")
+        XCTAssertFalse(application.isRunning)
+        XCTAssertNil(application.generationCoordinator.activeJob)
+        XCTAssertEqual(application.selectedBoardID, browsed.id)
+    }
+
+    @MainActor
+    func testMLXMetadataFailureCancellationOrModelChangeCannotAuthoriseDownload() throws {
+        for outcome in ["missing", "error", "wrong-model", "change", "change-back", "cancel"] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            application.appleModel = "fixture/model"
+            application.requestMLXDownloadInfo()
+            let metadata = try XCTUnwrap(backend.requests.first)
+            if outcome == "error" { metadata.onEvent(.error(message: "metadata unavailable", code: "mlx_download_info_failed")) }
+            if outcome == "wrong-model" { metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "other/model", downloadBytes: 4, cached: false, revision: String(repeating: "a", count: 40)))) }
+            if outcome == "change" || outcome == "change-back" {
+                metadata.onEvent(.mlxDownloadInfo(MLXDownloadInfo(model: "fixture/model", downloadBytes: 4, cached: false, revision: String(repeating: "a", count: 40))))
+                application.appleModel = "changed/model"
+                if outcome == "change-back" { application.appleModel = "fixture/model" }
+            }
+            if outcome == "cancel" { application.cancelGeneration() }
+            metadata.onFinish(.success(0))
+            XCTAssertFalse(application.showMLXSetupConfirmation, outcome)
+            XCTAssertFalse(backend.requests.contains { $0.arguments.first == "setup-mlx" }, outcome)
+            XCTAssertTrue(application.recentDocumentStore.records.isEmpty)
+        }
+    }
+
+    @MainActor
+    func testChangingModelAfterSizeConsentInvalidatesApproval() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.appleModel = "fixture/model"
+        try approveMLXMetadata(application, backend: backend)
+        application.appleModel = "fixture/another-model"
+        XCTAssertFalse(application.showMLXSetupConfirmation)
+        application.confirmMLXSetup()
+        XCTAssertEqual(backend.requests.last?.arguments, ["mlx-download-info", "--model", "fixture/another-model"])
+        XCTAssertFalse(backend.requests.contains { $0.arguments.first == "setup-mlx" })
+        application.cancelGeneration()
+    }
+
+    @MainActor
+    func testMLXMetadataLaunchFailurePreservesInfrastructureErrorAndDiagnostics() {
+        let backend = ControlledRunBackend()
+        backend.launchError = BackendClientError.backendMissing
+        let application = application(backend: backend)
+        application.requestMLXDownloadInfo()
+        XCTAssertEqual(application.errorMessage, BackendClientError.backendMissing.localizedDescription)
+        XCTAssertTrue(application.progressEntries.contains { $0.message == BackendClientError.backendMissing.localizedDescription })
+        XCTAssertFalse(application.showMLXSetupConfirmation)
+        XCTAssertFalse(application.isRunning)
+    }
+    @MainActor
     func testMLXParallelSettingIsIndependentSavedAndCapturedBeforeAnActiveJob() throws {
         for enabled in [false, true] {
             let backend = ControlledRunBackend()
@@ -108,15 +221,17 @@ final class RunIsolationTests: XCTestCase {
         application.cancelGeneration()
     }
     @MainActor
-    func testBundledMLXSetupExplanationDescribesChecksAndModelPreparationInSelectedLanguage() {
+    func testBundledMLXSetupExplanationDescribesChecksAndModelPreparationInSelectedLanguage() throws {
         for (language, expected) in [
-            ("en", "Keldin will check Apple MLX support, then download and prepare fixture/model-3B if needed. Models can use several gigabytes of storage. Generation stays on this Mac."),
-            ("fr", "Keldin vérifiera la prise en charge d’Apple MLX, puis téléchargera et préparera fixture/model-3B si nécessaire. Les modèles peuvent occuper plusieurs gigaoctets. La génération reste sur ce Mac."),
+            ("en", "fixture/model-3B is already on this Mac. Keldin will check Apple MLX support and prepare it without downloading model data. Generation stays on this Mac."),
+            ("fr", "fixture/model-3B est déjà sur ce Mac. Keldin vérifiera la prise en charge d’Apple MLX et le préparera sans télécharger les données du modèle. La génération reste sur ce Mac."),
         ] {
             let defaults = isolatedDefaults()
             defaults.set(language, forKey: "interfaceLanguage")
-            let application = application(backend: ControlledRunBackend(), defaults: defaults)
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend, defaults: defaults)
             application.appleModel = "  fixture/model-3B  "
+            try approveMLXMetadata(application, backend: backend, cached: true)
 
             // The same truthful explanation is used by bundled direct and
             // Store builds; neither installs a runtime in the running app.
@@ -441,9 +556,10 @@ final class RunIsolationTests: XCTestCase {
             let originalPaperID = application.selectedPaperID
             let originalOutput = application.outputFolder
             application.generate()
+            try approveMLXMetadata(application, backend: backend)
             XCTAssertTrue(application.showMLXSetupConfirmation)
             application.confirmMLXSetup()
-            let setup = try XCTUnwrap(backend.requests.first)
+            let setup = try XCTUnwrap(backend.requests.last)
             switch change {
             case "board":
                 let other = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.id != board.id })
@@ -466,7 +582,7 @@ final class RunIsolationTests: XCTestCase {
             setup.onFinish(.success(0))
 
             if change == "none" {
-                XCTAssertEqual(backend.requests.count, 2)
+                XCTAssertEqual(backend.requests.count, 3)
                 let job = try XCTUnwrap(application.generationCoordinator.activeJob)
                 XCTAssertEqual(job.configuration.boardID, board.id)
                 XCTAssertEqual(job.configuration.paperID, originalPaperID)
@@ -476,7 +592,7 @@ final class RunIsolationTests: XCTestCase {
                 XCTAssertTrue(application.isRunning)
                 application.cancelGeneration()
             } else {
-                XCTAssertEqual(backend.requests.count, 1, change)
+                XCTAssertEqual(backend.requests.count, 2, change)
                 XCTAssertFalse(application.isRunning, change)
                 XCTAssertNil(application.generationCoordinator.activeJob, change)
                 XCTAssertFalse(application.showMLXSetupConfirmation, change)
@@ -660,9 +776,12 @@ final class RunIsolationTests: XCTestCase {
             application.apply(.file(role: "question_paper", path: "/fixture/saved-paper.pdf"))
             let files = application.currentGenerationFiles
             application.modelToPull = "fixture-model"
-            if setupMLX { application.confirmMLXSetup() }
+            if setupMLX {
+                try approveMLXMetadata(application, backend: backend)
+                application.confirmMLXSetup()
+            }
             else { application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull)) }
-            let run = try XCTUnwrap(backend.requests.first)
+            let run = try XCTUnwrap(backend.requests.last)
 
             run.onEvent(.file(role: "question_paper", path: "/fixture/not-a-paper.pdf"))
             XCTAssertEqual(application.currentGenerationFiles, files)
@@ -1047,8 +1166,9 @@ final class RunIsolationTests: XCTestCase {
         let backend = ControlledRunBackend()
         let defaults = isolatedDefaults()
         let application = application(backend: backend, defaults: defaults)
+        try approveMLXMetadata(application, backend: backend)
         application.confirmMLXSetup()
-        let cancelled = try XCTUnwrap(backend.requests.first)
+        let cancelled = try XCTUnwrap(backend.requests.last)
         application.cancelGeneration()
         XCTAssertTrue(application.isRunning)
         cancelled.onEvent(.error(message: "Cancelled setup", code: "mlx_setup_failed"))
@@ -1056,14 +1176,14 @@ final class RunIsolationTests: XCTestCase {
 
         XCTAssertFalse(application.isRunning)
         XCTAssertFalse(application.showError)
-        XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertEqual(backend.requests.count, 2)
         XCTAssertNil(defaults.object(forKey: AppStorageKey.preparedMLXModels))
         application.generateFrenchPaper(largePrint: false)
         let replacementID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
         cancelled.onFinish(.success(0))
         XCTAssertTrue(application.isRunning)
         XCTAssertEqual(application.generationCoordinator.activeJob?.id, replacementID)
-        XCTAssertEqual(backend.requests.count, 2)
+        XCTAssertEqual(backend.requests.count, 3)
         application.cancelGeneration()
     }
 
@@ -1074,11 +1194,12 @@ final class RunIsolationTests: XCTestCase {
         let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI && $0.supports(.apple) })
         application.selectBoard(board)
         application.aiProvider = .apple
+        try approveMLXMetadata(application, backend: backend)
         application.confirmMLXSetup()
-        let setup = try XCTUnwrap(backend.requests.first)
+        let setup = try XCTUnwrap(backend.requests.last)
         setup.onFinish(.success(0))
 
-        XCTAssertEqual(backend.requests.count, 2)
+        XCTAssertEqual(backend.requests.count, 3)
         XCTAssertTrue(application.isRunning)
         let generationID = try XCTUnwrap(application.generationCoordinator.activeJob?.id)
         setup.onEvent(.error(message: "Late setup error", code: "mlx_setup_failed"))
@@ -1086,7 +1207,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(application.generationCoordinator.activeJob?.id, generationID)
         XCTAssertTrue(application.isRunning)
         XCTAssertFalse(application.showError)
-        XCTAssertEqual(backend.requests.count, 2)
+        XCTAssertEqual(backend.requests.count, 3)
         application.cancelGeneration()
     }
 
@@ -1227,6 +1348,19 @@ final class RunIsolationTests: XCTestCase {
             .sink { _ in finished.fulfill() }
         await fulfillment(of: [finished], timeout: 2)
         subscription.cancel()
+    }
+
+    @MainActor
+    private func approveMLXMetadata(_ application: ApplicationCoordinator, backend: ControlledRunBackend, cached: Bool = false) throws {
+        if !application.isRunning { application.requestMLXDownloadInfo() }
+        let request = try XCTUnwrap(backend.requests.last)
+        XCTAssertEqual(request.arguments.first, "mlx-download-info")
+        request.onEvent(.mlxDownloadInfo(MLXDownloadInfo(
+            model: application.appleModel.trimmingCharacters(in: .whitespacesAndNewlines),
+            downloadBytes: cached ? 0 : 1024, cached: cached, revision: String(repeating: "a", count: 40)
+        )))
+        request.onFinish(.success(0))
+        XCTAssertTrue(application.showMLXSetupConfirmation)
     }
 
     @MainActor

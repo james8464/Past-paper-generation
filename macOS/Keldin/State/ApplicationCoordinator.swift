@@ -33,7 +33,19 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
-    @Published var appleModel = AppDefaults.appleModel
+    @Published var appleModel = AppDefaults.appleModel {
+        didSet {
+            if appleModel != oldValue {
+                pendingMLXDownloadInfo = nil
+                pendingMLXSetupRetryTarget = nil
+                showMLXSetupConfirmation = false
+                if activeRun?.intent == .mlxDownloadInfo {
+                    activeRun?.mlxDownloadInfo = nil
+                    activeRun?.backendErrorMessage = "The selected model changed during the download-size check."
+                }
+            }
+        }
+    }
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
     @Published var showHostedAIConsent = false
@@ -50,7 +62,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     private(set) var pendingGenerationSeed: Int?
 
-    let distributionMode = DistributionMode.current
+    let distributionMode: DistributionMode
 
     private let backend: any BackendRunning
     private let defaults: UserDefaults
@@ -61,6 +73,8 @@ final class ApplicationCoordinator: ObservableObject {
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
     private var preparedMLXModels: Set<String> = []
+    private var pendingMLXDownloadInfo: MLXDownloadInfo?
+    private var pendingMLXSetupRetryTarget: GenerationRetryTarget?
     private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
     // Finished artifacts outlive their process so Documents can keep showing
@@ -170,7 +184,7 @@ final class ApplicationCoordinator: ObservableObject {
             if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
         case .apple:
-            return nil
+            return MLXModelAccessPolicy.issue(model: appleModel, distributionMode: distributionMode)
         }
     }
 
@@ -211,7 +225,14 @@ final class ApplicationCoordinator: ObservableObject {
 
     var mlxSetupExplanation: String {
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
-        return InterfaceText.resolve("Keldin will check Apple MLX support, then download and prepare \(model) if needed. Models can use several gigabytes of storage. Generation stays on this Mac.", language: presentationLanguage)
+        guard let info = pendingMLXDownloadInfo, info.model == model else {
+            return InterfaceText.resolve("Check the selected model's download size before setup.", language: presentationLanguage)
+        }
+        if info.cached {
+            return InterfaceText.resolve("\(model) is already on this Mac. Keldin will check Apple MLX support and prepare it without downloading model data. Generation stays on this Mac.", language: presentationLanguage)
+        }
+        let size = ByteCountFormatter.string(fromByteCount: Int64(info.downloadBytes), countStyle: .file)
+        return InterfaceText.resolve("\(model): estimated full model data \(size). Files already cached may reduce the download. Keldin will check Apple MLX support and prepare the model. Generation stays on this Mac.", language: presentationLanguage)
     }
 
     init(
@@ -219,6 +240,7 @@ final class ApplicationCoordinator: ObservableObject {
         secrets: SecretStoring = KeychainSecretStore(),
         historyDirectory: URL? = nil,
         backend: any BackendRunning = BackendClient(),
+        distributionMode: DistributionMode = .current,
         outputFolderBookmark: @escaping (URL) throws -> Data = { url in
             try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
         },
@@ -228,10 +250,11 @@ final class ApplicationCoordinator: ObservableObject {
     ) {
         self.defaults = defaults
         self.backend = backend
+        self.distributionMode = distributionMode
         self.outputFolderBookmark = outputFolderBookmark
         generationRecordsFolder = (historyDirectory ?? AppDefaults.jobHistoryFolder())
             .appendingPathComponent("Generation records", isDirectory: true)
-        let settings = SettingsStore(defaults: defaults, secrets: secrets)
+        let settings = SettingsStore(defaults: defaults, secrets: secrets, distributionMode: distributionMode)
         let recents = RecentDocumentStore(
             directory: historyDirectory ?? AppDefaults.jobHistoryFolder(),
             retentionLimit: settings.historyRetentionLimit,
@@ -316,7 +339,7 @@ final class ApplicationCoordinator: ObservableObject {
         let scoped = source.startAccessingSecurityScopedResource()
         defer { if scoped { source.stopAccessingSecurityScopedResource() } }
         do {
-            try KeldinMigration.importData(from: source, defaults: defaults)
+            try KeldinMigration.importData(from: source, defaults: defaults, distributionMode: distributionMode)
             restoreRecentDocuments(presentation: presentation)
             status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
         } catch {
@@ -371,6 +394,33 @@ final class ApplicationCoordinator: ObservableObject {
             seed: seed, largePrint: largePrint, excludedFamilies: excludedFamilies
         )
         startFrenchOperation(arguments: request.arguments, seed: seed, workingFolder: request.output)
+    }
+
+    func generateOccitanieActivity() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        progressEntries.removeAll()
+        lastQualityReport = nil
+        generationProgress = nil
+        status = InterfaceText.resolve("Preparing the Occitanie case study", language: presentationLanguage)
+        let working = generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        let session = beginRunSession(
+            intent: .occitanieActivity,
+            documents: RunDocuments(
+                frameworkID: "occitanie-nsi-case-study",
+                subject: "Étude de cas Occitanie", paper: "Activité indépendante, sans note d’examen",
+                workingFolder: working
+            ), model: ""
+        )
+        do {
+            let process = try backend.run(arguments: ["generate-occitanie-case-study", "--output", working.path], environment: [:]) { [weak self] event in
+                self?.apply(event, from: session)
+            } onFinish: { [weak self] result in
+                self?.finishRun(result, from: session)
+            }
+            if activeRun?.id == session { activeRun?.process = process }
+        } catch {
+            finishRun(.failure(error), from: session)
+        }
     }
 
     /// Catalogue use survives the configurable job-history limit and output moves.
@@ -684,8 +734,7 @@ final class ApplicationCoordinator: ObservableObject {
             usesAI: selectedBoard.usesAI,
             dryRun: dryRun
         ) {
-            showMLXSetupConfirmation = true
-            status = "Apple MLX setup required"
+            requestMLXDownloadInfo()
             return
         }
         let settingsSaved = persistSettings(
@@ -807,16 +856,62 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
+    func requestMLXDownloadInfo() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
+            setError(InterfaceText.resolve(issue, language: presentationLanguage))
+            return
+        }
+        guard !model.isEmpty else {
+            setError("Choose an Apple MLX model in Settings, then try again.")
+            return
+        }
+        pendingMLXDownloadInfo = nil
+        pendingMLXSetupRetryTarget = nil
+        showMLXSetupConfirmation = false
+        generationProgress = nil
+        generationEstimate = nil
+        status = InterfaceText.resolve("Checking model download size", language: presentationLanguage)
+        let session = beginRunSession(intent: .mlxDownloadInfo, model: model, retryTarget: generationRetryTarget)
+        do {
+            let process = try backend.run(
+                arguments: ["mlx-download-info", "--model", model],
+                environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
+            ) { [weak self] event in
+                self?.apply(event, from: session)
+            } onFinish: { [weak self] result in
+                self?.finishRun(result, from: session)
+            }
+            if activeRun?.id == session { activeRun?.process = process }
+        } catch {
+            finishRun(.failure(error), from: session)
+        }
+    }
+
     func confirmMLXSetup() {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
+            showMLXSetupConfirmation = false
+            setError(InterfaceText.resolve(issue, language: presentationLanguage))
+            return
+        }
         guard !model.isEmpty else {
             showMLXSetupConfirmation = false
             setError("Choose an Apple MLX model in Settings, then try again.")
             return
         }
+        guard showMLXSetupConfirmation, let approved = pendingMLXDownloadInfo,
+              approved.model == model, approved.isValid else {
+            requestMLXDownloadInfo()
+            return
+        }
 
         showMLXSetupConfirmation = false
+        pendingMLXDownloadInfo = nil
+        let retryTarget = pendingMLXSetupRetryTarget
+        pendingMLXSetupRetryTarget = nil
         status = "Setting up Apple MLX"
         generationProgress = 0.05
         progressEntries.removeAll()
@@ -824,10 +919,13 @@ final class ApplicationCoordinator: ObservableObject {
         etaTimer?.cancel()
         etaTimer = nil
 
-        let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: generationRetryTarget)
+        let session = beginRunSession(intent: .mlxSetup, model: model, retryTarget: retryTarget)
+        var arguments = ["setup-mlx", "--model", model]
+        if approved.cached { arguments.append("--local-only") }
+        if let revision = approved.revision { arguments += ["--revision", revision] }
         do {
             let process = try backend.run(
-                arguments: ["setup-mlx", "--model", model],
+                arguments: arguments,
                 environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
             ) { [weak self] event in
                 self?.apply(event, from: session)
@@ -843,6 +941,8 @@ final class ApplicationCoordinator: ObservableObject {
 
     func cancelMLXSetup() {
         showMLXSetupConfirmation = false
+        pendingMLXDownloadInfo = nil
+        pendingMLXSetupRetryTarget = nil
         status = "Ready"
     }
 
@@ -1231,7 +1331,7 @@ final class ApplicationCoordinator: ObservableObject {
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
             // Setup and model-management output cannot become paper artifacts.
-            if let intent = activeRun?.intent, intent == .mlxSetup || intent == .modelPull { return }
+            if let intent = activeRun?.intent, intent == .mlxSetup || intent == .mlxDownloadInfo || intent == .modelPull { return }
             var hidden = hiddenRecentPaths
             hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
             defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
@@ -1259,6 +1359,11 @@ final class ApplicationCoordinator: ObservableObject {
         case let .error(message, code):
             guard activeRun?.phase != .cancelling else { return }
             activeRun?.backendErrorMessage = message
+            if activeRun?.intent == .mlxDownloadInfo {
+                progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: message))
+                setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
+                return
+            }
             if code == "mlx_setup_required", activeRun?.intent == .paper {
                 let model = activeRun?.model ?? ""
                 preparedMLXModels.remove(model)
@@ -1276,6 +1381,10 @@ final class ApplicationCoordinator: ObservableObject {
             if let message {
                 status = message
             }
+        case let .mlxDownloadInfo(info):
+            guard activeRun?.intent == .mlxDownloadInfo, info.isValid,
+                  info.model == activeRun?.model, activeRun?.mlxDownloadInfo == nil else { return }
+            activeRun?.mlxDownloadInfo = info
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
             modelCoordinator.receiveOllamaState(ollamaState)
@@ -1295,12 +1404,67 @@ final class ApplicationCoordinator: ObservableObject {
         switch run.intent {
         case .paper:
             finishGeneration(result, run: run)
+        case .occitanieActivity:
+            finishOccitanieActivity(result, run: run)
         case .referencePreparation, .reviewRecord:
             finishMaintenance(result, run: run)
         case .modelPull:
             finishModelPull(result, run: run)
         case .mlxSetup:
             finishMLXSetup(result, run: run)
+        case .mlxDownloadInfo:
+            finishMLXDownloadInfo(result, run: run)
+        }
+    }
+
+    private func finishMLXDownloadInfo(_ result: Result<Int32, Error>, run: BackendRun) {
+        guard run.model == appleModel.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        if case let .failure(error) = result {
+            pendingMLXDownloadInfo = nil
+            pendingMLXSetupRetryTarget = nil
+            showMLXSetupConfirmation = false
+            progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: error.localizedDescription))
+            setError(error.localizedDescription)
+            return
+        }
+        guard case .success(0) = result, run.backendErrorMessage == nil, let info = run.mlxDownloadInfo else {
+            pendingMLXDownloadInfo = nil
+            pendingMLXSetupRetryTarget = nil
+            showMLXSetupConfirmation = false
+            setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
+            return
+        }
+        pendingMLXDownloadInfo = info
+        pendingMLXSetupRetryTarget = run.retryTarget
+        status = InterfaceText.resolve("Model download size checked", language: presentationLanguage)
+        showMLXSetupConfirmation = true
+    }
+
+    private func finishOccitanieActivity(_ result: Result<Int32, Error>, run: BackendRun) {
+        guard case .success(0) = result, run.backendErrorMessage == nil else {
+            finishMaintenance(result, run: run)
+            return
+        }
+        do {
+            guard let working = run.documents.workingFolder else { throw CocoaError(.fileReadInvalidFileName) }
+            let source = working.appendingPathComponent("occitanie-nsi-etude-de-cas").standardizedFileURL
+            let expected = ["question_paper": "occitanie-nsi-activite.pdf", "mark_scheme": "occitanie-nsi-correction.pdf"]
+            guard currentGenerationFiles.count == expected.count,
+                  Set(currentGenerationFiles.map(\.role)) == Set(expected.keys),
+                  currentGenerationFiles.allSatisfy({
+                      $0.url.deletingLastPathComponent().standardizedFileURL == source
+                          && $0.url.lastPathComponent == expected[$0.role]
+                  }) else { throw CocoaError(.fileReadCorruptFile) }
+            try publishUKGeneratedFiles(from: source, to: outputFolder)
+            generationProgress = 1
+            persistRecentDocuments()
+            if let activity = currentGenerationFiles.first(where: { $0.role == "question_paper" }) {
+                previewedFileID = activity.id
+                sidebarSelection = .documents
+            }
+        } catch {
+            setError(InterfaceText.resolve("The case study could not be saved. Try again or choose another output folder.", language: presentationLanguage))
+            progressEntries.append(ProgressEntry(stage: "publication", message: error.localizedDescription))
         }
     }
 
@@ -1324,7 +1488,7 @@ final class ApplicationCoordinator: ObservableObject {
             generationProgress = nil
             generationEstimate = nil
             status = "Apple MLX setup required"
-            showMLXSetupConfirmation = true
+            requestMLXDownloadInfo()
             return
         }
 
@@ -1506,18 +1670,19 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
-        if !jobArtifacts.isEmpty {
-            generatedFiles = latestDocumentVersions(jobArtifacts)
-            return
-        }
         guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
               let documents = try? JSONDecoder().decode(
                 [GeneratedFile].self,
                 from: data
               ) else {
+            generatedFiles = latestDocumentVersions(jobArtifacts)
             return
         }
-        generatedFiles = latestDocumentVersions(documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) })
+        // Independent activities have no exam job identity. Keep their document
+        // records alongside the authoritative artifacts from full-paper jobs.
+        let relocated = documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) }
+        let independent = relocated.filter { $0.subject == "Étude de cas Occitanie" && $0.paper == "Activité indépendante, sans note d’examen" }
+        generatedFiles = latestDocumentVersions(jobArtifacts.isEmpty ? relocated : independent + jobArtifacts)
     }
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
@@ -1686,12 +1851,12 @@ private enum RunningOperation {
 }
 
 private enum BackendRunIntent {
-    case paper, referencePreparation, reviewRecord, modelPull, mlxSetup
+    case paper, occitanieActivity, referencePreparation, reviewRecord, modelPull, mlxSetup, mlxDownloadInfo
 
     var operation: RunningOperation {
         switch self {
-        case .paper: .generation
-        case .referencePreparation, .reviewRecord: .none
+        case .paper, .occitanieActivity: .generation
+        case .referencePreparation, .reviewRecord, .mlxDownloadInfo: .none
         case .modelPull: .modelPull
         case .mlxSetup: .mlxSetup
         }
@@ -1724,6 +1889,7 @@ private struct BackendRun {
     var process: Process?
     var phase = BackendRunPhase.running
     var backendErrorMessage: String?
+    var mlxDownloadInfo: MLXDownloadInfo?
 }
 
 private struct GenerationRetryTarget: Equatable {

@@ -22,9 +22,15 @@ enum KeldinMigration {
         environment[name] ?? environment[name.replacingOccurrences(of: "KELDIN_", with: "PAPER_CREATOR_")]
     }
 
-    static func prepare(defaults: UserDefaults = .standard, fileManager: FileManager = .default) -> [String] {
+    static func prepare(
+        defaults: UserDefaults = .standard, fileManager: FileManager = .default,
+        distributionMode: DistributionMode = .current,
+        legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
+    ) -> [String] {
         guard needsImport(defaults: defaults) else { return [] }
-        importPreferences(defaults.persistentDomain(forName: legacyBundleID) ?? [:], into: defaults)
+        if distributionMode == .direct {
+            importPreferences(legacyDomainReader(defaults, legacyBundleID) ?? [:], into: defaults)
+        }
         let localHome = fileManager.homeDirectoryForCurrentUser
         let accountHome = fileManager.homeDirectory(forUser: NSUserName()) ?? localHome
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
@@ -84,15 +90,21 @@ enum KeldinMigration {
         defaults.removeObject(forKey: frenchFamilyImportFailedKey)
     }
 
-    static func importData(from source: URL, defaults: UserDefaults = .standard, fileManager: FileManager = .default) throws {
+    static func importData(
+        from source: URL, defaults: UserDefaults = .standard, fileManager: FileManager = .default,
+        distributionMode: DistributionMode = .current,
+        legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
+    ) throws {
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
         let destination = support.appendingPathComponent("Keldin")
         try copyMissingTree(from: source, to: destination, fileManager: fileManager)
         registerArtifactRoot(source, destination: destination, defaults: defaults)
-        // Selecting the former app's Application Support folder grants access to its files,
-        // not to a separate preferences or Keychain domain. Those imports remain independent.
-        importPreferences(defaults.persistentDomain(forName: legacyBundleID) ?? [:], into: defaults)
+        // A selected folder grants file access, not access to another preference
+        // domain. Store builds import only the selected files.
+        if distributionMode == .direct {
+            importPreferences(legacyDomainReader(defaults, legacyBundleID) ?? [:], into: defaults)
+        }
     }
 
     private static func registerArtifactRoot(_ source: URL, destination: URL, defaults: UserDefaults) {

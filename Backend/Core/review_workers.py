@@ -1,4 +1,4 @@
-"""Bounded local generation/review jobs, with caller-owned result acceptance."""
+"""Bounded generation/review jobs, with caller-owned result acceptance."""
 
 from __future__ import annotations
 
@@ -32,6 +32,34 @@ def map_reviews[T, R](
 ) -> list[R]:
     if type(workers) is not int or workers not in (1, 2):
         raise ValueError("Reviews support one or two workers.")
+    return _map_jobs(
+        items, review, workers=workers, progress=progress, on_result=on_result
+    )
+
+
+def map_hosted_jobs[T, R](
+    items: list[T],
+    review: Callable[[T], R],
+    *,
+    workers: int,
+    progress: Callable[[int, int], None] | None = None,
+    on_result: Callable[[int, R], None] | None = None,
+) -> list[R]:
+    if type(workers) is not int or not 1 <= workers <= 4:
+        raise ValueError("Hosted generation supports one to four workers.")
+    return _map_jobs(
+        items, review, workers=workers, progress=progress, on_result=on_result
+    )
+
+
+def _map_jobs[T, R](
+    items: list[T],
+    review: Callable[[T], R],
+    *,
+    workers: int,
+    progress: Callable[[int, int], None] | None,
+    on_result: Callable[[int, R], None] | None,
+) -> list[R]:
     if workers == 1:
         values = []
         for index, item in enumerate(items):
