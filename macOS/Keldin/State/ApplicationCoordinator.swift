@@ -517,7 +517,9 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func selectBoard(_ board: ExamBoardOption) {
-        guard catalogStore.selectBoard(board, isLocked: isRunning) else { return }
+        guard catalogStore.selectBoard(board, isLocked: false) else { return }
+        // Browsing changes the next selection, never the captured running job.
+        guard !isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
         status = board.isReady ? "Ready" : "Coming Soon"
@@ -1547,7 +1549,8 @@ final class ApplicationCoordinator: ObservableObject {
             provider: aiProvider,
             model: activeModelName,
             dryRun: dryRun,
-            benchmark: benchmarkCoordinator.verdict
+            benchmark: benchmarkCoordinator.verdict,
+            recentRuns: recentDocumentStore.records
         )
         etaTimer?.cancel()
         etaTimer = Timer.publish(every: 1, on: .main, in: .common)

@@ -25,7 +25,8 @@ enum GenerationEstimator {
         provider: AIProvider,
         model: String,
         dryRun: Bool,
-        benchmark: BenchmarkVerdict?
+        benchmark: BenchmarkVerdict?,
+        recentRuns: [GenerationJobRecord] = []
     ) -> GenerationEstimate {
         let benchmark = benchmark.flatMap { verdict in
             verdict.validatedScore != nil ? verdict : nil
@@ -75,7 +76,7 @@ enum GenerationEstimator {
         let benchmarkFactor = benchmark.map { benchmarkComplexity(score: $0.score) } ?? 1.0
 
         let total = EstimateTuning.baselineSeconds * paperFactor.value * providerFactor.value * modelFactor.value * deviceFactor.value * benchmarkFactor
-        let factors = [
+        var factors = [
             paperFactor.factor,
             providerFactor.factor,
             modelFactor.factor,
@@ -87,10 +88,33 @@ enum GenerationEstimator {
             ),
         ]
 
+        let durations = recentRuns
+            .filter {
+                $0.state == .completed && $0.configuration.boardID == board.id
+                    && $0.configuration.paperID == paper.id
+                    && $0.configuration.provider == provider.backendID
+                    && $0.configuration.model == model && $0.configuration.dryRun == dryRun
+            }
+            .sorted { $0.createdAt > $1.createdAt }
+            .compactMap { run -> TimeInterval? in
+                let duration = run.updatedAt.timeIntervalSince(run.createdAt)
+                return duration.isFinite && (1...86_400).contains(duration) ? duration : nil
+            }
+            .prefix(5).sorted()
+        let duration: TimeInterval
+        if durations.isEmpty {
+            duration = total
+        } else {
+            let middle = durations.count / 2
+            duration = durations.count.isMultiple(of: 2)
+                ? (durations[middle - 1] + durations[middle]) / 2 : durations[middle]
+            factors.append(EstimateFactor(title: "Runtime history",
+                detail: "Median of \(durations.count) matching completed runs.", impact: duration / max(total, 1)))
+        }
         return GenerationEstimate(
             startedAt: Date(),
-            totalSeconds: max(EstimateTuning.minimumSeconds, total),
-            remainingSeconds: max(EstimateTuning.minimumSeconds, total),
+            totalSeconds: max(EstimateTuning.minimumSeconds, duration),
+            remainingSeconds: max(EstimateTuning.minimumSeconds, duration),
             confidence: benchmark == nil ? EstimateTuning.noBenchmarkConfidence : EstimateTuning.benchmarkConfidence,
             factors: factors
         )
@@ -101,26 +125,43 @@ enum GenerationEstimator {
         progress: Double?,
         now: Date = Date()
     ) -> GenerationEstimate {
+        let previousUpdate = estimate.lastUpdatedAt ?? estimate.startedAt
+        guard now >= previousUpdate else { return estimate }
+        let validProgress = progress.flatMap { $0.isFinite ? $0 : nil } ?? 0
+        let currentProgress = max(estimate.lastObservedProgress ?? 0,
+            min(max(validProgress, EstimateTuning.minimumProgress), EstimateTuning.maximumProgress))
+        let changed = estimate.lastObservedProgress != currentProgress
+        guard now != previousUpdate || changed else { return estimate }
+        let elapsed = max(0, now.timeIntervalSince(estimate.startedAt))
+        let interval = max(changed ? 1 : 0, now.timeIntervalSince(previousUpdate))
         var updated = estimate
-        let elapsed = now.timeIntervalSince(estimate.startedAt)
-        let currentProgress = min(max(progress ?? 0, EstimateTuning.minimumProgress), EstimateTuning.maximumProgress)
-        let scheduleRemaining = max(0, estimate.totalSeconds - elapsed)
-
+        var targetRemaining = max(0, estimate.totalSeconds - elapsed)
         if currentProgress > EstimateTuning.observedProgressThreshold {
             let observedTotal = elapsed / currentProgress
             let blendedTotal = (estimate.totalSeconds * EstimateTuning.priorWeight) + (observedTotal * EstimateTuning.observedWeight)
-            updated.totalSeconds = max(elapsed, blendedTotal)
-            updated.remainingSeconds = max(0, updated.totalSeconds - elapsed)
-            updated.confidence = min(
+            targetRemaining = max(0, blendedTotal - elapsed)
+            if changed { updated.confidence = min(
                 EstimateTuning.maximumConfidence,
                 max(
                     estimate.confidence,
                     EstimateTuning.progressConfidenceBase + currentProgress * EstimateTuning.progressConfidenceRange
                 )
-            )
-        } else {
-            updated.remainingSeconds = scheduleRemaining
+            ) }
         }
+        if estimate.remainingSeconds <= 0 && changed {
+            // A fresh work observation can restore an expired estimate.
+            updated.remainingSeconds = targetRemaining
+        } else {
+            let countdown = max(0, estimate.remainingSeconds - interval)
+            let weight = 1 - exp(-interval / 15)
+            let correction = (targetRemaining - countdown) * weight
+            // Limit corrections to two seconds per elapsed second, rather
+            // than snapping to a new ETA after a slow question completes.
+            updated.remainingSeconds = max(0, countdown + min(2 * interval, max(-2 * interval, correction)))
+        }
+        updated.totalSeconds = elapsed + updated.remainingSeconds
+        updated.lastUpdatedAt = now
+        updated.lastObservedProgress = currentProgress
         return updated
     }
 

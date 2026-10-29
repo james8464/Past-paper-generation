@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793279575.6953516,
-    "ast_hash": "2daee85d229ac86f11a3154eb12e9b68",
+    "mtime": 1793281093.7717357,
+    "ast_hash": "b07f1e6024a5f8b55951e47168ca0218",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3490,8 +3490,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AppModels.swift": {
-    "mtime": 1793279181.240393,
-    "ast_hash": "4bb9e67fefeb55d0de799d1f6d9c04a2",
+    "mtime": 1793282051.3066795,
+    "ast_hash": "a89fb873a62a0743720b64dacc33668b",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AssessmentBundleExporter.swift": {
@@ -3510,13 +3510,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationEstimator.swift": {
-    "mtime": 1793272882.730792,
-    "ast_hash": "92f1592dd4815ec6232d2feb78c5a167",
+    "mtime": 1793282051.3075264,
+    "ast_hash": "7d5211d14d27823c622425f6136cddb5",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
-    "mtime": 1793280971.8084044,
-    "ast_hash": "1b1f1fe226b1b24e16bc5824965c7d26",
+    "mtime": 1793283170.2613,
+    "ast_hash": "efe1369083f3f5007c3f872cb2ce5501",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/InterfaceText.swift": {
@@ -3570,8 +3570,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/SidebarView.swift": {
-    "mtime": 1793206372.2510402,
-    "ast_hash": "b994152ec7fb42d5992f0c9ef0b1abcd",
+    "mtime": 1793282051.3030703,
+    "ast_hash": "98cb1df6d161f9c8fda84824b1ec87bc",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/BackendClient.swift": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793279033.6562424,
-    "ast_hash": "54871fcaece23f2fca37b0692852e11f",
+    "mtime": 1793282051.305464,
+    "ast_hash": "bb7b7a98680baabffc3ae5a8fcbbf0fe",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3875,8 +3875,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793279033.657258,
-    "ast_hash": "7f4d5864cdef6f1604812f8fd67b9fcc",
+    "mtime": 1793281952.232093,
+    "ast_hash": "2669270718666a3ab244f3e873ab2325",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793279575.4496439,
-    "ast_hash": "5407b5b4412feeb98af57b259b9fca9c",
+    "mtime": 1793281093.6901813,
+    "ast_hash": "f33d442359a485481ac49982747699dd",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4460,8 +4460,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GenerationProgress.swift": {
-    "mtime": 1793279460.4321847,
-    "ast_hash": "acb76135072ee41717620c6365b6bde5",
+    "mtime": 1793283170.2625525,
+    "ast_hash": "34df51cef63bd65d4786f1e152ac85a1",
     "semantic_hash": ""
   },
   "tests/test_ci_signing.py": {
@@ -4475,8 +4475,8 @@
     "semantic_hash": ""
   },
   "tests/test_generation_workspace_layout.py": {
-    "mtime": 1793279239.3889751,
-    "ast_hash": "c221c4db19252681dd901e598f5dc32f",
+    "mtime": 1793281952.2314444,
+    "ast_hash": "bf2d41f681f808a554a56c8986281eff",
     "semantic_hash": ""
   },
   "tests/test_repeat_practice_policy.py": {
@@ -4500,8 +4500,8 @@
     "semantic_hash": ""
   },
   "docs/quality/practice-workspace-test-build-2026-10-29.md": {
-    "mtime": 1793281017.1011686,
-    "ast_hash": "a0b76410bca4667caf344d1e6cccd721",
+    "mtime": 1793281093.441706,
+    "ast_hash": "3b96fe1b827af25657f2d33711e928d3",
     "semantic_hash": ""
   },
   "docs/quality/uk-repeat-practice-policy-review-2026-10-29.md": {
@@ -4527,6 +4527,21 @@
   "tests/test_events_progress.py": {
     "mtime": 1793280754.4373164,
     "ast_hash": "8a081f4c423b12e273d2da48be2ddf9a",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/GenerationEstimatorTests.swift": {
+    "mtime": 1793283170.2717803,
+    "ast_hash": "6483ee6bca5135ebc98e59257527272b",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
+    "mtime": 1793282608.214197,
+    "ast_hash": "1310d1c05bc56b791e8f817aeb7e0e10",
+    "semantic_hash": ""
+  },
+  "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
+    "mtime": 1793283393.9667287,
+    "ast_hash": "e9b07e3bfd5bd0f7f212c3fc97e86289",
     "semantic_hash": ""
   }
 }

@@ -25,7 +25,6 @@ struct Sidebar: View {
             store: application.catalogStore,
             expandedSubjectIDs: $expandedSubjectIDs
         )
-        .disabled(application.isRunning)
         .navigationTitle("Keldin")
         .frame(minWidth: 220)
         .onAppear(perform: expandSelectedSubject)

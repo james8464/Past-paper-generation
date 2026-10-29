@@ -539,6 +539,8 @@ struct GenerationEstimate: Equatable {
     var remainingSeconds: TimeInterval
     var confidence: Double
     var factors: [EstimateFactor]
+    var lastUpdatedAt: Date? = nil
+    var lastObservedProgress: Double? = nil
 
     var etaDate: Date {
         Date().addingTimeInterval(max(0, remainingSeconds))

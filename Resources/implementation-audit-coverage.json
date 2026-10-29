@@ -3041,6 +3041,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/generation-navigation-and-performance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-policy-and-pdf-tools-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3970,11 +3976,8 @@
     {
       "path": "macOS/Keldin/Domain/GenerationEstimator.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "092d2dbe57041a1d9375188dd8acade7989b7bf6554fe9b9f87598a3a2d485e7",
-      "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
-      "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
@@ -4123,11 +4126,8 @@
     {
       "path": "macOS/Keldin/Navigation/SidebarView.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Recovered explicit complete-file review from the recorded unchanged checkpoint; scope and unresolved findings remain in the evidence, with no whole-project clearance.",
-      "source_sha256": "2a7e6a883a1a3c58b656db5df1e2ad4df1976b8949af32da7c358e0922e523a8",
-      "review_evidence": "docs/quality/implementation-audit-file-review-2026-10-28.md",
-      "review_evidence_sha256": "ad8cc62a31b706b0dcf8ac96da0e2a5521779475634dbd237fbcd0871f806b08"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/PrivacyInfo.xcprivacy",
@@ -4284,6 +4284,18 @@
     },
     {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/GenerationEstimatorTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/GenerationNavigationInteractiveTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
