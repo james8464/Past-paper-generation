@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793297039.835451,
-    "ast_hash": "423336d6bb54ef3ae54c324c30e8e49a",
+    "mtime": 1793306150.6051865,
+    "ast_hash": "f7e2d05d490115bcd7abb2a33a8aedc1",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3410,8 +3410,8 @@
     "semantic_hash": ""
   },
   "tests/test_native_status_contrast.py": {
-    "mtime": 1793225406.3657315,
-    "ast_hash": "8f53da209ee9451c22c1cc08617dd654",
+    "mtime": 1793305964.1643615,
+    "ast_hash": "e319614a161dd82e459c59bca702f203",
     "semantic_hash": ""
   },
   "tests/test_french_interface_copy.py": {
@@ -3515,8 +3515,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
-    "mtime": 1793302747.6172643,
-    "ast_hash": "fb15b5aefb3b4b9d2c7fddbde873208b",
+    "mtime": 1793306150.6040778,
+    "ast_hash": "838314775521e9547f0b5de848a77a22",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/InterfaceText.swift": {
@@ -4025,7 +4025,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793305141.9261162,
+    "mtime": 1793305391.2487292,
     "ast_hash": "b4653ad9b6ab589a10d0cea11eb91272",
     "semantic_hash": ""
   },
@@ -4680,8 +4680,8 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_case_study.py": {
-    "mtime": 1793302747.6306982,
-    "ast_hash": "104df1cdf9ce5d2887c1776ee658046f",
+    "mtime": 1793306150.6055434,
+    "ast_hash": "d1ae2e2ae3133f21c83be68bd538d3f3",
     "semantic_hash": ""
   },
   "docs/quality/accounting-paper-two-public-choice-binding-2026-10-29.md": {
