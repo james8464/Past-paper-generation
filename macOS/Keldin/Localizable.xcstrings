@@ -1,6 +1,30 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Checking a model's download size contacts Hugging Face. No prompts are sent. Model data is downloaded only after you confirm.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "La vérification de la taille du modèle contacte Hugging Face. Aucune consigne n’est envoyée. Les données du modèle ne sont téléchargées qu’après votre confirmation."}}}
+    },
+    "Keldin is closing. No new generation tasks can start.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Keldin est en cours de fermeture. Aucune nouvelle génération ne peut démarrer."}}}
+    },
+    "Check the selected model's download size before setup.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérifiez la taille du téléchargement du modèle sélectionné avant sa préparation."}}}
+    },
+    "Checking model download size": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Vérification de la taille du modèle à télécharger"}}}
+    },
+    "Model download size checked": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Taille du modèle à télécharger vérifiée"}}}
+    },
+    "Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Keldin n’a pas pu vérifier la taille de ce modèle. Vérifiez votre connexion et l’identifiant du modèle, puis réessayez. Aucun téléchargement de modèle n’a commencé."}}}
+    },
+    "%@ is already on this Mac. Keldin will check Apple MLX support and prepare it without downloading model data. Generation stays on this Mac.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "%@ est déjà sur ce Mac. Keldin vérifiera la prise en charge d’Apple MLX et le préparera sans télécharger les données du modèle. La génération reste sur ce Mac."}}}
+    },
+    "%@: estimated full model data %@. Files already cached may reduce the download. Keldin will check Apple MLX support and prepare the model. Generation stays on this Mac.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "%1$@ : volume total estimé des données du modèle, %2$@. Les fichiers déjà en cache peuvent réduire le téléchargement. Keldin vérifiera la prise en charge d’Apple MLX et préparera le modèle. La génération reste sur ce Mac."}}}
+    },
     "Hugging Face model ID": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Identifiant du modèle Hugging Face"}}}
     },

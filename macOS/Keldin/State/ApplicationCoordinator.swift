@@ -33,7 +33,18 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
-    @Published var appleModel = AppDefaults.appleModel
+    @Published var appleModel = AppDefaults.appleModel {
+        didSet {
+            if appleModel != oldValue {
+                pendingMLXDownloadInfo = nil
+                showMLXSetupConfirmation = false
+                if activeRun?.intent == .mlxDownloadInfo {
+                    activeRun?.mlxDownloadInfo = nil
+                    activeRun?.backendErrorMessage = "The selected model changed during the download-size check."
+                }
+            }
+        }
+    }
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
     @Published var showHostedAIConsent = false
@@ -61,6 +72,7 @@ final class ApplicationCoordinator: ObservableObject {
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
     private var preparedMLXModels: Set<String> = []
+    private var pendingMLXDownloadInfo: MLXDownloadInfo?
     private var mlxRecoveryState = MLXRecoveryState()
     private var securityScopedOutputFolder: URL?
     // Finished artifacts outlive their process so Documents can keep showing
@@ -211,7 +223,14 @@ final class ApplicationCoordinator: ObservableObject {
 
     var mlxSetupExplanation: String {
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
-        return InterfaceText.resolve("Keldin will check Apple MLX support, then download and prepare \(model) if needed. Models can use several gigabytes of storage. Generation stays on this Mac.", language: presentationLanguage)
+        guard let info = pendingMLXDownloadInfo, info.model == model else {
+            return InterfaceText.resolve("Check the selected model's download size before setup.", language: presentationLanguage)
+        }
+        if info.cached {
+            return InterfaceText.resolve("\(model) is already on this Mac. Keldin will check Apple MLX support and prepare it without downloading model data. Generation stays on this Mac.", language: presentationLanguage)
+        }
+        let size = ByteCountFormatter.string(fromByteCount: Int64(info.downloadBytes), countStyle: .file)
+        return InterfaceText.resolve("\(model): estimated full model data \(size). Files already cached may reduce the download. Keldin will check Apple MLX support and prepare the model. Generation stays on this Mac.", language: presentationLanguage)
     }
 
     init(
@@ -713,8 +732,7 @@ final class ApplicationCoordinator: ObservableObject {
             usesAI: selectedBoard.usesAI,
             dryRun: dryRun
         ) {
-            showMLXSetupConfirmation = true
-            status = "Apple MLX setup required"
+            requestMLXDownloadInfo()
             return
         }
         let settingsSaved = persistSettings(
@@ -836,6 +854,38 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
+    func requestMLXDownloadInfo() {
+        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
+        if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
+            setError(InterfaceText.resolve(issue, language: presentationLanguage))
+            return
+        }
+        guard !model.isEmpty else {
+            setError("Choose an Apple MLX model in Settings, then try again.")
+            return
+        }
+        pendingMLXDownloadInfo = nil
+        showMLXSetupConfirmation = false
+        generationProgress = nil
+        generationEstimate = nil
+        status = InterfaceText.resolve("Checking model download size", language: presentationLanguage)
+        let session = beginRunSession(intent: .mlxDownloadInfo, model: model)
+        do {
+            let process = try backend.run(
+                arguments: ["mlx-download-info", "--model", model],
+                environment: ["HF_HOME": AppDefaults.mlxCacheFolder().path]
+            ) { [weak self] event in
+                self?.apply(event, from: session)
+            } onFinish: { [weak self] result in
+                self?.finishRun(result, from: session)
+            }
+            if activeRun?.id == session { activeRun?.process = process }
+        } catch {
+            finishRun(.failure(error), from: session)
+        }
+    }
+
     func confirmMLXSetup() {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -849,8 +899,13 @@ final class ApplicationCoordinator: ObservableObject {
             setError("Choose an Apple MLX model in Settings, then try again.")
             return
         }
+        guard showMLXSetupConfirmation, pendingMLXDownloadInfo?.model == model else {
+            requestMLXDownloadInfo()
+            return
+        }
 
         showMLXSetupConfirmation = false
+        pendingMLXDownloadInfo = nil
         status = "Setting up Apple MLX"
         generationProgress = 0.05
         progressEntries.removeAll()
@@ -877,6 +932,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     func cancelMLXSetup() {
         showMLXSetupConfirmation = false
+        pendingMLXDownloadInfo = nil
         status = "Ready"
     }
 
@@ -1265,7 +1321,7 @@ final class ApplicationCoordinator: ObservableObject {
             progressEntries.append(ProgressEntry(stage: stage, message: message))
         case let .file(role, path):
             // Setup and model-management output cannot become paper artifacts.
-            if let intent = activeRun?.intent, intent == .mlxSetup || intent == .modelPull { return }
+            if let intent = activeRun?.intent, intent == .mlxSetup || intent == .mlxDownloadInfo || intent == .modelPull { return }
             var hidden = hiddenRecentPaths
             hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
             defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
@@ -1293,6 +1349,11 @@ final class ApplicationCoordinator: ObservableObject {
         case let .error(message, code):
             guard activeRun?.phase != .cancelling else { return }
             activeRun?.backendErrorMessage = message
+            if activeRun?.intent == .mlxDownloadInfo {
+                progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: message))
+                setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
+                return
+            }
             if code == "mlx_setup_required", activeRun?.intent == .paper {
                 let model = activeRun?.model ?? ""
                 preparedMLXModels.remove(model)
@@ -1310,6 +1371,10 @@ final class ApplicationCoordinator: ObservableObject {
             if let message {
                 status = message
             }
+        case let .mlxDownloadInfo(info):
+            guard activeRun?.intent == .mlxDownloadInfo, info.isValid,
+                  info.model == activeRun?.model, activeRun?.mlxDownloadInfo == nil else { return }
+            activeRun?.mlxDownloadInfo = info
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
             modelCoordinator.receiveOllamaState(ollamaState)
@@ -1337,7 +1402,22 @@ final class ApplicationCoordinator: ObservableObject {
             finishModelPull(result, run: run)
         case .mlxSetup:
             finishMLXSetup(result, run: run)
+        case .mlxDownloadInfo:
+            finishMLXDownloadInfo(result, run: run)
         }
+    }
+
+    private func finishMLXDownloadInfo(_ result: Result<Int32, Error>, run: BackendRun) {
+        guard run.model == appleModel.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        guard case .success(0) = result, run.backendErrorMessage == nil, let info = run.mlxDownloadInfo else {
+            pendingMLXDownloadInfo = nil
+            showMLXSetupConfirmation = false
+            setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
+            return
+        }
+        pendingMLXDownloadInfo = info
+        status = InterfaceText.resolve("Model download size checked", language: presentationLanguage)
+        showMLXSetupConfirmation = true
     }
 
     private func finishOccitanieActivity(_ result: Result<Int32, Error>, run: BackendRun) {
@@ -1388,7 +1468,7 @@ final class ApplicationCoordinator: ObservableObject {
             generationProgress = nil
             generationEstimate = nil
             status = "Apple MLX setup required"
-            showMLXSetupConfirmation = true
+            requestMLXDownloadInfo()
             return
         }
 
@@ -1751,12 +1831,12 @@ private enum RunningOperation {
 }
 
 private enum BackendRunIntent {
-    case paper, occitanieActivity, referencePreparation, reviewRecord, modelPull, mlxSetup
+    case paper, occitanieActivity, referencePreparation, reviewRecord, modelPull, mlxSetup, mlxDownloadInfo
 
     var operation: RunningOperation {
         switch self {
         case .paper, .occitanieActivity: .generation
-        case .referencePreparation, .reviewRecord: .none
+        case .referencePreparation, .reviewRecord, .mlxDownloadInfo: .none
         case .modelPull: .modelPull
         case .mlxSetup: .mlxSetup
         }
@@ -1789,6 +1869,7 @@ private struct BackendRun {
     var process: Process?
     var phase = BackendRunPhase.running
     var backendErrorMessage: String?
+    var mlxDownloadInfo: MLXDownloadInfo?
 }
 
 private struct GenerationRetryTarget: Equatable {

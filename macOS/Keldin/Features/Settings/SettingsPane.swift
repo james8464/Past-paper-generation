@@ -346,6 +346,9 @@ private struct AISettingsTab: View {
                 }
                 Text("Setup checks that a model can run, not paper quality. Generation stops if the model changes source data or fails answer and marking checks.")
                     .foregroundStyle(.secondary)
+                Text("Checking a model's download size contacts Hugging Face. No prompts are sent. Model data is downloaded only after you confirm.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
         }
     }

@@ -1077,6 +1077,19 @@ enum GenerationQualityPolicy {
     }
 }
 
+struct MLXDownloadInfo: Equatable {
+    let model: String
+    let downloadBytes: Int
+    let cached: Bool
+    let revision: String?
+
+    var isValid: Bool {
+        !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && (0...9_007_199_254_740_991).contains(downloadBytes)
+            && (!cached || downloadBytes == 0)
+    }
+}
+
 enum BackendEvent: Equatable {
     case hello(protocolVersion: Int, backendVersion: String, capabilities: [String])
     case progress(stage: String?, message: String, progress: Double?)
@@ -1085,6 +1098,7 @@ enum BackendEvent: Equatable {
     case error(message: String, code: String? = nil)
     case models([String], message: String?)
     case ollamaStatus(installed: Bool, running: Bool, command: String?, message: String?)
+    case mlxDownloadInfo(MLXDownloadInfo)
     case benchmarkMetric(BenchmarkMetric)
     case benchmarkSample(BenchmarkSample)
     case benchmarkDone(BenchmarkVerdict)
@@ -1113,6 +1127,15 @@ enum BackendEvent: Equatable {
             )
         case "models":
             self = .models(payload.models ?? [], message: payload.message)
+        case "mlx_download_info":
+            guard let model = payload.model, let bytes = payload.downloadBytes, let cached = payload.cached else {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Missing MLX download metadata."))
+            }
+            let info = MLXDownloadInfo(model: model, downloadBytes: bytes, cached: cached, revision: payload.revision)
+            guard info.isValid else {
+                throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Invalid MLX download metadata."))
+            }
+            self = .mlxDownloadInfo(info)
         case "ollama_status":
             self = .ollamaStatus(
                 installed: payload.installed ?? false,
@@ -1237,6 +1260,10 @@ private struct BackendEventPayload: Decodable {
     let sourcePDF: String?
     let progress: Double?
     let models: [String]?
+    let model: String?
+    let downloadBytes: Int?
+    let cached: Bool?
+    let revision: String?
     let installed: Bool?
     let running: Bool?
     let command: String?
@@ -1279,6 +1306,10 @@ private struct BackendEventPayload: Decodable {
         case sourcePDF = "source_pdf"
         case progress
         case models
+        case model
+        case downloadBytes = "download_bytes"
+        case cached
+        case revision
         case installed
         case running
         case command

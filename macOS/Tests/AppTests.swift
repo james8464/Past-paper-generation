@@ -5,6 +5,13 @@ import XCTest
 @testable import Keldin
 
 final class KeldinTests: XCTestCase {
+    func testMLXDownloadMetadataEventRequiresTypedNonnegativeSizeAndCacheState() throws {
+        let event = try BackendEvent(jsonLine: #"{"type":"mlx_download_info","model":"owner/model","download_bytes":2048,"cached":false,"revision":"abc"}"#)
+        XCTAssertEqual(event, .mlxDownloadInfo(MLXDownloadInfo(model: "owner/model", downloadBytes: 2048, cached: false, revision: "abc")))
+        for body in [#""download_bytes":-1,"cached":false"#, #""download_bytes":true,"cached":false"#, #""download_bytes":1"#, #""download_bytes":1,"cached":"false"#] {
+            XCTAssertThrowsError(try BackendEvent(jsonLine: "{\"type\":\"mlx_download_info\",\"model\":\"owner/model\",\(body)}"))
+        }
+    }
     func testStoreMLXModelsUseManagedRepositoryIDsWithoutRestrictingDirectPaths() {
         for model in ["mlx-community/Qwen2.5-3B-Instruct-4bit", " owner/model.v1 "] {
             XCTAssertNil(MLXModelAccessPolicy.issue(model: model, distributionMode: .appStore))
