@@ -1,6 +1,8 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Wrong answers in an NSI probe": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Réponses erronées lors d’un essai en NSI"}}}},
+    "A tested revision returned wrong answers in a small NSI reasoning probe with reasoning off. Full-paper quality remains unverified.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Une révision testée a donné des réponses erronées lors d’un court essai de raisonnement en NSI, avec le raisonnement désactivé. La qualité d’un sujet complet reste non vérifiée."}}}},
     "The generation service returned duplicate document records. No paper was saved.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le service de génération a renvoyé des documents en double. Aucun sujet n’a été enregistré."}}}},
     "Model review is not proof. Executable contract checks do not certify the printed answers.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’avis d’un modèle n’est pas une preuve. Les contrôles de contrats exécutables ne certifient pas les réponses imprimées."}}}},
     "Model-reviewed questions: %lld of %lld": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Questions examinées par un modèle : %1$lld sur %2$lld"}}}},

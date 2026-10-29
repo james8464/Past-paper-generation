@@ -6,6 +6,9 @@ final class ModelQualityGuidanceTests: XCTestCase {
     func testModelEvidenceIsScopedToExactProviderAndModelNotMemoryOrParameterCount() {
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .apple, model: "mlx-community/Llama-3.2-3B-Instruct-4bit"), .answerChecksFailed)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "gemma4:12b"), .reviewIncomplete)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:9b"), .nsiProbeFailed)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .apple, model: "qwen3.5:9b"), .unverified)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:27b"), .unverified)
         for (provider, model) in [(AIProvider.ollama, "llama3.2:3b"), (.ollama, "qwen2.5:7b"), (.apple, "/private/model-cache"), (.apple, "other/Model-120B"), (.openAI, "future-model"), (.anthropic, "future-model")] {
             XCTAssertEqual(ModelQualityAdvice.forModel(provider: provider, model: model), .unverified)
         }

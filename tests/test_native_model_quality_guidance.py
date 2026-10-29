@@ -9,7 +9,13 @@ def test_model_quality_guidance_is_separate_from_memory_suggestions():
     policy = (APP / "Domain/PaperQualityGuidance.swift").read_text()
     assert "llama-3.2-3b-instruct-4bit" in policy
     assert "gemma4:12b" in policy
-    assert "case answerChecksFailed, reviewIncomplete, unverified" in policy
+    for evidence in [
+        "answerChecksFailed",
+        "nsiProbeFailed",
+        "reviewIncomplete",
+        "unverified",
+    ]:
+        assert evidence in policy
     assert "case passed" not in policy
     for relative in [
         "Features/Settings/SettingsPane.swift",
@@ -24,6 +30,18 @@ def test_model_quality_guidance_is_separate_from_memory_suggestions():
     assert 'Text("Recommended")' not in workspace
     assert 'LabeledContent("Memory-fit suggestion")' in settings
     assert 'Label("Recommended model selected"' not in settings
+
+
+def test_qwen_warning_is_scoped_to_tested_nsi_probe_not_full_paper_qualification():
+    source = (APP / "Domain/PaperQualityGuidance.swift").read_text()
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    message = (
+        "A tested revision returned wrong answers in a small NSI reasoning probe "
+        "with reasoning off. Full-paper quality remains unverified."
+    )
+    assert 'provider == .ollama, model == "qwen3.5:9b"' in source
+    assert message in source
+    assert catalog[message]["localizations"]["fr"]["stringUnit"]["value"]
 
 
 def test_last_result_summary_uses_reported_evidence_without_an_all_clear():
