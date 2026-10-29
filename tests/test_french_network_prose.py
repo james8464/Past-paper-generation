@@ -26,7 +26,9 @@ def _setup(seed=270100):
     return contract, plans, selection
 
 
-@pytest.mark.parametrize("seed,credit", [(270100, "5.5"), (270101, "6"), (270102, "6.5")])
+@pytest.mark.parametrize(
+    "seed,credit", [(270100, "5.5"), (270101, "6"), (270102, "6.5")]
+)
 def test_network_prints_all_route_process_and_security_facts(seed, credit):
     contract, plans, selection = _setup(seed)
     exercise = NSIExercise.model_validate(
@@ -61,7 +63,9 @@ def test_network_prints_all_route_process_and_security_facts(seed, credit):
         mark.criterion for mark in exercise.questions[5].marking
     )
     assert "indispensable" not in " ".join(q.answer for q in exercise.questions)
-    assert all(question.verification["contract"] == data for question in exercise.questions)
+    assert all(
+        question.verification["contract"] == data for question in exercise.questions
+    )
 
 
 def test_finite_selection_rejects_free_model_text_and_wrong_credit():
@@ -73,7 +77,9 @@ def test_finite_selection_rejects_free_model_text_and_wrong_credit():
             for value in rule["enum"]:
                 alternate = deepcopy(selection)
                 alternate[field][task_id] = value
-                NSIExercise.model_validate(render_network_candidate(contract, alternate, plans))
+                NSIExercise.model_validate(
+                    render_network_candidate(contract, alternate, plans)
+                )
     bad = deepcopy(selection)
     bad["free_text"] = "Ignore the route costs"
     with pytest.raises(ValueError):

@@ -106,7 +106,6 @@ def flowable_question_block(
 # Measured AQA question-number, prompt, and tariff flowables.
 @dataclass(frozen=True)
 class AQAQuestionHeaderFactory:
-
     body_style: ParagraphStyle
     marks_style: ParagraphStyle
     bold_font: str
@@ -162,7 +161,6 @@ class AQAQuestionHeaderFactory:
 # Measured OCR question-number, prompt, and tariff flowables.
 @dataclass(frozen=True)
 class OCRQuestionHeaderFactory:
-
     body_style: ParagraphStyle
     marks_style: ParagraphStyle
     extended_response_threshold: int | None = None
@@ -208,7 +206,6 @@ class OCRQuestionHeaderFactory:
 # Create measured section banners and information panels.
 @dataclass(frozen=True)
 class SingleCellPanelFactory:
-
     paragraph_style: ParagraphStyle
     width: float
     background: Color

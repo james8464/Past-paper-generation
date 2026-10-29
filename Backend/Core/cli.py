@@ -78,9 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=["ollama", "openai", "anthropic", "apple"],
         default="ollama",
     )
-    generate.add_argument(
-        "--api-key", default=environment_value("KELDIN_API_KEY", "")
-    )
+    generate.add_argument("--api-key", default=environment_value("KELDIN_API_KEY", ""))
     generate.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     generate.add_argument("--dry-run", action="store_true")
     generate.add_argument("--notes", default="")
@@ -196,6 +194,7 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
         except Exception as error:
             errors.append(f"{capability.backend_subject}: {error}")
     french_families = 0
+    french_version = None
     try:
         from Backend.Core.france.database_case_authoring import (
             catalogue_digest as database_digest,
@@ -216,9 +215,20 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
             render_tree(seed)
             render_case(seed)
             render_system(seed)
-            french_families += 1
         for catalogue in (tree_digest, database_digest, system_digest):
             catalogue()
+        from Backend.Core.france import expanded_pipeline
+        from Backend.Core.france.nsi import NSIExercise
+
+        # Keep historical probes above, then check every currently public family.
+        # This also exercises inspected correction code and byte-bound sources.
+        french_version = expanded_pipeline.VERSION
+        for seed in range(270100, 270100 + expanded_pipeline.FAMILY_COUNT):
+            _, _, exercises = expanded_pipeline._source(seed)
+            for exercise in exercises:
+                NSIExercise.model_validate(exercise)
+            french_families += 1
+        expanded_pipeline._catalogue()
     except Exception as error:
         errors.append(f"French NSI: {error}")
     emit(
@@ -226,6 +236,7 @@ def handle_bundle_check(_args: argparse.Namespace) -> int:
         healthy=not errors,
         generators=loaded,
         french_case_families=french_families,
+        french_prompt_version=french_version,
         errors=errors,
         message=(
             f"Loaded {len(loaded)} generator families."

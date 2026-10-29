@@ -42,9 +42,7 @@ def test_french_help_does_not_claim_ollama_authors_current_papers():
     french = source.split("private var frenchBaccalaureat:", 1)[1].split(
         "private var", 1
     )[0]
-    assert (
-        "French papers are built locally from a fixed catalogue." in french
-    )
+    assert "French papers are built locally from a fixed catalogue." in french
     assert "Ollama generation uses" not in french
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     key = (
@@ -64,4 +62,7 @@ def test_french_local_progress_has_selected_language_copy():
     key = "Preparing the practice paper."
     assert key in source
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
-    assert catalog[key]["localizations"]["fr"]["stringUnit"]["value"] == "Préparation du sujet d’entraînement."
+    assert (
+        catalog[key]["localizations"]["fr"]["stringUnit"]["value"]
+        == "Préparation du sujet d’entraînement."
+    )

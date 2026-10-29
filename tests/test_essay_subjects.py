@@ -16,7 +16,9 @@ def test_later_wave_subject_plugins_are_discoverable() -> None:
     }
 
     assert expected <= set(subject_plugin_ids())
-    assert all(discover_subject_plugin(identifier).id == identifier for identifier in expected)
+    assert all(
+        discover_subject_plugin(identifier).id == identifier for identifier in expected
+    )
 
 
 @pytest.mark.parametrize(
@@ -28,7 +30,11 @@ def test_later_wave_subject_plugins_are_discoverable() -> None:
         ),
         (
             "geography",
-            {"question": "Assess the response.", "marks": 12, "case_study": "Coastal town"},
+            {
+                "question": "Assess the response.",
+                "marks": 12,
+                "case_study": "Coastal town",
+            },
         ),
         (
             "sociology",
@@ -36,7 +42,11 @@ def test_later_wave_subject_plugins_are_discoverable() -> None:
         ),
         (
             "history",
-            {"question": "Assess the interpretation.", "marks": 25, "source_extract": "Quoted text"},
+            {
+                "question": "Assess the interpretation.",
+                "marks": 25,
+                "source_extract": "Quoted text",
+            },
         ),
         (
             "english-literature",
@@ -69,7 +79,9 @@ def test_authorised_extract_with_option_route_and_level_policy_passes() -> None:
         "answer": "A comparison grounded in methods, context, and the supplied extract.",
     }
 
-    assert discover_subject_plugin("english-literature").validate_item(item).passed is True
+    assert (
+        discover_subject_plugin("english-literature").validate_item(item).passed is True
+    )
 
 
 def test_history_rejects_an_inverted_chronology() -> None:

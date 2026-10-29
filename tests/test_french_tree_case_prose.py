@@ -9,8 +9,8 @@ import pytest
 def test_french_prose_spacing_escapes_markup_without_changing_newlines():
     from Backend.Core.france.rendering import french_prose_markup
 
-    assert french_prose_markup('« a < b » : oui !\nPourquoi ?') == (
-        '«\u00a0a &lt; b\u00a0»\u00a0: oui\u00a0!<br/>Pourquoi\u00a0?'
+    assert french_prose_markup("« a < b » : oui !\nPourquoi ?") == (
+        "«\u00a0a &lt; b\u00a0»\u00a0: oui\u00a0!<br/>Pourquoi\u00a0?"
     )
     assert french_prose_markup('x = "a&b";\ny = 2') == 'x = "a&amp;b";<br/>y = 2'
 
@@ -158,13 +158,14 @@ def test_tree_case_pdf_keeps_prompts_and_marking_legible(tmp_path, seed, large_p
             text = "\n".join(page.get_text() for page in pdf)
             if not correction:
                 assert "Rédigez vos réponses sur votre copie." in pdf[0].get_text()
-                assert "Recopiez et complétez les tableaux demandés." in pdf[0].get_text()
+                assert (
+                    "Recopiez et complétez les tableaux demandés." in pdf[0].get_text()
+                )
             assert "tree_nodes" not in text and "tree_states" not in text
             assert ("def " in text) is (correction or seed == 270100)
             assert "```" not in text
             assert not any(
-                line.strip() in {"?", "!", ";", ":", "»"}
-                for line in text.splitlines()
+                line.strip() in {"?", "!", ";", ":", "»"} for line in text.splitlines()
             ), "French punctuation must stay attached to the preceding word"
             for page in pdf:
                 for x0, y0, x1, y1, *_ in page.get_text("words"):

@@ -10,7 +10,9 @@ from Backend.Core.subjects.computer_science import (
 
 
 def test_computer_science_uses_the_specialised_plugin() -> None:
-    assert isinstance(discover_subject_plugin("computer-science"), ComputerSciencePlugin)
+    assert isinstance(
+        discover_subject_plugin("computer-science"), ComputerSciencePlugin
+    )
 
 
 def test_pseudocode_normalisation_preserves_tokens_not_formatting() -> None:

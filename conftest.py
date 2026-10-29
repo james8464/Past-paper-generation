@@ -12,13 +12,17 @@ ECONOMICS_ROOT = ROOT / "Resources" / "economics" / "edexcel-a" / "generator"
 AQA_ECONOMICS_ROOT = ROOT / "Resources" / "economics" / "aqa" / "generator"
 OCR_ECONOMICS_ROOT = ROOT / "Resources" / "economics" / "ocr" / "generator"
 COMPUTER_SCIENCE_ROOT = ROOT / "Resources" / "computer-science" / "aqa" / "generator"
-OCR_COMPUTER_SCIENCE_ROOT = ROOT / "Resources" / "computer-science" / "ocr" / "generator"
+OCR_COMPUTER_SCIENCE_ROOT = (
+    ROOT / "Resources" / "computer-science" / "ocr" / "generator"
+)
 BUSINESS_ROOT = ROOT / "Resources" / "business" / "aqa" / "generator"
 ACCOUNTING_ROOT = ROOT / "Resources" / "accounting" / "aqa" / "generator"
 
 
 @pytest.fixture(autouse=True)
-def generator_working_directory(request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch) -> None:
+def generator_working_directory(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> None:
     test_path = Path(str(request.fspath)).resolve()
     if ECONOMICS_ROOT in test_path.parents:
         working_directory = ECONOMICS_ROOT

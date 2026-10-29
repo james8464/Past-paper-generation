@@ -145,7 +145,10 @@ def test_apple_provider_loads_model_once(monkeypatch) -> None:
     def load(model_name: str, *, tokenizer_config) -> tuple[object, object]:
         calls["load"] += 1
         assert model_name == "/local/test-model"
-        assert tokenizer_config == {"trust_remote_code": False, "local_files_only": True}
+        assert tokenizer_config == {
+            "trust_remote_code": False,
+            "local_files_only": True,
+        }
         return object(), object()
 
     def generate(
@@ -184,7 +187,9 @@ def test_solver_schema_bounds_multiple_choice_to_candidate_options():
     choices = ["Cash book", "Purchases journal", "Sales journal", "General journal"]
     schema = _ollama_json_schema(
         "Independently solve this item.\n"
-        + json.dumps({"item": {"kind": "multiple_choice", "marks": 1, "choices": choices}})
+        + json.dumps(
+            {"item": {"kind": "multiple_choice", "marks": 1, "choices": choices}}
+        )
     )
     properties = schema["properties"]
     assert properties["answer"]["enum"] == choices
@@ -230,7 +235,11 @@ def test_apple_provider_applies_the_models_chat_template(monkeypatch) -> None:
     assert calls == [
         (
             [{"role": "user", "content": "Return JSON."}],
-            {"tokenize": False, "add_generation_prompt": True, "enable_thinking": False},
+            {
+                "tokenize": False,
+                "add_generation_prompt": True,
+                "enable_thinking": False,
+            },
         )
     ]
 
@@ -273,7 +282,8 @@ def test_apple_batch_format_and_identifier_repair(monkeypatch):
 
     module.generate = generate
     monkeypatch.setattr(
-        HostedLLMClient, "_mlx_structured_response",
+        HostedLLMClient,
+        "_mlx_structured_response",
         lambda self, prompt, schema: generate(None, None, prompt=prompt),
     )
     monkeypatch.setitem(sys.modules, "mlx_lm", module)
@@ -314,7 +324,8 @@ def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, p
     module.load = lambda _, **kwargs: (object(), object())
     module.generate = lambda *args, **kwargs: json.dumps({field: items})
     monkeypatch.setattr(
-        HostedLLMClient, "_mlx_structured_response",
+        HostedLLMClient,
+        "_mlx_structured_response",
         lambda self, prompt, schema: json.dumps({field: items}),
     )
     monkeypatch.setitem(sys.modules, "mlx_lm", module)
@@ -331,7 +342,9 @@ def test_apple_rejects_missing_or_extra_batch_items(monkeypatch, items, field, p
 
 @pytest.mark.parametrize("duplicate", [False, True])
 @pytest.mark.parametrize("chat", [False, True])
-def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatch, duplicate, chat):
+def test_apple_structured_decoder_caches_adapter_not_generation_state(
+    monkeypatch, duplicate, chat
+):
     calls = []
     adapters = []
     templates = []
@@ -342,7 +355,9 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
         def apply_chat_template(self, messages, **kwargs):
             templates.append((messages, kwargs))
             assert kwargs == {
-                "tokenize": False, "add_generation_prompt": True, "enable_thinking": False,
+                "tokenize": False,
+                "add_generation_prompt": True,
+                "enable_thinking": False,
             }
             return "formatted conversation"
 
@@ -366,11 +381,13 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
     monkeypatch.setitem(sys.modules, "outlines.types", types)
     llguidance = ModuleType("llguidance")
     llguidance.grammar_from = lambda format, text: text
+
     class Matcher:
         @staticmethod
         def validate_grammar(grammar):
             assert "uniqueItems" not in grammar
             return ""
+
     llguidance.LLMatcher = Matcher
     monkeypatch.setitem(sys.modules, "llguidance", llguidance)
     client = HostedLLMClient(provider="apple", model="test", api_key="")
@@ -382,21 +399,28 @@ def test_apple_structured_decoder_caches_adapter_not_generation_state(monkeypatc
             client._mlx_structured_response("prompt", schema)
         return
     for _ in range(2):
-        assert client._mlx_structured_response("unformatted prompt", schema) == '{"answer":"ready"}'
+        assert (
+            client._mlx_structured_response("unformatted prompt", schema)
+            == '{"answer":"ready"}'
+        )
     assert len(adapters) == 1
     assert len(calls) == 2
     assert len(templates) == (2 if chat else 0)
     assert calls[0] == (
-        "formatted conversation" if chat else "unformatted prompt", {"schema": schema},
+        "formatted conversation" if chat else "unformatted prompt",
+        {"schema": schema},
         {"backend": "llguidance", "max_tokens": 4096, "verbose": False},
     )
 
 
 def test_mlx_decoder_schema_preserves_property_names_and_original_contract():
-    schema = {"type": "object", "properties": {
-        "uniqueItems": {"type": "boolean"},
-        "values": {"type": "array", "uniqueItems": True, "maxItems": 3},
-    }}
+    schema = {
+        "type": "object",
+        "properties": {
+            "uniqueItems": {"type": "boolean"},
+            "values": {"type": "array", "uniqueItems": True, "maxItems": 3},
+        },
+    }
     adapted = _mlx_decoder_schema(schema)
     assert adapted["properties"]["uniqueItems"] == {"type": "boolean"}
     assert adapted["properties"]["values"] == {"type": "array", "maxItems": 3}
@@ -410,12 +434,15 @@ def test_apple_structured_decoder_missing_dependency_is_actionable(monkeypatch):
         client._mlx_structured_response("prompt", {"required": ["answer"]})
 
 
-@pytest.mark.parametrize("response", [
-    '{"answer":"partial"',
-    '{"answer":"first","answer":"second"}',
-    'Commentary {"answer":"complete"}',
-    '[{"answer":"complete"}]',
-])
+@pytest.mark.parametrize(
+    "response",
+    [
+        '{"answer":"partial"',
+        '{"answer":"first","answer":"second"}',
+        'Commentary {"answer":"complete"}',
+        '[{"answer":"complete"}]',
+    ],
+)
 def test_apple_constrained_output_is_not_salvaged(monkeypatch, response):
     module = ModuleType("mlx_lm")
     module.load = lambda _, **kwargs: (object(), object())
@@ -425,7 +452,8 @@ def test_apple_constrained_output_is_not_salvaged(monkeypatch, response):
         "Backend.Core.providers.resolve_local_mlx_model", lambda _: "/local/model"
     )
     monkeypatch.setattr(
-        HostedLLMClient, "_mlx_structured_response",
+        HostedLLMClient,
+        "_mlx_structured_response",
         lambda self, prompt, schema: response,
     )
     client = HostedLLMClient(provider="apple", model="test", api_key="")

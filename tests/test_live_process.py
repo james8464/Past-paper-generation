@@ -8,6 +8,45 @@ import threading
 import time
 from contextlib import suppress
 
+import pytest
+
+
+def test_interruption_during_post_spawn_initialization_kills_and_reaps_child(
+    tmp_path, monkeypatch
+):
+    from tools import live_process
+
+    calls = []
+    interruption = SystemExit(143)
+
+    class Process:
+        pid = 123456789
+
+        def wait(self):
+            calls.append("wait")
+            return -signal.SIGKILL
+
+    def spawn(*_args, **_kwargs):
+        calls.append("spawn")
+        return Process()
+
+    def interrupted_clock():
+        raise interruption
+
+    monkeypatch.setattr(live_process.subprocess, "Popen", spawn)
+    monkeypatch.setattr(live_process.time, "monotonic", interrupted_clock)
+    monkeypatch.setattr(
+        live_process.os,
+        "killpg",
+        lambda pid, sent: calls.append(("kill", pid, sent)),
+    )
+    with pytest.raises(SystemExit) as raised:
+        live_process.run_backend(
+            ["fake"], cwd=tmp_path, run_dir=tmp_path, timeout_seconds=1
+        )
+    assert raised.value is interruption
+    assert calls == ["spawn", ("kill", Process.pid, signal.SIGKILL), "wait"]
+
 
 def test_backend_progress_is_written_before_process_finishes(tmp_path):
     from tools.live_process import run_backend

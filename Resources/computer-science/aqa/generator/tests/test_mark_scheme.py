@@ -21,9 +21,15 @@ def test_every_part_has_specific_marking_guidance():
 def test_validation_rejects_missing_part_mark_scheme():
     blueprint = build_paper2_blueprint(load_syllabus(), seed=99)
     question = blueprint.questions[0]
-    broken_part = question.parts[0].model_copy(update={"marking": question.parts[0].marking.model_copy(update={"points": []})})
-    broken_question = question.model_copy(update={"parts": [broken_part, *question.parts[1:]]})
-    broken = blueprint.model_copy(update={"questions": [broken_question, *blueprint.questions[1:]]})
+    broken_part = question.parts[0].model_copy(
+        update={"marking": question.parts[0].marking.model_copy(update={"points": []})}
+    )
+    broken_question = question.model_copy(
+        update={"parts": [broken_part, *question.parts[1:]]}
+    )
+    broken = blueprint.model_copy(
+        update={"questions": [broken_question, *blueprint.questions[1:]]}
+    )
 
     try:
         validate_blueprint(broken, load_syllabus())
@@ -66,7 +72,9 @@ def test_mark_scheme_cover_uses_shared_measured_title_grid(tmp_path):
         for text, baseline in (("A-level", 190.3), ("Mark scheme", 323.6)):
             span = next(span for span in spans if span["text"] == text)
             assert span["origin"][1] == pytest.approx(baseline, abs=0.2)
-        rules = [drawing for drawing in page.get_drawings() if drawing["rect"].width > 500]
+        rules = [
+            drawing for drawing in page.get_drawings() if drawing["rect"].width > 500
+        ]
         assert any(
             rule["rect"].y0 == pytest.approx(305.7, abs=0.2) and rule["width"] == 3
             for rule in rules

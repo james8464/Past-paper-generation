@@ -35,7 +35,10 @@ def test_ollama_prompt_limits_generation_to_syllabus_topic():
     assert "VERIFIED MARKING IS IMMUTABLE" in prompt
     assert "Do not include '(4 marks)' or similar mark text" in prompt
     assert "Preserve the command word and source reference pattern" in prompt
-    assert "Do not add instructions such as 'Consider both positive and negative arguments'" in prompt
+    assert (
+        "Do not add instructions such as 'Consider both positive and negative arguments'"
+        in prompt
+    )
     assert "mark scheme and indicative content are immutable" in prompt
 
 

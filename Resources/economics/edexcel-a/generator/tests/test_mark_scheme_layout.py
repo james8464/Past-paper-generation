@@ -100,7 +100,9 @@ def test_source_backed_credit_criteria_render_as_examiner_point_entries():
     )
 
     rows = _mark_scheme_rows(blueprint, syllabus)
-    first_answer_lines = next(row["answer_lines"] for row in rows if row["number"] == "1(a)")
+    first_answer_lines = next(
+        row["answer_lines"] for row in rows if row["number"] == "1(a)"
+    )
 
     assert any(
         line.startswith("● AO1 (2 marks):") and line.endswith("(2)")
@@ -261,7 +263,9 @@ def test_mark_scheme_calculation_rows_include_specific_working(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     config.sections[0].part_command_words[0] = ["calculate", "mcq"]
-    blueprint = _blueprint_with_section_a_calculation(config, syllabus, "elasticity_data_table")
+    blueprint = _blueprint_with_section_a_calculation(
+        config, syllabus, "elasticity_data_table"
+    )
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, syllabus, output)
@@ -291,24 +295,36 @@ def test_mark_scheme_rows_fit_within_single_page_after_long_extracts():
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=12397218355689870975)
 
-    row_heights = [_ms_row_height(row["answer_lines"]) for row in _mark_scheme_rows(blueprint, syllabus)]
+    row_heights = [
+        _ms_row_height(row["answer_lines"])
+        for row in _mark_scheme_rows(blueprint, syllabus)
+    ]
 
     assert max(row_heights) <= MS_MAX_ROW_HEIGHT
 
 
-@pytest.mark.parametrize("paper_id,seed", [("paper_1", 42), ("paper_1", 26080122), ("paper_2", 42), ("paper_3", 42)])
-def test_contract_scheme_pagination_preserves_all_credit_without_filler(tmp_path, paper_id, seed):
+@pytest.mark.parametrize(
+    "paper_id,seed",
+    [("paper_1", 42), ("paper_1", 26080122), ("paper_2", 42), ("paper_3", 42)],
+)
+def test_contract_scheme_pagination_preserves_all_credit_without_filler(
+    tmp_path, paper_id, seed
+):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
-    blueprint = build_paper_blueprint(load_builtin_paper_config(paper_id), syllabus, seed=seed)
+    blueprint = build_paper_blueprint(
+        load_builtin_paper_config(paper_id), syllabus, seed=seed
+    )
     output = tmp_path / "ms.pdf"
     render_mark_scheme(blueprint, syllabus, output)
     _assert_complete_contract_scheme(output, blueprint)
-    validate_pdf_for_release(output, subject="economics",
-        paper_number=paper_id[-1], role="mark_scheme")
+    validate_pdf_for_release(
+        output, subject="economics", paper_number=paper_id[-1], role="mark_scheme"
+    )
 
 
 def _assert_complete_contract_scheme(output, blueprint):
     import pymupdf as fitz
+
     with fitz.open(output) as document:
         # Reference publications may contain deliberately empty diagram pages.
         # These original contracts do not: never pad a new scheme to that count.
@@ -318,7 +334,9 @@ def _assert_complete_contract_scheme(output, blueprint):
         for item in question.parts or [question]:
             for point in item.mark_scheme:
                 assert " ".join(point.split()) in text, (question.number, point)
-    assert text.count("Allocation:") == sum(len(q.parts) or 1 for q in blueprint.questions)
+    assert text.count("Allocation:") == sum(
+        len(q.parts) or 1 for q in blueprint.questions
+    )
 
 
 def test_mark_scheme_mcq_explanations_are_option_specific(tmp_path):
@@ -408,7 +426,9 @@ def _pdf_text(path: Path) -> str:
 def _pdf_page_count(path: Path) -> int:
     import subprocess
 
-    result = subprocess.run(["pdfinfo", str(path)], check=True, capture_output=True, text=True)
+    result = subprocess.run(
+        ["pdfinfo", str(path)], check=True, capture_output=True, text=True
+    )
     for line in result.stdout.splitlines():
         if line.startswith("Pages:"):
             return int(line.split(":", 1)[1].strip())
@@ -432,7 +452,10 @@ def _text_block_bbox(path: Path, needle: str) -> tuple[float, float, float, floa
 def _blueprint_with_section_b_topic(config, syllabus, topic_id: str):
     for seed in range(500):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
-        if any(question.section == "B" and question.topic_id == topic_id for question in blueprint.questions):
+        if any(
+            question.section == "B" and question.topic_id == topic_id
+            for question in blueprint.questions
+        ):
             return blueprint
     raise AssertionError(f"No Section B blueprint found for topic {topic_id}")
 
@@ -444,6 +467,10 @@ def _blueprint_with_section_a_calculation(config, syllabus, stimulus_kind: str):
     for seed in range(1000):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         for question in blueprint.questions:
-            if question.section == "A" and question.stimulus_kind == stimulus_kind and any(part.command_word == "calculate" for part in question.parts):
+            if (
+                question.section == "A"
+                and question.stimulus_kind == stimulus_kind
+                and any(part.command_word == "calculate" for part in question.parts)
+            ):
                 return blueprint
     raise AssertionError(f"No Section A calculation found for stimulus {stimulus_kind}")

@@ -35,7 +35,6 @@ _SOURCE_PROVENANCE_ROLES = frozenset(
 
 # Host projection with separate model-visible and identity-bearing views.
 class DifficultyCandidateProjection(BaseModel):
-
     model_config = ConfigDict(extra="forbid", strict=True)
 
     schema_version: Literal[1] = 1
@@ -124,12 +123,16 @@ def ensure_difficulty_candidate_projection(
 ) -> DifficultyCandidateProjection:
     if isinstance(candidate, DifficultyCandidateProjection):
         return candidate
-    if isinstance(candidate, dict) and {
-        "schema_version",
-        "route",
-        "review_content",
-        "identity_content",
-    } <= candidate.keys():
+    if (
+        isinstance(candidate, dict)
+        and {
+            "schema_version",
+            "route",
+            "review_content",
+            "identity_content",
+        }
+        <= candidate.keys()
+    ):
         return DifficultyCandidateProjection.model_validate(candidate, strict=True)
     return difficulty_candidate_projection(
         route="shared-generic",

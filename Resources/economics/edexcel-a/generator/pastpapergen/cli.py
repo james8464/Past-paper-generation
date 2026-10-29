@@ -7,12 +7,17 @@ import secrets
 from collections.abc import Callable
 from pathlib import Path
 
+from pastpapergen import _cli_runtime as _cli_runtime
+
+# isort: split
+
 from Backend.Core.family_adapter import (
     ArtifactSpec,
     BuildResult,
     FamilyAdapter,
     run_family_adapter,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import (
@@ -117,7 +122,7 @@ def generate_package(
     ollama_url: str,
     dry_run: bool,
     progress: Callable[[str], None] | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     return run_family_adapter(

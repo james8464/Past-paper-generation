@@ -33,7 +33,11 @@ def build_matrix(
         raise ValueError("generator registry must describe A-level papers")
 
     gates = generator_registry.get("readiness_gates")
-    if not isinstance(gates, list) or not gates or not all(isinstance(gate, str) for gate in gates):
+    if (
+        not isinstance(gates, list)
+        or not gates
+        or not all(isinstance(gate, str) for gate in gates)
+    ):
         raise ValueError("readiness_gates must be a non-empty string list")
     if len(gates) != len(set(gates)):
         raise ValueError("readiness_gates contains duplicates")
@@ -63,7 +67,9 @@ def build_matrix(
 
         implementation = implementations.pop(family_id, None)
         papers = _paper_rows(implementation, gates) if implementation else []
-        declared_papers = list(implementation["declared_papers"]) if implementation else []
+        declared_papers = (
+            list(implementation["declared_papers"]) if implementation else []
+        )
         supported_papers = [paper["id"] for paper in papers]
         verified_papers = [
             paper["id"]
@@ -115,7 +121,9 @@ def build_matrix(
     )
     if advertised_without_reference:
         unknown = ", ".join(advertised_without_reference)
-        raise ValueError(f"generator families have no matching layout profile: {unknown}")
+        raise ValueError(
+            f"generator families have no matching layout profile: {unknown}"
+        )
 
     for family_id in sorted(implementations):
         implementation = implementations[family_id]
@@ -216,13 +224,17 @@ def _validate_implementation(
         if not paper_id or paper_id not in declared:
             raise ValueError(f"{expected_id} has an undeclared paper: {paper_id}")
         if paper_id in paper_ids:
-            raise ValueError(f"{expected_id} has duplicate paper implementation: {paper_id}")
+            raise ValueError(
+                f"{expected_id} has duplicate paper implementation: {paper_id}"
+            )
         paper_ids.add(paper_id)
         paper_checks = paper.get("checks", paper.get("gates"))
         if not isinstance(paper_checks, dict):
             raise ValueError(f"{expected_id} paper {paper_id} has no checks object")
         if set(paper_checks) != set(readiness_gates):
-            raise ValueError(f"{expected_id} paper {paper_id} checks do not match registry")
+            raise ValueError(
+                f"{expected_id} paper {paper_id} checks do not match registry"
+            )
         if not all(isinstance(value, bool) for value in paper_checks.values()):
             raise ValueError(f"{expected_id} paper {paper_id} checks must be booleans")
         qualification = paper.get("qualification")
@@ -290,9 +302,15 @@ def render_json(value: dict[str, Any]) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Build the A-level generator coverage matrix.")
-    parser.add_argument("--write", action="store_true", help="write Resources/coverage-matrix.json")
-    parser.add_argument("--check", action="store_true", help="fail if the checked-in matrix is stale")
+    parser = argparse.ArgumentParser(
+        description="Build the A-level generator coverage matrix."
+    )
+    parser.add_argument(
+        "--write", action="store_true", help="write Resources/coverage-matrix.json"
+    )
+    parser.add_argument(
+        "--check", action="store_true", help="fail if the checked-in matrix is stale"
+    )
     args = parser.parse_args(argv)
     if args.write and args.check:
         parser.error("--write and --check are mutually exclusive")
@@ -303,8 +321,13 @@ def main(argv: list[str] | None = None) -> int:
         COVERAGE_MATRIX.write_text(rendered, encoding="utf-8")
         return 0
     if args.check:
-        if not COVERAGE_MATRIX.exists() or COVERAGE_MATRIX.read_text(encoding="utf-8") != rendered:
-            raise SystemExit("Resources/coverage-matrix.json is stale; run tools/coverage_matrix.py --write")
+        if (
+            not COVERAGE_MATRIX.exists()
+            or COVERAGE_MATRIX.read_text(encoding="utf-8") != rendered
+        ):
+            raise SystemExit(
+                "Resources/coverage-matrix.json is stale; run tools/coverage_matrix.py --write"
+            )
         return 0
     print(rendered, end="")
     return 0

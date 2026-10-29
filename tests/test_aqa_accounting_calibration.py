@@ -40,7 +40,9 @@ def test_external_difficulty_gates_remain_false() -> None:
 
 def test_registry_links_calibration_without_false_difficulty_claim() -> None:
     registry = json.loads(GENERATOR_REGISTRY.read_text(encoding="utf-8"))
-    family = next(item for item in registry["families"] if item["id"] == "aqa/accounting")
+    family = next(
+        item for item in registry["families"] if item["id"] == "aqa/accounting"
+    )
     assert family["calibration_path"] == (
         "accounting/aqa/generator/data/difficulty-calibration.json"
     )

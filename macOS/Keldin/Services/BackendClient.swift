@@ -160,14 +160,16 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             let data = await outputTask.value
             let errorData = await errorTask.value
 
-            let output = String(data: data, encoding: .utf8) ?? ""
-            let events = output
-                .split(separator: "\n")
-                .compactMap { try? BackendEvent(jsonLine: String($0)) }
-            if process.terminationStatus != 0,
-               let errorText = String(data: errorData, encoding: .utf8),
-               !errorText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                return events + [.error(message: Self.displayMessage(forBackendError: errorText))]
+            var buffer = BackendEventLineBuffer()
+            let lines = buffer.append(data) + [buffer.finish()]
+            var events = lines.compactMap(Self.event)
+            if process.terminationStatus != 0 {
+                let stderr = String(data: errorData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                if !stderr.isEmpty {
+                    events.append(.error(message: Self.displayMessage(forBackendError: stderr)))
+                } else if !events.contains(where: { if case .error = $0 { return true }; return false }) {
+                    events.append(.error(message: "The generation service stopped (exit code \(process.terminationStatus))."))
+                }
             }
             return events
         }.value
@@ -206,13 +208,13 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
         _ line: String,
         onEvent: @escaping @Sendable @MainActor (BackendEvent) -> Void
     ) {
+        if let event = event(from: line) { onEvent(event) }
+    }
+
+    private static func event(from line: String) -> BackendEvent? {
         let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        if let event = try? BackendEvent(jsonLine: trimmed) {
-            onEvent(event)
-        } else {
-            onEvent(.error(message: "Backend returned unreadable output."))
-        }
+        guard !trimmed.isEmpty else { return nil }
+        return (try? BackendEvent(jsonLine: trimmed)) ?? .error(message: "Backend returned unreadable output.")
     }
 
     private func repositoryRoot() throws -> URL {
@@ -228,12 +230,10 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             }
         }
 
-        let sourceRoot = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-            .deletingLastPathComponent()
-        if hasBackendScript(in: sourceRoot) {
-            return sourceRoot
+        var sourceRoot = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+        while sourceRoot.path != "/" {
+            if hasBackendScript(in: sourceRoot) { return sourceRoot }
+            sourceRoot.deleteLastPathComponent()
         }
 
         var candidate = bundleURL

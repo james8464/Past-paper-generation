@@ -77,7 +77,6 @@ INTENTIONAL_BLANK_PAGE_CONTRACTS = {
 # A compact, serialisable sample of one rendered PDF glyph.
 @dataclass(frozen=True)
 class GlyphMetric:
-
     font_file: str | None
     embedded_name: str
     baseline: float
@@ -527,7 +526,9 @@ def _contrast_ratio(
             + 0.0722 * linear(channels[2])
         )
 
-    lighter, darker = sorted((luminance(foreground), luminance(background)), reverse=True)
+    lighter, darker = sorted(
+        (luminance(foreground), luminance(background)), reverse=True
+    )
     return (lighter + 0.05) / (darker + 0.05)
 
 

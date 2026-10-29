@@ -7,7 +7,6 @@ import re
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
-from typing import Protocol
 
 from Backend.Core.assessment_checkpoints import AssessmentCheckpointStore
 from Backend.Core.assessment_contracts import EvidenceRecord
@@ -21,11 +20,13 @@ from Backend.Core.computer_science_authoring import (
     reviewed_question_metadata,
     validate_question_review,
 )
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
     SQLProgramAttemptAudit,
     require_solution_matches_scheme,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
@@ -59,10 +60,6 @@ from cspapergen.notes import note_context_for_topic
 from cspapergen.render_pdf import candidate_stimulus_data
 
 
-class JSONGenerationClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
-
-
 def improve_questions_with_ollama(
     client: JSONGenerationClient,
     blueprint: PaperBlueprint,
@@ -89,7 +86,11 @@ def improve_questions_with_ollama(
             if stored is not None:
                 try:
                     candidate = Question.model_validate(stored)
-                    validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
+                    validate_question_review(
+                        candidate.model_dump(mode="json"),
+                        question.model_dump(mode="json"),
+                        required=True,
+                    )
                     _validate_ai_question(question, candidate)
                 except (ValueError, TypeError):
                     checkpoint_store.discard_item(checkpoint_key)
@@ -102,7 +103,9 @@ def improve_questions_with_ollama(
                         ),
                     )
         if _uses_review_only_generation(question):
-            emit(f"Reviewing fixed question {display_index}/{total}: 0 {question.number:02d} ({topic.title})")
+            emit(
+                f"Reviewing fixed question {display_index}/{total}: 0 {question.number:02d} ({topic.title})"
+            )
             review = require_independent_review(
                 client,
                 item_id=f"question-{question.number}",
@@ -111,9 +114,18 @@ def improve_questions_with_ollama(
                 candidate=question,
                 specification=topic,
             )
-            candidate = question.model_copy(update=reviewed_question_metadata(
-                question.model_dump(mode="json"), question.model_dump(mode="json"), review))
-            validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
+            candidate = question.model_copy(
+                update=reviewed_question_metadata(
+                    question.model_dump(mode="json"),
+                    question.model_dump(mode="json"),
+                    review,
+                )
+            )
+            validate_question_review(
+                candidate.model_dump(mode="json"),
+                question.model_dump(mode="json"),
+                required=True,
+            )
             if checkpoint_store is not None:
                 checkpoint_store.save_payload(
                     checkpoint_key,
@@ -126,7 +138,9 @@ def improve_questions_with_ollama(
                     f"0 {question.number:02d}"
                 ),
             )
-        emit(f"Generating question {display_index}/{total}: 0 {question.number:02d} ({topic.title})")
+        emit(
+            f"Generating question {display_index}/{total}: 0 {question.number:02d} ({topic.title})"
+        )
         base_prompt = _prompt(
             question,
             topic.title,
@@ -140,7 +154,19 @@ def improve_questions_with_ollama(
                 if not failure
                 else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
             )
-            payload = client.generate_json(retry_prompt)
+            scenario_only = _uses_scenario_only_generation(question)
+            payload = request_json(
+                client,
+                make_request(
+                    retry_prompt,
+                    OutputContract(
+                        "aqa_cs",
+                        immutable_marking=not scenario_only,
+                        scenario_only=scenario_only,
+                        part_count=0 if scenario_only else min(8, len(question.parts)),
+                    ),
+                ),
+            )
             try:
                 candidate = _merge_question(question, payload)
                 _validate_ai_question(question, candidate)
@@ -152,9 +178,18 @@ def improve_questions_with_ollama(
                     candidate=candidate,
                     specification=topic,
                 )
-                candidate = candidate.model_copy(update=reviewed_question_metadata(
-                    question.model_dump(mode="json"), candidate.model_dump(mode="json"), review))
-                validate_question_review(candidate.model_dump(mode="json"), question.model_dump(mode="json"), required=True)
+                candidate = candidate.model_copy(
+                    update=reviewed_question_metadata(
+                        question.model_dump(mode="json"),
+                        candidate.model_dump(mode="json"),
+                        review,
+                    )
+                )
+                validate_question_review(
+                    candidate.model_dump(mode="json"),
+                    question.model_dump(mode="json"),
+                    required=True,
+                )
                 break
             except ValueError as error:
                 failure = str(error)
@@ -226,16 +261,34 @@ def review_blueprint_difficulty(
             projection = _part_solver_projection(question, part)
             solver_item = projection.item
             solution = _solve_part_with_sql_validation(client, projection)
-            credit_review = review_open_credit(client, solver_item, solution) if part.open_credit_contract else {}
+            credit_review = (
+                review_open_credit(client, solver_item, solution)
+                if part.open_credit_contract
+                else {}
+            )
             require_solution_matches_scheme(
                 solution,
-                {"marks": part.marks, "mark_scheme": [*part.marking.points, *part.marking.levels],
-                 "assessment_objectives": part.marking.assessment_objectives,
-                 "alternatives": part.marking.accept,
-                 "closed_answers": part.marking.closed_answers,
-                 "credit_review_item": solver_item, "open_credit_review": credit_review},
-                expected_choice=(next((o.text for o in part.options if o.label == part.correct_option), "")
-                                 if part.options else None),
+                {
+                    "marks": part.marks,
+                    "mark_scheme": [*part.marking.points, *part.marking.levels],
+                    "assessment_objectives": part.marking.assessment_objectives,
+                    "alternatives": part.marking.accept,
+                    "closed_answers": part.marking.closed_answers,
+                    "credit_review_item": solver_item,
+                    "open_credit_review": credit_review,
+                },
+                expected_choice=(
+                    next(
+                        (
+                            o.text
+                            for o in part.options
+                            if o.label == part.correct_option
+                        ),
+                        "",
+                    )
+                    if part.options
+                    else None
+                ),
             )
             evidence = require_difficulty_review(
                 client,
@@ -248,7 +301,10 @@ def review_blueprint_difficulty(
             )
             reviewed_parts.append(
                 part.model_copy(
-                    update={"difficulty_evidence": evidence.model_dump(mode="json"), "open_credit_review": credit_review}
+                    update={
+                        "difficulty_evidence": evidence.model_dump(mode="json"),
+                        "open_credit_review": credit_review,
+                    }
                 )
             )
         reviewed_questions.append(question.model_copy(update={"parts": reviewed_parts}))
@@ -276,7 +332,10 @@ def _prompt(
     notes: str,
     blueprint: PaperBlueprint,
 ) -> str:
-    parts = "\n".join(f"- Part {part.label}: {part.marks} marks, {part.prompt}" for part in question.parts)
+    parts = "\n".join(
+        f"- Part {part.label}: {part.marks} marks, {part.prompt}"
+        for part in question.parts
+    )
     paper_id = (
         f"bank-{blueprint.focus_topic_id}"
         if blueprint.assessment_kind == "question-bank"
@@ -290,7 +349,10 @@ def _prompt(
         ).model_dump(mode="json")
         for part in question.parts
     ]
-    objective_guidance = objective_policy_for("computer science").guidance() + " Computer Science has no AO4."
+    objective_guidance = (
+        objective_policy_for("computer science").guidance()
+        + " Computer Science has no AO4."
+    )
     if _uses_scenario_only_generation(question):
         stem_numbers = ", ".join(numeric_tokens(question.stem)) or "none"
         scenario_terms = ", ".join(_required_scenario_terms(question)) or "none"
@@ -458,8 +520,7 @@ def _solve_part_with_sql_validation(
         return _verified_sql_solution(first, projection, None)
     first_audit = _sql_attempt_audit(first, first_validation)
     structured = [
-        finding.model_dump(mode="json")
-        for finding in first_validation.findings
+        finding.model_dump(mode="json") for finding in first_validation.findings
     ]
     replacement = solver.solve(
         projection.item,
@@ -487,11 +548,13 @@ def _sql_solution_validation(
     )
     findings = list(result.findings)
     if solution.evidence_ids != [projection.sql_contract.source_id]:
-        findings.append(SQLValidationFinding(
-            code="source-citation",
-            message="The SQL response must cite the one supplied public schema source.",
-            location="evidence_ids",
-        ))
+        findings.append(
+            SQLValidationFinding(
+                code="source-citation",
+                message="The SQL response must cite the one supplied public schema source.",
+                location="evidence_ids",
+            )
+        )
     return result.model_copy(update={"passed": not findings, "findings": findings})
 
 
@@ -508,7 +571,6 @@ def _sql_attempt_audit(
 
 # A bounded SQL correction failed, retaining both private attempts.
 class SQLProgramValidationError(ValueError):
-
     def __init__(
         self,
         first_attempt: SQLProgramAttemptAudit,
@@ -530,16 +592,16 @@ def _verified_sql_solution(
     first_failure: SQLProgramAttemptAudit | None,
 ):
     assert projection.sql_contract is not None
-    digest = sql_source_intent_sha256(
-        projection.sql_contract, projection.sql_intent_id
+    digest = sql_source_intent_sha256(projection.sql_contract, projection.sql_intent_id)
+    return solution.model_copy(
+        update={
+            "verified_scope": SQL_VERIFIED_SCOPE,
+            "program_validation_version": SQL_VALIDATION_VERSION,
+            "program_validation_scope": SQL_VERIFIED_SCOPE,
+            "source_intent_sha256": digest,
+            "program_first_failure": first_failure,
+        }
     )
-    return solution.model_copy(update={
-        "verified_scope": SQL_VERIFIED_SCOPE,
-        "program_validation_version": SQL_VALIDATION_VERSION,
-        "program_validation_scope": SQL_VERIFIED_SCOPE,
-        "source_intent_sha256": digest,
-        "program_first_failure": first_failure,
-    })
 
 
 def _uses_scenario_only_generation(question: Question) -> bool:
@@ -555,21 +617,32 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
     stem = _clean(str(payload.get("stem") or question.stem))
     if question.stimulus is not None:
         stem = question.stem
-    if not _uses_scenario_only_generation(question) and numeric_tokens(stem) != numeric_tokens(question.stem):
+    if not _uses_scenario_only_generation(question) and numeric_tokens(
+        stem
+    ) != numeric_tokens(question.stem):
         stem = question.stem
     raw_parts = payload.get("parts")
     parts = question.parts
     if isinstance(raw_parts, list):
-        by_label = {str(item.get("label")): item for item in raw_parts if isinstance(item, dict)}
+        by_label = {
+            str(item.get("label")): item for item in raw_parts if isinstance(item, dict)
+        }
         merged = []
         for part in question.parts:
             raw = by_label.get(part.label, {})
-            prompt = _clean(str(raw.get("prompt") or part.prompt)) if isinstance(raw, dict) else part.prompt
+            prompt = (
+                _clean(str(raw.get("prompt") or part.prompt))
+                if isinstance(raw, dict)
+                else part.prompt
+            )
             if question.stimulus is not None:
                 prompt = part.prompt
             if numeric_tokens(prompt) != numeric_tokens(part.prompt):
                 prompt = part.prompt
-            points = _text_list(raw.get("marking_points") if isinstance(raw, dict) else None, part.marking.points)
+            points = _text_list(
+                raw.get("marking_points") if isinstance(raw, dict) else None,
+                part.marking.points,
+            )
             required_points = min(part.marks, 3)
             seen = {point.casefold() for point in points}
             for fallback in part.marking.points:
@@ -578,24 +651,32 @@ def _merge_question(question: Question, payload: dict[str, object]) -> Question:
                 if fallback.casefold() not in seen:
                     points.append(fallback)
                     seen.add(fallback.casefold())
-            accept = _text_list(raw.get("accept") if isinstance(raw, dict) else None, part.marking.accept)
-            reject = _text_list(raw.get("reject") if isinstance(raw, dict) else None, part.marking.reject)
+            accept = _text_list(
+                raw.get("accept") if isinstance(raw, dict) else None,
+                part.marking.accept,
+            )
+            reject = _text_list(
+                raw.get("reject") if isinstance(raw, dict) else None,
+                part.marking.reject,
+            )
             marking = part.marking.model_copy(
                 deep=True, update={"points": points, "accept": accept, "reject": reject}
             )
-            merged.append(part.model_copy(update={"prompt": prompt, "marking": marking}))
+            merged.append(
+                part.model_copy(update={"prompt": prompt, "marking": marking})
+            )
         parts = merged
     return question.model_copy(update={"stem": stem, "parts": parts})
 
 
 def _validate_ai_question(original: Question, candidate: Question) -> None:
     if _uses_review_only_generation(original):
-        if question_content_sha256(original.model_dump(mode="json")) != question_content_sha256(candidate.model_dump(mode="json")):
+        if question_content_sha256(
+            original.model_dump(mode="json")
+        ) != question_content_sha256(candidate.model_dump(mode="json")):
             raise ValueError("immutable source-coupled question was changed")
         return
-    original_text = " ".join(
-        [original.stem, *(part.prompt for part in original.parts)]
-    )
+    original_text = " ".join([original.stem, *(part.prompt for part in original.parts)])
     candidate_text = " ".join(
         [candidate.stem, *(part.prompt for part in candidate.parts)]
     )
@@ -669,9 +750,7 @@ def _validate_ai_question(original: Question, candidate: Question) -> None:
                 "an immutable assessment field"
             )
         points = [
-            point.strip()
-            for point in candidate_part.marking.points
-            if point.strip()
+            point.strip() for point in candidate_part.marking.points if point.strip()
         ]
         if len(set(point.casefold() for point in points)) < min(
             candidate_part.marks, 3

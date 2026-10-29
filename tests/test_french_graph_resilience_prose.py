@@ -131,4 +131,6 @@ def test_v20_route_and_search_prompts_match_credited_evidence(total):
         assert "tracez" in search["prompt"]
         assert "justifiez" not in search["prompt"]
         assert any("chemin" in mark["criterion"] for mark in search["marking"])
-        assert all("justification" not in mark["criterion"] for mark in search["marking"])
+        assert all(
+            "justification" not in mark["criterion"] for mark in search["marking"]
+        )

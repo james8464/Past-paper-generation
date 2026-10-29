@@ -21,7 +21,9 @@ from Backend.Core.france.network_prose import (
 
 def _hash(value: object) -> str:
     return sha256(
-        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode()
     ).hexdigest()
 
 
@@ -81,8 +83,12 @@ def _save(path: Path, data: dict) -> None:
 
 
 def _validate_failures(
-    failures: object, prompt_hash: str, contract: NetworkContract,
-    task: dict, *, accepted: bool,
+    failures: object,
+    prompt_hash: str,
+    contract: NetworkContract,
+    task: dict,
+    *,
+    accepted: bool,
 ) -> list[dict]:
     limit = 2 if accepted else 3
     if not isinstance(failures, list) or len(failures) > limit:
@@ -90,9 +96,14 @@ def _validate_failures(
     for number, failure in enumerate(failures, start=1):
         if (
             not isinstance(failure, dict)
-            or set(failure) - {
-                "attempt", "error", "prompt_sha256", "response",
-                "response_sha256", "transport_attempts",
+            or set(failure)
+            - {
+                "attempt",
+                "error",
+                "prompt_sha256",
+                "response",
+                "response_sha256",
+                "transport_attempts",
             }
             or type(failure.get("attempt")) is not int
             or failure["attempt"] != number

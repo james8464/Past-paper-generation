@@ -31,7 +31,11 @@ def rule() -> PaperRule:
                 option_count=2,
                 answer_options=1,
                 option_marks=10,
-                questions=[QuestionRule(id="q", marks=10, kind="essay", command_word="evaluate")],
+                questions=[
+                    QuestionRule(
+                        id="q", marks=10, kind="essay", command_word="evaluate"
+                    )
+                ],
             )
         ],
     )
@@ -65,8 +69,12 @@ def paper() -> GeneratedPaper:
                 answer_options=1,
                 candidate_marks=10,
                 options=[
-                    GeneratedOption(id="1", title="Option 1", questions=[question("1")]),
-                    GeneratedOption(id="2", title="Option 2", questions=[question("2")]),
+                    GeneratedOption(
+                        id="1", title="Option 1", questions=[question("1")]
+                    ),
+                    GeneratedOption(
+                        id="2", title="Option 2", questions=[question("2")]
+                    ),
                 ],
             )
         ],
@@ -115,8 +123,7 @@ def test_generated_paper_matches_contract() -> None:
     assert question.syllabus_outcomes == ["a"]
     assert sum(question.assessment_objectives.values()) == question.marks
     assert (
-        sum(point.marks for point in question.structured_mark_scheme)
-        == question.marks
+        sum(point.marks for point in question.structured_mark_scheme) == question.marks
     )
     assert question.expected_minutes == 60
     assert question.provenance == "built-in"
@@ -172,9 +179,7 @@ def test_rule_metadata_is_authoritative_for_generated_questions() -> None:
 
 def test_generated_paper_rejects_missing_command_word() -> None:
     generated = paper()
-    generated.sections[0].options[0].questions[0].prompt = (
-        "Consider option 1."
-    )
+    generated.sections[0].options[0].questions[0].prompt = "Consider option 1."
 
     with pytest.raises(ValueError, match="does not use command word"):
         validate_generated_paper(generated, rule(), {"a"})

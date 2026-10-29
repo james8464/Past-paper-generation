@@ -36,22 +36,45 @@ def api_models() -> list[str] | None:
 def ollama_command() -> str | None:
     if found := shutil.which("ollama"):
         return found
-    return next((candidate for candidate in OLLAMA_FALLBACK_COMMANDS if Path(candidate).exists()), None)
+    return next(
+        (
+            candidate
+            for candidate in OLLAMA_FALLBACK_COMMANDS
+            if Path(candidate).exists()
+        ),
+        None,
+    )
 
 
 def handle_ollama_status(_args: argparse.Namespace) -> int:
     models = api_models()
     if models is not None:
-        emit("ollama_status", installed=True, running=True, message="Ollama is available.")
+        emit(
+            "ollama_status",
+            installed=True,
+            running=True,
+            message="Ollama is available.",
+        )
         return 0
 
     command = ollama_command()
     if not command:
-        emit("ollama_status", installed=False, running=False, message="Ollama is not installed.")
+        emit(
+            "ollama_status",
+            installed=False,
+            running=False,
+            message="Ollama is not installed.",
+        )
         return 0
 
     try:
-        subprocess.run([command, "list"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+        subprocess.run(
+            [command, "list"],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+        )
         running = True
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
         running = False
@@ -61,7 +84,9 @@ def handle_ollama_status(_args: argparse.Namespace) -> int:
         installed=True,
         running=running,
         command=command,
-        message="Ollama is available." if running else "Ollama is installed but not responding.",
+        message="Ollama is available."
+        if running
+        else "Ollama is installed but not responding.",
     )
     return 0
 
@@ -69,7 +94,11 @@ def handle_ollama_status(_args: argparse.Namespace) -> int:
 def handle_list_models(_args: argparse.Namespace) -> int:
     api_result = api_models()
     if api_result is not None:
-        emit("models", models=api_result, message=f"Found {len(api_result)} Ollama model(s).")
+        emit(
+            "models",
+            models=api_result,
+            message=f"Found {len(api_result)} Ollama model(s).",
+        )
         return 0
 
     command = ollama_command()
@@ -78,12 +107,16 @@ def handle_list_models(_args: argparse.Namespace) -> int:
         return 0
 
     try:
-        result = subprocess.run([command, "list"], check=True, capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            [command, "list"], check=True, capture_output=True, text=True, timeout=10
+        )
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
         emit("error", message=f"Could not list Ollama models: {error}")
         return 1
 
-    models = [fields[0] for line in result.stdout.splitlines()[1:] if (fields := line.split())]
+    models = [
+        fields[0] for line in result.stdout.splitlines()[1:] if (fields := line.split())
+    ]
     emit("models", models=models, message=f"Found {len(models)} Ollama model(s).")
     return 0
 

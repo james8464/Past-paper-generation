@@ -10,6 +10,7 @@ from Backend.Core.family_adapter import (
     FamilyAdapter,
     run_family_adapter,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from configuredgen.generator import build_paper
 from configuredgen.models import ConfiguredSyllabus, load_syllabus
@@ -26,7 +27,7 @@ def generate_package(
     ollama_url: str = "http://localhost:11434",
     dry_run: bool = True,
     progress: Callable[[str], None] | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     syllabus = load_syllabus(syllabus_path)
@@ -98,9 +99,9 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
             emit("Creating practical source-file template")
             path = output / f"{syllabus.subject_plugin}-paper-{paper}-solution.py"
             path.write_text(
-                '# Candidate source file. Complete this original task offline.\n\n'
+                "# Candidate source file. Complete this original task offline.\n\n"
                 "def main() -> None:\n"
-                "    raise NotImplementedError(\"Complete the examination task\")\n\n"
+                '    raise NotImplementedError("Complete the examination task")\n\n'
                 'if __name__ == "__main__":\n'
                 "    main()\n",
                 encoding="utf-8",
@@ -124,8 +125,7 @@ def _adapter(syllabus: ConfiguredSyllabus, paper_id: str) -> FamilyAdapter:
         ),
         supporting_artifacts=(
             supporting
-            if {"evidence_document", "source_file"}
-            & set(specification.output_roles)
+            if {"evidence_document", "source_file"} & set(specification.output_roles)
             else None
         ),
         output_order=tuple(specification.output_roles),

@@ -46,9 +46,7 @@ def test_production_pdf_renderers_run_inside_atomic_transactions(path: Path) -> 
     assert "run_family_adapter" in source
     for renderer_call in renderer_calls:
         ancestor = parents.get(renderer_call)
-        while ancestor is not None and not (
-            isinstance(ancestor, ast.Lambda)
-        ):
+        while ancestor is not None and not (isinstance(ancestor, ast.Lambda)):
             ancestor = parents.get(ancestor)
         assert ancestor is not None, (
             f"{path}:{renderer_call.lineno} must pass {_call_name(renderer_call)} "
@@ -68,7 +66,6 @@ def test_shared_family_adapter_owns_atomic_pdf_transaction() -> None:
     assert len(calls) == 1
     call = calls[0]
     assert any(
-        isinstance(argument, ast.Attribute)
-        and argument.attr == "renderer"
+        isinstance(argument, ast.Attribute) and argument.attr == "renderer"
         for argument in call.args
     )

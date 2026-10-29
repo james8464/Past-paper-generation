@@ -24,7 +24,9 @@ def test_environment_alias_is_read_only_and_new_value_takes_precedence():
     assert environment_value("KELDIN_API_KEY", environment=values) == "old"
     values["KELDIN_API_KEY"] = ""
     assert environment_value("KELDIN_API_KEY", environment=values) == ""
-    assert environment_value("KELDIN_ROOT", "fallback", environment=values) == "fallback"
+    assert (
+        environment_value("KELDIN_ROOT", "fallback", environment=values) == "fallback"
+    )
     assert values["PAPER_CREATOR_API_KEY"] == "old"
     assert environment_value("KELDIN_APP_VERSION", None, environment={}) is None
 

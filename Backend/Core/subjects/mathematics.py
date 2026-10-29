@@ -81,7 +81,9 @@ def compare_mathematical_answers(
     if candidate_unit != expected_unit:
         return AnswerComparison(
             False,
-            (f"unit {candidate.unit or 'none'} does not match {expected.unit or 'none'}",),
+            (
+                f"unit {candidate.unit or 'none'} does not match {expected.unit or 'none'}",
+            ),
         )
 
     try:
@@ -97,7 +99,9 @@ def compare_mathematical_answers(
     if not (left.is_number and right.is_number):
         return AnswerComparison(False, ("expressions are not symbolically equivalent",))
     implicit_float_tolerance = (
-        Decimal("1e-15") if left.has(sympy.Float) or right.has(sympy.Float) else Decimal(0)
+        Decimal("1e-15")
+        if left.has(sympy.Float) or right.has(sympy.Float)
+        else Decimal(0)
     )
     tolerance = max(candidate.tolerance, expected.tolerance, implicit_float_tolerance)
     numeric_difference = abs(Decimal(str(sympy.N(difference, 30))))
@@ -179,7 +183,9 @@ class MathematicsPlugin:
         except ValueError as error:
             return SubjectValidation(False, (str(error),))
         if actual != expected:
-            return SubjectValidation(False, ("marking rules do not match the item contract",))
+            return SubjectValidation(
+                False, ("marking rules do not match the item contract",)
+            )
         return SubjectValidation(True)
 
     def calibration_features(self, item: Any) -> dict[str, float | str]:

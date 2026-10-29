@@ -217,7 +217,9 @@ def test_direct_profile_cannot_qualify_after_private_version_marker_mutation():
 
 # `model_copy(update=...)` does not re-run schema-three evidence validation.
 def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
-    checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
+    checked_in = json.loads(
+        Path("Resources/reference-demand-profiles.json").read_text()
+    )
     source = ReferenceDemandDocument.model_validate(
         {
             **checked_in,
@@ -277,7 +279,9 @@ def test_model_copied_document_cannot_promote_a_valid_profile_to_schema_three():
 
 # Calling a public Pydantic validator is not evidence of canonical loading.
 def test_direct_document_validator_cannot_qualify_a_forged_h3_document():
-    checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
+    checked_in = json.loads(
+        Path("Resources/reference-demand-profiles.json").read_text()
+    )
     source = ReferenceDemandDocument.model_validate(
         {
             **checked_in,
@@ -368,7 +372,9 @@ def test_public_context_accessors_cannot_be_used_to_inject_a_forged_profile():
 
 # Qualification cannot survive a post-validation profile-list mutation.
 def test_profile_list_mutation_invalidates_a_schema_three_document_attestation():
-    checked_in = json.loads(Path("Resources/reference-demand-profiles.json").read_text())
+    checked_in = json.loads(
+        Path("Resources/reference-demand-profiles.json").read_text()
+    )
     document = ReferenceDemandDocument.model_validate(
         {
             **checked_in,

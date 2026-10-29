@@ -413,8 +413,7 @@ def _levels_page(tariffs: tuple[int, ...] = (9, 10, 15, 25)) -> list[Flowable]:
     raw_rows = [["Tariff", "Bands used in this practice mark scheme"]]
     for marks in tariffs:
         bands = ", ".join(
-            f"Level {row.level}: {row.mark_range}"
-            for row in level_rows(marks)
+            f"Level {row.level}: {row.mark_range}" for row in level_rows(marks)
         )
         raw_rows.append([f"{marks} marks", bands])
     rows = [
@@ -479,8 +478,7 @@ def _level_policy_table(tariffs: tuple[int, ...]) -> Table:
             ]
         )
     rows = [
-        [Paragraph(str(value), STYLES["scheme"]) for value in row]
-        for row in raw_rows
+        [Paragraph(str(value), STYLES["scheme"]) for value in row] for row in raw_rows
     ]
     table = Table(rows, colWidths=[31 * mm, 20 * mm, 114 * mm], repeatRows=1)
     table.setStyle(
@@ -769,7 +767,10 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         if paper.paper_id == "paper_3"
         else (
             "Write your answers in the separate answer booklet.",
-            *(f"Section {section.id}: {section.instructions}" for section in paper.sections),
+            *(
+                f"Section {section.id}: {section.instructions}"
+                for section in paper.sections
+            ),
         )
     )
     return CoverProfile(
@@ -1210,13 +1211,41 @@ def _economic_diagram(
     drawing.add(Line(x0, y0, x0 + width, y0, strokeWidth=0.8))
     visual = visual or {}
     visual_kind = str(visual.get("visual_kind", ""))
-    y_axis = str(visual.get("y_axis", "Price level" if topic_id.startswith("4.2") else "Price"))
-    x_axis = str(visual.get("x_axis", "Real output" if topic_id.startswith("4.2") else "Quantity"))
+    y_axis = str(
+        visual.get("y_axis", "Price level" if topic_id.startswith("4.2") else "Price")
+    )
+    x_axis = str(
+        visual.get(
+            "x_axis", "Real output" if topic_id.startswith("4.2") else "Quantity"
+        )
+    )
 
     if visual_kind == "ppf_shift":
-        first = [x0 + 8, y0 + 101, x0 + 90, y0 + 92, x0 + 170, y0 + 68, x0 + 238, y0 + 31]
-        second = [x0 + 8, y0 + 111, x0 + 106, y0 + 105, x0 + 205, y0 + 82, x0 + 294, y0 + 31]
-        drawing.add(PolyLine(first, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3]))
+        first = [
+            x0 + 8,
+            y0 + 101,
+            x0 + 90,
+            y0 + 92,
+            x0 + 170,
+            y0 + 68,
+            x0 + 238,
+            y0 + 31,
+        ]
+        second = [
+            x0 + 8,
+            y0 + 111,
+            x0 + 106,
+            y0 + 105,
+            x0 + 205,
+            y0 + 82,
+            x0 + 294,
+            y0 + 31,
+        ]
+        drawing.add(
+            PolyLine(
+                first, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3]
+            )
+        )
         drawing.add(PolyLine(second, strokeColor=BLACK, strokeWidth=1.2))
         drawing.add(String(x0 + 230, y0 + 34, "PPF1", fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 286, y0 + 34, "PPF2", fontName=FONT_BOLD, fontSize=8))
@@ -1226,14 +1255,44 @@ def _economic_diagram(
 
     if visual_kind == "lorenz_shift":
         equality = [x0, y0, x0 + 280, y0 + 105]
-        first = [x0, y0, x0 + 70, y0 + 7, x0 + 140, y0 + 23, x0 + 210, y0 + 52, x0 + 280, y0 + 105]
-        second = [x0, y0, x0 + 70, y0 + 17, x0 + 140, y0 + 43, x0 + 210, y0 + 72, x0 + 280, y0 + 105]
-        drawing.add(PolyLine(equality, strokeColor=MID_GREY, strokeWidth=0.9, strokeDashArray=[4, 3]))
+        first = [
+            x0,
+            y0,
+            x0 + 70,
+            y0 + 7,
+            x0 + 140,
+            y0 + 23,
+            x0 + 210,
+            y0 + 52,
+            x0 + 280,
+            y0 + 105,
+        ]
+        second = [
+            x0,
+            y0,
+            x0 + 70,
+            y0 + 17,
+            x0 + 140,
+            y0 + 43,
+            x0 + 210,
+            y0 + 72,
+            x0 + 280,
+            y0 + 105,
+        ]
+        drawing.add(
+            PolyLine(
+                equality, strokeColor=MID_GREY, strokeWidth=0.9, strokeDashArray=[4, 3]
+            )
+        )
         drawing.add(PolyLine(first, strokeColor=MID_GREY, strokeWidth=1.0))
         drawing.add(PolyLine(second, strokeColor=BLACK, strokeWidth=1.2))
-        drawing.add(String(x0 + 150, y0 + 70, "Line of equality", fontName=FONT, fontSize=7))
+        drawing.add(
+            String(x0 + 150, y0 + 70, "Line of equality", fontName=FONT, fontSize=7)
+        )
         drawing.add(String(x0 + 175, y0 + 38, "Lorenz 1", fontName=FONT, fontSize=8))
-        drawing.add(String(x0 + 185, y0 + 62, "Lorenz 2", fontName=FONT_BOLD, fontSize=8))
+        drawing.add(
+            String(x0 + 185, y0 + 62, "Lorenz 2", fontName=FONT_BOLD, fontSize=8)
+        )
         drawing.add(String(x0 - 32, y0 + height, y_axis, fontName=FONT, fontSize=8))
         drawing.add(String(x0 + width - 85, y0 - 14, x_axis, fontName=FONT, fontSize=8))
         return drawing
@@ -1243,14 +1302,36 @@ def _economic_diagram(
         mpc = [x0 + 45, y0 + 16, x0 + 280, y0 + 94]
         msc = [x0 + 45, y0 + 42, x0 + 280, y0 + 120]
         drawing.add(PolyLine(msb, strokeColor=BLACK, strokeWidth=1.1))
-        drawing.add(PolyLine(mpc, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3]))
+        drawing.add(
+            PolyLine(mpc, strokeColor=MID_GREY, strokeWidth=1.0, strokeDashArray=[4, 3])
+        )
         drawing.add(PolyLine(msc, strokeColor=BLACK, strokeWidth=1.2))
         drawing.add(String(x0 + 283, y0 + 12, "MSB", fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 283, y0 + 91, "MPC", fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 283, y0 + 112, "MSC", fontName=FONT_BOLD, fontSize=8))
         social_x, market_x = x0 + 145, x0 + 183
-        drawing.add(Line(social_x, y0, social_x, y0 + 66, strokeColor=MID_GREY, strokeWidth=0.7, strokeDashArray=[3, 3]))
-        drawing.add(Line(market_x, y0, market_x, y0 + 62, strokeColor=MID_GREY, strokeWidth=0.7, strokeDashArray=[3, 3]))
+        drawing.add(
+            Line(
+                social_x,
+                y0,
+                social_x,
+                y0 + 66,
+                strokeColor=MID_GREY,
+                strokeWidth=0.7,
+                strokeDashArray=[3, 3],
+            )
+        )
+        drawing.add(
+            Line(
+                market_x,
+                y0,
+                market_x,
+                y0 + 62,
+                strokeColor=MID_GREY,
+                strokeWidth=0.7,
+                strokeDashArray=[3, 3],
+            )
+        )
         drawing.add(String(social_x - 7, y0 - 12, "Q*", fontName=FONT_BOLD, fontSize=8))
         drawing.add(String(market_x - 7, y0 - 12, "Qm", fontName=FONT, fontSize=8))
         drawing.add(String(x0 - 44, y0 + height, y_axis, fontName=FONT, fontSize=8))
@@ -1297,12 +1378,30 @@ def _economic_diagram(
                 strokeWidth=1.2,
             )
         )
-        drawing.add(String(demand[-2] - 5, demand[-1] - 10, "AD", fontName=FONT, fontSize=8))
-        drawing.add(String(original_x - 12, y0 + height + 2, "LRAS1", fontName=FONT, fontSize=8))
-        drawing.add(String(shifted_x - 12, y0 + height + 2, "LRAS2", fontName=FONT_BOLD, fontSize=8))
+        drawing.add(
+            String(demand[-2] - 5, demand[-1] - 10, "AD", fontName=FONT, fontSize=8)
+        )
+        drawing.add(
+            String(original_x - 12, y0 + height + 2, "LRAS1", fontName=FONT, fontSize=8)
+        )
+        drawing.add(
+            String(
+                shifted_x - 12, y0 + height + 2, "LRAS2", fontName=FONT_BOLD, fontSize=8
+            )
+        )
         for label, equilibrium_x in (("E1", original_x), ("E2", shifted_x)):
-            equilibrium_y = demand[1] + (demand[3] - demand[1]) * (equilibrium_x - demand[0]) / (demand[2] - demand[0])
-            drawing.add(String(equilibrium_x + 3, equilibrium_y + 3, label, fontName=FONT_BOLD, fontSize=7))
+            equilibrium_y = demand[1] + (demand[3] - demand[1]) * (
+                equilibrium_x - demand[0]
+            ) / (demand[2] - demand[0])
+            drawing.add(
+                String(
+                    equilibrium_x + 3,
+                    equilibrium_y + 3,
+                    label,
+                    fontName=FONT_BOLD,
+                    fontSize=7,
+                )
+            )
     elif curve_role and direction in {"left", "right"}:
         shifting = demand if curve_role == "demand" else supply
         fixed = supply if curve_role == "demand" else demand
@@ -1337,9 +1436,15 @@ def _economic_diagram(
         )
         base_x, base_y = x0 + 165, y0 + 59
         shift = offset / 2
-        shifted_y = base_y + (7 if curve_role == "demand" else -7) * (1 if direction == "right" else -1)
+        shifted_y = base_y + (7 if curve_role == "demand" else -7) * (
+            1 if direction == "right" else -1
+        )
         drawing.add(String(base_x + 3, base_y + 3, "E1", fontName=FONT, fontSize=7))
-        drawing.add(String(base_x + shift + 3, shifted_y + 3, "E2", fontName=FONT_BOLD, fontSize=7))
+        drawing.add(
+            String(
+                base_x + shift + 3, shifted_y + 3, "E2", fontName=FONT_BOLD, fontSize=7
+            )
+        )
         drawing.add(
             String(
                 shifting[-2] - 3,

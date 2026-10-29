@@ -35,15 +35,48 @@ NAMES = ["Ari", "Bao", "Cleo", "Dev", "Esi", "Farah", "Gus", "Hana"]
 
 def _technical_focus(point: str) -> str:
     value = point.casefold()
-    if any(term in value for term in ("encryption", "hash", "protocol", "data protection", "computer misuse")):
+    if any(
+        term in value
+        for term in (
+            "encryption",
+            "hash",
+            "protocol",
+            "data protection",
+            "computer misuse",
+        )
+    ):
         return "security"
-    if any(term in value for term in ("processor performance", "parallel", "compression", "search", "sort", "complexity")):
+    if any(
+        term in value
+        for term in (
+            "processor performance",
+            "parallel",
+            "compression",
+            "search",
+            "sort",
+            "complexity",
+        )
+    ):
         return "performance"
-    if any(term in value for term in ("fetch-decode", "boolean", "logic", "representation", "arithmetic")):
+    if any(
+        term in value
+        for term in ("fetch-decode", "boolean", "logic", "representation", "arithmetic")
+    ):
         return "correctness"
-    if any(term in value for term in ("operating system", "storage", "network", "file handling")):
+    if any(
+        term in value
+        for term in ("operating system", "storage", "network", "file handling")
+    ):
         return "reliability"
-    if any(term in value for term in ("software development", "translator", "paradigm", "object-oriented")):
+    if any(
+        term in value
+        for term in (
+            "software development",
+            "translator",
+            "paradigm",
+            "object-oriented",
+        )
+    ):
         return "maintainability"
     return "fitness for purpose"
 
@@ -84,7 +117,10 @@ def _analysis_prompt(point: str, evidence: str, index: int) -> str:
 
 def _programming_prompt(point: str, evidence: str) -> str:
     value = point.casefold()
-    if any(term in value for term in ("processor components", "fetch-decode", "processor performance")):
+    if any(
+        term in value
+        for term in ("processor components", "fetch-decode", "processor performance")
+    ):
         return (
             "Develop a clearly labelled technical design showing how an input request is "
             "processed and stored. Include the processor, main memory, relevant registers, "
@@ -151,10 +187,16 @@ def build_paper(
         context = rng.choice(CONTEXTS)
         case_id = rng.randint(1000, 9999)
         threshold = rng.randint(18, 40)
-        values = [threshold - rng.randint(1, 6), threshold, threshold + rng.randint(1, 8)]
+        values = [
+            threshold - rng.randint(1, 6),
+            threshold,
+            threshold + rng.randint(1, 8),
+        ]
         values.extend(rng.randint(12, 48) for _ in range(rng.randint(0, 3)))
         rng.shuffle(values)
-        trace = SumTrace(values=values, initial_total=rng.randint(2, 9), threshold=threshold)
+        trace = SumTrace(
+            values=values, initial_total=rng.randint(2, 9), threshold=threshold
+        )
         values = [float(value) for value in trace.values]
         option = GeneratedOption(
             id=f"Q{section_rule.id}",
@@ -274,9 +316,7 @@ def _question(
                 "performance concern",
                 "correctness condition",
             )[(index - 1) % 9]
-            prompt = (
-                f"State one {aspect} associated with {point} when it is used in {evidence}."
-            )
+            prompt = f"State one {aspect} associated with {point} when it is used in {evidence}."
         else:
             prompt = (
                 f"{rule.command_word} {rule.marks} distinct features of {point} "
@@ -326,9 +366,15 @@ def _question(
                 3: ("(NOT A) AND B", [{"A": 1, "B": 0}]),
                 4: ("A XOR B", [{"A": 0, "B": 0}, {"A": 1, "B": 1}]),
             }[index]
-            authoring_context["cs_input_contract"] = {"kind": "boolean-evaluation", "expression": expression, "inputs": inputs}
+            authoring_context["cs_input_contract"] = {
+                "kind": "boolean-evaluation",
+                "expression": expression,
+                "inputs": inputs,
+            }
         else:
-            prompt, scheme, source = _representation_calculation(index, marks=rule.marks, rng=rng)
+            prompt, scheme, source = _representation_calculation(
+                index, marks=rule.marks, rng=rng
+            )
             authoring_context["cs_input_contract"] = source
     elif rule.kind == "trace":
         iterations = len(trace.values)
@@ -343,14 +389,32 @@ def _question(
             total += value if value > trace.threshold else 0
             scheme.append(f"After iteration {position}, total: {total:,}.")
         sequence_groups = rule.marks - 1
-        groups = [list(range(1, iterations + 1))[i * iterations // sequence_groups:(i + 1) * iterations // sequence_groups]
-                  for i in range(sequence_groups)]
-        credit = "; ".join(f"1 mark for correct totals in iterations {','.join(map(str, group))}" for group in groups)
-        scheme.extend([f"Final output: {total:,}.",
-            f"Credit: {credit}; 1 mark for the single final output. Total {rule.marks} marks.",
-            "Allow follow-through from one arithmetic error when subsequent control flow is correct."])
-        authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True,
-                                  "cs_input_contract": trace.model_dump(mode="json")})
+        groups = [
+            list(range(1, iterations + 1))[
+                i * iterations // sequence_groups : (i + 1)
+                * iterations
+                // sequence_groups
+            ]
+            for i in range(sequence_groups)
+        ]
+        credit = "; ".join(
+            f"1 mark for correct totals in iterations {','.join(map(str, group))}"
+            for group in groups
+        )
+        scheme.extend(
+            [
+                f"Final output: {total:,}.",
+                f"Credit: {credit}; 1 mark for the single final output. Total {rule.marks} marks.",
+                "Allow follow-through from one arithmetic error when subsequent control flow is correct.",
+            ]
+        )
+        authoring_context.update(
+            {
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
+                "cs_input_contract": trace.model_dump(mode="json"),
+            }
+        )
     elif rule.kind == "diagram":
         prompt = (
             f"Draw a clearly labelled logic or data-structure diagram that applies {point} "
@@ -392,7 +456,9 @@ def _question(
     calibrated = calibrated_task(topic.id, group, index)
     if calibrated:
         prompt, scheme = calibrated
-        authoring_context.update({"preserve_prompt": True, "preserve_mark_scheme": True})
+        authoring_context.update(
+            {"preserve_prompt": True, "preserve_mark_scheme": True}
+        )
     task_operation = (
         "analyse"
         if rule.kind == "analysis" and rule.assessment_objectives.get("AO2", 0) > 0
@@ -452,7 +518,13 @@ def _representation_calculation(
                 "Divide the result by 8 to convert bits to bytes.",
                 f"File size: {size:,} bytes.",
             ],
-            {"kind": "sound-bytes", "sample_rate": sample_rate, "sample_depth": sample_depth, "duration": duration, "channels": 1},
+            {
+                "kind": "sound-bytes",
+                "sample_rate": sample_rate,
+                "sample_depth": sample_depth,
+                "duration": duration,
+                "channels": 1,
+            },
         )
     if index == 5:
         left = rng.randint(40, 90)
@@ -477,7 +549,12 @@ def _representation_calculation(
                 "Mantissa 01101 and exponent 011.",
                 "Floating representation: 01101011.",
             ],
-            {"kind": "floating-encode", "value": "6.5", "mantissa_bits": 5, "exponent_bits": 3},
+            {
+                "kind": "floating-encode",
+                "value": "6.5",
+                "mantissa_bits": 5,
+                "exponent_bits": 3,
+            },
         )
     raise ValueError(f"unsupported representation calculation {index} ({marks} marks)")
 

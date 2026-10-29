@@ -20,7 +20,6 @@ def _round_pounds(value: Decimal) -> int:
 # Candidate-visible source for the bookkeeping-system decision.
 @dataclass(frozen=True)
 class AccountingSystemCase:
-
     business: str
     annual_bookkeeper_salary: int
     annual_software_cost: int
@@ -45,9 +44,7 @@ class AccountingSystemCase:
         )
 
     @classmethod
-    def from_candidate_source(
-        cls, source: dict[str, object]
-    ) -> AccountingSystemCase:
+    def from_candidate_source(cls, source: dict[str, object]) -> AccountingSystemCase:
         costs = dict(source["costs"])
         return cls(
             business=str(source["business"]),
@@ -193,7 +190,6 @@ class CostingCase:
 # Candidate-visible source contract for the Paper 1 shareholder decision.
 @dataclass(frozen=True)
 class ShareholderCase:
-
     business: str
     nominal_share_value_pence: int
     opening_ordinary_shares: int
@@ -264,7 +260,9 @@ class ShareholderCase:
             opening_ordinary_shares=int(source["opening_ordinary_shares"]),
             bonus_shares_issued=int(source["bonus_shares_issued"]),
             opening_share_premium_thousands=int(equity["opening_share_premium"]),
-            opening_retained_earnings_thousands=int(equity["opening_retained_earnings"]),
+            opening_retained_earnings_thousands=int(
+                equity["opening_retained_earnings"]
+            ),
             revaluation_reserve_increase_thousands=int(equity["revaluation_increase"]),
             profit_for_year_thousands=int(equity["profit_for_year"]),
             dividends_paid_thousands=int(equity["dividends_paid"]),
@@ -275,7 +273,9 @@ class ShareholderCase:
             comparator_share_price_pence=int(comparator["share_price"]),
             comparator_earnings_per_share_pence=float(comparator["earnings_per_share"]),
             comparator_dividend_per_share_pence=float(comparator["dividend_per_share"]),
-            comparator_long_term_borrowings_thousands=int(comparator["long_term_borrowings"]),
+            comparator_long_term_borrowings_thousands=int(
+                comparator["long_term_borrowings"]
+            ),
             comparator_total_equity_thousands=int(comparator["total_equity"]),
         )
 
@@ -293,7 +293,10 @@ class ShareholderCase:
 
     @property
     def ordinary_share_capital_closing_thousands(self) -> int:
-        return self.ordinary_share_capital_opening_thousands + self.bonus_issue_capital_thousands
+        return (
+            self.ordinary_share_capital_opening_thousands
+            + self.bonus_issue_capital_thousands
+        )
 
     @property
     def share_premium_closing_thousands(self) -> int:
@@ -345,7 +348,10 @@ class ShareholderCase:
     def gearing_percent(self) -> float:
         return round(
             self.long_term_borrowings_thousands
-            / (self.long_term_borrowings_thousands + self.total_equity_closing_thousands)
+            / (
+                self.long_term_borrowings_thousands
+                + self.total_equity_closing_thousands
+            )
             * 100,
             1,
         )
@@ -353,7 +359,8 @@ class ShareholderCase:
     @property
     def comparator_price_earnings_ratio(self) -> float:
         return round(
-            self.comparator_share_price_pence / self.comparator_earnings_per_share_pence,
+            self.comparator_share_price_pence
+            / self.comparator_earnings_per_share_pence,
             1,
         )
 
@@ -482,7 +489,6 @@ class ShareholderCase:
 # Complete, internally consistent source for the Paper 1 company statement.
 @dataclass(frozen=True)
 class IncomeStatementCase:
-
     business: str
     administration_expenses: int
     cost_of_sales: int
@@ -530,8 +536,7 @@ class IncomeStatementCase:
     @property
     def inventory_write_down(self) -> int:
         net_realisable_value = (
-            self.damaged_inventory_sale_proceeds
-            - self.damaged_inventory_repair_cost
+            self.damaged_inventory_sale_proceeds - self.damaged_inventory_repair_cost
         )
         return max(0, self.damaged_inventory_cost - net_realisable_value)
 
@@ -704,7 +709,6 @@ class IncomeStatementCase:
 # Complete retirement and appropriation data for Paper 1 Question 15.
 @dataclass(frozen=True)
 class PartnershipCase:
-
     opening_capital: dict[str, int]
     goodwill: int
     target_capital: dict[str, int]
@@ -800,10 +804,7 @@ class PartnershipCase:
 
     @property
     def period_profit(self) -> list[int]:
-        return [
-            self.profit_for_year * months // 12
-            for months in self.period_months
-        ]
+        return [self.profit_for_year * months // 12 for months in self.period_months]
 
     def _capital_interest(self, period_index: int) -> dict[str, int]:
         months = self.period_months[period_index]
@@ -1040,9 +1041,7 @@ class PartnershipCase:
                     "first_period": self.opening_capital,
                     "second_period": self.target_capital,
                 },
-                "partner_salary_per_year": {
-                    "Morgan": self.partner_salary_per_year
-                },
+                "partner_salary_per_year": {"Morgan": self.partner_salary_per_year},
                 "capital_interest_rate_percent": self.capital_interest_rate_percent,
                 "interest_on_drawings": {
                     "first_period": self.first_period_drawings_interest,
@@ -1083,14 +1082,10 @@ class NonCurrentAssetCase:
         return cls(
             business=business,
             plant_cost_opening=plant_cost,
-            plant_accumulated_depreciation_opening=_nearest_hundred(
-                plant_cost * 0.30
-            ),
+            plant_accumulated_depreciation_opening=_nearest_hundred(plant_cost * 0.30),
             plant_purchase=_nearest_hundred(values[2] * 200),
             motor_cost_opening=motor_cost,
-            motor_accumulated_depreciation_opening=_nearest_hundred(
-                motor_cost * 0.35
-            ),
+            motor_accumulated_depreciation_opening=_nearest_hundred(motor_cost * 0.35),
             motor_disposal_cost=_nearest_hundred(values[1] * 180),
             motor_disposal_accumulated_depreciation=_nearest_hundred(
                 values[1] * 180 * 0.60
@@ -1108,8 +1103,7 @@ class NonCurrentAssetCase:
     @property
     def plant_accumulated_depreciation_closing(self) -> int:
         return (
-            self.plant_accumulated_depreciation_opening
-            + self.plant_depreciation_charge
+            self.plant_accumulated_depreciation_opening + self.plant_depreciation_charge
         )
 
     @property
@@ -1130,8 +1124,7 @@ class NonCurrentAssetCase:
     @property
     def motor_depreciation_charge(self) -> int:
         carrying_amount = (
-            self.motor_cost_closing
-            - self.motor_accumulated_depreciation_before_charge
+            self.motor_cost_closing - self.motor_accumulated_depreciation_before_charge
         )
         return carrying_amount * self.motor_rate_percent // 100
 
@@ -1243,7 +1236,6 @@ class NonCurrentAssetCase:
 # consistent.
 @dataclass(frozen=True)
 class SalesLedgerCase:
-
     business: str
     opening_receivables: int
     credit_sales: int

@@ -28,7 +28,6 @@ def themed_table_class[TableType](
 
 # Shared, measured answer-line primitive used by every board renderer.
 class AnswerLineFlowable(Flowable):
-
     def __init__(
         self,
         count: int,
@@ -88,9 +87,16 @@ class AQACompactAnswerLines(AnswerLineFlowable):
 # Legacy count/spacing still determines the area, so matching the printed
 # ruling pitch does not move questions or create extra pages.
 class OCRAnswerLines(AnswerLineFlowable):
-
-    def __init__(self, count: int, *, spacing_mm: float = 6.0, width_mm: float = 167) -> None:
-        super().__init__(count, width_mm=width_mm, spacing_mm=spacing_mm, colour="#231f20", dashed=False)
+    def __init__(
+        self, count: int, *, spacing_mm: float = 6.0, width_mm: float = 167
+    ) -> None:
+        super().__init__(
+            count,
+            width_mm=width_mm,
+            spacing_mm=spacing_mm,
+            colour="#231f20",
+            dashed=False,
+        )
 
     def draw(self) -> None:
         from reportlab.pdfbase.pdfmetrics import stringWidth

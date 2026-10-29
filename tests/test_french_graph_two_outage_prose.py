@@ -46,7 +46,9 @@ def _selection() -> dict:
 
 
 @pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
-def test_v25_stages_two_outages_with_exact_credit_and_no_answer_leak(total: str) -> None:
+def test_v25_stages_two_outages_with_exact_credit_and_no_answer_leak(
+    total: str,
+) -> None:
     candidate = _prose().render_graph_two_outage_candidate(
         build_graph_two_outage_contract(270100), _selection(), _specs(total)
     )
@@ -54,8 +56,12 @@ def test_v25_stages_two_outages_with_exact_credit_and_no_answer_leak(total: str)
     assert candidate["target_points"] == total
     assert candidate["minutes"] == 70
     assert [question["id"] for question in candidate["questions"]] == _IDS
-    assert [question["estimated_minutes"] for question in candidate["questions"]] == list(_MINUTES)
-    assert sum(Decimal(question["points"]) for question in candidate["questions"]) == Decimal(total)
+    assert [
+        question["estimated_minutes"] for question in candidate["questions"]
+    ] == list(_MINUTES)
+    assert sum(
+        Decimal(question["points"]) for question in candidate["questions"]
+    ) == Decimal(total)
     assert all(
         sum(Decimal(mark["points"]) for mark in question["marking"])
         == Decimal(question["points"])
@@ -68,8 +74,7 @@ def test_v25_stages_two_outages_with_exact_credit_and_no_answer_leak(total: str)
     assert "route_double_fermeture" in questions["1g"]["material_ids"]
     assert "E–F" in materials["route_double_fermeture"]["title"]
     assert all(
-        "_____" in cell
-        for cell in materials["route_double_fermeture"]["rows"][0]
+        "_____" in cell for cell in materials["route_double_fermeture"]["rows"][0]
     )
     assert "A–B" in questions["1f"]["prompt"]
     assert "E–F" in questions["1g"]["prompt"]
@@ -103,8 +108,13 @@ def test_v25_finite_selection_and_wrong_profile_fail_closed() -> None:
     prose = _prose()
     contract = build_graph_two_outage_contract(270100)
     assert len(prose.graph_two_outage_catalogue_digest()) == 64
-    assert prose.graph_two_outage_selection_schema(contract)["properties"]["scene_id"]["enum"]
-    assert prose.validate_graph_two_outage_selection(contract, _selection()) == _selection()
+    assert prose.graph_two_outage_selection_schema(contract)["properties"]["scene_id"][
+        "enum"
+    ]
+    assert (
+        prose.validate_graph_two_outage_selection(contract, _selection())
+        == _selection()
+    )
     bad_selection = _selection()
     bad_selection["question_forms"]["1g"] = "unregistered"
     with pytest.raises(ValueError):

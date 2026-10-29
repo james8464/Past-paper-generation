@@ -61,7 +61,6 @@ from Backend.Core.providers import HostedLLMClient
 
 # Explicit no-transport identity for the verified V32 case authoring path.
 class ApplicationOwnedFrenchClient:
-
     provider = "application-owned"
     model = "app-owned-v32"
     # V32's recorded identity does not change when the app is renamed.

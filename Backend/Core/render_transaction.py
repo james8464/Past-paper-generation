@@ -100,7 +100,11 @@ class _render_deadline:
         self._previous_handler = signal.getsignal(signal.SIGALRM)
         self._previous_timer = signal.getitimer(signal.ITIMER_REAL)
         remaining, _interval = self._previous_timer
-        deadline = min(self.timeout_seconds, remaining) if remaining > 0 else self.timeout_seconds
+        deadline = (
+            min(self.timeout_seconds, remaining)
+            if remaining > 0
+            else self.timeout_seconds
+        )
 
         def timed_out(_signum: int, _frame: object) -> None:
             raise RenderTimeout(
@@ -119,7 +123,9 @@ class _render_deadline:
         remaining, interval = self._previous_timer
         if remaining > 0:
             elapsed = time.monotonic() - self._started
-            signal.setitimer(signal.ITIMER_REAL, max(remaining - elapsed, 1e-6), interval)
+            signal.setitimer(
+                signal.ITIMER_REAL, max(remaining - elapsed, 1e-6), interval
+            )
 
 
 def _readable_page_count(path: Path, role: str) -> int:

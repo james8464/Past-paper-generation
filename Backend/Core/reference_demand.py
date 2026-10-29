@@ -208,8 +208,7 @@ def _checked_in_profile_fingerprint(family_id: str, paper_id: str) -> str:
         record = next(
             profile
             for profile in payload["profiles"]
-            if (profile["family_id"], profile["paper_id"])
-            == (family_id, str(paper_id))
+            if (profile["family_id"], profile["paper_id"]) == (family_id, str(paper_id))
         )
     except (FileNotFoundError, KeyError, StopIteration, TypeError) as error:
         raise ValueError("checked-in reference evidence is unavailable") from error
@@ -221,7 +220,9 @@ def _is_checked_in_reference_profile(profile: Any) -> bool:
     if not isinstance(profile, ReferenceDemandProfile):
         return False
     try:
-        return _profile_fingerprint(profile.model_dump(mode="json")) == _checked_in_profile_fingerprint(
+        return _profile_fingerprint(
+            profile.model_dump(mode="json")
+        ) == _checked_in_profile_fingerprint(
             profile.family_id,
             profile.paper_id,
         )
@@ -236,7 +237,9 @@ def verified_reference_profile(
 ) -> ReferenceDemandProfile:
     profile = profile_for(family_id, paper_id)
     if not _is_checked_in_reference_profile(profile):
-        raise ValueError("loaded reference evidence no longer matches its source record")
+        raise ValueError(
+            "loaded reference evidence no longer matches its source record"
+        )
     return profile
 
 

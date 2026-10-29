@@ -22,8 +22,18 @@ class ScaffoldRequest:
         for name, value in (("subject", self.subject), ("board", self.board)):
             if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", value):
                 raise ValueError(f"{name} must be a lowercase slug")
-        if not self.papers or any(not paper.strip() for paper in self.papers):
-            raise ValueError("at least one non-empty paper ID is required")
+        package = self.subject.replace("-", "") + self.board.replace("-", "") + "gen"
+        if not package.isidentifier():
+            raise ValueError("generated package must be a valid Python identifier")
+        if not self.papers or any(
+            not isinstance(paper, str) or not paper or paper != paper.strip()
+            for paper in self.papers
+        ):
+            raise ValueError(
+                "at least one canonical non-empty string paper ID is required"
+            )
+        if len(set(self.papers)) != len(self.papers):
+            raise ValueError("paper IDs must be unique")
 
 
 def scaffold_family(request: ScaffoldRequest) -> Path:
@@ -31,9 +41,7 @@ def scaffold_family(request: ScaffoldRequest) -> Path:
     if root.exists():
         raise FileExistsError(f"generator family already exists: {root}")
 
-    package = (
-        request.subject.replace("-", "") + request.board.replace("-", "") + "gen"
-    )
+    package = request.subject.replace("-", "") + request.board.replace("-", "") + "gen"
     generator = root / "generator"
     data = generator / "data"
     package_root = generator / package
@@ -98,7 +106,7 @@ def scaffold_family(request: ScaffoldRequest) -> Path:
         encoding="utf-8",
     )
     (package_root / "__init__.py").write_text(
-        '# Generated family adapter; not advertised until qualification passes.\n',
+        "# Generated family adapter; not advertised until qualification passes.\n",
         encoding="utf-8",
     )
     (package_root / "cli.py").write_text(_cli_template(), encoding="utf-8")
@@ -114,7 +122,7 @@ def _write_json(path: Path, payload: object) -> None:
 
 
 def _cli_template() -> str:
-    return '''from __future__ import annotations
+    return """from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
@@ -134,20 +142,31 @@ def generate_package(
     raise RuntimeError(
         f"Paper {paper} is scaffolded but not qualified for generation."
     )
-'''
+"""
 
 
 def _test_template(package: str) -> str:
-    return f'''from {package}.cli import generate_package
+    return f"""from pathlib import Path
+
+import pytest
+
+from {package}.cli import generate_package
 
 
-def test_scaffold_is_fail_closed() -> None:
-    assert callable(generate_package)
-'''
+def test_scaffold_is_fail_closed(tmp_path: Path) -> None:
+    with pytest.raises(RuntimeError, match="not qualified"):
+        generate_package(
+            paper="1", syllabus_path=tmp_path / "syllabus.json",
+            output_dir=tmp_path, seed=1, dry_run=True,
+        )
+    assert list(tmp_path.iterdir()) == []
+"""
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Scaffold an unadvertised generator family")
+    parser = argparse.ArgumentParser(
+        description="Scaffold an unadvertised generator family"
+    )
     parser.add_argument("--subject", required=True)
     parser.add_argument("--board", required=True)
     parser.add_argument("--papers", required=True)

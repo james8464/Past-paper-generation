@@ -138,7 +138,9 @@ class NetworkDepthContract:
         if type(seed) is not int or type(data.get("version")) is not int:
             raise ValueError("Invalid network depth identity")
         if _canonical(data) != _canonical(_facts(seed)):
-            raise ValueError("Network depth facts or derived results differ from application contract")
+            raise ValueError(
+                "Network depth facts or derived results differ from application contract"
+            )
         return cls(_canonical(data))
 
 

@@ -47,9 +47,9 @@ def test_aqa_economics_tariffs_are_registered_with_their_exact_mark_bands() -> N
     }
     for policy_id, mark_bands in expected.items():
         policy = policies[policy_id]
-        assert [(level.minimum_mark, level.maximum_mark) for level in policy.levels] == (
-            mark_bands
-        )
+        assert [
+            (level.minimum_mark, level.maximum_mark) for level in policy.levels
+        ] == (mark_bands)
 
 
 def test_level_engine_marks_weak_average_and_excellent_responses_monotonically() -> (

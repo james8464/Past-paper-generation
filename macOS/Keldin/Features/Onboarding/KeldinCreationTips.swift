@@ -3,7 +3,7 @@
 import SwiftUI
 import TipKit
 
-enum PaperCreationTips {
+enum KeldinCreationTips {
     static let modelRecommendation = ModelRecommendationTip()
     static let preview = PreviewTip()
     static let quality = QualityTip()

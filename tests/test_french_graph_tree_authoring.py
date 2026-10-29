@@ -20,7 +20,9 @@ def _question(plan, result):
         "answer": canonical_answer(plan["id"], result),
         "marking": [
             {
-                "points": plan["points"], "criterion": canonical_answer(plan["id"], result)}
+                "points": plan["points"],
+                "criterion": canonical_answer(plan["id"], result),
+            }
         ],
         "material_ids": [material],
         "curriculum_codes": [plan["required_curriculum_code"]],
@@ -73,7 +75,9 @@ def test_part_authoring_exposes_only_part_facts_and_resumes_after_cancel(tmp_pat
     draft = tmp_path / "draft.json"
     first = PartClient(stop_after=1)
     with pytest.raises(KeyboardInterrupt):
-        author_graph_tree_parts(first, task, contract, [], draft, run_identity=_run_identity())
+        author_graph_tree_parts(
+            first, task, contract, [], draft, run_identity=_run_identity()
+        )
     saved = json.loads(draft.read_text())
     assert [item["part"] for item in saved["parts"]] == ["A"]
     assert saved["contract_sha256"] == contract.digest

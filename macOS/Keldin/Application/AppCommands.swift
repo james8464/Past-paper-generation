@@ -2,14 +2,14 @@
 
 import SwiftUI
 
-private struct PaperCreationContextKey: FocusedValueKey {
-    typealias Value = PaperCreationContext
+private struct KeldinCreationContextKey: FocusedValueKey {
+    typealias Value = KeldinCreationContext
 }
 
 extension FocusedValues {
-    var paperCreationContext: PaperCreationContext? {
-        get { self[PaperCreationContextKey.self] }
-        set { self[PaperCreationContextKey.self] = newValue }
+    var keldinCreationContext: KeldinCreationContext? {
+        get { self[KeldinCreationContextKey.self] }
+        set { self[KeldinCreationContextKey.self] = newValue }
     }
 }
 
@@ -17,10 +17,16 @@ struct AppCommands: Commands {
     @ObservedObject var application: ApplicationCoordinator
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @FocusedObject private var documentActions: DocumentActionController?
-    @FocusedValue(\.paperCreationContext) private var creationContext
+    @FocusedValue(\.keldinCreationContext) private var creationContext
+
+    private var canNavigate: Bool {
+        KeldinCreationContext.allowsNavigation(
+            from: creationContext, applicationModal: application.hasCommandBlockingPresentation
+        )
+    }
 
     private var canCreate: Bool {
-        creationContext?.canCreate(
+        canNavigate && creationContext?.canCreate(
             boardCanGenerate: application.canGenerate,
             hasFrenchReferences: application.hasFrenchReferences,
             isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome || application.showHelp
@@ -32,16 +38,17 @@ struct AppCommands: Commands {
         switch creationContext {
         case .board: application.generate()
         case let .french(largePrint): application.generateFrenchPaper(largePrint: largePrint)
+        case .presentingModal: return
         }
     }
 
     private var canAccessDocument: Bool {
-        !application.showWelcome && !application.showHelp
+        canNavigate
             && documentActions?.canAccessDocument == true
     }
 
     private var canCopyProvenance: Bool {
-        !application.showWelcome && !application.showHelp
+        canNavigate
             && documentActions?.provenance != nil
     }
 
@@ -51,8 +58,12 @@ struct AppCommands: Commands {
 
     var body: some Commands {
         CommandGroup(replacing: .newItem) {
-            Button(localized("New Paper"), action: application.showCreationWorkspace)
+            Button(localized("New Paper")) {
+                guard canNavigate else { return }
+                application.showCreationWorkspace()
+            }
                 .keyboardShortcut("n", modifiers: [.command])
+                .disabled(!canNavigate)
 
             Button(localized("Create Paper"), action: createPaper)
                 .keyboardShortcut(.return, modifiers: [.command])
@@ -109,14 +120,16 @@ struct AppCommands: Commands {
             Divider()
 
             Button(localized("Open Latest Question Paper")) {
+                guard canNavigate else { return }
                 application.previewGeneratedFile(role: "question_paper")
             }
-            .disabled(!application.hasGeneratedFile(role: "question_paper"))
+            .disabled(!canNavigate || !application.hasGeneratedFile(role: "question_paper"))
 
             Button(localized("Open Latest Mark Scheme")) {
+                guard canNavigate else { return }
                 application.previewGeneratedFile(role: "mark_scheme")
             }
-            .disabled(!application.hasGeneratedFile(role: "mark_scheme"))
+            .disabled(!canNavigate || !application.hasGeneratedFile(role: "mark_scheme"))
 
             Button(localized("Reveal Latest Question Paper in Finder")) {
                 application.revealGeneratedFile(role: "question_paper")
@@ -125,21 +138,34 @@ struct AppCommands: Commands {
         }
 
         CommandMenu(localized("Tools")) {
-            Button(localized("Show Documents"), action: application.showDocuments)
+            Button(localized("Show Documents")) {
+                guard canNavigate else { return }
+                application.showDocuments()
+            }
                 .keyboardShortcut("d", modifiers: [.command, .shift])
+                .disabled(!canNavigate)
 
-            Button(localized("Show History"), action: application.showHistory)
+            Button(localized("Show History")) {
+                guard canNavigate else { return }
+                application.showHistory()
+            }
                 .keyboardShortcut("y", modifiers: [.command, .shift])
+                .disabled(!canNavigate)
 
             Button(localized("Show Benchmark")) {
+                guard canNavigate else { return }
                 application.showBenchmarkPage()
             }
             .keyboardShortcut("b", modifiers: [.command, .shift])
+            .disabled(!canNavigate)
 
             Divider()
 
-            Button(localized("Run Benchmark"), action: application.startBenchmark)
-                .disabled(application.isRunning || application.benchmarkCoordinator.isRunning)
+            Button(localized("Run Benchmark")) {
+                guard canNavigate else { return }
+                application.startBenchmark()
+            }
+                .disabled(!canNavigate || application.isRunning || application.benchmarkCoordinator.isRunning)
 
             Button(localized("Cancel Benchmark"), action: application.cancelBenchmark)
                 .disabled(!application.benchmarkCoordinator.isRunning)
@@ -151,11 +177,17 @@ struct AppCommands: Commands {
 
         CommandGroup(replacing: .help) {
             Button(localized("Keldin Help")) {
+                guard canNavigate else { return }
                 application.showHelpGuide()
             }
             .keyboardShortcut("h", modifiers: [.command, .shift])
+            .disabled(!canNavigate)
 
-            Button(localized("Show Welcome Guide"), action: application.showWelcomeGuide)
+            Button(localized("Show Welcome Guide")) {
+                guard canNavigate else { return }
+                application.showWelcomeGuide()
+            }
+            .disabled(!canNavigate)
 
             Divider()
 

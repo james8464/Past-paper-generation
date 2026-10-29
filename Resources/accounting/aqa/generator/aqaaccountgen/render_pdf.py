@@ -518,7 +518,9 @@ def _short_answer_scheme_page(question: GeneratedQuestion) -> list[Flowable]:
     return [
         _scheme_question_heading(question),
         Spacer(1, 3 * mm),
-        Paragraph(f"AO1 - {sum(point.marks for point in points)} marks", STYLES["heading"]),
+        Paragraph(
+            f"AO1 - {sum(point.marks for point in points)} marks", STYLES["heading"]
+        ),
         Paragraph(
             "Apply the levels separately to two distinct reasons. Award a maximum "
             "of 3 marks for each reason. A definition alone is not a reason. "
@@ -723,7 +725,12 @@ def _completed_income_statement_scheme(
     rows = [
         [awards[0][0], f"{case.revenue:,}", "", awards[0][1]],
         [awards[1][0], f"({case.adjusted_cost_of_sales:,})", "", awards[1][1]],
-        [awards[2][0], "", f"{case.revenue - case.adjusted_cost_of_sales:,}", awards[2][1]],
+        [
+            awards[2][0],
+            "",
+            f"{case.revenue - case.adjusted_cost_of_sales:,}",
+            awards[2][1],
+        ],
         [
             awards[3][0],
             f"({case.adjusted_administration_expenses:,})",
@@ -1228,10 +1235,10 @@ def _mark_scheme_extension_pages(paper: GeneratedPaper) -> list[Flowable]:
         pages.extend([PageBreak(), *_question_verification_page(question)])
     pages.extend(
         [
-        PageBreak(),
-        *_assessment_objectives_page(paper, questions),
-        PageBreak(),
-        *_independent_practice_page(),
+            PageBreak(),
+            *_assessment_objectives_page(paper, questions),
+            PageBreak(),
+            *_independent_practice_page(),
         ]
     )
     return pages
@@ -1306,10 +1313,7 @@ def _candidate_verification_rows(question: GeneratedQuestion) -> list[list[str]]
             ("topic", question.topic_id),
             ("printed mark total", str(question.marks)),
         ]
-    return [
-        [escape(label), escape(value[:180])]
-        for label, value in rows
-    ]
+    return [[escape(label), escape(value[:180])] for label, value in rows]
 
 
 def _assessment_objectives_page(
@@ -2411,7 +2415,6 @@ def _response_line_count(question: GeneratedQuestion) -> int:
 
 # Explain the scannable response method before the first MCQ.
 class _MultipleChoiceInstructions(Flowable):
-
     width = 167 * mm
     height = 156.7
 

@@ -30,8 +30,7 @@ def enrich_paper(
     policy_id = (
         "ocr-computer-science-3-band"
         if subject == "computer science" and paper.paper_code.startswith("H446")
-        else
-        "ocr-standard-4-level"
+        else "ocr-standard-4-level"
         if paper.paper_code.startswith("H")
         else "aqa-standard-4-level"
     )
@@ -54,8 +53,12 @@ def enrich_paper(
                     update={
                         "title": _clean_text(option.title),
                         # Indentation is source syntax, not cosmetic whitespace.
-                        "stimulus": [text if subject == "computer science" and "\n" in text
-                                     else _clean_text(text) for text in option.stimulus],
+                        "stimulus": [
+                            text
+                            if subject == "computer science" and "\n" in text
+                            else _clean_text(text)
+                            for text in option.stimulus
+                        ],
                         "questions": questions,
                     }
                 )
@@ -78,9 +81,7 @@ def _enrich_question(
     prompt = _clean_text(question.prompt)
     observable_mark_points = question.authoring_context.get(
         "observable_mark_points"
-    ) or [
-        point.text for point in question.structured_mark_scheme if point.marks
-    ]
+    ) or [point.text for point in question.structured_mark_scheme if point.marks]
     if not observable_mark_points:
         observable_mark_points = list(question.mark_scheme)
     authoring_context = {
@@ -176,7 +177,13 @@ def _compact_technical_guidance(
 
 
 def _uses_levels(question: GeneratedQuestion) -> bool:
-    if question.kind in {"calculation", "data", "multiple_choice", "programming", "trace"}:
+    if question.kind in {
+        "calculation",
+        "data",
+        "multiple_choice",
+        "programming",
+        "trace",
+    }:
         return False
     if any(
         point.casefold().startswith(("level ", "levels-based"))

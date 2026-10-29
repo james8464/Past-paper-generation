@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
 
 from pydantic import (
     BaseModel,
@@ -23,11 +23,9 @@ from Backend.Core.candidate_identity import (
     candidate_content_identity,
     candidate_review_content,
 )
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
+from Backend.Core.json_client import JSONGenerationClient as JSONClient
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
-
-
-class JSONClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
 
 
 class ReviewResult(BaseModel):
@@ -89,7 +87,6 @@ CANONICAL_COGNITIVE_OPERATIONS: tuple[CanonicalCognitiveOperation, ...] = (
 
 # Deterministic operation evidence bound only to the public candidate task.
 class PublicTaskOperationEvidence(BaseModel):
-
     model_config = ConfigDict(extra="forbid", strict=True)
 
     schema_version: Literal[1] = 1
@@ -201,7 +198,7 @@ def independent_review(
     candidate: Any,
     specification: Any,
 ) -> ReviewResult:
-    raw = client.generate_json(
+    prompt = (
         "Act as a second-pass UK A-level assessment editor. Review the candidate "
         f"{subject} item against its immutable blueprint and specification. "
         f"{objective_policy_for(subject).guidance()} Check "
@@ -232,8 +229,11 @@ def independent_review(
             ensure_ascii=False,
         )
     )
+    raw = request_json(client, make_request(prompt, OutputContract("review")))
     if not isinstance(raw, dict) or set(ReviewResult.model_fields) - raw.keys():
-        raise ValueError(f"{item_id} returned an invalid review response: missing checks")
+        raise ValueError(
+            f"{item_id} returned an invalid review response: missing checks"
+        )
     try:
         result = ReviewResult.model_validate(raw, strict=True)
     except ValidationError as error:
@@ -253,7 +253,11 @@ def require_difficulty_review(
     specification: Any,
     canonical_solution: Any | None = None,
 ) -> DifficultyReviewResult:
-    if canonical_solution is not None and _serialise(canonical_solution).get("integrity_version") != NUMERIC_INTEGRITY_VERSION:
+    if (
+        canonical_solution is not None
+        and _serialise(canonical_solution).get("integrity_version")
+        != NUMERIC_INTEGRITY_VERSION
+    ):
         raise ValueError(f"{item_id} has incompatible canonical solution evidence")
     result = difficulty_review(
         client,
@@ -274,8 +278,12 @@ def require_difficulty_review(
     )
     target_payload = _serialise(target)
     _validate_difficulty_result(result, target_payload, item_id=item_id)
-    solution_payload = _serialise(canonical_solution) if canonical_solution is not None else {}
-    solution_steps = solution_payload.get("steps", []) if isinstance(solution_payload, dict) else []
+    solution_payload = (
+        _serialise(canonical_solution) if canonical_solution is not None else {}
+    )
+    solution_steps = (
+        solution_payload.get("steps", []) if isinstance(solution_payload, dict) else []
+    )
     return result.model_copy(
         update={
             "target_profile_fingerprint": str(
@@ -344,16 +352,30 @@ def validate_saved_difficulty_evidence(
     try:
         result = DifficultyReviewResult.model_validate(evidence, strict=True)
     except ValidationError as error:
-        raise ValueError(f"{item_id} has invalid difficulty evidence; regenerate it") from error
+        raise ValueError(
+            f"{item_id} has invalid difficulty evidence; regenerate it"
+        ) from error
     if result.solution_integrity_version != NUMERIC_INTEGRITY_VERSION:
-        raise ValueError(f"{item_id} difficulty evidence has incompatible solution integrity")
+        raise ValueError(
+            f"{item_id} difficulty evidence has incompatible solution integrity"
+        )
     target_payload = _serialise(target)
-    if result.target_objective_policy_fingerprint != target_payload.get("objective_policy_fingerprint", ""):
-        raise ValueError(f"{item_id} difficulty evidence refers to a different objective policy")
-    if result.target_profile_fingerprint != target_payload.get("reference_profile_fingerprint"):
-        raise ValueError(f"{item_id} difficulty evidence refers to a different reference profile")
+    if result.target_objective_policy_fingerprint != target_payload.get(
+        "objective_policy_fingerprint", ""
+    ):
+        raise ValueError(
+            f"{item_id} difficulty evidence refers to a different objective policy"
+        )
+    if result.target_profile_fingerprint != target_payload.get(
+        "reference_profile_fingerprint"
+    ):
+        raise ValueError(
+            f"{item_id} difficulty evidence refers to a different reference profile"
+        )
     if result.estimated_minutes is None:
-        raise ValueError(f"{item_id} difficulty evidence has no completion-time estimate")
+        raise ValueError(
+            f"{item_id} difficulty evidence has no completion-time estimate"
+        )
     _validate_difficulty_result(result, target_payload, item_id=item_id)
 
 
@@ -406,16 +428,25 @@ def _validate_difficulty_result(
         "timing": result.timing_fit,
         "scaffolding": result.scaffolding_fit,
     }
-    failures.extend(f"{name} check failed" for name, passed in checks.items() if not passed)
-    if target_payload.get("requires_shortcut_resistance") and not result.shortcut_resistant:
-        failures.append("a superficial response or shortcut can bypass the intended demand")
+    failures.extend(
+        f"{name} check failed" for name, passed in checks.items() if not passed
+    )
+    if (
+        target_payload.get("requires_shortcut_resistance")
+        and not result.shortcut_resistant
+    ):
+        failures.append(
+            "a superficial response or shortcut can bypass the intended demand"
+        )
     minimum_minutes = target_payload.get("expected_minutes_min")
     maximum_minutes = target_payload.get("expected_minutes_max")
     if (
         result.estimated_minutes is not None
         and isinstance(minimum_minutes, (int, float))
         and isinstance(maximum_minutes, (int, float))
-        and not float(minimum_minutes) <= result.estimated_minutes <= float(maximum_minutes)
+        and not float(minimum_minutes)
+        <= result.estimated_minutes
+        <= float(maximum_minutes)
     ):
         failures.append(
             f"estimated completion time {result.estimated_minutes:g} minutes is outside "
@@ -491,7 +522,7 @@ def difficulty_review(
         '"shortcut_resistant":true|false,"timing_fit":true|false,'
         '"scaffolding_fit":true|false,"estimated_minutes":0,"issues":[]}.'
     )
-    raw = client.generate_json(
+    prompt = (
         "Act as an independent UK A-level difficulty calibration specialist; "
         "factual correctness is reviewed separately. Concentrate only on whether "
         f"the {subject} candidate elicits the reference-shaped cognitive demand "
@@ -552,8 +583,11 @@ def difficulty_review(
         )
         + response_contract
     )
+    raw = request_json(client, make_request(prompt, OutputContract("difficulty")))
     required_response_fields = set(DifficultyReviewResult.model_fields) - {
-        "schema_version", "target_profile_fingerprint", "independent_solution_steps",
+        "schema_version",
+        "target_profile_fingerprint",
+        "independent_solution_steps",
         "target_objective_policy_fingerprint",
         "public_task_operation_evidence",
         "candidate_content_identity",
@@ -565,7 +599,9 @@ def difficulty_review(
         or "public_task_operation_evidence" in raw
         or "candidate_content_identity" in raw
     ):
-        raise ValueError(f"{item_id} returned an invalid difficulty review response: missing checks")
+        raise ValueError(
+            f"{item_id} returned an invalid difficulty review response: missing checks"
+        )
     try:
         result = DifficultyReviewResult.model_validate(raw, strict=True)
     except ValidationError as error:
@@ -573,7 +609,9 @@ def difficulty_review(
             f"{item_id} returned an invalid difficulty review response"
         ) from error
     if result.estimated_minutes is None or result.estimated_minutes <= 0:
-        raise ValueError(f"{item_id} returned an invalid difficulty review response: missing timing")
+        raise ValueError(
+            f"{item_id} returned an invalid difficulty review response: missing timing"
+        )
     checks = (
         result.tariff_fit,
         result.command_word_fit,
@@ -613,7 +651,9 @@ def _public_task_operation_evidence(candidate: Any) -> PublicTaskOperationEviden
         prompt,
         flags=re.IGNORECASE,
     )
-    authors_declarative_sql = operation.casefold() == "program" and statement is not None
+    authors_declarative_sql = (
+        operation.casefold() == "program" and statement is not None
+    )
     projection_sha256 = hashlib.sha256(
         json.dumps(
             {"prompt": prompt, "task_operation": operation},

@@ -77,7 +77,9 @@ def parse_model_recommendations(
         raise ValueError("Ollama model tiers must begin at zero GB")
     for left, right in pairwise(tiers):
         if left.maximum_memory_gb != right.minimum_memory_gb:
-            raise ValueError("Ollama model tiers must be contiguous and non-overlapping")
+            raise ValueError(
+                "Ollama model tiers must be contiguous and non-overlapping"
+            )
     if tiers[-1].maximum_memory_gb is not None:
         raise ValueError("the final Ollama model tier must have no upper bound")
     if default_model not in {tier.model for tier in tiers}:

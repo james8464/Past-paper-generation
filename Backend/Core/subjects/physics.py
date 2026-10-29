@@ -26,7 +26,10 @@ def compare_physical_answers(
         return False
     if abs(candidate_value - expected_value) > tolerance:
         return False
-    return significant_figures is None or _significant_figures(candidate) == significant_figures
+    return (
+        significant_figures is None
+        or _significant_figures(candidate) == significant_figures
+    )
 
 
 class PhysicsPlugin:

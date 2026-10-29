@@ -135,7 +135,6 @@ def _expected(rows: dict[str, list[list]], update_sql: str) -> dict:
 # Canonical, immutable JSON with recomputed expected results.
 @dataclass(frozen=True)
 class DatabaseContract:
-
     _json: str
 
     def to_dict(self) -> dict:

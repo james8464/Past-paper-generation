@@ -15,10 +15,12 @@ from Backend.Core.assessment_quality import (
     validate_economics_causal_direction,
 )
 from Backend.Core.candidate_identity import edexcel_difficulty_candidate_projection
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
 from Backend.Core.independent_solver import (
     IndependentSolver,
     require_solution_matches_scheme,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_review import (
     assert_materially_new,
     require_difficulty_review,
@@ -94,7 +96,7 @@ Style rules:
 - Match the command word exactly: {question.command_word}.
 - Preserve the command word and source reference pattern from the draft intent.
 - Keep question_text to at most {max(12, len(question.prompt.split()) + 2)} words so it fits the measured examiner-paper layout.
-- Preserve these specification scope terms verbatim when present: {', '.join(_required_scope_terms(question)) or 'none'}.
+- Preserve these specification scope terms verbatim when present: {", ".join(_required_scope_terms(question)) or "none"}.
 - Preserve the exact task framing. In particular, do not turn a question asking for one likely effect on an outcome into a question about how a policy tool is used.
 - 12-mark questions usually use discuss whether, discuss the extent, or to what extent.
 - 10-mark questions usually use assess whether, assess the, or to what extent.
@@ -137,7 +139,7 @@ def _parts_for_prompt(question: QuestionBlueprint) -> str:
 
 
 def generate_questions_with_ollama(
-    client: OllamaClient,
+    client: JSONGenerationClient,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
@@ -165,8 +167,16 @@ def generate_questions_with_ollama(
             if stored is not None:
                 try:
                     candidate = QuestionBlueprint.model_validate(stored)
-                    if _uses_review_only_generation(question) or candidate.provenance == "reviewed-deterministic-contract":
-                        if candidate.model_copy(update={"provenance": question.provenance}) != question:
+                    if (
+                        _uses_review_only_generation(question)
+                        or candidate.provenance == "reviewed-deterministic-contract"
+                    ):
+                        if (
+                            candidate.model_copy(
+                                update={"provenance": question.provenance}
+                            )
+                            != question
+                        ):
                             raise ValueError("stored immutable question changed")
                     else:
                         _validate_ai_question(question, candidate)
@@ -176,15 +186,13 @@ def generate_questions_with_ollama(
                     with results_lock:
                         results[question_index] = candidate
                     return (
-                        f"Resumed reviewed question {index}/{total}: "
-                        f"{question.number}"
+                        f"Resumed reviewed question {index}/{total}: {question.number}"
                     )
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:
             raise ValueError(
-                f"unknown topic {question.topic_id!r} for question "
-                f"{question.number}"
+                f"unknown topic {question.topic_id!r} for question {question.number}"
             ) from error
         emit(
             f"Generating question {index}/{total}: {question.number} "
@@ -199,7 +207,9 @@ def generate_questions_with_ollama(
                 candidate=_multipart_review_view(question),
                 specification=_review_specification(topic, question),
             )
-            reviewed = question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+            reviewed = question.model_copy(
+                update={"provenance": "reviewed-deterministic-contract"}
+            )
             if checkpoint_store is not None:
                 checkpoint_store.save_payload(
                     checkpoint_key,
@@ -219,9 +229,23 @@ def generate_questions_with_ollama(
                 if not failure
                 else f"{base_prompt}\nPrevious attempt rejected: {failure}\nCorrect every issue in the next response."
             )
-            payload = client.generate_json(retry_prompt)
-            question_text = _merge_question_text(question, str(payload.get("question_text") or ""))
-            source_text = _merge_source_text(str(payload.get("source_text") or ""), question.source_text, question)
+            payload = request_json(
+                client,
+                make_request(
+                    retry_prompt,
+                    OutputContract(
+                        "edexcel",
+                        immutable_marking=True,
+                        part_count=min(6, len(question.parts)),
+                    ),
+                ),
+            )
+            question_text = _merge_question_text(
+                question, str(payload.get("question_text") or "")
+            )
+            source_text = _merge_source_text(
+                str(payload.get("source_text") or ""), question.source_text, question
+            )
             source_reference = question.source_reference
             # Source binding, answer data and AO allocation are immutable
             # properties of the verified paper plan, not creative model output.
@@ -255,7 +279,9 @@ def generate_questions_with_ollama(
                     candidate=_multipart_review_view(candidate),
                     specification=_review_specification(topic, candidate),
                 )
-                candidate = candidate.model_copy(update={"provenance": "ai-authored-stem-reviewed-contract"})
+                candidate = candidate.model_copy(
+                    update={"provenance": "ai-authored-stem-reviewed-contract"}
+                )
                 break
             except ValueError as error:
                 failure = str(error)
@@ -268,10 +294,7 @@ def generate_questions_with_ollama(
                             "changed required scope term",
                         )
                     )
-                    if (
-                        not supports_parallel
-                        and fallback_eligible
-                    ):
+                    if not supports_parallel and fallback_eligible:
                         try:
                             require_independent_review(
                                 client,
@@ -284,7 +307,9 @@ def generate_questions_with_ollama(
                         except ValueError as review_error:
                             failure = str(review_error)
                         else:
-                            candidate = question.model_copy(update={"provenance": "reviewed-deterministic-contract"})
+                            candidate = question.model_copy(
+                                update={"provenance": "reviewed-deterministic-contract"}
+                            )
                             break
                     raise ValueError(
                         f"question-{question.number} failed after 3 reviewed attempts: {failure}"
@@ -324,7 +349,7 @@ def generate_questions_with_ollama(
 
 # Run an independent demand-only gate over every rendered question item.
 def review_blueprint_difficulty(
-    client: object,
+    client: JSONGenerationClient,
     blueprint: PaperBlueprint,
     syllabus: Syllabus,
     progress: Callable[[str], None] | None = None,
@@ -335,7 +360,9 @@ def review_blueprint_difficulty(
         "pearson-edexcel/economics-a-2015",
         _normalise_profile_paper_id(blueprint.paper_id),
     )
-    item_count = sum(len(_question_demand_items(question)) for question in blueprint.questions)
+    item_count = sum(
+        len(_question_demand_items(question)) for question in blueprint.questions
+    )
     item_index = 0
     reviewed_questions: list[QuestionBlueprint] = []
     for question in blueprint.questions:
@@ -345,12 +372,12 @@ def review_blueprint_difficulty(
         for item, part in zip(items, question.parts or [question], strict=True):
             item_index += 1
             label = str(item.get("label") or question.number)
-            emit(f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}")
+            emit(
+                f"Calibrating difficulty {item_index}/{item_count}: {question.number}{label}"
+            )
             projection = _question_solver_projection(question, part)
             solver_item = projection.item
-            solution = IndependentSolver(client).solve(
-                solver_item, projection.evidence
-            )
+            solution = IndependentSolver(client).solve(solver_item, projection.evidence)
             require_solution_matches_scheme(
                 solution,
                 solver_item,
@@ -434,8 +461,7 @@ def _assert_public_stimulus(value: object) -> None:
         private = _PRIVATE_STIMULUS_KEYS.intersection(value)
         if private:
             raise ValueError(
-                "solver evidence contains private assessment fields: "
-                f"{sorted(private)}"
+                f"solver evidence contains private assessment fields: {sorted(private)}"
             )
         for child in value.values():
             _assert_public_stimulus(child)
@@ -467,7 +493,9 @@ def _validate_solver_projection(
     try:
         public_source = json.loads(evidence[0].text)
     except json.JSONDecodeError as error:
-        raise ValueError("Edexcel evidence must contain the public source JSON") from error
+        raise ValueError(
+            "Edexcel evidence must contain the public source JSON"
+        ) from error
     _assert_public_stimulus(public_source)
     if public_source != stimulus:
         raise ValueError("Edexcel evidence differs from selected public source")
@@ -493,18 +521,31 @@ def _question_solver_projection(
     item = {
         **part.model_dump(mode="json"),
         "id": f"question-{question.number}-{getattr(part, 'label', question.number)}",
-        "context": [question.prompt, question.source_text] if question.parts else question.source_text,
+        "context": [question.prompt, question.source_text]
+        if question.parts
+        else question.source_text,
         "stimulus": stimulus,
         "kind": "multiple_choice" if options else question.stimulus_kind,
         "choices": [option.text for option in options],
-        "authoring_context": {"expected_answer_form": (
-            "numeric" if part.command_word.casefold() in {"calculate", "determine"}
-            else "constructed_response"
-        ), **({"economics_input_contract": {
-            "source": question.source_instance.model_dump(mode="json"),
-            "source_fingerprint": question.source_instance.fingerprint(),
-            "requested_prompt": part.prompt, "marks": part.marks,
-        }} if part.command_word == "calculate" and question.source_instance else {})},
+        "authoring_context": {
+            "expected_answer_form": (
+                "numeric"
+                if part.command_word.casefold() in {"calculate", "determine"}
+                else "constructed_response"
+            ),
+            **(
+                {
+                    "economics_input_contract": {
+                        "source": question.source_instance.model_dump(mode="json"),
+                        "source_fingerprint": question.source_instance.fingerprint(),
+                        "requested_prompt": part.prompt,
+                        "marks": part.marks,
+                    }
+                }
+                if part.command_word == "calculate" and question.source_instance
+                else {}
+            ),
+        },
     }
     if correct_choice is not None:
         item["correct_choice"] = correct_choice
@@ -579,7 +620,9 @@ def _review_specification(
         "rendered_stimulus": {
             **candidate_stimulus_data(question),
             "description": _stimulus_description(question.stimulus_kind),
-            "source_text": question.source_instance.context if question.source_instance else question.source_text,
+            "source_text": question.source_instance.context
+            if question.source_instance
+            else question.source_text,
             "placement": "Candidate source projection; question stem and part-level responses are reviewed separately.",
         },
     }
@@ -597,7 +640,9 @@ def _stimulus_description(kind: str) -> str:
 def _merge_parts(question: QuestionBlueprint, raw_parts: object) -> list:
     if not isinstance(raw_parts, list):
         return question.parts
-    by_label = {str(item.get("label", "")): item for item in raw_parts if isinstance(item, dict)}
+    by_label = {
+        str(item.get("label", "")): item for item in raw_parts if isinstance(item, dict)
+    }
     merged = []
     for part in question.parts:
         raw = by_label.get(part.label, {})
@@ -605,23 +650,37 @@ def _merge_parts(question: QuestionBlueprint, raw_parts: object) -> list:
         raw_options = raw.get("options") if isinstance(raw, dict) else None
         if isinstance(raw_options, list):
             parsed_options = [
-                MultipleChoiceOption(label=str(option.get("label", "")), text=str(option.get("text", "")))
+                MultipleChoiceOption(
+                    label=str(option.get("label", "")), text=str(option.get("text", ""))
+                )
                 for option in raw_options
                 if isinstance(option, dict)
             ]
             if len(parsed_options) == 4:
                 options = parsed_options
         mark_scheme_raw = raw.get("mark_scheme") if isinstance(raw, dict) else None
-        indicative_raw = raw.get("indicative_content") if isinstance(raw, dict) else None
+        indicative_raw = (
+            raw.get("indicative_content") if isinstance(raw, dict) else None
+        )
         merged.append(
             part.model_copy(
                 update={
                     "prompt": _merge_part_prompt(part, raw),
-                    "mark_breakdown": str(raw.get("mark_breakdown") or part.mark_breakdown) if isinstance(raw, dict) else part.mark_breakdown,
+                    "mark_breakdown": str(
+                        raw.get("mark_breakdown") or part.mark_breakdown
+                    )
+                    if isinstance(raw, dict)
+                    else part.mark_breakdown,
                     "mark_scheme": _merge_text_list(mark_scheme_raw, part.mark_scheme),
-                    "indicative_content": _merge_text_list(indicative_raw, part.indicative_content),
+                    "indicative_content": _merge_text_list(
+                        indicative_raw, part.indicative_content
+                    ),
                     "options": options,
-                    "correct_option": str(raw.get("correct_option") or part.correct_option) if isinstance(raw, dict) else part.correct_option,
+                    "correct_option": str(
+                        raw.get("correct_option") or part.correct_option
+                    )
+                    if isinstance(raw, dict)
+                    else part.correct_option,
                 }
             )
         )
@@ -637,16 +696,56 @@ def _merge_text_list(raw: object, fallback: list[str]) -> list[str]:
 
 def _clean_prompt(prompt: str) -> str:
     cleaned = re.sub(r"[\(\[]\s*\d+\s*marks?\s*[\)\]]", "", prompt, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\(Total\s+for\s+(Question\s+)?\d+\s*=\s*\d+\s*marks?\s*\)", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(
+        r"\(Total\s+for\s+(Question\s+)?\d+\s*=\s*\d+\s*marks?\s*\)",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
     cleaned = re.sub(r"\bfigure\s+\d+\b", "the diagram", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\btable\s+\d+\b", "the table", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\bconsider both positive and negative arguments to support your answer\.?", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r",?\s*considering both positive and negative impacts?\.?", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\b(?:include|use)\s+relevant\s+economic\s+theor(?:y|ies)\s+to\s+support\s+your\s+(?:discussion|answer)\.?", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\byou\s+should\s+weigh\s+up\s+both\s+sides\b", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\bexplore\s+both\s+(?:sides\s+of\s+the\s+)?argument", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\bbring\s+in\s+relevant\s+economic\s+concepts\b", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r",?\s*both\s+in\s+the\s+short\s+run\s+and\s+the\s+long\s+run\.?", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(
+        r"\bconsider both positive and negative arguments to support your answer\.?",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r",?\s*considering both positive and negative impacts?\.?",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"\b(?:include|use)\s+relevant\s+economic\s+theor(?:y|ies)\s+to\s+support\s+your\s+(?:discussion|answer)\.?",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"\byou\s+should\s+weigh\s+up\s+both\s+sides\b",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"\bexplore\s+both\s+(?:sides\s+of\s+the\s+)?argument",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r"\bbring\s+in\s+relevant\s+economic\s+concepts\b",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+    cleaned = re.sub(
+        r",?\s*both\s+in\s+the\s+short\s+run\s+and\s+the\s+long\s+run\.?",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
     cleaned = re.sub(r"\bon\s+firm's\b", "on a firm's", cleaned, flags=re.IGNORECASE)
     return " ".join(cleaned.split())
 
@@ -710,9 +809,7 @@ def _validate_ai_question(
         candidate.scheme_mode,
     )
     if actual_assessment_data != verified_assessment_data:
-        raise ValueError(
-            f"question-{original.number} changed verified assessment data"
-        )
+        raise ValueError(f"question-{original.number} changed verified assessment data")
     maximum_stem_words = max(12, len(original.prompt.split()) + 2)
     if len(candidate.prompt.split()) > maximum_stem_words:
         raise ValueError(
@@ -793,7 +890,9 @@ def _validate_ai_question(
         )
         if candidate_part.options:
             labels = [option.label for option in candidate_part.options]
-            answers = [option.text.casefold().strip() for option in candidate_part.options]
+            answers = [
+                option.text.casefold().strip() for option in candidate_part.options
+            ]
             if (
                 labels != ["A", "B", "C", "D"]
                 or len(set(answers)) != 4
@@ -844,8 +943,7 @@ def _validate_content_lists(
         raise ValueError(f"{item_id} has insufficient specific marking guidance")
     if (
         marks >= 5
-        and len(set(item.casefold() for item in indicative))
-        < indicative_minimum
+        and len(set(item.casefold() for item in indicative)) < indicative_minimum
     ):
         raise ValueError(f"{item_id} has insufficient indicative content")
 
@@ -877,7 +975,11 @@ def _required_scope_terms(question: QuestionBlueprint) -> tuple[str, ...]:
     ]
     scenario = SCENARIOS.get(question.topic_id)
     if scenario is not None:
-        for scope in (scenario.event, scenario.outcome, *scenario.outcome.split(" and ")):
+        for scope in (
+            scenario.event,
+            scenario.outcome,
+            *scenario.outcome.split(" and "),
+        ):
             normalised = scope.replace("firms'", "firm's")
             if normalised in prompt:
                 terms.append(normalised)
@@ -912,11 +1014,17 @@ def _restore_source_reference(prompt: str, source_reference: str) -> str:
     table = re.search(r"Table\s+\d+", source_reference, flags=re.IGNORECASE)
     extract = re.search(r"Extract\s+[A-Z]", source_reference, flags=re.IGNORECASE)
     if figure:
-        restored = re.sub(r"\bthe diagram\b", figure.group(0), restored, count=1, flags=re.IGNORECASE)
+        restored = re.sub(
+            r"\bthe diagram\b", figure.group(0), restored, count=1, flags=re.IGNORECASE
+        )
     if table:
-        restored = re.sub(r"\bthe table\b", table.group(0), restored, count=1, flags=re.IGNORECASE)
+        restored = re.sub(
+            r"\bthe table\b", table.group(0), restored, count=1, flags=re.IGNORECASE
+        )
     if extract:
-        restored = re.sub(r"\bthe extract\b", extract.group(0), restored, count=1, flags=re.IGNORECASE)
+        restored = re.sub(
+            r"\bthe extract\b", extract.group(0), restored, count=1, flags=re.IGNORECASE
+        )
     return restored
 
 
@@ -933,7 +1041,9 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
     lowered = prompt.lower()
     command = question.command_word.lower()
 
-    ref_lowered = question.source_reference.lower() if question.source_reference else None
+    ref_lowered = (
+        question.source_reference.lower() if question.source_reference else None
+    )
     has_ref = True
     if ref_lowered:
         if ref_lowered.startswith("extract "):
@@ -943,7 +1053,11 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
         elif ref_lowered.startswith("table "):
             ref_text = "the table"
         else:
-            ref_text = "the source material" if ref_lowered == "source material" else ref_lowered
+            ref_text = (
+                "the source material"
+                if ref_lowered == "source material"
+                else ref_lowered
+            )
         has_ref = (
             f"with reference to {ref_text}" in lowered
             or f"with reference to {ref_lowered}" in lowered
@@ -956,10 +1070,18 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
         return has_ref and "discuss" in lowered
 
     if question.marks == 12:
-        return (has_ref or not ref_lowered) and ("discuss whether" in lowered or "discuss the extent" in lowered or "to what extent" in lowered)
+        return (has_ref or not ref_lowered) and (
+            "discuss whether" in lowered
+            or "discuss the extent" in lowered
+            or "to what extent" in lowered
+        )
 
     if question.marks == 10:
-        return (has_ref or not ref_lowered) and ("assess whether" in lowered or "assess the" in lowered or "to what extent" in lowered)
+        return (has_ref or not ref_lowered) and (
+            "assess whether" in lowered
+            or "assess the" in lowered
+            or "to what extent" in lowered
+        )
 
     if question.marks == 8:
         return (has_ref or not ref_lowered) and _has_word_starts(lowered, "examine")
@@ -975,7 +1097,9 @@ def _matches_expected_question_style(question: QuestionBlueprint, prompt: str) -
     return command in lowered
 
 
-def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprint) -> str:
+def _merge_source_text(
+    generated: str, fallback: str, question: QuestionBlueprint
+) -> str:
     if question.section == "A" and question.stimulus_kind:
         return fallback
     cleaned = " ".join(generated.split())
@@ -983,7 +1107,7 @@ def _merge_source_text(generated: str, fallback: str, question: QuestionBlueprin
         return fallback
     lowered = cleaned.lower()
     if lowered.startswith("this source concerns"):
-        cleaned = cleaned[len("this source concerns"):].strip()
+        cleaned = cleaned[len("this source concerns") :].strip()
         cleaned = cleaned[0].upper() + cleaned[1:] if cleaned else cleaned
     if (
         "may include evidence" in lowered

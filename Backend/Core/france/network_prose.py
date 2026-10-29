@@ -60,7 +60,11 @@ _QUESTIONS = {
 def network_catalogue_digest() -> str:
     return sha256(
         json.dumps(
-            {"version": NETWORK_PROSE_VERSION, "scenes": _SCENES, "questions": _QUESTIONS},
+            {
+                "version": NETWORK_PROSE_VERSION,
+                "scenes": _SCENES,
+                "questions": _QUESTIONS,
+            },
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),
@@ -114,15 +118,25 @@ def validate_network_selection(contract: NetworkContract, selection: dict) -> di
     return selection
 
 
-def _rubric(task_id: str, contract: NetworkContract, points: str, variant: int) -> list[dict]:
+def _rubric(
+    task_id: str, contract: NetworkContract, points: str, variant: int
+) -> list[dict]:
     expected = contract.to_dict()["expected"]
     prefix = "Points accordés pour " if variant == 1 else "Vérifier "
     criteria = {
-        "3a": [f"les deux additions donnant {expected['before']['cost']} et {expected['before']['other_cost']} et la route via R1."],
-        "3b": [f"les deux additions donnant {expected['after']['other_cost']} et {expected['after']['cost']} et la route via R2."],
+        "3a": [
+            f"les deux additions donnant {expected['before']['cost']} et {expected['before']['other_cost']} et la route via R1."
+        ],
+        "3b": [
+            f"les deux additions donnant {expected['after']['other_cost']} et {expected['after']['cost']} et la route via R2."
+        ],
         "3c": ["le cycle : B détient A, attend B ; C détient B, attend A."],
-        "3d": ["la libération de B par C, la fin de B, la reprise de C et l'ordre commun A avant B, qui supprime le cycle."],
-        "3e": ["la clé publique authentifiée, la clé de session chiffrée et son usage symétrique."],
+        "3d": [
+            "la libération de B par C, la fin de B, la reprise de C et l'ordre commun A avant B, qui supprime le cycle."
+        ],
+        "3e": [
+            "la clé publique authentifiée, la clé de session chiffrée et son usage symétrique."
+        ],
         "3f": [
             "la confidentialité face à l'observateur passif et la clé publique authentifiée.",
             "les limites (métadonnées, terminal compromis), le fait que la clé de la station n’authentifie pas le capteur et le cas d'un secret prépartagé.",
@@ -164,10 +178,14 @@ def render_network_candidate(
     )
     questions = []
     for task_id, plan in zip(_TASK_IDS, task_specs, strict=True):
-        prompt = _QUESTIONS[task_id][
-            int(selection["question_forms"][task_id][-1]) - 1
-        ]
-        materials = ["links"] if task_id in {"3a", "3b"} else ["processes"] if task_id in {"3c", "3d"} else []
+        prompt = _QUESTIONS[task_id][int(selection["question_forms"][task_id][-1]) - 1]
+        materials = (
+            ["links"]
+            if task_id in {"3a", "3b"}
+            else ["processes"]
+            if task_id in {"3c", "3d"}
+            else []
+        )
         questions.append(
             {
                 "id": task_id,
@@ -175,7 +193,9 @@ def render_network_candidate(
                 "points": plan["points"],
                 "answer": canonical_network_answer(task_id, contract),
                 "marking": _rubric(
-                    task_id, contract, plan["points"],
+                    task_id,
+                    contract,
+                    plan["points"],
                     int(selection["rubric_forms"][task_id][-1]),
                 ),
                 "material_ids": materials,
@@ -198,7 +218,9 @@ def render_network_candidate(
         "topics": ["architectures-reseaux"],
         "minutes": 70,
         "target_points": str(
-            sum((Decimal(plan["points"]) for plan in task_specs), Decimal(0)).normalize()
+            sum(
+                (Decimal(plan["points"]) for plan in task_specs), Decimal(0)
+            ).normalize()
         ),
         "materials": network_materials(contract),
         "questions": questions,

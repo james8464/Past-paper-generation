@@ -156,7 +156,6 @@ def _expected(rows: dict[str, list[list]]) -> dict:
 # Canonical JSON with every expected result recomputed from locked data.
 @dataclass(frozen=True)
 class DatabaseDepthContract:
-
     _json: str
 
     def to_dict(self) -> dict:

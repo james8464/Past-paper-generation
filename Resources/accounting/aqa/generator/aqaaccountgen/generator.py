@@ -46,28 +46,164 @@ BUSINESSES = [
 # separate topic list pointing at an unrelated question.
 MCQ_TASKS = {
     "paper_1": [
-        ("accounting-3", "Which book of prime entry records credit purchases of inventory?", "Purchases journal", ["Sales journal", "Cash book", "General journal"]),
-        ("accounting-8", "Which formula calculates gross profit margin?", "Gross profit ÷ revenue × 100", ["Profit for the year ÷ capital × 100", "Current assets ÷ current liabilities", "Revenue ÷ gross profit × 100"]),
-        ("accounting-5", "Which concept records income when it is earned?", "Accruals", ["Prudence", "Materiality", "Business entity"]),
-        ("accounting-8", "Which ratio measures short-term liquidity?", "Current ratio", ["Gearing", "Return on capital employed", "Asset turnover"]),
-        ("accounting-8", "Which source of finance normally increases gearing?", "A long-term loan", ["A rights issue", "Retained earnings", "Ordinary share capital"]),
-        ("accounting-6", "Where is carriage inwards normally included?", "Cost of sales", ["Finance costs", "Distribution costs", "Other income"]),
-        ("accounting-6", "Which item is a current asset?", "Trade receivables", ["Share capital", "Bank loan repayable in ten years", "Trade payables"]),
-        ("accounting-3", "What is the double entry for a credit sale?", "Debit receivables, credit sales", ["Debit sales, credit receivables", "Debit bank, credit sales", "Debit purchases, credit payables"]),
-        ("accounting-16", "A company issues ordinary shares above their nominal value. Where is the excess recorded?", "Share premium account", ["Revenue account", "Revaluation reserve", "Ordinary share capital account"]),
-        ("accounting-18", "Which principle requires professional honesty?", "Integrity", ["Consistency", "Realisation", "Duality"]),
+        (
+            "accounting-3",
+            "Which book of prime entry records credit purchases of inventory?",
+            "Purchases journal",
+            ["Sales journal", "Cash book", "General journal"],
+        ),
+        (
+            "accounting-8",
+            "Which formula calculates gross profit margin?",
+            "Gross profit ÷ revenue × 100",
+            [
+                "Profit for the year ÷ capital × 100",
+                "Current assets ÷ current liabilities",
+                "Revenue ÷ gross profit × 100",
+            ],
+        ),
+        (
+            "accounting-5",
+            "Which concept records income when it is earned?",
+            "Accruals",
+            ["Prudence", "Materiality", "Business entity"],
+        ),
+        (
+            "accounting-8",
+            "Which ratio measures short-term liquidity?",
+            "Current ratio",
+            ["Gearing", "Return on capital employed", "Asset turnover"],
+        ),
+        (
+            "accounting-8",
+            "Which source of finance normally increases gearing?",
+            "A long-term loan",
+            ["A rights issue", "Retained earnings", "Ordinary share capital"],
+        ),
+        (
+            "accounting-6",
+            "Where is carriage inwards normally included?",
+            "Cost of sales",
+            ["Finance costs", "Distribution costs", "Other income"],
+        ),
+        (
+            "accounting-6",
+            "Which item is a current asset?",
+            "Trade receivables",
+            ["Share capital", "Bank loan repayable in ten years", "Trade payables"],
+        ),
+        (
+            "accounting-3",
+            "What is the double entry for a credit sale?",
+            "Debit receivables, credit sales",
+            [
+                "Debit sales, credit receivables",
+                "Debit bank, credit sales",
+                "Debit purchases, credit payables",
+            ],
+        ),
+        (
+            "accounting-16",
+            "A company issues ordinary shares above their nominal value. Where is the excess recorded?",
+            "Share premium account",
+            [
+                "Revenue account",
+                "Revaluation reserve",
+                "Ordinary share capital account",
+            ],
+        ),
+        (
+            "accounting-18",
+            "Which principle requires professional honesty?",
+            "Integrity",
+            ["Consistency", "Realisation", "Duality"],
+        ),
     ],
     "paper_2": [
-        ("accounting-3", "What is the double entry for a credit sale?", "Debit receivables, credit sales", ["Debit sales, credit receivables", "Debit bank, credit sales", "Debit purchases, credit payables"]),
-        ("accounting-8", "Which formula calculates gross profit margin?", "Gross profit ÷ revenue × 100", ["Profit for the year ÷ capital × 100", "Current assets ÷ current liabilities", "Revenue ÷ gross profit × 100"]),
-        ("accounting-8", "Which ratio measures short-term liquidity?", "Current ratio", ["Gearing", "Return on capital employed", "Asset turnover"]),
-        ("accounting-9", "Which transaction reduces the closing balance in a cash budget when paid?", "Purchase of machinery", ["Depreciation charge", "Credit sale not yet collected", "Increase in an inventory valuation"]),
-        ("accounting-10", "Which formula calculates contribution per unit?", "Selling price per unit minus variable cost per unit", ["Selling price per unit minus fixed cost per unit", "Revenue minus total fixed costs", "Profit divided by units sold"]),
-        ("accounting-11", "A business buys a positive quantity of material below the standard price. What is the material price variance?", "Favourable", ["Adverse", "Zero", "Not measurable without the selling price"]),
-        ("accounting-12", "Which cost driver is most suitable for a purchase-order processing cost pool?", "Number of purchase orders", ["Number of employees in sales", "Value of finished goods sold", "Number of ordinary shareholders"]),
-        ("accounting-13", "Which method discounts future cash flows?", "Net present value", ["Payback", "Contribution per unit", "Inventory turnover"]),
-        ("accounting-2", "Which form of business can issue ordinary shares?", "Limited company", ["Sole trader", "Unincorporated partnership", "An individual trading under a business name"]),
-        ("accounting-18", "Which principle requires professional honesty?", "Integrity", ["Consistency", "Realisation", "Duality"]),
+        (
+            "accounting-3",
+            "What is the double entry for a credit sale?",
+            "Debit receivables, credit sales",
+            [
+                "Debit sales, credit receivables",
+                "Debit bank, credit sales",
+                "Debit purchases, credit payables",
+            ],
+        ),
+        (
+            "accounting-8",
+            "Which formula calculates gross profit margin?",
+            "Gross profit ÷ revenue × 100",
+            [
+                "Profit for the year ÷ capital × 100",
+                "Current assets ÷ current liabilities",
+                "Revenue ÷ gross profit × 100",
+            ],
+        ),
+        (
+            "accounting-8",
+            "Which ratio measures short-term liquidity?",
+            "Current ratio",
+            ["Gearing", "Return on capital employed", "Asset turnover"],
+        ),
+        (
+            "accounting-9",
+            "Which transaction reduces the closing balance in a cash budget when paid?",
+            "Purchase of machinery",
+            [
+                "Depreciation charge",
+                "Credit sale not yet collected",
+                "Increase in an inventory valuation",
+            ],
+        ),
+        (
+            "accounting-10",
+            "Which formula calculates contribution per unit?",
+            "Selling price per unit minus variable cost per unit",
+            [
+                "Selling price per unit minus fixed cost per unit",
+                "Revenue minus total fixed costs",
+                "Profit divided by units sold",
+            ],
+        ),
+        (
+            "accounting-11",
+            "A business buys a positive quantity of material below the standard price. What is the material price variance?",
+            "Favourable",
+            ["Adverse", "Zero", "Not measurable without the selling price"],
+        ),
+        (
+            "accounting-12",
+            "Which cost driver is most suitable for a purchase-order processing cost pool?",
+            "Number of purchase orders",
+            [
+                "Number of employees in sales",
+                "Value of finished goods sold",
+                "Number of ordinary shareholders",
+            ],
+        ),
+        (
+            "accounting-13",
+            "Which method discounts future cash flows?",
+            "Net present value",
+            ["Payback", "Contribution per unit", "Inventory turnover"],
+        ),
+        (
+            "accounting-2",
+            "Which form of business can issue ordinary shares?",
+            "Limited company",
+            [
+                "Sole trader",
+                "Unincorporated partnership",
+                "An individual trading under a business name",
+            ],
+        ),
+        (
+            "accounting-18",
+            "Which principle requires professional honesty?",
+            "Integrity",
+            ["Consistency", "Realisation", "Duality"],
+        ),
     ],
 }
 
@@ -163,10 +299,19 @@ def build_paper(
             topic = topics_by_id[topic_id]
             number = _number(rule.id, section_rule.id, index)
             if question_rule.kind == "multiple_choice":
-                question = _mcq(rule.id, question_rule, number, index, topic, rng, seed=run_seed)
+                question = _mcq(
+                    rule.id, question_rule, number, index, topic, rng, seed=run_seed
+                )
             else:
                 question = _written(
-                    rule.id, question_rule, number, topic, business, case_id, values, rng
+                    rule.id,
+                    question_rule,
+                    number,
+                    topic,
+                    business,
+                    case_id,
+                    values,
+                    rng,
                 )
             question.assessment_objectives = dict(question_rule.assessment_objectives)
             if question.kind != "multiple_choice":
@@ -179,10 +324,17 @@ def build_paper(
             if references:
                 question.authoring_context["referenced_question_data"] = {
                     prior.rule_id: {
-                        key: value for key, value in prior.authoring_context.items()
-                        if key in {"source_data", "adjustment_source_data", "adjustment_policy"}
+                        key: value
+                        for key, value in prior.authoring_context.items()
+                        if key
+                        in {
+                            "source_data",
+                            "adjustment_source_data",
+                            "adjustment_policy",
+                        }
                     }
-                    for prior in questions if prior.rule_id in references
+                    for prior in questions
+                    if prior.rule_id in references
                 }
             if len(question.assessment_objectives) > 1:
                 question.scheme_mode = "levels"
@@ -245,14 +397,19 @@ def _level_credit(question: GeneratedQuestion) -> list[MarkSchemePoint]:
         *[
             MarkSchemePoint(
                 text=f"{ao} allocation within the best-fit levels grid; apply the item-specific indicative content.",
-                marks=marks, credit_type="level", assessment_objective=ao,
+                marks=marks,
+                credit_type="level",
+                assessment_objective=ao,
             )
             for ao, marks in question.assessment_objectives.items()
         ],
         *[
             MarkSchemePoint(
-                text=text, marks=0,
-                credit_type="level" if text.lower().startswith("level ") else "guidance",
+                text=text,
+                marks=0,
+                credit_type="level"
+                if text.lower().startswith("level ")
+                else "guidance",
             )
             for text in question.mark_scheme
         ],
@@ -270,8 +427,14 @@ def _number(paper_id: str, section_id: str, index: int) -> str:
         if paper_id == "paper_1":
             return ["14.1", "14.2", "15.1", "15.2", "15.3"][index]
         return [
-            "14.1", "14.2", "14.3", "14.4",
-            "15.1", "15.2", "15.3", "15.4",
+            "14.1",
+            "14.2",
+            "14.3",
+            "14.4",
+            "15.1",
+            "15.2",
+            "15.3",
+            "15.4",
         ][index]
     return str(16 + index)
 
@@ -299,14 +462,21 @@ def _mcq(
             index, random.Random(f"accounting-selected-response-v1:{seed}:{index}")
         )
         return GeneratedQuestion(
-            rule_id=rule.id, number=number, marks=rule.marks,
-            kind=rule.kind, command_word=rule.command_word, topic_id=topic.id,
-            task_operation=rule.task_operation, source_dependency=rule.source_dependency,
-            prompt=scenario.prompt, choices=scenario.choices,
+            rule_id=rule.id,
+            number=number,
+            marks=rule.marks,
+            kind=rule.kind,
+            command_word=rule.command_word,
+            topic_id=topic.id,
+            task_operation=rule.task_operation,
+            source_dependency=rule.source_dependency,
+            prompt=scenario.prompt,
+            choices=scenario.choices,
             correct_choice=scenario.correct_choice,
             mark_scheme=[scenario.choices[scenario.correct_choice]],
             authoring_context={
-                "preserve_prompt": True, "preserve_mark_scheme": True,
+                "preserve_prompt": True,
+                "preserve_mark_scheme": True,
                 "selected_response_contract": scenario.public_contract,
                 "source_data": scenario.public_contract["inputs"],
             },
@@ -323,7 +493,8 @@ def _mcq(
         )
         correct = _gbp(opening + receipts - payments)
         distractors = [
-            _gbp(receipts - payments), _gbp(opening + receipts),
+            _gbp(receipts - payments),
+            _gbp(opening + receipts),
             _gbp(opening + receipts + payments),
         ]
     elif (paper_id, index) == ("paper_2", 4):
@@ -337,7 +508,9 @@ def _mcq(
         )
         correct = _gbp(price - variable)
         distractors = [
-            _gbp(price - variable - fixed), _gbp(price + variable), _gbp(price),
+            _gbp(price - variable - fixed),
+            _gbp(price + variable),
+            _gbp(price),
         ]
     choices = [correct, *distractors]
     rng.shuffle(choices)
@@ -427,9 +600,7 @@ def _written(
         authoring_context = case.authoring_context()
     elif rule.id == "company_adjustment":
         case = IncomeStatementCase.from_chart_values(business, values)
-        prompt = (
-            f"Assess the usefulness of the income statement to the employees of {business}."
-        )
+        prompt = f"Assess the usefulness of the income statement to the employees of {business}."
         authoring_context = {
             "independent_solver_instructions": [
                 "Use the independently derived profit for the year, recomputed from every "
@@ -479,7 +650,12 @@ def _written(
                 "Assess the formal agreement using only the named partners' "
                 "retirement, capital and two-period profit-sharing arrangements."
             ),
-            "required_prompt_terms": ["Alex", "Morgan", "Riley", "partnership agreement"],
+            "required_prompt_terms": [
+                "Alex",
+                "Morgan",
+                "Riley",
+                "partnership agreement",
+            ],
         }
         scheme = [
             "AO2: Apply the agreement to Riley's retirement and the reallocation of capital between Alex and Morgan;",
@@ -553,7 +729,9 @@ def _written(
             ),
         ]
         authoring_context = case.authoring_context()
-        authoring_context["numeric_input_contract"] = management_input_contract("contribution", authoring_context["source_data"])
+        authoring_context["numeric_input_contract"] = management_input_contract(
+            "contribution", authoring_context["source_data"]
+        )
     elif rule.id == "limitation":
         prompt = (
             f"Explain one limitation of using contribution alone when deciding whether "
@@ -655,10 +833,12 @@ def _written(
         # The candidate sees these same inputs in 14.1, not the adverse labour
         # variances in 14.2. Carry that dependency into independent review/solving.
         _, _, price_context = _management_calculation("variance_1", business, values)
-        authoring_context.update({
-            "source_question": "14.1",
-            "source_data": price_context["source_data"],
-        })
+        authoring_context.update(
+            {
+                "source_question": "14.1",
+                "source_data": price_context["source_data"],
+            }
+        )
     return GeneratedQuestion(
         rule_id=rule.id,
         number=number,
@@ -734,7 +914,10 @@ def _management_calculation(
             "actual_price_per_kg": actual_price,
             "actual_quantity_kg": actual_quantity,
         }
-        answers = {"direct_material_price_variance": variance, "direction": "favourable"}
+        answers = {
+            "direct_material_price_variance": variance,
+            "direction": "favourable",
+        }
         prompt = (
             f"Calculate the direct-material price variance for {business}. The standard "
             f"price is {_gbp(standard_price)} per kg, the actual price is "
@@ -894,15 +1077,19 @@ def _management_calculation(
         raise ValueError(f"unsupported accounting calculation rule: {rule_id}")
 
     prompt_values = [value for value in source.values()]
-    return prompt, scheme, {
-        "preserve_prompt": True,
-        "preserve_mark_scheme": True,
-        "source_data": source,
-        "numeric_input_contract": management_input_contract(rule_id, source),
-        "verified_answers": answers,
-        "prompt_values": prompt_values,
-        "task_scope": CALCULATION_TASKS[rule_id],
-    }
+    return (
+        prompt,
+        scheme,
+        {
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "source_data": source,
+            "numeric_input_contract": management_input_contract(rule_id, source),
+            "verified_answers": answers,
+            "prompt_values": prompt_values,
+            "task_scope": CALCULATION_TASKS[rule_id],
+        },
+    )
 
 
 def _levels(topic: Topic, point: str, case_id: int) -> list[str]:

@@ -52,21 +52,15 @@ class ConfiguredSyllabus(BaseModel):
         return {topic.id for topic in self.topics}
 
     def paper(self, identifier: str) -> PaperSpecification:
-        normalized = identifier.strip().removeprefix("paper_").removeprefix(
-            "paper"
-        )
+        normalized = identifier.strip().removeprefix("paper_").removeprefix("paper")
         try:
             return next(paper for paper in self.papers if paper.id == normalized)
         except StopIteration as error:
-            raise ValueError(
-                f"{self.family_id} has no paper {identifier}"
-            ) from error
+            raise ValueError(f"{self.family_id} has no paper {identifier}") from error
 
     def rule(self, identifier: str) -> PaperRule:
         paper = self.paper(identifier)
-        allowed = {
-            topic.id for topic in self.topics if paper.id in topic.papers
-        }
+        allowed = {topic.id for topic in self.topics if paper.id in topic.papers}
         return PaperRule(
             id=f"paper_{paper.id}",
             code=paper.code,

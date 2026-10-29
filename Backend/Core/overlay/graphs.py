@@ -34,7 +34,14 @@ def _ensure_style() -> None:
 def _save() -> str:
     fd, path = tempfile.mkstemp(suffix=".png", prefix="graph_")
     os.close(fd)
-    plt.savefig(path, dpi=GRAPH_DPI, bbox_inches="tight", pad_inches=0.08, transparent=False, facecolor="white")
+    plt.savefig(
+        path,
+        dpi=GRAPH_DPI,
+        bbox_inches="tight",
+        pad_inches=0.08,
+        transparent=False,
+        facecolor="white",
+    )
     plt.close()
     return path
 
@@ -50,18 +57,56 @@ def _ax() -> plt.Axes:
 
 
 def _arrow_axes(ax: plt.Axes, x_max: float, y_max: float) -> None:
-    ax.plot(x_max * 1.04, 0, ">k", markersize=4, clip_on=False, transform=ax.get_xaxis_transform())
-    ax.plot(0, y_max * 1.04, "^k", markersize=4, clip_on=False, transform=ax.get_yaxis_transform())
+    ax.plot(
+        x_max * 1.04,
+        0,
+        ">k",
+        markersize=4,
+        clip_on=False,
+        transform=ax.get_xaxis_transform(),
+    )
+    ax.plot(
+        0,
+        y_max * 1.04,
+        "^k",
+        markersize=4,
+        clip_on=False,
+        transform=ax.get_yaxis_transform(),
+    )
 
 
-def _label(ax: plt.Axes, text: str, x: float, y: float, fontsize: int = 9, ha: str = "center", va: str = "center") -> None:
+def _label(
+    ax: plt.Axes,
+    text: str,
+    x: float,
+    y: float,
+    fontsize: int = 9,
+    ha: str = "center",
+    va: str = "center",
+) -> None:
     ax.text(x, y, text, fontsize=fontsize, ha=ha, va=va)
 
 
 def _eq_point(ax: plt.Axes, x: float, y: float, x_max: float, y_max: float) -> None:
     ax.plot(x, y, "ko", markersize=3.5, zorder=5)
-    ax.axhline(y=y, xmin=0, xmax=x / x_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
-    ax.axvline(x=x, ymin=0, ymax=y / y_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
+    ax.axhline(
+        y=y,
+        xmin=0,
+        xmax=x / x_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
+    ax.axvline(
+        x=x,
+        ymin=0,
+        ymax=y / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
 
 
 def _gp(params: dict[str, object] | None, key: str, default: float) -> float:
@@ -115,17 +160,46 @@ def mr_mc_ac_diagram(
     ax.plot(xs, mc, "k-", label="MC")
     ax.plot(xs, ac, "k--", label="AC")
     ax.plot(xs, ar, "k-", label="AR")
-    ax.plot(xs[:profit_max_idx + 1], mr[:profit_max_idx + 1], "k-", label="MR")
+    ax.plot(xs[: profit_max_idx + 1], mr[: profit_max_idx + 1], "k-", label="MR")
 
     ax.plot(actual_q, actual_p, "ko", markersize=3.5, zorder=5)
-    ax.axvline(x=actual_q, ymin=0, ymax=actual_p / y_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
-    ax.axhline(y=actual_p, xmin=0, xmax=actual_q / q_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
-    ax.axhline(y=actual_ac, xmin=0, xmax=actual_q / q_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
+    ax.axvline(
+        x=actual_q,
+        ymin=0,
+        ymax=actual_p / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
+    ax.axhline(
+        y=actual_p,
+        xmin=0,
+        xmax=actual_q / q_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
+    ax.axhline(
+        y=actual_ac,
+        xmin=0,
+        xmax=actual_q / q_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
 
     supernormal_profit = actual_p - actual_ac
     if supernormal_profit > 0 and actual_q > 0:
-        ax.fill([0, actual_q, actual_q, 0], [actual_ac, actual_ac, actual_p, actual_p],
-                alpha=0.08, color="gray", label="Profit")
+        ax.fill(
+            [0, actual_q, actual_q, 0],
+            [actual_ac, actual_ac, actual_p, actual_p],
+            alpha=0.08,
+            color="gray",
+            label="Profit",
+        )
 
     ax.set_xlim(0, q_max)
     ax.set_ylim(0, y_max)
@@ -138,7 +212,9 @@ def mr_mc_ac_diagram(
     _label(ax, "AR", q_max * 0.78, ar[int(q_max * 0.78)], fontsize=8)
     _label(ax, "MR", q_max * 0.52, mr[int(q_max * 0.52)], fontsize=8)
     _label(ax, f"Q{int(actual_q)}", actual_q, -6, fontsize=7.5)
-    _label(ax, f"P{int(actual_p)}", -7, actual_p, fontsize=7.5, ha="center", va="center")
+    _label(
+        ax, f"P{int(actual_p)}", -7, actual_p, fontsize=7.5, ha="center", va="center"
+    )
     return _save()
 
 
@@ -191,11 +267,15 @@ def ad_as_diagram(
     if as_type == "keynesian":
         y1 = 30 + 30 * 0.5
         y2 = y1 + 60 * 0.08
-        as_y = np.piecewise(xs,
-                            [xs < 30, (xs >= 30) & (xs < 90), xs >= 90],
-                            [lambda x: 30 + x * 0.5,
-                             lambda x: y1 + (x - 30) * 0.08,
-                             lambda x: y2 + (x - 90) * 2.5])
+        as_y = np.piecewise(
+            xs,
+            [xs < 30, (xs >= 30) & (xs < 90), xs >= 90],
+            [
+                lambda x: 30 + x * 0.5,
+                lambda x: y1 + (x - 30) * 0.08,
+                lambda x: y2 + (x - 90) * 2.5,
+            ],
+        )
         as_y = np.minimum(as_y, 220)
     else:
         as_y = 30 + xs * 0.7
@@ -223,7 +303,15 @@ def phillips_curve(
     srpc = 8.5 - 2.2 * np.sqrt(xs - 0.5)
     srpc = np.clip(srpc, 0.5, 10)
     ax.plot(xs, srpc, "k-", label="SRPC")
-    ax.axvline(x=lrpc_rate, ymin=0, ymax=0.82, linestyle="--", color="gray", linewidth=1.2, label="LRPC")
+    ax.axvline(
+        x=lrpc_rate,
+        ymin=0,
+        ymax=0.82,
+        linestyle="--",
+        color="gray",
+        linewidth=1.2,
+        label="LRPC",
+    )
     _label(ax, f"U*={lrpc_rate}%", lrpc_rate, 0.5, fontsize=8)
     ax.set_xlim(0, 11)
     ax.set_ylim(0, 10)
@@ -274,7 +362,15 @@ def laffer_curve(
     peak_y = revenue[peak_idx]
     ax.plot(xs, revenue, "k-")
     ax.plot(peak_x, peak_y, "ko", markersize=3, zorder=5)
-    ax.axvline(x=peak_x, ymin=0, ymax=peak_y / 100, linestyle=":", color="gray", linewidth=0.8, zorder=1)
+    ax.axvline(
+        x=peak_x,
+        ymin=0,
+        ymax=peak_y / 100,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
     ax.set_xlim(0, 100)
     ax.set_ylim(0, 100)
     ax.set_xlabel("Tax rate (%)")
@@ -355,15 +451,36 @@ def externality_diagram(
         dwl_x = [q_social, q_social, q_private]
         dwl_y = [msb[eq_social_idx], msc[eq_social_idx], msc_at_private]
         ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
-        ax.axvline(x=q_social, ymin=0, ymax=p_social / y_max, linestyle=":", color="gray", linewidth=0.7)
+        ax.axvline(
+            x=q_social,
+            ymin=0,
+            ymax=p_social / y_max,
+            linestyle=":",
+            color="gray",
+            linewidth=0.7,
+        )
     else:
         mpb_at_private = mpb[eq_private_idx]
         dwl_x = [q_social, q_private, q_social]
         dwl_y = [mpb[eq_social_idx], mpb_at_private, msb[eq_social_idx]]
         ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
-        ax.axvline(x=q_social, ymin=0, ymax=p_social / y_max, linestyle=":", color="gray", linewidth=0.7)
+        ax.axvline(
+            x=q_social,
+            ymin=0,
+            ymax=p_social / y_max,
+            linestyle=":",
+            color="gray",
+            linewidth=0.7,
+        )
 
-    ax.axvline(x=q_private, ymin=0, ymax=p_private / y_max, linestyle=":", color="gray", linewidth=0.7)
+    ax.axvline(
+        x=q_private,
+        ymin=0,
+        ymax=p_private / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.7,
+    )
     ax.set_xlim(0, 105)
     ax.set_ylim(0, y_max)
     ax.set_xlabel("Quantity")
@@ -414,13 +531,34 @@ def perfect_competition_diagram(
 
     ax.plot(xs, mc, "k-", label="MC")
     ax.plot(xs, ac, "k--", label="AC")
-    ax.axhline(y=price, xmin=0, xmax=1, linestyle="-", color="gray", linewidth=1.2, label="D = AR = MR")
+    ax.axhline(
+        y=price,
+        xmin=0,
+        xmax=1,
+        linestyle="-",
+        color="gray",
+        linewidth=1.2,
+        label="D = AR = MR",
+    )
     ax.plot(actual_q, price, "ko", markersize=3.5, zorder=5)
-    ax.axvline(x=actual_q, ymin=0, ymax=price / y_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
+    ax.axvline(
+        x=actual_q,
+        ymin=0,
+        ymax=price / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
 
     if actual_ac < price:
-        ax.fill([0, actual_q, actual_q, 0], [actual_ac, actual_ac, price, price],
-                alpha=0.08, color="gray", label="Profit")
+        ax.fill(
+            [0, actual_q, actual_q, 0],
+            [actual_ac, actual_ac, price, price],
+            alpha=0.08,
+            color="gray",
+            label="Profit",
+        )
 
     ax.set_xlim(0, x_max)
     ax.set_ylim(0, y_max)
@@ -463,17 +601,38 @@ def monopoly_diagram(
         actual_ac = 50
 
     ax.plot(xs, ar, "k-", label="AR (Demand)")
-    ax.plot(xs[mr_idx + 1:], mr[mr_idx + 1:], "k--", alpha=0.3, linewidth=1.0)
-    ax.plot(xs[:mr_idx + 1], mr[:mr_idx + 1], "k--", label="MR", linewidth=1.3)
+    ax.plot(xs[mr_idx + 1 :], mr[mr_idx + 1 :], "k--", alpha=0.3, linewidth=1.0)
+    ax.plot(xs[: mr_idx + 1], mr[: mr_idx + 1], "k--", label="MR", linewidth=1.3)
     ax.plot(xs, mc, "k-", label="MC")
 
     if actual_ac < actual_p:
-        ax.fill([0, actual_q, actual_q, 0], [actual_ac, actual_ac, actual_p, actual_p],
-                alpha=0.08, color="gray", label="Profit")
+        ax.fill(
+            [0, actual_q, actual_q, 0],
+            [actual_ac, actual_ac, actual_p, actual_p],
+            alpha=0.08,
+            color="gray",
+            label="Profit",
+        )
 
     ax.plot(actual_q, actual_p, "ko", markersize=3.5, zorder=5)
-    ax.axvline(x=actual_q, ymin=0, ymax=actual_p / y_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
-    ax.axhline(y=actual_p, xmin=0, xmax=actual_q / q_max, linestyle=":", color="gray", linewidth=0.8, zorder=1)
+    ax.axvline(
+        x=actual_q,
+        ymin=0,
+        ymax=actual_p / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
+    ax.axhline(
+        y=actual_p,
+        xmin=0,
+        xmax=actual_q / q_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+        zorder=1,
+    )
 
     ax.set_xlim(0, q_max)
     ax.set_ylim(0, y_max)
@@ -492,7 +651,11 @@ def trade_cycle_diagram(
     ax = _ax()
     xs = np.linspace(0, 20, 500)
     trend = 11 + xs * 0.45
-    cycle = 10 * np.sin(xs * 0.7) * np.exp(-xs * 0.03) + 5 * np.sin(xs * 1.9) * np.exp(-xs * 0.06) + trend
+    cycle = (
+        10 * np.sin(xs * 0.7) * np.exp(-xs * 0.03)
+        + 5 * np.sin(xs * 1.9) * np.exp(-xs * 0.06)
+        + trend
+    )
     ax.plot(xs, cycle, "k-", label="Actual GDP", linewidth=1.5)
     ax.plot(xs, trend, "k--", label="Trend GDP", linewidth=1.2)
     ax.set_xlim(0, 20)
@@ -529,9 +692,13 @@ def tax_subsidy_diagram(
         p_supply = supply[new_eq_idx]
 
         ax.plot(xs, supply_shifted, "k-", label="S1 (after tax)")
-        ax.fill([q_new, q_new, q_eq, q_eq],
-                [p_supply, p_new, p_eq, p_eq],
-                alpha=0.08, color="gray", label="Tax revenue")
+        ax.fill(
+            [q_new, q_new, q_eq, q_eq],
+            [p_supply, p_new, p_eq, p_eq],
+            alpha=0.08,
+            color="gray",
+            label="Tax revenue",
+        )
         dwl_x = [q_new, q_eq, q_new]
         dwl_y = [supply[new_eq_idx], demand[eq_idx], demand[new_eq_idx]]
         ax.fill(dwl_x, dwl_y, alpha=0.15, color="gray", label="DWL", hatch="////")
@@ -543,15 +710,19 @@ def tax_subsidy_diagram(
         p_supply_new = supply_shifted[new_eq_idx]
 
         ax.plot(xs, supply_shifted, "k-", label="S1 (after subsidy)")
-        ax.fill([q_new, q_new, q_eq, q_new],
-                [p_supply_new, p_new, p_eq, p_supply_new],
-                alpha=0.08, color="gray", label="Subsidy cost")
+        ax.fill(
+            [q_new, q_new, q_eq, q_new],
+            [p_supply_new, p_new, p_eq, p_supply_new],
+            alpha=0.08,
+            color="gray",
+            label="Subsidy cost",
+        )
         dwl_x = [q_new, q_new, q_eq]
         dwl_y = [demand[new_eq_idx], p_supply_new, p_eq]
         ax.fill(dwl_x, dwl_y, alpha=0.15, color="gray", label="DWL", hatch="////")
 
     ax.plot(xs, demand, "k-", label="D")
-    ax.plot(xs[:eq_idx + 10], supply[:eq_idx + 10], "k--", label="S0", linewidth=1.2)
+    ax.plot(xs[: eq_idx + 10], supply[: eq_idx + 10], "k--", label="S0", linewidth=1.2)
 
     ax.plot(q_new, p_new, "ko", markersize=3, zorder=5)
     ax.plot(q_eq, p_eq, "ko", markersize=2.5, zorder=4, alpha=0.5)
@@ -589,7 +760,14 @@ def consumer_producer_surplus(
     ax.plot(xs, supply, "k-", label="S")
     ax.fill_between(xs[:q_idx], price, cs_top, alpha=0.1, color="gray", label="CS")
     ax.fill_between(xs[:q_idx], ps_bottom, price, alpha=0.06, color="gray", label="PS")
-    ax.axhline(y=price, xmin=0, xmax=quantity / q_max, linestyle=":", color="gray", linewidth=0.8)
+    ax.axhline(
+        y=price,
+        xmin=0,
+        xmax=quantity / q_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.8,
+    )
     ax.plot(quantity, price, "ko", markersize=3.5, zorder=5)
     _label(ax, "P\u2091", quantity + 7, price - 2, fontsize=8)
     _label(ax, "Q\u2091", quantity, -3, fontsize=8)
@@ -611,8 +789,12 @@ def circular_flow_diagram(
     ax.axis("off")
     _label(ax, "Firms", 5, 8, fontsize=11)
     _label(ax, "Households", 5, 2, fontsize=11)
-    ax.annotate("", xy=(5, 6.5), xytext=(5, 3.5), arrowprops=dict(arrowstyle="->", lw=1.2))
-    ax.annotate("", xy=(5, 3.5), xytext=(5, 6.5), arrowprops=dict(arrowstyle="->", lw=1.2))
+    ax.annotate(
+        "", xy=(5, 6.5), xytext=(5, 3.5), arrowprops=dict(arrowstyle="->", lw=1.2)
+    )
+    ax.annotate(
+        "", xy=(5, 3.5), xytext=(5, 6.5), arrowprops=dict(arrowstyle="->", lw=1.2)
+    )
     _label(ax, "Goods & services", 7.5, 5.5, fontsize=8)
     _label(ax, "Factor payments", 2.5, 5, fontsize=8)
     _label(ax, "Spending (G+S)", 5, 6.2, fontsize=8)
@@ -637,13 +819,20 @@ def keynesian_ad_as_diagram(
     flat_end = 40
     middle_end = 100
 
-    as_y = np.piecewise(xs,
-                        [xs < flat_end,
-                         (xs >= flat_end) & (xs < middle_end),
-                         xs >= middle_end],
-                        [lambda x: 25 + x * 0.4,
-                         lambda x: 25 + flat_end * 0.4 + (x - flat_end) * 0.06,
-                         lambda x: 25 + flat_end * 0.4 + (middle_end - flat_end) * 0.06 + (x - middle_end) * 2.8])
+    as_y = np.piecewise(
+        xs,
+        [xs < flat_end, (xs >= flat_end) & (xs < middle_end), xs >= middle_end],
+        [
+            lambda x: 25 + x * 0.4,
+            lambda x: 25 + flat_end * 0.4 + (x - flat_end) * 0.06,
+            lambda x: (
+                25
+                + flat_end * 0.4
+                + (middle_end - flat_end) * 0.06
+                + (x - middle_end) * 2.8
+            ),
+        ],
+    )
     as_y = np.minimum(as_y, y_max + 10)
 
     ad = 190 - xs * 0.7
@@ -667,4 +856,6 @@ def subsidy_diagram(
     params: dict[str, object] | None = None,
 ) -> str:
     subsidy_amount = _gp(params, "subsidy_amount", subsidy_amount)
-    return tax_subsidy_diagram(title=title, kind="subsidy", tax_amount=subsidy_amount, params=params)
+    return tax_subsidy_diagram(
+        title=title, kind="subsidy", tax_amount=subsidy_amount, params=params
+    )

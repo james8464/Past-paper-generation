@@ -27,7 +27,9 @@ def write_json(path: Path, payload: dict) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description='Reconcile the captured official NSI archive before reference ingestion.')
+    parser = argparse.ArgumentParser(
+        description="Reconcile the captured official NSI archive before reference ingestion."
+    )
     parser.add_argument("--register", required=True, type=Path)
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--manifest", type=Path)

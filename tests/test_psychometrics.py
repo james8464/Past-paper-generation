@@ -18,9 +18,7 @@ from Backend.Core.psychometrics import (
 
 def _approved_policy(path: Path) -> Path:
     payload = json.loads(
-        Path("Resources/empirical-calibration-policy.json").read_text(
-            encoding="utf-8"
-        )
+        Path("Resources/empirical-calibration-policy.json").read_text(encoding="utf-8")
     )
     payload["status"] = "approved"
     payload["approved_by_identity_class"] = "assessment-specialist"

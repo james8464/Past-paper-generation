@@ -269,9 +269,7 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
                 "Accept any one complete A, B and C combination whose output is 1; allocate the two marks according to the published split.",
                 "The values may be written as a binary triple if their variable order is clear.",
             ),
-            (
-                "Do not combine A and B from one valid row with C from another row.",
-            ),
+            ("Do not combine A and B from one valid row with C from another row.",),
         ),
         (
             (
@@ -416,7 +414,9 @@ PAPER2_STANDARDISATION: dict[str, tuple[Paper2Standardisation, ...]] = {
 }
 
 
-def build_paper2_blueprint(syllabus: Syllabus, seed: int | None = None) -> PaperBlueprint:
+def build_paper2_blueprint(
+    syllabus: Syllabus, seed: int | None = None
+) -> PaperBlueprint:
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     styles = {style.id: style for style in QUESTION_STYLES}
@@ -465,27 +465,35 @@ def build_topic_question_bank(
     try:
         plan = TOPIC_QUESTION_BANK_PLANS[topic_id]
     except KeyError as error:
-        raise ValueError(f"No question bank is available for topic {topic_id}") from error
+        raise ValueError(
+            f"No question bank is available for topic {topic_id}"
+        ) from error
     topic = syllabus.get_topic(topic_id)
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     from cspapergen.topic_bank import build_reference_bank_questions
+
     questions = build_reference_bank_questions(topic_id, rng)
-    if tuple((question.style_id, question.total_marks) for question in questions) != plan:
+    if (
+        tuple((question.style_id, question.total_marks) for question in questions)
+        != plan
+    ):
         raise ValueError("Reviewed topic-bank tasks do not match the declared plan")
-    return calibrate_blueprint(PaperBlueprint(
-        assessment_kind="question-bank",
-        focus_topic_id=topic_id,
-        paper_code="7517/QB",
-        title=f"A-level COMPUTER SCIENCE {topic.title} Question Bank",
-        paper_number="QB",
-        delivery_mode="written",
-        session="Practice",
-        duration_minutes=45,
-        total_marks=sum(question.total_marks for question in questions),
-        seed=run_seed,
-        questions=questions,
-    ))
+    return calibrate_blueprint(
+        PaperBlueprint(
+            assessment_kind="question-bank",
+            focus_topic_id=topic_id,
+            paper_code="7517/QB",
+            title=f"A-level COMPUTER SCIENCE {topic.title} Question Bank",
+            paper_number="QB",
+            delivery_mode="written",
+            session="Practice",
+            duration_minutes=45,
+            total_marks=sum(question.total_marks for question in questions),
+            seed=run_seed,
+            questions=questions,
+        )
+    )
 
 
 def _repartition_paper2_question(
@@ -516,11 +524,7 @@ def _repartition_paper2_question(
         else:
             remaining = source[min(index, len(source) - 1) :]
             part = remaining[0]
-            points = [
-                point
-                for item in remaining
-                for point in item.marking.points
-            ]
+            points = [point for item in remaining for point in item.marking.points]
             prompt = (
                 " ".join(item.prompt for item in remaining)
                 if len(remaining) > 1
@@ -585,10 +589,16 @@ def _repartition_paper2_question(
             "Rules accept or reject traffic using fields such as address, port or connection state.",
         ]
         rebuilt[0].marking.levels = []
-        rebuilt[0].marking.accept = ["Credit each distinct correct purpose and mechanism, up to two marks per named approach."]
-        rebuilt[0].marking.reject = ["Do not credit a bare product name or an unsupported claim of security."]
+        rebuilt[0].marking.accept = [
+            "Credit each distinct correct purpose and mechanism, up to two marks per named approach."
+        ]
+        rebuilt[0].marking.reject = [
+            "Do not credit a bare product name or an unsupported claim of security."
+        ]
     if question.style_id == "fibonacci_recursion":
-        rebuilt[2].prompt = "Explain how pattern matching can control recursion in functional programming."
+        rebuilt[
+            2
+        ].prompt = "Explain how pattern matching can control recursion in functional programming."
         rebuilt[2].marking.points = [
             "Separate patterns distinguish a base case from a recursive case;",
             "The matching pattern selects the corresponding result or recursive expression;",
@@ -601,23 +611,29 @@ def _paper2_sql_task(question: Question) -> Question:
     assert question.stimulus is not None
     stimulus = question.stimulus.model_copy(deep=True)
     assert stimulus.sql_contract is not None
-    sql_contract = stimulus.sql_contract.model_copy(update={
-        "source_id": "aqa-7517-fitness-centre-paper2-source-v1",
-        "sample_tables": [SQLSampleTableContract(
-            table="BOOKING",
-            columns=["MemberID", "SessionID", "Attended"],
-            rows=[
-                [1842, 27, False],
-                [1842, 28, False],
-                [1843, 27, False],
-                [1844, 27, True],
+    sql_contract = stimulus.sql_contract.model_copy(
+        update={
+            "source_id": "aqa-7517-fitness-centre-paper2-source-v1",
+            "sample_tables": [
+                SQLSampleTableContract(
+                    table="BOOKING",
+                    columns=["MemberID", "SessionID", "Attended"],
+                    rows=[
+                        [1842, 27, False],
+                        [1842, 28, False],
+                        [1843, 27, False],
+                        [1844, 27, True],
+                    ],
+                )
             ],
-        )],
-    })
-    stimulus = stimulus.model_copy(update={
-        "sql_contract": sql_contract,
-        "code": render_sql_schema(sql_contract),
-    })
+        }
+    )
+    stimulus = stimulus.model_copy(
+        update={
+            "sql_contract": sql_contract,
+            "code": render_sql_schema(sql_contract),
+        }
+    )
     prompts = [
         "Identify the error in this SQL condition: Email = NULL.",
         question.parts[1].prompt,
@@ -627,21 +643,27 @@ def _paper2_sql_task(question: Question) -> Question:
     ]
     points = [
         ["NULL is incorrectly compared using equality; a null test requires IS NULL."],
-        ["AO2: select Activity and count bookings rather than members.",
-         "AO2: join SESSION and BOOKING on their matching SessionID.",
-         "AO2: group on Activity to combine sessions for the same activity.",
-         "AO2: select groups with at least five bookings and sort by count descending.",
-         "AO3: express the projection, FROM/JOIN and GROUP BY as a coherent SELECT statement.",
-         "AO3: implement the aggregate condition using HAVING COUNT(*) >= 5 and ordering using ORDER BY COUNT(*) DESC."],
+        [
+            "AO2: select Activity and count bookings rather than members.",
+            "AO2: join SESSION and BOOKING on their matching SessionID.",
+            "AO2: group on Activity to combine sessions for the same activity.",
+            "AO2: select groups with at least five bookings and sort by count descending.",
+            "AO3: express the projection, FROM/JOIN and GROUP BY as a coherent SELECT statement.",
+            "AO3: implement the aggregate condition using HAVING COUNT(*) >= 5 and ordering using ORDER BY COUNT(*) DESC.",
+        ],
         [point.replace("1842", "1900") for point in question.parts[2].marking.points],
         ["First affected booking: (1842, 27).", "Second affected booking: (1842, 28)."],
         ["Removed booking: (1844, 27)."],
     ]
     parts = [
-        QuestionPart(label=str(i + 1), prompt=prompt, marks=marks,
-                     answer_lines=8 if i == 1 else 4,
-                     marking=MarkingGuidance(ao="pending", points=points[i]),
-                     sql_intent_id={1: "2", 2: "3"}.get(i, ""))
+        QuestionPart(
+            label=str(i + 1),
+            prompt=prompt,
+            marks=marks,
+            answer_lines=8 if i == 1 else 4,
+            marking=MarkingGuidance(ao="pending", points=points[i]),
+            sql_intent_id={1: "2", 2: "3"}.get(i, ""),
+        )
         for i, (prompt, marks) in enumerate(zip(prompts, (1, 6, 2, 2, 1), strict=True))
     ]
     parts[1].marking.accept = [
@@ -649,12 +671,22 @@ def _paper2_sql_task(question: Question) -> Question:
         "Each of the four analysis requirements and two programming requirements is worth one mark.",
         "Worked exemplar (non-additive): SELECT S.Activity, COUNT(*) FROM SESSION AS S JOIN BOOKING AS B ON S.SessionID = B.SessionID GROUP BY S.Activity HAVING COUNT(*) >= 5 ORDER BY COUNT(*) DESC;",
     ]
-    parts[3].set_closed_answers({"first-booking": ["(1842,27)", "1842,27"], "second-booking": ["(1842,28)", "1842,28"]})
+    parts[3].set_closed_answers(
+        {
+            "first-booking": ["(1842,27)", "1842,27"],
+            "second-booking": ["(1842,28)", "1842,28"],
+        }
+    )
     parts[4].set_closed_answers({"removed-booking": ["(1844,27)", "1844,27"]})
-    return question.model_copy(update={
-        "stimulus": stimulus, "parts": parts,
-        "stem": question.stem + " Members 1842, 1843 and 1844 and sessions 27 and 28 already exist; MemberID 1900 is not yet used. Each SQL statement runs independently on the original supplied rows.",
-    })
+    return question.model_copy(
+        update={
+            "stimulus": stimulus,
+            "parts": parts,
+            "stem": question.stem
+            + " Members 1842, 1843 and 1844 and sessions 27 and 28 already exist; MemberID 1900 is not yet used. Each SQL statement runs independently on the original supplied rows.",
+        }
+    )
+
 
 def build_paper1_blueprint(
     syllabus: Syllabus,
@@ -719,7 +751,7 @@ def _build_paper1_context(rng: random.Random) -> Paper1Context:
         f"{rng.randint(100, 999)},{rng.choice(categories)},{rng.randint(12, 95)}"
         for _ in range(8)
     ]
-    program = f'''from dataclasses import dataclass
+    program = f"""from dataclasses import dataclass
 
 CATEGORIES = {categories!r}
 THRESHOLD = {threshold}
@@ -790,7 +822,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-'''
+"""
     return Paper1Context(
         scenario_title=title,
         scenario_summary=summary,
@@ -802,12 +834,17 @@ if __name__ == "__main__":
     )
 
 
-def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[Question]:
+def _build_paper1_questions(
+    context: Paper1Context, rng: random.Random
+) -> list[Question]:
     first_value = rng.randint(20, 45)
     second_value = rng.randint(65, 90)
     questions = [
         _paper1_question(
-            1, "4.1", "programming_trace", "Program execution",
+            1,
+            "4.1",
+            "programming_trace",
+            "Program execution",
             "A short function processes two integer values.",
             Stimulus(
                 kind="code",
@@ -820,185 +857,326 @@ def _build_paper1_questions(context: Paper1Context, rng: random.Random) -> list[
                     "    return a - b"
                 ),
             ),
-            [_paper1_part("1", 4, f"State the value returned by transform({first_value}, {second_value}) and describe how you obtained it.", [
-                "Trace updates to both variables in the correct order;",
-                "Stop when the loop condition first becomes false;",
-                "Use the final values in the subtraction;",
-                "Award the final value if consistent with the trace;",
-            ], 8)],
+            [
+                _paper1_part(
+                    "1",
+                    4,
+                    f"State the value returned by transform({first_value}, {second_value}) and describe how you obtained it.",
+                    [
+                        "Trace updates to both variables in the correct order;",
+                        "Stop when the loop condition first becomes false;",
+                        "Use the final values in the subtraction;",
+                        "Award the final value if consistent with the trace;",
+                    ],
+                    8,
+                )
+            ],
         ),
         _paper1_question(
-            2, "4.4", "regular_language", "Regular languages",
+            2,
+            "4.4",
+            "regular_language",
+            "Regular languages",
             "A system accepts identifiers that begin with one letter followed by one or more digits.",
             Stimulus(kind="code", title="Candidate expression", code="[A-Z][0-9]+"),
-            [_paper1_part("1", 4, "Explain how the regular expression recognises valid identifiers and give one valid and one invalid example.", [
-                "First character must be an uppercase letter;",
-                "Remaining part contains one or more digits;",
-                "Valid example satisfies both components;",
-                "Invalid example fails a stated component;",
-            ], 8)],
+            [
+                _paper1_part(
+                    "1",
+                    4,
+                    "Explain how the regular expression recognises valid identifiers and give one valid and one invalid example.",
+                    [
+                        "First character must be an uppercase letter;",
+                        "Remaining part contains one or more digits;",
+                        "Valid example satisfies both components;",
+                        "Invalid example fails a stated component;",
+                    ],
+                    8,
+                )
+            ],
         ),
         _paper1_question(
-            3, "4.2", "stack_queue", "Stacks and queues",
+            3,
+            "4.2",
+            "stack_queue",
+            "Stacks and queues",
             "A service processes urgent requests in last-in, first-out order and routine requests in first-in, first-out order.",
             None,
-            [_paper1_part("1", 5, "Name the abstract data structure appropriate to each request type and explain the operations used to add and remove requests.", [
-                "Urgent requests use a stack;",
-                "Stack uses push and pop;",
-                "Routine requests use a queue;",
-                "Queue uses enqueue and dequeue;",
-                "Explanation links removal order to LIFO and FIFO;",
-            ], 10)],
+            [
+                _paper1_part(
+                    "1",
+                    5,
+                    "Name the abstract data structure appropriate to each request type and explain the operations used to add and remove requests.",
+                    [
+                        "Urgent requests use a stack;",
+                        "Stack uses push and pop;",
+                        "Routine requests use a queue;",
+                        "Queue uses enqueue and dequeue;",
+                        "Explanation links removal order to LIFO and FIFO;",
+                    ],
+                    10,
+                )
+            ],
         ),
         _paper1_question(
-            4, "4.3", "complexity", "Algorithm complexity",
+            4,
+            "4.3",
+            "complexity",
+            "Algorithm complexity",
             "Two algorithms solve the same problem. Algorithm X is O(n log n) and Algorithm Y is O(n²).",
             None,
-            [_paper1_part("1", 5, "Compare the likely performance of the algorithms as n increases. Explain why Big O alone does not determine the faster algorithm for every input.", [
-                "O(n log n) grows more slowly than O(n squared);",
-                "Algorithm X is therefore likely to scale better;",
-                "Big O describes asymptotic growth;",
-                "Constant factors or implementation details are omitted;",
-                "Small inputs or data characteristics may change actual running time;",
-            ], 10)],
+            [
+                _paper1_part(
+                    "1",
+                    5,
+                    "Compare the likely performance of the algorithms as n increases. Explain why Big O alone does not determine the faster algorithm for every input.",
+                    [
+                        "O(n log n) grows more slowly than O(n squared);",
+                        "Algorithm X is therefore likely to scale better;",
+                        "Big O describes asymptotic growth;",
+                        "Constant factors or implementation details are omitted;",
+                        "Small inputs or data characteristics may change actual running time;",
+                    ],
+                    10,
+                )
+            ],
         ),
         _paper1_question(
-            5, "4.1", "recursion", "Recursive programming",
+            5,
+            "4.1",
+            "recursion",
+            "Recursive programming",
             "A recursive function calculates a value from a positive integer.",
-            Stimulus(kind="code", title="Recursive function", code="def value(n):\n    if n == 1:\n        return 2\n    return n + value(n - 1)"),
-            [_paper1_part("1", 6, f"Trace value({rng.choice([4, 5, 6])}). Explain the purpose of the base case.", [
-                "Expand recursive calls in the correct order;",
-                "Reach the call with n equal to 1;",
-                "Return 2 from the base case;",
-                "Combine returned values correctly;",
-                "Base case stops further recursive calls;",
-                "Without it the recursion would not terminate normally;",
-            ], 12)],
+            Stimulus(
+                kind="code",
+                title="Recursive function",
+                code="def value(n):\n    if n == 1:\n        return 2\n    return n + value(n - 1)",
+            ),
+            [
+                _paper1_part(
+                    "1",
+                    6,
+                    f"Trace value({rng.choice([4, 5, 6])}). Explain the purpose of the base case.",
+                    [
+                        "Expand recursive calls in the correct order;",
+                        "Reach the call with n equal to 1;",
+                        "Return 2 from the base case;",
+                        "Combine returned values correctly;",
+                        "Base case stops further recursive calls;",
+                        "Without it the recursion would not terminate normally;",
+                    ],
+                    12,
+                )
+            ],
         ),
         _paper1_question(
-            6, "4.2", "graph_traversal", "Graph traversal",
+            6,
+            "4.2",
+            "graph_traversal",
+            "Graph traversal",
             "Locations are represented by an unweighted graph. A route with the fewest edges is required.",
-            Stimulus(kind="network", title="Graph", diagram=rng.choice(["mesh-wan", "star-lan"])),
-            [_paper1_part("1", 6, "Describe how breadth-first search can find a route with the fewest edges. Identify the main data structure it uses.", [
-                "Start at the source vertex;",
-                "Use a queue;",
-                "Visit adjacent unvisited vertices;",
-                "Record each vertex as visited and/or its predecessor;",
-                "Process vertices level by level;",
-                "First discovery of target gives a minimum-edge route;",
-            ], 12)],
+            Stimulus(
+                kind="network",
+                title="Graph",
+                diagram=rng.choice(["mesh-wan", "star-lan"]),
+            ),
+            [
+                _paper1_part(
+                    "1",
+                    6,
+                    "Describe how breadth-first search can find a route with the fewest edges. Identify the main data structure it uses.",
+                    [
+                        "Start at the source vertex;",
+                        "Use a queue;",
+                        "Visit adjacent unvisited vertices;",
+                        "Record each vertex as visited and/or its predecessor;",
+                        "Process vertices level by level;",
+                        "First discovery of target gives a minimum-edge route;",
+                    ],
+                    12,
+                )
+            ],
         ),
         _paper1_question(
-            7, "4.1", "oop_design", "Object-oriented design",
+            7,
+            "4.1",
+            "oop_design",
+            "Object-oriented design",
             f"The Skeleton Program represents each item using the {context.record_name} class.",
             None,
-            [_paper1_part("1", 8, "Explain how encapsulation, composition and inheritance could be used in an extended version of this system. Include one justified design choice.", [
-                "Encapsulation groups state and operations in a class;",
-                "Attributes can be protected through methods or properties;",
-                "Composition models a has-a relationship;",
-                "A container object could own record objects;",
-                "Inheritance models an is-a relationship;",
-                "A specialised record could inherit common behavior;",
-                "Design choice is relevant to the scenario;",
-                "Justification considers reuse, maintainability or validity;",
-            ], 15)],
+            [
+                _paper1_part(
+                    "1",
+                    8,
+                    "Explain how encapsulation, composition and inheritance could be used in an extended version of this system. Include one justified design choice.",
+                    [
+                        "Encapsulation groups state and operations in a class;",
+                        "Attributes can be protected through methods or properties;",
+                        "Composition models a has-a relationship;",
+                        "A container object could own record objects;",
+                        "Inheritance models an is-a relationship;",
+                        "A specialised record could inherit common behavior;",
+                        "Design choice is relevant to the scenario;",
+                        "Justification considers reuse, maintainability or validity;",
+                    ],
+                    15,
+                )
+            ],
         ),
         _paper1_question(
-            8, "4.3", "search_sort", "Searching and sorting",
+            8,
+            "4.3",
+            "search_sort",
+            "Searching and sorting",
             "A report displays records in descending adjusted-value order. A separate identifier index is used to locate records.",
             None,
-            [_paper1_part("1", 8, "Recommend a sorting algorithm and a searching algorithm. Explain the conditions needed for the search algorithm and compare their time complexities.", [
-                "Suitable efficient comparison sort identified;",
-                "Expected average/worst complexity stated accurately;",
-                "Binary search identified for repeated lookup;",
-                "Binary search requires data ordered by search key;",
-                "Binary search has logarithmic time complexity;",
-                "Linear search does not require sorted data;",
-                "Linear search has linear time complexity;",
-                "Recommendation is justified for the stated use;",
-            ], 15)],
+            [
+                _paper1_part(
+                    "1",
+                    8,
+                    "Recommend a sorting algorithm and a searching algorithm. Explain the conditions needed for the search algorithm and compare their time complexities.",
+                    [
+                        "Suitable efficient comparison sort identified;",
+                        "Expected average/worst complexity stated accurately;",
+                        "Binary search identified for repeated lookup;",
+                        "Binary search requires data ordered by search key;",
+                        "Binary search has logarithmic time complexity;",
+                        "Linear search does not require sorted data;",
+                        "Linear search has linear time complexity;",
+                        "Recommendation is justified for the stated use;",
+                    ],
+                    15,
+                )
+            ],
         ),
         _paper1_question(
-            9, "4.13", "test_design", "Systematic testing",
+            9,
+            "4.13",
+            "test_design",
+            "Systematic testing",
             f"The ADD command must accept an unused integer identifier, one of {', '.join(context.category_names)}, and a value from 0 to 100.",
             None,
-            [_paper1_part("1", 10, "Design a compact test plan containing normal, boundary, erroneous and duplicate-identifier cases. State the expected outcome for each case.", [
-                "Normal valid case with expected acceptance;",
-                "Lower boundary value 0;",
-                "Upper boundary value 100;",
-                "Value immediately below range;",
-                "Value immediately above range;",
-                "Invalid category;",
-                "Non-integer input;",
-                "Duplicate identifier;",
-                "Expected outcome stated for each case;",
-                "Set is representative without redundant cases;",
-            ], 18)],
+            [
+                _paper1_part(
+                    "1",
+                    10,
+                    "Design a compact test plan containing normal, boundary, erroneous and duplicate-identifier cases. State the expected outcome for each case.",
+                    [
+                        "Normal valid case with expected acceptance;",
+                        "Lower boundary value 0;",
+                        "Upper boundary value 100;",
+                        "Value immediately below range;",
+                        "Value immediately above range;",
+                        "Invalid category;",
+                        "Non-integer input;",
+                        "Duplicate identifier;",
+                        "Expected outcome stated for each case;",
+                        "Set is representative without redundant cases;",
+                    ],
+                    18,
+                )
+            ],
         ),
         _paper1_question(
-            10, "4.1", "skeleton_analysis", "Skeleton Program analysis",
+            10,
+            "4.1",
+            "skeleton_analysis",
+            "Skeleton Program analysis",
             "This separate raw-value function does not replace adjusted_value(record) in the Skeleton Program. THRESHOLD and MULTIPLIER are defined constants.",
-            Stimulus(kind="code", title="Separate function to complete", code="def parse_adjusted_value(raw_value):\n    # Return None if raw_value is malformed.\n    pass"),
-            [_paper1_part("1", 10, "Using the supplied constants and data file, explain how adjusted values and category totals are produced. Identify two robustness weaknesses in the supplied program.", [
-                "Threshold comparison is described correctly;",
-                "Multiplier is applied only at or above threshold;",
-                "Records are accumulated by category;",
-                "Example uses supplied data consistently;",
-                "File open can fail;",
-                "Malformed row can fail during unpacking;",
-                "Integer conversion can fail;",
-                "Unknown category can cause a key error;",
-                "Two weaknesses clearly identified;",
-                "Relevant handling or validation suggested;",
-            ], 18)],
+            Stimulus(
+                kind="code",
+                title="Separate function to complete",
+                code="def parse_adjusted_value(raw_value):\n    # Return None if raw_value is malformed.\n    pass",
+            ),
+            [
+                _paper1_part(
+                    "1",
+                    10,
+                    "Using the supplied constants and data file, explain how adjusted values and category totals are produced. Identify two robustness weaknesses in the supplied program.",
+                    [
+                        "Threshold comparison is described correctly;",
+                        "Multiplier is applied only at or above threshold;",
+                        "Records are accumulated by category;",
+                        "Example uses supplied data consistently;",
+                        "File open can fail;",
+                        "Malformed row can fail during unpacking;",
+                        "Integer conversion can fail;",
+                        "Unknown category can cause a key error;",
+                        "Two weaknesses clearly identified;",
+                        "Relevant handling or validation suggested;",
+                    ],
+                    18,
+                )
+            ],
         ),
         _paper1_question(
-            11, "4.1", "adapt_program", "Programming task: complete ADD",
+            11,
+            "4.1",
+            "adapt_program",
+            "Programming task: complete ADD",
             "Open the supplied Skeleton Program in your development environment.",
             None,
-            [_paper1_part("1", 14, "Complete add_record so that it validates all three inputs, rejects duplicate identifiers and appends a new object only when every value is valid. Test your code.", [
-                "Identifier input obtained and converted safely;",
-                "Duplicate identifiers detected;",
-                "Category input normalised;",
-                "Category checked against allowed values;",
-                "Numeric value obtained and converted safely;",
-                "Lower bound checked;",
-                "Upper bound checked;",
-                "Object constructed with correct fields;",
-                "Object appended only after all validation;",
-                "Clear feedback for invalid input;",
-                "No existing data corrupted;",
-                "Code is structured and readable;",
-                "Normal test succeeds;",
-                "At least one erroneous/boundary test succeeds;",
-            ], 4)],
+            [
+                _paper1_part(
+                    "1",
+                    14,
+                    "Complete add_record so that it validates all three inputs, rejects duplicate identifiers and appends a new object only when every value is valid. Test your code.",
+                    [
+                        "Identifier input obtained and converted safely;",
+                        "Duplicate identifiers detected;",
+                        "Category input normalised;",
+                        "Category checked against allowed values;",
+                        "Numeric value obtained and converted safely;",
+                        "Lower bound checked;",
+                        "Upper bound checked;",
+                        "Object constructed with correct fields;",
+                        "Object appended only after all validation;",
+                        "Clear feedback for invalid input;",
+                        "No existing data corrupted;",
+                        "Code is structured and readable;",
+                        "Normal test succeeds;",
+                        "At least one erroneous/boundary test succeeds;",
+                    ],
+                    4,
+                )
+            ],
         ),
         _paper1_question(
-            12, "4.3", "extend_program", "Programming task: report and analysis",
+            12,
+            "4.3",
+            "extend_program",
+            "Programming task: report and analysis",
             "Extend the supplied program without changing the existing command behavior.",
             None,
-            [_paper1_part("1", 20, "Complete print_report so that categories are displayed in descending total order, ties are resolved alphabetically, and the best record in each category is shown. Add a suitable efficient helper algorithm and test the complete feature.", [
-                "Category totals calculated from current records;",
-                "Adjusted rather than raw values used;",
-                "All categories represented;",
-                "Descending total order produced;",
-                "Alphabetical tie break implemented;",
-                "Best record found separately for each category;",
-                "Empty category handled;",
-                "Output includes category name;",
-                "Output includes total;",
-                "Output includes best record identifier;",
-                "Suitable decomposition into helper function(s);",
-                "Algorithm terminates for all valid data;",
-                "No unintended mutation of source records;",
-                "Efficient use of dictionary/list structures;",
-                "Normal dataset tested;",
-                "Tie case tested;",
-                "Empty-category case tested;",
-                "Expected and actual outcomes compared;",
-                "Code is readable and documented;",
-                "Complete solution meets every stated requirement;",
-            ], 4)],
+            [
+                _paper1_part(
+                    "1",
+                    20,
+                    "Complete print_report so that categories are displayed in descending total order, ties are resolved alphabetically, and the best record in each category is shown. Add a suitable efficient helper algorithm and test the complete feature.",
+                    [
+                        "Category totals calculated from current records;",
+                        "Adjusted rather than raw values used;",
+                        "All categories represented;",
+                        "Descending total order produced;",
+                        "Alphabetical tie break implemented;",
+                        "Best record found separately for each category;",
+                        "Empty category handled;",
+                        "Output includes category name;",
+                        "Output includes total;",
+                        "Output includes best record identifier;",
+                        "Suitable decomposition into helper function(s);",
+                        "Algorithm terminates for all valid data;",
+                        "No unintended mutation of source records;",
+                        "Efficient use of dictionary/list structures;",
+                        "Normal dataset tested;",
+                        "Tie case tested;",
+                        "Empty-category case tested;",
+                        "Expected and actual outcomes compared;",
+                        "Code is readable and documented;",
+                        "Complete solution meets every stated requirement;",
+                    ],
+                    4,
+                )
+            ],
         ),
     ]
     return _align_paper1_structure(questions, context, rng)
@@ -1013,166 +1191,487 @@ def _align_paper1_structure(
     recursive_n = rng.choice([5, 6])
     parts_by_question: dict[int, list[QuestionPart]] = {
         1: [
-            _paper1_part("1", 1, "Explain why a record can normally be found more quickly in a hash table than in an ordered list.", ["A hash function gives direct access to the expected storage location;"], 2, "AO1"),
-            _paper1_part("2", 4, "Describe the steps required to add a record to a hash table that resolves collisions using chaining.", [
-                "Apply the hash function to the record's key;",
-                "Use the result to select the table position;",
-                "Detect that the position already contains a record or chain;",
-                "Add the new record to the chain at that position;",
-            ], 6, "AO2"),
-            _paper1_part("3", 1, "Explain why the time needed to retrieve a record may increase as the hash table becomes full.", ["More collisions create longer chains or require more probes;"], 2, "AO2"),
-            _paper1_part("4", 1, "Explain why linear search has time complexity O(n).", ["In the worst case every item is examined once;"], 2, "AO1"),
-            _paper1_part("5", 1, "Explain why binary search has time complexity O(log n).", ["Each comparison discards half of the remaining search interval;"], 2, "AO1"),
-            _paper1_part("6", 1, "State one advantage of linear search over binary search.", ["The records do not need to be ordered;"], 2, "AO1"),
-            _paper1_part("7", 1, "Explain why merge sort is considered tractable.", ["Its polynomial/log-linear time complexity is practical for realistic input sizes;"], 2, "AO1"),
-            _paper1_part("8", 1, "State the maximum number of passes needed to bubble-sort a list containing 80 items.", ["79 passes;"], 2, "AO2"),
+            _paper1_part(
+                "1",
+                1,
+                "Explain why a record can normally be found more quickly in a hash table than in an ordered list.",
+                [
+                    "A hash function gives direct access to the expected storage location;"
+                ],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "2",
+                4,
+                "Describe the steps required to add a record to a hash table that resolves collisions using chaining.",
+                [
+                    "Apply the hash function to the record's key;",
+                    "Use the result to select the table position;",
+                    "Detect that the position already contains a record or chain;",
+                    "Add the new record to the chain at that position;",
+                ],
+                6,
+                "AO2",
+            ),
+            _paper1_part(
+                "3",
+                1,
+                "Explain why the time needed to retrieve a record may increase as the hash table becomes full.",
+                ["More collisions create longer chains or require more probes;"],
+                2,
+                "AO2",
+            ),
+            _paper1_part(
+                "4",
+                1,
+                "Explain why linear search has time complexity O(n).",
+                ["In the worst case every item is examined once;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "5",
+                1,
+                "Explain why binary search has time complexity O(log n).",
+                ["Each comparison discards half of the remaining search interval;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "6",
+                1,
+                "State one advantage of linear search over binary search.",
+                ["The records do not need to be ordered;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "7",
+                1,
+                "Explain why merge sort is considered tractable.",
+                [
+                    "Its polynomial/log-linear time complexity is practical for realistic input sizes;"
+                ],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "8",
+                1,
+                "State the maximum number of passes needed to bubble-sort a list containing 80 items.",
+                ["79 passes;"],
+                2,
+                "AO2",
+            ),
         ],
         2: [
-            _paper1_part("1", 2, "Define the term decomposition as used in computational thinking.", [
-                "Breaking a complex problem into smaller sub-problems;",
-                "Each sub-problem can be solved or developed separately;",
-            ], 4, "AO1"),
+            _paper1_part(
+                "1",
+                2,
+                "Define the term decomposition as used in computational thinking.",
+                [
+                    "Breaking a complex problem into smaller sub-problems;",
+                    "Each sub-problem can be solved or developed separately;",
+                ],
+                4,
+                "AO1",
+            ),
         ],
         3: [
-            _paper1_part("1", 1, "State the purpose of a depth-first traversal of a graph.", ["To visit or search all reachable vertices by following a path as far as possible before backtracking;"], 2, "AO1"),
-            _paper1_part("2", 2, "Using AL, identify one cycle and explain why it proves that this graph is not a tree.", ["A valid cycle is 1–2–5–4–1;", "A tree is acyclic, whereas that route returns to its start using distinct edges;"], 4, "AO2"),
-            _paper1_part("3", 2, "Complete every cell of the adjacency matrix for the graph represented by AL. Use 1 for an edge and 0 otherwise.", ["Entries are symmetric for the undirected graph;", "All and only the listed edges are represented;"], 5, "AO2"),
-            _paper1_part("4", 1, "Describe the base case in reachable that returns True.", ["The current vertex is the target vertex;"], 2, "AO2"),
-            _paper1_part("5", 6, "Trace the call reachable(3, 6, set()). The third argument is an initially empty set. Record, in order, every recursive call and every change made to visited.", [
-                "Initial call reachable(3, 6, set()) begins with visited = {};",
-                "Calls at current vertices 3, then 2: visited becomes {3}, then {3,2};",
-                "Calls at current vertices 1, then 4: visited becomes {3,2,1}, then {3,2,1,4};",
-                "Next call has current vertex 5: visited becomes {3,2,1,4,5}; already visited neighbours are skipped;",
-                "Next call has current vertex 6: it returns True before visited.add, so 6 is not added;",
-                "True propagates through calls 5, 4, 1, 2, 3; final visited is {3,2,1,4,5}. Set element order is immaterial;",
-            ], 10, "AO2"),
+            _paper1_part(
+                "1",
+                1,
+                "State the purpose of a depth-first traversal of a graph.",
+                [
+                    "To visit or search all reachable vertices by following a path as far as possible before backtracking;"
+                ],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "2",
+                2,
+                "Using AL, identify one cycle and explain why it proves that this graph is not a tree.",
+                [
+                    "A valid cycle is 1–2–5–4–1;",
+                    "A tree is acyclic, whereas that route returns to its start using distinct edges;",
+                ],
+                4,
+                "AO2",
+            ),
+            _paper1_part(
+                "3",
+                2,
+                "Complete every cell of the adjacency matrix for the graph represented by AL. Use 1 for an edge and 0 otherwise.",
+                [
+                    "Entries are symmetric for the undirected graph;",
+                    "All and only the listed edges are represented;",
+                ],
+                5,
+                "AO2",
+            ),
+            _paper1_part(
+                "4",
+                1,
+                "Describe the base case in reachable that returns True.",
+                ["The current vertex is the target vertex;"],
+                2,
+                "AO2",
+            ),
+            _paper1_part(
+                "5",
+                6,
+                "Trace the call reachable(3, 6, set()). The third argument is an initially empty set. Record, in order, every recursive call and every change made to visited.",
+                [
+                    "Initial call reachable(3, 6, set()) begins with visited = {};",
+                    "Calls at current vertices 3, then 2: visited becomes {3}, then {3,2};",
+                    "Calls at current vertices 1, then 4: visited becomes {3,2,1}, then {3,2,1,4};",
+                    "Next call has current vertex 5: visited becomes {3,2,1,4,5}; already visited neighbours are skipped;",
+                    "Next call has current vertex 6: it returns True before visited.add, so 6 is not added;",
+                    "True propagates through calls 5, 4, 1, 2, 3; final visited is {3,2,1,4,5}. Set element order is immaterial;",
+                ],
+                10,
+                "AO2",
+            ),
         ],
         4: [
-            _paper1_part("1", 12, "Write a program that compares two implementations for a supplied input size n. The functions run_X(data), run_Y(data), make_data(n) and timer() are available; timer() returns a monotonic time in seconds. Execute five comparable trials of each implementation, using fresh copies of the same data. Calculate each mean elapsed time and output the faster implementation and both means. Use a programming language or unambiguous executable pseudocode.", [
-                "Accept or receive the input size;",
-                "Generate equivalent input data for both algorithms;",
-                "Use a monotonic high-resolution timer;",
-                "Record the start time immediately before execution;",
-                "Record the end time immediately after execution;",
-                "Calculate elapsed time;",
-                "Repeat exactly five trials for each implementation;",
-                "Use the same data or equivalent copies;",
-                "Calculate each arithmetic mean as its sum of elapsed times divided by five;",
-                "Select the algorithm with the lower measured time;",
-                "Return or display the selection and evidence;",
-                "Algorithm is complete, unambiguous and terminates;",
-            ], 18, "AO3"),
-            _paper1_part("2", 1, "Evaluate this timing claim: one trial found X faster, so X will always be faster on this input size. State one limitation of the evidence.", ["One trial does not distinguish an algorithm effect from caching, background processes or timer variation; repeated comparable trials are needed;"], 3, "AO3"),
+            _paper1_part(
+                "1",
+                12,
+                "Write a program that compares two implementations for a supplied input size n. The functions run_X(data), run_Y(data), make_data(n) and timer() are available; timer() returns a monotonic time in seconds. Execute five comparable trials of each implementation, using fresh copies of the same data. Calculate each mean elapsed time and output the faster implementation and both means. Use a programming language or unambiguous executable pseudocode.",
+                [
+                    "Accept or receive the input size;",
+                    "Generate equivalent input data for both algorithms;",
+                    "Use a monotonic high-resolution timer;",
+                    "Record the start time immediately before execution;",
+                    "Record the end time immediately after execution;",
+                    "Calculate elapsed time;",
+                    "Repeat exactly five trials for each implementation;",
+                    "Use the same data or equivalent copies;",
+                    "Calculate each arithmetic mean as its sum of elapsed times divided by five;",
+                    "Select the algorithm with the lower measured time;",
+                    "Return or display the selection and evidence;",
+                    "Algorithm is complete, unambiguous and terminates;",
+                ],
+                18,
+                "AO3",
+            ),
+            _paper1_part(
+                "2",
+                1,
+                "Evaluate this timing claim: one trial found X faster, so X will always be faster on this input size. State one limitation of the evidence.",
+                [
+                    "One trial does not distinguish an algorithm effect from caching, background processes or timer variation; repeated comparable trials are needed;"
+                ],
+                3,
+                "AO3",
+            ),
         ],
         5: [
-            _paper1_part("1", 2, f"State the first two recursive calls made when evaluating the supplied function for n = {recursive_n}.", [
-                "First recursive call decreases n by one;",
-                "Second recursive call decreases n by one again;",
-            ], 4, "AO1"),
-            _paper1_part("2", 2, "Explain the purpose of the base case.", [
-                "It supplies a result without another recursive call;",
-                "It ensures that the recursion terminates;",
-            ], 4, "AO1"),
-            _paper1_part("3", 1, "State one consequence of removing the base case.", ["Calls continue until a recursion-depth or stack-overflow error occurs;"], 3, "AO2"),
+            _paper1_part(
+                "1",
+                2,
+                f"State the first two recursive calls made when evaluating the supplied function for n = {recursive_n}.",
+                [
+                    "First recursive call decreases n by one;",
+                    "Second recursive call decreases n by one again;",
+                ],
+                4,
+                "AO1",
+            ),
+            _paper1_part(
+                "2",
+                2,
+                "Explain the purpose of the base case.",
+                [
+                    "It supplies a result without another recursive call;",
+                    "It ensures that the recursion terminates;",
+                ],
+                4,
+                "AO1",
+            ),
+            _paper1_part(
+                "3",
+                1,
+                "State one consequence of removing the base case.",
+                [
+                    "Calls continue until a recursion-depth or stack-overflow error occurs;"
+                ],
+                3,
+                "AO2",
+            ),
         ],
         6: [
-            _paper1_part("1", 2, "Complete the missing transitions in the supplied state-transition table.", ["Correct transition from state S1;", "Correct transition from state S2;"], 4, "AO2"),
-            _paper1_part("2", 2, "Write a regular expression that accepts exactly the same strings as the finite-state machine.", ["Expression accepts the required prefix and repetitions;", "Expression rejects strings ending in a non-accepting state;"], 4, "AO2"),
-            _paper1_part("3", 2, "State two test strings: one accepted and one rejected by the finite-state machine.", ["Valid accepted string;", "Valid rejected string;"], 4, "AO2"),
-            _paper1_part("4", 1, "State the meaning of a double circle on a state-transition diagram.", ["An accepting/final state;"], 2, "AO1"),
-            _paper1_part("5", 1, "State whether a deterministic finite-state machine may have two transitions with the same input from one state.", ["No;"], 2, "AO1"),
-            _paper1_part("6", 2, "Explain why an input beginning with 0 is rejected, but a 0 after the initial 1 can be processed by this machine.", ["S0 has no transition on 0, so a leading 0 cannot be consumed;", "After the initial 1, S1 has a transition on 0 to S2;"], 4, "AO2"),
-            _paper1_part("7", 1, "State one reason for representing validation rules as a finite-state machine.", ["It provides an unambiguous, implementable model of every valid transition;"], 3, "AO2"),
-            _paper1_part("8", 3, "Explain why the validator must reject the complete input 102 even though its prefix 1 reaches an accepting state.", [
-                "Acceptance applies to the complete input, not just a prefix;",
-                "The symbol 2 has no defined transition in this binary machine;",
-                "An earlier accepting state cannot validate the unconsumed invalid suffix;",
-            ], 6, "AO2"),
+            _paper1_part(
+                "1",
+                2,
+                "Complete the missing transitions in the supplied state-transition table.",
+                [
+                    "Correct transition from state S1;",
+                    "Correct transition from state S2;",
+                ],
+                4,
+                "AO2",
+            ),
+            _paper1_part(
+                "2",
+                2,
+                "Write a regular expression that accepts exactly the same strings as the finite-state machine.",
+                [
+                    "Expression accepts the required prefix and repetitions;",
+                    "Expression rejects strings ending in a non-accepting state;",
+                ],
+                4,
+                "AO2",
+            ),
+            _paper1_part(
+                "3",
+                2,
+                "State two test strings: one accepted and one rejected by the finite-state machine.",
+                ["Valid accepted string;", "Valid rejected string;"],
+                4,
+                "AO2",
+            ),
+            _paper1_part(
+                "4",
+                1,
+                "State the meaning of a double circle on a state-transition diagram.",
+                ["An accepting/final state;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "5",
+                1,
+                "State whether a deterministic finite-state machine may have two transitions with the same input from one state.",
+                ["No;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "6",
+                2,
+                "Explain why an input beginning with 0 is rejected, but a 0 after the initial 1 can be processed by this machine.",
+                [
+                    "S0 has no transition on 0, so a leading 0 cannot be consumed;",
+                    "After the initial 1, S1 has a transition on 0 to S2;",
+                ],
+                4,
+                "AO2",
+            ),
+            _paper1_part(
+                "7",
+                1,
+                "State one reason for representing validation rules as a finite-state machine.",
+                [
+                    "It provides an unambiguous, implementable model of every valid transition;"
+                ],
+                3,
+                "AO2",
+            ),
+            _paper1_part(
+                "8",
+                3,
+                "Explain why the validator must reject the complete input 102 even though its prefix 1 reaches an accepting state.",
+                [
+                    "Acceptance applies to the complete input, not just a prefix;",
+                    "The symbol 2 has no defined transition in this binary machine;",
+                    "An earlier accepting state cannot validate the unconsumed invalid suffix;",
+                ],
+                6,
+                "AO2",
+            ),
         ],
         7: [
-            _paper1_part("1", 1, f"State the programming paradigm used to define {context.record_name}.", ["Object-oriented programming;"], 2, "AO1"),
-            _paper1_part("2", 2, "Explain one benefit of encapsulating the record fields.", [
-                "Fields can be accessed through controlled methods or properties;",
-                "This protects invariants and reduces unintended changes;",
-            ], 4, "AO2"),
+            _paper1_part(
+                "1",
+                1,
+                f"State the programming paradigm used to define {context.record_name}.",
+                ["Object-oriented programming;"],
+                2,
+                "AO1",
+            ),
+            _paper1_part(
+                "2",
+                2,
+                "Explain one benefit of encapsulating the record fields.",
+                [
+                    "Fields can be accessed through controlled methods or properties;",
+                    "This protects invariants and reduces unintended changes;",
+                ],
+                4,
+                "AO2",
+            ),
         ],
         8: [
-            _paper1_part("1", 1, "State the condition that must be true of the identifier index before binary search can be used.", ["The index must be ordered by identifier;"], 1, "AO1"),
+            _paper1_part(
+                "1",
+                1,
+                "State the condition that must be true of the identifier index before binary search can be used.",
+                ["The index must be ordered by identifier;"],
+                1,
+                "AO1",
+            ),
         ],
         9: [
-            _paper1_part("1", 4, f"Write code to validate that a category is one of {', '.join(context.category_names)} and that a numeric value is between 0 and 100 inclusive.", [
-                "Input is normalised consistently;",
-                "Membership of the allowed categories is tested;",
-                "Both inclusive numeric bounds are tested;",
-                "A correct Boolean result or validation action is produced;",
-            ], 8, "AO3"),
-            _paper1_part("2", 1, "State one test that checks a boundary of the numeric range.", [
-                "Use 0 or 100 and expect the value to be accepted;",
-            ], 3, "AO3"),
+            _paper1_part(
+                "1",
+                4,
+                f"Write code to validate that a category is one of {', '.join(context.category_names)} and that a numeric value is between 0 and 100 inclusive.",
+                [
+                    "Input is normalised consistently;",
+                    "Membership of the allowed categories is tested;",
+                    "Both inclusive numeric bounds are tested;",
+                    "A correct Boolean result or validation action is produced;",
+                ],
+                8,
+                "AO3",
+            ),
+            _paper1_part(
+                "2",
+                1,
+                "State one test that checks a boundary of the numeric range.",
+                [
+                    "Use 0 or 100 and expect the value to be accepted;",
+                ],
+                3,
+                "AO3",
+            ),
         ],
         10: [
-            _paper1_part("1", 7, "Complete parse_adjusted_value. Convert raw_value to an integer, return None if conversion fails, return the converted value multiplied by MULTIPLIER when it is at least THRESHOLD, and otherwise return the converted integer value.", [
-                "1 mark: int(raw_value) or an equivalent conversion is attempted;",
-                "1 mark: ValueError and/or TypeError is caught without terminating the program;",
-                "1 mark: None is returned from the exception path;",
-                "1 mark: the converted value is compared with THRESHOLD using >=;",
-                "1 mark: the converted value is multiplied by MULTIPLIER only on the threshold branch;",
-                "1 mark: the adjusted result is returned from that branch;",
-                "1 mark: the converted integer value is returned otherwise;",
-            ], 12, "AO3"),
-            _paper1_part("2", 1, "State one test that exercises the threshold boundary.", ["Input raw_value equal to THRESHOLD; expected output THRESHOLD * MULTIPLIER;"], 3, "AO3"),
+            _paper1_part(
+                "1",
+                7,
+                "Complete parse_adjusted_value. Convert raw_value to an integer, return None if conversion fails, return the converted value multiplied by MULTIPLIER when it is at least THRESHOLD, and otherwise return the converted integer value.",
+                [
+                    "1 mark: int(raw_value) or an equivalent conversion is attempted;",
+                    "1 mark: ValueError and/or TypeError is caught without terminating the program;",
+                    "1 mark: None is returned from the exception path;",
+                    "1 mark: the converted value is compared with THRESHOLD using >=;",
+                    "1 mark: the converted value is multiplied by MULTIPLIER only on the threshold branch;",
+                    "1 mark: the adjusted result is returned from that branch;",
+                    "1 mark: the converted integer value is returned otherwise;",
+                ],
+                12,
+                "AO3",
+            ),
+            _paper1_part(
+                "2",
+                1,
+                "State one test that exercises the threshold boundary.",
+                [
+                    "Input raw_value equal to THRESHOLD; expected output THRESHOLD * MULTIPLIER;"
+                ],
+                3,
+                "AO3",
+            ),
         ],
         11: [
-            _paper1_part("1", 11, "Complete add_record so that all inputs are validated, duplicate identifiers are rejected and a new object is appended only when every value is valid.", [
-                "Identifier is converted safely;",
-                "Existing identifiers are checked;",
-                "Duplicate identifiers are rejected;",
-                "Category input is normalised;",
-                "Category is checked against the allowed values;",
-                "Numeric value is converted safely;",
-                "Lower bound is checked;",
-                "Upper bound is checked;",
-                "A correctly populated object is constructed;",
-                "The object is appended only after all validation succeeds;",
-                "The implementation is complete and readable;",
-            ], 18, "AO3"),
-            _paper1_part("2", 1, "State one test that demonstrates duplicate identifiers are rejected.", ["Use an identifier already present and confirm that no record is appended;"], 3, "AO3"),
+            _paper1_part(
+                "1",
+                11,
+                "Complete add_record so that all inputs are validated, duplicate identifiers are rejected and a new object is appended only when every value is valid.",
+                [
+                    "Identifier is converted safely;",
+                    "Existing identifiers are checked;",
+                    "Duplicate identifiers are rejected;",
+                    "Category input is normalised;",
+                    "Category is checked against the allowed values;",
+                    "Numeric value is converted safely;",
+                    "Lower bound is checked;",
+                    "Upper bound is checked;",
+                    "A correctly populated object is constructed;",
+                    "The object is appended only after all validation succeeds;",
+                    "The implementation is complete and readable;",
+                ],
+                18,
+                "AO3",
+            ),
+            _paper1_part(
+                "2",
+                1,
+                "State one test that demonstrates duplicate identifiers are rejected.",
+                [
+                    "Use an identifier already present and confirm that no record is appended;"
+                ],
+                3,
+                "AO3",
+            ),
         ],
         12: [
-            _paper1_part("1", 11, "Complete print_report so that categories are displayed in descending adjusted-total order, ties are resolved alphabetically and record.identifier is shown for the best record in each category. You may define suitable helper functions.", [
-                "1 mark: traverses every current record exactly once when accumulating report data;",
-                "1 mark: calls adjusted_value, or implements the same threshold rule, instead of adding each raw value;",
-                "1 mark: maintains a separate accumulated total for every category, including categories with no records;",
-                "1 mark: tracks the record with the greatest adjusted value separately within each non-empty category;",
-                "1 mark: represents an empty category without attempting to access a missing best record;",
-                "1 mark: orders categories using the adjusted total as a descending primary key;",
-                "1 mark: uses the category name as an ascending secondary key when adjusted totals are equal;",
-                "1 mark: displays every category name once;",
-                "1 mark: displays the corresponding adjusted total for every category;",
-                "1 mark: displays record.identifier for the tracked best record in each non-empty category;",
-                "1 mark: leaves the records list and its Record objects unchanged after producing the report;",
-            ], 18, "AO3"),
-            _paper1_part("2", 1, "State one input data set and its expected output order that tests the alphabetical tie break.", ["1 mark: gives two categories with equal adjusted totals and expects those category names in alphabetical order;"], 3, "AO3"),
-            _paper1_part("3", 2, "Explain why a dictionary is suitable for storing the category totals.", [
-                "A category key gives direct access to its accumulated total;",
-                "Lookup and update are efficient on average;",
-            ], 4, "AO2"),
+            _paper1_part(
+                "1",
+                11,
+                "Complete print_report so that categories are displayed in descending adjusted-total order, ties are resolved alphabetically and record.identifier is shown for the best record in each category. You may define suitable helper functions.",
+                [
+                    "1 mark: traverses every current record exactly once when accumulating report data;",
+                    "1 mark: calls adjusted_value, or implements the same threshold rule, instead of adding each raw value;",
+                    "1 mark: maintains a separate accumulated total for every category, including categories with no records;",
+                    "1 mark: tracks the record with the greatest adjusted value separately within each non-empty category;",
+                    "1 mark: represents an empty category without attempting to access a missing best record;",
+                    "1 mark: orders categories using the adjusted total as a descending primary key;",
+                    "1 mark: uses the category name as an ascending secondary key when adjusted totals are equal;",
+                    "1 mark: displays every category name once;",
+                    "1 mark: displays the corresponding adjusted total for every category;",
+                    "1 mark: displays record.identifier for the tracked best record in each non-empty category;",
+                    "1 mark: leaves the records list and its Record objects unchanged after producing the report;",
+                ],
+                18,
+                "AO3",
+            ),
+            _paper1_part(
+                "2",
+                1,
+                "State one input data set and its expected output order that tests the alphabetical tie break.",
+                [
+                    "1 mark: gives two categories with equal adjusted totals and expects those category names in alphabetical order;"
+                ],
+                3,
+                "AO3",
+            ),
+            _paper1_part(
+                "3",
+                2,
+                "Explain why a dictionary is suitable for storing the category totals.",
+                [
+                    "A category key gives direct access to its accumulated total;",
+                    "Lookup and update are efficient on average;",
+                ],
+                4,
+                "AO2",
+            ),
         ],
     }
     parts_by_question[1][7].set_closed_answers({"passes": ["79", "79 passes"]})
-    parts_by_question[5][0].set_closed_answers({"first-call-n": [str(recursive_n - 1)], "second-call-n": [str(recursive_n - 2)]})
+    parts_by_question[5][0].set_closed_answers(
+        {
+            "first-call-n": [str(recursive_n - 1)],
+            "second-call-n": [str(recursive_n - 2)],
+        }
+    )
     matrix_rows = ["010100", "101010", "010001", "100010", "010101", "001010"]
-    parts_by_question[3][2].set_closed_answers({
-        f"r{r}c{c}": [value]
-        for r, row in enumerate(matrix_rows, 1) for c, value in enumerate(row, 1)
-    })
-    parts_by_question[3][4].set_closed_answers({
-        "called-current-vertices-in-order": ["3,2,1,4,5,6", "[3,2,1,4,5,6]"],
-        "visited-additions-in-order": ["3,2,1,4,5", "[3,2,1,4,5]"],
-        "result": ["True"],
-    })
-    parts_by_question[6][0].set_closed_answers({"S2-input-0": ["S1"], "S2-input-1": ["S2"]})
-    parts_by_question[6][0].marking.points = ["S2 with input 0 transitions to S1;", "S2 with input 1 transitions to S2;"]
+    parts_by_question[3][2].set_closed_answers(
+        {
+            f"r{r}c{c}": [value]
+            for r, row in enumerate(matrix_rows, 1)
+            for c, value in enumerate(row, 1)
+        }
+    )
+    parts_by_question[3][4].set_closed_answers(
+        {
+            "called-current-vertices-in-order": ["3,2,1,4,5,6", "[3,2,1,4,5,6]"],
+            "visited-additions-in-order": ["3,2,1,4,5", "[3,2,1,4,5]"],
+            "result": ["True"],
+        }
+    )
+    parts_by_question[6][0].set_closed_answers(
+        {"S2-input-0": ["S1"], "S2-input-1": ["S2"]}
+    )
+    parts_by_question[6][0].marking.points = [
+        "S2 with input 0 transitions to S1;",
+        "S2 with input 1 transitions to S2;",
+    ]
     parts_by_question[6][4].set_closed_answers({"answer": ["no"]})
     question_updates = {
         1: {
@@ -1220,7 +1719,11 @@ def _align_paper1_structure(
                 kind="fsm",
                 title="Finite-state machine and incomplete transition table",
                 headers=["Current state", "Input 0", "Input 1"],
-                rows=[["S0 (start)", "-", "S1"], ["S1 (accept)", "S2", "S1"], ["S2", "", ""]],
+                rows=[
+                    ["S0 (start)", "-", "S1"],
+                    ["S1 (accept)", "S2", "S1"],
+                    ["S2", "", ""],
+                ],
             ),
         },
     }

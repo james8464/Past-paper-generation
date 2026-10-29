@@ -28,10 +28,34 @@ PAPER_2_MARKS = [
     [3, 2, 3, 3, 5, 5, 6, 4, 9],
 ]
 PAPER_1_KINDS = [
-    ["analysis", "short_answer", "analysis", "trace", "programming", "analysis", "short_answer", "analysis"],
-    ["short_answer", "analysis", "analysis", "short_answer", "analysis", "table", "extended_response"],
+    [
+        "analysis",
+        "short_answer",
+        "analysis",
+        "trace",
+        "programming",
+        "analysis",
+        "short_answer",
+        "analysis",
+    ],
+    [
+        "short_answer",
+        "analysis",
+        "analysis",
+        "short_answer",
+        "analysis",
+        "table",
+        "extended_response",
+    ],
     ["table", "short_answer", "analysis", "short_answer", "short_answer"],
-    ["calculation", "short_answer", "calculation", "calculation", "calculation", "calculation"],
+    [
+        "calculation",
+        "short_answer",
+        "calculation",
+        "calculation",
+        "calculation",
+        "calculation",
+    ],
     ["diagram", "calculation", "calculation", "calculation"],
     ["extended_response", "analysis", "short_answer", "programming"],
     ["extended_response"],
@@ -45,19 +69,51 @@ PAPER_2_KINDS = [
     ["programming", "analysis", "extended_response"],
     ["short_answer", "short_answer", "short_answer"],
     ["programming", "programming", "programming"],
-    ["analysis", "short_answer", "programming", "short_answer", "short_answer", "short_answer", "short_answer"],
+    [
+        "analysis",
+        "short_answer",
+        "programming",
+        "short_answer",
+        "short_answer",
+        "short_answer",
+        "short_answer",
+    ],
     ["short_answer", "short_answer", "short_answer", "programming", "analysis"],
     ["programming", "analysis", "analysis", "short_answer", "short_answer"],
-    ["analysis", "short_answer", "analysis", "analysis", "programming", "programming", "programming", "programming", "extended_response"],
+    [
+        "analysis",
+        "short_answer",
+        "analysis",
+        "analysis",
+        "programming",
+        "programming",
+        "programming",
+        "programming",
+        "extended_response",
+    ],
 ]
 SECTION_TOPICS = {
     "paper_1": [
-        "systems-1", "systems-1", "systems-2", "systems-4", "systems-5",
-        "systems-3", "systems-6", "systems-4", "systems-3", "systems-6",
+        "systems-1",
+        "systems-1",
+        "systems-2",
+        "systems-4",
+        "systems-5",
+        "systems-3",
+        "systems-6",
+        "systems-4",
+        "systems-3",
+        "systems-6",
     ],
     "paper_2": [
-        "algorithms-2", "algorithms-3", "algorithms-4", "algorithms-5",
-        "algorithms-5", "algorithms-4", "algorithms-2", "algorithms-1",
+        "algorithms-2",
+        "algorithms-3",
+        "algorithms-4",
+        "algorithms-5",
+        "algorithms-5",
+        "algorithms-4",
+        "algorithms-2",
+        "algorithms-1",
         "algorithms-2",
     ],
 }
@@ -80,39 +136,71 @@ COMMANDS = {
 # These integer budgets (74/31/35 and 53/63/24) are original-task design choices.
 OBJECTIVES = {
     "paper_1": [
-        [(4,0,0),(1,0,0),(3,0,0),(0,3,0),(0,0,4),(3,0,0),(2,0,0),(3,0,0)],
-        [(2,0,0),(4,0,0),(3,0,0),(2,0,0),(4,0,0),(4,1,0),(3,2,4)],
-        [(4,1,0),(1,0,0),(3,0,0),(2,0,0),(2,0,0)],
-        [(0,1,0),(1,0,0),(0,2,0),(0,3,0),(0,4,0),(0,2,0)],
-        [(0,0,4),(0,1,0),(0,1,0),(0,2,0)],
-        [(4,2,6),(4,0,0),(2,0,0),(0,0,6)],
-        [(3,2,4)],
-        [(2,0,0),(0,4,0),(2,0,2)],
-        [(0,0,5)],
-        [(3,0,0),(3,0,0)],
+        [
+            (4, 0, 0),
+            (1, 0, 0),
+            (3, 0, 0),
+            (0, 3, 0),
+            (0, 0, 4),
+            (3, 0, 0),
+            (2, 0, 0),
+            (3, 0, 0),
+        ],
+        [(2, 0, 0), (4, 0, 0), (3, 0, 0), (2, 0, 0), (4, 0, 0), (4, 1, 0), (3, 2, 4)],
+        [(4, 1, 0), (1, 0, 0), (3, 0, 0), (2, 0, 0), (2, 0, 0)],
+        [(0, 1, 0), (1, 0, 0), (0, 2, 0), (0, 3, 0), (0, 4, 0), (0, 2, 0)],
+        [(0, 0, 4), (0, 1, 0), (0, 1, 0), (0, 2, 0)],
+        [(4, 2, 6), (4, 0, 0), (2, 0, 0), (0, 0, 6)],
+        [(3, 2, 4)],
+        [(2, 0, 0), (0, 4, 0), (2, 0, 2)],
+        [(0, 0, 5)],
+        [(3, 0, 0), (3, 0, 0)],
     ],
     "paper_2": [
-        [(2,0,0),(1,0,0),(0,2,0),(0,0,4)],
-        [(4,4,4)],
-        [(0,0,7),(0,4,0),(4,3,2)],
-        [(2,0,0),(2,0,0),(2,0,0)],
-        [(0,4,0),(4,0,0),(0,4,0)],
-        [(0,3,0),(1,0,0),(5,0,0),(2,0,0),(2,0,0),(1,0,0),(1,0,0)],
-        [(2,0,0),(2,0,0),(1,0,0),(0,5,0),(3,0,0)],
-        [(0,4,0),(0,3,0),(3,0,0),(1,0,0),(2,0,0)],
-        [(0,3,0),(2,0,0),(0,3,0),(0,3,0),(0,0,5),(0,5,0),(0,6,0),(0,4,0),(4,3,2)],
+        [(2, 0, 0), (1, 0, 0), (0, 2, 0), (0, 0, 4)],
+        [(4, 4, 4)],
+        [(0, 0, 7), (0, 4, 0), (4, 3, 2)],
+        [(2, 0, 0), (2, 0, 0), (2, 0, 0)],
+        [(0, 4, 0), (4, 0, 0), (0, 4, 0)],
+        [(0, 3, 0), (1, 0, 0), (5, 0, 0), (2, 0, 0), (2, 0, 0), (1, 0, 0), (1, 0, 0)],
+        [(2, 0, 0), (2, 0, 0), (1, 0, 0), (0, 5, 0), (3, 0, 0)],
+        [(0, 4, 0), (0, 3, 0), (3, 0, 0), (1, 0, 0), (2, 0, 0)],
+        [
+            (0, 3, 0),
+            (2, 0, 0),
+            (0, 3, 0),
+            (0, 3, 0),
+            (0, 0, 5),
+            (0, 5, 0),
+            (0, 6, 0),
+            (0, 4, 0),
+            (4, 3, 2),
+        ],
     ],
 }
 
 
-def _question(index: int, marks: int, kind: str, allocation: tuple[int, int, int], *, description: bool = False) -> QuestionRule:
+def _question(
+    index: int,
+    marks: int,
+    kind: str,
+    allocation: tuple[int, int, int],
+    *,
+    description: bool = False,
+) -> QuestionRule:
     # These prompts analyse supplied implementations or explain general
     # principles; they do not assess the construction of new code.
     if kind == "programming" and not allocation[2]:
         kind = "analysis"
     return QuestionRule(
-        id=f"q{index}", marks=marks, kind=kind,
-        command_word="Describe" if description else "Evaluate" if kind == "analysis" and allocation[2] else COMMANDS[kind],
+        id=f"q{index}",
+        marks=marks,
+        kind=kind,
+        command_word="Describe"
+        if description
+        else "Evaluate"
+        if kind == "analysis" and allocation[2]
+        else COMMANDS[kind],
         assessment_objectives={f"AO{i}": n for i, n in enumerate(allocation, 1) if n},
         expected_minutes=150 * marks / 140,
     )
@@ -129,8 +217,14 @@ def _sections(
             answer_options=1,
             option_marks=sum(sequence),
             questions=[
-                _question(question_index, value, kind, OBJECTIVES[paper_id][index - 1][question_index - 1],
-                          description=paper_id == "paper_1" and (index, question_index) in {(3, 3), (6, 2), (10, 1), (10, 2)})
+                _question(
+                    question_index,
+                    value,
+                    kind,
+                    OBJECTIVES[paper_id][index - 1][question_index - 1],
+                    description=paper_id == "paper_1"
+                    and (index, question_index) in {(3, 3), (6, 2), (10, 1), (10, 2)},
+                )
                 for question_index, (value, kind) in enumerate(
                     zip(sequence, kinds[index - 1], strict=True), start=1
                 )
@@ -165,9 +259,12 @@ RULES = {
 def load_rule(value: str) -> PaperRule:
     key = value.strip().lower().replace("-", "_").replace(" ", "")
     aliases = {
-        "1": "paper_1", "2": "paper_2",
-        "paper1": "paper_1", "paper2": "paper_2",
-        "paper_1": "paper_1", "paper_2": "paper_2",
+        "1": "paper_1",
+        "2": "paper_2",
+        "paper1": "paper_1",
+        "paper2": "paper_2",
+        "paper_1": "paper_1",
+        "paper_2": "paper_2",
     }
     try:
         return RULES[aliases[key]].model_copy(deep=True)

@@ -14,15 +14,23 @@ def bank_items(topic, seed=111):
 
     from Backend.Core.assessment_package import _extract_items
 
-    syllabus = load_syllabus(Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json"))
+    syllabus = load_syllabus(
+        Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json")
+    )
     paper = build_topic_question_bank(syllabus, topic_id=topic, seed=seed)
-    return _extract_items(paper.model_dump(mode="json"), subject="computer_science", paper_number=f"bank-{topic}")
+    return _extract_items(
+        paper.model_dump(mode="json"),
+        subject="computer_science",
+        paper_number=f"bank-{topic}",
+    )
 
 
 @pytest.mark.parametrize("topic", ["4.2", "4.10", "4.12"])
 def test_source_backed_bank_qualifies_only_its_generated_items(topic):
     items = bank_items(topic)
-    report = module().audit_topic_bank(items, topic, module().reviewed_topic_records(topic))
+    report = module().audit_topic_bank(
+        items, topic, module().reviewed_topic_records(topic)
+    )
     assert report["passed"], report["coverage"]
     assert report["qualification_scope"] == "generated-items"
     assert report["whole_topic_qualified"] is False
@@ -33,6 +41,7 @@ def test_source_backed_bank_qualifies_only_its_generated_items(topic):
 
 def test_forged_or_sparse_source_inventory_cannot_qualify_bank():
     from copy import deepcopy
+
     records = module().reviewed_topic_records("4.10")
     items = bank_items("4.10")
     tampered = deepcopy(records)
@@ -48,20 +57,32 @@ def test_same_operation_in_different_structure_does_not_support_a_task():
     item = items[0]
     item.update(prompt="Describe the insertion process for a hash table.")
     # A serialised queue contract must not turn unrelated hash content into queue evidence.
-    report = module().audit_topic_bank(items, "4.2", module().reviewed_topic_records("4.2"))
+    report = module().audit_topic_bank(
+        items, "4.2", module().reviewed_topic_records("4.2")
+    )
     assert report["passed"] is False
     assert item["id"] in report["coverage"]["unmatched_item_ids"]
 
 
-@pytest.mark.parametrize("topic,index,mutation", [
-    ("4.12", 0, "blank"), ("4.12", 0, "stem-only"),
-    ("4.12", 0, "missing-values"), ("4.12", 0, "unrelated-trace"),
-    ("4.12", 3, "stem-only"), ("4.12", 9, "stem-only"),
-    ("4.2", 2, "code-construction"), ("4.2", 5, "stem-only"),
-    ("4.10", 0, "stem-only"), ("4.10", 8, "empty"),
-    ("4.10", 8, "incomplete-scenario"),
-])
-def test_reviewed_support_requires_substantive_task_linked_context(topic, index, mutation):
+@pytest.mark.parametrize(
+    "topic,index,mutation",
+    [
+        ("4.12", 0, "blank"),
+        ("4.12", 0, "stem-only"),
+        ("4.12", 0, "missing-values"),
+        ("4.12", 0, "unrelated-trace"),
+        ("4.12", 3, "stem-only"),
+        ("4.12", 9, "stem-only"),
+        ("4.2", 2, "code-construction"),
+        ("4.2", 5, "stem-only"),
+        ("4.10", 0, "stem-only"),
+        ("4.10", 8, "empty"),
+        ("4.10", 8, "incomplete-scenario"),
+    ],
+)
+def test_reviewed_support_requires_substantive_task_linked_context(
+    topic, index, mutation
+):
     items = bank_items(topic)
     item = items[index]
     if mutation == "blank":
@@ -75,10 +96,16 @@ def test_reviewed_support_requires_substantive_task_linked_context(topic, index,
     elif mutation == "unrelated-trace":
         item["prompt"] = "Complete a trace table for the electron energy values."
     elif mutation == "code-construction":
-        item["prompt"] = "Write code to insert a new key into a hash table using linear probing."
+        item["prompt"] = (
+            "Write code to insert a new key into a hash table using linear probing."
+        )
     else:
-        item["context"] = ["A workshop provider records clients and their registrations."]
-    report = module().audit_topic_bank(items, topic, module().reviewed_topic_records(topic))
+        item["context"] = [
+            "A workshop provider records clients and their registrations."
+        ]
+    report = module().audit_topic_bank(
+        items, topic, module().reviewed_topic_records(topic)
+    )
     assert not report["passed"]
     assert item["id"] in report["coverage"]["unmatched_item_ids"]
 
@@ -94,7 +121,9 @@ def test_preview_seed_database_bank_preserves_required_sql_error_analysis():
     from cspapergen.syllabus import load_syllabus
     from cspapergen.validation import validate_blueprint
 
-    syllabus = load_syllabus(Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json"))
+    syllabus = load_syllabus(
+        Path("Resources/computer-science/aqa/generator/data/syllabus_seed.json")
+    )
     bank = build_topic_question_bank(syllabus, topic_id="4.10", seed=26092851)
     validate_blueprint(bank, syllabus)
     # Deletion construction alone must not substitute for the error-analysis task.
@@ -115,7 +144,9 @@ def test_bank_support_rejects_changed_work_not_just_matching_topic_words(mutatio
         item["marks"] = 12
     else:
         item["prompt"] = "Complete a trace table for this relational database query."
-    report = module().audit_topic_bank(items, "4.12", module().reviewed_topic_records("4.12"))
+    report = module().audit_topic_bank(
+        items, "4.12", module().reviewed_topic_records("4.12")
+    )
     assert not report["passed"]
     assert item["id"] in report["coverage"]["unmatched_item_ids"]
 
@@ -218,12 +249,21 @@ def test_real_bank_explanation_drawing_and_sequence_are_not_false_table_matches(
     database = bank_items("4.10")
     explanation = module().task_features(structures[1])
     assert explanation == {"topic_id": "4.2", "operation": "explain", "mode": "prose"}
-    drawing = module().task_features(next(i for i in database if i["prompt"].startswith("Draw")))
+    drawing = module().task_features(
+        next(i for i in database if i["prompt"].startswith("Draw"))
+    )
     assert drawing == {"topic_id": "4.10", "operation": "represent", "mode": "diagram"}
-    sequence = module().task_features(next(i for i in structures if "in-order traversal" in i["prompt"]))
+    sequence = module().task_features(
+        next(i for i in structures if "in-order traversal" in i["prompt"])
+    )
     assert sequence["mode"] == "sequence"
     for task in (explanation, drawing, sequence):
-        assert all(r["mode"] != "table" for r in module().matching_records(module().reviewed_topic_records(task["topic_id"]), task))
+        assert all(
+            r["mode"] != "table"
+            for r in module().matching_records(
+                module().reviewed_topic_records(task["topic_id"]), task
+            )
+        )
 
 
 @pytest.mark.parametrize(
@@ -296,10 +336,14 @@ def test_actual_same_topic_operation_and_mode_still_matches():
         },
     ],
 )
-def test_inherited_metadata_and_incidental_keywords_never_establish_topic_membership(item):
+def test_inherited_metadata_and_incidental_keywords_never_establish_topic_membership(
+    item,
+):
     task = module().task_features(item)
     assert task["topic_id"] is None
-    assert not module().matching_records(module().reviewed_topic_records(item["topic_id"]), task)
+    assert not module().matching_records(
+        module().reviewed_topic_records(item["topic_id"]), task
+    )
 
 
 def test_topic_contract_rejects_cross_topic_prompt_even_when_metadata_agrees():

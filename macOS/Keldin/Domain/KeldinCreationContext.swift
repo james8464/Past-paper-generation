@@ -1,8 +1,15 @@
 // Describe the current paper selection for the creation interface.
 
-enum PaperCreationContext: Equatable {
+enum KeldinCreationContext: Equatable {
     case board
     case french(largePrint: Bool)
+    case presentingModal
+
+    func presentingModal(_ isPresented: Bool) -> Self { isPresented ? .presentingModal : self }
+
+    static func allowsNavigation(from context: Self?, applicationModal: Bool) -> Bool {
+        !applicationModal && context != .presentingModal
+    }
 
     var frenchLargePrint: Bool? {
         guard case let .french(largePrint) = self else { return nil }
@@ -14,6 +21,7 @@ enum PaperCreationContext: Equatable {
         switch self {
         case .board: return boardCanGenerate
         case .french: return hasFrenchReferences
+        case .presentingModal: return false
         }
     }
 }

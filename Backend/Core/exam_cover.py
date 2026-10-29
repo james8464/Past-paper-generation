@@ -37,16 +37,19 @@ class CoverProfile:
 
     def __post_init__(self) -> None:
         if self.mark_rows and (
-            any(type(marks) is not int or marks <= 0 for _label, marks in self.mark_rows)
+            any(
+                type(marks) is not int or marks <= 0 for _label, marks in self.mark_rows
+            )
             or len({label for label, _marks in self.mark_rows}) != len(self.mark_rows)
             or sum(marks for _label, marks in self.mark_rows) != self.total_marks
         ):
-            raise ValueError("Cover section marks must be positive and sum to the paper total without duplicate sections.")
+            raise ValueError(
+                "Cover section marks must be positive and sum to the paper total without duplicate sections."
+            )
 
 
 # Fixed-grid, board-shaped front page without copying protected artwork.
 class QuestionPaperCover(Flowable):
-
     def __init__(
         self,
         profile: CoverProfile,

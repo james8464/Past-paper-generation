@@ -102,7 +102,10 @@ def _write_record(manifest: Path, record: dict) -> Path:
     destination = manifest.parent / f"teacher-review-{record['record_id'][:12]}.json"
     rendered = json.dumps(record, ensure_ascii=False, indent=2) + "\n"
     if destination.exists():
-        if destination.is_symlink() or destination.read_text(encoding="utf-8") != rendered:
+        if (
+            destination.is_symlink()
+            or destination.read_text(encoding="utf-8") != rendered
+        ):
             raise ValueError("Un enregistrement différent utilise déjà cet identifiant")
         return destination
     descriptor, temporary_name = tempfile.mkstemp(

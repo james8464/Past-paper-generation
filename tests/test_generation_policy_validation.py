@@ -20,7 +20,18 @@ def test_generation_counts_require_positive_non_boolean_integers(
 @pytest.mark.parametrize("field", ["draft_similarity_limit", "paper_similarity_limit"])
 @pytest.mark.parametrize(
     "invalid",
-    [True, False, -0.01, 1.01, float("nan"), float("inf"), -float("inf"), "0.5", None, 10**1000],
+    [
+        True,
+        False,
+        -0.01,
+        1.01,
+        float("nan"),
+        float("inf"),
+        -float("inf"),
+        "0.5",
+        None,
+        10**1000,
+    ],
 )
 def test_similarity_limits_require_finite_numbers_in_the_score_range(
     field: str, invalid: object
@@ -31,7 +42,9 @@ def test_similarity_limits_require_finite_numbers_in_the_score_range(
 
 @pytest.mark.parametrize("value", [0, 0.0, 0.5, 1, 1.0])
 def test_similarity_score_boundaries_remain_valid(value: float) -> None:
-    policy = GenerationPolicy(draft_similarity_limit=value, paper_similarity_limit=value)
+    policy = GenerationPolicy(
+        draft_similarity_limit=value, paper_similarity_limit=value
+    )
     assert policy.draft_similarity_limit == value
     assert policy.paper_similarity_limit == value
 
@@ -61,7 +74,10 @@ def test_maximum_similarity_limit_still_rejects_an_identical_item() -> None:
     policy = GenerationPolicy(paper_similarity_limit=1)
     with pytest.raises(ValueError, match="similar"):
         assert_distinct_items(
-            [{"id": "one", "prompt": "A repeated question."}, {"id": "two", "prompt": "A repeated question."}],
+            [
+                {"id": "one", "prompt": "A repeated question."},
+                {"id": "two", "prompt": "A repeated question."},
+            ],
             threshold=policy.paper_similarity_limit,
         )
 
@@ -70,6 +86,9 @@ def test_zero_similarity_limit_keeps_its_strict_comparison_semantics() -> None:
     policy = GenerationPolicy(paper_similarity_limit=0)
     with pytest.raises(ValueError, match="similar"):
         assert_distinct_items(
-            [{"id": "one", "prompt": "Completely unrelated vocabulary."}, {"id": "two", "prompt": "Another distinct sentence."}],
+            [
+                {"id": "one", "prompt": "Completely unrelated vocabulary."},
+                {"id": "two", "prompt": "Another distinct sentence."},
+            ],
             threshold=policy.paper_similarity_limit,
         )

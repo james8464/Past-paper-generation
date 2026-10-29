@@ -117,7 +117,9 @@ APPLIED_SOURCE_BY_NUMBER: dict[int, AppliedMCQSource] = {
         interest_rate_after=6,
         credit_share_percent=60,
     ),
-    17: TradeElasticitySource(export_elasticity=Decimal("0.9"), import_elasticity=Decimal("0.6")),
+    17: TradeElasticitySource(
+        export_elasticity=Decimal("0.9"), import_elasticity=Decimal("0.6")
+    ),
 }
 
 INDUSTRIES = [
@@ -164,72 +166,128 @@ MCQ_FACTS = {
     "4.1.1": (
         "Which change represents an increase in opportunity cost?",
         "More of one product must be sacrificed to produce an extra unit of another",
-        ["All resources become unemployed", "The price level falls", "Consumer surplus is unchanged"],
+        [
+            "All resources become unemployed",
+            "The price level falls",
+            "Consumer surplus is unchanged",
+        ],
     ),
     "4.1.2": (
         "Which behaviour is most consistent with bounded rationality?",
         "Using a simple rule of thumb because information is costly",
-        ["Maximising utility with perfect information", "Ignoring every available choice", "Producing where price equals marginal cost"],
+        [
+            "Maximising utility with perfect information",
+            "Ignoring every available choice",
+            "Producing where price equals marginal cost",
+        ],
     ),
     "4.1.3": (
         "Demand is price inelastic. Which outcome follows from a rise in price, other things equal?",
         "Total expenditure on the product rises",
-        ["Quantity demanded rises", "Total expenditure must fall", "Supply shifts to the left"],
+        [
+            "Quantity demanded rises",
+            "Total expenditure must fall",
+            "Supply shifts to the left",
+        ],
     ),
     "4.1.4": (
         "Which statement about a firm's costs is correct?",
         "Marginal cost crosses average cost at the minimum of average cost",
-        ["Fixed cost rises with every unit", "Average variable cost always equals price", "Total cost can never rise"],
+        [
+            "Fixed cost rises with every unit",
+            "Average variable cost always equals price",
+            "Total cost can never rise",
+        ],
     ),
     "4.1.5": (
         "Which feature is most likely to make a market contestable?",
         "Low sunk costs for firms entering and leaving",
-        ["A statutory monopoly", "Perfect price discrimination", "A single protected patent"],
+        [
+            "A statutory monopoly",
+            "Perfect price discrimination",
+            "A single protected patent",
+        ],
     ),
     "4.1.6": (
         "Which outcome is associated with a monopsonistic labour market?",
         "A powerful employer can hold wages below the competitive level",
-        ["Every worker receives economic rent", "Labour supply is perfectly horizontal", "Employment must be zero"],
+        [
+            "Every worker receives economic rent",
+            "Labour supply is perfectly horizontal",
+            "Employment must be zero",
+        ],
     ),
     "4.1.7": (
         "Which change would unambiguously make a Lorenz curve show less income inequality?",
         "The curve moves closer to the line of equality",
-        ["The curve moves further from the line of equality", "Nominal GDP rises", "The price level is unchanged"],
+        [
+            "The curve moves further from the line of equality",
+            "Nominal GDP rises",
+            "The price level is unchanged",
+        ],
     ),
     "4.1.8": (
         "Production creates an external cost. Which quantity is normally socially efficient?",
         "The output where social marginal cost equals social marginal benefit",
-        ["The output where private marginal cost is zero", "The maximum technically possible output", "The output chosen without considering third parties"],
+        [
+            "The output where private marginal cost is zero",
+            "The maximum technically possible output",
+            "The output chosen without considering third parties",
+        ],
     ),
     "4.2.1": (
         "Which measure is most useful when comparing average material living standards over time?",
         "Real GDP per head",
-        ["Nominal GDP alone", "The consumer price index alone", "The money supply alone"],
+        [
+            "Nominal GDP alone",
+            "The consumer price index alone",
+            "The money supply alone",
+        ],
     ),
     "4.2.2": (
         "The marginal propensity to consume rises. What happens to the simple multiplier?",
         "It becomes larger",
-        ["It becomes zero", "It necessarily becomes negative", "It is unchanged in every case"],
+        [
+            "It becomes zero",
+            "It necessarily becomes negative",
+            "It is unchanged in every case",
+        ],
     ),
     "4.2.3": (
         "Which combination is most consistent with a positive output gap?",
         "Actual output exceeds the economy's sustainable trend",
-        ["Cyclical unemployment rises sharply", "Aggregate demand is always zero", "The current account must balance"],
+        [
+            "Cyclical unemployment rises sharply",
+            "Aggregate demand is always zero",
+            "The current account must balance",
+        ],
     ),
     "4.2.4": (
         "A central bank raises its policy interest rate. Which is the most likely short-run effect?",
         "Credit-financed consumption and investment weaken",
-        ["Borrowing becomes cheaper", "The money multiplier becomes infinite", "All asset prices must rise"],
+        [
+            "Borrowing becomes cheaper",
+            "The money multiplier becomes infinite",
+            "All asset prices must rise",
+        ],
     ),
     "4.2.5": (
         "Which measure is an interventionist supply-side policy?",
         "Government-funded vocational training",
-        ["A rise in indirect tax to cut demand", "A reduction in the money supply", "A tariff with no domestic production"],
+        [
+            "A rise in indirect tax to cut demand",
+            "A reduction in the money supply",
+            "A tariff with no domestic production",
+        ],
     ),
     "4.2.6": (
         "A country's currency depreciates. Which condition makes an improvement in its trade balance more likely?",
         "Export and import demand are sufficiently price elastic",
-        ["All trade volumes are fixed forever", "Domestic inflation is necessarily zero", "Its current account is already balanced"],
+        [
+            "All trade volumes are fixed forever",
+            "Domestic inflation is necessarily zero",
+            "Its current account is already balanced",
+        ],
     ),
 }
 MCQ_CONTEXTS = {
@@ -296,7 +354,9 @@ PAPER3_TOPIC_BY_NUMBER = {
 }
 
 
-def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) -> GeneratedPaper:
+def build_paper(
+    rule: PaperRule, syllabus: Syllabus, seed: int | None = None
+) -> GeneratedPaper:
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
@@ -318,8 +378,12 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
             topic_cursor += 1
             if section_rule.id == "A" and rule.id == "paper_3":
                 topic_id = PAPER3_TOPIC_BY_NUMBER[option_index + 1]
-                topic = next(candidate for candidate in topics if candidate.id == topic_id)
-                option = _build_mcq_option(option_index + 1, topic, rng, question_rules[0])
+                topic = next(
+                    candidate for candidate in topics if candidate.id == topic_id
+                )
+                option = _build_mcq_option(
+                    option_index + 1, topic, rng, question_rules[0]
+                )
             else:
                 option, question_number = _build_written_option(
                     rule,
@@ -331,7 +395,9 @@ def build_paper(rule: PaperRule, syllabus: Syllabus, seed: int | None = None) ->
                     rng,
                 )
             options.append(option)
-        instructions = _section_instructions(rule.id, section_rule.id, section_rule.option_count)
+        instructions = _section_instructions(
+            rule.id, section_rule.id, section_rule.option_count
+        )
         sections.append(
             GeneratedSection(
                 id=section_rule.id,
@@ -493,9 +559,7 @@ def _written_question(
                 "Develop a causal chain from the stated change through the diagram to the final economic effect.",
             ]
         else:
-            prompt = (
-                f"Using {context}, explain how {task_profile.data_mechanism} in {context_name}."
-            )
+            prompt = f"Using {context}, explain how {task_profile.data_mechanism} in {context_name}."
             scheme = [
                 f"Define {point} accurately.",
                 f"Use a precise item of evidence about {context_name} rather than merely naming the context.",
@@ -519,9 +583,7 @@ def _written_question(
         ]
     else:
         proposition = task_profile.evaluation_view.split(" ", 1)[1]
-        prompt = (
-            f"{rule.command_word} {proposition} Use {context} and your economic knowledge."
-        )
+        prompt = f"{rule.command_word} {proposition} Use {context} and your economic knowledge."
         scheme = [
             *task_profile.evaluation_points,
             "A supported final judgement that answers the precise proposition in the question.",
@@ -540,11 +602,16 @@ def _written_question(
             )
         )
     matched_focus_terms = [
-        term for term in task_profile.focus_terms if term.casefold() in prompt.casefold()
+        term
+        for term in task_profile.focus_terms
+        if term.casefold() in prompt.casefold()
     ]
     if not matched_focus_terms and rule.kind == "diagram_analysis":
         matched_focus_terms = [task_profile.diagram_contract["cause"]]
-    if not matched_focus_terms and rule.kind in {"data_response", "data_interpretation"}:
+    if not matched_focus_terms and rule.kind in {
+        "data_response",
+        "data_interpretation",
+    }:
         matched_focus_terms = [task_profile.data_mechanism]
     if not matched_focus_terms:
         stopwords = {
@@ -594,9 +661,7 @@ def _written_question(
             }
         )
     structured_mark_scheme = (
-        _item_specific_scheme(scheme, rule)
-        if rule.marks >= 4
-        else []
+        _item_specific_scheme(scheme, rule) if rule.marks >= 4 else []
     )
     if structured_mark_scheme:
         authoring_context["observable_mark_points"] = [
@@ -861,7 +926,9 @@ def _build_mcq_option(
         task_operation=rule.task_operation,
         source_dependency=rule.source_dependency,
     )
-    return GeneratedOption(id=f"A{number}", title=f"Question {number}", questions=[question])
+    return GeneratedOption(
+        id=f"A{number}", title=f"Question {number}", questions=[question]
+    )
 
 
 def _visual_mcq(
@@ -947,7 +1014,9 @@ def _applied_mcq(
     try:
         source = APPLIED_SOURCE_BY_NUMBER[number]
     except KeyError as error:
-        raise ValueError(f"missing applied candidate source for question {number}") from error
+        raise ValueError(
+            f"missing applied candidate source for question {number}"
+        ) from error
     projection = project_applied_mcq(source)
     return (
         projection.prompt,
@@ -973,7 +1042,9 @@ def project_applied_mcq(source: AppliedMCQSource) -> AppliedMCQProjection:
             f"cost of the extra {_source_number(gain)} units of product X?"
         )
         candidates = [loss, gain, source.secondary_after, source.primary_after]
-        choices = [f"{_source_number(value)} units of product Y" for value in candidates]
+        choices = [
+            f"{_source_number(value)} units of product Y" for value in candidates
+        ]
     elif isinstance(source, ElasticRevenueSource):
         prompt = (
             f"A product's price changes from £{_source_number(source.price_before)} "
@@ -1098,8 +1169,7 @@ def _stimulus(
             f"{max(values):.1f} at its highest point and {min(values):.1f} at its lowest. "
             f"The case concerns {topic.title.lower()}. {task_profile.source_evidence} "
             "The index records relative activity rather than welfare and does not show how "
-            "the change is distributed between groups. "
-            + depth[0]
+            "the change is distributed between groups. " + depth[0]
         ),
         (
             f"Extract B: Economic mechanism. Economists investigating {context_name} propose "
@@ -1125,8 +1195,7 @@ def _stimulus(
             "The sample may omit informal activity and under-represent some affected groups. "
             "Other economic changes occurred at the same time, so the observed association does "
             "not by itself establish causation. A judgement should compare realistic alternatives, "
-            "opportunity costs, time periods and distributional effects. "
-            + depth[3]
+            "opportunity costs, time periods and distributional effects. " + depth[3]
         ),
     ]
 
@@ -1141,7 +1210,9 @@ def _evidence_depth(
     sample_size = rng.randrange(850, 4200, 50)
     household_share = rng.randint(24, 68)
     lag = rng.randint(2, 8)
-    region = rng.choice(["northern region", "coastal region", "capital region", "rural region"])
+    region = rng.choice(
+        ["northern region", "coastal region", "capital region", "rural region"]
+    )
     sentences = [
         (
             f"A survey of {sample_size:,} households found that {household_share}% had noticed "

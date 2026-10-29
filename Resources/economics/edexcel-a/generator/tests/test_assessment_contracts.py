@@ -45,11 +45,10 @@ def test_contestability_credit_is_specific_and_has_one_consistent_budget():
         "Based on the table, which change directly reduces the barrier currently "
         "classified as High?"
     )
-    assert any(
-        cell.text == "High" for row in q.source_instance.rows for cell in row
-    )
+    assert any(cell.text == "High" for row in q.source_instance.rows for cell in row)
     keyed = next(
-        option.text for option in q.parts[1].options
+        option.text
+        for option in q.parts[1].options
         if option.label == q.parts[1].correct_option
     )
     assert keyed == "Lower sunk costs"

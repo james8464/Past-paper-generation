@@ -555,7 +555,10 @@ def build_technical_dossier() -> Path:
 
     doc.add_heading("Risks and decisions", level=1)
     for label, detail in (
-        ("Wrong answer.", "Block publication, repair the source and repeat answer and PDF checks."),
+        (
+            "Wrong answer.",
+            "Block publication, repair the source and repeat answer and PDF checks.",
+        ),
         (
             "Memory pressure.",
             "Benchmark actual Macs; promise no universal compatibility.",
@@ -711,7 +714,10 @@ def build_mathematical_analysis() -> Path:
                 "Budget subject to confirmation.",
                 "The applicant must confirm any allocation. No teacher availability or paid review is assumed.",
             ),
-            ("Possible school trial.", "Requires an agreed partner and actual access conditions."),
+            (
+                "Possible school trial.",
+                "Requires an agreed partner and actual access conditions.",
+            ),
             (
                 "Hardware and accessibility.",
                 "Tested configurations, memory, speed, and standard/enlarged PDFs.",
@@ -763,9 +769,13 @@ def build_mathematical_analysis() -> Path:
 
 def main(argv: list[str] | None = None) -> None:
     global OUTPUT
-    parser = argparse.ArgumentParser(description='Build the maintained Prix Occitanie 2026 application evidence documents.')
+    parser = argparse.ArgumentParser(
+        description="Build the maintained Prix Occitanie 2026 application evidence documents."
+    )
     parser.add_argument(
-        "--output", type=Path, default=OUTPUT,
+        "--output",
+        type=Path,
+        default=OUTPUT,
         help="Output directory. Use a fresh directory to preserve completed personal forms.",
     )
     OUTPUT = parser.parse_args(argv).output.expanduser().resolve()

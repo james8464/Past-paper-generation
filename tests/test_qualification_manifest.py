@@ -87,9 +87,7 @@ def test_record_evidence_returns_a_new_manifest() -> None:
 
 
 def test_qualification_levels_require_every_policy_gate() -> None:
-    policy = QualificationPolicy.load(
-        ROOT / "Resources" / "qualification-policy.json"
-    )
+    policy = QualificationPolicy.load(ROOT / "Resources" / "qualification-policy.json")
     value = manifest()
 
     assert value.is_qualified("engineering", policy) is True
@@ -111,9 +109,7 @@ def test_manifest_round_trips_canonical_json(tmp_path: Path) -> None:
 
 def test_resource_schema_names_all_required_evidence_fields() -> None:
     schema = json.loads(
-        (ROOT / "Resources" / "qualification-schema.json").read_text(
-            encoding="utf-8"
-        )
+        (ROOT / "Resources" / "qualification-schema.json").read_text(encoding="utf-8")
     )
 
     assert set(schema["required"]) >= {

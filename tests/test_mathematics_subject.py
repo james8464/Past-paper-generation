@@ -71,7 +71,11 @@ def test_mathematics_plugin_rejects_unsafe_or_underspecified_items() -> None:
     plugin = MathematicsPlugin()
 
     unsafe = plugin.validate_item(
-        {"question": "Evaluate the expression", "marks": 2, "answer": "__import__('os')"}
+        {
+            "question": "Evaluate the expression",
+            "marks": 2,
+            "answer": "__import__('os')",
+        }
     )
     missing = plugin.validate_item({"question": "Solve", "marks": 2})
 
@@ -88,7 +92,11 @@ def test_mathematics_plugin_validates_and_solves_a_typed_item() -> None:
         "variables": ["x"],
         "marking_rules": [
             {"code": "M1", "description": "Uses a valid expansion method"},
-            {"code": "A1", "description": "Obtains the correct expression", "depends_on": ["M1"]},
+            {
+                "code": "A1",
+                "description": "Obtains the correct expression",
+                "depends_on": ["M1"],
+            },
         ],
     }
 

@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 
 from Backend.Core.events import emit_progress
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_requests import GenerationRequest, OutputContract
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
@@ -41,6 +42,25 @@ class HostedLLMClient:
         return self.provider in {"openai", "anthropic"}
 
     def generate_json(self, prompt: str, retries: int = 2) -> dict[str, object]:
+        return self._generate_json(prompt, retries=retries)
+
+    def generate_request(
+        self, request: GenerationRequest, retries: int = 2
+    ) -> dict[str, object]:
+        if not isinstance(request, GenerationRequest):
+            raise TypeError("structured generation requires a GenerationRequest")
+        # Preserve legacy overrides and test doubles instead of bypassing their
+        # generate_json implementation through an inherited structured method.
+        if (
+            getattr(self.generate_json, "__func__", None)
+            is not _HOSTED_LEGACY_GENERATE_JSON
+        ):
+            return self.generate_json(request.prompt)
+        return self._generate_json(request.prompt, retries=retries, request=request)
+
+    def _generate_json(
+        self, prompt: str, *, retries: int, request: GenerationRequest | None = None
+    ) -> dict[str, object]:
         if not 1 <= retries <= 3:
             raise ValueError("Structured-output attempts must be between 1 and 3.")
         current_prompt = prompt
@@ -48,12 +68,26 @@ class HostedLLMClient:
         for attempt in range(retries):
             try:
                 if self.provider == "ollama":
+                    if request is not None:
+                        return self._ollama(
+                            current_prompt,
+                            schema=request.schema,
+                            output_budget=request.output_budget,
+                            seed=request.seed,
+                            temperature=0 if attempt else request.temperature,
+                        )
                     return self._ollama(current_prompt)
                 if self.provider == "openai":
                     return self._openai(current_prompt)
                 if self.provider == "anthropic":
                     return self._anthropic(current_prompt)
                 if self.provider == "apple":
+                    if request is not None:
+                        return self._apple(
+                            current_prompt,
+                            schema=request.schema,
+                            identifiers=request.expected_ids,
+                        )
                     return self._apple(current_prompt)
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
             except ValueError as error:
@@ -93,6 +127,7 @@ class HostedLLMClient:
         seed: int | None = None,
         request_function: Any | None = None,
         strict_json: bool = False,
+        temperature: float | None = None,
     ) -> dict[str, object]:
         schema = _ollama_json_schema(prompt) if schema is None else schema
         payload = json.dumps(
@@ -103,7 +138,9 @@ class HostedLLMClient:
                 "think": False,
                 "format": schema,
                 "options": {
-                    "temperature": _ollama_temperature(prompt),
+                    "temperature": _ollama_temperature(prompt)
+                    if temperature is None
+                    else temperature,
                     "top_p": 0.9,
                     "num_ctx": 16384,
                     "num_predict": _ollama_output_budget(schema)
@@ -168,9 +205,15 @@ class HostedLLMClient:
                 details=diagnostic,
             ) from error
 
-    def _apple(self, prompt: str) -> dict[str, object]:
+    def _apple(
+        self,
+        prompt: str,
+        *,
+        schema: dict | None = None,
+        identifiers: tuple[str, ...] | None = None,
+    ) -> dict[str, object]:
         source_prompt = prompt
-        schema = _ollama_json_schema(prompt)
+        schema = _ollama_json_schema(prompt) if schema is None else schema
         if schema.get("required"):
             # Keep the format visible to the model as well as the token decoder.
             prompt += "\n\nReturn JSON only, following OUTPUT_SCHEMA=" + json.dumps(
@@ -190,8 +233,10 @@ class HostedLLMClient:
             if self._apple_model is None or self._apple_tokenizer is None:
                 local_model = resolve_local_mlx_model(self.model)
                 self._apple_model, self._apple_tokenizer = load(
-                    local_model, tokenizer_config={
-                        "trust_remote_code": False, "local_files_only": True,
+                    local_model,
+                    tokenizer_config={
+                        "trust_remote_code": False,
+                        "local_files_only": True,
                     },
                 )
             if schema.get("required"):
@@ -213,7 +258,11 @@ class HostedLLMClient:
                 raise ValueError("Model returned JSON, but not an object.")
         else:
             parsed = parse_json_object(response)
-        identifiers = _prompt_item_identifiers(source_prompt)
+        identifiers = (
+            _prompt_item_identifiers(source_prompt)
+            if identifiers is None
+            else identifiers
+        )
         for field in ("questions", "reviews"):
             if identifiers and field in schema.get("required", []):
                 items = parsed.get(field)
@@ -267,11 +316,15 @@ class HostedLLMClient:
         grammar = llguidance.grammar_from("json_schema", json.dumps(decoder_schema))
         grammar_error = llguidance.LLMatcher.validate_grammar(grammar)
         if grammar_error:
-            raise ValueError(f"MLX cannot constrain this response format: {grammar_error}")
+            raise ValueError(
+                f"MLX cannot constrain this response format: {grammar_error}"
+            )
         response = self._apple_structured_model(
             _mlx_json_prompt(self._apple_tokenizer, prompt),
-            JsonSchema(decoder_schema), backend="llguidance",
-            max_tokens=4096, verbose=False,
+            JsonSchema(decoder_schema),
+            backend="llguidance",
+            max_tokens=4096,
+            verbose=False,
         )
         if len(response.encode("utf-8")) > 1_048_576:
             raise ValueError("Model response exceeded the 1 MB JSON limit.")
@@ -279,7 +332,9 @@ class HostedLLMClient:
         try:
             Draft202012Validator(schema).validate(parsed)
         except ValidationError as error:
-            raise ValueError("MLX response did not match the required output schema.") from error
+            raise ValueError(
+                "MLX response did not match the required output schema."
+            ) from error
         return response
 
     def _openai(self, prompt: str) -> dict[str, object]:
@@ -358,9 +413,11 @@ class HostedLLMClient:
         return parse_json_object(text)
 
 
+_HOSTED_LEGACY_GENERATE_JSON = HostedLLMClient.generate_json
+
+
 # Standalone subject generators use the same transport as the app.
 class OllamaClient(HostedLLMClient):
-
     def __init__(self, base_url: str, model: str) -> None:
         super().__init__(provider="ollama", model=model, api_key="", base_url=base_url)
 
@@ -513,8 +570,31 @@ def _mlx_decoder_schema(schema: dict) -> dict:
 
 
 # Return a bounded top-level schema while leaving subject fields extensible.
-def _ollama_json_schema(prompt: str) -> dict[str, object]:
+def _legacy_schema_operation(prompt: str) -> str:
+    if prompt.startswith("Independently solve"):
+        return "solver"
+    if "`questions` array" in prompt or "a `questions` array" in prompt:
+        return "authoring"
+    if "`reviews` must contain" in prompt:
+        return "batch_review"
+    if '"estimated_demand":"low|standard|high"' in prompt:
+        return "difficulty"
+    if '"approved":true|false' in prompt:
+        return "review"
+    if '"question_text": "string"' in prompt:
+        return "edexcel"
+    if '"stem": "string"' in prompt and '"parts": [' in prompt:
+        return "aqa_cs"
+    return ""
 
+
+def _ollama_json_schema(
+    prompt: str, *, contract: OutputContract | None = None
+) -> dict[str, object]:
+
+    operation = (
+        contract.operation if contract is not None else _legacy_schema_operation(prompt)
+    )
     short_text = {"type": "string", "maxLength": 240}
     text_list = {
         "type": "array",
@@ -522,8 +602,8 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         "maxItems": 6,
     }
     object_items = {"type": "object", "additionalProperties": True}
-    solver_item = {}
-    if prompt.startswith("Independently solve") and "\n" in prompt:
+    solver_item = contract.solver_item if contract is not None else {}
+    if contract is None and prompt.startswith("Independently solve") and "\n" in prompt:
         try:
             payload = json.JSONDecoder().raw_decode(prompt.split("\n", 1)[1])[0]
             candidate = payload.get("item") if isinstance(payload, dict) else None
@@ -566,7 +646,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
                 ],
                 "additionalProperties": False,
             }
-    if prompt.startswith("Independently solve"):
+    if operation == "solver":
         properties = {
             "steps": {"type": "array", "items": short_text, "maxItems": 16},
             "answer": {"type": "string", "minLength": 1, "maxLength": 2400},
@@ -588,18 +668,29 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             option = {"type": "string", "enum": choices}
             properties["answer"] = option
             properties["mark_points"] = {
-                "type": "array", "items": option, "minItems": 1, "maxItems": 1,
+                "type": "array",
+                "items": option,
+                "minItems": 1,
+                "maxItems": 1,
             }
             if solver_item.get("marks") == 1:
                 # One selected option earns the single mark. Other options are
                 # distractors, not alternative correct answers to invent.
                 properties["alternatives"] = {**text_list, "maxItems": 0}
         required = list(properties)
-    elif "`questions` array" in prompt or "a `questions` array" in prompt:
-        item_count = _prompt_item_count(prompt)
+    elif operation == "authoring":
+        item_count = (
+            len(contract.identifiers)
+            if contract is not None
+            else _prompt_item_count(prompt)
+        )
         all_mark_schemes_locked = (
-            '"mark_scheme_locked": true' in prompt
-            and '"mark_scheme_locked": false' not in prompt
+            contract.mark_schemes_locked
+            if contract is not None
+            else (
+                '"mark_scheme_locked": true' in prompt
+                and '"mark_scheme_locked": false' not in prompt
+            )
         )
         mark_point = {
             "type": "object",
@@ -636,7 +727,13 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
         question = {
             "type": "object",
             "properties": {
-                "id": _batch_identifier_schema(prompt),
+                "id": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "enum": list(contract.identifiers),
+                }
+                if contract is not None
+                else _batch_identifier_schema(prompt),
                 "prompt": {"type": "string", "maxLength": 1200},
                 "choices": {
                     "type": "array",
@@ -673,12 +770,22 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             }
         }
         required = ["questions"]
-    elif "`reviews` must contain" in prompt:
-        item_count = _prompt_item_count(prompt)
+    elif operation == "batch_review":
+        item_count = (
+            len(contract.identifiers)
+            if contract is not None
+            else _prompt_item_count(prompt)
+        )
         review = {
             "type": "object",
             "properties": {
-                "id": _batch_identifier_schema(prompt),
+                "id": {
+                    "type": "string",
+                    "maxLength": 64,
+                    "enum": list(contract.identifiers),
+                }
+                if contract is not None
+                else _batch_identifier_schema(prompt),
                 "approved": {"type": "boolean"},
                 "factual_issues": text_list,
                 "marking_issues": text_list,
@@ -706,7 +813,7 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             }
         }
         required = ["reviews"]
-    elif '"estimated_demand":"low|standard|high"' in prompt:
+    elif operation == "difficulty":
         cognitive_operation = {
             "type": "string",
             "enum": list(CANONICAL_COGNITIVE_OPERATIONS),
@@ -757,7 +864,54 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "estimated_minutes",
             "issues",
         ]
-    elif '"approved":true|false' in prompt:
+    elif operation == "open_credit":
+        if contract is None:
+            raise ValueError("semantic credit schema requires owned allocations")
+        allocations = contract.credit_allocations
+        criterion = {
+            "type": "object",
+            "properties": {
+                "criterion_id": {
+                    "type": "string",
+                    "enum": [row[0] for row in allocations],
+                },
+                "decision": {
+                    "type": "string",
+                    "enum": ["supported", "unsupported", "uncertain"],
+                },
+                "answer_quote": {"type": "string", "maxLength": 2400},
+                "scheme_quote": {"type": "string", "maxLength": 2400},
+                "point_index": {
+                    "type": "integer",
+                    "enum": list(dict.fromkeys(row[1] for row in allocations)),
+                },
+                "marks": {
+                    "type": "integer",
+                    "enum": list(dict.fromkeys(row[2] for row in allocations)),
+                },
+            },
+            "required": [
+                "criterion_id",
+                "decision",
+                "answer_quote",
+                "scheme_quote",
+                "point_index",
+                "marks",
+            ],
+            "additionalProperties": False,
+        }
+        properties = {
+            "criteria": {
+                "type": "array",
+                "items": criterion,
+                "minItems": len(allocations),
+                "maxItems": len(allocations),
+            },
+            "issues": text_list,
+            "advisory_conflicts": text_list,
+        }
+        required = ["criteria", "issues", "advisory_conflicts"]
+    elif operation == "review":
         properties = {
             "approved": {"type": "boolean"},
             "factual_issues": {"type": "array", "items": {"type": "string"}},
@@ -774,9 +928,18 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "difficulty_issues",
             "ambiguity_issues",
         ]
-    elif '"question_text": "string"' in prompt:
-        if "VERIFIED MARKING IS IMMUTABLE" in prompt:
-            part_count = _edexcel_part_count(prompt)
+    elif operation == "edexcel":
+        immutable_marking = (
+            contract.immutable_marking
+            if contract is not None
+            else "VERIFIED MARKING IS IMMUTABLE" in prompt
+        )
+        if immutable_marking:
+            part_count = (
+                contract.part_count
+                if contract is not None
+                else _edexcel_part_count(prompt)
+            )
             part = {
                 "type": "object",
                 "properties": {
@@ -856,8 +1019,12 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
                 "parts": {"type": "array", "items": part, "maxItems": 6},
             }
             required = list(properties)
-    elif '"stem": "string"' in prompt and '"parts": [' in prompt:
-        compact = "VERIFIED MARKING IS IMMUTABLE" in prompt
+    elif operation == "aqa_cs":
+        compact = (
+            contract.immutable_marking
+            if contract is not None
+            else "VERIFIED MARKING IS IMMUTABLE" in prompt
+        )
         part_properties = {
             "label": {"type": "string", "maxLength": 16},
             "prompt": {"type": "string", "maxLength": 800},
@@ -881,9 +1048,13 @@ def _ollama_json_schema(prompt: str) -> dict[str, object]:
             "additionalProperties": False,
         }
         part_count = (
-            0
-            if "Do not repeat, rewrite or answer the parts" in prompt
-            else (_aqa_cs_part_count(prompt) if compact else 8)
+            (0 if contract.scenario_only else (contract.part_count if compact else 8))
+            if contract is not None
+            else (
+                0
+                if "Do not repeat, rewrite or answer the parts" in prompt
+                else (_aqa_cs_part_count(prompt) if compact else 8)
+            )
         )
         properties = {
             "stem": {"type": "string", "maxLength": 1000},

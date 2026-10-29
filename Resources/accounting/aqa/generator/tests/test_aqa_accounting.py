@@ -39,7 +39,9 @@ def test_shareholder_case_exposes_candidate_visible_source_contract() -> None:
     assert getattr(case_data, "ShareholderCase", None) is not None
 
 
-def test_shareholder_case_keeps_equity_and_investor_figures_in_consistent_units() -> None:
+def test_shareholder_case_keeps_equity_and_investor_figures_in_consistent_units() -> (
+    None
+):
     case = ShareholderCase(
         business="Cedar Components plc",
         nominal_share_value_pence=50,
@@ -74,7 +76,9 @@ def test_shareholder_case_keeps_equity_and_investor_figures_in_consistent_units(
     assert case.gearing_percent == 29.3
 
 
-def test_shareholder_question_uses_the_same_visible_case_for_generator_context() -> None:
+def test_shareholder_question_uses_the_same_visible_case_for_generator_context() -> (
+    None
+):
     paper = build_paper(RULES["paper_1"], SYLLABUS, 26083107)
     option = paper.sections[-1].options[0]
     question = next(item for item in option.questions if item.rule_id == "decision_2")
@@ -84,7 +88,9 @@ def test_shareholder_question_uses_the_same_visible_case_for_generator_context()
     assert question.authoring_context["source_data"] == case.candidate_source()
     assert "verified_answers" not in question.authoring_context
     assert "price_earnings_ratio" not in question.authoring_context["candidate_source"]
-    assert "dividend_yield_percent" not in question.authoring_context["candidate_source"]
+    assert (
+        "dividend_yield_percent" not in question.authoring_context["candidate_source"]
+    )
 
 
 @pytest.mark.parametrize("paper_id", ["paper_1", "paper_2"])
@@ -94,7 +100,9 @@ def test_section_c_decisions_share_complete_candidate_visible_cases(
     paper = build_paper(RULES[paper_id], SYLLABUS, 26092841)
     option = paper.sections[-1].options[0]
     system = next(item for item in option.questions if item.rule_id == "decision_1")
-    shareholder = next(item for item in option.questions if item.rule_id == "decision_2")
+    shareholder = next(
+        item for item in option.questions if item.rule_id == "decision_2"
+    )
     expected_system = AccountingSystemCase.from_chart_values(
         option.title, option.chart_values
     )
@@ -121,7 +129,9 @@ def test_section_c_decisions_share_complete_candidate_visible_cases(
     assert sum(point.startswith("Level 5") for point in shareholder.mark_scheme) == 1
 
 
-def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> None:
+def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_keys() -> (
+    None
+):
     from Backend.Core.ai_assessment import _Task, _task_source
 
     class CapturingSolver:
@@ -153,8 +163,9 @@ def test_shareholder_visible_source_reaches_reviewer_and_solver_without_answer_k
     assert "verified_answers" not in solver_item["authoring_context"]
     assert (
         "closing_total_equity"
-        not in solver_item["authoring_context"]["candidate_source"]
-        ["statement_of_changes_in_equity"]
+        not in solver_item["authoring_context"]["candidate_source"][
+            "statement_of_changes_in_equity"
+        ]
     )
 
 
@@ -182,7 +193,9 @@ def test_shareholder_pdf_source_and_scheme_preserve_the_complete_visible_contrac
     scheme_text = re.sub(
         r"\s+",
         " ",
-        " ".join(page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages),
+        " ".join(
+            page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
+        ),
     )
 
     assert "closing_total_equity" not in source["statement_of_changes_in_equity"]
@@ -210,7 +223,9 @@ def test_shareholder_pdf_source_and_scheme_preserve_the_complete_visible_contrac
         assert point in scheme_text
 
     rendered = fitz.open(paths["question_paper"])
-    page = next(page for page in rendered if "Statement of changes in equity" in page.get_text())
+    page = next(
+        page for page in rendered if "Statement of changes in equity" in page.get_text()
+    )
     header_words = page.get_text("words")
     ordinary = next(word for word in header_words if word[4] == "Ordinary")
     premium = next(word for word in header_words if word[4] == "premium")
@@ -268,24 +283,24 @@ def test_shareholder_pdf_source_and_scheme_preserve_the_complete_visible_contrac
         ]
 
     source_panel_right = max(
-        rect.x1
-        for rect in rectangles
-        if 520 < rect.x0 < 540 and rect.height > 500
+        rect.x1 for rect in rectangles if 520 < rect.x0 < 540 and rect.height > 500
     )
     equity_table_right = max(
-        rect.x1
-        for rect in rectangles
-        if 200 < rect.y0 < 300 and rect.width > 400
+        rect.x1 for rect in rectangles if 200 < rect.y0 < 300 and rect.width > 400
     )
     assert equity_table_right <= source_panel_right
 
 
-def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_negative() -> None:
+def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_negative() -> (
+    None
+):
     cases = []
     for seed in (26083109, 26083110, 26083111):
         paper = build_paper(RULES["paper_1"], SYLLABUS, seed)
         option = paper.sections[-1].options[0]
-        cases.append(ShareholderCase.from_chart_values(option.title, option.chart_values))
+        cases.append(
+            ShareholderCase.from_chart_values(option.title, option.chart_values)
+        )
 
     assert len({repr(case.candidate_source()) for case in cases}) == 3
     for case in cases:
@@ -296,7 +311,10 @@ def test_shareholder_cases_vary_deterministically_and_keep_bonus_premium_non_neg
         nominal_value = source["nominal_share_value_pence"]
         closing_shares = opening_shares + bonus_shares
 
-        assert equity["bonus_issue_capital_transfer"] == bonus_shares * nominal_value // 100_000
+        assert (
+            equity["bonus_issue_capital_transfer"]
+            == bonus_shares * nominal_value // 100_000
+        )
         assert equity["closing_share_premium"] >= 0
         published_total_equity = sum(
             equity[column]
@@ -384,7 +402,13 @@ def page_count(path: Path) -> int:
     text = subprocess.run(
         ["pdfinfo", str(path)], check=True, capture_output=True, text=True
     ).stdout
-    return int(next(line.split(":", 1)[1] for line in text.splitlines() if line.startswith("Pages:")))
+    return int(
+        next(
+            line.split(":", 1)[1]
+            for line in text.splitlines()
+            if line.startswith("Pages:")
+        )
+    )
 
 
 def test_exact_current_mark_sequences_and_totals() -> None:
@@ -434,14 +458,10 @@ def test_non_current_asset_question_and_scheme_share_verified_case_data() -> Non
     assert question.topic_id == "accounting-6"
     assert question.authoring_context["verified_answers"] == {
         "plant_cost": case.plant_cost_closing,
-        "plant_accumulated_depreciation": (
-            case.plant_accumulated_depreciation_closing
-        ),
+        "plant_accumulated_depreciation": (case.plant_accumulated_depreciation_closing),
         "plant_carrying_amount": case.plant_carrying_amount,
         "motor_cost": case.motor_cost_closing,
-        "motor_accumulated_depreciation": (
-            case.motor_accumulated_depreciation_closing
-        ),
+        "motor_accumulated_depreciation": (case.motor_accumulated_depreciation_closing),
         "motor_carrying_amount": case.motor_carrying_amount,
         "total_carrying_amount": case.total_carrying_amount,
     }
@@ -488,7 +508,9 @@ def test_locked_calculation_schemes_are_exactly_derived_from_the_case_data() -> 
         assert len(mark_points) == question.marks
 
 
-def test_locked_calculation_schemes_include_final_answers_and_all_case_numbers() -> None:
+def test_locked_calculation_schemes_include_final_answers_and_all_case_numbers() -> (
+    None
+):
     generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
     questions = {
         question.rule_id: (question, option)
@@ -539,10 +561,17 @@ def test_asset_scheme_reconciles_with_an_independent_exact_solution() -> None:
     )
     case = NonCurrentAssetCase.from_chart_values(option.title, option.chart_values)
     from Backend.Core.independent_solver import IndependentSolver
+
     solution = IndependentSolver().solve(question, [])
-    assert solution.numeric_results["plant_carrying_amount"] == case.plant_carrying_amount
-    assert solution.numeric_results["motor_carrying_amount"] == case.motor_carrying_amount
-    assert solution.numeric_results["total_carrying_amount"] == case.total_carrying_amount
+    assert (
+        solution.numeric_results["plant_carrying_amount"] == case.plant_carrying_amount
+    )
+    assert (
+        solution.numeric_results["motor_carrying_amount"] == case.motor_carrying_amount
+    )
+    assert (
+        solution.numeric_results["total_carrying_amount"] == case.total_carrying_amount
+    )
 
     result = reconcile_solution(
         solution,
@@ -598,7 +627,9 @@ def test_company_and_partnership_schemes_expose_complete_working_data() -> None:
             assert f"£{amount:,}" in appropriation_scheme
 
 
-def test_income_statement_question_has_a_complete_task_specific_source_contract() -> None:
+def test_income_statement_question_has_a_complete_task_specific_source_contract() -> (
+    None
+):
     generated = build_paper(RULES["paper_1"], SYLLABUS, 26080100)
     question = next(
         item
@@ -650,9 +681,7 @@ def test_contribution_question_uses_a_complete_costing_identity() -> None:
     )
     assert case.contribution == case.units_sold * case.contribution_per_unit
     assert case.profit == case.contribution - case.fixed_cost
-    awarded = [
-        point for point in question.structured_mark_scheme if point.marks > 0
-    ]
+    awarded = [point for point in question.structured_mark_scheme if point.marks > 0]
     assert len(awarded) == question.marks
     assert any("Contribution per unit" in point.text for point in awarded)
     assert any("Total contribution" in point.text for point in awarded)
@@ -667,11 +696,7 @@ def test_trade_discount_explanation_has_two_contextual_reasoning_chains() -> Non
         for item in section.options[0].questions
         if item.rule_id == "explain_trade"
     )
-    awarded = [
-        point
-        for point in question.structured_mark_scheme
-        if point.marks > 0
-    ]
+    awarded = [point for point in question.structured_mark_scheme if point.marks > 0]
 
     assert [point.marks for point in awarded] == [3, 3]
     assert sum(point.marks for point in awarded) == question.marks
@@ -706,7 +731,10 @@ def test_paper_two_written_items_use_specific_a_level_accounting_tasks() -> None
         question = questions[rule_id]
         assert focus in question.prompt.casefold()
         assert "treated or interpreted" not in question.prompt.casefold()
-        assert sum(point.marks for point in question.structured_mark_scheme) == question.marks
+        assert (
+            sum(point.marks for point in question.structured_mark_scheme)
+            == question.marks
+        )
 
     for rule_id in ("variance_4", "costing_4"):
         developed = [
@@ -737,9 +765,7 @@ def test_every_management_calculation_has_complete_immutable_source_data() -> No
         compact_prompt = question.prompt.replace(",", "")
         assert all(str(value) in compact_prompt for value in context["prompt_values"])
         awarded = [
-            point
-            for point in question.structured_mark_scheme
-            if point.marks > 0
+            point for point in question.structured_mark_scheme if point.marks > 0
         ]
         assert len(awarded) == question.marks
         assert all(point.marks == 1 for point in awarded)
@@ -806,9 +832,7 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
     appropriation = questions["partnership_2"].authoring_context
     assert appropriation["source_data"]["period_months"] == [8, 4]
     assert appropriation["source_data"]["profit_for_year"] == 80_400
-    assert appropriation["source_data"]["partner_salary_per_year"] == {
-        "Morgan": 12_000
-    }
+    assert appropriation["source_data"]["partner_salary_per_year"] == {"Morgan": 12_000}
     assert appropriation["verified_answers"]["period_profit"] == [53_600, 26_800]
     assert set(appropriation["verified_answers"]["appropriation_by_period"]) == {
         "first_period",
@@ -847,9 +871,10 @@ def test_long_mcq_choices_leave_clear_space_before_selection_boxes(tmp_path):
     with fitz.open(path) as document:
         page = document[2]
         boxes = [
-            drawing["rect"] for drawing in page.get_drawings()
-            if abs(drawing["rect"].width - 22) < .1
-            and abs(drawing["rect"].height - 13) < .1
+            drawing["rect"]
+            for drawing in page.get_drawings()
+            if abs(drawing["rect"].width - 22) < 0.1
+            and abs(drawing["rect"].height - 13) < 0.1
         ]
         assert len(boxes) == 12
         for box in boxes:
@@ -864,7 +889,9 @@ def test_paper_one_prints_general_and_indicative_guidance_once(tmp_path):
     paper = build_paper(RULES["paper_1"], SYLLABUS, seed=123)
     path = tmp_path / "guidance.pdf"
     render_mark_scheme(paper, path)
-    text = " ".join(" ".join(p.extract_text() or "" for p in PdfReader(path).pages).split())
+    text = " ".join(
+        " ".join(p.extract_text() or "" for p in PdfReader(path).pages).split()
+    )
     assert text.count("Final standardisation check") == 1
     question = paper.sections[-1].options[0].questions[0]
     for point in question.mark_scheme[:5]:
@@ -880,7 +907,9 @@ def test_paper_two_uses_distinct_source_verification_pages_not_repeated_guidance
         output_dir=tmp_path,
         seed=26092841,
     )
-    pages = [page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages]
+    pages = [
+        page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
+    ]
     verification_pages = [text for text in pages if "verification record" in text]
 
     assert len(verification_pages) == 12
@@ -919,8 +948,7 @@ def test_paper_two_mark_scheme_rows_contain_only_item_specific_guidance(
         seed=26083002,
     )
     text = "\n".join(
-        page.extract_text() or ""
-        for page in PdfReader(paths["mark_scheme"]).pages
+        page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
     )
 
     assert "Contribution per unit: £10 − £6 = £4." in text
@@ -929,7 +957,9 @@ def test_paper_two_mark_scheme_rows_contain_only_item_specific_guidance(
     assert "confusing Marginal costing with a superficially related concept" not in text
 
 
-def test_paper_two_prints_the_same_section_c_sources_used_by_review(tmp_path: Path) -> None:
+def test_paper_two_prints_the_same_section_c_sources_used_by_review(
+    tmp_path: Path,
+) -> None:
     seed = 26092841
     paper = build_paper(RULES["paper_2"], SYLLABUS, seed)
     option = paper.sections[-1].options[0]
@@ -940,8 +970,7 @@ def test_paper_two_prints_the_same_section_c_sources_used_by_review(tmp_path: Pa
         seed=seed,
     )
     text = " ".join(
-        page.extract_text() or ""
-        for page in PdfReader(paths["question_paper"]).pages
+        page.extract_text() or "" for page in PdfReader(paths["question_paper"]).pages
     )
 
     for question in option.questions:
@@ -974,8 +1003,7 @@ def test_paper_two_mark_scheme_does_not_cycle_section_c_guidance(
         r"\s+",
         " ",
         " ".join(
-            page.extract_text() or ""
-            for page in PdfReader(paths["mark_scheme"]).pages
+            page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
         ),
     )
 
@@ -993,7 +1021,9 @@ def test_paper_two_mark_scheme_does_not_cycle_section_c_guidance(
     assert "guidance continued" not in text.casefold()
 
 
-def test_paper_one_section_a_matches_measured_case_and_account_pages(tmp_path: Path) -> None:
+def test_paper_one_section_a_matches_measured_case_and_account_pages(
+    tmp_path: Path,
+) -> None:
     paths = generate_package(
         paper="1",
         syllabus_path=ROOT / "data" / "syllabus.json",
@@ -1087,8 +1117,12 @@ def test_non_current_asset_question_and_mark_scheme_use_the_same_figures(
         seed=seed,
     )
 
-    question_pages = [page.extract_text() or "" for page in PdfReader(paths["question_paper"]).pages]
-    scheme_pages = [page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages]
+    question_pages = [
+        page.extract_text() or "" for page in PdfReader(paths["question_paper"]).pages
+    ]
+    scheme_pages = [
+        page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
+    ]
     question_text = next(
         text
         for text in question_pages
@@ -1123,12 +1157,18 @@ def test_sales_ledger_question_ai_contract_and_scheme_share_verified_data(
         "cash_received_from_credit_customers": case.cash_received,
         "discount_allowed": case.discount_allowed,
     }
-    assert ledger_question.authoring_context["verified_answers"][
-        "closing_trade_receivables"
-    ] == case.closing_receivables
-    assert sales_question.authoring_context["verified_answers"][
-        "net_sales_transferred_to_income_statement"
-    ] == case.net_sales
+    assert (
+        ledger_question.authoring_context["verified_answers"][
+            "closing_trade_receivables"
+        ]
+        == case.closing_receivables
+    )
+    assert (
+        sales_question.authoring_context["verified_answers"][
+            "net_sales_transferred_to_income_statement"
+        ]
+        == case.net_sales
+    )
 
     paths = generate_package(
         paper="1",
@@ -1156,7 +1196,9 @@ def test_sales_ledger_question_ai_contract_and_scheme_share_verified_data(
     assert f"{case.net_sales:,}" in scheme_text
 
 
-def test_paper_one_mark_scheme_matches_reference_question_sequence(tmp_path: Path) -> None:
+def test_paper_one_mark_scheme_matches_reference_question_sequence(
+    tmp_path: Path,
+) -> None:
     paths = generate_package(
         paper="1",
         syllabus_path=ROOT / "data" / "syllabus.json",

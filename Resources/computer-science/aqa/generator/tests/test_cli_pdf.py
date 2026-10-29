@@ -44,10 +44,16 @@ def test_generated_pdfs_are_a4(tmp_path):
 def test_question_paper_uses_realistic_aqa_page_count(tmp_path):
     paths = generate_package(output_dir=tmp_path, seed=42, dry_run=True)
 
-    output = subprocess.check_output(["pdfinfo", str(paths["question_paper"])], text=True)
+    output = subprocess.check_output(
+        ["pdfinfo", str(paths["question_paper"])], text=True
+    )
 
     assert "Pages:" in output
-    pages = int(next(line.split()[1] for line in output.splitlines() if line.startswith("Pages:")))
+    pages = int(
+        next(
+            line.split()[1] for line in output.splitlines() if line.startswith("Pages:")
+        )
+    )
     assert pages == 40
 
 
@@ -89,14 +95,10 @@ def test_question_cover_includes_the_independent_wordmark(tmp_path):
         final_advice = page.search_for("now wish to select")[0]
         assert 730 < final_advice.y1 < 765
         content_top = min(
-            block[1]
-            for block in page.get_text("blocks")
-            if str(block[4]).strip()
+            block[1] for block in page.get_text("blocks") if str(block[4]).strip()
         )
         content_bottom = max(
-            block[3]
-            for block in page.get_text("blocks")
-            if str(block[4]).strip()
+            block[3] for block in page.get_text("blocks") if str(block[4]).strip()
         )
         assert content_top >= 12
         assert content_bottom <= page.rect.height - 14.2

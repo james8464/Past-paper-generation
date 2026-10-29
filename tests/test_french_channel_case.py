@@ -5,10 +5,12 @@ import pytest
 
 @pytest.mark.parametrize(
     "slot,closed,expected",
-    [("A", False, ("valeur", "A", None)),
-     ("B", True, ("valeur", "B", None)),
-     (None, True, ("fin", None, None)),
-     (None, False, ("attente", None, None))],
+    [
+        ("A", False, ("valeur", "A", None)),
+        ("B", True, ("valeur", "B", None)),
+        (None, True, ("fin", None, None)),
+        (None, False, ("attente", None, None)),
+    ],
 )
 def test_receive_distinguishes_value_eof_and_waiting(slot, closed, expected):
     from Backend.Core.france.channel_case import recevoir
@@ -22,22 +24,70 @@ def test_blocked_instructions_retry_without_advancing_the_program():
     result = simulate(["P", "P", "C", "C", "P", "C", "P", "C"])
     assert result["received"] == ["A", "B", None]
     assert result["trace"] == [
-        {"actor": "P", "event": "send A", "slot": "A", "closed": False,
-         "positions": [1, 0], "blocked": []},
-        {"actor": "P", "event": "blocked full", "slot": "A", "closed": False,
-         "positions": [1, 0], "blocked": ["P"]},
-        {"actor": "C", "event": "receive A", "slot": None, "closed": False,
-         "positions": [1, 1], "blocked": []},
-        {"actor": "C", "event": "blocked empty", "slot": None, "closed": False,
-         "positions": [1, 1], "blocked": ["C"]},
-        {"actor": "P", "event": "send B", "slot": "B", "closed": False,
-         "positions": [2, 1], "blocked": []},
-        {"actor": "C", "event": "receive B", "slot": None, "closed": False,
-         "positions": [2, 2], "blocked": []},
-        {"actor": "P", "event": "close", "slot": None, "closed": True,
-         "positions": [3, 2], "blocked": []},
-        {"actor": "C", "event": "eof", "slot": None, "closed": True,
-         "positions": [3, 3], "blocked": []},
+        {
+            "actor": "P",
+            "event": "send A",
+            "slot": "A",
+            "closed": False,
+            "positions": [1, 0],
+            "blocked": [],
+        },
+        {
+            "actor": "P",
+            "event": "blocked full",
+            "slot": "A",
+            "closed": False,
+            "positions": [1, 0],
+            "blocked": ["P"],
+        },
+        {
+            "actor": "C",
+            "event": "receive A",
+            "slot": None,
+            "closed": False,
+            "positions": [1, 1],
+            "blocked": [],
+        },
+        {
+            "actor": "C",
+            "event": "blocked empty",
+            "slot": None,
+            "closed": False,
+            "positions": [1, 1],
+            "blocked": ["C"],
+        },
+        {
+            "actor": "P",
+            "event": "send B",
+            "slot": "B",
+            "closed": False,
+            "positions": [2, 1],
+            "blocked": [],
+        },
+        {
+            "actor": "C",
+            "event": "receive B",
+            "slot": None,
+            "closed": False,
+            "positions": [2, 2],
+            "blocked": [],
+        },
+        {
+            "actor": "P",
+            "event": "close",
+            "slot": None,
+            "closed": True,
+            "positions": [3, 2],
+            "blocked": [],
+        },
+        {
+            "actor": "C",
+            "event": "eof",
+            "slot": None,
+            "closed": True,
+            "positions": [3, 3],
+            "blocked": [],
+        },
     ]
 
 

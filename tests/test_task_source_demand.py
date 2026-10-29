@@ -78,80 +78,197 @@ SELECTED_OPERATION_EXAMPLES = {
     "index_percentage_increase": {
         "inputs": {"base": "100", "rate_percent": "8"},
         "choices": ["108.0", "92.0", "113.0", "8.0"],
-        "unit": "index", "decimal_places": 1,
+        "unit": "index",
+        "decimal_places": 1,
     },
     "index_percentage_decrease": {
         "inputs": {"base": "100", "rate_percent": "8"},
         "choices": ["92.0", "108.0", "87.0", "8.0"],
-        "unit": "index", "decimal_places": 1,
+        "unit": "index",
+        "decimal_places": 1,
     },
     "index_percentage_change": {
         "inputs": {"initial": "100", "final": "120"},
         "choices": ["20.0%", "16.7%", "120.0%", "-20.0%"],
-        "unit": "percent", "decimal_places": 1,
+        "unit": "percent",
+        "decimal_places": 1,
     },
     "economic_shift": {
-        "inputs": {"curve": "D", "direction": "right", "scope": "market", "x_axis": "Quantity", "y_axis": "Price"},
-        "choices": ["Equilibrium price rises and equilibrium quantity rises", "Equilibrium price rises and equilibrium quantity falls", "Equilibrium price falls and equilibrium quantity rises", "Equilibrium price falls and equilibrium quantity falls"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "curve": "D",
+            "direction": "right",
+            "scope": "market",
+            "x_axis": "Quantity",
+            "y_axis": "Price",
+        },
+        "choices": [
+            "Equilibrium price rises and equilibrium quantity rises",
+            "Equilibrium price rises and equilibrium quantity falls",
+            "Equilibrium price falls and equilibrium quantity rises",
+            "Equilibrium price falls and equilibrium quantity falls",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "opportunity_cost_change": {
         "prompt": "Product X rises from 20 to 30 units while product Y falls from 80 to 68 units. What is the opportunity cost?",
-        "inputs": {"primary_before": "20", "secondary_before": "80", "primary_after": "30", "secondary_after": "68"},
-        "choices": ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
-        "unit": "quantity", "decimal_places": 0,
+        "inputs": {
+            "primary_before": "20",
+            "secondary_before": "80",
+            "primary_after": "30",
+            "secondary_after": "68",
+        },
+        "choices": [
+            "12 units of product Y",
+            "20 units of product Y",
+            "10 units of product Y",
+            "68 units of product Y",
+        ],
+        "unit": "quantity",
+        "decimal_places": 0,
     },
     "elastic_revenue_change": {
-        "inputs": {"price_before": "10", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
-        "choices": ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "price_before": "10",
+            "quantity_before": "100",
+            "price_after": "12",
+            "quantity_after": "88",
+        },
+        "choices": [
+            "Total expenditure rises",
+            "Total expenditure falls",
+            "Total expenditure is unchanged",
+            "The effect cannot be calculated",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "income_distribution_change": {
-        "inputs": {"poorest_share_before": "20", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
-        "choices": ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "poorest_share_before": "20",
+            "richest_share_before": "45",
+            "poorest_share_after": "25",
+            "richest_share_after": "38",
+        },
+        "choices": [
+            "Income inequality falls",
+            "Income inequality rises",
+            "Income inequality is unchanged",
+            "Nominal GDP must fall",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "interest_rate_demand_change": {
-        "inputs": {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "60"},
-        "choices": ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "interest_rate_before": "4",
+            "interest_rate_after": "6",
+            "credit_share_percent": "60",
+        },
+        "choices": [
+            "Credit-financed consumption and investment weaken",
+            "Credit-financed consumption and investment strengthen",
+            "Credit-financed consumption and investment are unchanged",
+            "All saving must cease",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "trade_elasticity_effect": {
-        "inputs": {"exchange_rate_direction": "depreciation", "export_elasticity": "0.9", "import_elasticity": "0.6"},
-        "choices": ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance is unlikely to change from the elasticity condition alone", "Domestic output must become zero"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "exchange_rate_direction": "depreciation",
+            "export_elasticity": "0.9",
+            "import_elasticity": "0.6",
+        },
+        "choices": [
+            "The trade balance is more likely to improve",
+            "The trade balance is more likely to worsen",
+            "The trade balance is unlikely to change from the elasticity condition alone",
+            "Domestic output must become zero",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "gross_profit": {
         "inputs": {"revenue": "20", "cost_of_sales": "6"},
         "choices": ["£14m", "£20m", "£6m", "£10m"],
-        "unit": "GBPm", "decimal_places": 0,
+        "unit": "GBPm",
+        "decimal_places": 0,
     },
     "after_tax_profit": {
-        "inputs": {"revenue": "20", "cost_of_sales": "6", "operating_expenses": "4", "taxation": "7"},
+        "inputs": {
+            "revenue": "20",
+            "cost_of_sales": "6",
+            "operating_expenses": "4",
+            "taxation": "7",
+        },
         "choices": ["£3m", "£7m", "£10m", "£14m"],
-        "unit": "GBPm", "decimal_places": 0,
+        "unit": "GBPm",
+        "decimal_places": 0,
     },
     "highest_productivity": {
         "inputs": {},
-        "rows": [{"label": "Factory A", "output": "900", "employees": "60"}, {"label": "Factory B", "output": "840", "employees": "40"}],
+        "rows": [
+            {"label": "Factory A", "output": "900", "employees": "60"},
+            {"label": "Factory B", "output": "840", "employees": "40"},
+        ],
         "choices": ["Factory B", "Factory A", "Factory C", "Factory D"],
-        "unit": "classification", "decimal_places": 0,
+        "unit": "classification",
+        "decimal_places": 0,
     },
     "performance_statements": {
         "inputs": {},
-        "rows": [{"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"}, {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower"}],
-        "choices": ["Statement 1 is true, Statement 2 is false", "Statement 1 is false, Statement 2 is true", "Both statements are true", "Both statements are false"],
-        "unit": "classification", "decimal_places": 0,
+        "rows": [
+            {
+                "label": "Capacity utilisation",
+                "target": "90",
+                "actual": "88",
+                "better_when": "higher",
+            },
+            {
+                "label": "Labour turnover",
+                "target": "12",
+                "actual": "17",
+                "better_when": "lower",
+            },
+        ],
+        "choices": [
+            "Statement 1 is true, Statement 2 is false",
+            "Statement 1 is false, Statement 2 is true",
+            "Both statements are true",
+            "Both statements are false",
+        ],
+        "unit": "classification",
+        "decimal_places": 0,
     },
     "break_even_change": {
-        "inputs": {"fixed_cost_before": "60", "price_before": "5", "variable_cost_before": "3", "fixed_cost_after": "60", "price_after": "6", "variable_cost_after": "2"},
-        "choices": ["A rise in selling price and a fall in variable cost per unit", "A fall in selling price and a rise in variable cost per unit", "A rise in fixed costs and a fall in output", "A fall in capacity and a rise in fixed costs"],
-        "unit": "effect", "decimal_places": 0,
+        "inputs": {
+            "fixed_cost_before": "60",
+            "price_before": "5",
+            "variable_cost_before": "3",
+            "fixed_cost_after": "60",
+            "price_after": "6",
+            "variable_cost_after": "2",
+        },
+        "choices": [
+            "A rise in selling price and a fall in variable cost per unit",
+            "A fall in selling price and a rise in variable cost per unit",
+            "A rise in fixed costs and a fall in output",
+            "A fall in capacity and a rise in fixed costs",
+        ],
+        "unit": "effect",
+        "decimal_places": 0,
     },
     "strategic_drift": {
         "inputs": {"external_change": "high", "strategic_change": "low"},
-        "choices": ["Strategic drift", "Strategic fit", "Market penetration", "Retrenchment"],
-        "unit": "classification", "decimal_places": 0,
+        "choices": [
+            "Strategic drift",
+            "Strategic fit",
+            "Market penetration",
+            "Retrenchment",
+        ],
+        "unit": "classification",
+        "decimal_places": 0,
     },
 }
 
@@ -244,7 +361,16 @@ def test_per_option_rule_resolver_hydrates_task_source_and_objectives() -> None:
         duration_minutes=2,
         total_marks=2,
         seed=1,
-        sections=[GeneratedSection(id="A", title="Selected response", instructions="Answer all.", options=options, answer_options=2, candidate_marks=2)],
+        sections=[
+            GeneratedSection(
+                id="A",
+                title="Selected response",
+                instructions="Answer all.",
+                options=options,
+                answer_options=2,
+                candidate_marks=2,
+            )
+        ],
     )
 
     validate_generated_paper(paper, rule, {"topic"})
@@ -255,7 +381,9 @@ def test_per_option_rule_resolver_hydrates_task_source_and_objectives() -> None:
 
 
 def test_rule_override_cannot_change_slot_identity_or_tariff() -> None:
-    base = QuestionRule(id="mcq", marks=1, kind="multiple_choice", command_word="Select")
+    base = QuestionRule(
+        id="mcq", marks=1, kind="multiple_choice", command_word="Select"
+    )
     with pytest.raises(ValueError, match="identity and tariff"):
         SectionRule(
             id="A",
@@ -271,13 +399,19 @@ def test_rule_override_cannot_change_slot_identity_or_tariff() -> None:
 def test_export_preserves_explicit_task_and_source_metadata() -> None:
     item = _extract_items(
         {
-            "questions": [{
-                "number": "1", "marks": 1, "kind": "multiple_choice",
-                "prompt": "Use Figure 1 to select the change.",
-                "task_operation": "analyse", "source_dependency": "figure",
-            }]
+            "questions": [
+                {
+                    "number": "1",
+                    "marks": 1,
+                    "kind": "multiple_choice",
+                    "prompt": "Use Figure 1 to select the change.",
+                    "task_operation": "analyse",
+                    "source_dependency": "figure",
+                }
+            ]
         },
-        subject="Economics", paper_number="3",
+        subject="Economics",
+        paper_number="3",
     )[0]
     assert item["task_operation"] == "analyse"
     assert item["source_dependency"] == "figure"
@@ -676,7 +810,9 @@ def test_selected_response_rejects_normalized_duplicate_choices() -> None:
         solve_selected_response(item)
 
 
-@pytest.mark.parametrize("operation", ["highest_productivity", "performance_statements"])
+@pytest.mark.parametrize(
+    "operation", ["highest_productivity", "performance_statements"]
+)
 def test_selected_response_rejects_duplicate_normalized_row_labels(
     operation: str,
 ) -> None:
@@ -740,27 +876,70 @@ def test_selected_response_rejects_duplicate_normalized_row_labels(
                 "primary_after": "30",
                 "secondary_after": "68",
             },
-            ["12 units of product Y", "20 units of product Y", "10 units of product Y", "68 units of product Y"],
+            [
+                "12 units of product Y",
+                "20 units of product Y",
+                "10 units of product Y",
+                "68 units of product Y",
+            ],
         ),
         (
             "elastic_revenue_change",
-            {"price_before": "0", "quantity_before": "100", "price_after": "12", "quantity_after": "88"},
-            ["Total expenditure rises", "Total expenditure falls", "Total expenditure is unchanged", "The effect cannot be calculated"],
+            {
+                "price_before": "0",
+                "quantity_before": "100",
+                "price_after": "12",
+                "quantity_after": "88",
+            },
+            [
+                "Total expenditure rises",
+                "Total expenditure falls",
+                "Total expenditure is unchanged",
+                "The effect cannot be calculated",
+            ],
         ),
         (
             "income_distribution_change",
-            {"poorest_share_before": "120", "richest_share_before": "45", "poorest_share_after": "25", "richest_share_after": "38"},
-            ["Income inequality falls", "Income inequality rises", "Income inequality is unchanged", "Nominal GDP must fall"],
+            {
+                "poorest_share_before": "120",
+                "richest_share_before": "45",
+                "poorest_share_after": "25",
+                "richest_share_after": "38",
+            },
+            [
+                "Income inequality falls",
+                "Income inequality rises",
+                "Income inequality is unchanged",
+                "Nominal GDP must fall",
+            ],
         ),
         (
             "interest_rate_demand_change",
-            {"interest_rate_before": "4", "interest_rate_after": "6", "credit_share_percent": "101"},
-            ["Credit-financed consumption and investment weaken", "Credit-financed consumption and investment strengthen", "Credit-financed consumption and investment are unchanged", "All saving must cease"],
+            {
+                "interest_rate_before": "4",
+                "interest_rate_after": "6",
+                "credit_share_percent": "101",
+            },
+            [
+                "Credit-financed consumption and investment weaken",
+                "Credit-financed consumption and investment strengthen",
+                "Credit-financed consumption and investment are unchanged",
+                "All saving must cease",
+            ],
         ),
         (
             "trade_elasticity_effect",
-            {"exchange_rate_direction": "depreciation", "export_elasticity": "-0.1", "import_elasticity": "0.6"},
-            ["The trade balance is more likely to improve", "The trade balance is more likely to worsen", "The trade balance must be unchanged", "Domestic output must become zero"],
+            {
+                "exchange_rate_direction": "depreciation",
+                "export_elasticity": "-0.1",
+                "import_elasticity": "0.6",
+            },
+            [
+                "The trade balance is more likely to improve",
+                "The trade balance is more likely to worsen",
+                "The trade balance must be unchanged",
+                "Domestic output must become zero",
+            ],
         ),
     ],
 )
@@ -810,8 +989,19 @@ def test_new_economic_selected_responses_reject_invalid_public_domains(
         ),
         (
             "performance_statements",
-            {"label": "Labour turnover", "target": "12", "actual": "17", "better_when": "lower", "output": "900"},
-            ["Both statements are true", "Both statements are false", "Statement 1 is true, Statement 2 is false", "Statement 1 is false, Statement 2 is true"],
+            {
+                "label": "Labour turnover",
+                "target": "12",
+                "actual": "17",
+                "better_when": "lower",
+                "output": "900",
+            },
+            [
+                "Both statements are true",
+                "Both statements are false",
+                "Statement 1 is true, Statement 2 is false",
+                "Statement 1 is false, Statement 2 is true",
+            ],
         ),
     ],
 )
@@ -824,7 +1014,14 @@ def test_row_selected_responses_reject_fields_from_other_operations(
     if operation == "highest_productivity":
         rows.append({"label": "Factory B", "output": "840", "employees": "40"})
     else:
-        rows.append({"label": "Capacity utilisation", "target": "90", "actual": "88", "better_when": "higher"})
+        rows.append(
+            {
+                "label": "Capacity utilisation",
+                "target": "90",
+                "actual": "88",
+                "better_when": "higher",
+            }
+        )
     item = {
         "id": operation,
         "marks": 1,
@@ -903,8 +1100,13 @@ def test_solver_prompt_declares_all_raw_fields_and_blind_payload() -> None:
         [],
     )
     for field in (
-        "steps", "answer", "mark_points", "evidence_ids", "alternatives",
-        "partial_credit_boundaries", "follow_through_rules",
+        "steps",
+        "answer",
+        "mark_points",
+        "evidence_ids",
+        "alternatives",
+        "partial_credit_boundaries",
+        "follow_through_rules",
     ):
         assert f'"{field}"' in client.prompt
     assert "selected_response_contract" in client.prompt

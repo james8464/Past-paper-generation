@@ -13,7 +13,10 @@ def test_edexcel_9ec0_2026_timetable_dates():
 
     assert paper_1.date == date(2026, 5, 11)
     assert paper_1.session == "Morning"
-    assert formatted_economics_exam_date("paper_1", date(2026, 5, 13)) == "Wednesday 13 May 2026"
+    assert (
+        formatted_economics_exam_date("paper_1", date(2026, 5, 13))
+        == "Wednesday 13 May 2026"
+    )
 
     assert paper_2.date == date(2026, 5, 18)
     assert paper_2.session == "Afternoon"

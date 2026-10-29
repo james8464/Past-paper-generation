@@ -1,5 +1,6 @@
 import AppKit
 import PDFKit
+import TipKit
 import XCTest
 @testable import Keldin
 
@@ -33,18 +34,24 @@ final class KeldinTests: XCTestCase {
     }
 
     func testCreationContextKeepsFrenchIndependentOfUKModelReadiness() {
-        let normal = PaperCreationContext.french(largePrint: false)
-        let enlarged = PaperCreationContext.french(largePrint: true)
+        let normal = KeldinCreationContext.french(largePrint: false)
+        let enlarged = KeldinCreationContext.french(largePrint: true)
         XCTAssertEqual(normal.frenchLargePrint, false)
         XCTAssertEqual(enlarged.frenchLargePrint, true)
-        XCTAssertNil(PaperCreationContext.board.frenchLargePrint)
+        XCTAssertNil(KeldinCreationContext.board.frenchLargePrint)
         for context in [normal, enlarged] {
             XCTAssertTrue(context.canCreate(boardCanGenerate: false, hasFrenchReferences: true, isBusy: false))
             XCTAssertFalse(context.canCreate(boardCanGenerate: true, hasFrenchReferences: false, isBusy: false))
             XCTAssertFalse(context.canCreate(boardCanGenerate: true, hasFrenchReferences: true, isBusy: true))
         }
-        XCTAssertFalse(PaperCreationContext.board.canCreate(boardCanGenerate: false, hasFrenchReferences: true, isBusy: false))
-        XCTAssertTrue(PaperCreationContext.board.canCreate(boardCanGenerate: true, hasFrenchReferences: false, isBusy: false))
+        XCTAssertFalse(KeldinCreationContext.board.canCreate(boardCanGenerate: false, hasFrenchReferences: true, isBusy: false))
+        XCTAssertTrue(KeldinCreationContext.board.canCreate(boardCanGenerate: true, hasFrenchReferences: false, isBusy: false))
+    }
+
+    func testKeldinTipContainerKeepsTheExistingTipIdentities() {
+        XCTAssertEqual(KeldinCreationTips.modelRecommendation.id, "ModelRecommendationTip")
+        XCTAssertEqual(KeldinCreationTips.preview.id, "PreviewTip")
+        XCTAssertEqual(KeldinCreationTips.quality.id, "QualityTip")
     }
 
     @MainActor

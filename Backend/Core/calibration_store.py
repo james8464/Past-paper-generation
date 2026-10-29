@@ -84,7 +84,6 @@ class ConsentRecord:
 # them in Keychain. Dataset files contain only authenticated ciphertext;
 # aggregate reports never contain candidate or marker identifiers.
 class CalibrationStore:
-
     def __init__(self, root: Path, *, key: bytes | str) -> None:
         self.root = root
         encoded_key = key.encode("ascii") if isinstance(key, str) else key
@@ -125,7 +124,9 @@ class CalibrationStore:
             "schema_version": SCHEMA_VERSION,
             "dataset_id": dataset_id,
             "metadata": asdict(metadata),
-            "consents": [asdict(consent_by_candidate[value]) for value in sorted(candidates)],
+            "consents": [
+                asdict(consent_by_candidate[value]) for value in sorted(candidates)
+            ],
             "responses": rows,
         }
         plaintext = json.dumps(
@@ -133,7 +134,9 @@ class CalibrationStore:
             sort_keys=True,
             separators=(",", ":"),
         ).encode("utf-8")
-        self._atomic_write(self.dataset_path(dataset_id), self._cipher.encrypt(plaintext))
+        self._atomic_write(
+            self.dataset_path(dataset_id), self._cipher.encrypt(plaintext)
+        )
         return dataset_id
 
     def aggregate(
@@ -266,7 +269,9 @@ def _read_rows(path: Path, *, metadata: CalibrationMetadata) -> list[dict[str, A
             "specification_version",
         }
         if missing := required - columns:
-            raise ValueError("response CSV is missing columns: " + ", ".join(sorted(missing)))
+            raise ValueError(
+                "response CSV is missing columns: " + ", ".join(sorted(missing))
+            )
         rows = [
             _normalise_row(row, row_number=index, metadata=metadata)
             for index, row in enumerate(reader, 2)
@@ -278,7 +283,8 @@ def _read_rows(path: Path, *, metadata: CalibrationMetadata) -> list[dict[str, A
         identity = (row["candidate_id"], row["item_id"], row["marker_id"])
         if identity in identities:
             raise ValueError(
-                "duplicate candidate/item/marker response: " + "/".join(filter(None, identity))
+                "duplicate candidate/item/marker response: "
+                + "/".join(filter(None, identity))
             )
         identities.add(identity)
     return rows

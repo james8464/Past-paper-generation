@@ -224,7 +224,9 @@ def test_paper_three_comparisons_bind_named_series_extract_and_credit() -> None:
         assert comparison["label"] in scheme
         assert "relate them" not in question.prompt.casefold()
         assert "accurate knowledge of the global context" not in scheme.casefold()
-        assert len(question.authoring_context["observable_mark_points"]) == question.marks
+        assert (
+            len(question.authoring_context["observable_mark_points"]) == question.marks
+        )
 
 
 def test_relationship_questions_align_knowledge_and_application_marks() -> None:

@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import errno
+import fcntl
 import hashlib
 import json
 import os
-from collections.abc import Mapping
+import tempfile
+from collections.abc import Iterator, Mapping
+from contextlib import contextmanager, suppress
 from pathlib import Path
 from threading import RLock
 from typing import Any, Literal
@@ -21,6 +25,72 @@ class CheckpointMismatch(ValueError):
 
 class CheckpointCorrupt(ValueError):
     pass
+
+
+class CheckpointBusy(RuntimeError):
+    pass
+
+
+@contextmanager
+def _file_lock(path: Path, *, job: bool = False) -> Iterator[Path]:
+    # Resolve aliases before choosing a sidecar. Never unlink sidecars: waiters
+    # must keep using the same inode, including after a checkpoint is retired.
+    path = path.resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    suffix = ".job.lock" if job else ".lock"
+    descriptor = os.open(
+        path.with_name(path.name + suffix), os.O_CREAT | os.O_RDWR, 0o600
+    )
+    try:
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | (fcntl.LOCK_NB if job else 0))
+        except OSError as error:
+            if job and error.errno in {errno.EACCES, errno.EAGAIN, errno.EWOULDBLOCK}:
+                raise CheckpointBusy(
+                    "This generation job is already running. Wait for it to finish before retrying."
+                ) from error
+            raise
+        yield path
+    finally:
+        # Closing also releases the lock if cancellation interrupted acquisition.
+        os.close(descriptor)
+
+
+@contextmanager
+def checkpoint_job_lease(path: Path) -> Iterator[None]:
+    """Own one CLI authoring/publication job on a local macOS/Linux filesystem."""
+    with _file_lock(path, job=True):
+        yield
+
+
+def checkpoint_receipt(path: Path) -> str | None:
+    with _file_lock(path) as canonical:
+        try:
+            return hashlib.sha256(canonical.read_bytes()).hexdigest()
+        except FileNotFoundError:
+            return None
+
+
+def retire_checkpoint(path: Path, receipt: str | None) -> bool:
+    """Retire only the exact checkpoint observed after authoring, not later work."""
+    with _file_lock(path) as canonical:
+        try:
+            current = hashlib.sha256(canonical.read_bytes()).hexdigest()
+        except FileNotFoundError:
+            return True
+        if receipt != current:
+            return False
+        canonical.unlink()
+        _sync_directory(canonical.parent)
+        return True
+
+
+def _sync_directory(path: Path) -> None:
+    directory = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
 
 
 class CheckpointIdentity(BaseModel):
@@ -74,13 +144,18 @@ def identity_for_blueprint(
 
 # Persist independently accepted questions without partial JSON writes.
 class AssessmentCheckpointStore:
-
     def __init__(self, path: Path, identity: CheckpointIdentity) -> None:
-        self.path = path
+        self.path = path.resolve()
         self.identity = identity
         self._lock = RLock()
-        if self.path.exists():
+        with self._transaction():
             self._read_document()
+
+    @contextmanager
+    def _transaction(self) -> Iterator[None]:
+        # Consistent order: instance lock, then cross-instance/process file lock.
+        with self._lock, _file_lock(self.path):
+            yield
 
     def load_item(self, key: str) -> GeneratedQuestion | None:
         raw = self.load_payload(key)
@@ -97,7 +172,7 @@ class AssessmentCheckpointStore:
         self.save_payload(key, question.model_dump(mode="json"))
 
     def load_payload(self, key: str) -> dict[str, Any] | None:
-        with self._lock:
+        with self._transaction():
             raw = self._read_document()["items"].get(key)
             if raw is None:
                 return None
@@ -106,7 +181,7 @@ class AssessmentCheckpointStore:
             return dict(raw)
 
     def save_payload(self, key: str, payload: Mapping[str, Any]) -> None:
-        with self._lock:
+        with self._transaction():
             document = self._read_document()
             items = document["items"]
             if not isinstance(items, dict):
@@ -115,7 +190,7 @@ class AssessmentCheckpointStore:
             self._write_document(document)
 
     def discard_item(self, key: str) -> None:
-        with self._lock:
+        with self._transaction():
             document = self._read_document()
             items = document["items"]
             if not isinstance(items, dict):
@@ -124,33 +199,35 @@ class AssessmentCheckpointStore:
                 self._write_document(document)
 
     def clear(self) -> None:
-        with self._lock:
+        with self._transaction():
+            self._read_document(allow_blueprint_revision=False)
             self.path.unlink(missing_ok=True)
 
     def _write_document(self, document: Mapping[str, object]) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        temporary = self.path.with_suffix(self.path.suffix + ".tmp")
-        with temporary.open("w", encoding="utf-8") as handle:
-            json.dump(
-                document,
-                handle,
-                indent=2,
-                sort_keys=True,
-                ensure_ascii=False,
-            )
-            handle.write("\n")
-            # Flush file contents before replacing the previous accepted checkpoint.
-            handle.flush()
-            os.fsync(handle.fileno())
-        temporary.replace(self.path)
-        # Sync the directory too, so the replacement survives a crash.
-        directory = os.open(self.path.parent, os.O_RDONLY)
+        descriptor, name = tempfile.mkstemp(
+            prefix=f".{self.path.name}.", suffix=".tmp", dir=self.path.parent
+        )
+        temporary = Path(name)
         try:
-            os.fsync(directory)
-        finally:
-            os.close(directory)
+            with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+                json.dump(
+                    document, handle, indent=2, sort_keys=True, ensure_ascii=False
+                )
+                handle.write("\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temporary, self.path)
+            _sync_directory(self.path.parent)
+        except BaseException:
+            # A cleanup fault must not hide the write or cancellation failure.
+            with suppress(OSError):
+                temporary.unlink(missing_ok=True)
+            raise
 
-    def _read_document(self) -> dict[str, object]:
+    def _read_document(
+        self, *, allow_blueprint_revision: bool = True
+    ) -> dict[str, object]:
         if not self.path.exists():
             return {
                 "schema_version": 1,
@@ -160,9 +237,7 @@ class AssessmentCheckpointStore:
         try:
             document = json.loads(self.path.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError) as error:
-            raise CheckpointCorrupt(
-                f"checkpoint is unreadable: {self.path}"
-            ) from error
+            raise CheckpointCorrupt(f"checkpoint is unreadable: {self.path}") from error
         if not isinstance(document, dict) or document.get("schema_version") != 1:
             raise CheckpointCorrupt("checkpoint has an unsupported schema version")
         raw_identity = document.get("identity")
@@ -179,7 +254,7 @@ class AssessmentCheckpointStore:
             if getattr(stored_identity, field_name)
             != getattr(self.identity, field_name)
         ]
-        if mismatches == ["blueprint_sha256"]:
+        if mismatches == ["blueprint_sha256"] and allow_blueprint_revision:
             # Retain expensive accepted items across a blueprint revision. Every
             # caller revalidates each payload against the current immutable item
             # contract before it is allowed back into the paper.

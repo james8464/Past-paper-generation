@@ -34,18 +34,38 @@ def test_creation_commands_do_not_run_behind_guidance_sheets():
 
 def test_document_commands_do_not_target_the_document_behind_a_guide():
     source = (APP / "Application/AppCommands.swift").read_text()
-    access = source.split("private var canAccessDocument: Bool", 1)[1].split("private", 1)[0]
-    assert "!application.showWelcome" in access
-    assert "!application.showHelp" in access
+    access = source.split("private var canAccessDocument: Bool", 1)[1].split(
+        "private", 1
+    )[0]
+    assert "canNavigate" in access
     assert "documentActions?.canAccessDocument == true" in access
     assert source.count(".disabled(!canAccessDocument)") == 4
     assert source.count("guard canAccessDocument else { return }") == 4
-    provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split("private", 1)[0]
-    assert "!application.showWelcome" in provenance
-    assert "!application.showHelp" in provenance
+    provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split(
+        "private", 1
+    )[0]
+    assert "canNavigate" in provenance
     assert "documentActions?.provenance != nil" in provenance
     assert ".disabled(!canCopyProvenance)" in source
     assert "guard canCopyProvenance else { return }" in source
+    navigation = source.split("private var canNavigate: Bool", 1)[1].split(
+        "private", 1
+    )[0]
+    assert "KeldinCreationContext.allowsNavigation(" in navigation
+    assert "applicationModal: application.hasCommandBlockingPresentation" in navigation
+    coordinator = (APP / "State/ApplicationCoordinator.swift").read_text()
+    modal = coordinator.split("var hasCommandBlockingPresentation: Bool", 1)[1].split(
+        "private", 1
+    )[0]
+    for presentation in (
+        "showWelcome",
+        "showHelp",
+        "showError",
+        "showHostedAIConsent",
+        "showMLXSetupConfirmation",
+        "showPullConfirmation",
+    ):
+        assert presentation in modal
 
 
 def test_help_containers_keep_localisable_resources_and_stable_identity():

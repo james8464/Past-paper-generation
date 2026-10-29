@@ -23,7 +23,7 @@ struct GeneratorWorkspace: View {
             }
         }
         .navigationTitle("\(board.subjectTitle) · \(board.shortTitle)")
-        .focusedSceneValue(\.paperCreationContext, .board)
+        .focusedSceneValue(\.keldinCreationContext, KeldinCreationContext.board.presentingModal(showsQualityReview))
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
                 if board.isReady {
@@ -101,9 +101,9 @@ private struct PaperConfiguration: View {
             if board.usesAI,
                application.aiProvider == .ollama,
                !application.selectedModelIsRecommended {
-                TipView(PaperCreationTips.modelRecommendation)
+                TipView(KeldinCreationTips.modelRecommendation)
             } else if application.generatedFiles.isEmpty {
-                TipView(PaperCreationTips.preview)
+                TipView(KeldinCreationTips.preview)
             }
 
             Section("Assessment") {
@@ -297,7 +297,7 @@ private struct RecentDocuments: View {
             .padding(.top, 14)
 
             if !application.generatedFiles.isEmpty {
-                TipView(PaperCreationTips.quality)
+                TipView(KeldinCreationTips.quality)
                     .padding(.horizontal, 20)
             }
 

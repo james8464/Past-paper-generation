@@ -670,7 +670,10 @@ def _validate_route_selection_pdf(
             [
                 line.strip()
                 for line in page.get_text().splitlines()
-                if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
+                if line.strip()
+                and not line.startswith(
+                    ("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : ")
+                )
             ]
             for page in pdf
         ]
@@ -2033,7 +2036,8 @@ def validate_network_incident_pdf(
             line.strip()
             for page in pages
             for line in page.splitlines()
-            if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
+            if line.strip()
+            and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
         ]
     text = "\n".join(lines)
     flat = " ".join(text.split())
@@ -2163,7 +2167,8 @@ def validate_network_incident_timeline_pdf(
         line.strip()
         for page in pages
         for line in page.splitlines()
-        if line.strip() and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
+        if line.strip()
+        and not line.startswith(("Keldin —", f"{LEGACY_PUBLISHER} —", "Page : "))
     ]
     text = "\n".join(lines)
     flat = " ".join(text.split())

@@ -990,9 +990,7 @@ def run_plan(args: argparse.Namespace) -> int:
         attempt.mkdir(parents=True, exist_ok=False)
         artifact_root = output / "artifacts" / _slug(item.model) / digest[:12]
         checkpoint = (
-            artifact_root
-            / ".keldin-checkpoints"
-            / f"{ASSESSMENT}-{item.seed}.json"
+            artifact_root / ".keldin-checkpoints" / f"{ASSESSMENT}-{item.seed}.json"
         )
         command = [
             sys.executable,

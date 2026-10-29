@@ -33,7 +33,9 @@ def test_blueprint_varies_topics_within_section_when_enough_topics_exist():
     config = load_builtin_paper_config("paper_1")
 
     blueprint = build_paper_blueprint(config, syllabus, seed=0)
-    section_a_topic_ids = [question.topic_id for question in blueprint.questions if question.section == "A"]
+    section_a_topic_ids = [
+        question.topic_id for question in blueprint.questions if question.section == "A"
+    ]
 
     assert len(section_a_topic_ids) == len(set(section_a_topic_ids))
 
@@ -78,8 +80,14 @@ def test_paper_3_uses_coherent_synoptic_case_studies():
     for seed in range(20):
         blueprint = build_paper_blueprint(config, syllabus, seed=seed)
         for section in ("A", "B"):
-            questions = [question for question in blueprint.questions if question.section == section]
-            themes = {syllabus.get_topic(question.topic_id).theme for question in questions}
+            questions = [
+                question
+                for question in blueprint.questions
+                if question.section == section
+            ]
+            themes = {
+                syllabus.get_topic(question.topic_id).theme for question in questions
+            }
 
             assert len({question.source_title for question in questions}) == 1
             assert len(themes) == 4

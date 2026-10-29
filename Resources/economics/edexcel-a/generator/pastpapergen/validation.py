@@ -14,9 +14,13 @@ def validate_blueprint(
     syllabus: Syllabus,
 ) -> None:
     if blueprint.paper_code != config.code:
-        raise ValueError(f"Paper code mismatch: {blueprint.paper_code} != {config.code}")
+        raise ValueError(
+            f"Paper code mismatch: {blueprint.paper_code} != {config.code}"
+        )
     if blueprint.total_marks != config.total_marks:
-        raise ValueError(f"Total marks mismatch: {blueprint.total_marks} != {config.total_marks}")
+        raise ValueError(
+            f"Total marks mismatch: {blueprint.total_marks} != {config.total_marks}"
+        )
     if not blueprint.questions:
         raise ValueError("Paper has no questions")
     answer_marks = 0
@@ -34,7 +38,9 @@ def validate_blueprint(
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:
-            raise ValueError(f"Question {question.number} uses unknown topic {question.topic_id}") from error
+            raise ValueError(
+                f"Question {question.number} uses unknown topic {question.topic_id}"
+            ) from error
         if topic.theme not in config.allowed_themes:
             raise ValueError(
                 f"Question {question.number} topic {topic.id} theme {topic.theme} "
@@ -46,20 +52,31 @@ def validate_blueprint(
                 answer_marks += question.marks
         else:
             answer_marks += question.marks
-        if question.parts and sum(part.marks for part in question.parts) != question.marks:
+        if (
+            question.parts
+            and sum(part.marks for part in question.parts) != question.marks
+        ):
             raise ValueError(
-                f"Question {question.number} part marks do not total "
-                f"{question.marks}"
+                f"Question {question.number} part marks do not total {question.marks}"
             )
         for part in question.parts:
             validate_assessment_contract(question, part)
             _reject_mark_text(f"{question.number}({part.label})", part.prompt)
             if part.command_word == "mcq":
-                if len(part.options) != 4 or part.correct_option not in {"A", "B", "C", "D"}:
-                    raise ValueError(f"Question {question.number} MCQ part {part.label} is not structured")
+                if len(part.options) != 4 or part.correct_option not in {
+                    "A",
+                    "B",
+                    "C",
+                    "D",
+                }:
+                    raise ValueError(
+                        f"Question {question.number} MCQ part {part.label} is not structured"
+                    )
                 option_labels = {option.label for option in part.options}
                 if option_labels != {"A", "B", "C", "D"}:
-                    raise ValueError(f"Question {question.number} MCQ options must be A-D")
+                    raise ValueError(
+                        f"Question {question.number} MCQ options must be A-D"
+                    )
                 answer = next(
                     option.text
                     for option in part.options
@@ -75,14 +92,18 @@ def validate_blueprint(
                         "the correct option"
                     )
             if not part.mark_scheme and part.marks <= 5:
-                raise ValueError(f"Question {question.number} part {part.label} has no mark scheme")
+                raise ValueError(
+                    f"Question {question.number} part {part.label} has no mark scheme"
+                )
             _validate_scheme(
                 f"{question.number}({part.label})",
                 part.mark_scheme,
                 part.marks,
             )
         if question.parts:
-            if question.source_instance and (question.mark_scheme or question.assessment_objectives):
+            if question.source_instance and (
+                question.mark_scheme or question.assessment_objectives
+            ):
                 raise ValueError("Multipart parent must not duplicate part credit")
             continue
         validate_assessment_contract(question, question)
@@ -90,7 +111,9 @@ def validate_blueprint(
             raise ValueError(f"Question {question.number} has no mark scheme")
         _validate_scheme(question.number, question.mark_scheme, question.marks)
     if answer_marks != config.total_marks:
-        raise ValueError(f"Answerable marks mismatch: {answer_marks} != {config.total_marks}")
+        raise ValueError(
+            f"Answerable marks mismatch: {answer_marks} != {config.total_marks}"
+        )
 
 
 def _reject_mark_text(number: str, prompt: str) -> None:
@@ -102,9 +125,7 @@ def _validate_scheme(number: str, points: list[str], marks: int) -> None:
     if not points:
         return
     normalised = [
-        " ".join(point.casefold().split())
-        for point in points
-        if point.strip()
+        " ".join(point.casefold().split()) for point in points if point.strip()
     ]
     if len(normalised) != len(set(normalised)):
         raise ValueError(f"Question {number} repeats a mark-scheme point")

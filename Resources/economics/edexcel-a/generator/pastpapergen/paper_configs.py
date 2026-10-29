@@ -289,4 +289,6 @@ def load_builtin_paper_config(paper_id: str) -> PaperConfig:
         return deepcopy(_BUILTIN_CONFIGS[paper_id])
     except KeyError as error:
         known = ", ".join(sorted(_BUILTIN_CONFIGS))
-        raise ValueError(f"Unknown paper config '{paper_id}'. Known: {known}") from error
+        raise ValueError(
+            f"Unknown paper config '{paper_id}'. Known: {known}"
+        ) from error

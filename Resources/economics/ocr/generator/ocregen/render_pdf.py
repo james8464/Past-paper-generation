@@ -1714,7 +1714,6 @@ def _answer_mark(question: GeneratedQuestion) -> Table:
 
 # Carry the visible question label into an in-row continuation.
 class _CreditTable(Table):
-
     @staticmethod
     def _cell_text(value):
         if isinstance(value, (tuple, list)):
@@ -1971,9 +1970,14 @@ def _document(path: Path, paper: GeneratedPaper, kind: str) -> BaseDocTemplate:
     frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id="body")
 
     if kind == "Question paper":
+
         def record_question_end(flowable) -> None:
-            if isinstance(flowable, Paragraph) and flowable.getPlainText() == "END OF QUESTION PAPER":
+            if (
+                isinstance(flowable, Paragraph)
+                and flowable.getPlainText() == "END OF QUESTION PAPER"
+            ):
                 doc._question_paper_end_page = doc.page
+
         doc.afterFlowable = record_question_end
 
     def draw_chrome(canvas, value) -> None:
@@ -2066,7 +2070,10 @@ def _chrome(canvas, doc, code: str, kind: str) -> None:
         canvas.drawCentredString(page_width / 2, page_height - 18.8 * mm, str(doc.page))
         canvas.setFont(FONT, 6)
         canvas.drawString(21.5 * mm, 20.2 * mm, code)
-        if doc.page % 2 == 1 and getattr(doc, "_question_paper_end_page", None) != doc.page:
+        if (
+            doc.page % 2 == 1
+            and getattr(doc, "_question_paper_end_page", None) != doc.page
+        ):
             canvas.setFont(FONT_BOLD, 10)
             canvas.drawRightString(page_width - 23 * mm, 21.2 * mm, "Turn over")
         canvas.restoreState()

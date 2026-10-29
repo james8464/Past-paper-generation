@@ -6,7 +6,6 @@ from dataclasses import dataclass
 # Shared Paper 1 financial-statement figures.
 @dataclass(frozen=True)
 class FinancialPosition:
-
     inventories: int
     receivables: int
     cash: int

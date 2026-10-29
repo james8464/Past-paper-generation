@@ -43,7 +43,9 @@ def _selection() -> dict:
 
 
 @pytest.mark.parametrize("total", ["5.5", "6", "6.5"])
-def test_v22_candidate_has_staged_before_after_work_and_exact_credit(total: str) -> None:
+def test_v22_candidate_has_staged_before_after_work_and_exact_credit(
+    total: str,
+) -> None:
     candidate = render_graph_route_trace_candidate(
         build_graph_route_trace_contract(270100), _selection(), _specs(total)
     )
@@ -51,7 +53,9 @@ def test_v22_candidate_has_staged_before_after_work_and_exact_credit(total: str)
     assert candidate["target_points"] == total
     assert candidate["minutes"] == 70
     assert [question["id"] for question in candidate["questions"]] == _IDS
-    assert sum(question["estimated_minutes"] for question in candidate["questions"]) == 70
+    assert (
+        sum(question["estimated_minutes"] for question in candidate["questions"]) == 70
+    )
     assert all(
         sum(Decimal(mark["points"]) for mark in question["marking"])
         == Decimal(question["points"])
@@ -66,8 +70,10 @@ def test_v22_candidate_has_staged_before_after_work_and_exact_credit(total: str)
         assert len(table["rows"]) == 4
         assert all(len(row) == 7 for row in table["rows"])
         assert [row[0] for row in table["rows"]] == [
-            "1re distance (fixé : ___)", "1re préd.",
-            "2e distance (fixé : ___)", "2e préd.",
+            "1re distance (fixé : ___)",
+            "1re préd.",
+            "2e distance (fixé : ___)",
+            "2e préd.",
         ]
         assert all(row[1:] == ["_____" for _ in "ABCDEF"] for row in table["rows"])
         assert all("A=0" not in " ".join(row) for row in table["rows"])

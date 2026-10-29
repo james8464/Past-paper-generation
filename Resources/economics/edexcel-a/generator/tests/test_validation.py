@@ -34,11 +34,18 @@ def test_validate_blueprint_rejects_unstructured_mcq():
     blueprint = build_paper_blueprint(config, syllabus, seed=1)
     first = blueprint.questions[0]
     bad_parts = [
-        part.model_copy(update={"options": [], "correct_option": ""}) if part.marks == 1 else part
+        part.model_copy(update={"options": [], "correct_option": ""})
+        if part.marks == 1
+        else part
         for part in first.parts
     ]
     bad_blueprint = blueprint.model_copy(
-        update={"questions": [first.model_copy(update={"parts": bad_parts}), *blueprint.questions[1:]]}
+        update={
+            "questions": [
+                first.model_copy(update={"parts": bad_parts}),
+                *blueprint.questions[1:],
+            ]
+        }
     )
 
     with pytest.raises(ValueError, match="MCQ"):
@@ -49,8 +56,12 @@ def test_validate_blueprint_rejects_llm_mark_text_in_prompt():
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
     blueprint = build_paper_blueprint(config, syllabus, seed=1)
-    bad_question = blueprint.questions[0].model_copy(update={"prompt": "Explain something. (4 marks)"})
-    bad_blueprint = blueprint.model_copy(update={"questions": [bad_question, *blueprint.questions[1:]]})
+    bad_question = blueprint.questions[0].model_copy(
+        update={"prompt": "Explain something. (4 marks)"}
+    )
+    bad_blueprint = blueprint.model_copy(
+        update={"questions": [bad_question, *blueprint.questions[1:]]}
+    )
 
     with pytest.raises(ValueError, match="marks text"):
         validate_blueprint(bad_blueprint, config, syllabus)

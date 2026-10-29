@@ -22,8 +22,12 @@ def test_case_has_an_isolated_node_a_shared_child_and_a_cycle():
         ["e", "Notes"],
     ]
     assert case["links"] == [
-        ["r", "a"], ["r", "b"], ["a", "c"],
-        ["b", "c"], ["c", "d"], ["d", "a"],
+        ["r", "a"],
+        ["r", "b"],
+        ["a", "c"],
+        ["b", "c"],
+        ["c", "d"],
+        ["d", "a"],
     ]
 
 
@@ -57,8 +61,14 @@ def test_recursive_traversal_terminates_on_the_cycle_and_visits_shared_child_onc
 
 @pytest.mark.parametrize(
     "start,target,expected",
-    [("r", "r", 0), ("r", "b", 1), ("r", "d", 3),
-     ("r", "e", None), ("a", "b", None), ("d", "c", 2)],
+    [
+        ("r", "r", 0),
+        ("r", "b", 1),
+        ("r", "d", 3),
+        ("r", "e", None),
+        ("a", "b", None),
+        ("d", "c", 2),
+    ],
 )
 def test_shortest_link_count_is_not_recursive_visit_position(start, target, expected):
     from Backend.Core.france.directory_case import build_objects, distance_minimale
@@ -116,7 +126,7 @@ def test_cases_do_not_leak_mutations_or_claim_seed_based_variety():
     assert build_case(-(2**63)) == build_case(2**63 - 1) == source()
 
 
-@pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63)-1, 2**63])
+@pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63) - 1, 2**63])
 def test_case_refuses_invalid_seed_types_and_out_of_range_values(seed):
     from Backend.Core.france.directory_case import build_case
 

@@ -12,6 +12,7 @@ from Backend.Core.family_adapter import (
     FamilyAdapter,
     run_family_adapter,
 )
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from cspapergen.generator import (
     TOPIC_QUESTION_BANK_PLANS,
@@ -138,7 +139,7 @@ def generate_package(
     syllabus_path: Path = DEFAULT_SYLLABUS_PATH,
     notes_source: Path = DEFAULT_NOTES_SOURCE,
     progress: Callable[[str], None] | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     if progress is not None:

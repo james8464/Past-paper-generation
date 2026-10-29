@@ -11,10 +11,11 @@ import re
 from collections import Counter
 from collections.abc import Sequence
 from decimal import Decimal
-from typing import Any, Protocol
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
+from Backend.Core.answer_projection import without_private_answer_keys
 from Backend.Core.assessment_contracts import EvidenceRecord
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.assessment_quality import content_similarity
@@ -25,6 +26,8 @@ from Backend.Core.credit_policy import (
     declared_rule_metadata_present,
 )
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
+from Backend.Core.json_client import JSONGenerationClient as SolverClient
 from Backend.Core.numeric_integrity import (
     NUMERIC_INTEGRITY_VERSION,
     CheckedNumericOutput,
@@ -36,6 +39,7 @@ from Backend.Core.numeric_integrity import (
     numeric_result,
 )
 from Backend.Core.open_credit import validate_open_credit_review
+from Backend.Core.solver_prompts import build_solver_prompt, solver_output_contract
 from Backend.Core.subjects.accounting import (
     derive_accounting_open_response_context,
     solve_accounting_calculation,
@@ -47,10 +51,11 @@ from Backend.Core.subjects.economics_contracts import solve_economics_contract
 from Backend.Core.subjects.selected_response import solve_selected_response
 from Backend.Core.subjects.sql_contracts import SQLValidationResult
 
+_without_answer_key = without_private_answer_keys
+
 
 # Private durable record of one model-presented SQL attempt.
 class SQLProgramAttemptAudit(BaseModel):
-
     model_config = ConfigDict(frozen=True)
 
     answer: str
@@ -59,13 +64,8 @@ class SQLProgramAttemptAudit(BaseModel):
     validation_result: SQLValidationResult
 
 
-class SolverClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
-
-
 # Exact raw-provider shape; semantic validation remains item-specific below.
 class SolverResponseEnvelope(BaseModel):
-
     model_config = ConfigDict(extra="forbid", strict=True)
 
     steps: list[str]
@@ -128,7 +128,6 @@ class ReconciliationResult(BaseModel):
 
 # Solve an item in a context that deliberately excludes its draft scheme.
 class IndependentSolver:
-
     def __init__(self, client: SolverClient | None = None) -> None:
         self.client = client
 
@@ -148,7 +147,8 @@ class IndependentSolver:
         )
         context = dict(raw_item.get("authoring_context") or {})
         policy = objective_policy_for(
-            str(raw_item.get("subject", "")), str(context.get("objective_subject", "")),
+            str(raw_item.get("subject", "")),
+            str(context.get("objective_subject", "")),
             "computer science" if context.get("cs_input_contract") else "",
         )
         policy.validate(raw_item)
@@ -168,13 +168,7 @@ class IndependentSolver:
             or len(set(response_slots)) != len(response_slots)
         ):
             raise ValueError(f"{item_id} invalid closed response slot contract")
-        deterministic = solve_accounting_calculation(raw_item)
-        if deterministic is None:
-            deterministic = solve_computer_science_contract(raw_item)
-        if deterministic is None:
-            deterministic = solve_economics_contract(raw_item)
-        if deterministic is None:
-            deterministic = solve_selected_response(raw_item)
+        deterministic = _deterministic_subject_solution(raw_item)
         expression = context.get("calculation_expression")
         variables = context.get("calculation_variables")
         expressions = context.get("calculation_expressions")
@@ -225,71 +219,24 @@ class IndependentSolver:
         elif not response_slots and _requires_numeric_contract(raw_item):
             raise ValueError(f"{item_id} unsupported closed numeric output contract")
         result: dict[str, Any] = deterministic or {}
-        response_instructions = (
-            " For a closed response (response_slots supplied), answer and "
-            "mark_points must EACH be a JSON object mapping EVERY supplied "
-            "slot ID to the same single final answer string, with no extra "
-            "slots or commentary. Work out the solution in steps FIRST, then "
-            "write answer, then copy those final values into mark_points. "
-            "In steps, solve each requested slot in turn using that slot's position and "
-            "all relevant source evidence. Check that every slot has been considered before "
-            "finalising either map; results may coincide only if separately justified by "
-            "the item. "
-            'Format example only: "answer": {"slot-id": "final value"}, '
-            '"mark_points": {"slot-id": "final value"}. Use the actual supplied '
-            "slot IDs. Do not put grading prose or nested objects in either mapping."
-            if response_slots
-            else " For multiple choice, mark_points must contain exactly one string: "
-            "the same selected option as answer. Put reasoning in steps."
-        )
         if deterministic is None and self.client is not None:
-            correction = ""
-            if correction_findings:
-                if context.get("sql_answer_contract") is None:
-                    raise ValueError("solver correction findings require a public SQL contract")
-                correction = (
-                    " This is the single permitted correction of a prior SQL response. "
-                    "Correct every structured verifier finding using only the same public "
-                    "schema, intent and supported syntax. Do not ask for or infer a private "
-                    "worked query. SQL_VALIDATION_FINDINGS="
-                    + json.dumps(list(correction_findings), ensure_ascii=False, sort_keys=True)
-                )
             raw_result = _generate_solver_response(
-                    self.client,
-                    "Independently solve this UK A-level assessment item. Do not "
-                    "infer or reproduce a draft mark scheme. Recompute every numeric "
-                    "result and cite only the supplied evidence IDs; when sources is "
-                    "empty, evidence_ids must be an empty array. For multiple choice, "
-                    "return the complete option text rather than its number or letter. "
-                    "Return exactly one JSON object with these seven top-level fields, "
-                    "and no others: steps, answer, mark_points, evidence_ids, alternatives, "
-                    "partial_credit_boundaries, follow_through_rules. Every field is required; "
-                    "every array must be present explicitly even when empty; do not return null. "
-                    "Follow every independent_solver_instructions entry in authoring_context; "
-                    "derive its requested facts solely from candidate-visible inputs and show "
-                    "those derivations in steps. "
-                    "When independently_derived_context is present, treat its numeric results "
-                    "as authoritative code-derived facts from the public inputs; use them in "
-                    "the answer and do not replace them with new model arithmetic. "
-                    'For an open response the literal envelope is: {"steps":["reasoning step"],'
-                    '"answer":"complete answer","mark_points":["creditable point"],'
-                    '"evidence_ids":[],"alternatives":[],"partial_credit_boundaries":[],'
-                    '"follow_through_rules":[]}. '
-                    + response_instructions
-                    + correction
-                    + "\n"
-                    + json.dumps(
-                        {
-                            "item": solver_item,
-                            "sources": [source.model_dump() for source in sources],
-                        },
-                        ensure_ascii=False,
-                    ),
-                    item_id=item_id,
-                    derived_context=derived_context,
-                )
+                self.client,
+                build_solver_prompt(
+                    solver_item,
+                    sources,
+                    response_slots,
+                    correction_findings=correction_findings,
+                    sql_contract_present=context.get("sql_answer_contract") is not None,
+                ),
+                item_id=item_id,
+                derived_context=derived_context,
+                output_contract=solver_output_contract(solver_item, response_slots),
+            )
             try:
-                envelope = SolverResponseEnvelope.model_validate(raw_result, strict=True)
+                envelope = SolverResponseEnvelope.model_validate(
+                    raw_result, strict=True
+                )
             except ValidationError as error:
                 raise ValueError(
                     f"{item_id} returned an invalid solver response envelope"
@@ -405,9 +352,16 @@ class IndependentSolver:
             )
         )
         credit_rules, advisory_issues = collect_credit_rules(
-            context, result, closed=fixed_answer, marks=int(raw_item.get("marks", 0)))
+            context, result, closed=fixed_answer, marks=int(raw_item.get("marks", 0))
+        )
+
         def mandatory(field: str) -> list[str]:
-            return [rule.text for rule in credit_rules if rule.kind == field and rule.origin != "model-advisory"]
+            return [
+                rule.text
+                for rule in credit_rules
+                if rule.kind == field and rule.origin != "model-advisory"
+            ]
+
         return CanonicalSolution(
             item_id=item_id,
             answer=answer,
@@ -456,18 +410,30 @@ class IndependentSolver:
 
 
 # Repair missing public numeric evidence at the solver, not by rewriting the question.
+def _deterministic_subject_solution(item: dict[str, Any]) -> dict[str, Any] | None:
+    result = solve_accounting_calculation(item)
+    if result is None:
+        result = solve_computer_science_contract(item)
+    if result is None:
+        result = solve_economics_contract(item)
+    if result is None:
+        result = solve_selected_response(item)
+    return result
+
+
 def _generate_solver_response(
     client: SolverClient,
     prompt: str,
     *,
     item_id: str,
     derived_context: dict[str, Any] | None,
+    output_contract: OutputContract,
 ) -> dict[str, object]:
     required = (derived_context or {}).get("required_numeric_evidence", {})
     attempts: list[dict[str, Any]] = []
     correction = ""
     for _ in range(2 if required else 1):
-        raw = client.generate_json(prompt + correction)
+        raw = request_json(client, make_request(prompt + correction, output_contract))
         if not required:
             return raw
         try:
@@ -481,16 +447,22 @@ def _generate_solver_response(
         visible = " ".join([envelope.answer, *envelope.steps])
         numbers = _numbers(visible)
         missing = [
-            role for role, value in required.items()
-            if not any(math.isclose(number, value, rel_tol=0, abs_tol=0.005) for number in numbers)
+            role
+            for role, value in required.items()
+            if not any(
+                math.isclose(number, value, rel_tol=0, abs_tol=0.005)
+                for number in numbers
+            )
         ]
         if not missing:
             return raw
-        attempts.append({
-            "missing_roles": missing,
-            "answer": envelope.answer,
-            "steps": envelope.steps,
-        })
+        attempts.append(
+            {
+                "missing_roles": missing,
+                "answer": envelope.answer,
+                "steps": envelope.steps,
+            }
+        )
         correction = (
             "\nThe prior independent answer omitted required public numeric evidence. "
             "Use only the original public inputs and independently_derived_context. "
@@ -510,50 +482,6 @@ def _generate_solver_response(
     )
 
 
-def _without_answer_key(value: Any) -> Any:
-    hidden = {
-        # Private instance credit must not enter the blind model context.
-        # Keep candidate input contracts and ordinary source fields (including
-        # a source's own "credit" column) intact for independent derivation.
-        "assessment_contract",
-        "open_credit_contract",
-        "open_credit_review",
-        "credit_allocations",
-        "credit_review_item",
-        "accounting_source_content",
-        "accounting_marking_policy",
-        "grouped_level_policy",
-        "mark_scheme",
-        "structured_mark_scheme",
-        "marking",
-        "mark_breakdown",
-        "indicative_content",
-        "correct_choice",
-        "correct_option",
-        "verified_answers",
-        "canonical_solution",
-        "observable_mark_points",
-        "valid_alternatives",
-        "alternative_permission_ids",
-        "alternative_permission_version",
-        "partial_credit_boundaries",
-        "follow_through_rules",
-        "difficulty_evidence",
-        "required_mark_scheme_terms",
-        "forbidden_mark_scheme_terms",
-        "closed_answers",
-    }
-    if isinstance(value, dict):
-        return {
-            key: _without_answer_key(child)
-            for key, child in value.items()
-            if key not in hidden
-        }
-    if isinstance(value, list):
-        return [_without_answer_key(child) for child in value]
-    return value
-
-
 # Retain finite route evidence, but fingerprint open text instead of logging it.
 def solution_failure_evidence(
     solution: CanonicalSolution, issues: Sequence[ReconciliationIssue]
@@ -565,10 +493,19 @@ def solution_failure_evidence(
         )
         is_edge_count = slot == "edges" and re.fullmatch(r"\d{1,3}", value)
         is_tree_parent = re.fullmatch(r"node-\d{1,3}-parent", slot) and (
-            re.fullmatch(r"\d{1,3}", value) or value.casefold() in {"none", "no parent", "null"}
+            re.fullmatch(r"\d{1,3}", value)
+            or value.casefold() in {"none", "no parent", "null"}
         )
-        is_tree_side = re.fullmatch(r"node-\d{1,3}-side", slot) and value.casefold() in {
-            "left", "right", "root", "none", "neither", "null", "n/a"
+        is_tree_side = re.fullmatch(
+            r"node-\d{1,3}-side", slot
+        ) and value.casefold() in {
+            "left",
+            "right",
+            "root",
+            "none",
+            "neither",
+            "null",
+            "n/a",
         }
         if is_route or is_edge_count or is_tree_parent or is_tree_side:
             safe_slots[slot] = value
@@ -603,9 +540,12 @@ def require_solution_matches_scheme(
             f"{solution.item_id} independent answer disagrees with the keyed option",
             details=solution_failure_evidence(
                 solution,
-                [ReconciliationIssue(
-                    field="choice", message="independent answer disagrees with keyed option"
-                )],
+                [
+                    ReconciliationIssue(
+                        field="choice",
+                        message="independent answer disagrees with keyed option",
+                    )
+                ],
             ),
         )
     if expected_choice is not None:
@@ -654,14 +594,24 @@ def reconcile_solution(
         try:
             review_item = raw.get("credit_review_item", {})
             marking = review_item.get("marking", {})
-            if (review_item.get("authoring_context", {}).get("open_credit_contract") != solution.open_credit_contract
-                    or raw.get("mark_scheme") != [*marking.get("points", []), *marking.get("levels", [])]
-                    or raw.get("alternatives", []) != marking.get("accept", [])
-                    or raw.get("marks") != review_item.get("marks")):
-                raise ValueError("semantic credit review does not match the actual scheme")
-            validate_open_credit_review(review_item, raw.get("open_credit_review"), solution=solution)
+            if (
+                review_item.get("authoring_context", {}).get("open_credit_contract")
+                != solution.open_credit_contract
+                or raw.get("mark_scheme")
+                != [*marking.get("points", []), *marking.get("levels", [])]
+                or raw.get("alternatives", []) != marking.get("accept", [])
+                or raw.get("marks") != review_item.get("marks")
+            ):
+                raise ValueError(
+                    "semantic credit review does not match the actual scheme"
+                )
+            validate_open_credit_review(
+                review_item, raw.get("open_credit_review"), solution=solution
+            )
         except (ValueError, TypeError, KeyError) as error:
-            issues.append(ReconciliationIssue(field="open_credit_review", message=str(error)))
+            issues.append(
+                ReconciliationIssue(field="open_credit_review", message=str(error))
+            )
 
     requires_free_entry_numeric_contract = raw.get("kind") != "multiple_choice" and (
         _requires_numeric_contract(raw) or bool(solution.numeric_results)
@@ -734,10 +684,18 @@ def reconcile_solution(
         alternative_groups = [
             (checked_outputs, raw.get("alternatives", [])),
             (checked_outputs, raw.get("allow", [])),
-            (checked_outputs, [rule.text for rule in solution.credit_rules
-                               if rule.kind == "alternatives" and rule.content_kind == "answer"
-                               and rule.origin != "model-advisory"]
-             if solution.credit_policy_version == CREDIT_POLICY_VERSION else solution.alternatives),
+            (
+                checked_outputs,
+                [
+                    rule.text
+                    for rule in solution.credit_rules
+                    if rule.kind == "alternatives"
+                    and rule.content_kind == "answer"
+                    and rule.origin != "model-advisory"
+                ]
+                if solution.credit_policy_version == CREDIT_POLICY_VERSION
+                else solution.alternatives,
+            ),
         ]
         for point in points:
             if not isinstance(point, dict):
@@ -753,8 +711,10 @@ def reconcile_solution(
             ]
             for field in ("alternatives", "allow"):
                 alternatives = point.get(field, [])
-                if associated or solution.text_checks or any(
-                    re.search(r"\d|[£%]", value) for value in alternatives
+                if (
+                    associated
+                    or solution.text_checks
+                    or any(re.search(r"\d|[£%]", value) for value in alternatives)
                 ):
                     alternative_groups.append((associated, alternatives))
         for checks, alternatives in alternative_groups:
@@ -775,10 +735,17 @@ def reconcile_solution(
                 )
             )
             for check in solution.text_checks:
-                selected = [statement for statement in published if re.search(check.scheme_pattern, statement, re.MULTILINE)]
-                matches = re.findall(check.scheme_pattern, "\n".join(published), re.MULTILINE)
+                selected = [
+                    statement
+                    for statement in published
+                    if re.search(check.scheme_pattern, statement, re.MULTILINE)
+                ]
+                matches = re.findall(
+                    check.scheme_pattern, "\n".join(published), re.MULTILINE
+                )
                 complete = not check.whole_statement or all(
-                    re.fullmatch(check.scheme_pattern, statement.strip()) for statement in selected
+                    re.fullmatch(check.scheme_pattern, statement.strip())
+                    for statement in selected
                 )
                 if (
                     not matches
@@ -873,19 +840,38 @@ def reconcile_solution(
                     )
 
             if not solution.numeric_checks and not solution.text_checks:
-                concrete = [rule.text for rule in solution.credit_rules
-                            if rule.kind == "alternatives" and rule.content_kind == "answer"
-                            and rule.origin != "model-advisory"] if solution.credit_policy_version == CREDIT_POLICY_VERSION else solution.alternatives
+                concrete = (
+                    [
+                        rule.text
+                        for rule in solution.credit_rules
+                        if rule.kind == "alternatives"
+                        and rule.content_kind == "answer"
+                        and rule.origin != "model-advisory"
+                    ]
+                    if solution.credit_policy_version == CREDIT_POLICY_VERSION
+                    else solution.alternatives
+                )
                 for alternative in concrete:
-                    slot, value = (solution.response_slots[0], alternative) if len(solution.response_slots) == 1 else ("", alternative)
+                    slot, value = (
+                        (solution.response_slots[0], alternative)
+                        if len(solution.response_slots) == 1
+                        else ("", alternative)
+                    )
                     if ":" in alternative:
-                        slot, value = (piece.strip() for piece in alternative.split(":", 1))
+                        slot, value = (
+                            piece.strip() for piece in alternative.split(":", 1)
+                        )
                     allowed = accepted.get(slot, [])
                     if not isinstance(allowed, list) or not any(
                         _closed_slot_equal(slot, value, str(candidate))
                         for candidate in allowed
                     ):
-                        issues.append(ReconciliationIssue(field="alternatives", message=f"unsupported or incorrect closed alternative: {alternative}"))
+                        issues.append(
+                            ReconciliationIssue(
+                                field="alternatives",
+                                message=f"unsupported or incorrect closed alternative: {alternative}",
+                            )
+                        )
 
     expected_numbers = [] if solution.response_slots else _numbers(solution.answer)
     if expected_numbers and solution.mark_points_exhaustive and not solution.is_choice:
@@ -933,8 +919,15 @@ def reconcile_solution(
             )
 
     for rule in solution.credit_rules:
-        if rule.origin == "source-declared" and not declared_rule_metadata_present(rule, raw, points):
-            issues.append(ReconciliationIssue(field=rule.kind, message=f"scheme omits or changes declared score/cap/dependencies: {rule.raw}"))
+        if rule.origin == "source-declared" and not declared_rule_metadata_present(
+            rule, raw, points
+        ):
+            issues.append(
+                ReconciliationIssue(
+                    field=rule.kind,
+                    message=f"scheme omits or changes declared score/cap/dependencies: {rule.raw}",
+                )
+            )
 
     allocation: Counter[str] = Counter()
     total_marks = 0
@@ -948,7 +941,8 @@ def reconcile_solution(
             allocation[str(objective)] += marks
     if (
         solution.assessment_objectives
-        and (dict(allocation) if total_marks else raw.get("assessment_objectives", {})) != solution.assessment_objectives
+        and (dict(allocation) if total_marks else raw.get("assessment_objectives", {}))
+        != solution.assessment_objectives
     ):
         issues.append(
             ReconciliationIssue(
@@ -1017,9 +1011,13 @@ def _route_vertices(value: str) -> tuple[str, ...] | None:
             vertices = re.split(r"\s*(?:,|->|→|-)\s*", value[1:-1].strip())
     else:
         vertices = re.split(r"\s*(?:,|->|→|-)\s*", value)
-    if not isinstance(vertices, list) or not vertices or any(
-        not isinstance(vertex, str) or not re.fullmatch(r"[A-Za-z0-9_]+", vertex)
-        for vertex in vertices
+    if (
+        not isinstance(vertices, list)
+        or not vertices
+        or any(
+            not isinstance(vertex, str) or not re.fullmatch(r"[A-Za-z0-9_]+", vertex)
+            for vertex in vertices
+        )
     ):
         return None
     return tuple(vertices)
@@ -1036,7 +1034,10 @@ def _closed_slot_equal(slot: str, left: str, right: str) -> bool:
         # The root is neither a left nor a right child. Both encodings describe
         # that same absence of a parent edge; other child sides stay exact.
         root_sides = {"root", "none", "no side", "neither", "n/a"}
-        if _closed_normalise(left) in root_sides and _closed_normalise(right) in root_sides:
+        if (
+            _closed_normalise(left) in root_sides
+            and _closed_normalise(right) in root_sides
+        ):
             return True
     return _closed_normalise(left) == _closed_normalise(right)
 

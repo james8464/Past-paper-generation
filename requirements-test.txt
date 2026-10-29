@@ -1,4 +1,6 @@
 pytest>=8,<10
+# Wheel parity tests invoke this backend directly, without build isolation.
+setuptools>=84,<85
 pymupdf==1.28.2
 pypdf>=5,<7
 ruff>=0.16,<0.17

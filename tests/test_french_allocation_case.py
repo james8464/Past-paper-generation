@@ -17,11 +17,16 @@ def test_query_uses_active_eligible_teams_in_task_priority_order():
         database.executemany("INSERT INTO Tache VALUES (?, ?, ?)", case["tasks"])
         database.executemany("INSERT INTO Habilitation VALUES (?, ?)", case["skills"])
         assert database.execute(candidate_query()).fetchall() == [
-            (10, 1), (10, 2), (11, 1), (12, 3)
+            (10, 1),
+            (10, 2),
+            (11, 1),
+            (12, 3),
         ]
         database.execute("UPDATE Equipe SET active = 0 WHERE id = 2")
         assert database.execute(candidate_query()).fetchall() == [
-            (10, 1), (11, 1), (12, 3)
+            (10, 1),
+            (11, 1),
+            (12, 3),
         ]
 
 
@@ -45,7 +50,9 @@ def test_repair_matches_all_small_bipartite_feasibility_cases():
         feasible = [
             list(zip(tasks, order, strict=True))
             for order in permutations(teams)
-            if all((task, team) in choices for task, team in zip(tasks, order, strict=True))
+            if all(
+                (task, team) in choices for task, team in zip(tasks, order, strict=True)
+            )
         ]
         answer = affecter(tasks, choices)
         assert (answer is not None) == bool(feasible)
@@ -72,12 +79,14 @@ def test_sql_schema_enforces_the_keys_and_active_domain_claimed_in_the_paper():
         database.executemany("INSERT INTO Habilitation VALUES (?, ?)", case["skills"])
         for team, domain in [(9, "son"), (1, "son"), (None, "son")]:
             with pytest.raises(sqlite3.IntegrityError):
-                database.execute("INSERT INTO Habilitation VALUES (?, ?)", (team, domain))
+                database.execute(
+                    "INSERT INTO Habilitation VALUES (?, ?)", (team, domain)
+                )
         with pytest.raises(sqlite3.IntegrityError):
             database.execute("UPDATE Equipe SET active = 2 WHERE id = 1")
 
 
-@pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63)-1, 2**63])
+@pytest.mark.parametrize("seed", [True, 1.5, "270104", -(2**63) - 1, 2**63])
 def test_invalid_seed_is_refused(seed):
     from Backend.Core.france.allocation_case import build_case
 

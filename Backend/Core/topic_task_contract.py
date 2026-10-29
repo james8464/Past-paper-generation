@@ -35,7 +35,6 @@ ResponseMode = Literal[
 
 # The serialised summary is valid only when it agrees with the question.
 class ReferenceTaskContract(BaseModel):
-
     model_config = ConfigDict(extra="forbid", strict=True)
 
     policy_id: Literal["aqa-cs-topic-evidence-v1"]
@@ -59,11 +58,16 @@ def derive_task_semantics(
     has_options = isinstance(options, list) and bool(options)
     slots = response_slots if isinstance(response_slots, list) else []
 
-    if text.startswith(("explain ", "describe ")) and operation not in {"explain", "describe", "analyse"}:
+    if text.startswith(("explain ", "describe ")) and operation not in {
+        "explain",
+        "describe",
+        "analyse",
+    }:
         return None
     # A prose operation cannot override an explicit construction instruction.
     if operation not in {"program", "complete-code"} and re.match(
-        r"(?:write|create|develop|implement|complete)\b.*\b(?:code|pseudocode|program|function|procedure|algorithm|select|insert|update|delete|create table)\b", text
+        r"(?:write|create|develop|implement|complete)\b.*\b(?:code|pseudocode|program|function|procedure|algorithm|select|insert|update|delete|create table)\b",
+        text,
     ):
         return None
 

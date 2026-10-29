@@ -12,7 +12,9 @@ from tests.support.solver_responses import complete_solver_response
 
 
 def test_public_and_credit_contract_changes_have_a_new_accounting_identity():
-    assert ADAPTER.prompt_version == "ai-assessment-v11-accounting-public-credit-contracts"
+    assert (
+        ADAPTER.prompt_version == "ai-assessment-v11-accounting-public-credit-contracts"
+    )
 
 
 @pytest.mark.parametrize("key", ["accounting_source_content", "grouped_level_policy"])

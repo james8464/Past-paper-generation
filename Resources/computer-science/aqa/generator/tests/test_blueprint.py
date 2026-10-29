@@ -36,7 +36,9 @@ def test_blueprint_is_deterministic_for_seed():
 
 
 def test_four_mark_boolean_tasks_have_equivalent_explicit_working():
-    style = next(style for style in QUESTION_STYLES if style.id == "boolean_simplification")
+    style = next(
+        style for style in QUESTION_STYLES if style.id == "boolean_simplification"
+    )
     expressions = set()
     answers = set()
     for seed in range(30):
@@ -73,7 +75,12 @@ def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> N
         hash_question = build_question(styles["data_structures_hash"], 1, 6, rng)
         hash_source = hash_question.stimulus.code
         size = int(re.search(r"key MOD (\d+)", hash_source).group(1))
-        keys = [int(value) for value in re.search(r"Keys inserted: ([\d, ]+)", hash_source).group(1).split(", ")]
+        keys = [
+            int(value)
+            for value in re.search(r"Keys inserted: ([\d, ]+)", hash_source)
+            .group(1)
+            .split(", ")
+        ]
         occupied: set[int] = set()
         expected_slots = {}
         for key in keys:
@@ -84,7 +91,9 @@ def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> N
             expected_slots[f"key-{key}"] = [str(slot)]
         assert hash_question.parts[0].marking.closed_answers == expected_slots
         hash_patterns.add(tuple(key % size for key in keys))
-        hash_wraps |= any(slot == "0" for values in expected_slots.values() for slot in values)
+        hash_wraps |= any(
+            slot == "0" for values in expected_slots.values() for slot in values
+        )
 
         tree_question = build_question(styles["data_structures_tree"], 1, 6, rng)
         values = [int(value) for value in tree_question.stimulus.code.split(", ")]
@@ -93,18 +102,40 @@ def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> N
             cursor = values[0]
             while True:
                 side = "left" if value < cursor else "right"
-                child = next((node for node, (parent, branch) in links.items() if parent == cursor and branch == side), None)
+                child = next(
+                    (
+                        node
+                        for node, (parent, branch) in links.items()
+                        if parent == cursor and branch == side
+                    ),
+                    None,
+                )
                 if child is None:
                     links[value] = (cursor, side)
                     break
                 cursor = child
         expected_tree = {}
         for value, (parent, side) in links.items():
-            expected_tree[f"node-{value}-parent"] = [str(parent)] if parent is not None else ["none", "no parent"]
+            expected_tree[f"node-{value}-parent"] = (
+                [str(parent)] if parent is not None else ["none", "no parent"]
+            )
             expected_tree[f"node-{value}-side"] = [side]
         assert tree_question.parts[0].marking.closed_answers == expected_tree
-        tree_shapes.add(tuple((values.index(value), values.index(parent) if parent is not None else None, side) for value, (parent, side) in links.items()))
-        traversal = next(name for name in ("in-order", "pre-order", "post-order") if name in tree_question.parts[1].prompt)
+        tree_shapes.add(
+            tuple(
+                (
+                    values.index(value),
+                    values.index(parent) if parent is not None else None,
+                    side,
+                )
+                for value, (parent, side) in links.items()
+            )
+        )
+        traversal = next(
+            name
+            for name in ("in-order", "pre-order", "post-order")
+            if name in tree_question.parts[1].prompt
+        )
         tree_traversals.add(traversal)
 
         graph_question = build_question(styles["data_structures_graph"], 1, 6, rng)
@@ -113,8 +144,12 @@ def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> N
         for line in graph_question.stimulus.code.splitlines():
             vertex, neighbours = line.split(": ")
             adjacency[vertex] = neighbours.split(", ")
-        start = re.search(r"Starting at ([A-F])", graph_question.parts[0].prompt).group(1)
-        target = re.search(r"from ([A-F]) to ([A-F])", graph_question.parts[1].prompt).group(2)
+        start = re.search(r"Starting at ([A-F])", graph_question.parts[0].prompt).group(
+            1
+        )
+        target = re.search(
+            r"from ([A-F]) to ([A-F])", graph_question.parts[1].prompt
+        ).group(2)
         graph_start_targets.add((start, target))
         paths = [[start]]
         seen = {start}
@@ -127,7 +162,8 @@ def test_data_structure_templates_vary_tasks_and_keep_source_derived_keys() -> N
                     seen.add(neighbour)
                     paths.append([*path, neighbour])
         assert graph_question.parts[0].marking.closed_answers == {
-            f"visit-{index}": [vertex] for index, vertex in enumerate(traversal_order, 1)
+            f"visit-{index}": [vertex]
+            for index, vertex in enumerate(traversal_order, 1)
         }
         route = next(path for path in paths if path[-1] == target)
         assert graph_question.parts[1].marking.closed_answers == {
@@ -149,8 +185,10 @@ def test_all_supported_assessments_keep_code_inside_the_renderable_width() -> No
     assessments = [
         paper_one,
         build_paper2_blueprint(syllabus, seed=26080116),
-        *(build_topic_question_bank(syllabus, topic_id=topic, seed=26080116)
-          for topic in ("4.2", "4.10", "4.12")),
+        *(
+            build_topic_question_bank(syllabus, topic_id=topic, seed=26080116)
+            for topic in ("4.2", "4.10", "4.12")
+        ),
     ]
 
     assert all(
@@ -167,11 +205,19 @@ def test_blueprint_totals_100_marks_and_uses_paper2_topics_only():
     blueprint = build_paper2_blueprint(syllabus, seed=7)
 
     assert blueprint.total_marks == 100
-    assert sum(part.marks for question in blueprint.questions for part in question.parts) == 100
+    assert (
+        sum(part.marks for question in blueprint.questions for part in question.parts)
+        == 100
+    )
     assert [question.total_marks for question in blueprint.questions] == QUESTION_TOTALS
     assert len(blueprint.questions) == 14
     assert {question.topic_id for question in blueprint.questions} <= syllabus.topic_ids
-    assert all(question.topic_id.startswith(("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")) for question in blueprint.questions)
+    assert all(
+        question.topic_id.startswith(
+            ("4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11", "4.12")
+        )
+        for question in blueprint.questions
+    )
 
 
 def test_paper_one_binary_search_uses_a_separate_identifier_index() -> None:
@@ -224,8 +270,7 @@ def test_paper_2_uses_reference_part_mark_pattern():
     blueprint = build_paper2_blueprint(load_syllabus(), seed=7)
 
     assert [
-        tuple(part.marks for part in question.parts)
-        for question in blueprint.questions
+        tuple(part.marks for part in question.parts) for question in blueprint.questions
     ] == [marks for _style_id, marks in PAPER2_QUESTION_PLAN]
 
 
@@ -334,20 +379,30 @@ def test_generation_and_package_use_identical_demand_targets(paper_id) -> None:
     elif paper_id == "2":
         blueprint = build_paper2_blueprint(syllabus, seed=7)
     else:
-        blueprint = build_topic_question_bank(syllabus, topic_id=paper_id.removeprefix("bank-"), seed=7)
+        blueprint = build_topic_question_bank(
+            syllabus, topic_id=paper_id.removeprefix("bank-"), seed=7
+        )
     profile = profile_for("aqa/computer-science", paper_id)
     original = [_part_demand_item(q, p) for q in blueprint.questions for p in q.parts]
-    exported = _extract_items(blueprint.model_dump(mode="json"), subject="computer_science", paper_number=paper_id)
+    exported = _extract_items(
+        blueprint.model_dump(mode="json"),
+        subject="computer_science",
+        paper_number=paper_id,
+    )
     assert len(original) == len(exported)
     for before, after in zip(original, exported, strict=True):
-        assert build_item_demand_target(before, profile) == build_item_demand_target(after, profile), after["id"]
+        assert build_item_demand_target(before, profile) == build_item_demand_target(
+            after, profile
+        ), after["id"]
 
 
 def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> None:
     from cspapergen.ollama_client import _part_solver_item
 
     blueprint = build_paper2_blueprint(load_syllabus(), seed=7)
-    question = next(q for q in blueprint.questions if q.style_id == "software_classification")
+    question = next(
+        q for q in blueprint.questions if q.style_id == "software_classification"
+    )
     part = question.parts[0]
     captured = []
 
@@ -361,7 +416,11 @@ def test_solver_view_includes_candidate_visible_stimulus_and_hides_answers() -> 
 
     item = _part_solver_item(question, part)
     IndependentSolver(Client()).solve(item, [])
-    assert "Spreadsheet" in captured[0] or "Word processor" in captured[0] or "Presentation software" in captured[0]
+    assert (
+        "Spreadsheet" in captured[0]
+        or "Word processor" in captured[0]
+        or "Presentation software" in captured[0]
+    )
     assert "System software" in captured[0]
     assert "Application software" not in captured[0]
     assert "Utility software" not in captured[0]
@@ -391,7 +450,9 @@ def test_software_classification_stimulus_contains_only_consistent_categories() 
 
 
 def test_functional_type_stimulus_uses_renderable_exam_notation():
-    style = next(style for style in QUESTION_STYLES if style.id == "functional_type_short")
+    style = next(
+        style for style in QUESTION_STYLES if style.id == "functional_type_short"
+    )
 
     question = build_question(style, number=1, total=4, rng=random.Random(1))
 
@@ -400,11 +461,19 @@ def test_functional_type_stimulus_uses_renderable_exam_notation():
 
 
 def test_new_visual_styles_have_renderable_stimuli():
-    truth_style = next(style for style in QUESTION_STYLES if style.id == "truth_table_completion")
-    network_style = next(style for style in QUESTION_STYLES if style.id == "network_topology")
+    truth_style = next(
+        style for style in QUESTION_STYLES if style.id == "truth_table_completion"
+    )
+    network_style = next(
+        style for style in QUESTION_STYLES if style.id == "network_topology"
+    )
 
-    truth_question = build_question(truth_style, number=4, total=8, rng=random.Random(2))
-    network_question = build_question(network_style, number=5, total=8, rng=random.Random(3))
+    truth_question = build_question(
+        truth_style, number=4, total=8, rng=random.Random(2)
+    )
+    network_question = build_question(
+        network_style, number=5, total=8, rng=random.Random(3)
+    )
 
     assert truth_question.stimulus is not None
     assert truth_question.stimulus.kind == "truth_table"
@@ -444,7 +513,9 @@ def test_hosted_question_generation_runs_independent_prompts_concurrently():
 def test_blueprint_receives_a_separate_reference_demand_review() -> None:
     syllabus = load_syllabus()
     full = build_paper2_blueprint(syllabus, seed=7)
-    hardest = next(question for question in full.questions if question.style_id == "ipv4_extended")
+    hardest = next(
+        question for question in full.questions if question.style_id == "ipv4_extended"
+    )
     blueprint = full.model_copy(update={"questions": [hardest]})
 
     class Client:
@@ -474,24 +545,43 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
                 "command_word_fit": True,
                 "context_fit": True,
                 "profile_fit": True,
-                "observed_cognitive_operations": ["retrieve", "apply", "transform", "explain", "contextualise", "analyse", "integrate", "judge"],
+                "observed_cognitive_operations": [
+                    "retrieve",
+                    "apply",
+                    "transform",
+                    "explain",
+                    "contextualise",
+                    "analyse",
+                    "integrate",
+                    "judge",
+                ],
                 "cognitive_operations_fit": True,
                 "reasoning_range_fit": True,
                 "shortcut_resistant": True,
                 "timing_fit": True,
                 "scaffolding_fit": True,
-                "estimated_minutes": float(re.search(r'"expected_minutes_min": ([\d.]+)', prompt).group(1)),
+                "estimated_minutes": float(
+                    re.search(r'"expected_minutes_min": ([\d.]+)', prompt).group(1)
+                ),
                 "issues": [],
             }
 
     client = Client()
     reviewed = review_blueprint_difficulty(client, blueprint, syllabus)
 
-    difficulty_prompts = [prompt for prompt in client.prompts if "difficulty calibration specialist" in prompt]
+    difficulty_prompts = [
+        prompt
+        for prompt in client.prompts
+        if "difficulty calibration specialist" in prompt
+    ]
     assert len(difficulty_prompts) == len(hardest.parts)
-    assert all('"reference_profile_fingerprint"' in prompt for prompt in difficulty_prompts)
+    assert all(
+        '"reference_profile_fingerprint"' in prompt for prompt in difficulty_prompts
+    )
     assert all('"minimum_reasoning_steps"' in prompt for prompt in difficulty_prompts)
-    assert all(part.difficulty_evidence["approved"] for part in reviewed.questions[0].parts)
+    assert all(
+        part.difficulty_evidence["approved"] for part in reviewed.questions[0].parts
+    )
 
 
 def test_local_generation_retries_only_the_rejected_question():
@@ -560,7 +650,9 @@ def test_local_generation_stops_before_queued_question_after_failure() -> None:
     assert client.authoring_calls == 3
 
 
-def test_editable_question_does_not_claim_authorship_after_repeated_paraphrases() -> None:
+def test_editable_question_does_not_claim_authorship_after_repeated_paraphrases() -> (
+    None
+):
     syllabus = load_syllabus()
     full_blueprint = build_paper1_blueprint(syllabus, seed=26080115)[0]
     question = full_blueprint.questions[8]
@@ -635,7 +727,9 @@ def test_paper_one_report_task_has_objective_partial_credit() -> None:
     assert all(point.startswith("1 mark:") for point in implementation.marking.points)
     assert not any("readable" in point for point in implementation.marking.points)
     assert "record.identifier" in implementation.prompt
-    assert any("leaves the records list" in point for point in implementation.marking.points)
+    assert any(
+        "leaves the records list" in point for point in implementation.marking.points
+    )
     assert "input data set" in tie_test.prompt
     assert "expected output order" in tie_test.prompt
 
@@ -678,14 +772,20 @@ def test_paper_two_floating_point_convention_and_marks_are_unambiguous() -> None
     assert [part.marks for part in question.parts] == [1, 3, 1, 1, 2, 1]
     assert "State whether the binary point" in question.parts[0].prompt
     assert "copied" not in " ".join(question.parts[0].marking.points).casefold()
-    assert "binary point is immediately after the mantissa sign bit" in question.parts[1].prompt
+    assert (
+        "binary point is immediately after the mantissa sign bit"
+        in question.parts[1].prompt
+    )
     conversion = question.parts[1].marking.points
     assert len(conversion) == 3
     assert all(point.startswith("1 mark:") for point in conversion)
     assert any("-1 + 1/4 + 1/16 = -0.6875" in point for point in conversion)
     assert any("0010₂ = 2" in point for point in conversion)
     assert any("-0.6875 × 2² = -2.75" in point for point in conversion)
-    assert "starts 01 when positive or 10 when negative" in question.parts[2].marking.points[0]
+    assert (
+        "starts 01 when positive or 10 when negative"
+        in question.parts[2].marking.points[0]
+    )
     assert len(question.parts[3].marking.points) == 1
     scoring_points = question.parts[4].marking.points
     assert len(scoring_points) == 2
@@ -703,8 +803,16 @@ def test_paper_two_assembly_program_defines_isa_and_six_distinct_marks() -> None
     assert "STR R0, [100]" in question.stimulus.code
     assert "LSR performs a zero-fill logical right shift" in part.prompt
     assert part.marks == len(part.marking.points[:6]) == 6
-    assert sum(point.startswith("Purpose — 1 mark:") for point in part.marking.points) == 3
-    assert sum(point.startswith("Implementation — 1 mark:") for point in part.marking.points) == 3
+    assert (
+        sum(point.startswith("Purpose — 1 mark:") for point in part.marking.points) == 3
+    )
+    assert (
+        sum(
+            point.startswith("Implementation — 1 mark:")
+            for point in part.marking.points
+        )
+        == 3
+    )
     assert any("binary bit length" in point for point in part.marking.points)
 
 
@@ -796,18 +904,28 @@ def test_database_question_has_exact_command_and_mark_coverage() -> None:
     assert [part.marks for part in question.parts] == [1, 6, 2, 2, 1]
     assert question.stimulus is not None
     assert "fitness centre" in question.stem
-    assert all(name in question.stimulus.code for name in ("MEMBER", "SESSION", "BOOKING"))
+    assert all(
+        name in question.stimulus.code for name in ("MEMBER", "SESSION", "BOOKING")
+    )
     assert all(len(line) <= 58 for line in question.stimulus.code.splitlines())
     prompts = " ".join(part.prompt for part in question.parts).upper()
-    assert all(command in prompts for command in ("SELECT", "INSERT", "UPDATE", "DELETE"))
+    assert all(
+        command in prompts for command in ("SELECT", "INSERT", "UPDATE", "DELETE")
+    )
     assert "ERROR" in prompts
     assert all(part.marking.points for part in question.parts)
     assert [part.assessment_objectives for part in question.parts] == [
-        {"AO2": 1}, {"AO2": 4, "AO3": 2}, {"AO3": 2}, {"AO2": 2}, {"AO2": 1},
+        {"AO2": 1},
+        {"AO2": 4, "AO3": 2},
+        {"AO3": 2},
+        {"AO2": 2},
+        {"AO2": 1},
     ]
 
 
-def test_boolean_questions_use_exam_notation_instead_of_programming_punctuation() -> None:
+def test_boolean_questions_use_exam_notation_instead_of_programming_punctuation() -> (
+    None
+):
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     boolean_questions = (blueprint.questions[8], blueprint.questions[12])
 
@@ -817,7 +935,9 @@ def test_boolean_questions_use_exam_notation_instead_of_programming_punctuation(
             [question.stimulus.code, *(part.prompt for part in question.parts)]
         )
         assert not any(token in visible_notation for token in ("A.B", "A.C", ").("))
-        assert any(symbol in visible_notation for symbol in ("·", "+", "⊕", "⊼", "⊽", "̅"))
+        assert any(
+            symbol in visible_notation for symbol in ("·", "+", "⊕", "⊼", "⊽", "̅")
+        )
 
 
 def test_stored_program_question_has_exact_command_and_mark_coverage() -> None:
@@ -827,7 +947,9 @@ def test_stored_program_question_has_exact_command_and_mark_coverage() -> None:
     assert [part.marks for part in question.parts] == [2, 6, 1, 1]
     assert question.parts[1].prompt.startswith("Describe how one instruction")
     cycle_guidance = " ".join(question.parts[1].marking.points).casefold()
-    assert all(bus in cycle_guidance for bus in ("address bus", "data bus", "control bus"))
+    assert all(
+        bus in cycle_guidance for bus in ("address bus", "data bus", "control bus")
+    )
     assert len(question.parts[1].marking.points) == 6
     assert question.parts[2].prompt.startswith("State the role")
     assert question.parts[3].prompt.startswith("State one benefit")
@@ -871,7 +993,9 @@ def test_sound_calculation_scheme_includes_the_canonical_final_answer() -> None:
     blueprint = build_paper2_blueprint(load_syllabus(), seed=26080116)
     part = blueprint.questions[1].parts[0]
 
-    assert any("mib" in point.casefold() and "=" in point for point in part.marking.points)
+    assert any(
+        "mib" in point.casefold() and "=" in point for point in part.marking.points
+    )
 
 
 def test_contextual_compression_scheme_names_the_scenario_consequence() -> None:
@@ -942,6 +1066,7 @@ def test_numeric_heavy_multipart_prompt_requests_only_a_new_scenario() -> None:
     paper_one = build_paper1_blueprint(syllabus, seed=26080115)[0]
     finite_state = paper_one.questions[5]
     from cspapergen.ollama_client import _uses_review_only_generation
+
     assert _uses_review_only_generation(finite_state)
 
     optical = build_paper2_blueprint(syllabus, seed=7).questions[2]

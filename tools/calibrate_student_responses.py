@@ -57,11 +57,10 @@ def main() -> int:
     parser.add_argument("--export-encrypted", type=Path)
     parser.add_argument("--delete", action="store_true")
     args = parser.parse_args()
+    _validate_operation(args, parser=parser)
 
     review = (
-        json.loads(args.review.read_text(encoding="utf-8"))
-        if args.review
-        else None
+        json.loads(args.review.read_text(encoding="utf-8")) if args.review else None
     )
     if args.secure_store:
         return _run_secure(args, review=review, parser=parser)
@@ -107,6 +106,7 @@ def _run_secure(
     review: dict[str, object] | None,
     parser: argparse.ArgumentParser,
 ) -> int:
+    _validate_operation(args, parser=parser)
     key = _load_key(args.key_file, parser=parser)
     store = CalibrationStore(args.secure_store, key=key)
     dataset_id = args.dataset_id
@@ -121,9 +121,7 @@ def _run_secure(
             return 0
     else:
         if not all((args.responses, args.metadata, args.consents)):
-            parser.error(
-                "secure import requires responses, --metadata, and --consents"
-            )
+            parser.error("secure import requires responses, --metadata, and --consents")
         metadata = CalibrationMetadata(
             **json.loads(args.metadata.read_text(encoding="utf-8"))
         )
@@ -159,6 +157,43 @@ def _run_secure(
         )
     )
     return 0 if payload["difficulty_independently_verified"] else 2
+
+
+def _validate_operation(
+    args: argparse.Namespace, *, parser: argparse.ArgumentParser
+) -> None:
+    action = args.delete or args.export_encrypted is not None
+    if args.delete and args.export_encrypted is not None:
+        parser.error("choose either --delete or --export-encrypted")
+    secure_flags = (
+        args.dataset_id,
+        args.metadata,
+        args.consents,
+        args.key_file,
+        action,
+    )
+    if not args.secure_store:
+        if any(value is not None and value is not False for value in secure_flags):
+            parser.error("secure dataset options require --secure-store")
+        return
+    if args.dataset_id is not None and not args.dataset_id.strip():
+        parser.error("--dataset-id must not be empty")
+    if action and not args.dataset_id:
+        parser.error("--delete and --export-encrypted require --dataset-id")
+    if args.dataset_id and any(
+        value is not None for value in (args.responses, args.metadata, args.consents)
+    ):
+        parser.error("an existing --dataset-id cannot be combined with import inputs")
+    if action and any(
+        value is not None for value in (args.review, args.policy, args.output)
+    ):
+        parser.error("delete/export actions cannot be combined with aggregation inputs")
+    if any(value is not None for value in (args.family, args.paper, args.form_id)):
+        parser.error(
+            "secure datasets use metadata instead of --family, --paper or --form-id"
+        )
+    if not args.dataset_id and not all((args.responses, args.metadata, args.consents)):
+        parser.error("secure import requires responses, --metadata, and --consents")
 
 
 def _load_key(

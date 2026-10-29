@@ -17,6 +17,7 @@ from Backend.Core.assessment_checkpoints import (
     identity_for_blueprint,
 )
 from Backend.Core.assessment_package import write_assessment_package
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 from Backend.Core.providers import HostedLLMClient
@@ -58,18 +59,30 @@ class FamilyAdapter:
     resolve_seed: Callable[[int | None], int | None] | None = None
     seed_message: Callable[[int | None], str] | None = None
     validate: Callable[[Any, Any, Any], None] | None = None
-    improve: Callable[
-        [Any, Any, Any, object, ProgressCallback | None, AssessmentCheckpointStore | None],
-        Any,
-    ] | None = None
-    calibrate_difficulty: Callable[
-        [Any, Any, Any, object, ProgressCallback | None], Any
-    ] | None = None
-    client_factory: Callable[[str, str], object] | None = None
+    improve: (
+        Callable[
+            [
+                Any,
+                Any,
+                Any,
+                JSONGenerationClient,
+                ProgressCallback | None,
+                AssessmentCheckpointStore | None,
+            ],
+            Any,
+        ]
+        | None
+    ) = None
+    calibrate_difficulty: (
+        Callable[[Any, Any, Any, JSONGenerationClient, ProgressCallback | None], Any]
+        | None
+    ) = None
+    client_factory: Callable[[str, str], JSONGenerationClient] | None = None
     checkpoint_identity: Callable[[Any, Any, str], Any] | None = None
-    supporting_artifacts: Callable[
-        [Any, Any, Any, str, Path, ProgressCallback], Mapping[str, Path]
-    ] | None = None
+    supporting_artifacts: (
+        Callable[[Any, Any, Any, str, Path, ProgressCallback], Mapping[str, Path]]
+        | None
+    ) = None
     output_order: tuple[str, ...] = ()
 
 
@@ -84,7 +97,7 @@ def run_family_adapter(
     ollama_url: str = "http://localhost:11434",
     dry_run: bool = True,
     progress: ProgressCallback | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     emit = progress or (lambda _message: None)
@@ -201,10 +214,12 @@ def run_family_adapter(
 
     if adapter.output_order:
         paths = {
-            role: paths[role]
-            for role in adapter.output_order
-            if role in paths
-        } | {role: path for role, path in paths.items() if role not in adapter.output_order}
+            role: paths[role] for role in adapter.output_order if role in paths
+        } | {
+            role: path
+            for role, path in paths.items()
+            if role not in adapter.output_order
+        }
 
     # Keep the machine-readable assessment beside the PDFs for later inspection.
     assessment_path = output_dir / f"{adapter.stem(rule, paper)}-assessment.json"
@@ -224,7 +239,7 @@ def run_family_adapter(
     return paths
 
 
-def _hosted_client(model: str, ollama_url: str) -> object:
+def _hosted_client(model: str, ollama_url: str) -> JSONGenerationClient:
     return HostedLLMClient(
         provider="ollama",
         model=model,

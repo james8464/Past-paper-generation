@@ -116,7 +116,10 @@ def mlx_runtime_available() -> bool:
         for package, expected in expected_versions.items():
             if importlib.metadata.version(package) != expected:
                 return False
-        if not all(callable(function) for function in (load, generate, from_mlxlm, grammar_from)):
+        if not all(
+            callable(function)
+            for function in (load, generate, from_mlxlm, grammar_from)
+        ):
             return False
         value = mx.array([1])
         mx.eval(value)
@@ -231,7 +234,9 @@ def resolve_local_mlx_model(
 
 
 def load_mlx_model(
-    model: str, *, snapshot_resolver: Callable[..., str] | None = None,
+    model: str,
+    *,
+    snapshot_resolver: Callable[..., str] | None = None,
 ) -> None:
     emit_progress(
         "Preparing the selected model. The first download may take several minutes…",
@@ -247,12 +252,20 @@ def load_mlx_model(
                 from huggingface_hub import snapshot_download
 
                 snapshot_resolver = snapshot_download
-            path = Path(snapshot_resolver(
-                repo_id=model, local_files_only=False, allow_patterns=MLX_MODEL_PATTERNS,
-            ))
-        load(str(path.resolve()), tokenizer_config={
-            "trust_remote_code": False, "local_files_only": True,
-        })
+            path = Path(
+                snapshot_resolver(
+                    repo_id=model,
+                    local_files_only=False,
+                    allow_patterns=MLX_MODEL_PATTERNS,
+                )
+            )
+        load(
+            str(path.resolve()),
+            tokenizer_config={
+                "trust_remote_code": False,
+                "local_files_only": True,
+            },
+        )
         resolve_local_mlx_model(model)
     except MLXModelSetupRequired:
         raise

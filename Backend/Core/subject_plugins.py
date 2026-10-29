@@ -12,7 +12,6 @@ from Backend.Core.subject_contracts import SubjectValidation as SubjectValidatio
 # Safe baseline plugin for families with validation in their own contracts.
 @dataclass(frozen=True)
 class ContractSubjectPlugin:
-
     id: str
 
     def validate_item(self, item: Any) -> SubjectValidation:

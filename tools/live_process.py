@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import signal
 import subprocess
@@ -47,6 +48,12 @@ def _handle_termination():
 def run_backend(
     command: list[str], *, cwd: Path, run_dir: Path, timeout_seconds: float
 ) -> BackendRun:
+    if (
+        type(timeout_seconds) not in {int, float}
+        or not math.isfinite(timeout_seconds)
+        or timeout_seconds <= 0
+    ):
+        raise ValueError("backend timeout must be a finite positive number")
     output_path = run_dir / "events.jsonl"
     error_path = run_dir / "stderr.log"
     peak_rss = None
@@ -69,8 +76,8 @@ def run_backend(
             errors.write(str(error))
             return_code = 127
         else:
-            deadline = time.monotonic() + timeout_seconds
             try:
+                deadline = time.monotonic() + timeout_seconds
                 while True:
                     pid, status, usage = os.wait4(process.pid, os.WNOHANG)
                     if pid:

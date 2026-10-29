@@ -28,7 +28,9 @@ def discover_note_pdfs(source_dir: Path = DEFAULT_NOTES_SOURCE) -> list[Path]:
     return sorted(source_dir.glob("*.pdf"))
 
 
-def cache_notes(source_dir: Path = DEFAULT_NOTES_SOURCE, cache_dir: Path = DEFAULT_NOTES_CACHE) -> NotesManifest:
+def cache_notes(
+    source_dir: Path = DEFAULT_NOTES_SOURCE, cache_dir: Path = DEFAULT_NOTES_CACHE
+) -> NotesManifest:
     _migrate_cache(cache_dir)
     raw_dir = cache_dir / "raw"
     text_dir = cache_dir / "text"
@@ -47,10 +49,20 @@ def cache_notes(source_dir: Path = DEFAULT_NOTES_SOURCE, cache_dir: Path = DEFAU
         if text_path.exists() and text_path.stat().st_size > 0:
             text_count += 1
 
-    return NotesManifest(source_dir=source_dir, cache_dir=cache_dir, pdf_count=len(pdfs), text_count=text_count)
+    return NotesManifest(
+        source_dir=source_dir,
+        cache_dir=cache_dir,
+        pdf_count=len(pdfs),
+        text_count=text_count,
+    )
 
 
-def note_context_for_topic(topic_id: str, title: str, cache_dir: Path = DEFAULT_NOTES_CACHE, max_chars: int = 2200) -> str:
+def note_context_for_topic(
+    topic_id: str,
+    title: str,
+    cache_dir: Path = DEFAULT_NOTES_CACHE,
+    max_chars: int = 2200,
+) -> str:
     _migrate_cache(cache_dir)
     text_dir = cache_dir / "text"
     if not text_dir.exists():
@@ -59,7 +71,9 @@ def note_context_for_topic(topic_id: str, title: str, cache_dir: Path = DEFAULT_
     chunks: list[str] = []
     for text_file in sorted(text_dir.glob("*.txt")):
         if any(text_file.name.startswith(prefix) for prefix in prefixes):
-            chunks.append(text_file.read_text(encoding="utf-8", errors="ignore")[:max_chars])
+            chunks.append(
+                text_file.read_text(encoding="utf-8", errors="ignore")[:max_chars]
+            )
     if not chunks:
         for text_file in sorted(text_dir.glob("*.txt")):
             content = text_file.read_text(encoding="utf-8", errors="ignore")
@@ -85,7 +99,12 @@ def _topic_prefixes(topic_id: str) -> tuple[str, ...]:
 
 def _extract_text(pdf: Path, text_path: Path) -> None:
     try:
-        subprocess.run(["pdftotext", "-layout", str(pdf), str(text_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(
+            ["pdftotext", "-layout", str(pdf), str(text_path)],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
     except (OSError, subprocess.CalledProcessError):
         text_path.write_text("", encoding="utf-8")
 

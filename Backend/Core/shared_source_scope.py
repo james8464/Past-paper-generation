@@ -7,12 +7,21 @@ from typing import Any
 
 from Backend.Core.assessment_quality import numeric_tokens
 
-_OWNED_SOURCE_KEYS = frozenset({
-    "candidate_source", "referenced_question_data", "source_data",
-    "numeric_input_contract", "selected_response_contract", "cs_input_contract",
-    "sql_answer_contract", "calculation_variables", "opening_balances",
-    "transactions_at_start_of_year", "adjustment_source_data",
-})
+_OWNED_SOURCE_KEYS = frozenset(
+    {
+        "candidate_source",
+        "referenced_question_data",
+        "source_data",
+        "numeric_input_contract",
+        "selected_response_contract",
+        "cs_input_contract",
+        "sql_answer_contract",
+        "calculation_variables",
+        "opening_balances",
+        "transactions_at_start_of_year",
+        "adjustment_source_data",
+    }
+)
 
 _OPTION_SOURCE_CUE = re.compile(
     r"\b(?:appendix|appendices|cases?|charts?|extracts?|figures?|sources?|tables?)"
@@ -28,7 +37,9 @@ _OPTION_SOURCE_CUE = re.compile(
 
 
 def owns_shared_source(question: dict[str, Any]) -> bool:
-    return bool(_OWNED_SOURCE_KEYS.intersection(question.get("authoring_context") or {}))
+    return bool(
+        _OWNED_SOURCE_KEYS.intersection(question.get("authoring_context") or {})
+    )
 
 
 # Specific material cues refer to extracts; topic nouns alone do not.
@@ -45,9 +56,15 @@ def uses_shared_option_source(question: dict[str, Any], option: dict[str, Any]) 
     )
 
 
-def shared_source_requires_context(question: dict[str, Any], option: dict[str, Any]) -> bool:
+def shared_source_requires_context(
+    question: dict[str, Any], option: dict[str, Any]
+) -> bool:
     context = question.get("authoring_context") or {}
     explicit = question.get("contract")
     contract = explicit if explicit is not None else context.get("assessment_contract")
     evidence = contract.get("evidence", []) if isinstance(contract, dict) else []
-    return bool(evidence or owns_shared_source(question) or uses_shared_option_source(question, option))
+    return bool(
+        evidence
+        or owns_shared_source(question)
+        or uses_shared_option_source(question, option)
+    )

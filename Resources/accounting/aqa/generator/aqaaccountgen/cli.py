@@ -10,6 +10,7 @@ from aqaaccountgen.generator import build_paper
 from aqaaccountgen.render_pdf import render_mark_scheme, render_question_paper
 from aqaaccountgen.syllabus import load_syllabus
 from Backend.Core.family_adapter import ArtifactSpec, FamilyAdapter, run_family_adapter
+from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 
 
@@ -56,7 +57,7 @@ def generate_package(
     ollama_url: str = "http://localhost:11434",
     dry_run: bool = True,
     progress: Callable[[str], None] | None = None,
-    client: object | None = None,
+    client: JSONGenerationClient | None = None,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Path]:
     return run_family_adapter(

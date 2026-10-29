@@ -47,8 +47,7 @@ def test_every_family_renderer_imports_the_shared_document_dsl() -> None:
             missing_imports.append(str(renderer.relative_to(ROOT)))
 
     assert missing_imports == [], (
-        "family renderers must use Backend.Core.document_dsl: "
-        + repr(missing_imports)
+        "family renderers must use Backend.Core.document_dsl: " + repr(missing_imports)
     )
 
 
@@ -120,13 +119,14 @@ def test_family_renderers_do_not_reintroduce_shared_page_furniture() -> None:
 
     for renderer in sorted(ROOT.glob("Resources/**/generator/**/render_pdf.py")):
         for node in ast.parse(renderer.read_text(encoding="utf-8")).body:
-            if isinstance(
-                node, (ast.FunctionDef, ast.AsyncFunctionDef)
-            ) and node.name in SHARED_FURNITURE_NAMES:
+            if (
+                isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                and node.name in SHARED_FURNITURE_NAMES
+            ):
                 local_furniture.append(
                     f"{renderer.relative_to(ROOT)}:{node.lineno} {node.name}"
                 )
 
-    assert local_furniture == [], (
-        "use the shared document_dsl page furniture: " + repr(local_furniture)
+    assert local_furniture == [], "use the shared document_dsl page furniture: " + repr(
+        local_furniture
     )

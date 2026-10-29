@@ -104,18 +104,22 @@ def test_accounting_export_preserves_each_reviewed_source_demand(paper_id):
     )
     from Backend.Core.reference_demand import build_item_demand_target, profile_for
 
-    syllabus = load_syllabus(Path("Resources/accounting/aqa/generator/data/syllabus.json"))
+    syllabus = load_syllabus(
+        Path("Resources/accounting/aqa/generator/data/syllabus.json")
+    )
     paper = build_paper(RULES[paper_id], syllabus, 26092840)
     tasks = _tasks(paper, {topic.id: topic for topic in syllabus.topics})
     number = paper_id.removeprefix("paper_")
-    exported = _extract_items(paper.model_dump(mode="json"), subject="aqa/accounting", paper_number=number)
+    exported = _extract_items(
+        paper.model_dump(mode="json"), subject="aqa/accounting", paper_number=number
+    )
     profile = profile_for("aqa/accounting", number)
     for task, item in zip(tasks, exported, strict=True):
         reviewed = build_item_demand_target(_demand_item(task), profile)
         assert build_item_demand_target(item, profile) == reviewed, task.question.number
-        assert candidate_content_identity(item["difficulty_candidate_projection"]) == candidate_content_identity(
-            _difficulty_candidate(task, task.question)
-        )
+        assert candidate_content_identity(
+            item["difficulty_candidate_projection"]
+        ) == candidate_content_identity(_difficulty_candidate(task, task.question))
 
         class Reviewer:
             def generate_json(self, prompt, target=reviewed):
@@ -129,15 +133,27 @@ def test_accounting_export_preserves_each_reviewed_source_demand(paper_id):
                     profile_fit=True,
                     observed_cognitive_operations=target.required_cognitive_operations,
                     estimated_minutes=float(target.expected_minutes_min),
-                ).model_dump(mode="json", exclude={"candidate_content_identity", "public_task_operation_evidence"})
+                ).model_dump(
+                    mode="json",
+                    exclude={
+                        "candidate_content_identity",
+                        "public_task_operation_evidence",
+                    },
+                )
 
         evidence = require_difficulty_review(
-            Reviewer(), item_id=task.question.number, subject="Accounting",
-            target=reviewed, candidate=_difficulty_candidate(task, task.question), specification={},
+            Reviewer(),
+            item_id=task.question.number,
+            subject="Accounting",
+            target=reviewed,
+            candidate=_difficulty_candidate(task, task.question),
+            specification={},
         ).model_dump(mode="json")
         validate_saved_difficulty_evidence(
-            evidence, build_item_demand_target(item, profile),
-            item_id=item["id"], candidate=item["difficulty_candidate_projection"],
+            evidence,
+            build_item_demand_target(item, profile),
+            item_id=item["id"],
+            candidate=item["difficulty_candidate_projection"],
         )
 
 
@@ -154,7 +170,10 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
     assert task.option.stimulus == []
     # Deliberately inject legacy planning text to keep testing the exclusion
     # boundary even though new generation no longer invents these extracts.
-    task.option.stimulus = ["Unprinted planning revenue is 710000.", "Staff turnover is 19%."]
+    task.option.stimulus = [
+        "Unprinted planning revenue is 710000.",
+        "Staff turnover is 19%.",
+    ]
 
     payload = solver_payload(task)
     for source in [payload, *model_sources(task)]:
@@ -166,9 +185,7 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
         assert '"trade_receivable": 186714' in text
     # The open-response solver receives a code-derived calculation from the
     # public inputs, never the private worked answer or marking points.
-    derived = payload["item"]["authoring_context"][
-        "independently_derived_context"
-    ]
+    derived = payload["item"]["authoring_context"]["independently_derived_context"]
     assert derived["source"] == "deterministic-candidate-inputs"
     assert derived["numeric_results"]["profit_for_year"] == 1_001_495
     assert derived["numeric_results"]["adjusted_marketing_expenses"] == 762_259
@@ -179,12 +196,14 @@ def test_accounting_14_2_solver_uses_printed_company_case_not_unprinted_option_e
         "independent_solver_instructions"
     ]
     assert any("recompute" in instruction.casefold() for instruction in instructions)
-    assert any("supplier invoice" in instruction.casefold() for instruction in instructions)
-    assert any("irrecoverable debt" in instruction.casefold() for instruction in instructions)
-    assert "1,001,495" not in " ".join(instructions)
-    assert (
-        "Follow every independent_solver_instructions entry" in solver_prompt(task)
+    assert any(
+        "supplier invoice" in instruction.casefold() for instruction in instructions
     )
+    assert any(
+        "irrecoverable debt" in instruction.casefold() for instruction in instructions
+    )
+    assert "1,001,495" not in " ".join(instructions)
+    assert "Follow every independent_solver_instructions entry" in solver_prompt(task)
 
 
 def test_self_contained_solver_excludes_contradictory_unrelated_option_data():

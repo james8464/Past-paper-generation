@@ -88,6 +88,8 @@ better performance.
 | T6 | Some branding tests assert literal Swift spelling instead of behaviour. | Keep resource/identity assertions. Move action routing and migration semantics into native behaviour tests before relaxing spelling assertions. | Equivalent refactors pass while misrouted actions and broken migration still fail. |
 | T7 | Generator roots repeat across pytest, CI, conftest and packaging inputs. | Add one explicit inventory or a tested parity check against the registry. Preserve isolated generator working directories. | Deliberately missing family/configuration entry fails the parity check. |
 | T8 | Calibration utilities repeat PDF extraction, hashing and band helpers. | Extract only common infrastructure, retaining subject-specific parsing and qualification rules. | Existing report fields/fingerprints and empty-input behaviour remain stable. |
+| T9 | `tools/live_process.py` accepts NaN/infinite deadlines, disabling timeout comparisons. | Require a finite positive numeric deadline before opening logs or spawning work. | Invalid input leaves retained logs unchanged and launches no process; valid integer/fractional deadlines retain behavior. |
+| T10 | Secure calibration delete/export flags can fall through to import or silently select deletion. | Validate exclusive operation modes and required IDs before accessing keys, data or storage. | Fake-store regressions prove invalid combinations have no access or import side effect; valid modes remain available. |
 
 ## Implementation order and release gates
 
@@ -279,3 +281,69 @@ remain planned here; work in another checkout does not count as integrated work.
 The file-level coverage ledger remains an inventory of pending and excluded work,
 not a whole-project semantic clearance. No full language, HIG, paper-equivalence
 or App Store approval claim follows from these changes.
+
+## Consolidated checkpoint after protected PR112
+
+This section supersedes the earlier branch-local status counts, not their test
+results. Main is at `92765b703bda87b87095b608d6e9b08d6a0e7430` after both
+protected checks passed for PR112. Its typed operation owner prevents maintenance
+from changing unrelated paper history, and the French benchmark labels were
+verified through the native interface. The full native gate passed 214 tests;
+signed direct and Store-mode builds passed. No Store submission occurred.
+
+The next consolidated branch includes these separately reviewed changes:
+
+- P2: canonical cross-process locks, unique atomic saves, whole-job leases,
+  conditional retirement and terminal-event ordering. The later success-cleanup
+  regression passed in a 103-test gate. Cancellation coverage is limited to the
+  retirement phase, not a universal post-publication guarantee.
+- P4: immutable trusted request metadata replaces prompt-wording inference on
+  current routes. The current review contract is version 7. Historical French
+  routes remain intact. Targeted final gate: 1,118 passed, two skipped.
+- P5: a shared minimal JSON-client protocol and typed client factories replace
+  duplicated interfaces. Heterogeneous family model hooks still use explicit
+  Any; no repository-wide static checker or complete generic migration is claimed.
+  The original static-check acceptance criterion remains deferred. Runtime tests
+  do not satisfy it, so P5 is only partially accepted.
+- P6: prompt builders, known private-key filtering and named deterministic
+  dispatch have separate owners. Seven complete prompt/request snapshots remain
+  byte-identical. Targeted final gate: 1,305 passed, two skipped.
+- T8: shared calibration infrastructure and explicit v2 content metrics replace
+  seed-based variety counts. The metric is scoped, not an exhaustive renderer
+  identity. Historical v1 reports are retained; no fresh v2 PASS is invented.
+- T9/T10: invalid deadlines and conflicting secure dataset operations refuse
+  before their side effects. Twenty-seven fake-boundary cases pass.
+- T5: the maintained Python formatter/lint gate covers both root entry points.
+  Mechanical formatting changed 230 files; all 535 compared Python syntax trees
+  and literal sequences are unchanged. Twenty-nine catalogue source files remain
+  byte-identical and linted. This is not semantic clearance of all those files.
+- The valid internal Keldin naming changes from `31ec4cd` are integrated
+  selectively. TipKit identities and existing Edexcel imports/command are kept.
+  A new Keldin Edexcel CLI facade uses the same implementation. Unsafe replay
+  comment churn and stale generated metadata are excluded.
+
+N8's concrete ownership defects are fixed; broader model-discovery decomposition
+remains a separate maintainability decision without a measured performance
+claim. T6's existing resource and source-wiring assertions are retained where no
+equivalent native behavioral proof justifies removing them. The renamed context
+still has readiness/print-choice tests and stable TipKit identity tests.
+
+Next acceptance is finite: refresh graph/inventory, run the frozen combined
+Python/native and signed packaging gates, review current source/frozen public
+French output against the official comparator, then run the supported live
+quality routes without calling previews live generation. Record failures and
+repair genuine current-source faults. Complete the remaining file-level review
+dispositions without changing frozen source during identity-bearing tests.
+Neither inventory, formatting nor this checkpoint establishes whole-project
+semantic review, observed learner timing, complete HIG compliance or official
+paper equivalence. Distribution credentials and third-party rights stay external.
+
+The ledger can now retain explicit file-review records (`2363e08`). Each record
+requires the exact source hash, tracked Markdown evidence path and hash, and a
+nonempty review scope/reason. Regeneration preserves valid records, resets a
+changed source to pending and refuses malformed or changed evidence. Tests cover
+unknown fields, untracked evidence and escaping or looping symlinks. The final
+focused gate passed 32 tests after 11 initial and three additional edge-case
+regressions failed. No real file was automatically marked reviewed. These
+records bind evidence to bytes; they do not authenticate a reviewer or establish
+that an attestation is true. Full file-level semantic review remains unfinished.

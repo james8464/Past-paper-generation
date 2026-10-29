@@ -5,13 +5,11 @@ from __future__ import annotations
 import json
 import math
 from collections.abc import Sequence
-from typing import Any, Protocol
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-
-class SimulationClient(Protocol):
-    def generate_json(self, prompt: str) -> dict[str, object]: ...
+from Backend.Core.json_client import JSONGenerationClient as SimulationClient
 
 
 class CandidateResponse(BaseModel):
@@ -27,7 +25,6 @@ class CandidateResponse(BaseModel):
 
 # Create diagnostic responses without exposing a drafted mark scheme.
 class ResponseSimulator:
-
     def __init__(self, client: SimulationClient | None = None) -> None:
         self.client = client
 

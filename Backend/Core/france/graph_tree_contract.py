@@ -36,7 +36,9 @@ _FAULTY_BFS = (
     "                file.append(voisin)\n"
     "    return ordre"
 )
-_CORRECTED_BFS = _FAULTY_BFS.replace("if visin not in visites:", "if voisin not in visites:")
+_CORRECTED_BFS = _FAULTY_BFS.replace(
+    "if visin not in visites:", "if voisin not in visites:"
+)
 
 
 # Execute only the two fixed, application-owned snippets, never model code.
@@ -225,7 +227,6 @@ def _expected(graph: dict, tree: dict, debug_case: dict) -> dict:
 # Immutable canonical JSON; callers receive fresh copies of its data.
 @dataclass(frozen=True)
 class GraphTreeContract:
-
     _json: str
 
     def to_dict(self) -> dict:

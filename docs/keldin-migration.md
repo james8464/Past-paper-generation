@@ -11,6 +11,25 @@ file paths so the recorded results remain traceable.
 
 ## Local files and settings
 
+### Standalone Edexcel command
+
+`keldin-edexcel` and `python -m keldin_edexcel` provide the Keldin command name
+after installing the Edexcel generator. The `keldin_edexcel.cli` facade exports
+the same `main` and `generate_package` callable objects as `pastpapergen.cli`.
+It is not a renamed copy of the implementation or a new set of model classes.
+Internal submodules such as `models` remain under `pastpapergen`.
+
+The distribution name, existing `pastpapergen` imports and command, registry
+entry point and saved assessment IDs remain unchanged. Existing scripts require
+no import or data migration. Reinstalling the editable generator exposes the new
+console command alongside the old one.
+
+For an editable installation inside a complete checkout, both CLI names locate
+the checkout's shared Backend at the command boundary, regardless of the current
+directory or PYTHONPATH. Importing the packages alone does not change search
+paths. A generator wheel by itself does not include the Keldin Backend and is
+not a standalone application; it needs that runtime separately available.
+
 At the first normal launch, Keldin imports accessible preferences from the earlier
 bundle domain and copies its Application Support files into `Keldin`. Existing
 Keldin values and files win on conflicts. Originals remain in place, including

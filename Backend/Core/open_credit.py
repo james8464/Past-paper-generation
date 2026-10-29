@@ -16,6 +16,8 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from Backend.Core.credit_policy import CREDIT_POLICY_VERSION
+from Backend.Core.generation_requests import OutputContract, make_request, request_json
+from Backend.Core.json_client import JSONGenerationClient
 
 CPU_SOURCE = "https://www.aqa.org.uk/subjects/computer-science/a-level/computer-science-7517/specification/subject-content/fundamentals-of-computer-organisation-and-architecture"
 CPU_POINTS = [
@@ -192,7 +194,9 @@ def _relation_is_qualified(text: str, match: re.Match[str] | None) -> bool:
     return bool(leading or trailing)
 
 
-def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Match[str], ...]:
+def _unqualified_matches(
+    clause: str, patterns: tuple[str, ...]
+) -> tuple[re.Match[str], ...]:
     return tuple(
         match
         for pattern in patterns
@@ -205,9 +209,7 @@ def _unqualified_matches(clause: str, patterns: tuple[str, ...]) -> tuple[re.Mat
 def _passive_relation_patterns(
     subject: str, action: str, suffix: str
 ) -> tuple[str, str]:
-    assertion = (
-        rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
-    )
+    assertion = rf"{subject} (?:(?:is|are|must be|gets?) )?{action}{suffix}"
     denial = (
         rf"{subject} "
         rf"(?:(?:is|are) (?:not|never)|(?:does|do) not get|must not|cannot) "
@@ -480,7 +482,7 @@ def _semantic_response_envelope(item: dict[str, Any]) -> dict[str, Any]:
 
 
 def review_open_credit(
-    client: Any, item: dict[str, Any], solution: Any
+    client: JSONGenerationClient, item: dict[str, Any], solution: Any
 ) -> dict[str, Any]:
     validate_open_credit_contract(item)
     solved = solution.model_dump(mode="json")
@@ -491,7 +493,8 @@ def review_open_credit(
         raise ValueError(
             "CPU semantic review requires a current independently solved answer"
         )
-    raw = client.generate_json(
+    envelope = _semantic_response_envelope(item)
+    prompt = (
         "Act as a scoped semantic credit adjudicator, AFTER the blind independent solver. "
         "Judge only the two declared AQA 7517 section 4.7.2.1 criteria. This is model review, not deterministic proof. "
         "For EACH unique criterion decide supported, unsupported or uncertain separately against the independent final answer AND "
@@ -510,7 +513,7 @@ def review_open_credit(
         "Do not add keys or omit keys. Use exact substrings of the final answer and actual_printed_points[point_index] as evidence quotes. "
         "Use unsupported/uncertain if either side lacks support; do not fabricate quotations. All lists must be explicit, including empty ones.\n"
         "Exact response envelope (replace every angle-bracket placeholder; use [] when an array is empty):\n"
-        + json.dumps(_semantic_response_envelope(item), ensure_ascii=False)
+        + json.dumps(envelope, ensure_ascii=False)
         + "\nReview inputs:\n"
         + json.dumps(
             {
@@ -521,6 +524,14 @@ def review_open_credit(
             ensure_ascii=False,
         )
     )
+    contract = OutputContract(
+        "open_credit",
+        credit_allocations=tuple(
+            (row["criterion_id"], row["point_index"], row["marks"])
+            for row in envelope["criteria"]
+        ),
+    )
+    raw = request_json(client, make_request(prompt, contract))
     judgement = _validate_judgement(item, solved, raw)
     return {
         "credit_policy_version": CREDIT_POLICY_VERSION,

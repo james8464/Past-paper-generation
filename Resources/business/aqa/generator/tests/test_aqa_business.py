@@ -78,15 +78,16 @@ def test_paper_one_calculations_share_source_data_with_mark_scheme() -> None:
     assert roce.rule_id == "roce_calculation"
     assert current_ratio.command_word == roce.command_word == "Calculate"
     assert current_ratio.kind == roce.kind == "calculation"
-    assert (
-        f"{format_number(financials.current_ratio)}:1"
-        in " ".join(current_ratio.mark_scheme)
+    assert f"{format_number(financials.current_ratio)}:1" in " ".join(
+        current_ratio.mark_scheme
     )
     assert (
         f"£{format_number(financials.operating_profit_at_twelve_percent)}m"
         in " ".join(roce.mark_scheme)
     )
-    assert [point.assessment_objective for point in current_ratio.structured_mark_scheme] == [
+    assert [
+        point.assessment_objective for point in current_ratio.structured_mark_scheme
+    ] == [
         "AO1",
         "AO2",
         "AO2",
@@ -192,8 +193,13 @@ def test_paper_one_essays_bind_a_comparative_decision_to_visible_evidence() -> N
         assert all(term.casefold() in marking for term in required_mark_scheme_terms)
         assert context["market"].casefold() in marking
         assert context["objective"].casefold() in marking
-        assert any("intermediate effect" in point.casefold() for point in question.mark_scheme)
-        assert any("comparative judgement" in point.casefold() for point in question.mark_scheme)
+        assert any(
+            "intermediate effect" in point.casefold() for point in question.mark_scheme
+        )
+        assert any(
+            "comparative judgement" in point.casefold()
+            for point in question.mark_scheme
+        )
 
 
 def test_mcq_choices_are_distinct() -> None:
@@ -354,7 +360,10 @@ def test_fixed_business_mcqs_have_one_typed_source_for_task_key_and_renderer() -
 
     assert "strategic drift" not in questions[12].prompt.casefold()
     assert "relationship shown" in questions[12].prompt.casefold()
-    assert all(not option.chart_title and not option.chart_values for option in paper.sections[0].options)
+    assert all(
+        not option.chart_title and not option.chart_values
+        for option in paper.sections[0].options
+    )
 
 
 def test_question_12_requires_the_candidate_visible_table() -> None:
@@ -376,7 +385,9 @@ def test_question_12_requires_the_candidate_visible_table() -> None:
     assert changed_solution["answer"] == "Strategic fit"
 
 
-def test_business_selected_responses_are_independently_derived_and_fail_closed() -> None:
+def test_business_selected_responses_are_independently_derived_and_fail_closed() -> (
+    None
+):
     paper = build_paper(RULES["paper_1"], SYLLABUS, 123)
     questions = {
         int(option.questions[0].number): option.questions[0]
@@ -388,7 +399,8 @@ def test_business_selected_responses_are_independently_derived_and_fail_closed()
         raw["correct_choice"] = (question.correct_choice + 1) % 4
         solution = IndependentSolver().solve(raw, [])
         assert solution.answer == next(
-            choice for choice in question.choices
+            choice
+            for choice in question.choices
             if choice.casefold() in solution.answer.casefold()
         )
         assert solution.solution_source == "deterministic-candidate-inputs"
@@ -405,7 +417,10 @@ def test_business_selected_responses_are_independently_derived_and_fail_closed()
     )
     with pytest.raises(ValueError, match="one highest row"):
         IndependentSolver().solve(tied, [])
-    assert "high external change and low strategic change" not in questions[12].prompt.casefold()
+    assert (
+        "high external change and low strategic change"
+        not in questions[12].prompt.casefold()
+    )
 
 
 def test_generated_validation_rejects_normalized_duplicate_mcq_choices() -> None:
@@ -538,9 +553,7 @@ def test_paper_one_uses_measured_question_and_answer_page_plan(tmp_path: Path) -
     pages = PdfReader(paths["question_paper"]).pages
     assert "change in the break-even point" in (pages[3].extract_text() or "")
     assert "Financial data" in (pages[4].extract_text() or "")
-    assert "Extract from accounts of" in (
-        pages[9].extract_text() or ""
-    )
+    assert "Extract from accounts of" in (pages[9].extract_text() or "")
     assert "Average span of control" in (pages[11].extract_text() or "")
     assert "There are no questions printed on this page" in (
         pages[27].extract_text() or ""
@@ -588,7 +601,9 @@ def test_paper_one_mcq_labels_and_question_text_stay_inside_print_geometry(
 
         strategy_page = document[6]
         strategy_text = strategy_page.get_text()
-        assert "Which measure records employees leaving during a period?" in strategy_text
+        assert (
+            "Which measure records employees leaving during a period?" in strategy_text
+        )
         first_prompt_word = next(
             word
             for word in strategy_page.get_text("words")

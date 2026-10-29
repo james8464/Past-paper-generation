@@ -52,27 +52,42 @@ def runtime_page_count_policy(
 
 # Content-driven pagination must preserve every published marking statement.
 def _aqa_cs_printed_credit(
-    pdf_path: Path, assessment_path: Path | None, reference_count: int, *, paper: str = "2"
+    pdf_path: Path,
+    assessment_path: Path | None,
+    reference_count: int,
+    *,
+    paper: str = "2",
 ) -> dict:
     from Backend.Core.assessment_package import _extract_items
     from Backend.Core.open_credit import printed_credit_points
 
     if assessment_path is None:
-        raise LayoutConformanceError("Content-driven CS pagination requires its assessment package")
+        raise LayoutConformanceError(
+            "Content-driven CS pagination requires its assessment package"
+        )
     package = json.loads(assessment_path.read_text(encoding="utf-8"))
-    if package.get("subject") != "computer_science" or str(package.get("paper")) != paper:
-        raise LayoutConformanceError("Content-driven CS pagination package identity differs")
+    if (
+        package.get("subject") != "computer_science"
+        or str(package.get("paper")) != paper
+    ):
+        raise LayoutConformanceError(
+            "Content-driven CS pagination package identity differs"
+        )
     blueprint = package.get("blueprint") or {}
     items = _extract_items(blueprint, subject="computer_science", paper_number=paper)
     if not items or package.get("items") != items:
-        raise LayoutConformanceError("Content-driven CS pagination requires matching assessed items")
+        raise LayoutConformanceError(
+            "Content-driven CS pagination requires matching assessed items"
+        )
     expected = {}
     levels = {}
     for question in blueprint.get("questions", []):
         for part in question["parts"]:
             identifier = (f"{int(question['number']):02d}", str(part["label"]))
             if identifier in expected:
-                raise LayoutConformanceError("Content-driven CS package has duplicate assessed parts")
+                raise LayoutConformanceError(
+                    "Content-driven CS package has duplicate assessed parts"
+                )
             marking = part["marking"]
             expected[identifier] = [
                 *printed_credit_points(marking),
@@ -93,7 +108,10 @@ def _aqa_cs_printed_credit(
         characters = normalise(point)
         if not characters:
             return False
-        if re.fullmatch(r"[+\-−]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?(?:/[+\-]?\d+(?:\.\d*)?)?[;.]?", characters):
+        if re.fullmatch(
+            r"[+\-−]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?(?:/[+\-]?\d+(?:\.\d*)?)?[;.]?",
+            characters,
+        ):
             # A bare numerical answer is a whole printed statement, not a
             # suffix of a signed value, decimal, fraction or expression. Keep
             # physical lines so a preceding row heading does not become part
@@ -120,22 +138,33 @@ def _aqa_cs_printed_credit(
             page = document[page_number]
             words = page.get_text("words", sort=False)
             anchors = sorted(
-                (word for word in words if 45 <= word[0] < 73
-                 and re.fullmatch(r"\d{2}", word[4])),
+                (
+                    word
+                    for word in words
+                    if 45 <= word[0] < 73 and re.fullmatch(r"\d{2}", word[4])
+                ),
                 key=lambda word: word[1],
             )
             if not anchors:
                 if paper != "1":
-                    raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+                    raise LayoutConformanceError(
+                        "Content-driven CS scheme has blank or unassessed padding"
+                    )
                 appendix_started = True
                 text = page.get_text(sort=True)
-                match = re.search(r"Question\s+(\d{2}):\s+Example Python 3 solution", text)
+                match = re.search(
+                    r"Question\s+(\d{2}):\s+Example Python 3 solution", text
+                )
                 question = int(match[1]) if match else None
-                if (question not in {4, 9, 10, 11, 12}
-                        or question in appendix_questions
-                        or text.count("Example Python 3 solution") != 1
-                        or len(text.splitlines()) < 10):
-                    raise LayoutConformanceError("Content-driven CS scheme has blank or duplicate appendix padding")
+                if (
+                    question not in {4, 9, 10, 11, 12}
+                    or question in appendix_questions
+                    or text.count("Example Python 3 solution") != 1
+                    or len(text.splitlines()) < 10
+                ):
+                    raise LayoutConformanceError(
+                        "Content-driven CS scheme has blank or duplicate appendix padding"
+                    )
                 # Read only the monospaced code, not a matching heading or prose.
                 # Preserve line order, operators and literal values; whitespace
                 # around a line is immaterial to this printed-content check.
@@ -143,25 +172,44 @@ def _aqa_cs_printed_credit(
                 for block in page.get_text("dict")["blocks"]:
                     for line in block.get("lines", []):
                         spans = line.get("spans", [])
-                        if spans and all("courier" in span["font"].casefold() for span in spans):
-                            code_lines.append("".join(span["text"] for span in spans).strip())
+                        if spans and all(
+                            "courier" in span["font"].casefold() for span in spans
+                        ):
+                            code_lines.append(
+                                "".join(span["text"] for span in spans).strip()
+                            )
                 try:
                     reference_code = paper1_reference_code(
                         question, record_name=blueprint.get("program_record_name", "")
                     )
                 except ValueError as error:
-                    raise LayoutConformanceError("CS reference solution has no valid program context") from error
-                expected_code = [line.strip() for line in reference_code.splitlines() if line.strip()]
+                    raise LayoutConformanceError(
+                        "CS reference solution has no valid program context"
+                    ) from error
+                expected_code = [
+                    line.strip() for line in reference_code.splitlines() if line.strip()
+                ]
                 if [line for line in code_lines if line] != expected_code:
-                    raise LayoutConformanceError("Content-driven CS scheme omits or changes a reference solution")
+                    raise LayoutConformanceError(
+                        "Content-driven CS scheme omits or changes a reference solution"
+                    )
                 appendix_questions.add(question)
                 continue
             if appendix_started:
-                raise LayoutConformanceError("Content-driven CS scheme has assessed rows after its appendix")
+                raise LayoutConformanceError(
+                    "Content-driven CS scheme has assessed rows after its appendix"
+                )
             for index, anchor in enumerate(anchors):
-                bottom = anchors[index + 1][1] - 2 if index + 1 < len(anchors) else page.rect.height - 65
-                part = "".join(word[4] for word in words
-                               if 73 <= word[0] < 100 and abs(word[1] - anchor[1]) < 2)
+                bottom = (
+                    anchors[index + 1][1] - 2
+                    if index + 1 < len(anchors)
+                    else page.rect.height - 65
+                )
+                part = "".join(
+                    word[4]
+                    for word in words
+                    if 73 <= word[0] < 100 and abs(word[1] - anchor[1]) < 2
+                )
                 guidance_lines = {}
                 for word in words:
                     if 100 <= word[0] < 511 and anchor[1] - 2 <= word[1] < bottom:
@@ -169,46 +217,72 @@ def _aqa_cs_printed_credit(
                 text = "\n".join(" ".join(line) for line in guidance_lines.values())
                 identifier = (anchor[4], part)
                 if not part:
-                    if (index != 0 or previous is None or previous_page != page_number - 1
-                            or anchor[4] != previous[0] or not levels[previous]
-                            or previous in continued_levels
-                            or not text.startswith("Extended response levels")):
-                        raise LayoutConformanceError("Content-driven CS scheme has invalid or duplicate continuation")
+                    if (
+                        index != 0
+                        or previous is None
+                        or previous_page != page_number - 1
+                        or anchor[4] != previous[0]
+                        or not levels[previous]
+                        or previous in continued_levels
+                        or not text.startswith("Extended response levels")
+                    ):
+                        raise LayoutConformanceError(
+                            "Content-driven CS scheme has invalid or duplicate continuation"
+                        )
                     identifier = previous
                     continued_levels[identifier] = text
                     row_points = levels[identifier]
                 else:
                     if identifier not in expected:
-                        raise LayoutConformanceError("Content-driven CS scheme has an unassessed question row")
+                        raise LayoutConformanceError(
+                            "Content-driven CS scheme has an unassessed question row"
+                        )
                     if identifier in printed_rows:
-                        raise LayoutConformanceError("Content-driven CS scheme has duplicate question rows or pages")
+                        raise LayoutConformanceError(
+                            "Content-driven CS scheme has duplicate question rows or pages"
+                        )
                     printed_rows[identifier] = text
                     row_points = [*expected[identifier], *levels[identifier]]
                 if not any(contains_credit(text, point) for point in row_points):
-                    raise LayoutConformanceError("Content-driven CS scheme has blank or unassessed padding")
+                    raise LayoutConformanceError(
+                        "Content-driven CS scheme has blank or unassessed padding"
+                    )
                 previous, previous_page = identifier, page_number
     for identifier, points in expected.items():
         printed = printed_rows.get(identifier, "")
         level_text = continued_levels.get(identifier, printed)
-        if (any(not contains_credit(printed, point) for point in points)
-                or any(not contains_credit(level_text, point) for point in levels[identifier])
-                or identifier not in printed_rows):
+        if (
+            any(not contains_credit(printed, point) for point in points)
+            or any(
+                not contains_credit(level_text, point) for point in levels[identifier]
+            )
+            or identifier not in printed_rows
+        ):
             raise LayoutConformanceError(
                 f"Content-driven CS scheme omits or truncates marking guidance for {'.'.join(identifier)}"
             )
-        if identifier in continued_levels and any(contains_credit(printed, point) for point in levels[identifier]):
-            raise LayoutConformanceError("Content-driven CS scheme has duplicate levels guidance")
+        if identifier in continued_levels and any(
+            contains_credit(printed, point) for point in levels[identifier]
+        ):
+            raise LayoutConformanceError(
+                "Content-driven CS scheme has duplicate levels guidance"
+            )
     if paper == "1" and appendix_questions != {4, 9, 10, 11, 12}:
-        raise LayoutConformanceError("Content-driven CS scheme omits reference solutions")
+        raise LayoutConformanceError(
+            "Content-driven CS scheme omits reference solutions"
+        )
     return {
         "policy": (
-            AQA_CS_PAPER1_SCHEME_PAGINATION if paper == "1"
+            AQA_CS_PAPER1_SCHEME_PAGINATION
+            if paper == "1"
             else AQA_CS_SCHEME_PAGINATION
         ),
         "reference_page_count": reference_count,
         "actual_page_count": actual_count,
         "checked_parts": len(items),
-        "checked_credit_statements": sum(len(expected[key]) + len(levels[key]) for key in expected),
+        "checked_credit_statements": sum(
+            len(expected[key]) + len(levels[key]) for key in expected
+        ),
     }
 
 
@@ -274,14 +348,11 @@ def _edexcel_printed_credit(
                 f"Content-driven scheme has blank padding on page {page_number}"
             )
         # The first three pages are the existing cover and general guidance.
-        colophon = (
-            normalise(text)
-            in {
-                "Keldin. Independent practice material. Not produced, endorsed or approved by any examination board.",
-                # Retained packages keep their original publisher label.
-                f"{LEGACY_PUBLISHER}. Independent practice material. Not produced, endorsed or approved by any examination board.",
-            }
-        )
+        colophon = normalise(text) in {
+            "Keldin. Independent practice material. Not produced, endorsed or approved by any examination board.",
+            # Retained packages keep their original publisher label.
+            f"{LEGACY_PUBLISHER}. Independent practice material. Not produced, endorsed or approved by any examination board.",
+        }
         if (
             page_number > 3
             and not (colophon and page_number == actual_count)
@@ -344,56 +415,101 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
-        if policy_payload and policy_payload.get("kind") == ACCOUNTING_SCHEME_PAGINATION:
-            if subject != "accounting_aqa" or paper != "1" or generated_role != "mark_scheme":
-                raise LayoutConformanceError("Accounting scheme policy cannot apply to this document")
+        if (
+            policy_payload
+            and policy_payload.get("kind") == ACCOUNTING_SCHEME_PAGINATION
+        ):
+            if (
+                subject != "accounting_aqa"
+                or paper != "1"
+                or generated_role != "mark_scheme"
+            ):
+                raise LayoutConformanceError(
+                    "Accounting scheme policy cannot apply to this document"
+                )
             content_report = verify_accounting_scheme(
-                generated_path, paths.get("assessment_package"), int(master["page_count"])
+                generated_path,
+                paths.get("assessment_package"),
+                int(master["page_count"]),
             )
             # Unmarked historical packages retain their exact measured template;
             # only the explicit V11 credit contract selects the compact layout.
             conform_pdf_to_box_template(
-                generated_path, master.get("page_boxes") or master["boxes"],
-                expected_page_count=ACCOUNTING_SCHEME_PAGES if content_report else master["page_count"],
+                generated_path,
+                master.get("page_boxes") or master["boxes"],
+                expected_page_count=ACCOUNTING_SCHEME_PAGES
+                if content_report
+                else master["page_count"],
                 strict_page_count=True,
             )
             if content_report:
                 results[generated_role] = content_report
             continue
-        if policy_payload and policy_payload.get("kind") == OCR_ECONOMICS_SCHEME_PAGINATION:
-            if subject != "economics_ocr" or record.get("family") != "ocr-economics" or generated_role != "mark_scheme":
-                raise LayoutConformanceError("OCR scheme pagination policy cannot apply to this document")
+        if (
+            policy_payload
+            and policy_payload.get("kind") == OCR_ECONOMICS_SCHEME_PAGINATION
+        ):
+            if (
+                subject != "economics_ocr"
+                or record.get("family") != "ocr-economics"
+                or generated_role != "mark_scheme"
+            ):
+                raise LayoutConformanceError(
+                    "OCR scheme pagination policy cannot apply to this document"
+                )
             results[generated_role] = verify_ocr_scheme_content(
-                generated_path, paths.get("assessment_package"), paper=paper,
+                generated_path,
+                paths.get("assessment_package"),
+                paper=paper,
                 reference_count=int(master["page_count"]),
             )
             # Overflow retains the landscape marking grid, not the reference's
             # portrait colophon simply because its fixed page index was reached.
             measured = master["page_boxes"]
-            landscape = next(box for box in measured if box["media"][2] > box["media"][3])
+            landscape = next(
+                box for box in measured if box["media"][2] > box["media"][3]
+            )
             with fitz.open(generated_path) as document:
                 boxes = [
-                    measured[index] if index < 10 else measured[-1]
-                    if index == len(document) - 1 else landscape
+                    measured[index]
+                    if index < 10
+                    else measured[-1]
+                    if index == len(document) - 1
+                    else landscape
                     for index in range(len(document))
                 ]
             conform_pdf_to_box_template(generated_path, boxes, strict_page_count=False)
             continue
         if policy_payload and policy_payload.get("kind") in {
-            AQA_CS_SCHEME_PAGINATION, AQA_CS_PAPER1_SCHEME_PAGINATION,
+            AQA_CS_SCHEME_PAGINATION,
+            AQA_CS_PAPER1_SCHEME_PAGINATION,
         }:
-            if (subject != "computer_science" or paper not in {"1", "2"}
-                    or generated_role != "mark_scheme"
-                    or policy_payload["kind"] != runtime_page_count_policy(
-                        "aqa-computer-science", "mark-scheme", int(master["page_count"]), paper=paper
-                    )["kind"]):
-                raise LayoutConformanceError("CS scheme pagination policy cannot apply to this document")
+            if (
+                subject != "computer_science"
+                or paper not in {"1", "2"}
+                or generated_role != "mark_scheme"
+                or policy_payload["kind"]
+                != runtime_page_count_policy(
+                    "aqa-computer-science",
+                    "mark-scheme",
+                    int(master["page_count"]),
+                    paper=paper,
+                )["kind"]
+            ):
+                raise LayoutConformanceError(
+                    "CS scheme pagination policy cannot apply to this document"
+                )
             conform_pdf_to_box_template(
-                generated_path, master.get("page_boxes") or master["boxes"],
-                expected_page_count=master["page_count"], strict_page_count=False,
+                generated_path,
+                master.get("page_boxes") or master["boxes"],
+                expected_page_count=master["page_count"],
+                strict_page_count=False,
             )
             results[generated_role] = _aqa_cs_printed_credit(
-                generated_path, paths.get("assessment_package"), int(master["page_count"]), paper=paper
+                generated_path,
+                paths.get("assessment_package"),
+                int(master["page_count"]),
+                paper=paper,
             )
             continue
         if policy_payload and policy_payload.get("kind") == EDEXCEL_SCHEME_PAGINATION:

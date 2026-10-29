@@ -181,8 +181,7 @@ def _answer(task_id: str, result: dict, facts: dict) -> str:
         }
         path = result["path"]
         addition = " + ".join(
-            str(weights[frozenset((left, right))])
-            for left, right in pairwise(path)
+            str(weights[frozenset((left, right))]) for left, right in pairwise(path)
         )
         return (
             "Le chemin minimal est "

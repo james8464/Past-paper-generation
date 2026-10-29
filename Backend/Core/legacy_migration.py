@@ -53,7 +53,9 @@ def copy_missing_tree(source: Path, destination: Path) -> None:
                 copy_missing_tree(child, target)
         elif child.is_file() and not target.exists():
             # Publish a complete copy without replacing a concurrent writer's file.
-            with tempfile.NamedTemporaryFile(dir=destination, prefix=".keldin-import-", delete=False) as copied:
+            with tempfile.NamedTemporaryFile(
+                dir=destination, prefix=".keldin-import-", delete=False
+            ) as copied:
                 temporary = Path(copied.name)
                 try:
                     with child.open("rb") as original:
