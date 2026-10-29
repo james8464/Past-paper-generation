@@ -13,7 +13,7 @@ diff reviews do not imply a full-file review of the larger callers.
 | `macOS/Keldin/Application/MainWindowRouting.swift` | Reviewed all routes and action ordering. Pending Main presentations reopen their host without another route mutation, dialog or benchmark. Normal benchmark routing selects and opens its destination before starting work. No view/window object or closure is stored in a focus key. |
 | `macOS/Keldin/Domain/KeldinCreationContext.swift` | Reviewed model-free French readiness, enlarged-print selection and disabled modal contexts. Main-owned blocking applies to focused Main; Settings dialogs block their own scene. Recovery routing still refuses new work until the retained Main prompt is resolved. |
 | `macOS/Keldin/State/ModelDownloadPresentation.swift` | Reviewed immutable request IDs and model snapshots, visible/dismissing phases, matching consumption and replacement safety. An invisible dismissed request cannot disable commands; explicit cancellation and host disappearance consume the matching request. |
-| `macOS/Keldin/State/SettingsActionPresentation.swift` | Reviewed inactive/idle/presented/dismissing transitions, stale callback rejection and error retention. Closing the host discards pending consent but retains errors for reopening. Deferred errors do not overwrite the visible request or flood alerts. The service stores no native window or view. |
+| `macOS/Keldin/State/SettingsActionPresentation.swift` | Reviewed inactive/idle/presented/dismissing transitions, stale callback rejection and error retention. Closing the host discards pending consent but retains errors for reopening. Derived provider selection shows the captured consent intent and returns to the actual provider after cancellation, without a mirrored selection field. Deferred errors do not overwrite the visible request or flood alerts. The service stores no native window or view. |
 | `macOS/Tests/MainWindowRoutingTests.swift` | Read all five tests and the protocol fake. They check all eight pending-modal routes, normal ordering, benchmark visibility ordering, stable repeated identity and restoration coding. These are routing tests, not proof of actual window reuse. |
 
 ## Regression evidence
@@ -29,10 +29,18 @@ seven tests in `tmp/settings-action-host-python-green.log`; Ruff and diff checks
 passed. These results cover more code than the six full-file attestations, but
 do not automatically mark other files reviewed.
 
+Actual Release testing subsequently found that the provider control kept its
+optimistic OpenAI highlight after Cancel, although the actual provider stayed
+Ollama and consent remained unaccepted. Commit `916738ab` explicitly observes the
+typed owner and derives the control's pending selection. Its policy regression
+failed with three assertions before the fix; 53 focused native tests and seven
+Python wiring checks passed. The parent reread the complete changed service.
+Actual verification of the rebuilt control remains a separate acceptance gate.
+
 ## Limits
 
 Actual Settings-only/window-reuse verification and final signed builds are
-separate release gates. The existing output-folder bookmark failure handling is
-unchanged by this package. Main's other presentation flags have not been replaced
+separate release gates. The output-folder bookmark failure was repaired separately
+at `7fc9f427`, with a 76-test focused gate. Main's other presentation flags have not been replaced
 with a universal queue. This record does not claim full interaction coverage,
 complete localisation, HIG certification, Store approval or faster execution.

@@ -3560,7 +3560,7 @@
       "reason": "Reviewed launch/test-host separation, scene ownership and the value-keyed Main window. The stable primary value keeps menu-open requests directed at one logical Main scene. Existing test-host defaults avoid real Keychain access. Optional TipKit setup still tolerates failure. Migration errors and Main presentations retain their existing flags.",
       "source_sha256": "2821fa012ef36bd50630f157a2c0af4399c1658518abebd83059e4024500378c",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
@@ -3575,7 +3575,7 @@
       "reason": "Reviewed all routes and action ordering. Pending Main presentations reopen their host without another route mutation, dialog or benchmark. Normal benchmark routing selects and opens its destination before starting work. No view/window object or closure is stored in a focus key.",
       "source_sha256": "ed44c09eb607fd8b92c330707eacdca824fbe6eb59d5e9d4ec6f3bbdd38f0d96",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/AccentColor.colorset/Contents.json",
@@ -3752,7 +3752,7 @@
       "reason": "Reviewed model-free French readiness, enlarged-print selection and disabled modal contexts. Main-owned blocking applies to focused Main; Settings dialogs block their own scene. Recovery routing still refuses new work until the retained Main prompt is resolved.",
       "source_sha256": "f75a7ef4d249f3aaaf3f3be2dd59ebd703c3fa73ab189156269ca2c023c888f6",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/Domain/NativeInterfaceCopy.swift",
@@ -3935,7 +3935,7 @@
       "reason": "Reviewed immutable request IDs and model snapshots, visible/dismissing phases, matching consumption and replacement safety. An invisible dismissed request cannot disable commands; explicit cancellation and host disappearance consume the matching request.",
       "source_sha256": "ccdac77c383c580843424b253781ec3ad28a0ebc6b247a8b14215e12fc50b0dc",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/State/RecentDocumentStore.swift",
@@ -3947,10 +3947,10 @@
       "path": "macOS/Keldin/State/SettingsActionPresentation.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Reviewed inactive/idle/presented/dismissing transitions, stale callback rejection and error retention. Closing the host discards pending consent but retains errors for reopening. Deferred errors do not overwrite the visible request or flood alerts. The service stores no native window or view.",
-      "source_sha256": "ba3ac96d1f9c228fc9a82e24ce781d709eb5441272f044c2bd4fc95fac003496",
+      "reason": "Reviewed inactive/idle/presented/dismissing transitions, stale callback rejection and error retention. Closing the host discards pending consent but retains errors for reopening. Derived provider selection shows the captured consent intent and returns to the actual provider after cancellation, without a mirrored selection field. Deferred errors do not overwrite the visible request or flood alerts. The service stores no native window or view.",
+      "source_sha256": "5b9a4a9174c646ab465b732b1dc9fdfa9f017cad0135981681206e17a3316f7e",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Keldin/State/SettingsStore.swift",
@@ -4031,7 +4031,7 @@
       "reason": "Read all five tests and the protocol fake. They check all eight pending-modal routes, normal ordering, benchmark visibility ordering, stable repeated identity and restoration coding. These are routing tests, not proof of actual window reuse.",
       "source_sha256": "19cca7572d1b89b0cc46ec83321367ca0b4301147eec5b6bc82369f5e31358ba",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "08711d7721e4d8c654afe1b9a2cc78d1f9e74031353eb9d876360425542d33dd"
+      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
     },
     {
       "path": "macOS/Tests/MigrationTests.swift",

@@ -389,3 +389,14 @@ access in the initiating scene. Its injected failure regression failed before
 the fix; the focused native gate passed 76 tests. Successful saved bytes, selected
 path and security-scope options are unchanged. This fixes the silent failure
 recorded as outside the earlier scene-routing package.
+
+Actual signed-app testing caught a provider-control highlight that did not reset
+after cancelling disclosure. The actual provider and consent were unchanged.
+Commit `916738ab` observes the typed pending request and derives the control's
+selection; its focused regression gate passed 53 native tests. The full Python
+run also identified one obsolete direct-call spelling assertion after typed menu
+routing (4,554 passed, one failed, two skipped). That wiring assertion now follows
+the route covered by native ordering/recovery tests. A real-repository ledger
+check additionally rejects stale reviewed source; its red case caught the changed
+Settings service before its explicit re-review. Final gates must use the refreshed
+ledger and rebuilt interface, not the preceding frontend's results.

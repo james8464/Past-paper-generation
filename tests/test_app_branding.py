@@ -67,7 +67,8 @@ def test_main_window_and_help_use_public_name():
     )
     commands = (APP / "Application/AppCommands.swift").read_text()
     assert 'Button(localized("Keldin Help"))' in commands
-    assert "application.showHelpGuide()" in commands
+    # Native router tests cover ordering and recovery; keep this wiring visible.
+    assert "navigate(.help(.gettingStarted))" in commands
     catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
     assert (
         catalog["Keldin Help"]["localizations"]["fr"]["stringUnit"]["value"]
