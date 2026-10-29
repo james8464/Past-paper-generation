@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import signal
 import tempfile
@@ -14,6 +15,7 @@ from pathlib import Path
 import pymupdf as fitz
 
 from Backend.Core.pdf_accessibility import add_page_structure_tree
+from Backend.Core.temporary_cleanup import remove_failed_temporary
 
 
 # A document role could not be rendered safely.
@@ -49,8 +51,8 @@ def render_pdf_atomically(
 ) -> RenderResult:
     if not role.strip():
         raise ValueError("render role must not be empty")
-    if timeout_seconds <= 0:
-        raise ValueError("render timeout must be greater than zero")
+    if not math.isfinite(timeout_seconds) or timeout_seconds <= 0:
+        raise ValueError("render timeout must be finite and greater than zero")
     if threading.current_thread() is not threading.main_thread():
         raise RenderTransactionError(
             f"{role} must render on the backend main thread so its deadline can be enforced"
@@ -66,9 +68,9 @@ def render_pdf_atomically(
     )
     os.close(descriptor)
     temporary = Path(temporary_name)
-    temporary.unlink()
     started = time.monotonic()
     try:
+        temporary.unlink()
         with _render_deadline(role, timeout_seconds):
             renderer(temporary)
             _readable_page_count(temporary, role)
@@ -83,8 +85,9 @@ def render_pdf_atomically(
             pages=pages,
             elapsed_seconds=time.monotonic() - started,
         )
-    finally:
-        temporary.unlink(missing_ok=True)
+    except BaseException as error:
+        remove_failed_temporary(temporary, error)
+        raise
 
 
 class _render_deadline:
@@ -112,20 +115,45 @@ class _render_deadline:
                 f"{self.timeout_seconds:g} seconds"
             )
 
-        signal.signal(signal.SIGALRM, timed_out)
-        signal.setitimer(signal.ITIMER_REAL, deadline)
+        try:
+            signal.signal(signal.SIGALRM, timed_out)
+            signal.setitimer(signal.ITIMER_REAL, deadline)
+        except BaseException as error:
+            self._restore_previous_state(error)
+            raise
 
     def __exit__(self, _type: object, _value: object, _traceback: object) -> None:
-        signal.setitimer(signal.ITIMER_REAL, 0)
+        self._restore_previous_state(
+            _value if isinstance(_value, BaseException) else None
+        )
+
+    def _restore_previous_state(self, original_error: BaseException | None) -> None:
+        failures: list[BaseException] = []
+
+        def restore(operation: Callable[[], object]) -> None:
+            try:
+                operation()
+            except BaseException as error:
+                failures.append(error)
+
+        restore(lambda: signal.setitimer(signal.ITIMER_REAL, 0))
         if self._previous_handler is not None:
-            signal.signal(signal.SIGALRM, self._previous_handler)
+            restore(lambda: signal.signal(signal.SIGALRM, self._previous_handler))
         # Resume any outer deadline with the time spent rendering subtracted.
         remaining, interval = self._previous_timer
         if remaining > 0:
             elapsed = time.monotonic() - self._started
-            signal.setitimer(
-                signal.ITIMER_REAL, max(remaining - elapsed, 1e-6), interval
+            restore(
+                lambda: signal.setitimer(
+                    signal.ITIMER_REAL, max(remaining - elapsed, 1e-6), interval
+                )
             )
+        if failures:
+            target = original_error if original_error is not None else failures[0]
+            for failure in failures:
+                target.add_note(f"Render deadline restoration failed: {failure}")
+            if original_error is None:
+                raise target
 
 
 def _readable_page_count(path: Path, role: str) -> int:

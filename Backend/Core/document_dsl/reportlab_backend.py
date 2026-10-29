@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hashlib
+import math
 import os
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -29,6 +31,8 @@ from Backend.Core.document_dsl.components import (
     Table,
 )
 from Backend.Core.document_dsl.model import LayoutBox, LayoutPlan, RenderEvidence
+from Backend.Core.document_dsl.text_layout import wrap_text
+from Backend.Core.temporary_cleanup import remove_failed_temporary
 
 
 @dataclass
@@ -36,9 +40,15 @@ class ReportLabBackend:
     max_render_seconds: float = 30.0
 
     def render(self, plan: LayoutPlan, destination: Path) -> RenderEvidence:
+        if not math.isfinite(self.max_render_seconds) or self.max_render_seconds <= 0:
+            raise ValueError("render progress timeout must be finite and positive")
         started = time.monotonic()
         destination.parent.mkdir(parents=True, exist_ok=True)
-        temporary = destination.with_suffix(destination.suffix + ".tmp")
+        descriptor, name = tempfile.mkstemp(
+            dir=destination.parent, prefix=f".{destination.name}.", suffix=".tmp"
+        )
+        os.close(descriptor)
+        temporary = Path(name)
         try:
             pdf = Canvas(
                 str(temporary),
@@ -60,14 +70,18 @@ class ReportLabBackend:
                         "document rendering exceeded its progress deadline"
                     )
             pdf.save()
+            data = temporary.read_bytes()
+            with fitz.open(temporary) as document:
+                if not document.is_pdf or document.page_count < 1:
+                    raise ValueError(
+                        "document renderer produced an empty or non-PDF document"
+                    )
+                selectable = any(page.get_text().strip() for page in document)
+                page_count = document.page_count
             os.replace(temporary, destination)
-        except BaseException:
-            temporary.unlink(missing_ok=True)
+        except BaseException as error:
+            remove_failed_temporary(temporary, error)
             raise
-        data = destination.read_bytes()
-        with fitz.open(destination) as document:
-            selectable = any(page.get_text().strip() for page in document)
-            page_count = document.page_count
         return RenderEvidence(
             destination=str(destination),
             sha256=hashlib.sha256(data).hexdigest(),
@@ -116,9 +130,20 @@ class ReportLabBackend:
             pdf.drawString(x, y + height - bold.leading.pt, component.heading)
             cursor = y + height - bold.leading.pt - body.leading.pt
             pdf.setFont(body.name, body.size.pt)
+            bullet_width = pdf.stringWidth("• ", body.name, body.size.pt)
             for item in component.items:
-                pdf.drawString(x + 8, cursor, f"• {item}")
-                cursor -= body.leading.pt
+                lines = wrap_text(
+                    item,
+                    font=body.name,
+                    size=body.size.pt,
+                    width=width - 12 - bullet_width,
+                )
+                for index, line in enumerate(lines):
+                    if index == 0:
+                        pdf.drawString(x + 8, cursor, f"• {line}")
+                    else:
+                        pdf.drawString(x + 8 + bullet_width, cursor, line)
+                    cursor -= body.leading.pt
         elif isinstance(component, QuestionBlock):
             pdf.setFont(bold.name, bold.size.pt)
             pdf.drawString(x, y + height - body.leading.pt, component.number)
@@ -203,18 +228,9 @@ class ReportLabBackend:
     def _wrapped_text(
         pdf: Canvas, text: str, x: float, y: float, width: float, font
     ) -> None:  # type: ignore[no-untyped-def]
-        words = text.split()
-        line = ""
-        for word in words:
-            candidate = word if not line else f"{line} {word}"
-            if pdf.stringWidth(candidate, font.name, font.size.pt) <= width:
-                line = candidate
-            else:
-                pdf.drawString(x, y, line)
-                y -= font.leading.pt
-                line = word
-        if line:
+        for line in wrap_text(text, font=font.name, size=font.size.pt, width=width):
             pdf.drawString(x, y, line)
+            y -= font.leading.pt
 
     @staticmethod
     def _table(
@@ -275,22 +291,7 @@ class ReportLabBackend:
         size: float,
         width: float,
     ) -> list[str]:
-        words = text.split()
-        if not words:
-            return [""]
-        lines: list[str] = []
-        current = ""
-        for word in words:
-            candidate = word if not current else f"{current} {word}"
-            if pdf.stringWidth(candidate, font, size) <= width:
-                current = candidate
-            else:
-                if current:
-                    lines.append(current)
-                current = word
-        if current:
-            lines.append(current)
-        return lines
+        return list(wrap_text(text, font=font, size=size, width=width))
 
     @staticmethod
     def _fitted_font_size(

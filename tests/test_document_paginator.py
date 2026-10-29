@@ -14,6 +14,7 @@ from Backend.Core.document_dsl import (
     Paginator,
     QuestionBlock,
 )
+from Backend.Core.document_dsl.model import Length, Size
 
 
 def _document(*components: object) -> DocumentSpec:
@@ -86,3 +87,64 @@ def test_progress_watchdog_stops_non_progressing_splitter() -> None:
 
     with pytest.raises(PaginationError, match="progress"):
         Paginator(max_operations=20).layout(_document(BrokenAnswerSpace(lines=100)))
+
+
+@pytest.mark.parametrize("dimension", ["width", "height"])
+def test_paginator_rejects_oversized_split_fragment(dimension):
+    class Fragment:
+        def measure(self, _profile, available):
+            return Size(
+                Length(available.width.pt + (10 if dimension == "width" else 0)),
+                Length(available.height.pt + (10 if dimension == "height" else 0)),
+            )
+
+    class Oversized:
+        def measure(self, _profile, available):
+            return Size(available.width, Length(available.height.pt + 100))
+
+        def split(self, _profile, _available):
+            return Fragment(), None
+
+    with pytest.raises(PaginationError, match="fit"):
+        Paginator().layout(_document(Oversized()))
+
+
+def test_final_consuming_split_does_not_append_an_empty_page():
+    class CompactFragment:
+        def measure(self, _profile, available):
+            return Size(available.width, Length(20))
+
+    class AdaptiveComponent:
+        def measure(self, _profile, available):
+            return Size(available.width, Length(available.height.pt + 100))
+
+        def split(self, _profile, _available):
+            return CompactFragment(), None
+
+    plan = Paginator().layout(_document(AdaptiveComponent()))
+    assert len(plan.pages) == 1
+    assert len(plan.pages[0].boxes) == 1
+
+
+def test_explicitly_declared_empty_page_is_preserved():
+    plan = Paginator().layout(_document())
+    assert len(plan.pages) == 1
+    assert plan.pages[0].boxes == ()
+
+
+def test_instruction_split_does_not_return_an_oversized_first_item():
+    from Backend.Core.document_dsl import board_profile
+
+    profile = board_profile("aqa")
+    available = Size(profile.content_frame.width, Length(60))
+    block = InstructionBlock(
+        heading="Instructions",
+        items=("Read the source carefully before answering. " * 30, "Keep the paper."),
+    )
+    first, remainder = block.split(profile, available)
+    assert (
+        first is None
+        or first.measure(profile, available).height.pt <= available.height.pt
+    )
+    if first is None:
+        assert remainder == block

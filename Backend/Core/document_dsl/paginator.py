@@ -28,6 +28,7 @@ class Paginator:
         pages: list[LayoutPage] = []
         operations = 0
         for declared_page in spec.pages:
+            initial_page_count = len(pages)
             pending = list(declared_page.components)
             boxes: list[LayoutBox] = []
             cursor_top = profile.content_frame.y.pt + profile.content_frame.height.pt
@@ -66,6 +67,13 @@ class Paginator:
                     signature_after = repr(remainder)
                     if first_size.height.pt <= 0 or signature_after == signature_before:
                         raise PaginationError("component splitter made no progress")
+                    if (
+                        first_size.width.pt > available.width.pt + 0.01
+                        or first_size.height.pt > available.height.pt + 0.01
+                    ):
+                        raise PaginationError(
+                            "split fragment cannot fit available space"
+                        )
                     cursor_top -= first_size.height.pt
                     boxes.append(
                         LayoutBox(
@@ -98,14 +106,15 @@ class Paginator:
                     profile.content_frame.y.pt + profile.content_frame.height.pt
                 )
 
-            pages.append(
-                LayoutPage(
-                    number=len(pages) + 1,
-                    role=declared_page.role,
-                    boxes=tuple(boxes),
-                    label=declared_page.label,
+            if boxes or len(pages) == initial_page_count:
+                pages.append(
+                    LayoutPage(
+                        number=len(pages) + 1,
+                        role=declared_page.role,
+                        boxes=tuple(boxes),
+                        label=declared_page.label,
+                    )
                 )
-            )
         return LayoutPlan(
             profile=profile,
             role=spec.role,

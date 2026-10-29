@@ -41,6 +41,7 @@ from Backend.Core.document_dsl import (
     board_profile,
     renderer_contract,
 )
+from Backend.Core.document_dsl.model import Length
 from Backend.Core.exam_cover import CoverProfile, QuestionPaperCover
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.reportlab_theme import (
@@ -50,6 +51,177 @@ from Backend.Core.reportlab_theme import (
     OCRAnswerLines,
     OCRComputerScienceAnswerLines,
 )
+
+
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), -float("inf")])
+@pytest.mark.parametrize("constructor", [Length, Length.mm])
+def test_document_lengths_reject_nonfinite_values(value, constructor):
+    with pytest.raises(ValueError, match="finite"):
+        constructor(value)
+
+
+@pytest.mark.parametrize("value", [0.0, 1e-12])
+@pytest.mark.parametrize("constructor", [Length, Length.mm])
+def test_document_lengths_preserve_valid_zero_and_tiny_positive_values(
+    value, constructor
+):
+    length = constructor(value)
+    assert length.pt == (value if constructor is Length else value * 72 / 25.4)
+
+
+def _single_component_plan(component):
+    return Paginator().layout(
+        DocumentSpec(
+            profile_id="aqa",
+            role=DocumentRole.QUESTION_PAPER,
+            pages=(PageSpec(role=PageRole.QUESTION, components=(component,)),),
+            metadata=DocumentMetadata(title="Layout regression", author="Keldin"),
+        )
+    )
+
+
+def test_long_instruction_drawing_stays_inside_its_measured_box(tmp_path):
+    instruction = "Read each source carefully before writing a supported answer. " * 6
+    plan = _single_component_plan(
+        InstructionBlock(heading="Instructions", items=(instruction,))
+    )
+    path = tmp_path / "instructions.pdf"
+    ReportLabBackend().render(plan, path)
+    box = plan.pages[0].boxes[0]
+    with fitz.open(path) as document:
+        spans = [
+            span
+            for block in document[0].get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line["spans"]
+        ]
+        body = [
+            span for span in spans if "Read" in span["text"] or "source" in span["text"]
+        ]
+        assert body
+        assert all(span["bbox"][2] <= box.x.pt + box.width.pt + 0.5 for span in body)
+        assert "".join(instruction.split()) in "".join(document[0].get_text().split())
+
+
+@pytest.mark.parametrize("kind", ["question", "source", "table"])
+def test_overlong_token_is_preserved_without_exceeding_component_bounds(tmp_path, kind):
+    token = "W" * 140
+    component = {
+        "question": QuestionBlock(number="01", prompt=token, marks=2),
+        "source": SourcePanel(title="Evidence", body=token),
+        "table": Table(headers=("Label", "Value"), rows=(("Code", token),)),
+    }[kind]
+    plan = _single_component_plan(component)
+    path = tmp_path / f"{kind}.pdf"
+    ReportLabBackend().render(plan, path)
+    box = plan.pages[0].boxes[0]
+    right = box.x.pt + box.width.pt
+    if kind == "question":
+        right -= 73
+    elif kind == "source":
+        right -= 8
+    with fitz.open(path) as document:
+        spans = [
+            span
+            for block in document[0].get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line["spans"]
+            if "W" in span["text"]
+        ]
+        assert spans
+        assert all(span["bbox"][2] <= right + 0.5 for span in spans)
+        assert sum(span["text"].count("W") for span in spans) == len(token)
+
+
+def test_direct_backend_validates_staged_pdf_before_replacement(tmp_path, monkeypatch):
+    from Backend.Core.document_dsl import reportlab_backend
+
+    path = tmp_path / "paper.pdf"
+    previous = b"retained previous document"
+    path.write_bytes(previous)
+    original_save = reportlab_backend.Canvas.save
+
+    def invalid_save(pdf):
+        original_save(pdf)
+        Path(pdf._filename).write_bytes(b"not a PDF")
+
+    monkeypatch.setattr(reportlab_backend.Canvas, "save", invalid_save)
+    with pytest.raises(fitz.FileDataError):
+        ReportLabBackend().render(_single_component_plan(AnswerSpace(lines=3)), path)
+    assert path.read_bytes() == previous
+
+
+def test_direct_backend_uses_unique_sibling_temporary_files(tmp_path, monkeypatch):
+    from Backend.Core.document_dsl import reportlab_backend
+
+    path = tmp_path / "paper.pdf"
+    temporary_paths = []
+    original_canvas = reportlab_backend.Canvas
+
+    def record_canvas(filename, *args, **kwargs):
+        temporary_paths.append(Path(filename))
+        return original_canvas(filename, *args, **kwargs)
+
+    monkeypatch.setattr(reportlab_backend, "Canvas", record_canvas)
+    plan = _single_component_plan(AnswerSpace(lines=3))
+    ReportLabBackend().render(plan, path)
+    ReportLabBackend().render(plan, path)
+    assert len(set(temporary_paths)) == 2
+    assert all(item.parent == path.parent and item != path for item in temporary_paths)
+    assert all(not item.exists() for item in temporary_paths)
+
+
+def test_direct_backend_worker_threads_publish_complete_independent_staging(
+    tmp_path, monkeypatch
+):
+    import os
+    from concurrent.futures import ThreadPoolExecutor
+    from threading import Barrier
+
+    from Backend.Core.document_dsl import reportlab_backend
+
+    path = tmp_path / "concurrent.pdf"
+    barrier = Barrier(2)
+    staged = []
+    replace = os.replace
+
+    def overlap(source, destination):
+        staged.append(Path(source))
+        barrier.wait(timeout=5)
+        replace(source, destination)
+
+    monkeypatch.setattr(reportlab_backend.os, "replace", overlap)
+    plan = _single_component_plan(AnswerSpace(lines=3))
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        futures = [pool.submit(ReportLabBackend().render, plan, path) for _ in range(2)]
+        results = [future.result(timeout=10) for future in futures]
+    assert len(set(staged)) == 2
+    assert all(
+        result.page_count == 1 and result.atomic_publication for result in results
+    )
+    with fitz.open(path) as document:
+        assert len(document) == 1
+    assert all(not item.exists() for item in staged)
+
+
+def test_shared_text_wrap_preserves_explicit_paragraphs_and_complete_tokens():
+    from reportlab.pdfbase.pdfmetrics import stringWidth
+
+    from Backend.Core.document_dsl.text_layout import wrap_text
+
+    assert wrap_text(
+        "First paragraph\n\nSecond paragraph", font="Helvetica", size=10, width=300
+    ) == (
+        "First paragraph",
+        "",
+        "Second paragraph",
+    )
+    token = "VeryLongIdentifier" * 30
+    lines = wrap_text(token, font="Helvetica", size=10, width=50)
+    assert "".join(lines) == token
+    assert all(stringWidth(line, "Helvetica", 10) <= 50 for line in lines)
+    with pytest.raises(ValueError, match="glyph"):
+        wrap_text("W", font="Helvetica", size=10, width=0.01)
 
 
 @pytest.mark.parametrize(

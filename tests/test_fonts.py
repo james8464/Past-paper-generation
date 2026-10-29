@@ -1,3 +1,4 @@
+import pytest
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import Paragraph
@@ -44,3 +45,16 @@ def test_fallback_family_supports_bold_paragraph_markup() -> None:
     )
 
     assert paragraph.frags[0].fontName == "TestFallbackFamily-Bold"
+
+
+@pytest.mark.parametrize(
+    "name, fallback, expected",
+    [
+        ("MissingSans-BoldItalic", "Helvetica", "Helvetica-BoldOblique"),
+        ("MissingSerif-BoldItalic", "Times-Roman", "Times-BoldItalic"),
+        ("MissingCourier-BoldItalic", "Courier", "Courier-BoldOblique"),
+    ],
+)
+def test_missing_bold_italic_font_preserves_both_traits(name, fallback, expected):
+    register_font(name, fallback=fallback)
+    assert pdfmetrics.getFont(name).face.name == expected
