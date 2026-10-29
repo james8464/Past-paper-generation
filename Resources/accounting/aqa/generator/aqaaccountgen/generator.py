@@ -30,6 +30,9 @@ from Backend.Core.exam_blueprints import (
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 from Backend.Core.subjects.accounting import management_input_contract
+from Backend.Core.subjects.accounting_selected_response import (
+    accounting_selected_response_contract,
+)
 
 BUSINESSES = [
     "Alder Manufacturing",
@@ -482,6 +485,7 @@ def _mcq(
             },
         )
     _, stem, correct, distractors = MCQ_TASKS[paper_id][index]
+    public_contract = None
     if (paper_id, index) == ("paper_2", 3):
         opening = rng.randrange(10, 30, 5) * 1_000
         receipts = rng.randrange(40, 80, 5) * 1_000
@@ -497,6 +501,14 @@ def _mcq(
             _gbp(opening + receipts),
             _gbp(opening + receipts + payments),
         ]
+        public_contract = accounting_selected_response_contract(
+            "cash_budget_balance",
+            {
+                "opening_balance": str(opening),
+                "receipts": str(receipts),
+                "payments": str(payments),
+            },
+        )
     elif (paper_id, index) == ("paper_2", 4):
         price = rng.randrange(30, 50, 5)
         variable = rng.randrange(10, 20, 5)
@@ -512,6 +524,14 @@ def _mcq(
             _gbp(price + variable),
             _gbp(price),
         ]
+        public_contract = accounting_selected_response_contract(
+            "contribution_per_unit",
+            {
+                "selling_price": str(price),
+                "variable_cost": str(variable),
+                "allocated_fixed_cost": str(fixed),
+            },
+        )
     choices = [correct, *distractors]
     rng.shuffle(choices)
     answer = choices.index(correct)
@@ -526,6 +546,14 @@ def _mcq(
         choices=choices,
         correct_choice=answer,
         mark_scheme=[f"Option {'ABCD'[answer]}: {correct}."],
+        authoring_context={
+            "preserve_prompt": True,
+            "preserve_mark_scheme": True,
+            "selected_response_contract": public_contract,
+            "source_data": public_contract["inputs"],
+        }
+        if public_contract is not None
+        else {},
     )
 
 

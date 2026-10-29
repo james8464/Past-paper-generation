@@ -1,4 +1,4 @@
-"""Recompute four bounded Accounting choice contracts from public facts."""
+"""Recompute bounded Accounting choice contracts from public facts."""
 
 from __future__ import annotations
 
@@ -16,6 +16,8 @@ AccountingOperation = Literal[
     "sale_or_return_gross_profit",
     "credit_sale_correction",
     "net_share_premium",
+    "cash_budget_balance",
+    "contribution_per_unit",
 ]
 AccountingUnit = Literal["GBP", "entry_pair"]
 _DECIMAL = re.compile(r"[0-9]{1,12}(?:\.[0-9]{1,4})?\Z")
@@ -198,6 +200,36 @@ def _share_premium(
     )
 
 
+def _cash_budget(
+    contract: AccountingSelectedResponseContract,
+) -> AccountingChoiceWorking:
+    v = _values(contract, {"opening_balance", "receipts", "payments"})
+    closing = v["opening_balance"] + v["receipts"] - v["payments"]
+    return AccountingChoiceWorking(
+        pounds(closing),
+        (
+            f"Add receipts to opening cash: {pounds(v['opening_balance'])} + {pounds(v['receipts'])}.",
+            f"Deduct payments: closing cash is {pounds(closing)}.",
+        ),
+        {"closing_cash_balance": float(closing)},
+    )
+
+
+def _unit_contribution(
+    contract: AccountingSelectedResponseContract,
+) -> AccountingChoiceWorking:
+    v = _values(contract, {"selling_price", "variable_cost", "allocated_fixed_cost"})
+    contribution = v["selling_price"] - v["variable_cost"]
+    return AccountingChoiceWorking(
+        pounds(contribution),
+        (
+            f"Subtract variable cost from selling price: {pounds(v['selling_price'])} - {pounds(v['variable_cost'])} = {pounds(contribution)} per unit.",
+            f"Allocated fixed cost of {pounds(v['allocated_fixed_cost'])} per unit is not deducted when calculating contribution.",
+        ),
+        {"contribution_per_unit": float(contribution)},
+    )
+
+
 _OPERATIONS: dict[
     str,
     tuple[
@@ -209,6 +241,8 @@ _OPERATIONS: dict[
     "sale_or_return_gross_profit": ("GBP", _sale_or_return),
     "credit_sale_correction": ("entry_pair", _credit_sale),
     "net_share_premium": ("GBP", _share_premium),
+    "cash_budget_balance": ("GBP", _cash_budget),
+    "contribution_per_unit": ("GBP", _unit_contribution),
 }
 
 

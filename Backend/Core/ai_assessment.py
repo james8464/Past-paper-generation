@@ -73,7 +73,7 @@ _question_uses_option_source = _assessment_prompts.question_uses_option_source
 _SEMANTIC_STOPWORDS = _assessment_prompts._SEMANTIC_STOPWORDS
 
 LOGGER = logging.getLogger(__name__)
-ASSESSMENT_REVIEW_VERSION = "assessment-review-v9-coordinate-choice-duplicates"
+ASSESSMENT_REVIEW_VERSION = "assessment-review-v10-accounting-public-numeric-choices"
 
 
 class AssessmentLLMClient(JSONGenerationClient, Protocol):
