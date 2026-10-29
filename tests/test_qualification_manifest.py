@@ -4,6 +4,7 @@ import hashlib
 import json
 from datetime import UTC, datetime
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from pydantic import ValidationError
@@ -132,3 +133,33 @@ def test_resource_schema_names_all_required_evidence_fields() -> None:
         "syllabus",
         "renderer",
     }
+
+
+def test_manifest_save_does_not_unlink_after_committed_replace(tmp_path: Path):
+    path = tmp_path / "qualification.json"
+    value = manifest()
+    with patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")):
+        value.save(path)
+    assert QualificationManifest.load(path) == value
+    assert list(tmp_path.iterdir()) == [path]
+
+
+@pytest.mark.parametrize("operation", ["fsync", "replace"])
+def test_manifest_save_preserves_primary_failure_when_cleanup_fails(
+    tmp_path, operation
+):
+    path = tmp_path / "qualification.json"
+    path.write_bytes(b"previous")
+    primary = OSError("publication failed")
+    with (
+        patch(
+            f"Backend.Core.qualification.manifest.os.{operation}", side_effect=primary
+        ),
+        patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")),
+        pytest.raises(OSError) as caught,
+    ):
+        manifest().save(path)
+    assert caught.value is primary
+    assert "cleanup denied" in " ".join(caught.value.__notes__)
+    assert path.read_bytes() == b"previous"
+    assert len(list(tmp_path.glob(".qualification.json.*.tmp"))) == 1

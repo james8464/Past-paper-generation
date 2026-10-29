@@ -178,8 +178,14 @@ class QualificationManifest(BaseModel):
                 stream.flush()
                 os.fsync(stream.fileno())
             os.replace(temporary, path)
-        finally:
-            temporary.unlink(missing_ok=True)
+        except BaseException as error:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                error.add_note(
+                    f"Temporary manifest cleanup failed for {temporary}: {cleanup_error}"
+                )
+            raise
 
     @classmethod
     def load(cls, path: Path) -> QualificationManifest:

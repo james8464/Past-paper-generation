@@ -114,3 +114,28 @@ def test_overlapping_atomic_json_writers_do_not_share_temporary_files(tmp_path: 
         {"writer": 1},
     ]
     assert list(tmp_path.iterdir()) == [path]
+
+
+def test_atomic_json_does_not_unlink_after_committed_replace(tmp_path: Path):
+    path = tmp_path / "result.json"
+    with patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")):
+        write_json_atomically(path, {"passed": True})
+    assert json.loads(path.read_text()) == {"passed": True}
+    assert list(tmp_path.iterdir()) == [path]
+
+
+@pytest.mark.parametrize("operation", ["fsync", "replace"])
+def test_atomic_json_preserves_primary_failure_when_cleanup_fails(tmp_path, operation):
+    path = tmp_path / "result.json"
+    path.write_bytes(b"previous")
+    primary = OSError("publication failed")
+    with (
+        patch(f"tools.atomic_json.os.{operation}", side_effect=primary),
+        patch.object(Path, "unlink", side_effect=PermissionError("cleanup denied")),
+        pytest.raises(OSError) as caught,
+    ):
+        write_json_atomically(path, {"passed": True})
+    assert caught.value is primary
+    assert "cleanup denied" in " ".join(caught.value.__notes__)
+    assert path.read_bytes() == b"previous"
+    assert len(list(tmp_path.glob(".result.json.*.tmp"))) == 1

@@ -33,5 +33,11 @@ def write_json_atomically(
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary, path)
-    finally:
-        temporary.unlink(missing_ok=True)
+    except BaseException as error:
+        try:
+            temporary.unlink(missing_ok=True)
+        except OSError as cleanup_error:
+            error.add_note(
+                f"Temporary JSON cleanup failed for {temporary}: {cleanup_error}"
+            )
+        raise
