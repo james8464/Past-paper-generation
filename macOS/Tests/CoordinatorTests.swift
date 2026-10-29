@@ -4,6 +4,27 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testMLXBatchProgressUsesPlainLocalizedCopyAndKeepsDiagnostics() {
+        for (stage, message, english, french) in [
+            ("provider_batch", "Apple MLX is decoding two tasks together.",
+             "Apple MLX is working on two tasks.", "Apple MLX traite deux tâches en parallèle."),
+            ("provider_serial_fallback", "Apple MLX is using serial decoding for this model or prompt pair.",
+             "Apple MLX is working on one task at a time for this model or these prompts.",
+             "Apple MLX traite une tâche à la fois pour ce modèle ou ces consignes."),
+        ] {
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), english)
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "fr"), french)
+            let model = isolatedApplication()
+            model.apply(.progress(stage: stage, message: message, progress: 0.25))
+            XCTAssertEqual(model.progressEntries.last?.message, message)
+            XCTAssertEqual(model.progressEntries.last?.stage, stage)
+            XCTAssertEqual(model.generationProgress, 0.25)
+            let unknown = message + " Extra diagnostics."
+            XCTAssertEqual(GenerationPresentation.progress(unknown, language: "fr"), unknown)
+        }
+    }
+
+    @MainActor
     func testAcceptedParallelProgressUsesTheSelectedLanguage() {
         for (kind, english, french) in [
             ("items", "Items checked: 2 of 17", "Éléments vérifiés : 2 sur 17"),

@@ -1,6 +1,12 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Apple MLX is working on two tasks.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Apple MLX traite deux tâches en parallèle."}}}
+    },
+    "Apple MLX is working on one task at a time for this model or these prompts.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Apple MLX traite une tâche à la fois pour ce modèle ou ces consignes."}}}
+    },
     "Parallel MLX generation": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération MLX en parallèle"}}}
     },

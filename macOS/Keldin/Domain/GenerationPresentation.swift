@@ -16,6 +16,14 @@ enum GenerationPresentation {
     }
 
     static func progress(_ message: String, language: String = "system") -> String {
+        switch message {
+        case "Apple MLX is decoding two tasks together.":
+            return localized("Apple MLX is working on two tasks.", language: language)
+        case "Apple MLX is using serial decoding for this model or prompt pair.":
+            return localized("Apple MLX is working on one task at a time for this model or these prompts.", language: language)
+        default:
+            break
+        }
         if let range = message.range(of: #"^Accepted [0-9]+ of [0-9]+ AI (items|questions)$"#, options: .regularExpression),
            range == (message.startIndex..<message.endIndex) {
             let words = message.split(separator: " ")
