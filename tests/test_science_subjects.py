@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from decimal import Decimal
+
 import pytest
 
 from Backend.Core.subject_plugins import discover_subject_plugin, subject_plugin_ids
@@ -103,3 +105,29 @@ def test_physics_requires_uncertainty_for_uncertainty_items() -> None:
 
     assert invalid.passed is False
     assert any("uncertainty" in diagnostic for diagnostic in invalid.diagnostics)
+
+
+@pytest.mark.parametrize("formula", ["H2O)", "(H2O))", "()", "Ca()2", "H0", "(OH)0"])
+def test_formula_parser_rejects_unmatched_empty_and_zero_count_groups(formula):
+    with pytest.raises(ValueError):
+        Formula.parse(formula)
+
+
+@pytest.mark.parametrize("equation", ["0H2 -> 0O2", "0H2 + O2 -> O2", "() -> ()"])
+def test_equation_parser_rejects_zero_coefficients_and_empty_species(equation):
+    with pytest.raises(ValueError):
+        equation_is_balanced(equation)
+
+
+@pytest.mark.parametrize("value", ["NaN", "sNaN", "Infinity", "-Infinity"])
+@pytest.mark.parametrize("position", ["candidate", "expected"])
+def test_physics_nonfinite_values_are_rejected_without_decimal_errors(value, position):
+    candidate, expected = (value, "1") if position == "candidate" else ("1", value)
+    assert compare_physical_answers(candidate, expected, "V", "V") is False
+
+
+@pytest.mark.parametrize(
+    "tolerance", [Decimal("NaN"), Decimal("Infinity"), Decimal("-1")]
+)
+def test_physics_rejects_nonfinite_or_negative_tolerances(tolerance):
+    assert compare_physical_answers("2", "1", "V", "V", tolerance=tolerance) is False

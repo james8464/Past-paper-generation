@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal, DecimalException, InvalidOperation
 from typing import Any
 
 from Backend.Core.subject_contracts import SubjectValidation
@@ -22,9 +22,20 @@ def compare_physical_answers(
     try:
         candidate_value = Decimal(candidate)
         expected_value = Decimal(expected)
-    except InvalidOperation:
+        allowed_difference = Decimal(str(tolerance))
+    except (InvalidOperation, TypeError, ValueError):
         return False
-    if abs(candidate_value - expected_value) > tolerance:
+    if (
+        not candidate_value.is_finite()
+        or not expected_value.is_finite()
+        or not allowed_difference.is_finite()
+        or allowed_difference < 0
+    ):
+        return False
+    try:
+        if abs(candidate_value - expected_value) > allowed_difference:
+            return False
+    except DecimalException:
         return False
     return (
         significant_figures is None

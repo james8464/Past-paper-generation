@@ -40,6 +40,7 @@ from Backend.Core.france.expanded_pipeline import (
     VERSION as EXPANDED_VERSION,
 )
 from Backend.Core.france.expanded_pipeline import (
+    FamilyCatalogueExhausted,
     choose_fresh_seed,
 )
 from Backend.Core.france.extended_pipeline import (
@@ -130,6 +131,8 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.generator_registry import assessment_framework
 from Backend.Core.legacy_migration import LEGACY_PUBLISHER, output_directory
 from Backend.Core.render_transaction import render_pdf_atomically
+
+REPEAT_PRACTICE_POLICY = "repeat-practice-v1"
 
 
 def validate_endpoint(url: str, *, allow_remote: bool):
@@ -2424,6 +2427,11 @@ def handle_generate_assessment(args) -> int:
         # The public CLI defaults to app-owned authoring with no model dependency.
         application_owned = getattr(args, "provider", "ollama") == "application-owned"
         excluded_families = getattr(args, "exclude_family", [])
+        repeat_practice = getattr(args, "repeat_practice", False)
+        if type(repeat_practice) is not bool:
+            raise ValueError("Repeat practice must be an explicit Boolean flag")
+        if repeat_practice and not application_owned:
+            raise ValueError("Repeat practice requires application-owned generation")
         if excluded_families and not application_owned:
             raise ValueError(
                 "Saved-family exclusions require application-owned generation"
@@ -2443,16 +2451,24 @@ def handle_generate_assessment(args) -> int:
         output = Path(args.output).expanduser().absolute()
         output.mkdir(parents=True, exist_ok=True)
         history = load_originality_history(output)
+        # Repetition is an explicit practice policy, not a uniqueness verdict.
+        # Keep saved files/history intact; only omit cross-history comparison.
+        comparison_history = [] if repeat_practice else history
         run_implementation = implementation_identity() if application_owned else None
-        selected_seed = (
-            choose_fresh_seed(
-                args.seed, previous_texts=history, excluded_families=excluded_families
-            )
-            if application_owned
-            else args.seed
-        )
+        selected_seed = args.seed
+        if application_owned:
+            try:
+                selected_seed = choose_fresh_seed(
+                    args.seed,
+                    previous_texts=comparison_history,
+                    excluded_families=excluded_families,
+                )
+            except FamilyCatalogueExhausted:
+                if not repeat_practice:
+                    raise
         checkpoint_name = (
-            f"{definition.id}-{EXPANDED_VERSION}-{run_implementation}-{selected_seed}.json"
+            f"{definition.id}-{EXPANDED_VERSION}-{run_implementation}-"
+            f"{REPEAT_PRACTICE_POLICY + '-' if repeat_practice else ''}{selected_seed}.json"
             if application_owned
             else f"{definition.id}-{selected_seed}.json"
         )
@@ -2464,7 +2480,7 @@ def handle_generate_assessment(args) -> int:
             seed=selected_seed,
             checkpoint=checkpoint,
             progress=lambda message: emit_progress(message, stage="french_generation"),
-            previous_texts=history,
+            previous_texts=comparison_history,
             contract_graph_tree=True,
             contract_authoring_version="v35" if application_owned else "v32",
         )
@@ -2694,6 +2710,14 @@ def handle_generate_assessment(args) -> int:
                 if whole_case
                 else "model_assisted",
                 "model_used": not whole_case,
+                **(
+                    {
+                        "practice_policy": REPEAT_PRACTICE_POLICY,
+                        "cross_history_comparison": "not_performed",
+                    }
+                    if repeat_practice
+                    else {}
+                ),
             },
         )
         paths["package_manifest"] = staging / "manifest.json"

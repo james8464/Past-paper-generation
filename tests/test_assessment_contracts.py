@@ -178,6 +178,73 @@ def test_code_line_labels_are_not_assessment_values() -> None:
     validate_candidate_contract("01 total = 225", "07 total = 225", contract)
 
 
+def test_leading_assessment_quantity_is_not_removed_as_an_undeclared_label():
+    contract = AssessmentContract(
+        item_id="q1",
+        marks=2,
+        assessment_objectives={"AO2": 2},
+        numeric_values=[NumericValueContract(text="100")],
+    )
+    text = "100 workers produce the goods. Explain the effect."
+    validate_candidate_contract(text, text, contract)
+    for candidate in (
+        "200 workers produce the goods.",
+        "Workers produce the goods.",
+        "100 workers produce 100 units.",
+    ):
+        with pytest.raises(ValueError, match="immutable numeric"):
+            validate_candidate_contract(text, candidate, contract)
+
+
+def test_new_leading_quantity_cannot_evade_extra_number_check():
+    contract = AssessmentContract(
+        item_id="q1", marks=2, assessment_objectives={"AO2": 2}
+    )
+    with pytest.raises(ValueError, match="immutable numeric"):
+        validate_candidate_contract(
+            "Explain employment.", "100 workers produce the goods.", contract
+        )
+
+
+@pytest.mark.parametrize(
+    "role",
+    [
+        NumericRole.CODE_LINE_LABEL,
+        NumericRole.ITEM_IDENTIFIER,
+        NumericRole.DISPLAY_LABEL,
+    ],
+)
+def test_explicit_source_owned_leading_label_can_change_without_changing_data(role):
+    contract = AssessmentContract(
+        item_id="q1",
+        marks=2,
+        assessment_objectives={"AO2": 2},
+        numeric_values=[
+            NumericValueContract(text="01", role=role),
+            NumericValueContract(text="225"),
+        ],
+    )
+    validate_candidate_contract("01 total = 225", "07 total = 225", contract)
+    with pytest.raises(ValueError, match="immutable numeric"):
+        validate_candidate_contract(
+            "01 total = 225", "07 total = 225\n100 workers are employed.", contract
+        )
+
+
+def test_explicit_question_mark_and_precision_labels_keep_their_syntax():
+    contract = AssessmentContract(
+        item_id="q1",
+        marks=2,
+        assessment_objectives={"AO2": 2},
+        numeric_values=[NumericValueContract(text="225")],
+    )
+    validate_candidate_contract(
+        "Calculate 225 to one decimal place.",
+        "Question 7: Calculate 225 to 1 decimal place. [2 marks]",
+        contract,
+    )
+
+
 def test_leading_context_year_is_not_immutable_assessment_data() -> None:
     question = GeneratedQuestion(
         rule_id="mcq",

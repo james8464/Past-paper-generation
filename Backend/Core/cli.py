@@ -100,6 +100,11 @@ def build_parser() -> argparse.ArgumentParser:
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")
     assessment.add_argument(
+        "--repeat-practice",
+        action="store_true",
+        help="Use saved family exclusions to prefer unused families, then allow repetition without cross-history comparison",
+    )
+    assessment.add_argument(
         "--exclude-family",
         type=int,
         choices=range(5),

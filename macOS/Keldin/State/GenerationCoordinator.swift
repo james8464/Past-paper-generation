@@ -56,7 +56,7 @@ final class GenerationCoordinator {
         }
     }
 
-    func complete(expectedJobID: UUID, artifacts: [GeneratedFile]? = nil) throws {
+    func complete(expectedJobID: UUID, artifacts: [GeneratedFile]? = nil, expectedFrenchPolicy: FrenchAssessmentRequest.PracticePolicy = .strict) throws {
         guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         if let artifacts { generatedFiles = artifacts }
         if job.configuration.assessmentID == FrenchAssessmentRequest.assessmentID,
@@ -64,7 +64,7 @@ final class GenerationCoordinator {
             guard let manifest = generatedFiles.first(where: { $0.role == "package_manifest" }) else {
                 throw CocoaError(.fileReadNoSuchFile)
             }
-            let seed = try FrenchAssessmentRequest.publishedSeed(from: manifest.url)
+            let seed = try FrenchAssessmentRequest.publishedSeed(from: manifest.url, expectedPolicy: expectedFrenchPolicy)
             let configuration = job.configuration
             job = GenerationJobRecord(
                 schemaVersion: job.schemaVersion, id: job.id,

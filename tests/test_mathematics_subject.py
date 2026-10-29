@@ -102,3 +102,49 @@ def test_mathematics_plugin_validates_and_solves_a_typed_item() -> None:
 
     assert plugin.validate_item(item).passed is True
     assert str(plugin.solve(item)) == "x**2 + 4*x + 4"
+
+
+@pytest.mark.parametrize(
+    "expression",
+    [
+        "().__class__",
+        "sin.__class__",
+        "__x + 1",
+        "x.__getattribute__(x)",
+        "__import__(x)",
+    ],
+)
+def test_python_attribute_and_private_syntax_never_reaches_sympy_parser(
+    monkeypatch, expression
+):
+    def unexpected_parser(*_args, **_kwargs):
+        raise AssertionError("unsupported Python syntax reached the eval-backed parser")
+
+    monkeypatch.setattr(
+        "Backend.Core.subjects.mathematics.parse_expr", unexpected_parser
+    )
+    result = MathematicsPlugin().validate_item(
+        {"question": "Evaluate", "marks": 1, "answer": expression}
+    )
+    assert result.passed is False
+
+
+@pytest.mark.parametrize(
+    "candidate, accepted", [("1.23", True), ("1.2300", False), ("1.230", False)]
+)
+def test_mathematical_comparison_enforces_explicit_significant_figures(
+    candidate, accepted
+):
+    result = compare_mathematical_answers(
+        MathematicalAnswer(candidate), MathematicalAnswer("1.23", significant_figures=3)
+    )
+    assert result.equivalent is accepted
+
+
+def test_mathematical_precision_remains_optional_and_accepts_scientific_notation():
+    assert compare_mathematical_answers(
+        MathematicalAnswer("1.2300"), MathematicalAnswer("1.23")
+    ).equivalent
+    assert compare_mathematical_answers(
+        MathematicalAnswer("1.20e3"), MathematicalAnswer("1200", significant_figures=3)
+    ).equivalent

@@ -71,12 +71,12 @@ struct GeneratorWorkspace: View {
     private var workspace: some View {
         VStack(spacing: 0) {
             PaperConfiguration(board: board)
-                .frame(maxHeight: 390)
+                .frame(maxHeight: .infinity)
 
             Divider()
 
             RecentDocuments()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
         }
     }
 
@@ -205,11 +205,7 @@ private struct PaperConfiguration: View {
                 .help("Preview layout without contacting an AI provider. Preview questions are not release output.")
             }
 
-            if application.isRunning {
-                Section("Progress") {
-                    GenerationProgress()
-                }
-            } else if let blocker = application.generationBlockerResource {
+            if !application.isRunning, let blocker = application.generationBlockerResource {
                 Section("Action required") {
                     HStack(alignment: .firstTextBaseline, spacing: 10) {
                         Image(systemName: "exclamationmark.triangle.fill")
@@ -237,51 +233,15 @@ private struct PaperConfiguration: View {
     }
 }
 
-private struct GenerationProgress: View {
-    @EnvironmentObject private var application: ApplicationCoordinator
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
-            if let progress = application.generationProgress {
-                ProgressView(value: progress) {
-                    HStack {
-                        Text(application.status)
-                        Spacer()
-                        if let estimate = application.generationEstimate {
-                            Text(estimate.remainingText)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                } currentValueLabel: {
-                    Text(progress.formatted(.percent.precision(.fractionLength(0))))
-                }
-            } else {
-                ProgressView(application.status)
-            }
-        }
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Paper creation progress")
-        .accessibilityValue(accessibilityValue)
-        .accessibilityAddTraits(.updatesFrequently)
-    }
-
-    private var accessibilityValue: String {
-        var parts = [application.status]
-        if let progress = application.generationProgress {
-            parts.append(progress.formatted(.percent.precision(.fractionLength(0))))
-        }
-        if let estimate = application.generationEstimate {
-            parts.append(estimate.remainingText)
-        }
-        return parts.joined(separator: ", ")
-    }
-}
-
 private struct RecentDocuments: View {
     @EnvironmentObject private var application: ApplicationCoordinator
+    @State private var isExpanded = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            GeneratedFilesTable(files: application.generatedFiles)
+                .frame(height: 160)
+        } label: {
             HStack {
                 Text("Recent Documents")
                     .font(.headline)
@@ -293,18 +253,9 @@ private struct RecentDocuments: View {
                 Spacer()
                 Button("Open Output Folder", action: application.openOutputFolder)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 14)
-
-            if !application.generatedFiles.isEmpty {
-                TipView(KeldinCreationTips.quality)
-                    .padding(.horizontal, 20)
-            }
-
-            GeneratedFilesTable(files: application.generatedFiles)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .padding(.bottom, 12)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
         .focusSection()
     }
 }

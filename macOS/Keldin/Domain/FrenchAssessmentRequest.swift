@@ -3,6 +3,7 @@
 import Foundation
 
 struct FrenchAssessmentRequest {
+    enum PracticePolicy { case strict, repeatPractice }
     static let assessmentID = "fr-bac-general-nsi-written-2027"
     static let modelID = "app-owned-v35"
     static let familyIDs = [
@@ -41,17 +42,24 @@ struct FrenchAssessmentRequest {
             "generate-assessment", "--assessment", Self.assessmentID,
             "--reference-index", referenceIndex.path, "--output", output.path,
             "--provider", "application-owned", "--seed", String(seed),
+            "--repeat-practice",
         ]
         if largePrint { result.append("--large-print") }
         for family in excludedFamilies { result += ["--exclude-family", String(family)] }
         return result
     }
 
-    static func publishedSeed(from manifest: URL) throws -> Int {
+    static func publishedSeed(from manifest: URL, expectedPolicy: PracticePolicy = .strict) throws -> Int {
         let data = try Data(contentsOf: manifest)
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         let publication = try decoder.decode(Publication.self, from: data)
+        switch expectedPolicy {
+        case .strict:
+            guard publication.practicePolicy == nil, publication.crossHistoryComparison == nil else { throw CocoaError(.fileReadCorruptFile) }
+        case .repeatPractice:
+            guard publication.practicePolicy == "repeat-practice-v1", publication.crossHistoryComparison == "not_performed" else { throw CocoaError(.fileReadCorruptFile) }
+        }
         guard publication.schemaVersion == 1,
               publication.assessment == assessmentID,
               publication.status == "unreviewed_draft",
@@ -77,6 +85,8 @@ struct FrenchAssessmentRequest {
         let teacherReview: String
         let empiricalCalibration: String
         let identity: Identity
+        let practicePolicy: String?
+        let crossHistoryComparison: String?
 
         struct Identity: Decodable {
             let provider: String

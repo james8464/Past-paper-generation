@@ -63,7 +63,21 @@ def validate_candidate_contract(
     expected = Counter(_normalise_quantity(value.text) for value in expected_values)
     actual_tokens = list(numeric_tokens(candidate))
 
-    ignored = _ignored_candidate_quantities(candidate)
+    label_roles = {"code_line_label", "item_identifier", "display_label"}
+    declared_labels = {
+        _normalise_quantity(value.text)
+        for value in contract.numeric_values
+        if value.role.value in label_roles
+    }
+    leading_label_lines = frozenset(
+        index
+        for index, line in enumerate(original.splitlines())
+        if (match := re.match(r"\s*(\d{1,3})(?=\s+\S)", line))
+        and _normalise_quantity(match.group(1)) in declared_labels
+    )
+    ignored = _ignored_candidate_quantities(
+        candidate, leading_label_lines=leading_label_lines
+    )
     ignored.extend(_precision_digit_tokens(candidate))
     _subtract_tokens(actual_tokens, ignored)
 
@@ -120,18 +134,23 @@ def _normalise_quantity(value: str) -> str:
     return " ".join(value.casefold().split())
 
 
-def _ignored_candidate_quantities(value: str) -> list[str]:
+def _ignored_candidate_quantities(
+    value: str, *, leading_label_lines: frozenset[int] = frozenset()
+) -> list[str]:
     ignored: list[str] = []
     patterns = (
-        r"(?m)^\s*(\d{1,3})(?=\s+\S)",
         r"\[\s*(\d+)\s+marks?\s*\]",
         r"\b(?:question|extract|figure|table)\s+(\d+)\b",
         r"\bline\s+(\d+)\b",
     )
     for pattern in patterns:
-        ignored.extend(
-            match.group(1) for match in re.finditer(pattern, value, flags=re.IGNORECASE)
-        )
+        for match in re.finditer(pattern, value, flags=re.IGNORECASE):
+            ignored.extend(numeric_tokens(match.group(0)))
+    for index, line in enumerate(value.splitlines()):
+        if index in leading_label_lines and (
+            match := re.match(r"\s*(\d{1,3})(?=\s+\S)", line)
+        ):
+            ignored.append(match.group(1))
     return ignored
 
 
@@ -237,13 +256,20 @@ def validate_package_novelty(
     *,
     history_root: Path,
     threshold: float = 0.84,
+    cross_generation_policy: str = "strict-cross-generation-v1",
 ) -> dict[str, Any]:
-
+    if cross_generation_policy not in (
+        "strict-cross-generation-v1",
+        "repeat-practice-v1",
+    ):
+        raise ValueError("Unknown cross-generation similarity policy")
+    strict_history = cross_generation_policy == "strict-cross-generation-v1"
     current = _load_package(package_path)
     current_items = _items(current)
     assert_distinct_items(current_items, threshold=threshold)
 
     comparisons = 0
+    historical_overlap = False
     nearest: dict[str, Any] | None = None
     for historic_path in sorted(history_root.glob("*-assessment.json")):
         if (
@@ -274,17 +300,23 @@ def validate_package_novelty(
                         "historic_package": historic_path.name,
                     }
                 if score >= threshold:
-                    raise ValueError(
-                        f"generated item {item.get('id')} is too similar to "
-                        f"{historic_path.name}:{historic_item.get('id')} "
-                        f"({score:.3f}); choose a new seed or regenerate"
-                    )
+                    historical_overlap = True
+                    if strict_history:
+                        raise ValueError(
+                            f"generated item {item.get('id')} is too similar to "
+                            f"{historic_path.name}:{historic_item.get('id')} "
+                            f"({score:.3f}); choose a new seed or regenerate"
+                        )
     return {
         "algorithm": "weighted-token-shingle-jaccard-v1",
         "threshold": threshold,
         "historic_comparisons": comparisons,
         "nearest_match": nearest,
-        "passed": True,
+        # Permitted repetition is not a successful cross-history originality test.
+        "passed": not historical_overlap,
+        "cross_generation_policy": cross_generation_policy,
+        "within_paper_passed": True,
+        "historical_overlap": historical_overlap,
     }
 
 

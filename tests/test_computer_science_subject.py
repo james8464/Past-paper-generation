@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from Backend.Core.subject_plugins import discover_subject_plugin
 from Backend.Core.subjects.computer_science import (
     ComputerSciencePlugin,
@@ -75,3 +77,22 @@ def test_programming_paper_accepts_only_declared_languages_and_evidence() -> Non
 
     assert invalid.passed is False
     assert valid.passed is True
+
+
+@pytest.mark.parametrize(
+    "left, right", [('OUTPUT "Yes"', 'output "yes"'), ('OUTPUT "←"', 'output "="')]
+)
+def test_pseudocode_comparison_preserves_quoted_literal_content(left, right):
+    assert pseudocode_equivalent(left, right) is False
+
+
+@pytest.mark.parametrize("variable", ["ORANGE", "ANDY", "NOT_FOUND", "XORed"])
+def test_truth_table_operator_prefixes_do_not_split_variable_names(variable):
+    rows = truth_table(variable, variables=(variable,))
+    assert [row["result"] for row in rows] == [False, True]
+
+
+def test_truth_table_accepts_trailing_whitespace():
+    assert truth_table("A AND B  ", variables=("A", "B")) == truth_table(
+        "A AND B", variables=("A", "B")
+    )

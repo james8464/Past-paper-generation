@@ -6,6 +6,13 @@ enum GenerationPresentation {
         if message == "Construction des exercices vérifiés, sans appel à un modèle." {
             return localized("Preparing the practice paper.", language: language)
         }
+        for prefix in ["Calibrating difficulty ", "Checking reference demand "] where message.hasPrefix(prefix) {
+            let counts = message.dropFirst(prefix.count)
+                .prefix(while: { $0 != ":" }).split(separator: "/")
+            guard counts.count == 2, let index = Int(counts[0]), let total = Int(counts[1]),
+                  1 <= index, index <= total else { return message }
+            return localized("Reviewing question \(index) of \(total)", language: language)
+        }
         let prefix = "Refining AI item "
         let separator = " after an automated quality check:"
         guard message.hasPrefix(prefix),

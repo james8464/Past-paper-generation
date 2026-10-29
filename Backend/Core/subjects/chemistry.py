@@ -106,6 +106,10 @@ def _parse_group(
     while index < len(tokens):
         token = tokens[index]
         if token == ")":
+            if not expects_closing:
+                raise ValueError("unmatched closing bracket")
+            if not result:
+                raise ValueError("chemical groups must contain atoms")
             return result, index + 1
         if token == "(":
             inner, index = _parse_group(tokens, index + 1, expects_closing=True)
@@ -126,7 +130,10 @@ def _parse_group(
 
 def _multiplier(tokens: list[str], index: int) -> tuple[int, int]:
     if index < len(tokens) and tokens[index].isdigit():
-        return int(tokens[index]), index + 1
+        multiplier = int(tokens[index])
+        if multiplier < 1:
+            raise ValueError("atom and group counts must be positive")
+        return multiplier, index + 1
     return 1, index
 
 
@@ -138,6 +145,8 @@ def _equation_side(value: str) -> Counter[str]:
         if match is None:
             raise ValueError(f"invalid equation species: {species}")
         coefficient = int(match.group(1) or 1)
+        if coefficient < 1:
+            raise ValueError("equation coefficients must be positive")
         formula = Formula.parse(match.group(2))
         for element, count in formula.elements.items():
             result[element] += coefficient * count

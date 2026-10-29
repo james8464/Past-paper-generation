@@ -15,8 +15,15 @@ _PRACTICAL_LANGUAGES = {"java", "python", "visual basic"}
 
 
 def normalise_pseudocode(value: str) -> tuple[str, ...]:
-    tokens = _PSEUDOCODE_TOKEN.findall(value.replace("←", "="))
-    return tuple(token.casefold() for token in tokens)
+    tokens = _PSEUDOCODE_TOKEN.findall(value)
+    return tuple(
+        token
+        if token.startswith(("'", '"'))
+        else "="
+        if token == "←"
+        else token.casefold()
+        for token in tokens
+    )
 
 
 def pseudocode_equivalent(left: str, right: str) -> bool:
@@ -121,7 +128,7 @@ class ComputerSciencePlugin:
 
 
 _BOOLEAN_TOKEN = re.compile(
-    r"\s*(?:(AND|OR|NOT|XOR|NAND|NOR)|([A-Za-z][A-Za-z0-9_]*)|([()+·.¬⊕⊼⊽]))",
+    r"\s*(?:(AND|OR|NOT|XOR|NAND|NOR)\b|([A-Za-z][A-Za-z0-9_]*)|([()+·.¬⊕⊼⊽]))",
     re.IGNORECASE,
 )
 BooleanNode = tuple[str, object] | tuple[str, object, object]
@@ -138,6 +145,8 @@ class _BooleanParser:
         tokens: list[str] = []
         cursor = 0
         while cursor < len(expression):
+            if not expression[cursor:].strip():
+                break
             match = _BOOLEAN_TOKEN.match(expression, cursor)
             if match is None:
                 raise ValueError("logic expression contains an unsupported operation")

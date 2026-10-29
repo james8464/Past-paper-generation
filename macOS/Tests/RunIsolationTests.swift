@@ -1170,6 +1170,7 @@ private final class FailingSettingsSecrets: SecretStoring {
 // retain the production main-actor contract without launching a helper or model.
 final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     struct Request {
+        let arguments: [String]
         let onEvent: @Sendable @MainActor (BackendEvent) -> Void
         let onFinish: @Sendable @MainActor (Result<Int32, Error>) -> Void
     }
@@ -1183,7 +1184,7 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
         onFinish: @escaping @Sendable @MainActor (Result<Int32, Error>) -> Void
     ) throws -> Process {
         if let launchError { throw launchError }
-        requests.append(Request(onEvent: onEvent, onFinish: onFinish))
+        requests.append(Request(arguments: arguments, onEvent: onEvent, onFinish: onFinish))
         return ControlledProcess()
     }
 

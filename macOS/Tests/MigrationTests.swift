@@ -5,6 +5,132 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    func testArtifactCollisionNeverSubstitutesDifferentDestinationBytes() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationCollision-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old")
+        let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+        let source = old.appendingPathComponent("paper.pdf")
+        let destination = new.appendingPathComponent("paper.pdf")
+        let original = Data("original assessment".utf8)
+        let current = Data("different current assessment".utf8)
+        try original.write(to: source)
+        try current.write(to: destination)
+        try KeldinMigration.copyMissingTree(from: old, to: new)
+        let defaults = isolatedDefaults()
+        defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+        let artifact = GeneratedFile(role: "question_paper", url: source)
+
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), artifact)
+        XCTAssertEqual(try Data(contentsOf: source), original)
+        XCTAssertEqual(try Data(contentsOf: destination), current)
+    }
+
+    func testMissingOriginalRequiresVerifiedCopyAndRejectsLaterDestinationChanges() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationProof-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old")
+        let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+        let source = old.appendingPathComponent("paper.pdf")
+        let destination = new.appendingPathComponent("paper.pdf")
+        let bytes = Data("verified original assessment".utf8)
+        try bytes.write(to: destination)
+        let defaults = isolatedDefaults()
+        defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+        let artifact = GeneratedFile(role: "question_paper", url: source)
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), artifact)
+
+        try bytes.write(to: source)
+        let verified = KeldinMigration.relocatedArtifact(artifact, defaults: defaults)
+        XCTAssertEqual(verified.url, destination)
+        XCTAssertEqual(verified.id, artifact.id)
+        try FileManager.default.removeItem(at: source)
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), verified)
+
+        try Data("replacement assessment".utf8).write(to: destination)
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), artifact)
+    }
+
+    func testObservedSourceConflictRevokesProofBeforeTheOriginalDisappears() throws {
+        for failure in ["changed bytes", "read denied", "symbolic link"] {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationRevocation-\(UUID().uuidString)")
+            defer { try? FileManager.default.removeItem(at: root) }
+            let old = root.appendingPathComponent("old")
+            let new = root.appendingPathComponent("new")
+            try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+            let source = old.appendingPathComponent("paper.pdf")
+            let destination = new.appendingPathComponent("paper.pdf")
+            let bytes = Data("assessment A".utf8)
+            try bytes.write(to: source)
+            try bytes.write(to: destination)
+            let defaults = isolatedDefaults()
+            defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+            let artifact = GeneratedFile(role: "question_paper", url: source)
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults).url, destination)
+
+            if failure == "changed bytes" {
+                try Data("assessment B".utf8).write(to: source)
+            } else if failure == "symbolic link" {
+                try FileManager.default.removeItem(at: source)
+                try FileManager.default.createSymbolicLink(atPath: source.path, withDestinationPath: destination.path)
+            }
+            let refused = KeldinMigration.relocatedArtifact(artifact, defaults: defaults, readData: { url in
+                if failure == "read denied", url == source { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: url)
+            })
+            XCTAssertEqual(refused, artifact, failure)
+
+            try FileManager.default.removeItem(at: source)
+
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), artifact, failure)
+            XCTAssertEqual(try Data(contentsOf: destination), bytes)
+            try bytes.write(to: source)
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults).url, destination)
+            try FileManager.default.removeItem(at: source)
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults).url, destination)
+        }
+    }
+
+    func testRejectedDestinationRevokesProofBeforeTheOriginalDisappears() throws {
+        for failure in ["read denied", "symbolic link"] {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationDestination-\(UUID().uuidString)")
+            defer { try? FileManager.default.removeItem(at: root) }
+            let old = root.appendingPathComponent("old")
+            let new = root.appendingPathComponent("new")
+            try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+            try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+            let source = old.appendingPathComponent("paper.pdf")
+            let destination = new.appendingPathComponent("paper.pdf")
+            let bytes = Data("assessment A".utf8)
+            try bytes.write(to: source)
+            try bytes.write(to: destination)
+            let defaults = isolatedDefaults()
+            defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+            let artifact = GeneratedFile(role: "question_paper", url: source)
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults).url, destination)
+            if failure == "symbolic link" {
+                try FileManager.default.removeItem(at: destination)
+                try FileManager.default.createSymbolicLink(atPath: destination.path, withDestinationPath: source.path)
+            }
+
+            let refused = KeldinMigration.relocatedArtifact(artifact, defaults: defaults, readData: { url in
+                if failure == "read denied", url == destination { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: url)
+            })
+            XCTAssertEqual(refused, artifact, failure)
+            try FileManager.default.removeItem(at: source)
+            if failure == "symbolic link" { try FileManager.default.removeItem(at: destination) }
+            try bytes.write(to: destination)
+
+            XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults), artifact, failure)
+        }
+    }
+
     func testIdentityMigrationRevisitsVersionOneForTheV35FamilyLedger() {
         let defaults = isolatedDefaults()
         defaults.set(1, forKey: KeldinMigration.completionKey)
@@ -99,9 +225,11 @@ final class MigrationTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: root) }
         let old = root.appendingPathComponent("old")
         let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
         let target = new.appendingPathComponent("paper.pdf")
         try Data("saved PDF".utf8).write(to: target)
+        try Data("saved PDF".utf8).write(to: old.appendingPathComponent("paper.pdf"))
         let file = GeneratedFile(role: "question_paper", url: old.appendingPathComponent("paper.pdf"))
         let defaults = isolatedDefaults()
         defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
@@ -111,6 +239,33 @@ final class MigrationTests: XCTestCase {
         XCTAssertEqual(relocated.createdAt, file.createdAt)
         let external = GeneratedFile(role: "question_paper", url: root.appendingPathComponent("elsewhere.pdf"))
         XCTAssertEqual(KeldinMigration.relocatedArtifact(external, defaults: defaults), external)
+    }
+
+    func testUnreadableOriginalCannotUseAnEarlierCopyProof() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinMigrationDenied-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let old = root.appendingPathComponent("old")
+        let new = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: old, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: new, withIntermediateDirectories: true)
+        let source = old.appendingPathComponent("paper.pdf")
+        let destination = new.appendingPathComponent("paper.pdf")
+        let bytes = Data("matching assessment".utf8)
+        try bytes.write(to: source)
+        try bytes.write(to: destination)
+        let defaults = isolatedDefaults()
+        defaults.set([old.path: new.path], forKey: KeldinMigration.artifactMappingsKey)
+        let artifact = GeneratedFile(role: "question_paper", url: source)
+        XCTAssertEqual(KeldinMigration.relocatedArtifact(artifact, defaults: defaults).url, destination)
+
+        let result = KeldinMigration.relocatedArtifact(artifact, defaults: defaults, readData: { url in
+            if url == source { throw CocoaError(.fileReadNoPermission) }
+            return try Data(contentsOf: url)
+        })
+
+        XCTAssertEqual(result, artifact)
+        XCTAssertEqual(try Data(contentsOf: source), bytes)
+        XCTAssertEqual(try Data(contentsOf: destination), bytes)
     }
 
 }
