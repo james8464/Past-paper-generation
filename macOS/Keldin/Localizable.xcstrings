@@ -3892,6 +3892,16 @@
       }
     },
     "Recent Documents": {},
+    "Reviewing question %lld of %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification de la question %1$lld sur %2$lld"
+          }
+        }
+      }
+    },
     "Rechecking question %@": {
       "localizations": {
         "fr": {

@@ -104,16 +104,23 @@ def progress_emitter() -> Callable[[str | GenerationUpdate], None]:
         progress = render_progress.get(message)
         question_match = re.search(r"Generating question\s+(\d+)/(\d+)", message)
         generated_match = re.search(r"Generated question\s+(\d+)/(\d+)", message)
+        review_match = re.search(
+            r"(?:Calibrating difficulty|Checking reference demand)\s+(\d+)/(\d+)",
+            message,
+        )
         if question_match:
             index, total = map(int, question_match.groups())
             progress = 0.08 + ((index - 1) / max(total, 1)) * 0.70
         elif generated_match:
             index, total = map(int, generated_match.groups())
             progress = 0.08 + (index / max(total, 1)) * 0.70
-        if progress is None:
-            progress = last_progress
-        else:
-            last_progress = progress
-        emit_progress(message, progress=progress)
+        elif review_match:
+            index, total = map(int, review_match.groups())
+            if 1 <= index <= total:
+                # This message starts item i; only its predecessors are complete.
+                progress = 0.78 + ((index - 1) / total) * 0.04
+        if progress is not None:
+            last_progress = max(last_progress, progress)
+        emit_progress(message, progress=last_progress)
 
     return callback

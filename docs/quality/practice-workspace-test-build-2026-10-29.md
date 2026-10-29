@@ -15,6 +15,13 @@ Documents. It uses actual backend progress and status, shows the existing time
 estimate when available, and offers Cancel. Unknown progress remains
 indeterminate; the interface does not invent a percentage or completion time.
 
+Independent review now advances through the existing 78% to 82% review stage as
+each preceding question finishes. It does not count the question still being
+reviewed as complete or imply a time estimate. Invalid counts leave progress
+unchanged. Legacy status messages no longer move the indicator backwards.
+English/French status copy says which question is being reviewed; the original
+backend message remains available in diagnostics.
+
 Recent Documents starts collapsed. Expanding it reveals a 160-point table
 instead of occupying the lower half of the window. Existing document preview,
 Finder actions and output-folder access remain available. Configuration receives
@@ -56,6 +63,19 @@ request that collides with an existing destination still refuses to overwrite it
 The normal app flow creates a fresh random seed for each request.
 
 ## Acceptance boundary
+
+The first protected Backend run completed with 4,722 passes, two skips and one
+failure: a test still required the old French repeat-blocking sentence. Its
+expectation now matches the requested repeat-practice wording while retaining
+the bilingual/non-AI provenance assertions. The failure was reproduced locally
+and retained in `tmp/french-repeat-ui-copy-red.log`.
+
+The progress follow-up reproduced three failures before implementation and then
+passed 41 related Python tests. The English/French review-status test first
+failed its four expected text assertions; the final complete native suite passed
+272 tests. This follow-up changes progress presentation, not paper content,
+provider requests, quality thresholds or the stored original diagnostic message.
+Latest-head protected checks remain a separate merge gate.
 
 The currently running user Xcode Debug app was observed creating an Economics
 paper. Its old progress control was inside the disabled form. That generation

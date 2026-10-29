@@ -4,6 +4,17 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testDifficultyReviewProgressUsesPlainSelectedLanguageCopy() {
+        for prefix in ["Calibrating difficulty", "Checking reference demand"] {
+            let message = "\(prefix) 2/17: 1b"
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "en"), "Reviewing question 2 of 17")
+            XCTAssertEqual(GenerationPresentation.progress(message, language: "fr"), "Vérification de la question 2 sur 17")
+        }
+        let malformed = "Calibrating difficulty 0/17: 1b"
+        XCTAssertEqual(GenerationPresentation.progress(malformed, language: "fr"), malformed)
+    }
+
+    @MainActor
     func testQualityFailureShowsRecoveryAdviceAndKeepsOriginalActivity() {
         let model = isolatedApplication()
         let diagnostic = "AI could not produce a valid, second-pass reviewed item for question 05: context check failed"

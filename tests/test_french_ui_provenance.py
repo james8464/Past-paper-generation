@@ -25,7 +25,7 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
     ).read_text()
     catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
     for key in (
-        "Five paper families are available. The app selects an unused family and blocks repeats.",
+        "Five paper families are available and can be used again for practice.",
         "This catalogue runs locally without an AI model or Ollama. It does not test model quality.",
         "Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation.",
     ):
@@ -35,6 +35,7 @@ def test_french_workspace_explains_application_owned_cases_in_both_languages():
         assert unit["value"] and unit["value"] != key
     assert "French generation uses Ollama" not in workspace
     assert "Gemma 4 12B is the comparison baseline" not in workspace
+    assert "blocks repeats" not in workspace
 
 
 def test_french_help_does_not_claim_ollama_authors_current_papers():
