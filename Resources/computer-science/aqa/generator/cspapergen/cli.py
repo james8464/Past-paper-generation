@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from cspapergen import _cli_runtime as _cli_runtime
+
+# isort: split
+
 import argparse
 from collections.abc import Callable
 from pathlib import Path
