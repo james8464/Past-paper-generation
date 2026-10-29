@@ -35,6 +35,7 @@ final class DocumentPickerTests: XCTestCase {
         }
     }
 
+    @MainActor
     func testLabelsIncludeLocalisedRoleStoredContextAndLocalisedDate() {
         let file = fixtures(count: 1)[0]
         let english = DocumentPickerView.label(for: file, locale: Locale(identifier: "en_GB"))
@@ -54,6 +55,7 @@ final class DocumentPickerTests: XCTestCase {
         }
     }
 
+    @MainActor
     func testRepeatedRolesKeepDistinctStoredIdentitiesAndLabels() {
         let files = fixtures(count: 60)
         XCTAssertEqual(Set(files.map(\.id)).count, 60)

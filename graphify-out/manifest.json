@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793238846.99087,
-    "ast_hash": "d2e20a8e942c1cbab863e0470ba9723c",
+    "mtime": 1793274819.0860407,
+    "ast_hash": "caa08fa4590799a19b4c0e7c5da9bf18",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4395,8 +4395,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/DocumentPickerTests.swift": {
-    "mtime": 1793273310.6174517,
-    "ast_hash": "a9237325f879baba854aff4f65f8eaa7",
+    "mtime": 1793275787.3038452,
+    "ast_hash": "b674fc4becbcf0d56686659cd36c2f95",
     "semantic_hash": ""
   },
   "tests/test_build_cleanup_safety.py": {

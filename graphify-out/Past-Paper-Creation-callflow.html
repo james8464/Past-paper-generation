@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 10734 nodes, 31549 edges, 438 communities. Commit: 282d231</p>
+<p class="subtitle">Generated from graphify knowledge graph: 10734 nodes, 31549 edges, 443 communities. Commit: 61d8ce6</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -76,8 +76,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#test-document-dsl-py">test_document_dsl.py</a>
     <a href="#keldintests">KeldinTests</a>
     <a href="#sql-contracts-py">sql_contracts.py</a>
-    <a href="#localizedresource">.localizedResource</a>
     <a href="#qualityreviewview">QualityReviewView</a>
+    <a href="#independent-solver-py">independent_solver.py</a>
     <a href="#other">Other</a>
 </div>
 
@@ -90,9 +90,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>49 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1486 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1481 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>837 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>839 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>88 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
@@ -100,11 +100,11 @@ flowchart LR
     class CLI_SKILLS_9964CBB8 module;
     INGEST_CACHE_UPDATE_FF457338("Ingestion &amp; Updates<br/><small>218 nodes</small>")
     class INGEST_CACHE_UPDATE_FF457338 module;
-    SERVE_API_35EC8E86("Serving API<br/><small>191 nodes</small>")
+    SERVE_API_35EC8E86("Serving API<br/><small>216 nodes</small>")
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>6259 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>6240 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     TEST_DOCUMENT_DSL_PY_6AAEED4D("test_document_dsl.py<br/><small>158 nodes</small>")
     class TEST_DOCUMENT_DSL_PY_6AAEED4D module;
@@ -112,24 +112,24 @@ flowchart LR
     class KELDINTESTS_25F9B50A module;
     SQL_CONTRACTS_PY_D75AD132("sql_contracts.py<br/><small>52 nodes</small>")
     class SQL_CONTRACTS_PY_D75AD132 module;
-    LOCALIZEDRESOURCE_8F382607(".localizedResource<br/><small>37 nodes</small>")
-    class LOCALIZEDRESOURCE_8F382607 module;
     QUALITYREVIEWVIEW_9E311B53("QualityReviewView<br/><small>34 nodes</small>")
     class QUALITYREVIEWVIEW_9E311B53 module;
+    INDEPENDENT_SOLVER_PY_157AA9CD("independent_solver.py<br/><small>34 nodes</small>")
+    class INDEPENDENT_SOLVER_PY_157AA9CD module;
     OTHER_D0941E68("Other<br/><small>1145 nodes</small>")
     class OTHER_D0941E68 module;
-    TESTS_FIXTURES_B84B1DCC -->|references x566| ANALYSIS_CLUSTERING_C79796DA
-    TESTS_FIXTURES_B84B1DCC -->|imports x388| BUILD_GRAPH_321CBB04
-    BUILD_GRAPH_321CBB04 -->|calls x385| TESTS_FIXTURES_B84B1DCC
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x348| TESTS_FIXTURES_B84B1DCC
-    OTHER_D0941E68 -->|imports x122| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x95| OTHER_D0941E68
-    KELDINTESTS_25F9B50A -->|method x84| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x530| ANALYSIS_CLUSTERING_C79796DA
+    TESTS_FIXTURES_B84B1DCC -->|imports x401| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|calls x368| TESTS_FIXTURES_B84B1DCC
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x362| TESTS_FIXTURES_B84B1DCC
+    SERVE_API_35EC8E86 -->|calls x122| TESTS_FIXTURES_B84B1DCC
+    KELDINTESTS_25F9B50A -->|method x85| TESTS_FIXTURES_B84B1DCC
+    INDEPENDENT_SOLVER_PY_157AA9CD -->|imports x67| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x66| OTHER_D0941E68
+    OTHER_D0941E68 -->|references x66| TESTS_FIXTURES_B84B1DCC
     CLI_SKILLS_9964CBB8 -->|calls x66| TESTS_FIXTURES_B84B1DCC
     INGEST_CACHE_UPDATE_FF457338 -->|calls x53| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|references x51| KELDINTESTS_25F9B50A
-    TESTS_FIXTURES_B84B1DCC -->|references x35| SERVE_API_35EC8E86
-    SERVE_API_35EC8E86 -->|references x35| TESTS_FIXTURES_B84B1DCC
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,7 +146,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>49</td><td><code>299, 158, 408, 198, 296, 419, 344</code></td></tr><tr><td>Graph Build</td><td>1486</td><td><code>32, 10, 11, 25, 60, 40, 153, 48, 73, 98, 104, 21, 93, 101, 109, 178, 116, 160, 279, 110, 118, 309, 78, 88, 72, 115, 122, 136, 139, 142, 143, 274, 149, 111, 154, 131, 161, 166, 168, 175, 174, 188, 141, 180, 181, 182, 187, 189, 217, 349, 368, 407, 192, 194, 196, 394, 266, 297, 347, 333, 278, 280, 433, 439, 184, 212, 213, 216, 218, 219, 281, 282, 435</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>837</td><td><code>119, 123, 20, 6, 16, 26, 8, 57, 53, 55, 65, 68, 263, 242, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>88</td><td><code>127, 183, 199, 354, 316, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>34</td><td><code>171, 427, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>218</td><td><code>49, 124</code></td></tr><tr><td>Serving API</td><td>191</td><td><code>360, 260, 257, 265, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>6259</td><td><code>0, 14, 7, 38, 3, 107, 61, 37, 82, 12, 103, 132, 34, 1, 27, 28, 31, 23, 9, 173, 18, 33, 43, 52, 70, 64, 156, 45, 22, 133, 29, 5, 80, 150, 157, 163, 79, 81, 35, 44, 62, 74, 2, 399, 66, 120, 13, 56, 292, 369, 46, 69, 41, 36, 341, 324, 113, 76, 100, 348, 86, 17, 19, 50, 75, 15, 39, 201, 30, 179, 138, 106, 301, 340, 298, 54, 95, 99, 135, 42, 112, 152, 146, 162, 87, 89, 102, 85, 94, 129, 176, 231, 185, 190, 372, 402, 51, 204, 91, 327, 351, 92, 151, 208, 393, 59, 117, 134, 169, 251, 288, 302, 77, 105, 137, 144, 289, 323, 382, 130, 148, 177, 310, 330, 331, 367, 24, 128, 155, 337, 350, 359, 364, 366, 373, 378, 170, 329, 325, 346, 352, 126, 375, 388, 376, 377, 291, 410, 422, 191, 203, 293, 311, 383, 416, 96, 147, 356, 426, 370, 434</code></td></tr><tr><td>test_document_dsl.py</td><td>158</td><td><code>63</code></td></tr><tr><td>KeldinTests</td><td>138</td><td><code>4</code></td></tr><tr><td>sql_contracts.py</td><td>52</td><td><code>114</code></td></tr><tr><td>.localizedResource</td><td>37</td><td><code>83</code></td></tr><tr><td>QualityReviewView</td><td>34</td><td><code>159</code></td></tr><tr><td>Other</td><td>1145</td><td><code>97, 84, 90, 167, 250, 108, 228, 58, 286, 67, 371, 401, 164, 125, 172, 214, 319, 315, 193, 195, 197, 205, 244, 256, 215, 220, 246, 247, 335, 365, 381, 409, 290, 363, 384, 47, 165, 252, 253, 254, 255, 392, 400, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 357, 395, 403, 406, 206, 248, 261, 303, 304, 339, 342, 379, 412, 413, 414, 436, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 338, 353, 362, 380, 404, 411, 415, 418, 420, 421, 186, 267, 305, 314, 322, 355, 385, 396, 423, 424, 431, 432, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 430, 209, 210, 211, 343, 389, 202, 224, 225, 283, 284, 285, 336, 345, 358, 390, 391, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>49</td><td><code>299, 158, 408, 198, 296, 419, 344</code></td></tr><tr><td>Graph Build</td><td>1481</td><td><code>32, 10, 11, 25, 60, 40, 153, 48, 73, 98, 104, 21, 93, 101, 109, 116, 279, 110, 118, 309, 78, 88, 72, 115, 122, 136, 139, 142, 143, 274, 149, 160, 178, 111, 154, 131, 161, 166, 168, 175, 174, 188, 141, 180, 181, 182, 187, 189, 217, 349, 368, 407, 441, 192, 194, 196, 394, 442, 266, 297, 347, 333, 278, 280, 433, 439, 184, 212, 213, 216, 218, 219, 281, 282, 435</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>839</td><td><code>119, 123, 6, 20, 16, 26, 8, 57, 55, 65, 53, 68, 263, 242, 245, 71, 268, 269, 270, 271, 272, 273</code></td></tr><tr><td>Outputs &amp; Docs</td><td>88</td><td><code>127, 183, 199, 354, 316, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>34</td><td><code>171, 427, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>218</td><td><code>49, 124</code></td></tr><tr><td>Serving API</td><td>216</td><td><code>360, 260, 437, 257, 265, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>6240</td><td><code>0, 14, 7, 3, 38, 61, 107, 37, 82, 12, 45, 103, 132, 1, 27, 34, 69, 28, 31, 23, 9, 173, 18, 33, 52, 70, 29, 64, 156, 22, 133, 5, 80, 150, 157, 163, 79, 81, 13, 62, 35, 2, 399, 44, 66, 74, 120, 56, 292, 369, 46, 41, 36, 324, 113, 341, 76, 100, 348, 86, 19, 50, 75, 39, 43, 201, 30, 179, 138, 106, 301, 340, 89, 298, 54, 95, 99, 135, 15, 112, 152, 146, 162, 42, 87, 102, 85, 94, 129, 176, 231, 185, 372, 402, 51, 204, 91, 327, 351, 92, 151, 208, 393, 59, 117, 134, 169, 251, 288, 302, 77, 105, 137, 144, 289, 323, 382, 130, 148, 177, 310, 330, 367, 190, 24, 128, 155, 17, 337, 350, 438, 440, 359, 364, 366, 373, 378, 170, 329, 331, 325, 346, 352, 126, 375, 388, 376, 377, 291, 410, 422, 191, 203, 293, 311, 383, 416, 96, 147, 356, 426, 370, 434</code></td></tr><tr><td>test_document_dsl.py</td><td>158</td><td><code>63</code></td></tr><tr><td>KeldinTests</td><td>138</td><td><code>4</code></td></tr><tr><td>sql_contracts.py</td><td>52</td><td><code>114</code></td></tr><tr><td>QualityReviewView</td><td>34</td><td><code>159</code></td></tr><tr><td>independent_solver.py</td><td>34</td><td><code>97</code></td></tr><tr><td>Other</td><td>1145</td><td><code>83, 84, 90, 167, 250, 108, 228, 58, 286, 67, 371, 384, 401, 164, 125, 172, 214, 315, 193, 195, 197, 205, 244, 256, 215, 319, 220, 246, 247, 335, 365, 381, 409, 290, 363, 47, 165, 252, 253, 254, 255, 392, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 357, 395, 403, 406, 206, 248, 261, 303, 304, 339, 342, 379, 400, 412, 413, 414, 436, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 338, 353, 362, 380, 404, 411, 415, 418, 420, 421, 186, 267, 305, 314, 322, 355, 385, 396, 423, 424, 431, 432, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 430, 209, 210, 211, 343, 389, 202, 224, 225, 283, 284, 285, 336, 345, 358, 390, 391, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -158,7 +158,7 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>10734 nodes · 31549 edges · 438 communities (406 shown, 32 thin omitted)</li>
+      <li>10734 nodes · 31549 edges · 443 communities (411 shown, 32 thin omitted)</li>
       <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 1802 edges (avg confidence: 0.66)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `NSIExercise` - 265 edges</li>
@@ -523,21 +523,21 @@ flowchart LR
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1486 nodes and 2760 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1481 nodes and 2738 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (1486 nodes, 2760 edges)
-    subgraph build_graph_Core_france_archetypes_py_42219ef4["Core/france/archetypes.py"]
-        backend_core_france_archetypes_exercisearchetype_ad8514f1("ExerciseArchetype<br/><small>Core/france/archetypes.py</small>")
-        backend_core_france_archetypes_exercisearchetype_bede92f2("required_curriculum_codes()<br/><small>Core/france/archetypes.py</small>")
-        backend_core_france_archetypes_archetype_for_see_662a23dc("archetype_for_seed()<br/><small>Core/france/archetypes.py</small>")
-    end
+    %% Section: Graph Build (1481 nodes, 2738 edges)
     subgraph build_graph_Core_france_graph_resilience_authori_5166d6aa["Core/france/graph_resilience_authoring.py"]
         backend_core_france_graph_resilience_authoring_a_b8578979("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
         backend_core_france_graph_resilience_authoring_r_1b497a24("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
         backend_core_france_graph_resilience_authoring_i_e66be7ba("_identity()<br/><small>Core/france/graph_resilience_authoring.py</small>")
+        backend_core_france_graph_resilience_authoring_g_5820d0e7("resilience selection prompt()<br/><small>Core/france/graph_resilience_authoring.py</small>")
+    end
+    subgraph build_graph_Core_france_graph_resilience_prose_p_6a09beb3["Core/france/graph_resilience_prose.py"]
+        backend_core_france_graph_resilience_prose_graph_0322b989("resilience catalogue digest()<br/><small>Core/france/graph_resilience_prose.py</small>")
+        backend_core_france_graph_resilience_prose_graph_b8cb6153("resilience selection schema()<br/><small>Core/france/graph_resilience_prose.py</small>")
     end
     subgraph build_graph_Core_france_graph_route_trace_author_4702e85c["Core/france/graph_route_trace_authoring.py"]
         backend_core_france_graph_route_trace_authoring_46538981("route trace selection()<br/><small>Core/france/graph_route_trace_authoring.py</small>")
@@ -549,14 +549,12 @@ flowchart LR
     end
     backend_core_france_database_depth_authoring_val_42bf8eb4("_validate_failures()<br/><small>Core/france/database_depth_authoring.py</small>")
     backend_core_france_graph_resilience_contract_bu_0e61cd63("graph resilience contract()<br/><small>Core/france/graph_resilience_contract.py</small>")
-    backend_core_france_graph_resilience_prose_graph_0322b989("resilience catalogue digest()<br/><small>Core/france/graph_resilience_prose.py</small>")
     backend_core_france_graph_route_trace_contract_b_71465e0d("route trace contract()<br/><small>Core/france/graph_route_trace_contract.py</small>")
+    backend_core_france_graph_tree_authoring_1c52f444("graph_tree_authoring.py")
     backend_core_france_graph_tree_binding_canonical_3269e732("canonical_answer()<br/><small>Core/france/graph_tree_binding.py</small>")
     backend_core_france_graph_tree_contract_build_gr_d5a539f0("build_graph_tree_contract()<br/><small>Core/france/graph_tree_contract.py</small>")
-    backend_core_france_pipeline_tasks_for_seed_19161918("_tasks_for_seed()<br/><small>Core/france/pipeline.py</small>")
+    tests_test_french_graph_resilience_authoring_tes_b1927ac5("every selection fact()<br/><small>tests/test_french_graph_resilience_authoring.py</small>")
     tests_test_french_graph_tree_authoring_partclien_696a5744("PartClient<br/><small>tests/test_french_graph_tree_authoring.py</small>")
-    backend_core_france_archetypes_exercisearchetype_ad8514f1 -->|method| backend_core_france_archetypes_exercisearchetype_bede92f2
-    backend_core_france_archetypes_archetype_for_see_662a23dc -->|calls| backend_core_france_pipeline_tasks_for_seed_19161918
     backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
     backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
     backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_route_trace_authoring_46538981
@@ -566,27 +564,36 @@ flowchart LR
     backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
     backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_prose_graph_0322b989
     backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
+    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
+    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_prose_graph_b8cb6153
+    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
+    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
     backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
+    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
+    backend_core_france_graph_resilience_authoring_a_b8578979 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
+    backend_core_france_graph_resilience_contract_bu_0e61cd63 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
+    backend_core_france_graph_resilience_prose_graph_b8cb6153 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
     backend_core_france_graph_route_trace_authoring_d12647e4 -->|calls| backend_core_france_graph_route_trace_authoring_46538981
     backend_core_france_graph_two_outage_authoring_r_d8b579ef -->|calls| backend_core_france_graph_two_outage_authoring_a_6d008a85
-    %% Omitted for readability: 1468 nodes, 0 edges
-    class backend_core_france_archetypes_exercisearchetype_ad8514f1 klass;
-    class backend_core_france_archetypes_exercisearchetype_bede92f2 function;
-    class backend_core_france_archetypes_archetype_for_see_662a23dc function;
+    backend_core_france_graph_tree_authoring_1c52f444 -->|imports| backend_core_france_graph_tree_binding_canonical_3269e732
+    %% Omitted for readability: 1463 nodes, 0 edges
     class backend_core_france_graph_resilience_authoring_a_b8578979 function;
     class backend_core_france_graph_resilience_authoring_r_1b497a24 function;
     class backend_core_france_graph_resilience_authoring_i_e66be7ba function;
+    class backend_core_france_graph_resilience_authoring_g_5820d0e7 function;
+    class backend_core_france_graph_resilience_prose_graph_0322b989 function;
+    class backend_core_france_graph_resilience_prose_graph_b8cb6153 function;
     class backend_core_france_graph_route_trace_authoring_46538981 api;
     class backend_core_france_graph_route_trace_authoring_d12647e4 api;
     class backend_core_france_graph_two_outage_authoring_a_6d008a85 function;
     class backend_core_france_graph_two_outage_authoring_r_d8b579ef function;
     class backend_core_france_database_depth_authoring_val_42bf8eb4 function;
     class backend_core_france_graph_resilience_contract_bu_0e61cd63 function;
-    class backend_core_france_graph_resilience_prose_graph_0322b989 function;
     class backend_core_france_graph_route_trace_contract_b_71465e0d api;
+    class backend_core_france_graph_tree_authoring_1c52f444 module;
     class backend_core_france_graph_tree_binding_canonical_3269e732 function;
     class backend_core_france_graph_tree_contract_build_gr_d5a539f0 function;
-    class backend_core_france_pipeline_tasks_for_seed_19161918 function;
+    class tests_test_french_graph_resilience_authoring_tes_b1927ac5 test;
     class tests_test_french_graph_tree_authoring_partclien_696a5744 test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -611,46 +618,6 @@ flowchart LR
 </tr>
 <tr>
   <td>1</td>
-  <td><code>archetypes.py</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td><span class="tag tag-class">Module</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td>Module file in Core/france/archetypes.py.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>QuestionIntent</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>QuestionIntent node in Core/france/archetypes.py.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>ExerciseArchetype</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>required_curriculum_codes()</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td>ExerciseArchetype node in Core/france/archetypes.py.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.required_curriculum_codes()</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>ExerciseArchetype</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>.required_curriculum_codes() node in Core/france/archetypes.py.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>archetype_for_seed()</code><br><small style="color:var(--muted)">Core/france/archetypes.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>pipeline.py</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td>archetype_for_seed() node in Core/france/archetypes.py.</td>
-</tr>
-<tr>
-  <td>6</td>
   <td><code>graph_tree_authoring.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
@@ -658,7 +625,7 @@ flowchart LR
   <td>Module file in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>2</td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -666,7 +633,7 @@ flowchart LR
   <td>Caches analysis results or computes cache keys.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>3</td>
   <td><code>french_retry_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -674,7 +641,7 @@ flowchart LR
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>4</td>
   <td><code>_run_identity_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -682,7 +649,7 @@ flowchart LR
   <td>Caches analysis results or computes cache keys.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>5</td>
   <td><code>_check_failed_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -690,7 +657,7 @@ flowchart LR
   <td>_check_failed_attempts() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>6</td>
   <td><code>_save()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -698,7 +665,7 @@ flowchart LR
   <td>_save() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>7</td>
   <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -706,7 +673,7 @@ flowchart LR
   <td>Path node in project.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>8</td>
   <td><code>part_response_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -714,7 +681,7 @@ flowchart LR
   <td>part_response_schema() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>9</td>
   <td><code>contract_question_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>part_response_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -722,7 +689,7 @@ flowchart LR
   <td>contract_question_schema() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>10</td>
   <td><code>_part_request()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -730,7 +697,7 @@ flowchart LR
   <td>_part_request() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>11</td>
   <td><code>part_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_part_request()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>part_response_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -738,7 +705,7 @@ flowchart LR
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>12</td>
   <td><code>_check_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -746,7 +713,7 @@ flowchart LR
   <td>_check_part() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>13</td>
   <td><code>author_graph_tree_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_check_failed_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_check_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br>+4 more</td>
@@ -754,7 +721,7 @@ flowchart LR
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>14</td>
   <td><code>replay_graph_tree_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_check_failed_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_check_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br>+4 more</td>
@@ -762,7 +729,7 @@ flowchart LR
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>15</td>
   <td><code>apply_graph_tree_repair()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -770,7 +737,7 @@ flowchart LR
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>16</td>
   <td><code>part_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -778,7 +745,7 @@ flowchart LR
   <td>part_selection_schema() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>17</td>
   <td><code>question_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>part_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -786,7 +753,7 @@ flowchart LR
   <td>question_selection_schema() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>18</td>
   <td><code>_selection_request()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_part_request()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -794,7 +761,7 @@ flowchart LR
   <td>_selection_request() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>19</td>
   <td><code>part_selection_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_selection_request()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>part_selection_schema()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -802,7 +769,7 @@ flowchart LR
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>20</td>
   <td><code>_closed_identity()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_run_identity_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -810,7 +777,7 @@ flowchart LR
   <td>_closed_identity() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>21</td>
   <td><code>_check_closed_failures()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -818,7 +785,7 @@ flowchart LR
   <td>_check_closed_failures() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>22</td>
   <td><code>_valid_transport_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_check_closed_failures()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>french_retry_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -826,7 +793,7 @@ flowchart LR
   <td>_valid_transport_attempts() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>23</td>
   <td><code>_transport_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_valid_transport_attempts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
@@ -834,7 +801,7 @@ flowchart LR
   <td>_transport_attempts() node in Core/france/graph_tree_authoring.py.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>24</td>
   <td><code>BaseException</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -842,12 +809,52 @@ flowchart LR
   <td>BaseException node in project.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>25</td>
   <td><code>_check_closed_saved_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>part_selection_prompt()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
   <td><code>author_closed_prose_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>replay_closed_prose_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>validate_selection()</code><br><small style="color:var(--muted)">Core/france/graph_tree_prose.py</small></td>
   <td>_check_closed_saved_part() node in Core/france/graph_tree_authoring.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>author_closed_prose_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_check_closed_failures()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_check_closed_saved_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_closed_identity()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br>+4 more</td>
+  <td><code>and rejects tampering()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br><code>and run identity()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br><code>checkpointed after success()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br>+8 more</td>
+  <td>author_closed_prose_parts() node in Core/france/graph_tree_authoring.py.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>replay_closed_prose_parts()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_check_closed_failures()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_check_closed_saved_part()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br><code>_closed_identity()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small><br>+2 more</td>
+  <td><code>and rejects tampering()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br><code>closed prose evidence()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>each raw attempt()</code><br><small style="color:var(--muted)">tests/test_french_closed_prose_authoring.py</small><br>+4 more</td>
+  <td>replay_closed_prose_parts() node in Core/france/graph_tree_authoring.py.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>apply_closed_prose_repair()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><code>closed prose draft()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>closed prose evidence()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>graph tree candidate()</code><br><small style="color:var(--muted)">Core/france/graph_tree_prose.py</small><br>+3 more</td>
+  <td>apply_closed_prose_repair() node in Core/france/graph_tree_authoring.py.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>graph_tree_binding.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td><code>graph_resilience_prose.py</code><br><small style="color:var(--muted)">Core/france/graph_resilience_prose.py</small><br><code>graph_tree_authoring.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_authoring.py</small></td>
+  <td><code>graph_tree_contract.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_contract.py</small><br><code>graph_tree_depth_prose.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_depth_prose.py</small><br><code>graph_tree_prose.py</code><br><small style="color:var(--muted)">Core/france/graph_tree_prose.py</small><br>+4 more</td>
+  <td>Module file in Core/france/graph_tree_binding.py.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>bind_graph_tree_contract()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small></td>
+  <td>Caches analysis results or computes cache keys.</td>
 </tr>
 </table>
 
@@ -868,19 +875,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1106, calls x750, extends x284, imports x265. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1103, calls x734, extends x284, imports x259. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/aqaaccountgen/render_pdf.py. This section covers 837 nodes and 2562 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/aqaaccountgen/render_pdf.py. This section covers 839 nodes and 2612 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (837 nodes, 2562 edges)
+    %% Section: Analysis &amp; Clustering (839 nodes, 2612 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -914,7 +921,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_pdf_probe_873c5756
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
     backend_core_benchmark_emit_static_metrics_c43bbe70 -->|calls| backend_core_benchmark_apple_cpu_core_split_fcd9b541
-    %% Omitted for readability: 819 nodes, 0 edges
+    %% Omitted for readability: 821 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -1020,14 +1027,38 @@ flowchart LR
 </tr>
 <tr>
   <td>9</td>
+  <td><code>GraphParams</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>to_dict()</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small></td>
+  <td>Builds dependency relationships and graph data.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>.from_dict()</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.from_dict() node in generator/pastpapergen/models.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.to_dict()</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>GraphParams</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>.to_dict() node in generator/pastpapergen/models.py.</td>
+</tr>
+<tr>
+  <td>12</td>
   <td><code>pastpapergen/render_pdf.py</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
-  <td><code>economics_exam_schedule()</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small><br><code>exam_dates.py</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small><br><code>layouts.py</code><br><small style="color:var(--muted)">Core/overlay/layouts.py</small></td>
+  <td><code>economics_exam_schedule()</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small><br><code>exam_dates.py</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small><br><code>GraphParams</code><br><small style="color:var(--muted)">generator/pastpapergen/models.py</small><br>+1 more</td>
   <td><code>source_cases.py</code><br><small style="color:var(--muted)">generator/pastpapergen/source_cases.py</small></td>
   <td>Module file in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>10</td>
+  <td>13</td>
   <td><code>PaperBlueprint</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1035,7 +1066,7 @@ flowchart LR
   <td>PaperBlueprint node in project.</td>
 </tr>
 <tr>
-  <td>11</td>
+  <td>14</td>
   <td><code>_count_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1043,7 +1074,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>15</td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_count_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>economics_exam_schedule()</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small></td>
@@ -1051,7 +1082,7 @@ flowchart LR
   <td>_draw_cover() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>16</td>
   <td><code>Canvas</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td><code>_count_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1059,7 +1090,7 @@ flowchart LR
   <td>Canvas node in project.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>17</td>
   <td><code>_draw_turn_over()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1067,7 +1098,7 @@ flowchart LR
   <td>_draw_turn_over() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>18</td>
   <td><code>_exam_date_line()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1075,7 +1106,7 @@ flowchart LR
   <td>_exam_date_line() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>19</td>
   <td><code>_exam_session()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>economics_exam_schedule()</code><br><small style="color:var(--muted)">generator/pastpapergen/exam_dates.py</small></td>
@@ -1083,7 +1114,7 @@ flowchart LR
   <td>_exam_session() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>20</td>
   <td><code>_draw_boxes()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1091,7 +1122,7 @@ flowchart LR
   <td>_draw_boxes() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>21</td>
   <td><code>_draw_front_section()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1099,7 +1130,7 @@ flowchart LR
   <td>_draw_front_section() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>22</td>
   <td><code>_draw_crop_marks()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1107,7 +1138,7 @@ flowchart LR
   <td>_draw_crop_marks() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>23</td>
   <td><code>_encode_barcode()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1115,7 +1146,7 @@ flowchart LR
   <td>_encode_barcode() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>24</td>
   <td><code>_draw_fake_barcode()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>_encode_barcode()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1123,7 +1154,7 @@ flowchart LR
   <td>_draw_fake_barcode() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>25</td>
   <td><code>_instruction_line()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_cover()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1131,7 +1162,7 @@ flowchart LR
   <td>_instruction_line() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>26</td>
   <td><code>_draw_question_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_count_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1139,7 +1170,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>27</td>
   <td><code>_draw_paper_3_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_question_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1147,7 +1178,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>28</td>
   <td><code>_draw_paper_3_source_page()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_paper_3_pages()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1155,7 +1186,7 @@ flowchart LR
   <td>Organizes documentation pages, navigation, or content lookup.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>29</td>
   <td><code>_draw_case_source_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_paper_3_source_page()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
@@ -1163,36 +1194,12 @@ flowchart LR
   <td>_draw_case_source_figure() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>30</td>
   <td><code>_draw_paper_3_extract()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_draw_paper_3_source_page()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td><code>_wrap()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
   <td>_draw_paper_3_extract() node in generator/pastpapergen/render_pdf.py.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>_paper_3_values()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>_draw_paper_3_bar_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>_draw_paper_3_line_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>_draw_paper_3_table_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td>_paper_3_values() node in generator/pastpapergen/render_pdf.py.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>_draw_paper_3_line_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_draw_paper_3_source_page()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>_paper_3_values()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td><code>_draw_paper_3_series()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td>_draw_paper_3_line_figure() node in generator/pastpapergen/render_pdf.py.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>_draw_paper_3_bar_figure()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>_draw_paper_3_source_page()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small><br><code>_paper_3_values()</code><br><small style="color:var(--muted)">generator/pastpapergen/render_pdf.py</small></td>
-  <td>No direct outbound edge</td>
-  <td>_draw_paper_3_bar_figure() node in generator/pastpapergen/render_pdf.py.</td>
 </tr>
 </table>
 
@@ -1213,7 +1220,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x928, contains x663, references x629, imports x68. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x929, contains x663, references x658, imports x76. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2269,62 +2276,69 @@ flowchart LR
 
 <!-- ====== 8. Serving API ====== -->
 <h2 id="serve-api">8. Serving API</h2>
-<p>Serving API groups implementation around macos, keldin, selected, responsepy, mostly in Core/subjects/selected_response.py, Keldin/State/SettingsActionPresentation.swift, Keldin/Domain/WorkNotification.swift. This section covers 191 nodes and 405 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Serving API groups implementation around macos, keldin, selected, backend, mostly in Core/subjects/selected_response.py, Keldin/State/SettingsActionPresentation.swift, Keldin/Domain/WorkNotification.swift. This section covers 216 nodes and 468 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Serving API (191 nodes, 405 edges)
-    subgraph serve_api_Backend_Core_response_simulation_py_55785683["Backend/Core/response_simulation.py"]
-        backend_core_response_simulation_responsesimulat_a341ee40("ResponseSimulator<br/><small>Backend/Core/response_simulation.py</small>")
-        backend_core_response_simulation_responsesimulat_58f01919("__init__()<br/><small>Backend/Core/response_simulation.py</small>")
-        backend_core_response_simulation_responsesimulat_f14a8df6("responses()<br/><small>Backend/Core/response_simulation.py</small>")
-        backend_core_response_simulation_band_ratios_b4527b68("_band_ratios()<br/><small>Backend/Core/response_simulation.py</small>")
-        backend_core_response_simulation_mapping_4770ef25("_mapping()<br/><small>Backend/Core/response_simulation.py</small>")
-        backend_core_response_simulation_strings_0f632707("_strings()<br/><small>Backend/Core/response_simulation.py</small>")
+    %% Section: Serving API (216 nodes, 468 edges)
+    subgraph serve_api_Backend_Core_cli_py_9e60ec28["Backend/Core/cli.py"]
+        backend_core_cli_491f2ddf("cli.py")
+        backend_core_cli_build_parser_589b4fac("build_parser()<br/><small>Backend/Core/cli.py</small>")
+        backend_core_cli_main_d29c866a("main()<br/><small>Backend/Core/cli.py</small>")
+        backend_core_cli_handle_french_references_2bb7e75a("handle_french_references()<br/><small>Backend/Core/cli.py</small>")
+        backend_core_cli_handle_bundle_check_99255abe("handle_bundle_check()<br/><small>Backend/Core/cli.py</small>")
     end
-    subgraph serve_api_Core_subjects_accounting_selected_resp_7cc3c8d9["Core/subjects/accounting_selected_response.py"]
-        backend_core_subjects_accounting_selected_respon_7de1fd33("pounds()<br/><small>Core/subjects/accounting_selected_response.py</small>")
-        backend_core_subjects_accounting_selected_respon_7a143f10("AccountingSelectedResponseContract<br/><small>Core/subjects/accounting_selected_response.py</small>")
-        backend_core_subjects_accounting_selected_respon_b10b4261("selected response contract()<br/><small>Core/subjects/accounting_selected_response.py</small>")
-        backend_core_subjects_accounting_selected_respon_1405d14b("_carriage()<br/><small>Core/subjects/accounting_selected_response.py</small>")
-        backend_core_subjects_accounting_selected_respon_362a1acb("_credit_sale()<br/><small>Core/subjects/accounting_selected_response.py</small>")
-        backend_core_subjects_accounting_selected_respon_4287bc3d("_sale_or_return()<br/><small>Core/subjects/accounting_selected_response.py</small>")
+    subgraph serve_api_Backend_Core_events_py_872eb0f0["Backend/Core/events.py"]
+        backend_core_events_emit_a5a67dcb("emit()<br/><small>Backend/Core/events.py</small>")
+        backend_core_events_emit_progress_195c14b3("emit_progress()<br/><small>Backend/Core/events.py</small>")
+        backend_core_events_run_subprocess_json_d431bb09("run_subprocess_json()<br/><small>Backend/Core/events.py</small>")
     end
-    subgraph serve_api_tests_test_response_simulation_py_e4e5941b["tests/test_response_simulation.py"]
-        tests_test_response_simulation_test_model_simula_6a1eab5d("draft mark scheme()<br/><small>tests/test_response_simulation.py</small>")
-        tests_test_response_simulation_test_response_sim_724168e7("monotonic candidate evidence()<br/><small>tests/test_response_simulation.py</small>")
+    subgraph serve_api_Backend_Core_ollama_py_2f81d080["Backend/Core/ollama.py"]
+        backend_core_ollama_handle_list_models_e9a5e5e4("handle_list_models()<br/><small>Backend/Core/ollama.py</small>")
+        backend_core_ollama_handle_ollama_status_c14b3659("handle_ollama_status()<br/><small>Backend/Core/ollama.py</small>")
     end
+    subgraph serve_api_tests_test_app_backend_py_2e4669a0["tests/test_app_backend.py"]
+        tests_test_app_backend_test_bundle_check_rejects_725bb68f("missing marking policy()<br/><small>tests/test_app_backend.py</small>")
+        tests_test_app_backend_test_bundle_check_rejects_dc2c1d8f("unrenderable french corrections()<br/><small>tests/test_app_backend.py</small>")
+    end
+    backend_core_generation_emit_generated_files_a9f12531("emit_generated_files()<br/><small>Backend/Core/generation.py</small>")
+    backend_core_subjects_accounting_selected_respon_7de1fd33("pounds()<br/><small>Core/subjects/accounting_selected_response.py</small>")
     macos_keldin_domain_appmodels_aiprovider_d4e33bdd("AIProvider<br/><small>Keldin/Domain/AppModels.swift</small>")
     macos_keldin_state_modeldownloadpresentation_mod_607def09("ModelDownloadPresentation<br/><small>Keldin/State/ModelDownloadPresentation.swift</small>")
     macos_keldin_state_settingsactionpresentation_se_1501981e("SettingsActionPresentation<br/><small>Keldin/State/SettingsActionPresentation.swift</small>")
     macos_tests_finalinterfaceguardtests_finalinterf_7def8486("FinalInterfaceGuardTests<br/><small>macOS/Tests/FinalInterfaceGuardTests.swift</small>")
-    backend_core_response_simulation_responsesimulat_a341ee40 -->|method| backend_core_response_simulation_responsesimulat_58f01919
-    backend_core_response_simulation_responsesimulat_a341ee40 -->|method| backend_core_response_simulation_responsesimulat_f14a8df6
-    backend_core_response_simulation_responsesimulat_a341ee40 -->|calls| tests_test_response_simulation_test_model_simula_6a1eab5d
-    backend_core_response_simulation_responsesimulat_a341ee40 -->|calls| tests_test_response_simulation_test_response_sim_724168e7
-    backend_core_response_simulation_responsesimulat_f14a8df6 -->|calls| backend_core_response_simulation_band_ratios_b4527b68
-    backend_core_response_simulation_responsesimulat_f14a8df6 -->|calls| backend_core_response_simulation_mapping_4770ef25
-    backend_core_response_simulation_responsesimulat_f14a8df6 -->|calls| backend_core_response_simulation_strings_0f632707
-    backend_core_subjects_accounting_selected_respon_7a143f10 -->|calls| backend_core_subjects_accounting_selected_respon_b10b4261
-    backend_core_subjects_accounting_selected_respon_7de1fd33 -->|calls| backend_core_subjects_accounting_selected_respon_1405d14b
-    backend_core_subjects_accounting_selected_respon_7de1fd33 -->|calls| backend_core_subjects_accounting_selected_respon_362a1acb
-    backend_core_subjects_accounting_selected_respon_7de1fd33 -->|calls| backend_core_subjects_accounting_selected_respon_4287bc3d
-    %% Omitted for readability: 173 nodes, 0 edges
-    class backend_core_response_simulation_responsesimulat_a341ee40 klass;
-    class backend_core_response_simulation_responsesimulat_58f01919 function;
-    class backend_core_response_simulation_responsesimulat_f14a8df6 function;
-    class backend_core_response_simulation_band_ratios_b4527b68 function;
-    class backend_core_response_simulation_mapping_4770ef25 function;
-    class backend_core_response_simulation_strings_0f632707 function;
+    backend_core_cli_build_parser_589b4fac -->|calls| backend_core_cli_main_d29c866a
+    backend_core_cli_handle_french_references_2bb7e75a -->|calls| backend_core_events_emit_a5a67dcb
+    backend_core_cli_handle_bundle_check_99255abe -->|calls| backend_core_events_emit_a5a67dcb
+    backend_core_cli_handle_bundle_check_99255abe -->|calls| tests_test_app_backend_test_bundle_check_rejects_725bb68f
+    backend_core_cli_handle_bundle_check_99255abe -->|calls| tests_test_app_backend_test_bundle_check_rejects_dc2c1d8f
+    backend_core_cli_main_d29c866a -->|calls| backend_core_events_emit_a5a67dcb
+    backend_core_events_emit_a5a67dcb -->|calls| backend_core_events_emit_progress_195c14b3
+    backend_core_events_emit_a5a67dcb -->|calls| backend_core_events_run_subprocess_json_d431bb09
+    backend_core_events_emit_a5a67dcb -->|calls| backend_core_generation_emit_generated_files_a9f12531
+    backend_core_events_emit_a5a67dcb -->|calls| backend_core_ollama_handle_list_models_e9a5e5e4
+    backend_core_events_emit_a5a67dcb -->|calls| backend_core_ollama_handle_ollama_status_c14b3659
+    backend_core_events_emit_progress_195c14b3 -->|calls| backend_core_events_run_subprocess_json_d431bb09
+    backend_core_events_emit_progress_195c14b3 -->|calls| backend_core_generation_emit_generated_files_a9f12531
+    backend_core_cli_491f2ddf -->|imports| backend_core_events_emit_a5a67dcb
+    backend_core_cli_491f2ddf -->|imports| backend_core_ollama_handle_list_models_e9a5e5e4
+    backend_core_cli_491f2ddf -->|imports| backend_core_ollama_handle_ollama_status_c14b3659
+    %% Omitted for readability: 198 nodes, 0 edges
+    class backend_core_cli_491f2ddf entry;
+    class backend_core_cli_build_parser_589b4fac function;
+    class backend_core_cli_main_d29c866a function;
+    class backend_core_cli_handle_french_references_2bb7e75a function;
+    class backend_core_cli_handle_bundle_check_99255abe function;
+    class backend_core_events_emit_a5a67dcb function;
+    class backend_core_events_emit_progress_195c14b3 function;
+    class backend_core_events_run_subprocess_json_d431bb09 function;
+    class backend_core_ollama_handle_list_models_e9a5e5e4 function;
+    class backend_core_ollama_handle_ollama_status_c14b3659 function;
+    class tests_test_app_backend_test_bundle_check_rejects_725bb68f test;
+    class tests_test_app_backend_test_bundle_check_rejects_dc2c1d8f test;
+    class backend_core_generation_emit_generated_files_a9f12531 function;
     class backend_core_subjects_accounting_selected_respon_7de1fd33 function;
-    class backend_core_subjects_accounting_selected_respon_7a143f10 klass;
-    class backend_core_subjects_accounting_selected_respon_b10b4261 function;
-    class backend_core_subjects_accounting_selected_respon_1405d14b function;
-    class backend_core_subjects_accounting_selected_respon_362a1acb function;
-    class backend_core_subjects_accounting_selected_respon_4287bc3d function;
-    class tests_test_response_simulation_test_model_simula_6a1eab5d test;
-    class tests_test_response_simulation_test_response_sim_724168e7 test;
     class macos_keldin_domain_appmodels_aiprovider_d4e33bdd klass;
     class macos_keldin_state_modeldownloadpresentation_mod_607def09 klass;
     class macos_keldin_state_settingsactionpresentation_se_1501981e klass;
@@ -2609,7 +2623,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x125, calls x84, contains x58, method x42. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x134, calls x105, contains x72, method x42. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2749,12 +2763,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, Keldin/Domain/AppModels.swift, generator/aqaaccountgen/case_data.py. This section covers 6259 nodes and 19534 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, backend, generator, mostly in tests/test_nsi_pipeline.py, Keldin/Domain/AppModels.swift, generator/aqaaccountgen/case_data.py. This section covers 6240 nodes and 19348 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (6259 nodes, 19534 edges)
+    %% Section: Tests &amp; Fixtures (6240 nodes, 19348 edges)
     subgraph tests_fixtures_Backend_Core_accounting_scheme_co_dec83d5b["Backend/Core/accounting_scheme_content.py"]
         backend_core_accounting_scheme_content_require_p_c51a4e97("_require_paper_shape()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
         backend_core_accounting_scheme_content_require_p_2005a8cd("_require_printed_table()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
@@ -2790,7 +2804,7 @@ flowchart LR
     backend_core_ai_assessment_generationpolicy_3659b550 -->|calls| resources_economics_aqa_generator_tests_test_aqa_7c73cd70
     backend_core_ai_assessment_generationpolicy_3659b550 -->|calls| tests_test_accounting_selected_response_test_wri_699ba125
     backend_core_independent_solver_independentsolve_ca9b7e1f -->|calls| backend_core_independent_solver_reconcile_soluti_03e71447
-    %% Omitted for readability: 6241 nodes, 0 edges
+    %% Omitted for readability: 6222 nodes, 0 edges
     class backend_core_accounting_scheme_content_require_p_c51a4e97 function;
     class backend_core_accounting_scheme_content_require_p_2005a8cd function;
     class backend_core_accounting_scheme_content_amount_bfa70c03 function;
@@ -2922,7 +2936,7 @@ flowchart LR
   <td>12</td>
   <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+41 more</td>
+  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+42 more</td>
   <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+66 more</td>
   <td>validate_package() node in Core/france/pipeline.py.</td>
 </tr>
@@ -2930,7 +2944,7 @@ flowchart LR
   <td>13</td>
   <td><code>catalogue_digest()</code><br><small style="color:var(--muted)">Core/france/system_case_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>cli.py</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/system_case_authoring.py</small></td>
   <td>catalogue_digest() node in Core/france/system_case_authoring.py.</td>
 </tr>
@@ -2938,7 +2952,7 @@ flowchart LR
   <td>14</td>
   <td><code>catalogue_digest()</code><br><small style="color:var(--muted)">Core/france/tree_case_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>cli.py</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
+  <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/tree_case_authoring.py</small></td>
   <td>catalogue_digest() node in Core/france/tree_case_authoring.py.</td>
 </tr>
@@ -2976,6 +2990,22 @@ flowchart LR
 </tr>
 <tr>
   <td>19</td>
+  <td><code>._json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><code>add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>retrieve()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td>._json() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ValueError</code></td>
+  <td>No direct outbound edge</td>
+  <td>.add() node in Backend/Core/scoped_references.py.</td>
+</tr>
+<tr>
+  <td>21</td>
   <td><code>test_french_database_construction.py</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+1 more</td>
@@ -2983,7 +3013,7 @@ flowchart LR
   <td>Module file in tests/test_french_database_construction.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>22</td>
   <td><code>test_construction_solution_matches_independent_counts()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td>External entry / no inbound edge</td>
@@ -2991,7 +3021,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>23</td>
   <td><code>parametrize</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2999,7 +3029,7 @@ flowchart LR
   <td>parametrize node in project.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>24</td>
   <td><code>test_v28_package_has_construction_credit_and_replays()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -3007,7 +3037,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>test_v28_working_tables_stay_with_questions()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
@@ -3015,15 +3045,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>24</td>
-  <td><code>test_french_expanded_pdf.py</code><br><small style="color:var(--muted)">tests/test_french_expanded_pdf.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>_centres()</code><br><small style="color:var(--muted)">Core/france/graph_pdf.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br>+4 more</td>
-  <td><code>generate()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>test_french_expanded_pipeline.py</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small></td>
-  <td>Module file in tests/test_french_expanded_pdf.py.</td>
-</tr>
-<tr>
-  <td>25</td>
+  <td>26</td>
   <td><code>test_explicit_v35_generation_dispatch_never_calls_a_model()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pdf.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -3031,7 +3053,7 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>27</td>
   <td><code>test_french_graph_two_outage_pdf.py</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_pdf.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+1 more</td>
@@ -3039,7 +3061,7 @@ flowchart LR
   <td>Module file in tests/test_french_graph_two_outage_pdf.py.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>28</td>
   <td><code>parametrize</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3047,7 +3069,7 @@ flowchart LR
   <td>parametrize node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>29</td>
   <td><code>test_v25_two_outage_pdf_stages_work_and_rejects_mutations()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_pdf.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>two outage pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
@@ -3055,20 +3077,12 @@ flowchart LR
   <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>30</td>
   <td><code>test_french_route_selection.py</code><br><small style="color:var(--muted)">tests/test_french_route_selection.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+2 more</td>
   <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
   <td>Module file in tests/test_french_route_selection.py.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>package_for_seed()</code><br><small style="color:var(--muted)">tests/test_french_route_selection.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><code>catalogue and construction()</code><br><small style="color:var(--muted)">tests/test_french_route_selection.py</small><br><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+1 more</td>
-  <td>package_for_seed() node in tests/test_french_route_selection.py.</td>
 </tr>
 </table>
 
@@ -3089,7 +3103,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x7757, contains x3921, references x2739, imports x2067. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x7719, contains x3908, references x2703, imports x2020. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4126,359 +4140,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. .localizedResource ====== -->
-<h2 id="localizedresource">14. .localizedResource</h2>
-<p>.localizedResource groups implementation around macos, keldin, features, welcomehelpviewsswift, mostly in Features/Onboarding/WelcomeHelpViews.swift, Keldin/Domain/InterfaceText.swift, Features/Settings/SettingsPane.swift. This section covers 37 nodes and 66 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: .localizedResource (37 nodes, 66 edges)
-    subgraph localizedresource_Features_Onboarding_WelcomeHel_51a1b528["Features/Onboarding/WelcomeHelpViews.swift"]
-        macos_keldin_features_onboarding_welcomehelpview_1901cfb9("HelpTopicPage<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_deae52ef(".frenchBaccalaureat<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_ddea11a1(".creatingAPaper<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_9ed3e53e(".gettingStarted<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_f162a443(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_6fadc64e(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_5008d80d(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_f7daf6c8(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_856b96b7(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_086a8c46(".choosingAModel<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_b7626d04(".body<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-        macos_keldin_features_onboarding_welcomehelpview_e55a7782("WelcomeSheet<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
-    end
-    subgraph localizedresource_Features_Settings_SettingsPane_7e1afff7["Features/Settings/SettingsPane.swift"]
-        macos_keldin_features_settings_settingspane_aise_4a0a6aa4("AISettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_aise_1efd1ad5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_aise_95e94544(".providerSettings<br/><small>Features/Settings/SettingsPane.swift</small>")
-    end
-    subgraph localizedresource_Keldin_Domain_InterfaceText_sw_a7e6d6f6["Keldin/Domain/InterfaceText.swift"]
-        macos_keldin_domain_interfacetext_interfacetext_4252af90("localizedResource()<br/><small>Keldin/Domain/InterfaceText.swift</small>")
-        macos_keldin_domain_interfacetext_interfacetext_30fcefa8("InterfaceText<br/><small>Keldin/Domain/InterfaceText.swift</small>")
-    end
-    macos_keldin_features_generation_generatorworksp_b7836961(".generateHelp<br/><small>Features/Generation/GeneratorWorkspaceView.swift</small>")
-    macos_keldin_domain_interfacetext_interfacetext_30fcefa8 -->|method| macos_keldin_domain_interfacetext_interfacetext_4252af90
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_generation_generatorworksp_b7836961
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_f162a443
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_6fadc64e
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_5008d80d
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_f7daf6c8
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_856b96b7
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_086a8c46
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_onboarding_welcomehelpview_b7626d04
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_settings_settingspane_aise_1efd1ad5
-    macos_keldin_domain_interfacetext_interfacetext_4252af90 -->|calls| macos_keldin_features_settings_settingspane_aise_95e94544
-    macos_keldin_features_onboarding_welcomehelpview_5008d80d -->|calls| macos_keldin_features_onboarding_welcomehelpview_1901cfb9
-    macos_keldin_features_onboarding_welcomehelpview_1901cfb9 -->|method| macos_keldin_features_onboarding_welcomehelpview_856b96b7
-    macos_keldin_features_onboarding_welcomehelpview_1901cfb9 -->|method| macos_keldin_features_onboarding_welcomehelpview_086a8c46
-    macos_keldin_features_onboarding_welcomehelpview_1901cfb9 -->|method| macos_keldin_features_onboarding_welcomehelpview_ddea11a1
-    macos_keldin_features_onboarding_welcomehelpview_1901cfb9 -->|method| macos_keldin_features_onboarding_welcomehelpview_deae52ef
-    macos_keldin_features_onboarding_welcomehelpview_1901cfb9 -->|method| macos_keldin_features_onboarding_welcomehelpview_9ed3e53e
-    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_1efd1ad5
-    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_95e94544
-    %% Omitted for readability: 19 nodes, 0 edges
-    class macos_keldin_features_onboarding_welcomehelpview_1901cfb9 klass;
-    class macos_keldin_features_onboarding_welcomehelpview_deae52ef function;
-    class macos_keldin_features_onboarding_welcomehelpview_ddea11a1 function;
-    class macos_keldin_features_onboarding_welcomehelpview_9ed3e53e function;
-    class macos_keldin_features_onboarding_welcomehelpview_f162a443 function;
-    class macos_keldin_features_onboarding_welcomehelpview_6fadc64e function;
-    class macos_keldin_features_onboarding_welcomehelpview_5008d80d function;
-    class macos_keldin_features_onboarding_welcomehelpview_f7daf6c8 function;
-    class macos_keldin_features_onboarding_welcomehelpview_856b96b7 function;
-    class macos_keldin_features_onboarding_welcomehelpview_086a8c46 function;
-    class macos_keldin_features_onboarding_welcomehelpview_b7626d04 function;
-    class macos_keldin_features_onboarding_welcomehelpview_e55a7782 klass;
-    class macos_keldin_features_settings_settingspane_aise_4a0a6aa4 klass;
-    class macos_keldin_features_settings_settingspane_aise_1efd1ad5 function;
-    class macos_keldin_features_settings_settingspane_aise_95e94544 function;
-    class macos_keldin_domain_interfacetext_interfacetext_4252af90 function;
-    class macos_keldin_domain_interfacetext_interfacetext_30fcefa8 klass;
-    class macos_keldin_features_generation_generatorworksp_b7836961 function;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>InterfaceText.swift</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>InterfaceText.swift node in Keldin/Domain/InterfaceText.swift.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>InterfaceText</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td>InterfaceText node in Keldin/Domain/InterfaceText.swift.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>.localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>InterfaceText</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+7 more</td>
-  <td>.localizedResource() node in Keldin/Domain/InterfaceText.swift.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Locale</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Locale node in project.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>.generateHelp</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.generateHelp node in Features/Generation/GeneratorWorkspaceView.swift.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>WelcomeHelpViews.swift</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>WelcomeHelpViews.swift node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>WelcomeSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>WelcomeSheet node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ApplicationCoordinator node in project.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>WelcomeSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>WelcomeRow node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>String node in project.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>LocalizedStringResource</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.currentMemoryResource</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>LocalizedStringResource node in project.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>HelpSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>HelpSheet node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+8 more</td>
-  <td>Organizes documentation pages, navigation, or content lookup.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>Locale</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Locale node in project.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>.selectedLocale</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.selectedLocale node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>.gettingStarted</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.gettingStarted node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.choosingAModel node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>.creatingAPaper</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.creatingAPaper node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.checkingQuality node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.frenchBaccalaureat node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>.privacy</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.privacy node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>.troubleshooting</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.troubleshooting node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>.shortcuts</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>.shortcuts node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>.currentMemoryResource</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>LocalizedStringResource</code></td>
-  <td>No direct outbound edge</td>
-  <td>.currentMemoryResource node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+3 more</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td>HelpSection node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Features/Onboarding/WelcomeHelpViews.swift</code></td><td>25 nodes</td></tr>
-<tr><td><code>Keldin/Domain/InterfaceText.swift</code></td><td>3 nodes</td></tr>
-<tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>3 nodes</td></tr>
-<tr><td><code>Features/Generation/GeneratorWorkspaceView.swift</code></td><td>1 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x26, method x20, references x12, contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 15. QualityReviewView ====== -->
-<h2 id="qualityreviewview">15. QualityReviewView</h2>
+<!-- ====== 14. QualityReviewView ====== -->
+<h2 id="qualityreviewview">14. QualityReviewView</h2>
 <p>QualityReviewView groups implementation around generatorworkspaceviewswift, macos, keldin, features, mostly in Features/Generation/GeneratorWorkspaceView.swift. This section covers 34 nodes and 63 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4819,70 +4482,69 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, 2026, french, quality, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md, Core/overlay/graphs.py. This section covers 1145 nodes and 1335 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 15. independent_solver.py ====== -->
+<h2 id="independent-solver-py">15. independent_solver.py</h2>
+<p>independent_solver.py groups implementation around backend, independent, solverpy, credit, mostly in Backend/Core/independent_solver.py, Backend/Core/credit_policy.py, Backend/Core/solver_prompts.py. This section covers 34 nodes and 72 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (1145 nodes, 1335 edges)
-    subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
-        backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_09765bf0("guidance()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_369fbe2e("operations()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_fe91c1d1("response_mode()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_c6da37d7("task_operation()<br/><small>Backend/Core/assessment_objectives.py</small>")
-        backend_core_assessment_objectives_objectivepoli_742f1231("validate()<br/><small>Backend/Core/assessment_objectives.py</small>")
-    end
-    subgraph other_Core_overlay_graphs_py_e43e7d49["Core/overlay/graphs.py"]
-        backend_core_overlay_graphs_save_21119de2("_save()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_ax_23f43dcb("_ax()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_arrow_axes_abe5018b("_arrow_axes()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_gp_dfa943ef("_gp()<br/><small>Core/overlay/graphs.py</small>")
-        backend_core_overlay_graphs_label_d5a81724("_label()<br/><small>Core/overlay/graphs.py</small>")
-    end
-    subgraph other_Backend_Core_credit_policy_py_031cd362["Backend/Core/credit_policy.py"]
-        backend_core_credit_policy_credit_rule_62ce1b3e("credit_rule()<br/><small>Backend/Core/credit_policy.py</small>")
-        backend_core_credit_policy_collect_credit_rules_534a03a4("collect_credit_rules()<br/><small>Backend/Core/credit_policy.py</small>")
-        backend_core_credit_policy_declared_rule_metadat_b1fc85f1("rule metadata present()<br/><small>Backend/Core/credit_policy.py</small>")
-    end
-    subgraph other_Backend_Core_independent_solver_py_c06198ac["Backend/Core/independent_solver.py"]
+    %% Section: independent_solver.py (34 nodes, 72 edges)
+    subgraph independent_solver_py_Backend_Core_independent_s_d0bdc00b["Backend/Core/independent_solver.py"]
         backend_core_independent_solver_independentsolve_f534d564("solve()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_requirement_pres_21907df8("_requirement_present()<br/><small>Backend/Core/independent_solver.py</small>")
         backend_core_independent_solver_as_mapping_839fdcb8("_as_mapping()<br/><small>Backend/Core/independent_solver.py</small>")
         backend_core_independent_solver_closed_slot_equa_d5b740f2("_closed_slot_equal()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_deterministic_su_85adf7b5("deterministic subject solution()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_generate_solver_20be6b81("_generate_solver_response()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_normalise_choice_0e90ba7c("_normalise_choice_answer()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_requires_numeric_180d0c17("_requires_numeric_contract()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_safe_calculate_890691fd("_safe_calculate()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_string_list_2af93960("_string_list()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_numbers_49f38157("_numbers()<br/><small>Backend/Core/independent_solver.py</small>")
+        backend_core_independent_solver_route_vertices_281bd226("_route_vertices()<br/><small>Backend/Core/independent_solver.py</small>")
     end
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_f7ee7e42
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_09765bf0
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_369fbe2e
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_fe91c1d1
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_c6da37d7
-    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_742f1231
+    subgraph independent_solver_py_Backend_Core_credit_policy_478fdb08["Backend/Core/credit_policy.py"]
+        backend_core_credit_policy_credit_rule_62ce1b3e("credit_rule()<br/><small>Backend/Core/credit_policy.py</small>")
+        backend_core_credit_policy_collect_credit_rules_534a03a4("collect_credit_rules()<br/><small>Backend/Core/credit_policy.py</small>")
+        backend_core_credit_policy_ce8e4022("credit_policy.py")
+        backend_core_credit_policy_creditrule_e1c51493("CreditRule<br/><small>Backend/Core/credit_policy.py</small>")
+        backend_core_credit_policy_declared_rule_metadat_b1fc85f1("rule metadata present()<br/><small>Backend/Core/credit_policy.py</small>")
+    end
+    backend_core_solver_prompts_build_solver_prompt_b4db95f7("build_solver_prompt()<br/><small>Backend/Core/solver_prompts.py</small>")
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_collect_credit_rules_534a03a4
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_declared_rule_metadat_b1fc85f1
     backend_core_credit_policy_collect_credit_rules_534a03a4 -->|calls| backend_core_independent_solver_independentsolve_f534d564
     backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_as_mapping_839fdcb8
     backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_closed_slot_equa_d5b740f2
-    %% Omitted for readability: 1127 nodes, 0 edges
-    class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
-    class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
-    class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
-    class backend_core_assessment_objectives_objectivepoli_369fbe2e function;
-    class backend_core_assessment_objectives_objectivepoli_fe91c1d1 function;
-    class backend_core_assessment_objectives_objectivepoli_c6da37d7 function;
-    class backend_core_assessment_objectives_objectivepoli_742f1231 function;
-    class backend_core_overlay_graphs_save_21119de2 function;
-    class backend_core_overlay_graphs_ax_23f43dcb function;
-    class backend_core_overlay_graphs_arrow_axes_abe5018b function;
-    class backend_core_overlay_graphs_gp_dfa943ef function;
-    class backend_core_overlay_graphs_label_d5a81724 function;
-    class backend_core_credit_policy_credit_rule_62ce1b3e function;
-    class backend_core_credit_policy_collect_credit_rules_534a03a4 function;
-    class backend_core_credit_policy_declared_rule_metadat_b1fc85f1 function;
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_deterministic_su_85adf7b5
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_generate_solver_20be6b81
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_normalise_choice_0e90ba7c
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_requires_numeric_180d0c17
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_safe_calculate_890691fd
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_string_list_2af93960
+    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_solver_prompts_build_solver_prompt_b4db95f7
+    backend_core_independent_solver_generate_solver_20be6b81 -->|calls| backend_core_independent_solver_numbers_49f38157
+    backend_core_independent_solver_route_vertices_281bd226 -->|calls| backend_core_independent_solver_closed_slot_equa_d5b740f2
+    %% Omitted for readability: 16 nodes, 0 edges
     class backend_core_independent_solver_independentsolve_f534d564 function;
+    class backend_core_independent_solver_requirement_pres_21907df8 function;
     class backend_core_independent_solver_as_mapping_839fdcb8 function;
     class backend_core_independent_solver_closed_slot_equa_d5b740f2 function;
+    class backend_core_independent_solver_deterministic_su_85adf7b5 function;
+    class backend_core_independent_solver_generate_solver_20be6b81 function;
+    class backend_core_independent_solver_normalise_choice_0e90ba7c function;
+    class backend_core_independent_solver_requires_numeric_180d0c17 function;
+    class backend_core_independent_solver_safe_calculate_890691fd function;
+    class backend_core_independent_solver_string_list_2af93960 function;
+    class backend_core_independent_solver_numbers_49f38157 function;
+    class backend_core_independent_solver_route_vertices_281bd226 api;
+    class backend_core_credit_policy_credit_rule_62ce1b3e function;
+    class backend_core_credit_policy_collect_credit_rules_534a03a4 function;
+    class backend_core_credit_policy_ce8e4022 module;
+    class backend_core_credit_policy_creditrule_e1c51493 klass;
+    class backend_core_credit_policy_declared_rule_metadat_b1fc85f1 function;
+    class backend_core_solver_prompts_build_solver_prompt_b4db95f7 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4909,7 +4571,7 @@ flowchart LR
   <td><code>credit_policy.py</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>open_credit.py</code><br><small style="color:var(--muted)">Backend/Core/open_credit.py</small></td>
+  <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td>Module file in Backend/Core/credit_policy.py.</td>
 </tr>
 <tr>
@@ -4957,7 +4619,7 @@ flowchart LR
   <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>collect_credit_rules()</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>credit_policy.py</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>CreditRule</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br>+1 more</td>
-  <td><code>accounting.py</code><br><small style="color:var(--muted)">Core/subjects/accounting.py</small><br><code>build_solver_prompt()</code><br><small style="color:var(--muted)">Backend/Core/solver_prompts.py</small><br><code>Decimal</code><br>+4 more</td>
+  <td><code>build_solver_prompt()</code><br><small style="color:var(--muted)">Backend/Core/solver_prompts.py</small><br><code>Decimal</code></td>
   <td>Module file in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -4973,7 +4635,7 @@ flowchart LR
   <td><code>.solve()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>collect_credit_rules()</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small></td>
-  <td><code>_as_mapping()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_closed_slot_equal()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_generate_solver_response()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br>+7 more</td>
+  <td><code>_as_mapping()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_closed_slot_equal()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>_generate_solver_response()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br>+6 more</td>
   <td>.solve() node in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -4997,7 +4659,7 @@ flowchart LR
   <td><code>_deterministic_subject_solution()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>solve()</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
-  <td><code>solve accounting calculation()</code><br><small style="color:var(--muted)">Core/subjects/accounting.py</small></td>
+  <td>No direct outbound edge</td>
   <td>_deterministic_subject_solution() node in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -5151,19 +4813,361 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>Backend/Core/independent_solver.py</code></td><td>22 nodes</td></tr>
+<tr><td><code>Backend/Core/credit_policy.py</code></td><td>5 nodes</td></tr>
+<tr><td><code>Backend/Core/solver_prompts.py</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x24, calls x21, references x19, imports x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around docs, 2026, french, quality, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md, Core/overlay/graphs.py. This section covers 1145 nodes and 1346 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Other (1145 nodes, 1346 edges)
+    subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
+        backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_09765bf0("guidance()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_369fbe2e("operations()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_fe91c1d1("response_mode()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_c6da37d7("task_operation()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_742f1231("validate()<br/><small>Backend/Core/assessment_objectives.py</small>")
+    end
+    subgraph other_Backend_Core_open_credit_py_6d620545["Backend/Core/open_credit.py"]
+        backend_core_open_credit_cpu_credit_contract_16ed91db("cpu_credit_contract()<br/><small>Backend/Core/open_credit.py</small>")
+        backend_core_open_credit_cpu_credit_allocations_e5875766("cpu_credit_allocations()<br/><small>Backend/Core/open_credit.py</small>")
+        backend_core_open_credit_validate_open_credit_co_4c024891("open credit contract()<br/><small>Backend/Core/open_credit.py</small>")
+        backend_core_open_credit_printed_credit_points_f0cd82bb("printed_credit_points()<br/><small>Backend/Core/open_credit.py</small>")
+        backend_core_open_credit_validate_judgement_bd2e08b9("_validate_judgement()<br/><small>Backend/Core/open_credit.py</small>")
+    end
+    subgraph other_Core_overlay_graphs_py_e43e7d49["Core/overlay/graphs.py"]
+        backend_core_overlay_graphs_save_21119de2("_save()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_ax_23f43dcb("_ax()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_arrow_axes_abe5018b("_arrow_axes()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_gp_dfa943ef("_gp()<br/><small>Core/overlay/graphs.py</small>")
+        backend_core_overlay_graphs_label_d5a81724("_label()<br/><small>Core/overlay/graphs.py</small>")
+    end
+    macos_keldin_features_onboarding_welcomehelpview_1901cfb9("HelpTopicPage<br/><small>Features/Onboarding/WelcomeHelpViews.swift</small>")
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_f7ee7e42
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_09765bf0
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_369fbe2e
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_fe91c1d1
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_c6da37d7
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_742f1231
+    backend_core_open_credit_cpu_credit_contract_16ed91db -->|calls| backend_core_open_credit_cpu_credit_allocations_e5875766
+    backend_core_open_credit_cpu_credit_contract_16ed91db -->|calls| backend_core_open_credit_validate_open_credit_co_4c024891
+    backend_core_open_credit_cpu_credit_allocations_e5875766 -->|calls| backend_core_open_credit_validate_open_credit_co_4c024891
+    backend_core_open_credit_printed_credit_points_f0cd82bb -->|calls| backend_core_open_credit_validate_judgement_bd2e08b9
+    backend_core_open_credit_validate_open_credit_co_4c024891 -->|calls| backend_core_open_credit_validate_judgement_bd2e08b9
+    %% Omitted for readability: 1127 nodes, 0 edges
+    class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
+    class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
+    class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
+    class backend_core_assessment_objectives_objectivepoli_369fbe2e function;
+    class backend_core_assessment_objectives_objectivepoli_fe91c1d1 function;
+    class backend_core_assessment_objectives_objectivepoli_c6da37d7 function;
+    class backend_core_assessment_objectives_objectivepoli_742f1231 function;
+    class backend_core_open_credit_cpu_credit_contract_16ed91db function;
+    class backend_core_open_credit_cpu_credit_allocations_e5875766 function;
+    class backend_core_open_credit_validate_open_credit_co_4c024891 function;
+    class backend_core_open_credit_printed_credit_points_f0cd82bb function;
+    class backend_core_open_credit_validate_judgement_bd2e08b9 function;
+    class backend_core_overlay_graphs_save_21119de2 function;
+    class backend_core_overlay_graphs_ax_23f43dcb function;
+    class backend_core_overlay_graphs_arrow_axes_abe5018b function;
+    class backend_core_overlay_graphs_gp_dfa943ef function;
+    class backend_core_overlay_graphs_label_d5a81724 function;
+    class macos_keldin_features_onboarding_welcomehelpview_1901cfb9 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>View</code><br><small style="color:var(--muted)">Keldin/Components/NativeVisualStyle.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>View node in Keldin/Components/NativeVisualStyle.swift.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>.nativePrimaryActionStyle()</code><br><small style="color:var(--muted)">Keldin/Components/NativeVisualStyle.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>.nativePrimaryActionStyle() node in Keldin/Components/NativeVisualStyle.swift.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>WelcomeHelpViews.swift</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>WelcomeHelpViews.swift node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>WelcomeSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>WelcomeSheet node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ApplicationCoordinator node in project.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Text</code><br><code>WelcomeSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>WelcomeRow node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>LocalizedStringResource</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.currentMemoryResource</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>LocalizedStringResource node in project.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code><br><code>WelcomeRow</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>HelpSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>HelpSheet node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+8 more</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Locale</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Locale node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.selectedLocale</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.selectedLocale node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>.gettingStarted</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>Text</code></td>
+  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.gettingStarted node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code></td>
+  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.choosingAModel node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>.creatingAPaper</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.creatingAPaper node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>Text</code></td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.checkingQuality node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>Text</code></td>
+  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.frenchBaccalaureat node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.privacy</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.privacy node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.troubleshooting</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.troubleshooting node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.shortcuts</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>.shortcuts node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.currentMemoryResource</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpTopicPage</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>LocalizedStringResource</code></td>
+  <td>No direct outbound edge</td>
+  <td>.currentMemoryResource node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.checkingQuality</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+3 more</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>HelpSection node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpSection</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.creatingAPaper</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.gettingStarted</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>HelpSteps node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HelpSteps</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>localizedResource()</code><br><small style="color:var(--muted)">Keldin/Domain/InterfaceText.swift</small><br><code>Text</code></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>HelpCallout</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.choosingAModel</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.creatingAPaper</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.frenchBaccalaureat</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br>+1 more</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td>HelpCallout node in Features/Onboarding/WelcomeHelpViews.swift.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-keldin-excellence-programme.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>Core/overlay/graphs.py</code></td><td>26 nodes</td></tr>
+<tr><td><code>Features/Onboarding/WelcomeHelpViews.swift</code></td><td>25 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-keldin-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
 <tr><td><code>Backend/Core/open_credit.py</code></td><td>23 nodes</td></tr>
-<tr><td><code>Backend/Core/independent_solver.py</code></td><td>22 nodes</td></tr>
 <tr><td><code>docs/quality/keldin-user-acceptance-2026-10-27.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>Keldin/Services/PDFDocumentAccess.swift</code></td><td>19 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x834, calls x201, references x153, method x67. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x818, calls x205, references x162, method x84. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5177,7 +5181,7 @@ flowchart LR
       <tr><td>Nodes</td><td>10734</td></tr>
       <tr><td>Edges</td><td>31549</td></tr>
       <tr><td>Hyperedges</td><td>0</td></tr>
-      <tr><td>Communities</td><td>438</td></tr>
+      <tr><td>Communities</td><td>443</td></tr>
       <tr><td>Documented Sections</td><td>15</td></tr>
     </table>
   </div>
@@ -5193,7 +5197,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-10-29 11:53 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-10-29 12:12 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->
