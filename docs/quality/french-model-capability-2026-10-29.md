@@ -32,3 +32,22 @@ The [official Qwen card](https://huggingface.co/Qwen/Qwen3.5-9B) describes a hyb
 At the tested source, typed Ollama requests honor their schema and output budget. Typed MLX requests silently used the old 4,096-token cap; a separate scoped fix is required before interpreting a longer-task MLX failure as a model limit. MLX also uses a single answer-phase constrained decoder with thinking disabled, so changing its template flag alone is not a safe thinking implementation.
 
 Typed OpenAI and Anthropic requests currently discard the trusted request budget and schema before transport dispatch. OpenAI uses generic `json_object` without a request-specific output limit. Anthropic uses a fixed 4,096-token limit and a JSON prompt. Downstream validation still applies, but these are not schema-bound transport equivalents. No unsupported API field or relaxed acceptance rule was added by this harness.
+
+## Second installed model: Gemma 4 12B
+
+The same four calls were then run once on installed `gemma4:12b`, digest `4eb23ef187e2c5462566d6a1d3bbbc2f1346d0b4327cbb66d58fffbcc9b2b05c`. This run froze at commit `5a917116`, Core identity `6ebb279c833efb49e799c03c37bb586c6f8138a05fc1bfa7c11a1a46c8ebc63d`. Its intervening provider-budget fix changed MLX and hosted transports, not these Ollama request options or the exercise schema. Source and model checks passed around all four calls. No model was downloaded.
+
+| Task | Thinking | Shared output cap | Observed outcome |
+| --- | --- | --- | --- |
+| Three known-answer tasks | Off | 2,048 | All three exact answers correct; stop, 38 tokens, 10.3 s |
+| Authored exercise | Off | 14,000 | Stop, 2,178 tokens, 158.6 s; curriculum validation rejected the response |
+| Three known-answer tasks | On | 2,048 | All three exact answers correct; stop, 999 total tokens, 67.8 s |
+| Authored exercise | On | 14,000 | HTTP socket limit reached at 180 s; no response available |
+
+The thinking-on mini response contained 2,231 thinking characters and 85 answer characters. The false-mode authored exercise invented topic identifiers (`SD-GRAPHE`, `BDD-SQL-SELECT`, `ALG-GRAPHES`) outside the supplied curriculum vocabulary. Its four verification objects also used `type` rather than the requested `kind`. The first domain validator rejected it; no normalization, curriculum substitution or response-specific repair was applied. It is not an accepted exercise.
+
+Root's CPU-only native build began during this run. Elapsed values are observations, not controlled speed comparisons. Neither this sequence nor the earlier Qwen sequence establishes overall model rankings. Gemma's exact-answer mini results support further testing; they do not qualify full paper generation. Both thinking-on authoring calls remained unresolved at the transport limit rather than being demonstrated mathematically wrong.
+
+Gemma evidence remains alongside the earlier run in `tmp/french-capability-20261029/gemma4-12b-seed270100`. Summary SHA-256: `f8543ab89f1fb5536381f9b2ff417818b1db79f9051613fdf16dee486eedb31a`. Existing prompts, candidates, errors and earlier attempts were retained. No PDF or user output was published.
+
+The Qwen authoring response reported 2,429 input tokens even without references. Adding its requested 14,000-token output allowance exceeds the configured 16,384 context. Its actual short completion did not reach that boundary, but a full allowance cannot be assumed to fit. This requires an explicit input/context policy before local French qualification. The later bounded typed-budget fix is recorded separately in `mlx-typed-output-budgets-2026-10-29.md`; it does not resolve this Ollama context issue or establish schema-mode equivalence for hosted providers.
