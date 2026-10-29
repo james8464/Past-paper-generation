@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
 import importlib.metadata
+import json
 import os
 import platform
+import re
 import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,6 +44,10 @@ MLX_MODEL_PATTERNS = [
 MINIMUM_MLX_FREE_BYTES = 8 * 1024**3
 SUPPORTED_PYTHON_MIN = (3, 10)
 SUPPORTED_PYTHON_MAX = (3, 13)
+_APPROVED_REVISION = re.compile(r"[0-9a-f]{40,64}\Z")
+_MODEL_ID = re.compile(
+    r"[A-Za-z0-9][A-Za-z0-9._-]{0,95}/[A-Za-z0-9][A-Za-z0-9._-]{0,95}\Z"
+)
 
 
 # A recoverable Apple MLX setup failure suitable for the app UI.
@@ -203,6 +211,83 @@ def install_mlx_runtime(
     return return_code == 0 and mlx_runtime_available()
 
 
+def _validate_setup_binding(revision: str | None, local_only: bool) -> None:
+    if revision is not None and (
+        not isinstance(revision, str) or not _APPROVED_REVISION.fullmatch(revision)
+    ):
+        raise MLXSetupError(
+            "The approved model revision is invalid. Check the download size again."
+        )
+    if type(local_only) is not bool:
+        raise MLXSetupError("The local-only setup policy must be a Boolean.")
+
+
+def _approval_path(model: str) -> Path:
+    cache = Path(os.environ.get("HF_HOME", "~/.cache/huggingface")).expanduser()
+    name = hashlib.sha256(model.encode("utf-8")).hexdigest() + ".json"
+    return cache / "keldin-model-approvals" / name
+
+
+def _approved_revision(model: str) -> str | None:
+    path = _approval_path(model)
+    try:
+        if path.is_symlink() or path.parent.is_symlink():
+            raise ValueError("linked approval record")
+        if not path.exists():
+            return None
+        with path.open("rb") as stream:
+            data = stream.read(1025)
+        if len(data) > 1024:
+            raise ValueError("oversized approval record")
+        raw = json.loads(data)
+        if (
+            not isinstance(raw, dict)
+            or set(raw) != {"schema_version", "model", "revision"}
+            or type(raw["schema_version"]) is not int
+            or raw["schema_version"] != 1
+            or raw["model"] != model
+        ):
+            raise ValueError("invalid approval record")
+        revision = raw["revision"]
+        _validate_setup_binding(revision, True)
+        if revision is None:
+            raise ValueError("missing approved revision")
+        return str(revision)
+    except (OSError, ValueError, MLXSetupError) as error:
+        raise MLXModelSetupRequired(
+            "The saved model approval could not be verified. Check the download size and approve setup again."
+        ) from error
+
+
+def _save_approved_revision(model: str, revision: str) -> None:
+    _validate_setup_binding(revision, True)
+    if not _MODEL_ID.fullmatch(model) or ".." in model or "--" in model:
+        raise MLXSetupError("The approved model ID is invalid.")
+    path = _approval_path(model)
+    if path.is_symlink() or path.parent.is_symlink():
+        raise MLXSetupError("The model approval location is invalid.")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=".approval-",
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            json.dump(
+                {"schema_version": 1, "model": model, "revision": revision}, stream
+            )
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+
+
 # Return a complete local model path without allowing a network download.
 def resolve_local_mlx_model(
     model: str,
@@ -219,11 +304,14 @@ def resolve_local_mlx_model(
             from huggingface_hub import snapshot_download
 
             snapshot_resolver = snapshot_download
+        approved = _approved_revision(model)
+        binding = {"revision": approved} if approved is not None else {}
         return str(
             snapshot_resolver(
                 repo_id=model,
                 local_files_only=True,
                 allow_patterns=MLX_MODEL_PATTERNS,
+                **binding,
             )
         )
     except Exception as error:
@@ -237,7 +325,14 @@ def load_mlx_model(
     model: str,
     *,
     snapshot_resolver: Callable[..., str] | None = None,
+    revision: str | None = None,
+    local_only: bool = False,
 ) -> None:
+    _validate_setup_binding(revision, local_only)
+    if revision is not None and (
+        not _MODEL_ID.fullmatch(model) or ".." in model or "--" in model
+    ):
+        raise MLXSetupError("The approved model ID is invalid.")
     emit_progress(
         "Preparing the selected model. The first download may take several minutes…",
         stage="mlx-model",
@@ -247,18 +342,29 @@ def load_mlx_model(
         from mlx_lm import load
 
         path = Path(model).expanduser()
+        if path.exists() and revision is not None:
+            raise MLXSetupError(
+                "A local model folder cannot be bound to a repository revision. Check its setup again."
+            )
         if not path.exists():
             if snapshot_resolver is None:
                 from huggingface_hub import snapshot_download
 
                 snapshot_resolver = snapshot_download
-            path = Path(
-                snapshot_resolver(
-                    repo_id=model,
-                    local_files_only=False,
-                    allow_patterns=MLX_MODEL_PATTERNS,
+            if local_only and revision is None:
+                path = Path(
+                    resolve_local_mlx_model(model, snapshot_resolver=snapshot_resolver)
                 )
-            )
+            else:
+                binding = {"revision": revision} if revision is not None else {}
+                path = Path(
+                    snapshot_resolver(
+                        repo_id=model,
+                        local_files_only=local_only,
+                        allow_patterns=MLX_MODEL_PATTERNS,
+                        **binding,
+                    )
+                )
         load(
             str(path.resolve()),
             tokenizer_config={
@@ -266,10 +372,15 @@ def load_mlx_model(
                 "local_files_only": True,
             },
         )
-        resolve_local_mlx_model(model)
+        if revision is not None:
+            _save_approved_revision(model, revision)
     except MLXModelSetupRequired:
         raise
     except Exception as error:
+        if local_only:
+            raise MLXModelSetupRequired(
+                "The approved local model could not be prepared. Check its download size and approve setup again. No model data was downloaded."
+            ) from error
         raise MLXSetupError(
             "The Apple MLX model could not be prepared. Check your internet "
             "connection and available storage, then try Setup Again."
@@ -317,12 +428,22 @@ def ensure_mlx_ready(
 def handle_setup_mlx(args: argparse.Namespace) -> int:
     emit_progress("Checking Apple MLX support…", stage="mlx-check", progress=0.05)
     try:
+        revision = getattr(args, "revision", None)
+        local_only = getattr(args, "local_only", False)
+        _validate_setup_binding(revision, local_only)
         validate_mlx_setup_environment()
+
+        def loader(model: str) -> None:
+            if revision is None and not local_only:
+                load_mlx_model(model)
+            else:
+                load_mlx_model(model, revision=revision, local_only=local_only)
+
         ensure_mlx_ready(
             args.model,
             runtime_available=mlx_runtime_available,
             install_runtime=install_mlx_runtime,
-            load_model=load_mlx_model,
+            load_model=loader,
             frozen=bool(getattr(sys, "frozen", False)),
         )
     except MLXSetupCancelled:

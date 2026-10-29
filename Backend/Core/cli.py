@@ -52,6 +52,8 @@ def build_parser() -> argparse.ArgumentParser:
 
     mlx_setup = subparsers.add_parser("setup-mlx")
     mlx_setup.add_argument("--model", required=True)
+    mlx_setup.add_argument("--revision")
+    mlx_setup.add_argument("--local-only", action="store_true")
     mlx_setup.set_defaults(handler=handle_setup_mlx)
 
     mlx_status = subparsers.add_parser("mlx-status")
