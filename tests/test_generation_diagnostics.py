@@ -140,7 +140,10 @@ def test_exhausted_item_retries_preserve_original_evidence(monkeypatch):
     )
     with pytest.raises(RuntimeError) as raised:
         _generate_item_transaction(
-            Namespace(id="1/1/1", question=Namespace(number="7", authoring_context={})),
+            Namespace(
+                id="1/1/1",
+                question=Namespace(number="7", kind="explain", authoring_context={}),
+            ),
             client=Client(),
             subject="Economics",
             seed=7,
