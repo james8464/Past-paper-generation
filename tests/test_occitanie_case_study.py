@@ -12,6 +12,41 @@ from Backend.Core.cli import build_parser
 from Backend.Core.france import occitanie_case_study as case
 
 
+def test_native_status_mapping_tracks_actual_cli_event_messages(tmp_path, monkeypatch):
+    messages = []
+    monkeypatch.setattr(
+        case, "emit_progress", lambda message, **_: messages.append(message)
+    )
+    monkeypatch.setattr(
+        case,
+        "emit",
+        lambda kind, **values: (
+            messages.append(values["message"]) if kind == "done" else None
+        ),
+    )
+    monkeypatch.setattr(case, "generate_case_study", lambda _: {})
+    assert (
+        case.handle_generate_case_study(argparse.Namespace(output=str(tmp_path))) == 0
+    )
+
+    def cancel(_):
+        raise InterruptedError
+
+    monkeypatch.setattr(case, "generate_case_study", cancel)
+    assert (
+        case.handle_generate_case_study(argparse.Namespace(output=str(tmp_path))) == 130
+    )
+    assert len(set(messages)) == 3
+    native = (
+        case.Path(__file__).resolve().parents[1]
+        / "macOS/Keldin/Domain/GenerationPresentation.swift"
+    ).read_text()
+    for message in set(messages):
+        assert message in native, (
+            f"The native status map is missing the CLI message: {message}"
+        )
+
+
 def test_curated_values_and_licence_are_source_pinned():
     data = case.load_case_data()
     rows = data["records"]

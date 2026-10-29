@@ -1,6 +1,9 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Occitanie case study cancelled.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Création de l’activité annulée."}}}
+    },
     "Checking a model's download size contacts Hugging Face. No prompts are sent. Model data is downloaded only after you confirm.": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "La vérification de la taille du modèle contacte Hugging Face. Aucune consigne n’est envoyée. Les données du modèle ne sont téléchargées qu’après votre confirmation."}}}
     },
