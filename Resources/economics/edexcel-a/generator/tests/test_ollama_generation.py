@@ -32,14 +32,19 @@ GUIDANCE = [
 ]
 
 
-def test_blueprint_receives_a_separate_reference_demand_review() -> None:
+@pytest.mark.parametrize("workers", [1, 2])
+def test_blueprint_receives_a_separate_reference_demand_review(workers) -> None:
     syllabus = load_syllabus(Path(__file__).parents[1] / "data" / "syllabus_seed.json")
     config = load_builtin_paper_config("paper_1")
     full = build_paper_blueprint(config, syllabus, seed=7)
-    hardest = max(full.questions, key=lambda question: question.marks)
-    blueprint = full.model_copy(update={"questions": [hardest]})
+    hardest = sorted(full.questions, key=lambda question: question.marks, reverse=True)[
+        :2
+    ]
+    blueprint = full.model_copy(update={"questions": hardest})
 
     class Client:
+        parallel_review_workers = workers
+
         def __init__(self) -> None:
             self.prompts: list[str] = []
 
@@ -90,10 +95,14 @@ def test_blueprint_receives_a_separate_reference_demand_review() -> None:
         for prompt in client.prompts
         if "difficulty calibration specialist" in prompt
     ]
-    assert len(difficulty_prompts) == 1
+    assert len(difficulty_prompts) == 2
     assert '"reference_profile_fingerprint"' in difficulty_prompts[0]
     assert '"requires_judgement": true' in difficulty_prompts[0]
     assert reviewed.questions[0].difficulty_evidence["approved"] is True
+    assert reviewed.questions[1].difficulty_evidence["approved"] is True
+    assert [question.number for question in reviewed.questions] == [
+        question.number for question in hardest
+    ]
 
 
 @pytest.mark.parametrize("paper_id", ["paper_1", "paper_2", "paper_3"])

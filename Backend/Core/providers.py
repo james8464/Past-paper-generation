@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import re
 import threading
 import time
@@ -30,6 +31,12 @@ class HostedLLMClient:
         self.model = model
         self.api_key = api_key
         self.base_url = _normalise_base_url(base_url)
+        self.parallel_review_workers = (
+            2
+            if provider == "ollama"
+            and os.environ.get("KELDIN_PARALLEL_LOCAL_REVIEWS") == "1"
+            else 1
+        )
         self._apple_model: Any | None = None
         self._apple_tokenizer: Any | None = None
         self._apple_structured_model: Any | None = None

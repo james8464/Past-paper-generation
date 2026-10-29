@@ -256,6 +256,15 @@ private struct AISettingsTab: View {
                     }
                 }
 
+                Toggle("Parallel Edexcel reviews", isOn: Binding(
+                    get: { application.settingsStore.parallelLocalReviews },
+                    set: { application.setParallelLocalReviews($0) }
+                ))
+                Text("Review two independent Economics Edexcel questions at once. Requires Ollama configured for two parallel requests and uses more memory. Other providers keep their current scheduling.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
                 if application.selectedModelIsRecommended {
                     Label("Recommended model selected", systemImage: "checkmark.seal.fill")
                         .foregroundStyle(.primary)

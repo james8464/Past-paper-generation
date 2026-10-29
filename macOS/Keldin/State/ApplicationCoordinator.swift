@@ -723,7 +723,8 @@ final class ApplicationCoordinator: ObservableObject {
                     forInfoDictionaryKey: "CFBundleShortVersionString"
                 ) as? String ?? "development",
                 provider: aiProvider.backendID,
-                model: activeModelName
+                model: activeModelName,
+                localReviewWorkers: aiProvider == .ollama ? (settingsStore.parallelLocalReviews ? 2 : 1) : nil
             ),
             state: .pending,
             artifacts: [],
@@ -755,6 +756,7 @@ final class ApplicationCoordinator: ObservableObject {
         ]
 
         var backendEnvironment = [
+            "KELDIN_PARALLEL_LOCAL_REVIEWS": settingsStore.parallelLocalReviews ? "1" : "0",
             "KELDIN_GENERATED_ON": Self.generationDateFormatter.string(from: Date()),
             "KELDIN_JOB_ID": UUID().uuidString,
             "KELDIN_APP_VERSION": Bundle.main.object(
@@ -967,6 +969,12 @@ final class ApplicationCoordinator: ObservableObject {
 
     func saveAISettings(presentation: SettingsActionPresentation? = nil) {
         persistSettings(presentation: presentation)
+    }
+
+    func setParallelLocalReviews(_ enabled: Bool) {
+        guard !isRunning else { return }
+        settingsStore.parallelLocalReviews = enabled
+        _ = persistSettings(includeCredentials: false, presentation: settingsPresentation)
     }
 
     func removeGeneratedFile(_ file: GeneratedFile) {

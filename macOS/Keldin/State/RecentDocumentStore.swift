@@ -29,6 +29,7 @@ struct GenerationProvenance: Codable, Equatable {
     let appVersion: String
     let provider: String
     let model: String
+    var localReviewWorkers: Int? = nil
 }
 
 struct QualificationSnapshot: Codable, Equatable {

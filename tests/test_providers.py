@@ -19,6 +19,16 @@ from Backend.Core.providers import (
 )
 
 
+@pytest.mark.parametrize("provider", ["ollama", "apple", "openai", "anthropic"])
+def test_parallel_local_review_setting_is_captured_and_never_enables_mlx(
+    provider, monkeypatch
+):
+    monkeypatch.setenv("KELDIN_PARALLEL_LOCAL_REVIEWS", "1")
+    client = HostedLLMClient(provider=provider, model="fixture", api_key="")
+    monkeypatch.setenv("KELDIN_PARALLEL_LOCAL_REVIEWS", "0")
+    assert client.parallel_review_workers == (2 if provider == "ollama" else 1)
+
+
 @pytest.mark.parametrize(
     "module", ["cspapergen.ollama_client", "pastpapergen.ollama_client"]
 )

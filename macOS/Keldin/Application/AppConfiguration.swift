@@ -95,6 +95,7 @@ enum AppStorageKey {
     static let appleModel = "appleModel"
     static let preparedMLXModels = "preparedMLXModels"
     static let dryRun = "dryRun"
+    static let parallelLocalReviews = "parallelLocalReviews"
     static let notificationsEnabled = "notificationsEnabled"
     static let hasSeenWelcome = "hasSeenWelcome"
     static let outputFolderPath = "outputFolderPath"
