@@ -22,7 +22,11 @@ def test_english_rtf_has_explicit_pages_and_no_tables(tmp_path):
     for report in (sources.TECHNICAL, sources.RELIABILITY):
         content = sources.render(report)
         assert r"\li3800" in content and r"\li3500" in content
-        assert r"\sb3400" in content and r"\fs56" in content
+        assert r"\sl-3400\slmult0 \u160?\par" in content
+        assert r"\sb3400" not in content
+        assert r"\pard\f1\fs56" in content
+        assert r"\pard\f1\fs32" in content
+        assert content.index(r"\u160?\par") < content.index("Keldin\\par")
         assert all(
             len(" ".join(text for _, text in page.sections).split()) <= 250
             for page in report.pages

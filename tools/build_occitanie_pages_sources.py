@@ -273,10 +273,11 @@ def paragraph(
     indent: int = 0,
     before: int = 0,
     after: int = 200,
+    font: int = 0,
 ) -> str:
     leading = max(280, size * 12)
     return (
-        rf"\pard\f0\fs{size}\li{indent}\ri0\fi0\sb{before}\sa{after}\sl{leading}\slmult0 "
+        rf"\pard\f{font}\fs{size}\li{indent}\ri0\fi0\sb{before}\sa{after}\sl{leading}\slmult0 "
         + (r"\b " if bold else r"\b0 ")
         + rtf_text(text)
         + r"\par"
@@ -314,10 +315,13 @@ def render(report: Report) -> str:
     if report.subtitle:
         blocks.extend(
             [
+                # Pages discards space-before on the first paragraph. A retained
+                # NBSP paragraph with exact 170 pt leading reserves the cover gap.
+                r"\pard\f0\fs2\li0\fi0\sb0\sa0\sl-3400\slmult0 \u160?\par" + "\n",
+                paragraph("Keldin", size=56, bold=True, indent=3500, after=300, font=1),
                 paragraph(
-                    "Keldin", size=56, bold=True, indent=3500, before=3400, after=300
+                    report.subtitle, size=32, bold=True, indent=3500, after=400, font=1
                 ),
-                paragraph(report.subtitle, size=32, indent=3500, after=400),
                 paragraph(DATE, size=22, indent=3500),
                 r"\page" + "\n",
             ]
