@@ -2,6 +2,67 @@ import XCTest
 @testable import Keldin
 
 final class FinalInterfaceGuardTests: XCTestCase {
+    @MainActor
+    func testDownloadApprovalHandlesBothDismissalOrdersWithoutInvisibleCommandBlocking() {
+        for dismissFirst in [false, true] {
+            let presentation = ModelDownloadPresentation()
+            let request = ModelDownloadRequest(model: "fixture/captured")
+            presentation.present(request)
+            if dismissFirst {
+                presentation.presentationDidDismiss(id: request.id)
+                XCTAssertFalse(presentation.blocksCommands)
+                XCTAssertFalse(presentation.isPresented)
+            }
+            XCTAssertEqual(presentation.consume(id: request.id), request)
+            if !dismissFirst { presentation.presentationDidDismiss(id: request.id) }
+            XCTAssertNil(presentation.request)
+            XCTAssertFalse(presentation.blocksCommands)
+            XCTAssertNil(presentation.consume(id: request.id))
+
+            presentation.present(request)
+            presentation.presentationDidDismiss(id: request.id)
+            let replacement = ModelDownloadRequest(model: "fixture/replacement")
+            presentation.present(replacement)
+            presentation.presentationDidDismiss(id: request.id)
+            XCTAssertNil(presentation.consume(id: request.id))
+            XCTAssertEqual(presentation.request, replacement)
+            XCTAssertTrue(presentation.blocksCommands)
+            presentation.dismiss(id: replacement.id)
+            XCTAssertNil(presentation.consume(id: replacement.id))
+            XCTAssertFalse(presentation.blocksCommands)
+        }
+    }
+
+    @MainActor
+    func testDownloadPresentationOwnsOnlyItsSceneAndConsumesTheExactRequestOnce() throws {
+        let settings = ModelDownloadPresentation()
+        let otherScene = ModelDownloadPresentation()
+        let first = ModelDownloadRequest(model: "fixture/first")
+        let newer = ModelDownloadRequest(model: "fixture/newer")
+        settings.present(first)
+        otherScene.present(newer)
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: settings.isPresented))
+        settings.present(newer)
+        XCTAssertEqual(settings.request, first)
+        XCTAssertNil(settings.consume(id: newer.id))
+        XCTAssertEqual(settings.request, first)
+        XCTAssertEqual(settings.consume(id: first.id), first)
+        XCTAssertNil(settings.consume(id: first.id))
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: settings.isPresented))
+        XCTAssertEqual(otherScene.request, newer)
+
+        settings.present(newer)
+        settings.dismiss(id: first.id)
+        XCTAssertEqual(settings.request, newer)
+        settings.dismiss(id: newer.id)
+        XCTAssertFalse(settings.isPresented)
+        XCTAssertEqual(otherScene.request, newer)
+        otherScene.dismiss(id: newer.id)
+        XCTAssertFalse(otherScene.isPresented)
+        settings.present(nil)
+        XCTAssertFalse(settings.isPresented)
+    }
+
     func testLocalModalContextBlocksCreationAndNavigationThenRestoresItsPrintChoice() {
         for original in [KeldinCreationContext.board, .french(largePrint: false), .french(largePrint: true)] {
             let modal = original.presentingModal(true)
@@ -22,7 +83,7 @@ final class FinalInterfaceGuardTests: XCTestCase {
         application.showWelcome = false
         let flags: [ReferenceWritableKeyPath<ApplicationCoordinator, Bool>] = [
             \.showWelcome, \.showHelp, \.showError, \.showHostedAIConsent,
-            \.showMLXSetupConfirmation, \.showPullConfirmation,
+            \.showMLXSetupConfirmation,
         ]
         XCTAssertFalse(application.hasCommandBlockingPresentation)
         for flag in flags {

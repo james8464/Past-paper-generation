@@ -4,6 +4,8 @@ import AppKit
 import SwiftUI
 
 struct SettingsPane: View {
+    @EnvironmentObject private var application: ApplicationCoordinator
+    @StateObject private var downloadPresentation = ModelDownloadPresentation()
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @AppStorage(AppStorageKey.settingsPane)
     private var selectedPane = SettingsPaneID.ai
@@ -33,6 +35,35 @@ struct SettingsPane: View {
         .navigationTitle(InterfaceText.resolve(selectedPane.title, language: interfaceLanguage))
         .background(SettingsWindowConfiguration(title: InterfaceText.resolve(selectedPane.title, language: interfaceLanguage)))
         .environment(\.locale, interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage))
+        .environmentObject(downloadPresentation)
+        .focusedSceneObject(downloadPresentation)
+        .confirmationDialog(
+            "Pull \(downloadPresentation.request?.model ?? "")?",
+            isPresented: downloadConfirmationBinding,
+            titleVisibility: .visible,
+            presenting: downloadPresentation.request
+        ) { request in
+            Button("Pull Model") {
+                guard let approved = downloadPresentation.consume(id: request.id) else { return }
+                application.confirmPullModel(approved)
+            }
+            Button("Cancel", role: .cancel) { downloadPresentation.dismiss(id: request.id) }
+        } message: { _ in
+            Text("Ollama will download this model and make it available locally.")
+        }
+        .onDisappear {
+            if let request = downloadPresentation.request { downloadPresentation.dismiss(id: request.id) }
+        }
+    }
+
+    private var downloadConfirmationBinding: Binding<Bool> {
+        let requestID = downloadPresentation.request?.id
+        return Binding(
+            get: { downloadPresentation.isPresented && downloadPresentation.request?.id == requestID },
+            set: { visible in
+                if !visible, let requestID { downloadPresentation.presentationDidDismiss(id: requestID) }
+            }
+        )
     }
 }
 
@@ -73,6 +104,7 @@ private struct SettingsWindowConfiguration: NSViewRepresentable {
 private struct AISettingsTab: View {
     @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
+    @EnvironmentObject private var downloadPresentation: ModelDownloadPresentation
 
     var body: some View {
         Form {
@@ -135,7 +167,9 @@ private struct AISettingsTab: View {
                         Button("Use Recommended Model", action: application.useRecommendedOllamaModel)
                             .disabled(application.selectedModelIsRecommended)
                     } else if application.distributionMode.canManageOllama {
-                        Button("Download Recommended Model…", action: application.requestRecommendedOllamaModel)
+                        Button("Download Recommended Model…") {
+                            downloadPresentation.present(application.requestRecommendedOllamaModel())
+                        }
                             .disabled(!application.canRequestModelDownload)
                     }
 
@@ -182,7 +216,9 @@ private struct AISettingsTab: View {
                         HStack {
                             TextField("Model name", text: $application.modelToPull)
                                 .frame(minWidth: 190)
-                            Button("Download", action: application.requestPullModel)
+                            Button("Download") {
+                                downloadPresentation.present(application.requestPullModel())
+                            }
                                 .disabled(application.modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || !application.canRequestModelDownload)
                         }
                     }

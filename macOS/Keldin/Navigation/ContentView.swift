@@ -65,18 +65,6 @@ struct ContentView: View {
         } message: {
             Text(application.mlxSetupExplanation)
         }
-        .confirmationDialog(
-            "Pull \(application.modelToPull)?",
-            isPresented: $application.showPullConfirmation,
-            titleVisibility: .visible
-        ) {
-            Button("Pull Model") {
-                application.confirmPullModel()
-            }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Ollama will download this model and make it available locally.")
-        }
         .sheet(isPresented: $application.showWelcome) {
             WelcomeSheet()
                 .environmentObject(application)

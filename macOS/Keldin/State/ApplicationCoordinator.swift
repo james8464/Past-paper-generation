@@ -35,7 +35,6 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var appleModel = AppDefaults.appleModel
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
-    @Published var showPullConfirmation = false
     @Published var showHostedAIConsent = false
     @Published var showMLXSetupConfirmation = false
     @Published var showError = false
@@ -69,7 +68,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     var hasCommandBlockingPresentation: Bool {
         showWelcome || showHelp || showError || showHostedAIConsent
-            || showMLXSetupConfirmation || showPullConfirmation
+            || showMLXSetupConfirmation
     }
 
     private var activeOperation: RunningOperation { activeRun?.intent.operation ?? .none }
@@ -862,26 +861,26 @@ final class ApplicationCoordinator: ObservableObject {
         progressEntries.append(ProgressEntry(stage: "cancel", message: message))
     }
 
-    func pullSelectedModel() {
-        guard canRequestModelDownload else { return }
+    func pullSelectedModel() -> ModelDownloadRequest? {
+        guard canRequestModelDownload else { return nil }
         modelToPull = selectedModel
-        showPullConfirmation = true
+        return requestPullModel()
     }
 
-    func requestPullModel() {
+    func requestPullModel() -> ModelDownloadRequest? {
         guard canRequestModelDownload,
-              !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        showPullConfirmation = true
+              !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return ModelDownloadRequest(model: modelToPull.trimmingCharacters(in: .whitespacesAndNewlines))
     }
 
-    func confirmPullModel() {
+    func confirmPullModel(_ request: ModelDownloadRequest) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         guard distributionMode.canManageOllama else {
             setError("The App Store build can detect Ollama, but cannot install or pull models.")
             return
         }
 
-        let model = modelToPull.trimmingCharacters(in: .whitespacesAndNewlines)
+        let model = request.model.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !model.isEmpty else { return }
         status = "Pulling model"
         generationProgress = 0.05
@@ -999,10 +998,10 @@ final class ApplicationCoordinator: ObservableObject {
         distributionMode.canManageOllama && !isRunning && !benchmarkCoordinator.isRunning
     }
 
-    func requestRecommendedOllamaModel() {
-        guard canRequestModelDownload else { return }
+    func requestRecommendedOllamaModel() -> ModelDownloadRequest? {
+        guard canRequestModelDownload else { return nil }
         modelToPull = ollamaRecommendation.model
-        requestPullModel()
+        return requestPullModel()
     }
 
     func copyDiagnosticSummary() {

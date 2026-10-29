@@ -17,11 +17,13 @@ struct AppCommands: Commands {
     @ObservedObject var application: ApplicationCoordinator
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
     @FocusedObject private var documentActions: DocumentActionController?
+    @FocusedObject private var modelDownloadPresentation: ModelDownloadPresentation?
     @FocusedValue(\.keldinCreationContext) private var creationContext
 
     private var canNavigate: Bool {
         KeldinCreationContext.allowsNavigation(
-            from: creationContext, applicationModal: application.hasCommandBlockingPresentation
+            from: creationContext,
+            applicationModal: application.hasCommandBlockingPresentation || modelDownloadPresentation?.blocksCommands == true
         )
     }
 

@@ -5,6 +5,17 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testDownloadRequestDoesNotBlockAnUnrelatedWindowGlobally() {
+        let application = application(backend: ControlledRunBackend())
+        application.modelToPull = "fixture/model"
+
+        let request = application.requestPullModel()
+
+        XCTAssertEqual(request?.model, "fixture/model")
+        XCTAssertFalse(application.hasCommandBlockingPresentation)
+    }
+
+    @MainActor
     func testRecommendedDownloadRequestAndCancelPreserveTheSelectedModel() {
         let defaults = isolatedDefaults()
         defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
@@ -12,14 +23,16 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend, defaults: defaults)
 
         XCTAssertTrue(application.canRequestModelDownload)
-        application.requestRecommendedOllamaModel()
+        let presentation = ModelDownloadPresentation()
+        presentation.present(application.requestRecommendedOllamaModel())
 
         XCTAssertEqual(application.modelToPull, application.ollamaRecommendation.model)
-        XCTAssertTrue(application.showPullConfirmation)
+        XCTAssertTrue(presentation.isPresented)
         XCTAssertEqual(application.selectedModel, "fixture/previous-model")
         XCTAssertEqual(application.settingsStore.ollamaModel, "fixture/previous-model")
         XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
-        application.showPullConfirmation = false // The native Cancel dismisses this binding.
+        if let request = presentation.request { presentation.dismiss(id: request.id) }
+        XCTAssertFalse(presentation.isPresented)
         XCTAssertEqual(application.selectedModel, "fixture/previous-model")
         XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
         XCTAssertTrue(backend.requests.isEmpty)
@@ -37,7 +50,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(application.selectedModel, application.ollamaRecommendation.model)
         XCTAssertEqual(application.settingsStore.ollamaModel, application.ollamaRecommendation.model)
         XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), application.ollamaRecommendation.model)
-        XCTAssertFalse(application.showPullConfirmation)
+        XCTAssertFalse(application.hasCommandBlockingPresentation)
         XCTAssertTrue(backend.requests.isEmpty)
     }
 
@@ -53,11 +66,11 @@ final class RunIsolationTests: XCTestCase {
             application.modelToPull = "fixture/draft-tag"
             XCTAssertFalse(application.canRequestModelDownload)
 
-            application.requestRecommendedOllamaModel()
-            application.requestPullModel()
-            application.pullSelectedModel()
+            XCTAssertNil(application.requestRecommendedOllamaModel())
+            XCTAssertNil(application.requestPullModel())
+            XCTAssertNil(application.pullSelectedModel())
 
-            XCTAssertFalse(application.showPullConfirmation)
+            XCTAssertFalse(application.hasCommandBlockingPresentation)
             XCTAssertEqual(application.modelToPull, "fixture/draft-tag")
             XCTAssertEqual(application.selectedModel, "fixture/previous-model")
             XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), "fixture/previous-model")
@@ -74,10 +87,10 @@ final class RunIsolationTests: XCTestCase {
             defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)
             let backend = ControlledRunBackend()
             let application = application(backend: backend, defaults: defaults)
-            application.requestRecommendedOllamaModel()
-            let requested = application.modelToPull
-            application.showPullConfirmation = false
-            application.confirmPullModel()
+            let request = try XCTUnwrap(application.requestRecommendedOllamaModel())
+            let requested = request.model
+            application.modelToPull = "fixture/changed-before-approval"
+            application.confirmPullModel(request)
             let run = try XCTUnwrap(backend.requests.first)
             application.modelToPull = "fixture/later-draft"
             switch outcome {
@@ -96,6 +109,30 @@ final class RunIsolationTests: XCTestCase {
             XCTAssertEqual(defaults.string(forKey: AppStorageKey.ollamaModel), expected, outcome)
             XCTAssertFalse(application.isRunning)
         }
+    }
+
+    @MainActor
+    func testDownloadApprovalIsConsumedOnceAndRechecksBusyOwnership() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let presentation = ModelDownloadPresentation()
+        application.modelToPull = "fixture/captured"
+        presentation.present(application.requestPullModel())
+        let request = try XCTUnwrap(presentation.request)
+        if let approved = presentation.consume(id: request.id) { application.confirmPullModel(approved) }
+        if let duplicate = presentation.consume(id: request.id) { application.confirmPullModel(duplicate) }
+        XCTAssertEqual(backend.requests.count, 1)
+        application.cancelGeneration()
+
+        application.modelToPull = "fixture/next"
+        presentation.present(application.requestPullModel())
+        let next = try XCTUnwrap(presentation.request)
+        application.startBenchmark()
+        if let approved = presentation.consume(id: next.id) { application.confirmPullModel(approved) }
+        XCTAssertEqual(backend.requests.count, 2) // One download, then one benchmark.
+        XCTAssertFalse(application.isRunning)
+        XCTAssertFalse(presentation.isPresented)
+        application.cancelBenchmark()
     }
 
     @MainActor
@@ -326,7 +363,7 @@ final class RunIsolationTests: XCTestCase {
             let files = application.currentGenerationFiles
             application.modelToPull = "fixture-model"
             if setupMLX { application.confirmMLXSetup() }
-            else { application.confirmPullModel() }
+            else { application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull)) }
             let run = try XCTUnwrap(backend.requests.first)
 
             run.onEvent(.file(role: "question_paper", path: "/fixture/not-a-paper.pdf"))
@@ -413,7 +450,7 @@ final class RunIsolationTests: XCTestCase {
         let status = application.status
         application.modelToPull = "fixture-model"
 
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         application.confirmMLXSetup()
 
         XCTAssertEqual(backend.requests.count, 1)
@@ -433,7 +470,7 @@ final class RunIsolationTests: XCTestCase {
         let status = application.status
         application.modelToPull = "fixture-model"
 
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         application.confirmMLXSetup()
 
         XCTAssertEqual(backend.requests.count, 1)
@@ -467,7 +504,7 @@ final class RunIsolationTests: XCTestCase {
             let originalBytes = try Data(contentsOf: historyFile)
             application.modelToPull = "fixture-model"
 
-            application.confirmPullModel()
+            application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
             let pull = try XCTUnwrap(backend.requests.last)
             XCTAssertEqual(backend.requests.count, 2)
             pull.onFinish(outcome)
@@ -487,7 +524,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend, defaults: defaults)
         let originalModel = application.selectedModel
         application.modelToPull = "fixture-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         let pull = try XCTUnwrap(backend.requests.first)
 
         pull.onFinish(.success(7))
@@ -520,7 +557,7 @@ final class RunIsolationTests: XCTestCase {
         let historyFile = history.appendingPathComponent("\(job.id.uuidString).json")
         let originalBytes = try Data(contentsOf: historyFile)
         application.modelToPull = "fixture-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
 
         application.cancelGeneration()
 
@@ -692,7 +729,7 @@ final class RunIsolationTests: XCTestCase {
         let application = application(backend: backend)
         let originalModel = application.selectedModel
         application.modelToPull = "cancelled-model"
-        application.confirmPullModel()
+        application.confirmPullModel(ModelDownloadRequest(model: application.modelToPull))
         let cancelled = try XCTUnwrap(backend.requests.first)
         application.cancelGeneration()
         application.generateFrenchPaper(largePrint: false)

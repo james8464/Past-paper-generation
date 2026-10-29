@@ -63,9 +63,19 @@ def test_document_commands_do_not_target_the_document_behind_a_guide():
         "showError",
         "showHostedAIConsent",
         "showMLXSetupConfirmation",
-        "showPullConfirmation",
     ):
         assert presentation in modal
+    assert "showPullConfirmation" not in coordinator
+    assert "modelDownloadPresentation?.blocksCommands == true" in navigation
+    assert "@FocusedObject private var modelDownloadPresentation" in source
+    settings = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    assert ".focusedSceneObject(downloadPresentation)" in settings
+    assert "presenting: downloadPresentation.request" in settings
+    assert "downloadPresentation.consume(id: request.id)" in settings
+    assert "downloadPresentation.presentationDidDismiss(id: requestID)" in settings
+    main = (APP / "Navigation/ContentView.swift").read_text()
+    assert "showPullConfirmation" not in main
+    assert '"Pull Model"' not in main
 
 
 def test_help_containers_keep_localisable_resources_and_stable_identity():
