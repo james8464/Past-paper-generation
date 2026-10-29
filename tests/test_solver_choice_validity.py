@@ -181,7 +181,7 @@ def test_choice_validity_gate_changes_checkpoint_identity(monkeypatch, tmp_path)
     )
     assert (
         ASSESSMENT_REVIEW_VERSION
-        == "assessment-review-v10-accounting-public-numeric-choices"
+        == "assessment-review-v11-accounting-equal-priority"
     )
     current = generation.checkpoint_path_for_job(args, tmp_path)
     monkeypatch.setattr(

@@ -58,17 +58,34 @@ def test_numeric_choices_are_bound_to_public_facts_not_private_keys(number, oper
 
 
 def test_all_question_content_and_rng_match_pre_binding_baseline():
+    def original_projection(question):
+        projection = {
+            key: value
+            for key, value in question.model_dump(mode="json").items()
+            if key != "authoring_context"
+        }
+        # The later equal-priority fix intentionally changes one scheme sentence.
+        # Reverse only that exact delta when checking the earlier binding's RNG
+        # and content baseline; dedicated tie tests require the corrected text.
+        corrected = (
+            "Ranking: Equal priority because both products earn the same contribution "
+            "per scarce hour; this criterion alone does not favour either product."
+        )
+        old = "Ranking: Equal priority should be produced first because it has the higher contribution per scarce hour."
+        projection["mark_scheme"] = [
+            line.replace(corrected, old) for line in projection["mark_scheme"]
+        ]
+        for point in projection["structured_mark_scheme"]:
+            point["text"] = point["text"].replace(corrected, old)
+        return projection
+
     rows = []
     for seed in [*range(100), 270100, 270101]:
         rows.append(
             [
                 seed,
                 [
-                    {
-                        key: value
-                        for key, value in task.question.model_dump(mode="json").items()
-                        if key != "authoring_context"
-                    }
+                    original_projection(task.question)
                     for task in accounting_tasks("paper_2", seed)
                 ],
             ]

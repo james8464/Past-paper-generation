@@ -1099,7 +1099,12 @@ def _management_calculation(
             "Method for Product B: contribution per unit ÷ scarce hours per unit;",
             f"Product B: {_gbp(contribution_b)} ÷ {hours_b} = "
             f"{_gbp_decimal(return_b)} per scarce hour.",
-            f"Ranking: {ranked_first} should be produced first because it has the higher contribution per scarce hour.",
+            (
+                "Ranking: Equal priority because both products earn the same contribution "
+                "per scarce hour; this criterion alone does not favour either product."
+                if ranked_first == "Equal priority"
+                else f"Ranking: {ranked_first} should be produced first because it has the higher contribution per scarce hour."
+            ),
         ]
     else:
         raise ValueError(f"unsupported accounting calculation rule: {rule_id}")

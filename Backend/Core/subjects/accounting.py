@@ -62,11 +62,18 @@ def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
         )
         solution["answer"]["ranked_first"] = priority
         solution["mark_points"]["ranked_first"] = priority
+        ranking_pattern = (
+            r"^Ranking: (Equal priority) because both products earn the same contribution "
+            r"per scarce hour; this criterion alone does not favour either product\."
+            if priority == "Equal priority"
+            else r"^Ranking: (Product A|Product B) should be produced first because it has the higher contribution per scarce hour\."
+        )
         solution["text_checks"] = [
             {
                 "role": "ranked_first",
                 "value": priority,
-                "scheme_pattern": r"^Ranking: (Product A|Product B|Equal priority) should be produced first",
+                "scheme_pattern": ranking_pattern,
+                "whole_statement": True,
             }
         ]
     return solution
