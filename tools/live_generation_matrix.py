@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import fnmatch
 import hashlib
 import json
+import os
 import signal
 import sys
 import time
@@ -267,6 +269,11 @@ def run_matrix(
             error_messages.append(
                 "runtime source or model changed during generation; rerun on stable inputs"
             )
+        if not dry_run and provider in {"ollama", "apple"} and not model_digest:
+            generation_passed = False
+            error_messages.append(
+                "local model identity is unavailable; this run is not pinned acceptance evidence"
+            )
         demand = _read_package_manifest(file_events.get("assessment_package")).get(
             "reference_demand"
         )
@@ -496,13 +503,25 @@ def _request_identity(
     runtime_sha256: str | None = None,
 ) -> dict[str, Any]:
     return {
-        "version": 1,
+        "version": 2,
         "job": job.id,
         "seed": seed,
         "preview": dry_run,
         "model": None if dry_run else model,
         "provider": None if dry_run else provider,
         "model_digest": model_digest,
+        "local_generation_workers": (
+            2
+            if os.environ.get(
+                "KELDIN_PARALLEL_LOCAL_REVIEWS"
+                if provider == "ollama"
+                else "KELDIN_PARALLEL_MLX_GENERATION"
+            )
+            == "1"
+            else 1
+        )
+        if not dry_run and provider in {"ollama", "apple"}
+        else None,
         "endpoint_sha256": hashlib.sha256(ollama_url.rstrip("/").encode()).hexdigest(),
         "runtime_sha256": runtime_sha256
         if runtime_sha256 is not None
@@ -534,6 +553,8 @@ def _runtime_sha256() -> str:
 
 
 def _model_digest(provider: str, model: str, ollama_url: str) -> str | None:
+    if provider == "apple":
+        return _mlx_model_digest(model)
     if provider != "ollama":
         return None
     try:
@@ -548,6 +569,38 @@ def _model_digest(provider: str, model: str, ollama_url: str) -> str | None:
     except (OSError, ValueError, AttributeError):
         pass
     return None
+
+
+def _mlx_model_digest(model: str) -> str | None:
+    # Pin actual cached data, not just a mutable model name or cache path.
+    # Resolving is local-only and never initiates setup or a download.
+    from Backend.Core.mlx_setup import MLX_MODEL_PATTERNS, resolve_local_mlx_model
+
+    try:
+        root = Path(resolve_local_mlx_model(model))
+        if not (root / "config.json").is_file():
+            return None
+        files = sorted(
+            path
+            for path in root.rglob("*")
+            if path.is_file()
+            and any(
+                fnmatch.fnmatch(path.name, pattern) for pattern in MLX_MODEL_PATTERNS
+            )
+        )
+        if not any(
+            path.name.startswith("model") and path.suffix == ".safetensors"
+            for path in files
+        ):
+            return None
+        digest = hashlib.sha256()
+        for path in files:
+            digest.update(path.relative_to(root).as_posix().encode("utf-8"))
+            digest.update(b"\0")
+            digest.update(_sha256(path).encode("ascii"))
+        return digest.hexdigest()
+    except (OSError, RuntimeError, ValueError, ImportError):
+        return None
 
 
 def _resumable_result(
@@ -570,7 +623,7 @@ def _resumable_result(
     if result.get("request_identity") != request_identity:
         return None
     if (
-        request_identity["provider"] == "ollama"
+        request_identity["provider"] in {"ollama", "apple"}
         and not request_identity["model_digest"]
     ):
         return None
