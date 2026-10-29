@@ -619,8 +619,8 @@
     }
   },
   "solver_mcq": {
-    "prompt": "Independently solve this UK A-level assessment item. Do not infer or reproduce a draft mark scheme. Recompute every numeric result and cite only the supplied evidence IDs; when sources is empty, evidence_ids must be an empty array. For multiple choice, return the complete option text rather than its number or letter. Return exactly one JSON object with these seven top-level fields, and no others: steps, answer, mark_points, evidence_ids, alternatives, partial_credit_boundaries, follow_through_rules. Every field is required; every array must be present explicitly even when empty; do not return null. Follow every independent_solver_instructions entry in authoring_context; derive its requested facts solely from candidate-visible inputs and show those derivations in steps. When independently_derived_context is present, treat its numeric results as authoritative code-derived facts from the public inputs; use them in the answer and do not replace them with new model arithmetic. For an open response the literal envelope is: {\"steps\":[\"reasoning step\"],\"answer\":\"complete answer\",\"mark_points\":[\"creditable point\"],\"evidence_ids\":[],\"alternatives\":[],\"partial_credit_boundaries\":[],\"follow_through_rules\":[]}.  For multiple choice, mark_points must contain exactly one string: the same selected option as answer. Put reasoning in steps.\n{\"item\": {\"id\": \"solver-fixture\", \"marks\": 1, \"prompt\": \"Choose the appropriate description.\", \"kind\": \"multiple_choice\", \"choices\": [\"Public option α\", \"Public option β\"]}, \"sources\": [{\"id\": \"source-1\", \"text\": \"Café records contain candidate-visible information.\"}]}",
-    "prompt_sha256": "28071879b2c0042c04e2082eae5522d92cbc17b0b4769b85278573990492b8f2",
+    "prompt": "Independently solve this UK A-level assessment item. Do not infer or reproduce a draft mark scheme. Recompute every numeric result and cite only the supplied evidence IDs; when sources is empty, evidence_ids must be an empty array. For multiple choice, return the complete option text rather than its number or letter. Return exactly one JSON object with these eight top-level fields, and no others: steps, answer, mark_points, evidence_ids, alternatives, partial_credit_boundaries, follow_through_rules, has_single_valid_choice. Every field is required; every array must be present explicitly even when empty; do not return null. Follow every independent_solver_instructions entry in authoring_context; derive its requested facts solely from candidate-visible inputs and show those derivations in steps. When independently_derived_context is present, treat its numeric results as authoritative code-derived facts from the public inputs; use them in the answer and do not replace them with new model arithmetic. For an open response the literal envelope is: {\"steps\":[\"reasoning step\"],\"answer\":\"complete answer\",\"mark_points\":[\"creditable point\"],\"evidence_ids\":[],\"alternatives\":[],\"partial_credit_boundaries\":[],\"follow_through_rules\":[]}.  For multiple choice, mark_points must contain exactly one string: the same selected option as answer. Put reasoning in steps. Independently derive the result before checking ALL public options. Set has_single_valid_choice to true only if exactly one option is valid. Set it to false if none is correct or more than one is correct, even when the options are worded differently. Never choose a closest answer to conceal invalid options. With false, use any supplied option as the required answer/mark_points placeholder; this response is rejected, not treated as a solution. Explain the defect in steps.\n{\"item\": {\"id\": \"solver-fixture\", \"marks\": 1, \"prompt\": \"Choose the appropriate description.\", \"kind\": \"multiple_choice\", \"choices\": [\"Public option α\", \"Public option β\"]}, \"sources\": [{\"id\": \"source-1\", \"text\": \"Café records contain candidate-visible information.\"}]}",
+    "prompt_sha256": "ad0ce187a37593eadfd96c7c12fb90f159394f1fb55a3a8af4f4a77a546d9227",
     "metadata": {
       "version": "trusted-generation-request-v1",
       "operation": "solver",
@@ -691,6 +691,9 @@
               "maxLength": 240
             },
             "maxItems": 8
+          },
+          "has_single_valid_choice": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false,
@@ -701,10 +704,11 @@
           "evidence_ids",
           "alternatives",
           "partial_credit_boundaries",
-          "follow_through_rules"
+          "follow_through_rules",
+          "has_single_valid_choice"
         ]
       },
-      "schema_sha256": "be70085a3e693a2a58ed2b25a504d873ce16e000f537421e509a92eeeeaf214c"
+      "schema_sha256": "acf9f6165f7ff817f2275fa6901278854914a9974c0279bbad67cbe7996a597b"
     }
   },
   "solver_sql_correction": {
