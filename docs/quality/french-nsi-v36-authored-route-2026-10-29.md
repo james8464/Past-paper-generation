@@ -16,8 +16,9 @@ data, structured materials, tasks, proposed answers and individual credit criter
 There is no source-owned question or answer bank in this route. Each of three
 autonomous exercises has six technical points and 70 indicative minutes. The
 separate two-point language rubric remains numerically indicative. At least
-three broad curriculum domains must be covered; difficulty and time remain
-uncalibrated.
+three broad curriculum domains are requested, not imposed from the model's own
+labels. Repeated domains produce a coverage-profile warning; difficulty and time
+remain uncalibrated.
 
 ## Admission and evidence
 
@@ -29,7 +30,13 @@ Missing eligible material refuses before any model request. The isolated
 a qualified full-paper route.
 
 Existing exercise validators check exact credits, question identifiers,
-curriculum codes, material links, timings and declared cognitive progression.
+curriculum codes, material links and timing sums. Only V36 passes an explicit
+validation context that treats self-reported cognitive labels as profile
+warnings, not proof of actual demand or a reason to reject otherwise sound
+content. Historical/default validation retains its previous thresholds. An
+explicit empty materials list permits code-only or conceptual exercises;
+omitting the field still refuses. Incorrect credits, unsafe code, unanswered
+questions and negative model reviews remain blocking.
 Model Python fragments are parsed, not executed; imports, dynamic execution,
 filesystem/system/network access and introspective names are refused. The
 existing bounded interpreter, in-memory SQL checker and shortest-path calculator

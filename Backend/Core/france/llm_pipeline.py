@@ -22,6 +22,7 @@ from Backend.Core.france.nsi import (
     TOPICS,
     NSIExercise,
     authoring_schema,
+    cognitive_profile_findings,
     require_authoring_fields,
 )
 from Backend.Core.france.source_identity import implementation_identity
@@ -85,6 +86,7 @@ def exercise_request(
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
     schema = authoring_schema()
+    schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
     schema["properties"]["minutes"] = {"type": "integer", "const": 70}
     schema["properties"]["target_points"] = {"type": "string", "const": "6"}
@@ -134,7 +136,7 @@ def exercise_request(
         "prévus. Celui-ci doit être autonome, sur 6 points techniques et 70 minutes "
         "indicatives, sans prérequis provenant des autres exercices. Les 2 points "
         "indicatifs de langue sont séparés et ne figurent pas dans ces 6 points. "
-        "Évalue un domaine principal différent de ceux déjà couverts, avec des étapes "
+        "Vise des domaines variés, avec des étapes "
         "de raisonnement, construction et justification, sans remplir des pages à vide. "
         "Respecte les capacités du programme et les bornes du schéma. "
         "Dans topics, utilise les noms des domaines, pas les codes des capacités. "
@@ -142,7 +144,8 @@ def exercise_request(
         "les points de sa question. La somme estimated_minutes doit valoir 70. Prévois "
         "au moins trois opérations différentes, dont deux parmi analyse, design, debug, "
         "justify; au plus une question recall et au moins une difficulté 4. Donne les données "
-        "nécessaires, des tableaux ou graphes structurés, et des fragments Python "
+        "nécessaires; fournis des tableaux ou graphes structurés lorsqu'ils sont utiles, "
+        "sinon materials doit être une liste vide explicite. Donne les fragments Python "
         "syntaxiquement complets dans des blocs ```python. Aucun import, accès fichier, "
         "réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
         "des programmes à exécuter sur la machine. Pour verification, utilise un contrat "
@@ -192,8 +195,10 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
     if not isinstance(raw, dict) or len(json.dumps(raw, ensure_ascii=False)) > 160000:
         raise ValueError("Exercice NSI absent ou trop volumineux")
     Draft202012Validator(exercise_request(exercise_id, 0, []).schema).validate(raw)
-    require_authoring_fields(raw)
-    exercise = NSIExercise.model_validate(raw)
+    require_authoring_fields(raw, allow_empty_materials=True)
+    exercise = NSIExercise.model_validate(
+        raw, context={"authoring_profile": "v36-model-authored"}
+    )
     if (
         exercise.id != exercise_id
         or exercise.target_points != "6"
@@ -202,6 +207,12 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
         raise ValueError("Allocation NSI modifiée")
     snippets = [exercise.context]
     for question in exercise.questions:
+        if (
+            not question.prompt.strip()
+            or not question.answer.strip()
+            or any(not credit.criterion.strip() for credit in question.marking)
+        ):
+            raise ValueError("Question, réponse proposée ou critère de crédit vide")
         snippets.extend(
             [
                 question.prompt,
@@ -299,6 +310,7 @@ def _verification_evidence(
     exercises: list[NSIExercise],
 ) -> tuple[list[dict], list[dict]]:
     checks, warnings = [], []
+    covered_topics: set[str] = set()
     for exercise in exercises:
         for question in exercise.questions:
             kind = question.verification["kind"]
@@ -320,6 +332,29 @@ def _verification_evidence(
                     **result,
                 }
             )
+        findings = cognitive_profile_findings(exercise.questions)
+        if findings:
+            warnings.append(
+                {
+                    "exercise_id": exercise.id,
+                    "question_id": exercise.questions[0].id,
+                    "state": "profile_warning",
+                    "code": "self_reported_cognitive_profile",
+                    "findings": list(findings),
+                    "reason": "Les étiquettes déclarées ne couvrent pas le profil cognitif indicatif du logiciel. Elles ne mesurent pas la difficulté réelle des questions.",
+                }
+            )
+        if not set(exercise.topics) - covered_topics:
+            warnings.append(
+                {
+                    "exercise_id": exercise.id,
+                    "question_id": exercise.questions[0].id,
+                    "state": "profile_warning",
+                    "code": "repeated_broad_topics",
+                    "reason": "Les domaines déclarés recoupent ceux des exercices précédents. Ce constat de couverture ne mesure pas la diversité réelle des questions.",
+                }
+            )
+        covered_topics.update(exercise.topics)
     return checks, warnings
 
 
@@ -523,8 +558,6 @@ def generate(
             identifier,
         )
         attempts.append(authoring)
-        if not set(exercise.topics) - topics:
-            raise ValueError("Les exercices ne couvrent pas trois domaines distincts")
         topics.update(exercise.topics)
         if progress:
             progress(f"Résolution et contrôle indépendants de l'exercice {identifier}")
@@ -602,11 +635,6 @@ def validate_package(package: dict) -> list[NSIExercise]:
     exercises = [
         validate_authored_exercise(value, str(i)) for i, value in enumerate(raw, 1)
     ]
-    topics: set[str] = set()
-    for exercise in exercises:
-        if not set(exercise.topics) - topics:
-            raise ValueError("Les exercices ne couvrent pas trois domaines distincts")
-        topics.update(exercise.topics)
     _validate_references(package.get("references"))
     reviews = package.get("reviews")
     if not isinstance(reviews, list) or len(reviews) != 3:
