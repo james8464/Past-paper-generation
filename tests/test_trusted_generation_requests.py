@@ -575,6 +575,11 @@ def test_current_authoring_and_batch_review_keep_metadata_out_of_checkpoint(tmp_
     assert client.requests[1].seed == 0
     assert all(request.expected_ids == ("0/0/0",) for request in client.requests)
     assert "trusted-generation-request-v1" not in path.read_text()
+    assert "authoring_shapes" not in path.read_text()
+    assert all("authoring_shapes" not in request.prompt for request in client.requests)
+    item = client.requests[0].schema["properties"]["questions"]["items"]["properties"]
+    assert item["choices"]["maxItems"] == 0
+    assert item["correct_choice"] == {"type": "null"}
 
     class NoCalls:
         def generate_json(self, _prompt):

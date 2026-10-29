@@ -649,6 +649,14 @@ def _generate_item_transaction(
                             "preserve_mark_scheme"
                         )
                         is True,
+                        authoring_shapes=(
+                            (
+                                task.id,
+                                "multiple_choice"
+                                if task.question.kind == "multiple_choice"
+                                else "constructed_response",
+                            ),
+                        ),
                     ),
                     generation_seed=seed,
                     attempt=attempt,

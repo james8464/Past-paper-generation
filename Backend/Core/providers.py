@@ -8,6 +8,7 @@ import os
 import re
 import threading
 import time
+from copy import deepcopy
 from typing import Any
 from urllib.parse import urlparse
 
@@ -768,6 +769,25 @@ def _ollama_json_schema(
             ],
             "additionalProperties": False,
         }
+        if contract is not None and contract.authoring_shapes:
+            variants = []
+            for identifier, kind in contract.authoring_shapes:
+                variant = deepcopy(question)
+                fields = variant["properties"]
+                fields["id"]["enum"] = [identifier]
+                if kind == "multiple_choice":
+                    fields["choices"].update(minItems=4, maxItems=4, uniqueItems=True)
+                    fields["choices"]["items"] = {**short_text, "minLength": 1}
+                    fields["correct_choice"] = {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 3,
+                    }
+                else:
+                    fields["choices"].update(minItems=0, maxItems=0)
+                    fields["correct_choice"] = {"type": "null"}
+                variants.append(variant)
+            question = variants[0] if len(variants) == 1 else {"anyOf": variants}
         properties = {
             "questions": {
                 "type": "array",
