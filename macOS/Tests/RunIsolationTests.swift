@@ -5,6 +5,132 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testSettingsConsentApprovalUsesCapturedProviderAndRechecksGeneration() throws {
+        for busy in [false, true] {
+            let backend = ControlledRunBackend()
+            let application = application(backend: backend)
+            let owner = application.settingsPresentation
+            owner.activate()
+            application.selectAIProvider(.openAI, presentation: owner)
+            let request = try XCTUnwrap(owner.request)
+            if busy { application.generateFrenchPaper(largePrint: false) }
+            let originalProvider = application.aiProvider
+            let originalJob = application.generationCoordinator.activeJob
+            guard let approved = owner.consume(id: request.id), case let .hostedConsent(provider) = approved.kind else { return XCTFail("Expected owned consent") }
+
+            application.acceptHostedAIConsent(for: provider, presentation: owner)
+
+            XCTAssertEqual(application.hasHostedAIConsent, !busy)
+            XCTAssertEqual(application.aiProvider, busy ? originalProvider : .openAI)
+            XCTAssertEqual(application.generationCoordinator.activeJob, originalJob)
+            XCTAssertFalse(application.showHostedAIConsent)
+            if busy {
+                XCTAssertTrue(application.isRunning)
+                application.cancelGeneration()
+            } else {
+                XCTAssertEqual(application.modelCoordinator.provider, .openAI)
+                XCTAssertTrue(backend.requests.isEmpty)
+            }
+        }
+    }
+
+    @MainActor
+    func testSettingsDownloadFailureDoesNotOverwriteRetainedMainError() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.apply(.error(message: "Retained Main error", code: "fixture"))
+        let mainMessage = application.errorMessage
+        let owner = application.settingsPresentation
+        owner.activate()
+        backend.launchError = CocoaError(.executableLoad)
+
+        application.confirmPullModel(ModelDownloadRequest(model: "fixture/model"), presentation: owner)
+
+        XCTAssertTrue(application.showError)
+        XCTAssertEqual(application.errorMessage, mainMessage)
+        guard case .error = owner.request?.kind else { return XCTFail("Expected Settings error") }
+        XCTAssertFalse(application.isRunning)
+    }
+
+    @MainActor
+    func testLateSettingsRefreshErrorIsRetainedWithoutInvisiblePresentation() async throws {
+        let backend = DeferredRefreshBackend()
+        let application = application(backend: backend)
+        let owner = application.settingsPresentation
+        owner.activate()
+        application.refreshOllama(presentation: owner)
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        owner.deactivate()
+
+        backend.resumeNext(.failure(CocoaError(.fileReadUnknown)))
+        await waitForRefreshCompletion(application)
+
+        XCTAssertFalse(application.showError)
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.request)
+        XCTAssertEqual(application.progressEntries.last?.stage, "error")
+        owner.activate()
+        guard case .error = owner.request?.kind else { return XCTFail("Expected retained Settings error") }
+    }
+
+    @MainActor
+    func testMainRefreshFailureDoesNotBecomeSettingsOwnedWhenFocusChanges() async throws {
+        let backend = DeferredRefreshBackend()
+        let application = application(backend: backend)
+        application.refreshOllama()
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        application.settingsPresentation.activate()
+
+        backend.resumeNext(.failure(CocoaError(.fileReadUnknown)))
+        await waitForRefreshCompletion(application)
+
+        XCTAssertTrue(application.showError)
+        XCTAssertNil(application.settingsPresentation.request)
+        XCTAssertFalse(application.settingsPresentation.blocksCommands)
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: application.hasCommandBlockingPresentation, mainSceneIsFocused: false))
+    }
+
+    @MainActor
+    func testSettingsPersistenceErrorStaysWithItsExplicitOwner() {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend, secrets: FailingSettingsSecrets())
+        let settings = application.settingsPresentation
+        settings.activate()
+        application.openAIAPIKey = "PRIVATE_TEST_KEY"
+
+        application.saveAISettings(presentation: settings)
+
+        XCTAssertFalse(application.showError)
+        XCTAssertTrue(settings.blocksCommands)
+        guard case let .error(message) = settings.request?.kind else { return XCTFail("Expected a Settings-owned error") }
+        XCTAssertFalse(message.contains("PRIVATE_TEST_KEY"))
+        settings.deactivate()
+        XCTAssertFalse(settings.blocksCommands)
+        settings.activate()
+        XCTAssertEqual(settings.request?.kind, .error(message))
+    }
+
+    @MainActor
+    func testSettingsConsentHasAnExplicitOwnerAndDoesNotPresentOnMain() {
+        let application = application(backend: ControlledRunBackend())
+        let settings = application.settingsPresentation
+        settings.activate()
+        let original = application.aiProvider
+
+        application.selectAIProvider(.openAI, presentation: settings)
+
+        XCTAssertFalse(application.showHostedAIConsent)
+        XCTAssertEqual(settings.request?.kind, .hostedConsent(.openAI))
+        XCTAssertEqual(application.aiProvider, original)
+        settings.deactivate()
+        XCTAssertFalse(settings.blocksCommands)
+        XCTAssertNil(settings.request)
+        XCTAssertFalse(application.hasHostedAIConsent)
+        settings.activate()
+        XCTAssertNil(settings.request)
+    }
+
+    @MainActor
     func testDownloadRequestDoesNotBlockAnUnrelatedWindowGlobally() {
         let application = application(backend: ControlledRunBackend())
         application.modelToPull = "fixture/model"
@@ -933,7 +1059,8 @@ final class RunIsolationTests: XCTestCase {
 
     @MainActor
     private func application(
-        backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil
+        backend: any BackendRunning, defaults: UserDefaults? = nil, historyDirectory: URL? = nil,
+        secrets: any SecretStoring = RunIsolationSecrets()
     ) -> ApplicationCoordinator {
         let defaults = defaults ?? isolatedDefaults()
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
@@ -941,7 +1068,7 @@ final class RunIsolationTests: XCTestCase {
         let history = historyDirectory ?? FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRunIsolation-\(UUID().uuidString)")
         addTeardownBlock { try? FileManager.default.removeItem(at: history) }
         return ApplicationCoordinator(
-            defaults: defaults, secrets: RunIsolationSecrets(), historyDirectory: history, backend: backend
+            defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend
         )
     }
 
@@ -965,6 +1092,11 @@ final class RunIsolationTests: XCTestCase {
             )
         )
     }
+}
+
+private final class FailingSettingsSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) throws { throw SecretStoreError.unexpected(operation: .write) }
 }
 
 // Each instance is driven synchronously by one main-actor test. Captured callbacks

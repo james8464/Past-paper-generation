@@ -7,8 +7,11 @@ enum KeldinCreationContext: Equatable {
 
     func presentingModal(_ isPresented: Bool) -> Self { isPresented ? .presentingModal : self }
 
-    static func allowsNavigation(from context: Self?, applicationModal: Bool) -> Bool {
-        !applicationModal && context != .presentingModal
+    static func allowsNavigation(
+        from context: Self?, applicationModal: Bool,
+        mainSceneIsFocused: Bool = true, settingsModal: Bool = false
+    ) -> Bool {
+        !(applicationModal && mainSceneIsFocused) && !settingsModal && context != .presentingModal
     }
 
     var frenchLargePrint: Bool? {

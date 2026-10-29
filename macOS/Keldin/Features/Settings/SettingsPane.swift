@@ -37,6 +37,7 @@ struct SettingsPane: View {
         .environment(\.locale, interfaceLanguage == "system" ? .current : Locale(identifier: interfaceLanguage))
         .environmentObject(downloadPresentation)
         .focusedSceneObject(downloadPresentation)
+        .modifier(SettingsActionHost(presentation: application.settingsPresentation, download: downloadPresentation))
         .confirmationDialog(
             "Pull \(downloadPresentation.request?.model ?? "")?",
             isPresented: downloadConfirmationBinding,
@@ -45,7 +46,7 @@ struct SettingsPane: View {
         ) { request in
             Button("Pull Model") {
                 guard let approved = downloadPresentation.consume(id: request.id) else { return }
-                application.confirmPullModel(approved)
+                application.confirmPullModel(approved, presentation: application.settingsPresentation)
             }
             Button("Cancel", role: .cancel) { downloadPresentation.dismiss(id: request.id) }
         } message: { _ in
@@ -64,6 +65,65 @@ struct SettingsPane: View {
                 if !visible, let requestID { downloadPresentation.presentationDidDismiss(id: requestID) }
             }
         )
+    }
+}
+
+private struct SettingsActionHost: ViewModifier {
+    @EnvironmentObject private var application: ApplicationCoordinator
+    @ObservedObject var presentation: SettingsActionPresentation
+    @ObservedObject var download: ModelDownloadPresentation
+    @State private var isAttached = false
+
+    func body(content: Content) -> some View {
+        content
+            .focusedSceneObject(presentation)
+            .alert(title, isPresented: presentedBinding, presenting: presentation.request) { request in
+                switch request.kind {
+                case let .hostedConsent(provider):
+                    Button("Use Hosted AI") {
+                        guard presentation.consume(id: request.id) != nil else { return }
+                        application.acceptHostedAIConsent(for: provider, presentation: presentation)
+                    }
+                    Button("Cancel", role: .cancel) { presentation.dismiss(id: request.id) }
+                case .error:
+                    Button("OK", role: .cancel) { presentation.dismiss(id: request.id) }
+                }
+            } message: { request in
+                switch request.kind {
+                case .hostedConsent:
+                    Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
+                case let .error(message): Text(message)
+                }
+            }
+            .onAppear {
+                isAttached = true
+                updateAvailability()
+            }
+            .onDisappear {
+                isAttached = false
+                presentation.deactivate()
+            }
+            .onChange(of: download.blocksCommands) { _, _ in updateAvailability() }
+    }
+
+    private var title: LocalizedStringKey {
+        if case .hostedConsent = presentation.request?.kind { return "Hosted AI Disclosure" }
+        return "Couldn't complete the action"
+    }
+
+    private var presentedBinding: Binding<Bool> {
+        let id = presentation.request?.id
+        return Binding(
+            get: { presentation.blocksCommands && presentation.request?.id == id },
+            set: { visible in
+                if !visible, let id { presentation.presentationDidDismiss(id: id) }
+            }
+        )
+    }
+
+    private func updateAvailability() {
+        if isAttached && !download.blocksCommands { presentation.activate() }
+        else { presentation.deactivate() }
     }
 }
 
@@ -102,6 +162,7 @@ private struct SettingsWindowConfiguration: NSViewRepresentable {
 }
 
 private struct AISettingsTab: View {
+    @Environment(\.openWindow) private var openWindow
     @Environment(\.locale) private var locale
     @EnvironmentObject private var application: ApplicationCoordinator
     @EnvironmentObject private var downloadPresentation: ModelDownloadPresentation
@@ -111,7 +172,7 @@ private struct AISettingsTab: View {
             Section("Provider") {
                 Picker("Provider", selection: Binding(
                     get: { application.aiProvider },
-                    set: { application.selectAIProvider($0) }
+                    set: { application.selectAIProvider($0, presentation: application.settingsPresentation) }
                 )) {
                     ForEach(AIProvider.allCases) { provider in
                         Text(provider.title).tag(provider)
@@ -136,12 +197,12 @@ private struct AISettingsTab: View {
         }
         .formStyle(.grouped)
         .disabled(application.isRunning)
-        .onChange(of: application.selectedModel) { _, _ in application.saveAISettings() }
-        .onChange(of: application.openAIModel) { _, _ in application.saveAISettings() }
-        .onChange(of: application.anthropicModel) { _, _ in application.saveAISettings() }
-        .onChange(of: application.appleModel) { _, _ in application.saveAISettings() }
-        .onChange(of: application.openAIAPIKey) { _, _ in application.saveAISettings() }
-        .onChange(of: application.anthropicAPIKey) { _, _ in application.saveAISettings() }
+        .onChange(of: application.selectedModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.openAIModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.anthropicModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.appleModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.openAIAPIKey) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.anthropicAPIKey) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
     }
 
     @ViewBuilder
@@ -164,7 +225,9 @@ private struct AISettingsTab: View {
 
                 HStack {
                     if application.recommendedModelIsInstalled {
-                        Button("Use Recommended Model", action: application.useRecommendedOllamaModel)
+                        Button("Use Recommended Model") {
+                            application.useRecommendedOllamaModel(presentation: application.settingsPresentation)
+                        }
                             .disabled(application.selectedModelIsRecommended)
                     } else if application.distributionMode.canManageOllama {
                         Button("Download Recommended Model…") {
@@ -174,7 +237,9 @@ private struct AISettingsTab: View {
                     }
 
                     Button("Open Model Guide") {
-                        application.showHelpGuide(topic: .choosingAModel)
+                        MainWindowRouting.navigate(.help(.choosingAModel), application: application) {
+                            openWindow(id: MainWindowRouting.sceneID, value: $0)
+                        }
                     }
                 }
 
@@ -204,7 +269,9 @@ private struct AISettingsTab: View {
                 }
 
                 HStack {
-                    Button("Check Again", action: application.refreshOllama)
+                    Button("Check Again") {
+                        application.refreshOllama(presentation: application.settingsPresentation)
+                    }
                         .disabled(application.isRefreshingOllama)
                     Spacer()
                     Text(InterfaceText.localizedResource(application.ollamaState.messageResource, locale: locale))
@@ -274,7 +341,9 @@ private struct OutputSettingsTab: View {
             }
 
             Section("Previous app data") {
-                Button("Import previous app data…", action: application.importPreviousAppData)
+                Button("Import previous app data…") {
+                    application.importPreviousAppData(presentation: application.settingsPresentation)
+                }
                     .disabled(application.isRunning)
                 Text("Use this if your earlier papers or history were not imported automatically. Choose the former app's Application Support folder. You may need to choose your output folder again or re-enter API keys.")
                     .foregroundStyle(.secondary)
@@ -285,7 +354,7 @@ private struct OutputSettingsTab: View {
                     "Create a layout preview",
                     isOn: Binding(
                         get: { application.dryRun },
-                        set: { application.setDryRun($0) }
+                        set: { application.setDryRun($0, presentation: application.settingsPresentation) }
                     )
                 )
                 Text(
@@ -300,7 +369,7 @@ private struct OutputSettingsTab: View {
                     "Notify when generation starts and finishes",
                     isOn: Binding(
                         get: { application.notificationsEnabled },
-                        set: { application.setNotificationsEnabled($0) }
+                        set: { application.setNotificationsEnabled($0, presentation: application.settingsPresentation) }
                     )
                 )
                 Text("Keldin only sends notifications about work you start.")
@@ -312,7 +381,7 @@ private struct OutputSettingsTab: View {
                     "Keep \(application.settingsStore.historyRetentionLimit) jobs",
                     value: Binding(
                         get: { application.settingsStore.historyRetentionLimit },
-                        set: { application.setHistoryRetentionLimit($0) }
+                        set: { application.setHistoryRetentionLimit($0, presentation: application.settingsPresentation) }
                     ),
                     in: 10 ... 500,
                     step: 10

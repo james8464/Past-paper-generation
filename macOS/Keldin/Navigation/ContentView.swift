@@ -85,6 +85,7 @@ struct ContentView: View {
             }
         }
         .environment(\.locale, interfaceLocale)
+        .focusedSceneValue(\.keldinMainWindowIdentity, .primary)
     }
 
     private func columnVisibility(

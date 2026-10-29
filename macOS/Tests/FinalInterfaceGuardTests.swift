@@ -2,6 +2,43 @@ import XCTest
 @testable import Keldin
 
 final class FinalInterfaceGuardTests: XCTestCase {
+    func testMainOwnedPresentationAllowsRecoveryFromAnotherScene() {
+        XCTAssertTrue(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: true, mainSceneIsFocused: false))
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: .board, applicationModal: true, mainSceneIsFocused: true))
+        XCTAssertFalse(KeldinCreationContext.allowsNavigation(from: nil, applicationModal: false, mainSceneIsFocused: false, settingsModal: true))
+    }
+
+    @MainActor
+    func testSettingsActionLifetimeRetainsErrorsButCancelsConsentOnClose() throws {
+        let owner = SettingsActionPresentation()
+        owner.reportError("Retained original error")
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.request)
+        owner.activate()
+        let error = try XCTUnwrap(owner.request)
+        XCTAssertEqual(error.kind, .error("Retained original error"))
+        XCTAssertEqual(owner.consume(id: error.id), error)
+        owner.requestConsent(for: .openAI)
+        let consent = try XCTUnwrap(owner.request)
+        owner.presentationDidDismiss(id: consent.id)
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertEqual(owner.consume(id: consent.id), consent)
+        XCTAssertNil(owner.consume(id: consent.id))
+        owner.requestConsent(for: .anthropic)
+        let newer = try XCTUnwrap(owner.request)
+        owner.dismiss(id: consent.id)
+        XCTAssertEqual(owner.request, newer)
+        owner.reportError("Deferred error")
+        owner.deactivate()
+        XCTAssertFalse(owner.blocksCommands)
+        XCTAssertNil(owner.consume(id: newer.id))
+        owner.activate()
+        XCTAssertEqual(owner.request?.kind, .error("Deferred error"))
+        owner.deactivate()
+        owner.activate()
+        XCTAssertEqual(owner.request?.kind, .error("Deferred error"))
+    }
+
     @MainActor
     func testDownloadApprovalHandlesBothDismissalOrdersWithoutInvisibleCommandBlocking() {
         for dismissFirst in [false, true] {
