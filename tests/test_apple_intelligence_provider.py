@@ -564,8 +564,10 @@ def test_compatible_solver_selects_guidance_before_inference_with_full_schema(
     assert client.usage_records[0]["generation_mode"] == "guided_with_postvalidation"
 
 
+@pytest.mark.parametrize("answer", ["overlong", "e\u0301e\u0301"])
 def test_guided_overlong_string_still_refuses_original_schema_without_retry(
     monkeypatch,
+    answer,
 ):
     schema = {
         "type": "object",
@@ -580,7 +582,7 @@ def test_guided_overlong_string_still_refuses_original_schema_without_retry(
         return {
             **reply(payload),
             "generation_mode": "guided_with_postvalidation",
-            "output": {"answer": "overlong"},
+            "output": {"answer": answer},
         }
 
     monkeypatch.setattr(service, "roundtrip", guided)
