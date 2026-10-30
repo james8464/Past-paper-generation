@@ -377,6 +377,51 @@ def _review_schema(exercise: NSIExercise) -> dict:
     }
 
 
+def _review_rejection(
+    exercise: NSIExercise,
+    *,
+    stage: str,
+    issues: list[str] | None = None,
+    questions: dict | None = None,
+) -> GenerationEvidenceError:
+    """Retain bounded review evidence, without copying prompts or proposed answers."""
+    rejected = []
+    for question_id, item in (questions or {}).items():
+        failed_flags = [
+            name
+            for name, value in item.items()
+            if name != "issues" and value is not True
+        ]
+        if failed_flags or item["issues"]:
+            rejected.append(
+                {
+                    "question_id": question_id,
+                    "failed_flags": failed_flags,
+                    "issues": [value[:256] for value in item["issues"][:3]],
+                    "issue_count": len(item["issues"]),
+                }
+            )
+    details = {
+        "stage": stage,
+        "exercise_id": exercise.id,
+        "exercise_sha256": _digest(exercise.model_dump(mode="json")),
+        "issues": [value[:256] for value in (issues or [])[:3]],
+        "issue_count": len(issues or []),
+        "question_reviews": rejected[:12],
+        "rejected_question_count": len(rejected),
+    }
+    if stage == "blind_solution":
+        reason = "la résolution indépendante signale un problème"
+    else:
+        first = rejected[0]
+        categories = ", ".join(first["failed_flags"]) or "problème signalé"
+        reason = f"question {first['question_id']} ({categories})"
+    return GenerationEvidenceError(
+        f"Le contrôle refuse le brouillon de l'exercice {exercise.id} : {reason}.",
+        details=details,
+    )
+
+
 def _validate_review(exercise: NSIExercise, review: dict) -> None:
     if (
         not isinstance(review, dict)
@@ -389,14 +434,16 @@ def _validate_review(exercise: NSIExercise, review: dict) -> None:
     Draft202012Validator(_solution_schema(exercise)).validate(blind)
     questions = review.get("question_review")
     Draft202012Validator(_review_schema(exercise)).validate(questions)
-    if blind["issues"] or any(
+    if blind["issues"]:
+        raise _review_rejection(
+            exercise, stage="blind_solution", issues=blind["issues"]
+        )
+    if any(
         item["issues"]
         or any(value is not True for key, value in item.items() if key != "issues")
         for item in questions.values()
     ):
-        raise ValueError(
-            "Le contrôle du corrigé, du programme ou du barème refuse le brouillon"
-        )
+        raise _review_rejection(exercise, stage="question_review", questions=questions)
 
 
 def _verification_evidence(
@@ -609,7 +656,9 @@ def _review(
     )
     Draft202012Validator(blind_schema).validate(blind)
     if blind["issues"]:
-        raise ValueError("Résolution indépendante : " + "; ".join(blind["issues"]))
+        raise _review_rejection(
+            exercise, stage="blind_solution", issues=blind["issues"]
+        )
     review_schema = _review_schema(exercise)
     review = request_json(
         client,

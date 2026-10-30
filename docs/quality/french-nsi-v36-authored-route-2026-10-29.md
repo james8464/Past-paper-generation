@@ -61,6 +61,15 @@ stops generation. Successful packages retain the rejected draft and its hash;
 final structural failures keep bounded private diagnostic evidence. A negative
 correctness review or failed executable contract is not a formatting retry.
 
+Rejected blind solutions and question reviews also retain private diagnostic
+evidence: the exercise identity/hash, review stage, failed flag names and bounded
+issue excerpts. Public errors identify the exercise and first rejected question
+without copying model-authored explanations or proposed answers. The existing
+private writer redacts supplied credentials, limits report size and retains file
+permissions. Schema-invalid reviews still fail validation; no approval, semantic
+retry or output correction is added by this diagnostic path. Mocked runtime tests
+confirm that these failures publish neither PDFs nor successful completion.
+
 Obvious multiline Python suite headers in unfenced prose are a typed structural
 format error: prose layout cannot preserve their indentation. This guard covers
 ordinary function, class and control-suite headers, not every possible Python
