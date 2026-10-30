@@ -5,6 +5,19 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "macOS/Keldin"
 
 
+def test_hosted_provider_label_and_disclosure_summary_have_french_copy():
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    for key, expected in (
+        ("AI provider", "Fournisseur d’IA"),
+        (
+            "Prompts and subject context may be sent to the selected provider.",
+            "Les consignes et le contexte de la matière peuvent être transmis au fournisseur sélectionné.",
+        ),
+    ):
+        unit = catalog[key]["localizations"]["fr"]["stringUnit"]
+        assert unit["state"] == "translated"
+        assert unit["value"] == expected
+
 def test_model_quality_guidance_is_separate_from_memory_suggestions():
     policy = (APP / "Domain/PaperQualityGuidance.swift").read_text()
     assert "llama-3.2-3b-instruct-4bit" in policy

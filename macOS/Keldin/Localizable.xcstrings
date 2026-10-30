@@ -419,7 +419,7 @@
         }
       }
     },
-    "AI provider": {},
+    "AI provider": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Fournisseur d’IA"}}}},
     "API key": {
       "localizations": {
         "fr": {
@@ -3947,7 +3947,7 @@
       }
     },
     "Progress": {},
-    "Prompts and subject context may be sent to the selected provider.": {},
+    "Prompts and subject context may be sent to the selected provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les consignes et le contexte de la matière peuvent être transmis au fournisseur sélectionné."}}}},
     "Provider": {
       "localizations": {
         "fr": {
