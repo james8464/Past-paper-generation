@@ -136,3 +136,23 @@ def test_french_local_progress_has_selected_language_copy():
         catalog[key]["localizations"]["fr"]["stringUnit"]["value"]
         == "Préparation du sujet d’entraînement."
     )
+
+
+def test_model_draft_statuses_and_parallel_limits_have_bilingual_copy():
+    catalog = json.loads((ROOT / "Localizable.xcstrings").read_text())["strings"]
+    presentation = (ROOT / "Domain/GenerationPresentation.swift").read_text()
+    for key in (
+        "Drafting exercise %@",
+        "Solving and checking exercise %@",
+        "Formatting and checking the document",
+        "NSI draft created by the model. Read the warnings before use.",
+    ):
+        assert catalog[key]["localizations"]["fr"]["stringUnit"]["value"]
+    assert "Brouillon NSI généré par le modèle." in presentation
+    settings = (ROOT / "Features/Settings/SettingsPane.swift").read_text()
+    for key in (
+        "For supported UK papers, generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. French NSI drafts run one step at a time.",
+        "For supported UK papers, run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time. French NSI drafts run one step at a time.",
+    ):
+        assert key in settings
+        assert catalog[key]["localizations"]["fr"]["stringUnit"]["value"]

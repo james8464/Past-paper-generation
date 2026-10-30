@@ -1,6 +1,10 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Drafting exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Rédaction de l’exercice %@"}}}},
+    "Solving and checking exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Résolution et vérification de l’exercice %@"}}}},
+    "Formatting and checking the document": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Mise en page et vérification du document"}}}},
+    "NSI draft created by the model. Read the warnings before use.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Brouillon NSI généré par le modèle. Consultez les avertissements avant utilisation."}}}},
     "DeepSeek (French NSI only)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"DeepSeek (NSI française uniquement)"}}}},
     "Exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Exercice %@"}}}},
     "Elapsed: %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Temps écoulé : %@"}}}},
@@ -146,8 +150,8 @@
     "Parallel MLX generation": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération MLX en parallèle"}}}
     },
-    "Run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time.": {
-      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Exécute jusqu’à deux tâches MLX avec un seul modèle. Cette option utilise plus de mémoire ; les modèles non compatibles traitent une tâche à la fois."}}}
+    "For supported UK papers, run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time. French NSI drafts run one step at a time.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Pour les sujets britanniques compatibles, exécute jusqu’à deux tâches MLX avec un seul modèle. Cette option utilise plus de mémoire ; les modèles non compatibles traitent une tâche à la fois. Les brouillons de NSI française sont générés une étape à la fois."}}}
     },
     "Configure parallel requests in Ollama": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Configurer les requêtes parallèles dans Ollama"}}}
@@ -161,8 +165,8 @@
     "Parallel Ollama generation": {
       "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génération Ollama en parallèle"}}}
     },
-    "Generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. Apple MLX and other providers keep their current scheduling.": {
-      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Génère et vérifie deux groupes de questions indépendants à la fois. Ollama doit autoriser deux requêtes en parallèle, ce qui utilise davantage de mémoire. Apple MLX et les autres moteurs conservent leur fonctionnement actuel."}}}
+    "For supported UK papers, generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. French NSI drafts run one step at a time.": {
+      "localizations": {"fr": {"stringUnit": {"state": "translated", "value": "Pour les sujets britanniques compatibles, génère et vérifie deux groupes de questions indépendants à la fois. Ollama doit autoriser deux requêtes en parallèle, ce qui utilise davantage de mémoire. Les brouillons de NSI française sont générés une étape à la fois."}}}
     },
     "": {},
     "%@": {

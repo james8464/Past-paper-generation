@@ -4,6 +4,40 @@ import XCTest
 
 final class CoordinatorTests: XCTestCase {
     @MainActor
+    func testFrenchModelDraftStatusesFollowInterfaceLanguageAndPreserveDiagnostics() {
+        let messages = [
+            ("Rédaction originale de l'exercice 1 par deepseek-v4-pro", "Drafting exercise 1", "Rédaction de l’exercice 1"),
+            ("Résolution et contrôle indépendants de l'exercice 2", "Solving and checking exercise 2", "Résolution et vérification de l’exercice 2"),
+            ("Mise en page et vérification du document", "Formatting and checking the document", "Mise en page et vérification du document"),
+        ]
+        for language in ["en", "fr"] {
+            let defaults = isolatedDefaults()
+            defaults.set(language, forKey: "interfaceLanguage")
+            let application = isolatedApplication(defaults: defaults)
+            for (raw, english, french) in messages {
+                application.apply(.progress(stage: "french_generation", message: raw, progress: 0.2))
+                XCTAssertEqual(application.status, language == "en" ? english : french)
+                XCTAssertEqual(application.progressEntries.last?.message, raw)
+            }
+            let raw = "Brouillon NSI généré par le modèle. Consultez les avertissements avant utilisation."
+            application.apply(.done(message: raw))
+            XCTAssertEqual(application.status, language == "en"
+                ? "NSI draft created by the model. Read the warnings before use."
+                : raw)
+            XCTAssertEqual(application.progressEntries.last?.message, raw)
+        }
+        for raw in [
+            "Rédaction originale de l'exercice 4 par model",
+            "Rédaction originale de l'exercice 1 par ",
+            "Résolution et contrôle indépendants de l'exercice 2: unknown diagnostic",
+            "Mise en page et vérification du document: unknown diagnostic",
+        ] {
+            XCTAssertEqual(GenerationPresentation.progress(raw, language: "en"), raw)
+        }
+        XCTAssertEqual(GenerationPresentation.completion("Unknown completion", language: "fr"), "Unknown completion")
+    }
+
+    @MainActor
     func testOccitanieBackendStatusesFollowInterfaceLanguageAndKeepRawDiagnostics() {
         let preparation = "Préparation de l'extrait public d'Occitanie"
         let cancellation = "Création de l'activité annulée"

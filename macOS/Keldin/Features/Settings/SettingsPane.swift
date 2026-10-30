@@ -267,7 +267,7 @@ private struct AISettingsTab: View {
                     get: { application.settingsStore.parallelLocalReviews },
                     set: { application.setParallelLocalReviews($0) }
                 ))
-                Text("Generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. Apple MLX and other providers keep their current scheduling.")
+                Text("For supported UK papers, generate and review two independent question groups at once. Requires Ollama configured for two parallel requests and uses more memory. French NSI drafts run one step at a time.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -357,7 +357,7 @@ private struct AISettingsTab: View {
                     get: { application.settingsStore.parallelMLXGeneration },
                     set: { application.setParallelMLXGeneration($0) }
                 ))
-                Text("Run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time.")
+                Text("For supported UK papers, run up to two MLX tasks together with one model. Uses more memory; unsupported models run one task at a time. French NSI drafts run one step at a time.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
