@@ -99,6 +99,157 @@ class Client:
         }
 
 
+class BlindNoteClient(Client):
+    def generate_request(self, request):
+        properties = request.schema["properties"]
+        if "question_review" in properties:
+            self.requests.append(request)
+            assert "Une convention mérite une précision." in request.prompt
+            return {
+                "question_review": {
+                    identifier: {
+                        **{
+                            name: True
+                            for name in (
+                                "correct",
+                                "answer_complete",
+                                "rubric_consistent",
+                                "curriculum_aligned",
+                                "french",
+                                "self_contained",
+                            )
+                        },
+                        "issues": [],
+                    }
+                    for identifier in properties["question_review"]["properties"]
+                },
+                "blind_issue_dispositions": {
+                    "0": {
+                        "issue_index": 0,
+                        "blocking": False,
+                        "rationale": "Les données publiques fixent cette convention.",
+                    }
+                },
+            }
+        result = super().generate_request(request)
+        if "answers" in properties:
+            result["issues"] = ["Une convention mérite une précision."]
+        return result
+
+
+def test_blind_notes_are_adjudicated_and_retained_as_revalidated_warnings(tmp_path):
+    client = BlindNoteClient()
+    package = generate(tmp_path, client)
+    assert len(client.requests) == 9
+    notes = [
+        w for w in package["warnings"] if w.get("code") == "blind_issue_nonblocking"
+    ]
+    assert len(notes) == 3
+    assert notes[0]["issue"] == "Une convention mérite une précision."
+    assert notes[0]["rationale"] == "Les données publiques fixent cette convention."
+    assert notes[0]["question_id"] == "exercise"
+    assert notes[0]["issue"] in notes[0]["reason"]
+    assert notes[0]["rationale"] in notes[0]["reason"]
+    assert len(subject.validate_package(package)) == 3
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        lambda d: d.clear(),
+        lambda d: d.update({"1": d.pop("0")}),
+        lambda d: d["0"].update(issue_index=True),
+        lambda d: d["0"].update(issue_index=1),
+        lambda d: d["0"].update(blocking="false"),
+        lambda d: d["0"].update(rationale="   "),
+        lambda d: d["0"].update(blocking=True),
+    ],
+)
+def test_invalid_or_blocking_blind_disposition_refuses(tmp_path, mutate):
+    class Invalid(BlindNoteClient):
+        def generate_request(self, request):
+            value = super().generate_request(request)
+            if "blind_issue_dispositions" in value:
+                mutate(value["blind_issue_dispositions"])
+            return value
+
+    client = Invalid()
+    with pytest.raises((ValueError, SchemaValidationError)):
+        generate(tmp_path, client)
+    assert len(client.requests) == 3
+
+
+@pytest.mark.parametrize(
+    "flag",
+    [
+        "correct",
+        "answer_complete",
+        "rubric_consistent",
+        "curriculum_aligned",
+        "french",
+        "self_contained",
+        "issues",
+    ],
+)
+def test_blind_adjudication_does_not_override_hard_question_failure(tmp_path, flag):
+    class Invalid(BlindNoteClient):
+        def generate_request(self, request):
+            value = super().generate_request(request)
+            if "question_review" in value:
+                value["question_review"]["1"][flag] = (
+                    ["Problème de fond."] if flag == "issues" else False
+                )
+            return value
+
+    with pytest.raises(ValueError, match="refuse"):
+        generate(tmp_path, Invalid())
+
+
+def test_dispositions_must_cover_every_note_not_just_first(tmp_path):
+    class TwoNotes(BlindNoteClient):
+        def generate_request(self, request):
+            value = super().generate_request(request)
+            if "answers" in value:
+                value["issues"].append("Une seconde réserve distincte.")
+            return value
+
+    client = TwoNotes()
+    with pytest.raises(SchemaValidationError):
+        generate(tmp_path, client)
+    assert len(client.requests) == 3
+
+
+def test_no_blind_notes_retain_legacy_review_schema_and_evidence(tmp_path):
+    client = Client()
+    package = generate(tmp_path, client)
+    assert client.requests[2].schema == subject._review_schema(
+        subject.validate_authored_exercise(raw_exercise(), "1")
+    )
+    assert all(
+        "blind_issue_dispositions" not in review for review in package["reviews"]
+    )
+
+
+@pytest.mark.parametrize("target", ["disposition", "warning", "note"])
+def test_blind_adjudication_package_tampering_refuses_with_new_content_hash(
+    tmp_path, target
+):
+    package = generate(tmp_path, BlindNoteClient())
+    if target == "disposition":
+        package["reviews"][0]["blind_issue_dispositions"]["0"]["blocking"] = True
+    elif target == "warning":
+        package["warnings"] = [
+            w for w in package["warnings"] if w.get("code") != "blind_issue_nonblocking"
+        ]
+    else:
+        package["reviews"][0]["blind_solution"]["issues"].append("Nouvelle réserve.")
+    package["identity"]["content_sha256"] = subject._digest(
+        {key: value for key, value in package.items() if key != "identity"}
+    )
+    with pytest.raises((ValueError, SchemaValidationError)):
+        subject.validate_package(package)
+
+
 def generate(tmp_path, client):
     path = tmp_path / "index.sqlite"
     make_index(path)
@@ -378,6 +529,7 @@ def test_actual_installed_mlx_grammar_compiles_authoring_and_review_shapes():
         subject.exercise_request("1", 42, []).schema,
         subject._solution_schema(exercise),
         subject._review_schema(exercise),
+        subject._adjudication_schema(exercise, ["Une réserve."]),
     ):
         grammar = llguidance.grammar_from(
             "json", json.dumps(_mlx_decoder_schema(schema))
