@@ -1053,6 +1053,85 @@ def _reference_union(rows: list[dict]) -> list[dict]:
     return result
 
 
+def _structural_feedback(error: Exception, schema: dict) -> str:
+    """Keep candidate values in private evidence, not repair instructions."""
+    if isinstance(error, CodeLayoutError):
+        return "Mise en page du code : rédiger des lignes plus courtes respectant les largeurs indiquées, sans modifier automatiquement le programme."
+    if isinstance(error, PythonCodeFormatError):
+        return "Présentation Python : fournir des programmes complets dans les blocs de code demandés, en conservant leur indentation."
+    if isinstance(error, ProviderOutputContractError):
+        return "Structure JSON : produire un seul objet JSON valide respectant tous les champs, types et contraintes du schéma."
+
+    fields = set()
+
+    def collect(value):
+        if isinstance(value, dict):
+            fields.update(value.get("properties", {}))
+            for child in value.values():
+                collect(child)
+        elif isinstance(value, list):
+            for child in value:
+                collect(child)
+
+    collect(schema)
+    categories = {
+        "required": "champ requis",
+        "missing": "champ requis",
+        "additionalProperties": "champ inattendu",
+        "extra_forbidden": "champ inattendu",
+        "type": "type",
+        "string_type": "type",
+        "list_type": "type",
+        "dict_type": "type",
+        "int_parsing": "type",
+        "enum": "valeur autorisée",
+        "literal_error": "valeur autorisée",
+        "const": "valeur attendue",
+        "pattern": "format",
+        "minLength": "longueur",
+        "maxLength": "longueur",
+        "string_too_short": "longueur",
+        "string_too_long": "longueur",
+        "minItems": "taille",
+        "maxItems": "taille",
+        "anyOf": "alternative",
+        "oneOf": "alternative",
+    }
+    if isinstance(error, SchemaValidationError):
+        locations = [(error.validator, error.absolute_path)]
+    elif isinstance(error, ModelValidationError):
+        locations = [
+            (item["type"], item["loc"])
+            for item in error.errors(
+                include_input=False, include_context=False, include_url=False
+            )[:3]
+        ]
+    else:
+        locations = []
+    hints = []
+    for kind, path in locations:
+        parts = ""
+        for segment in list(path)[:8]:
+            if type(segment) is int:
+                parts += f"[{segment}]" if 0 <= segment <= 999 else "[indice]"
+            else:
+                name = (
+                    segment
+                    if isinstance(segment, str) and segment in fields
+                    else "champ"
+                )
+                parts += ("." if parts else "") + name
+        category = (
+            categories.get(kind, "contrat") if isinstance(kind, str) else "contrat"
+        )
+        hints.append(f"{category} : {parts[:64] or 'exercice'}")
+    return (
+        "Structure à reprendre. "
+        + ("; ".join(hints) or "contrat de l'exercice")
+        + ". Respecter les contraintes du schéma et rédiger un nouvel exercice complet."
+    )[:320]
+
+
 def _author(client, request, exercise_id, *, large_print: bool = False):
     """Regenerate one malformed structure; never patch its answer or rubric."""
     rejected = []
@@ -1109,11 +1188,7 @@ def _author(client, request, exercise_id, *, large_print: bool = False):
                     },
                 ) from error
             rejected.append(refusal)
-            feedback = issue
-            if "kind" in refusal and refusal["schema_path"]:
-                feedback += " Chemin du schéma : " + "/".join(
-                    str(part) for part in refusal["schema_path"]
-                )
+            feedback = _structural_feedback(error, request.schema)
             request = GenerationRequest(
                 request.prompt
                 + "\nREGENERATION: Le brouillon ne respecte pas le contrat: "
