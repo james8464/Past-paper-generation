@@ -11,3 +11,17 @@ func requiredFoundationModelsAPIs(schema: GenerationSchema) async throws {
   _ = try await model.tokenCount(for: Instructions("probe"))
   _ = try await model.tokenCount(for: schema)
 }
+
+// Runtime availability cannot hide an unknown type from an older SDK compiler.
+// Cover the same unified error symbols used by the enabled helper as well.
+@available(macOS 27.0, *)
+func requiredFoundationModelsErrorAPIs(_ error: any Error) {
+  if let failure = error as? LanguageModelError {
+    switch failure {
+    case .contextSizeExceeded: break
+    case .unsupportedGenerationGuide: break
+    case .unsupportedLanguageOrLocale: break
+    default: break
+    }
+  }
+}

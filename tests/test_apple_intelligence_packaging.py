@@ -176,3 +176,14 @@ def test_intermediate_sdk_builds_stub_when_required_api_probe_fails(tmp_path):
         / "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Main.swift"
     ).read_text()
     assert "canImport(FoundationModels) && KELDIN_FOUNDATION_MODELS_CAPABLE" in main
+
+
+def test_sdk_probe_covers_the_unified_error_symbols_used_by_helper():
+    probe = (ROOT / "macOS/AppleIntelligenceHelper/CapabilityProbe.swift").read_text()
+    for symbol in (
+        "LanguageModelError",
+        ".contextSizeExceeded",
+        ".unsupportedGenerationGuide",
+        ".unsupportedLanguageOrLocale",
+    ):
+        assert symbol in probe
