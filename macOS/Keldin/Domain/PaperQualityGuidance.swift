@@ -1,10 +1,13 @@
 import Foundation
 
 enum ModelQualityAdvice: Equatable {
-    case answerChecksFailed, nsiProbeFailed, retiredModel, reviewIncomplete, unverified
+    case answerChecksFailed, systemCalculationFailed, nsiProbeFailed, retiredModel, reviewIncomplete, unverified
 
     static func forModel(provider: AIProvider, model: String) -> Self {
         let model = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        if provider == .appleIntelligence, model == "apple-system-on-device" {
+            return .systemCalculationFailed
+        }
         if provider == .apple, model == "mlx-community/llama-3.2-3b-instruct-4bit" {
             return .answerChecksFailed
         }
@@ -16,7 +19,7 @@ enum ModelQualityAdvice: Equatable {
 
     var title: LocalizedStringResource {
         switch self {
-        case .answerChecksFailed: "Known answer-check failure"
+        case .answerChecksFailed, .systemCalculationFailed: "Known answer-check failure"
         case .nsiProbeFailed: "Wrong answers in an NSI probe"
         case .retiredModel: "This model has been retired"
         case .reviewIncomplete: "Paper-quality review incomplete"
@@ -28,6 +31,8 @@ enum ModelQualityAdvice: Equatable {
         switch self {
         case .answerChecksFailed:
             "This Apple MLX model failed answer checks in an Accounting test. Memory fit does not establish paper quality."
+        case .systemCalculationFailed:
+            "This Apple on-device model failed an unaided accounting calculation test. Check generated answers and marks; some drafts may be refused."
         case .nsiProbeFailed:
             "A tested revision returned wrong answers in a small NSI reasoning probe with reasoning off. Full-paper quality remains unverified."
         case .retiredModel:
