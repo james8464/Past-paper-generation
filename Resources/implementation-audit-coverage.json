@@ -5717,6 +5717,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_malformed_python_retry.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_model_capability.py",
       "classification": "test",
       "status": "pending",
