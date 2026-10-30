@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793382025.9598844,
+    "mtime": 1793382684.904585,
     "ast_hash": "3b7c90681c5caf4ba6707a6f3b0ec5fc",
     "semantic_hash": ""
   },
@@ -2075,13 +2075,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1793319980.0273778,
-    "ast_hash": "959655ddd2c36aca6c623efc7c534485",
+    "mtime": 1793384141.9770162,
+    "ast_hash": "324251aec67078427235d3678b01fed4",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1793302937.992185,
-    "ast_hash": "7fff8df6c228dc17f0896467d113eb4a",
+    "mtime": 1793384141.977325,
+    "ast_hash": "9b7a83e1c87226b515bbd2731fb85fef",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793382025.8568714,
+    "mtime": 1793382684.816167,
     "ast_hash": "529ec80e5d0f00661ee677e4627813f9",
     "semantic_hash": ""
   },
@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793380754.272698,
-    "ast_hash": "981a5612c28a36dbcb17051d9c945d59",
+    "mtime": 1793384764.486897,
+    "ast_hash": "f02d8cd20b34071d91cf75e207c8c48a",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4940,8 +4940,8 @@
     "semantic_hash": ""
   },
   "docs/quality/deepseek-french-draft-validation-2026-10-30.md": {
-    "mtime": 1793367765.4509318,
-    "ast_hash": "b66d5b386eb1d62dfd94fbf69f01c4c7",
+    "mtime": 1793384764.4873693,
+    "ast_hash": "2921590dbf174b1c7aa80edc24e89e7f",
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchGenerationEstimateTests.swift": {
@@ -5170,13 +5170,18 @@
     "semantic_hash": ""
   },
   "docs/quality/apple-intelligence-provider-acceptance-2026-10-30.md": {
-    "mtime": 1793382427.8036191,
-    "ast_hash": "24539cdb1a8c910e9fea7d41d2150ffb",
+    "mtime": 1793384141.9777536,
+    "ast_hash": "c6c2e1b23c3443424a2020fb0999f81c",
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/README.md": {
     "mtime": 1793380754.3521934,
     "ast_hash": "476f67ec3e11e9d74138ddb7c4bdfc77",
+    "semantic_hash": ""
+  },
+  "tests/test_french_malformed_python_retry.py": {
+    "mtime": 1793384811.924962,
+    "ast_hash": "aa247a9d5b40ecd4e7e673481aa299e0",
     "semantic_hash": ""
   }
 }
