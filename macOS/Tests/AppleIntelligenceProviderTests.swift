@@ -64,8 +64,12 @@ final class AppleIntelligenceProviderTests: XCTestCase {
         defaults.set(AIProvider.appleIntelligence.rawValue, forKey: AppStorageKey.aiProvider)
         defaults.set("retained-mlx-model", forKey: AppStorageKey.appleModel)
         let counter = AvailabilityCounter()
+        let history = FileManager.default.temporaryDirectory.appendingPathComponent("AppleIntelligenceHistory-\(UUID().uuidString)")
+        addTeardownBlock {
+            if FileManager.default.fileExists(atPath: history.path) { try FileManager.default.removeItem(at: history) }
+        }
         let app = ApplicationCoordinator(defaults: defaults, secrets: EmptyAppleSecrets(),
-            backend: ControlledRunBackend(), appleIntelligenceChecker: { _ in
+            historyDirectory: history, backend: ControlledRunBackend(), appleIntelligenceChecker: { _ in
                 await counter.record()
                 return AppleIntelligenceAvailability(checked: true, available: true, contextSize: 8192, frenchSupported: true)
             })
