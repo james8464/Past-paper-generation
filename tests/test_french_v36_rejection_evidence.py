@@ -73,6 +73,36 @@ def test_malformed_review_is_not_recast_as_valid_review_evidence():
         subject._review(RejectingClient("malformed"), exercise, 42, [])
 
 
+@pytest.mark.parametrize(
+    ("flag", "label"),
+    [
+        ("correct", "réponse incorrecte"),
+        ("answer_complete", "corrigé incomplet"),
+        ("rubric_consistent", "barème incohérent"),
+        ("curriculum_aligned", "programme non respecté"),
+        ("french", "texte non français"),
+        ("self_contained", "données manquantes"),
+    ],
+)
+def test_public_rejection_categories_are_plain_french(flag, label):
+    exercise = subject.validate_authored_exercise(raw_exercise(), "1")
+    evidence = subject._review(Client(), exercise, 42, [])
+    evidence["question_review"]["1"][flag] = False
+    with pytest.raises(GenerationEvidenceError) as caught:
+        subject._validate_review(exercise, evidence)
+    assert label in str(caught.value)
+    assert f"({flag})" not in str(caught.value)
+    assert caught.value.details["question_reviews"][0]["failed_flags"] == [flag]
+
+
+def test_unknown_review_flags_fail_schema_before_message_formatting():
+    exercise = subject.validate_authored_exercise(raw_exercise(), "1")
+    evidence = subject._review(Client(), exercise, 42, [])
+    evidence["question_review"]["1"]["invented_flag"] = False
+    with pytest.raises(ValidationError):
+        subject._validate_review(exercise, evidence)
+
+
 def test_review_evidence_does_not_copy_successful_solutions_or_full_issue_text():
     exercise = subject.validate_authored_exercise(raw_exercise(), "1")
     client = Client()

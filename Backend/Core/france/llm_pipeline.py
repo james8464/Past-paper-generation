@@ -414,7 +414,16 @@ def _review_rejection(
         reason = "la résolution indépendante signale un problème"
     else:
         first = rejected[0]
-        categories = ", ".join(first["failed_flags"]) or "problème signalé"
+        labels = {
+            "correct": "réponse incorrecte",
+            "answer_complete": "corrigé incomplet",
+            "rubric_consistent": "barème incohérent",
+            "curriculum_aligned": "programme non respecté",
+            "french": "texte non français",
+            "self_contained": "données manquantes",
+        }
+        categories = ", ".join(labels[name] for name in first["failed_flags"])
+        categories = categories or "problème signalé"
         reason = f"question {first['question_id']} ({categories})"
     return GenerationEvidenceError(
         f"Le contrôle refuse le brouillon de l'exercice {exercise.id} : {reason}.",
