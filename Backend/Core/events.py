@@ -5,6 +5,7 @@ from __future__ import annotations
 import itertools
 import json
 import re
+import signal
 import subprocess
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -61,19 +62,54 @@ def emit_progress(
 
 
 def run_subprocess_json(command: list[str], *, stage: str) -> int:
+    """Stream a CLI child and release it before the native shutdown deadline."""
+    process: subprocess.Popen[str] | None = None
+    cancelled = False
+    cleaning_up = False
+
+    def cancel(signum: int, _frame: Any) -> None:
+        nonlocal cancelled
+        cancelled = True
+        # A signal arriving during Popen must not abandon an unregistered child.
+        if process is not None and not cleaning_up:
+            raise SystemExit(128 + signum)
+
+    previous_handler = signal.signal(signal.SIGTERM, cancel)
     try:
-        process = subprocess.Popen(
-            command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
-        )
-    except OSError as error:
-        emit("error", message=f"Could not start {' '.join(command)}: {error}")
-        return 127
-    assert process.stdout is not None
-    for line in process.stdout:
-        text = line.strip()
-        if text:
-            emit_progress(text, stage=stage)
-    return process.wait()
+        try:
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+            )
+        except OSError as error:
+            emit("error", message=f"Could not start the model setup process: {error}")
+            return 127
+        if cancelled:
+            raise SystemExit(128 + signal.SIGTERM)
+        assert process.stdout is not None
+        for line in process.stdout:
+            text = line.strip()
+            if text:
+                emit_progress(text, stage=stage)
+        return process.wait()
+    finally:
+        cleaning_up = True
+        try:
+            if process is not None:
+                try:
+                    if process.poll() is None:
+                        # Only this Popen belongs to setup. Never signal a group,
+                        # a discovered PID or the shared Ollama service.
+                        process.terminate()
+                        try:
+                            process.wait(timeout=0.35)
+                        except subprocess.TimeoutExpired:
+                            process.kill()
+                            process.wait(timeout=0.35)
+                finally:
+                    if process.stdout is not None:
+                        process.stdout.close()
+        finally:
+            signal.signal(signal.SIGTERM, previous_handler)
 
 
 def progress_emitter() -> Callable[[str | GenerationUpdate], None]:
@@ -92,8 +128,8 @@ def progress_emitter() -> Callable[[str | GenerationUpdate], None]:
     def callback(message: str | GenerationUpdate) -> None:
         nonlocal last_progress
         if isinstance(message, GenerationUpdate):
-            progress = 0.08 + message.progress * 0.70
-            last_progress = max(last_progress, progress)
+            item_progress = 0.08 + message.progress * 0.70
+            last_progress = max(last_progress, item_progress)
             emit(
                 "progress",
                 stage=message.stage,

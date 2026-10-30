@@ -13,7 +13,7 @@ from contextlib import contextmanager, suppress
 from copy import deepcopy
 from pathlib import Path
 from threading import RLock
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -215,7 +215,9 @@ class AssessmentCheckpointStore:
 
     def load_payload(self, key: str) -> dict[str, Any] | None:
         with self._transaction():
-            raw = self._read_document()["items"].get(key)
+            # _read_document validates this mapping before returning it.
+            items = cast(dict[str, Any], self._read_document()["items"])
+            raw = items.get(key)
             if raw is None:
                 return None
             if not isinstance(raw, dict):
@@ -278,7 +280,7 @@ class AssessmentCheckpointStore:
             }
         try:
             document = json.loads(self.path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as error:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
             raise CheckpointCorrupt(f"checkpoint is unreadable: {self.path}") from error
         if not isinstance(document, dict) or document.get("schema_version") != 1:
             raise CheckpointCorrupt("checkpoint has an unsupported schema version")
