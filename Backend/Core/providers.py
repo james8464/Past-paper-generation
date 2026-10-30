@@ -96,7 +96,7 @@ class HostedLLMClient:
     ) -> dict[str, object]:
         if not 1 <= retries <= 3:
             raise ValueError("Structured-output attempts must be between 1 and 3.")
-        if self.provider == "deepseek" or (
+        if self.provider in {"deepseek", "apple_intelligence"} or (
             request is not None and request.operation == "french_nsi_authoring"
         ):
             # The French pipeline owns its one recorded structural regeneration.
@@ -105,6 +105,8 @@ class HostedLLMClient:
         last_error: ValueError | None = None
         for attempt in range(retries):
             try:
+                if self.provider == "apple_intelligence":
+                    return self._apple_intelligence(current_prompt, request=request)
                 if self.provider == "deepseek":
                     if request is None:
                         raise ValueError(
@@ -192,6 +194,45 @@ class HostedLLMClient:
         raise ValueError(
             "Provider could not return valid structured output."
         ) from last_error
+
+    def _apple_intelligence(self, prompt: str, *, request=None) -> dict:
+        from Backend.Core import apple_intelligence
+
+        if self.model != apple_intelligence.MODEL:
+            raise ValueError(
+                "Apple Intelligence uses the system model apple-system-on-device, not a downloaded model."
+            )
+        schema = request.schema if request is not None else _ollama_json_schema(prompt)
+        operation = request.operation if request is not None else "authoring"
+        requested = (
+            request.output_budget
+            if request is not None
+            else _ollama_output_budget(schema)
+        )
+        cap = (
+            4096
+            if operation
+            in {"authoring", "french_nsi_authoring", "edexcel", "aqa_cs", "open_credit"}
+            else 2048
+        )
+        budget = min(requested, cap)
+        candidate, usage = apple_intelligence.generate(
+            prompt,
+            schema,
+            budget=budget,
+            temperature=request.temperature if request is not None else 0.2,
+            locale="fr_FR" if operation == "french_nsi_authoring" else "en_GB",
+            schema_mode=apple_intelligence.solver_schema_mode(operation, schema),
+        )
+        usage["requested_output_budget"] = requested
+        self.usage_records.append(usage)
+        emit(
+            "progress",
+            stage="provider_usage",
+            message="Apple Intelligence response received; checking the original output contract.",
+            usage=usage,
+        )
+        return candidate
 
     def _ollama(
         self,
@@ -1129,6 +1170,7 @@ def _ollama_json_schema(
         contract.operation if contract is not None else _legacy_schema_operation(prompt)
     )
     short_text = {"type": "string", "maxLength": 240}
+    reasoning_step = {"type": "string", "maxLength": 512}
     text_list = {
         "type": "array",
         "items": short_text,
@@ -1160,7 +1202,7 @@ def _ollama_json_schema(
             return {
                 "type": "object",
                 "properties": {
-                    "steps": {"type": "array", "items": short_text, "maxItems": 16},
+                    "steps": {"type": "array", "items": reasoning_step, "maxItems": 16},
                     "answer": answers,
                     "mark_points": answers,
                     "evidence_ids": text_list,
@@ -1181,7 +1223,7 @@ def _ollama_json_schema(
             }
     if operation == "solver":
         properties = {
-            "steps": {"type": "array", "items": short_text, "maxItems": 16},
+            "steps": {"type": "array", "items": reasoning_step, "maxItems": 16},
             "answer": {"type": "string", "minLength": 1, "maxLength": 2400},
             "mark_points": {"type": "array", "items": short_text, "maxItems": 16},
             "evidence_ids": text_list,

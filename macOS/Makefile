@@ -53,6 +53,7 @@ BUILD_PRODUCTS := $(DERIVED)/Build/Products/$(CONFIGURATION)
 APP_PATH := $(BUILD_PRODUCTS)/$(APP_SCHEME).app
 APP_STORE_APP_PATH := $(DERIVED)/Build/Products/Release/$(APP_SCHEME).app
 APP_STORE_HELPER_PATH := $(APP_STORE_APP_PATH)/Contents/Resources/KeldinBackend/KeldinBackend
+APP_STORE_APPLE_HELPER_PATH := $(APP_STORE_APP_PATH)/Contents/Helpers/KeldinAppleIntelligence
 
 PHONY_TARGETS := $(TARGET_PREFIX)help $(TARGET_PREFIX)diagnose $(TARGET_PREFIX)build \
 	$(TARGET_PREFIX)test $(TARGET_PREFIX)run $(TARGET_PREFIX)build-and-run \
@@ -144,6 +145,10 @@ $(TARGET_PREFIX)preflight-app-store:
 	@codesign -d --entitlements :- "$(APP_STORE_HELPER_PATH)" 2>/dev/null | plutil -extract 'com\.apple\.security\.app-sandbox' raw -o - - | grep -qx true
 	@codesign -d --entitlements :- "$(APP_STORE_HELPER_PATH)" 2>/dev/null | plutil -extract 'com\.apple\.security\.inherit' raw -o - - | grep -qx true
 	@codesign -dvvv "$(APP_STORE_HELPER_PATH)" 2>&1 | grep -q 'runtime'
+	@codesign --verify --strict --verbose=2 "$(APP_STORE_APPLE_HELPER_PATH)"
+	@codesign -d --entitlements :- "$(APP_STORE_APPLE_HELPER_PATH)" 2>/dev/null | plutil -extract 'com\.apple\.security\.app-sandbox' raw -o - - | grep -qx true
+	@codesign -d --entitlements :- "$(APP_STORE_APPLE_HELPER_PATH)" 2>/dev/null | plutil -extract 'com\.apple\.security\.inherit' raw -o - - | grep -qx true
+	@codesign -dvvv "$(APP_STORE_APPLE_HELPER_PATH)" 2>&1 | grep -q 'runtime'
 	@! find "$(APP_STORE_APP_PATH)" -iname '*Reference Corpus*' -print -quit | grep -q .
 
 $(TARGET_PREFIX)backend-env:

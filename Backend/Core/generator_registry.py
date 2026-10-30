@@ -13,7 +13,9 @@ from Backend.Core.paths import REPO_ROOT
 from Backend.Core.subject_plugins import discover_subject_plugin
 
 REGISTRY_PATH = REPO_ROOT / "Resources" / "generator-registry.json"
-KNOWN_PROVIDERS = frozenset({"ollama", "openai", "anthropic", "apple"})
+KNOWN_PROVIDERS = frozenset(
+    {"ollama", "openai", "anthropic", "apple", "apple_intelligence"}
+)
 KNOWN_CONTENT_MODES = frozenset({"deterministic", "ai-assisted"})
 KNOWN_QUALIFICATION_STATES = frozenset(
     {"not_run", "passed", "failed", "not_applicable"}

@@ -432,6 +432,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case anthropic
     case deepSeek
     case apple
+    case appleIntelligence
 
     var id: String { rawValue }
 
@@ -441,7 +442,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .openAI: "OpenAI"
         case .anthropic: "Anthropic"
         case .deepSeek: "DeepSeek"
-        case .apple: "Apple MLX"
+        case .apple: "Local models (MLX)"
+        case .appleIntelligence: "Apple Intelligence"
         }
     }
 
@@ -452,6 +454,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .anthropic: "Uses an API key"
         case .deepSeek: "French NSI only, uses an API key"
         case .apple: "Runs locally on Apple Silicon"
+        case .appleIntelligence: "Uses Apple's on-device system model"
         }
     }
 
@@ -477,6 +480,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .anthropic: "text.bubble"
         case .deepSeek: "network"
         case .apple: "applelogo"
+        case .appleIntelligence: "sparkles"
         }
     }
 
@@ -487,6 +491,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .anthropic: "anthropic"
         case .deepSeek: "deepseek"
         case .apple: "apple"
+        case .appleIntelligence: "apple_intelligence"
         }
     }
 
@@ -497,6 +502,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case "anthropic": self = .anthropic
         case "deepseek": self = .deepSeek
         case "apple": self = .apple
+        case "apple_intelligence": self = .appleIntelligence
         default: return nil
         }
     }

@@ -10,6 +10,7 @@ import tempfile
 from hashlib import sha256
 from pathlib import Path
 
+from Backend.Core.apple_intelligence import FRENCH_FULL_PAPER_ERROR
 from Backend.Core.events import emit, emit_progress
 from Backend.Core.france import llm_pipeline
 from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
@@ -76,7 +77,15 @@ def handle_generate_llm_assessment(args) -> int:
 
     try:
         definition = assessment_framework(args.assessment)
-        if args.provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}:
+        if args.provider == "apple_intelligence":
+            raise ValueError(FRENCH_FULL_PAPER_ERROR)
+        if args.provider not in {
+            "ollama",
+            "apple",
+            "openai",
+            "anthropic",
+            "deepseek",
+        }:
             raise ValueError("Un fournisseur de modèle est requis")
         if getattr(args, "repeat_practice", False) or getattr(
             args, "exclude_family", []

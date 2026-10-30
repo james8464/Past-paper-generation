@@ -3,196 +3,226 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 110;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		935DC030DA0CA72167FC5BB8 /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 1BE04BB6BFC2C8FC34DD62F2 /* catalog.json */; };
-		C991DB481431281ED4BB385C /* ollama-model-recommendations.json in Resources */ = {isa = PBXBuildFile; fileRef = A579B079D643F94CDBA4DBD2 /* ollama-model-recommendations.json */; };
-		FA7A0A9B6D66EEE14ED9654B /* generator-registry.json in Resources */ = {isa = PBXBuildFile; fileRef = 943F82CF5C5AFC76781C7FFC /* generator-registry.json */; };
+		43408407422C64D63868AE36 /* generator-registry.json in Resources */ = {isa = PBXBuildFile; fileRef = EC7EAA0B4ED135DE83819DE4 /* generator-registry.json */; };
+		54C0387ECCB18243A5628A0C /* catalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 3946F9B3126C4C4A0732FADE /* catalog.json */; };
+		711EFBFCCF67E07BE2FDAEF7 /* ollama-model-recommendations.json in Resources */ = {isa = PBXBuildFile; fileRef = 9720A69542AE39244A2A0123 /* ollama-model-recommendations.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5BFAA6ECABF1EA5D42891A15 /* PBXContainerItemProxy */ = {
+		7CA7C5572D848E88D6FD4492 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 70077B90026ABDB260BE960D /* Project object */;
+			containerPortal = 8A8D273B381D957DBBC2BF09 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = F83C267BD749B4DE60F9E7E5;
+			remoteGlobalIDString = 1B86E9AFA30A6F73AAC3FC81;
 			remoteInfo = Keldin;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1BE04BB6BFC2C8FC34DD62F2 /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
-		49AA15F163D73C4DDB8D9B7B /* Keldin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Keldin.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		943F82CF5C5AFC76781C7FFC /* generator-registry.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "generator-registry.json"; sourceTree = "<group>"; };
-		A579B079D643F94CDBA4DBD2 /* ollama-model-recommendations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ollama-model-recommendations.json"; sourceTree = "<group>"; };
-		FBE3DF670F156B7CFB63330A /* KeldinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeldinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		01EEE85A329ACC7FEF6F786B /* KeldinTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KeldinTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		3946F9B3126C4C4A0732FADE /* catalog.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = catalog.json; sourceTree = "<group>"; };
+		918B2910DF36CA04D3809095 /* Keldin.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Keldin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9720A69542AE39244A2A0123 /* ollama-model-recommendations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ollama-model-recommendations.json"; sourceTree = "<group>"; };
+		EC7EAA0B4ED135DE83819DE4 /* generator-registry.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "generator-registry.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		012379F16A7FA1D220AD61BE /* Exceptions for "Keldin" folder in "Keldin" target */ = {
+		467908D3C6729BE6401BD80E /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Keldin.entitlements,
+				KeldinBackend.entitlements,
+				KeldinDirect.entitlements,
 			);
-			target = F83C267BD749B4DE60F9E7E5 /* Keldin */;
+			target = 1B86E9AFA30A6F73AAC3FC81 /* Keldin */;
 		};
-		7E93D3B8B72790A53880DE0C /* Exceptions for "Tests" folder in "KeldinTests" target */ = {
+		CC5EAC71AEC7AFB0CF4847F6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = AA51BBF7103FDC0264F29039 /* KeldinTests */;
+			target = 17C9245FC3DEAEBDD18C473D /* KeldinTests */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		09D71200BDC591CFAD261152 /* Keldin */ = {
+		86C4EBD5E73E4A3A19C1964A /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				012379F16A7FA1D220AD61BE /* Exceptions for "Keldin" folder in "Keldin" target */,
+				CC5EAC71AEC7AFB0CF4847F6 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
-			path = Keldin;
-			sourceTree = "<group>";
-		};
-		178798ACBEF73A9554415E41 /* Tests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				7E93D3B8B72790A53880DE0C /* Exceptions for "Tests" folder in "KeldinTests" target */,
+			explicitFileTypes = {
+			};
+			explicitFolders = (
 			);
 			path = Tests;
+			sourceTree = "<group>";
+		};
+		CD247602C4C0D35128B3D75C /* Keldin */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				467908D3C6729BE6401BD80E /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = Keldin;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXGroup section */
-		5A104F05B07AA5C7DFB73882 /* Resources */ = {
+		2C7940A932D44416421DE6A6 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1BE04BB6BFC2C8FC34DD62F2 /* catalog.json */,
-				943F82CF5C5AFC76781C7FFC /* generator-registry.json */,
-				A579B079D643F94CDBA4DBD2 /* ollama-model-recommendations.json */,
+				918B2910DF36CA04D3809095 /* Keldin.app */,
+				01EEE85A329ACC7FEF6F786B /* KeldinTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		783F097450EBB78D92E93EC0 = {
+			isa = PBXGroup;
+			children = (
+				CD247602C4C0D35128B3D75C /* Keldin */,
+				C51B831535C43D485CF9DAC3 /* Resources */,
+				86C4EBD5E73E4A3A19C1964A /* Tests */,
+				2C7940A932D44416421DE6A6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C51B831535C43D485CF9DAC3 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3946F9B3126C4C4A0732FADE /* catalog.json */,
+				EC7EAA0B4ED135DE83819DE4 /* generator-registry.json */,
+				9720A69542AE39244A2A0123 /* ollama-model-recommendations.json */,
 			);
 			name = Resources;
 			path = ../Resources;
 			sourceTree = "<group>";
 		};
-		D7376D9BD672AB9C081AA3EE = {
-			isa = PBXGroup;
-			children = (
-				09D71200BDC591CFAD261152 /* Keldin */,
-				5A104F05B07AA5C7DFB73882 /* Resources */,
-				178798ACBEF73A9554415E41 /* Tests */,
-				EB87B0DB9ADE068E754390FF /* Products */,
-			);
-			sourceTree = "<group>";
-			usesTabs = 1;
-		};
-		EB87B0DB9ADE068E754390FF /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				49AA15F163D73C4DDB8D9B7B /* Keldin.app */,
-				FBE3DF670F156B7CFB63330A /* KeldinTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		AA51BBF7103FDC0264F29039 /* KeldinTests */ = {
+		17C9245FC3DEAEBDD18C473D /* KeldinTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 852358679ED3D4987E6D57FF /* Build configuration list for PBXNativeTarget "KeldinTests" */;
+			buildConfigurationList = F391B57263F9F110F75C6AFB /* Build configuration list for PBXNativeTarget "KeldinTests" */;
 			buildPhases = (
-				2A89D26C4551409457D90475 /* Sources */,
-				8B00F10A49A3773FABA4D95F /* Resources */,
+				0645F2AF3A5033AA9052F393 /* Sources */,
+				042E0385E425CE0C00BE69A4 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				A80143C4770E08D04968BF0B /* PBXTargetDependency */,
+				CA7F7E2A68E4423449D5F2BC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				178798ACBEF73A9554415E41 /* Tests */,
+				86C4EBD5E73E4A3A19C1964A /* Tests */,
 			);
 			name = KeldinTests;
+			packageProductDependencies = (
+			);
 			productName = KeldinTests;
-			productReference = FBE3DF670F156B7CFB63330A /* KeldinTests.xctest */;
+			productReference = 01EEE85A329ACC7FEF6F786B /* KeldinTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F83C267BD749B4DE60F9E7E5 /* Keldin */ = {
+		1B86E9AFA30A6F73AAC3FC81 /* Keldin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DA060FFFE6306031BB79E410 /* Build configuration list for PBXNativeTarget "Keldin" */;
+			buildConfigurationList = 2F03CDF78798641ADD9A252C /* Build configuration list for PBXNativeTarget "Keldin" */;
 			buildPhases = (
-				BB891F61274F5025F093A5F3 /* Bundle standalone backend */,
-				B772DB4F085E23E9B42BBABE /* Sources */,
-				3FA0E03FC64459FAB4666292 /* Resources */,
+				17F90745C4A4849B57B554FD /* Bundle standalone backend */,
+				3F0FC1D34E645B41A6CF2A73 /* Sources */,
+				91776C7089217AF373A1B84D /* Resources */,
 			);
 			buildRules = (
 			);
+			dependencies = (
+			);
 			fileSystemSynchronizedGroups = (
-				09D71200BDC591CFAD261152 /* Keldin */,
+				CD247602C4C0D35128B3D75C /* Keldin */,
 			);
 			name = Keldin;
+			packageProductDependencies = (
+			);
 			productName = Keldin;
-			productReference = 49AA15F163D73C4DDB8D9B7B /* Keldin.app */;
+			productReference = 918B2910DF36CA04D3809095 /* Keldin.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		70077B90026ABDB260BE960D /* Project object */ = {
+		8A8D273B381D957DBBC2BF09 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 2641;
 				TargetAttributes = {
-					F83C267BD749B4DE60F9E7E5 = {
+					17C9245FC3DEAEBDD18C473D = {
+						DevelopmentTeam = Z29CKRV8C9;
+						ProvisioningStyle = Automatic;
+					};
+					1B86E9AFA30A6F73AAC3FC81 = {
+						DevelopmentTeam = Z29CKRV8C9;
 						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = BD70643DB4AC9BEBC60DB6D5 /* Build configuration list for PBXProject "Keldin" */;
+			buildConfigurationList = 45D1EF695DFC699FF63C62C0 /* Build configuration list for PBXProject "Keldin" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				Base,
 				en,
 			);
-			mainGroup = D7376D9BD672AB9C081AA3EE;
+			mainGroup = 783F097450EBB78D92E93EC0;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 110;
-			productRefGroup = EB87B0DB9ADE068E754390FF /* Products */;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 2C7940A932D44416421DE6A6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F83C267BD749B4DE60F9E7E5 /* Keldin */,
-				AA51BBF7103FDC0264F29039 /* KeldinTests */,
+				1B86E9AFA30A6F73AAC3FC81 /* Keldin */,
+				17C9245FC3DEAEBDD18C473D /* KeldinTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		3FA0E03FC64459FAB4666292 /* Resources */ = {
+		042E0385E425CE0C00BE69A4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
-				935DC030DA0CA72167FC5BB8 /* catalog.json in Resources */,
-				FA7A0A9B6D66EEE14ED9654B /* generator-registry.json in Resources */,
-				C991DB481431281ED4BB385C /* ollama-model-recommendations.json in Resources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B00F10A49A3773FABA4D95F /* Resources */ = {
+		91776C7089217AF373A1B84D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
+				54C0387ECCB18243A5628A0C /* catalog.json in Resources */,
+				43408407422C64D63868AE36 /* generator-registry.json in Resources */,
+				711EFBFCCF67E07BE2FDAEF7 /* ollama-model-recommendations.json in Resources */,
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		BB891F61274F5025F093A5F3 /* Bundle standalone backend */ = {
+		17F90745C4A4849B57B554FD /* Bundle standalone backend */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
 			inputPaths = (
 				"$(SRCROOT)/../bridge.py",
 				"$(SRCROOT)/../Backend/Core/cli.py",
@@ -200,8 +230,16 @@
 				"$(SRCROOT)/../Backend/Core/providers.py",
 				"$(SRCROOT)/../Backend/Core/model_recommendations.py",
 				"$(SRCROOT)/../Backend/Core/mlx_setup.py",
+				"$(SRCROOT)/scripts/build_apple_intelligence.sh",
+				"$(SRCROOT)/AppleIntelligenceHelper/Package.swift",
+				"$(SRCROOT)/AppleIntelligenceHelper/CapabilityProbe.swift",
+				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Main.swift",
+				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Protocol.swift",
+				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift",
 				"$(SRCROOT)/../requirements-build.txt",
 				"$(SRCROOT)/../Resources/ollama-model-recommendations.json",
+				"$(SRCROOT)/../Resources/reference-demand-profiles.json",
+				"$(SRCROOT)/../Resources/reference-demand-profile.schema.json",
 				"$(SRCROOT)/../Resources/economics/edexcel-a/generator/pyproject.toml",
 				"$(SRCROOT)/../Resources/economics/aqa/generator/pyproject.toml",
 				"$(SRCROOT)/../Resources/economics/ocr/generator/pyproject.toml",
@@ -211,40 +249,142 @@
 				"$(SRCROOT)/../Resources/accounting/aqa/generator/pyproject.toml",
 			);
 			name = "Bundle standalone backend";
+			outputFileListPaths = (
+			);
 			outputPaths = (
 				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/KeldinBackend/.built",
+				"$(TARGET_BUILD_DIR)/$(CONTENTS_FOLDER_PATH)/Helpers/KeldinAppleIntelligence",
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = (
-				"\"$SRCROOT/scripts/build_backend.sh\"",
-				"",
-			);
+			shellScript = "\"$SRCROOT/scripts/build_backend.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		2A89D26C4551409457D90475 /* Sources */ = {
+		0645F2AF3A5033AA9052F393 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
-		B772DB4F085E23E9B42BBABE /* Sources */ = {
+		3F0FC1D34E645B41A6CF2A73 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
 			files = (
 			);
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		A80143C4770E08D04968BF0B /* PBXTargetDependency */ = {
+		CA7F7E2A68E4423449D5F2BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F83C267BD749B4DE60F9E7E5 /* Keldin */;
-			targetProxy = 5BFAA6ECABF1EA5D42891A15 /* PBXContainerItemProxy */;
+			target = 1B86E9AFA30A6F73AAC3FC81 /* Keldin */;
+			targetProxy = 7CA7C5572D848E88D6FD4492 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		06FA098EBC70219D6DE69554 /* Debug configuration for PBXProject "Keldin" */ = {
+		4C08CEDD0DAC2CEA37012AC9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = arm64;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8E3E2EA2B3F9E2AEDE79EC29 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Z29CKRV8C9;
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin.Tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Keldin.app/Contents/MacOS/Keldin";
+			};
+			name = Release;
+		};
+		96B5E36F8D0C7535281E9C05 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = Z29CKRV8C9;
+				INFOPLIST_FILE = Tests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin.Tests;
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Keldin.app/Contents/MacOS/Keldin";
+			};
+			name = Debug;
+		};
+		9D856F3858A30AB1BAAB43EF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -310,7 +450,7 @@
 			};
 			name = Debug;
 		};
-		3129FBD99CF72F99E372C5E8 /* Release configuration for PBXNativeTarget "Keldin" */ = {
+		EC776232CC3143C74B8FCB48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APP_SANDBOX_ENABLED = NO;
@@ -332,8 +472,6 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Keldin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Keldin;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -349,28 +487,9 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
-			name = Release;
+			name = Debug;
 		};
-		3D1EE8820509A6E494B5EC1D /* Release configuration for PBXNativeTarget "KeldinTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Z29CKRV8C9;
-				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin.Tests;
-				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Keldin.app/Contents/MacOS/Keldin";
-			};
-			name = Release;
-		};
-		6259793B588D843EDA81884C /* Debug configuration for PBXNativeTarget "Keldin" */ = {
+		EF9FF5A37AAC98A43FAD45D8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APP_SANDBOX_ENABLED = NO;
@@ -392,8 +511,6 @@
 				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Keldin/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Keldin;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -409,114 +526,39 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 			};
-			name = Debug;
-		};
-		C4760E36B2827453CECBBFC3 /* Release configuration for PBXProject "Keldin" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = arm64;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-			};
 			name = Release;
-		};
-		E0D92D50FE699BBA3495666D /* Debug configuration for PBXNativeTarget "KeldinTests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = Z29CKRV8C9;
-				INFOPLIST_FILE = Tests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.jamesdurup.Keldin.Tests;
-				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Keldin.app/Contents/MacOS/Keldin";
-			};
-			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		852358679ED3D4987E6D57FF /* Build configuration list for PBXNativeTarget "KeldinTests" */ = {
+		2F03CDF78798641ADD9A252C /* Build configuration list for PBXNativeTarget "Keldin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				E0D92D50FE699BBA3495666D /* Debug configuration for PBXNativeTarget "KeldinTests" */,
-				3D1EE8820509A6E494B5EC1D /* Release configuration for PBXNativeTarget "KeldinTests" */,
+				EC776232CC3143C74B8FCB48 /* Debug */,
+				EF9FF5A37AAC98A43FAD45D8 /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		BD70643DB4AC9BEBC60DB6D5 /* Build configuration list for PBXProject "Keldin" */ = {
+		45D1EF695DFC699FF63C62C0 /* Build configuration list for PBXProject "Keldin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				06FA098EBC70219D6DE69554 /* Debug configuration for PBXProject "Keldin" */,
-				C4760E36B2827453CECBBFC3 /* Release configuration for PBXProject "Keldin" */,
+				9D856F3858A30AB1BAAB43EF /* Debug */,
+				4C08CEDD0DAC2CEA37012AC9 /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		DA060FFFE6306031BB79E410 /* Build configuration list for PBXNativeTarget "Keldin" */ = {
+		F391B57263F9F110F75C6AFB /* Build configuration list for PBXNativeTarget "KeldinTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6259793B588D843EDA81884C /* Debug configuration for PBXNativeTarget "Keldin" */,
-				3129FBD99CF72F99E372C5E8 /* Release configuration for PBXNativeTarget "Keldin" */,
+				96B5E36F8D0C7535281E9C05 /* Debug */,
+				8E3E2EA2B3F9E2AEDE79EC29 /* Release */,
 			);
+			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 70077B90026ABDB260BE960D /* Project object */;
+	rootObject = 8A8D273B381D957DBBC2BF09 /* Project object */;
 }

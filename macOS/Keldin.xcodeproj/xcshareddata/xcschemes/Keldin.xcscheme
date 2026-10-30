@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "F83C267BD749B4DE60F9E7E5"
+               BlueprintIdentifier = "1B86E9AFA30A6F73AAC3FC81"
                BuildableName = "Keldin.app"
                BlueprintName = "Keldin"
                ReferencedContainer = "container:Keldin.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F83C267BD749B4DE60F9E7E5"
+            BlueprintIdentifier = "1B86E9AFA30A6F73AAC3FC81"
             BuildableName = "Keldin.app"
             BlueprintName = "Keldin"
             ReferencedContainer = "container:Keldin.xcodeproj">
@@ -44,7 +44,7 @@
             parallelizable = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AA51BBF7103FDC0264F29039"
+               BlueprintIdentifier = "17C9245FC3DEAEBDD18C473D"
                BuildableName = "KeldinTests.xctest"
                BlueprintName = "KeldinTests"
                ReferencedContainer = "container:Keldin.xcodeproj">
@@ -68,7 +68,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F83C267BD749B4DE60F9E7E5"
+            BlueprintIdentifier = "1B86E9AFA30A6F73AAC3FC81"
             BuildableName = "Keldin.app"
             BlueprintName = "Keldin"
             ReferencedContainer = "container:Keldin.xcodeproj">
@@ -87,7 +87,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "F83C267BD749B4DE60F9E7E5"
+            BlueprintIdentifier = "1B86E9AFA30A6F73AAC3FC81"
             BuildableName = "Keldin.app"
             BlueprintName = "Keldin"
             ReferencedContainer = "container:Keldin.xcodeproj">

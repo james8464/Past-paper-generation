@@ -164,6 +164,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/apple_intelligence.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/assessment_checkpoints.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -2837,6 +2843,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/apple-intelligence-provider-acceptance-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/aqa-accounting-component-scope-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3974,6 +3986,54 @@
       "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
+      "path": "macOS/AppleIntelligenceHelper/.gitignore",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/CapabilityProbe.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/Package.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/README.md",
+      "classification": "documentation",
+      "status": "excluded",
+      "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Main.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Protocol.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/AppleIntelligenceHelper/Tests/KeldinAppleIntelligenceTests/ProtocolTests.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Branding/icon-design.json",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",
@@ -4006,11 +4066,8 @@
     {
       "path": "macOS/Keldin.xcodeproj/xcshareddata/xcschemes/Keldin.xcscheme",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "f8484b40ca716ee2382d90cdfda2f2efb3c82a1da1ac0eb60e7b59fe4294559b",
-      "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
-      "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/AppIcon.icon/Assets/01-RearLeft.svg",
@@ -4478,6 +4535,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Keldin/Services/AppleIntelligenceAvailability.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin/Services/BackendClient.swift",
       "classification": "maintained-source",
       "status": "pending",
@@ -4593,6 +4656,12 @@
     },
     {
       "path": "macOS/Tests/AppTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/AppleIntelligenceProviderTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4775,6 +4844,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/scripts/build_apple_intelligence.sh",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/scripts/build_backend.sh",
       "classification": "maintained-source",
       "status": "pending",
@@ -4950,6 +5025,18 @@
     },
     {
       "path": "tests/test_app_branding.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_apple_intelligence_packaging.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_apple_intelligence_provider.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6399,6 +6486,12 @@
     },
     {
       "path": "tests/test_solver_choice_validity.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_solver_reasoning_budget.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

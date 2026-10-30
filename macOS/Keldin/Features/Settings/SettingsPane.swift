@@ -177,10 +177,10 @@ private struct AISettingsTab: View {
                     set: { application.selectAIProvider($0, presentation: presentation) }
                 )) {
                     ForEach(AIProvider.allCases) { provider in
-                        Text(provider.title).tag(provider)
+                        Text(InterfaceText.localizedResource(LocalizedStringResource(stringLiteral: provider.title), locale: locale)).tag(provider)
                     }
                 }
-                .pickerStyle(.segmented)
+                .pickerStyle(.menu)
                 .tint(Color("ControlAccent"))
 
                 Text(InterfaceText.localizedResource(application.aiProvider.subtitleResource, locale: locale))
@@ -348,7 +348,7 @@ private struct AISettingsTab: View {
             }
 
         case .apple:
-            Section("Apple MLX") {
+            Section("Local models (MLX)") {
                 if application.distributionMode == .appStore {
                     TextField("Hugging Face model ID", text: $application.appleModel)
                 } else {
@@ -375,8 +375,49 @@ private struct AISettingsTab: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+        case .appleIntelligence:
+            Section("Apple Intelligence") {
+                Text("Uses Apple's on-device system model. No external model download or API key is needed.")
+                Button("Check availability") { application.refreshAppleIntelligenceAvailability() }
+                    .disabled(application.isRefreshingAppleIntelligence)
+                if application.isRefreshingAppleIntelligence { ProgressView().controlSize(.small) }
+                else if application.appleIntelligenceAvailability.checked {
+                    Label {
+                        Text(InterfaceText.localizedResource(application.appleIntelligenceAvailability.available ? "Available on this Mac" : "Unavailable on this Mac", locale: locale))
+                    } icon: {
+                        Image(systemName: application.appleIntelligenceAvailability.available ? "checkmark.circle" : "exclamationmark.triangle")
+                    }.foregroundStyle(.primary)
+                }
+                Text("Requires a compatible Mac, enabled Apple Intelligence and macOS 26.4 or later.")
+                    .foregroundStyle(.secondary)
+                Text("Complete French NSI papers require another provider.")
+                    .foregroundStyle(.secondary)
+                Text("Availability depends on this Mac and System Settings. Paper quality has not been verified. Requests that exceed the system model's context stop without omitting content or switching providers.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                Label {
+                    Text(InterfaceText.localizedResource(AppleCloudPlaceholder.title, locale: locale))
+                } icon: {
+                    Image(systemName: "cloud").accessibilityHidden(true)
+                }
+                .foregroundStyle(.secondary)
+                Text(InterfaceText.localizedResource(AppleCloudPlaceholder.detail, locale: locale))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .task {
+                if !application.appleIntelligenceAvailability.checked { application.refreshAppleIntelligenceAvailability() }
+            }
         }
     }
+}
+
+enum AppleCloudPlaceholder {
+    static let title: LocalizedStringResource = "Apple cloud models (planned)"
+    // Eligibility: https://developer.apple.com/private-cloud-compute/
+    static let detail: LocalizedStringResource = "Not available in Keldin. Access requires Apple Developer Program membership, App Store Small Business Program enrolment, fewer than 2 million first-time app downloads and Apple's Private Cloud Compute entitlement."
 }
 
 private struct OutputSettingsTab: View {

@@ -1,19 +1,19 @@
 {
   "counts": {
-    "build-release-configuration": 27,
+    "build-release-configuration": 36,
     "design-resource": 1,
     "development-configuration": 10,
-    "documentation": 201,
+    "documentation": 202,
     "durable-derived-configuration": 1,
     "durable-derived-metadata": 14,
     "runtime-resource": 172,
-    "runtime-source": 286,
-    "test": 321,
+    "runtime-source": 288,
+    "test": 325,
     "test-configuration": 2,
     "tooling": 34
   },
   "forbidden": [],
   "schema_version": 1,
-  "tracked_files": 1069,
+  "tracked_files": 1085,
   "unclassified": []
 }

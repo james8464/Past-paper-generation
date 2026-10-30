@@ -82,7 +82,7 @@ def build_parser() -> argparse.ArgumentParser:
     generate.add_argument("--model", default=DEFAULT_MODEL)
     generate.add_argument(
         "--provider",
-        choices=["ollama", "openai", "anthropic", "apple"],
+        choices=["ollama", "openai", "anthropic", "apple", "apple_intelligence"],
         default="ollama",
     )
     generate.add_argument("--api-key", default=environment_value("KELDIN_API_KEY", ""))
@@ -104,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
         choices=[
             "ollama",
             "apple",
+            "apple_intelligence",
             "openai",
             "anthropic",
             "deepseek",
