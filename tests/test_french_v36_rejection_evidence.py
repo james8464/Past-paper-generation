@@ -27,7 +27,7 @@ class RejectingClient(Client):
             return {
                 "question_review": {
                     identifier: {
-                        name: [] if name == "issues" else True
+                        name: [] if name in {"issues", "advisories"} else True
                         for name in item["properties"]
                     }
                     for identifier, item in properties["question_review"][

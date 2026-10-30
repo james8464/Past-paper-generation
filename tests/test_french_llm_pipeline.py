@@ -94,6 +94,11 @@ class Client:
                 "french": True,
                 "self_contained": True,
                 "issues": [],
+                **(
+                    {"advisories": []}
+                    if "advisories" in properties[identifier]["properties"]
+                    else {}
+                ),
             }
             for identifier in properties
         }
@@ -125,6 +130,14 @@ class BlindNoteClient(Client):
                             )
                         },
                         "issues": [],
+                        **(
+                            {"advisories": []}
+                            if "advisories"
+                            in properties["question_review"]["properties"][identifier][
+                                "properties"
+                            ]
+                            else {}
+                        ),
                     }
                     for identifier in properties["question_review"]["properties"]
                 },
@@ -287,11 +300,13 @@ def test_complete_adjudication_cannot_hide_bad_coverage(tmp_path, target):
         generate(tmp_path, Invalid())
 
 
-def test_no_blind_notes_retain_legacy_review_schema_and_evidence(tmp_path):
+def test_no_blind_notes_use_prospective_question_schema_without_disposition_envelope(
+    tmp_path,
+):
     client = Client()
     package = generate(tmp_path, client)
     assert client.requests[2].schema == subject._review_schema(
-        subject.validate_authored_exercise(raw_exercise(), "1")
+        subject.validate_authored_exercise(raw_exercise(), "1"), include_advisories=True
     )
     assert all(
         "blind_issue_dispositions" not in review for review in package["reviews"]
