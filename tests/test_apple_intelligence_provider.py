@@ -420,3 +420,49 @@ def test_cli_accepts_system_provider_for_french_route():
         ]
     )
     assert args.provider == service.PROVIDER
+
+
+def test_old_os_unavailable_error_does_not_require_success_capability_fields(
+    monkeypatch,
+):
+    class Process:
+        returncode = 0
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def communicate(self, data, timeout):
+            payload = json.loads(data)
+            unavailable = {
+                "protocol_version": 1,
+                "request_id": payload["request_id"],
+                "provider": service.PROVIDER,
+                "model": service.MODEL,
+                "os_version": "25.0",
+                "status": "error",
+                "error": {"code": "unavailable", "message": "fixed"},
+            }
+            return json.dumps(unavailable).encode(), b""
+
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(
+        service, "helper_path", lambda: Path("/signed/KeldinAppleIntelligence")
+    )
+    monkeypatch.setattr(service.subprocess, "Popen", Process)
+    with pytest.raises(GenerationEvidenceError, match="unavailable") as error:
+        service.roundtrip({"request_id": "owned"})
+    assert error.value.details["code"] == "unavailable"
+
+
+def test_oversized_prepared_prompt_refuses_before_launch(transport):
+    with pytest.raises(GenerationEvidenceError, match="context capacity"):
+        service.generate(
+            "a" * 131073,
+            {"type": "object"},
+            budget=512,
+            temperature=0.2,
+            locale="en_GB",
+        )
+    assert not transport
