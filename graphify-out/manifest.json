@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793390723.3062775,
-    "ast_hash": "65eca7467d2ace2ea9bb6c7e556df875",
+    "mtime": 1793403860.2145834,
+    "ast_hash": "c41001d1022a2b18f1150b34029630f3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793390723.2268744,
-    "ast_hash": "bf069cf60f651b1284c34315f5a55f52",
+    "mtime": 1793403860.1373224,
+    "ast_hash": "0098844a6629fe4cdc2bf078dad799fb",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793388656.5400174,
-    "ast_hash": "880fb14adf2f82b9d2825b75d129f46e",
+    "mtime": 1793403839.8644454,
+    "ast_hash": "07e2133333ae07105210d269ed0018d0",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4805,8 +4805,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_pipeline.py": {
-    "mtime": 1793376926.0922694,
-    "ast_hash": "2203f709f42712221c895c5bdae9bfaa",
+    "mtime": 1793403839.8990076,
+    "ast_hash": "0261fb676bcd70f905beb62764e25af1",
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
@@ -4865,8 +4865,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_v36_profile_warnings.py": {
-    "mtime": 1793375682.9049304,
-    "ast_hash": "2dd159fede71d3a3dc69f777d7e24c73",
+    "mtime": 1793403839.907273,
+    "ast_hash": "6b366d18ee5b21f77a9b37da79cd2163",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/HostedModelCandidate.swift": {
@@ -4995,8 +4995,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_question_advisories.py": {
-    "mtime": 1793367737.4948685,
-    "ast_hash": "3648952098cc7437c5872709c73475be",
+    "mtime": 1793403839.9052606,
+    "ast_hash": "859c957533c94ca26cb292a2fccfb7f6",
     "semantic_hash": ""
   },
   "docs/quality/french-question-advisory-review-2026-10-30.md": {
@@ -5010,8 +5010,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_code_layout.py": {
-    "mtime": 1793369545.295576,
-    "ast_hash": "92afd36e47122cf90cb1de61a8993149",
+    "mtime": 1793403839.8928585,
+    "ast_hash": "a44062b71676cf871f0d648598ec861f",
     "semantic_hash": ""
   },
   "docs/quality/french-v36-print-layout-admission-2026-10-30.md": {
@@ -5242,6 +5242,21 @@
   "docs/quality/french-recovery-storage-review-2026-10-30.md": {
     "mtime": 1793403496.8129432,
     "ast_hash": "185485e4f36d401eb9580b02a6849356",
+    "semantic_hash": ""
+  },
+  "tests/test_french_reviewed_redraft.py": {
+    "mtime": 1793403839.9058955,
+    "ast_hash": "a1afa22829bf70e0354471dede25f853",
+    "semantic_hash": ""
+  },
+  "tests/test_french_semantic_refusal.py": {
+    "mtime": 1793403839.9061415,
+    "ast_hash": "042d8cf760d78191deb95d82b26b5d86",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-30-french-reviewed-redraft.md": {
+    "mtime": 1793403839.8648753,
+    "ast_hash": "2585545d9a8fcc778f3ded06cdfad7d2",
     "semantic_hash": ""
   }
 }

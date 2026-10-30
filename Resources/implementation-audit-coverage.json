@@ -3848,6 +3848,12 @@
       "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
     },
     {
+      "path": "docs/superpowers/plans/2026-10-30-french-reviewed-redraft.md",
+      "classification": "documentation",
+      "status": "excluded",
+      "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
+    },
+    {
       "path": "docs/superpowers/specs/2026-08-23-contract-first-paper-generation-design.md",
       "classification": "documentation",
       "status": "excluded",
@@ -5987,6 +5993,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_reviewed_redraft.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_round_robin_case.py",
       "classification": "test",
       "status": "pending",
@@ -6006,6 +6018,12 @@
     },
     {
       "path": "tests/test_french_runtime.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_semantic_refusal.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

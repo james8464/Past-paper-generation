@@ -140,8 +140,15 @@ def test_live_review_requires_channel_but_legacy_saved_review_shape_still_revali
     for review in package["reviews"]:
         for item in review["question_review"].values():
             item.pop("advisories")
+    for raw, review in zip(package["exercises"], package["reviews"], strict=True):
+        subject._validate_review(
+            subject.validate_authored_exercise(raw, raw["id"]), review
+        )
     resign(package)
-    assert len(subject.validate_package(package)) == 3
+    # Legacy review objects remain readable, but cannot replace captured current
+    # responses inside a source-bound recovery package.
+    with pytest.raises(ValueError):
+        subject.validate_package(package)
     assert (
         "advisories"
         not in subject._review_schema(exercise)["properties"]["1"]["properties"]
@@ -223,8 +230,13 @@ def test_legacy_saved_blind_dispositions_without_advisory_fields_still_revalidat
     for review in package["reviews"]:
         for item in review["question_review"].values():
             item.pop("advisories")
+    for raw, review in zip(package["exercises"], package["reviews"], strict=True):
+        subject._validate_review(
+            subject.validate_authored_exercise(raw, raw["id"]), review
+        )
     resign(package)
-    assert subject.validate_package(package)
+    with pytest.raises(ValueError):
+        subject.validate_package(package)
 
 
 def test_installed_mlx_compiles_prospective_review_with_and_without_blind_notes():

@@ -430,9 +430,12 @@ def test_invalid_or_blocking_blind_disposition_refuses(tmp_path, mutate):
             return value
 
     client = Invalid()
-    with pytest.raises((ValueError, SchemaValidationError)):
+    with pytest.raises((ValueError, SchemaValidationError)) as caught:
         generate(tmp_path, client)
-    assert len(client.requests) == 3
+    semantic = isinstance(caught.value, subject.SemanticReviewRefusal)
+    assert len(client.requests) == (6 if semantic else 3)
+    if semantic:
+        assert client.requests[3].generation_seed != client.requests[0].generation_seed
 
 
 @pytest.mark.parametrize(
@@ -821,7 +824,7 @@ def test_negative_model_review_fails_instead_of_selecting_a_fixed_family(tmp_pat
     client = Negative()
     with pytest.raises(ValueError, match="refuse"):
         generate(tmp_path, client)
-    assert len(client.requests) == 3
+    assert len(client.requests) == 6
 
 
 def test_restore_revalidates_reviews_even_if_content_hash_is_recomputed(tmp_path):
