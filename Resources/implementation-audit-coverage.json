@@ -813,9 +813,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "29f81375b79c230791059059436fd4f80c9e0bcb2bd6d7deee540073f8a1638d",
-      "review_evidence": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
-      "review_evidence_sha256": "b7a3ff04f6a4a638cef56a16de250d8632a243968adb58aecc5b36d92fdd2755"
+      "source_sha256": "333121cdefe6752b7a8d64e5a0166c9dfa796139f675d18ab884497aa3085d67",
+      "review_evidence": "docs/quality/french-question-advisory-review-2026-10-30.md",
+      "review_evidence_sha256": "83755c1febf2695fa1afb4f9b15dd0fbb26d252b069343edf39c0d904736e6ea"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -3180,6 +3180,12 @@
     },
     {
       "path": "docs/quality/french-ollama-context-capacity-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-question-advisory-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5682,6 +5688,12 @@
     },
     {
       "path": "tests/test_french_provider.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_question_advisories.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

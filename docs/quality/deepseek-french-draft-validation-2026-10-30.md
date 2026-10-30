@@ -25,6 +25,7 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Pro 16k, connected brief | First authoring response completed; display-only Python filter rejected `nonlocal` | Overbroad display restriction reproduced; no PDF published |
 | Pro 16k, separated display boundary | First exercise passed authoring, blind solving and review; second authoring response exhausted 16,384 tokens | No complete paper or PDF; authoring ceiling raised separately from review budgets |
 | Pro 32k, audited admission | First exercise passed all three stages; second authoring response completed but used a full function in a bounded `python_trace` contract | Unsupported proof contract refused; no PDF published, and no automatic mathematical-error verdict |
+| Pro 32k, capability descriptions | Three first-exercise calls completed in 333.69 seconds; question-review issues contained explicitly nonblocking terminology and grammar notes | Strict issue rejection refused publication. Independent review separately found a justification/rubric gap, so this was not a correct paper refused only for style |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
@@ -39,6 +40,8 @@ The previous flow refused every blind note before the third review could assess 
 - Missing, extra, malformed or blocking decisions refuse publication.
 - Incorrect answers, incomplete corrections, inconsistent rubrics, missing data and other negative question checks still refuse publication.
 - Accepted advisory notes remain visible warnings with the original concern and rationale. Package revalidation recomputes those warnings.
+
+New question reviews also have a distinct bounded `advisories` channel for optional style suggestions. These produce question-specific warnings. Every entry in `issues` and every negative review flag still blocks, even if its prose calls it minor. Legacy saved reviews without advisories retain their original schema; partial advisory additions refuse. The Pro9 response is not retroactively converted or accepted.
 
 Empty-note review schemas and saved evidence retain their previous shape. This is still model review, not independent proof. A second call to the same model can rationalise an error; manual subject review remains necessary.
 
@@ -67,6 +70,10 @@ The connected-brief attempt included `nonlocal` in a printed correction. The dis
 Executable `python_trace` verification uses a separate bounded interpreter. Its allowed statements and refusal of scope declarations/functions are unchanged. Targeted tests cover both boundaries. Revalidating the retained response after this fix admits its structure without executing its code; that replay is not a fresh generation or semantic qualification.
 
 The 32k attempt exposed a separate authoring-documentation gap: the schema did not describe the interpreter's supported subset. Its descriptions now state the exact Python, SQLite and shortest-path verification capabilities and limits. Unsupported tasks must explicitly request human verification. Failed executable contracts still refuse; the app never silently relabels them. This change has not yet qualified a fresh live paper.
+
+Independent review of that attempt also found a substantive error in the second exercise. Its proposed algorithm re-enqueues a vertex whenever its distance improves, without a finalized set. The explanation incorrectly claims that a previously removed vertex cannot be reconsidered and that FIFO scheduling must change the result. For the supplied FIFO example, later relaxation corrects the distance to 2. The unsupported contract had already stopped publication; repairing its documentation does not repair these generated claims.
+
+In the later capability-description run, an independent question-only derivation found the route D-B-E-G with cost 7 and checked the adjacency list, code and debugging answer. The proposed justification compared selected alternatives but did not establish a global minimum. Its rubric awarded the justification credit for that insufficient comparison. This remains a real quality concern even though the numerical shortest-path contract passed. Original model responses and the independent derivation are retained separately; no answer or rubric was patched.
 
 ## Native interface evidence
 
