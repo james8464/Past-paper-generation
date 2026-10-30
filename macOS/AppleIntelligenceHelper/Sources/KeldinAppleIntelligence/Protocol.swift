@@ -90,6 +90,7 @@ struct HelperRequest: Sendable {
   let outputTokens: Int
   let temperature: Double
   let schemaMode: String
+  let promptIncludesSchema: Bool
 
   static func parse(_ data: Data) throws -> HelperRequest {
     guard data.count <= 262_144,
@@ -107,12 +108,13 @@ struct HelperRequest: Sendable {
       return HelperRequest(
         requestID: requestID, operation: operation, locale: locale,
         prompt: "", instructions: "", schema: nil, outputTokens: 0, temperature: 0,
-        schemaMode: "structured_text")
+        schemaMode: "structured_text", promptIncludesSchema: false)
     }
     guard
       Set(value.keys).isSubset(
         of: base.union([
           "prompt", "instructions", "schema", "schema_mode", "max_output_tokens", "temperature",
+          "prompt_includes_schema",
         ])),
       let prompt = value["prompt"]?.string,
       !prompt.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
@@ -126,23 +128,35 @@ struct HelperRequest: Sendable {
     }
     let instructions = value["instructions"]?.string ?? ""
     let schemaMode = value["schema_mode"]?.string ?? "structured_text"
+    let binding = value["prompt_includes_schema"] ?? .bool(false)
     guard instructions.utf8.count <= 32_768, ["guided", "structured_text"].contains(schemaMode),
-      value["schema_mode"] == nil || value["schema_mode"]?.string != nil
+      value["schema_mode"] == nil || value["schema_mode"]?.string != nil,
+      binding == .bool(false) || binding == .bool(true),
+      binding == .bool(false) || schemaMode == "structured_text"
     else { throw HelperFailure.invalidRequest }
     return HelperRequest(
       requestID: requestID, operation: operation, locale: locale,
       prompt: prompt, instructions: instructions, schema: schema,
-      outputTokens: output, temperature: temperature, schemaMode: schemaMode)
+      outputTokens: output, temperature: temperature, schemaMode: schemaMode,
+      promptIncludesSchema: binding == .bool(true))
   }
 
   func completePrompt() throws -> String {
     guard schemaMode == "structured_text", let schema else { return prompt }
+    if promptIncludesSchema {
+      guard let marker = prompt.range(of: "\nOUTPUT_SCHEMA=", options: .backwards),
+        let supplied = try? JSONValue.decode(Data(prompt[marker.upperBound...].utf8)),
+        supplied == schema
+      else { throw HelperFailure.invalidRequest }
+      return prompt
+    }
     let encoder = JSONEncoder()
     encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
     let encoded = try encoder.encode(schema)
     let contract = String(decoding: encoded, as: UTF8.self)
-    return prompt + "\n\nOUTPUT_SCHEMA\n" + contract
+    return prompt
       + "\n\nReturn exactly one JSON object matching OUTPUT_SCHEMA. Do not add an outer Markdown fence, comments or trailing commas. Code fences and formatting requested inside JSON string values are allowed. Preserve the requested language."
+      + "\nOUTPUT_SCHEMA=" + contract
   }
 }
 

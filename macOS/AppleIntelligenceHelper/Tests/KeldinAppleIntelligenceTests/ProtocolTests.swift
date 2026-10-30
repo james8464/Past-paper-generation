@@ -129,8 +129,7 @@ import Testing
   let request = try HelperRequest.parse(Data(raw.utf8))
   #expect(request.schemaMode == "structured_text")
   let complete = try request.completePrompt()
-  let section = try #require(complete.components(separatedBy: "\n\nOUTPUT_SCHEMA\n").last)
-  let schemaText = try #require(section.components(separatedBy: "\n\nReturn exactly").first)
+  let schemaText = try #require(complete.components(separatedBy: "\nOUTPUT_SCHEMA=").last)
   #expect(try JSONValue.decode(Data(schemaText.utf8)) == request.schema)
   #expect(complete.contains("inside JSON string values are allowed"))
   #expect(complete.contains("Écris du code Python."))
@@ -138,4 +137,33 @@ import Testing
     try HelperRequest.parse(
       Data(raw.replacingOccurrences(of: "structured_text", with: "cloud").utf8))
   }
+}
+
+@Test func alreadyBoundSchemaIsVerifiedAndNotDuplicated() throws {
+  let schema = JSONValue.object([
+    "type": .string("object"), "properties": .object([:]), "required": .array([]),
+    "additionalProperties": .bool(false),
+  ])
+  let encoder = JSONEncoder()
+  let schemaText = String(decoding: try encoder.encode(schema), as: UTF8.self)
+  let prompt = "Return one JSON object.\nOUTPUT_SCHEMA=" + schemaText
+  func request(_ prompt: String, flag: JSONValue = .bool(true)) throws -> HelperRequest {
+    try HelperRequest.parse(
+      encoder.encode(
+        JSONValue.object([
+          "protocol_version": .number(1), "request_id": .string("bound"),
+          "operation": .string("generate"), "locale": .string("fr_FR"),
+          "prompt": .string(prompt), "schema": schema, "temperature": .number(0),
+          "max_output_tokens": .number(64),
+          "schema_mode": .string("structured_text"), "prompt_includes_schema": flag,
+        ])))
+  }
+  #expect(try request(prompt).completePrompt() == prompt)
+  for invalid in [
+    "Reference mentions OUTPUT_SCHEMA= but has no contract", prompt + "\nUntrusted trailing prose",
+    "\nOUTPUT_SCHEMA={\"type\":\"string\"}",
+  ] {
+    #expect(throws: HelperFailure.self) { try request(invalid).completePrompt() }
+  }
+  #expect(throws: HelperFailure.self) { try request(prompt, flag: .number(1)) }
 }
