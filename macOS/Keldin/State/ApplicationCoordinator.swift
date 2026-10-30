@@ -27,9 +27,18 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var isRefreshingOllama = false
-    @Published var ollamaState = OllamaState()
-    @Published var availableModels: [String] = []
-    @Published var hasLoadedOllamaModels = false
+    var ollamaState: OllamaState {
+        get { modelCoordinator.ollamaState }
+        set { modelCoordinator.receiveOllamaState(newValue) }
+    }
+    var availableModels: [String] {
+        get { modelCoordinator.availableModels }
+        set { modelCoordinator.setAvailableModels(newValue) }
+    }
+    var hasLoadedOllamaModels: Bool {
+        get { modelCoordinator.hasLoadedModels }
+        set { modelCoordinator.setHasLoadedModels(newValue) }
+    }
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
@@ -228,9 +237,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var ollamaModelOptions: [String] {
-        var seen: Set<String> = []
-        return ([selectedModel, ollamaRecommendation.model] + availableModels)
-            .filter { !$0.isEmpty && seen.insert($0).inserted }
+        modelCoordinator.modelOptions(selectedModel: selectedModel)
     }
 
     var outputFolderDisplayPath: String {
@@ -286,7 +293,6 @@ final class ApplicationCoordinator: ObservableObject {
         aiProvider = settings.provider
         selectedModel = ollamaModel
         modelCoordinator.provider = settings.provider
-        modelCoordinator.selectedModel = ollamaModel
         modelToPull = ollamaModel
         openAIModel = settings.openAIModel
         anthropicModel = settings.anthropicModel
@@ -318,6 +324,7 @@ final class ApplicationCoordinator: ObservableObject {
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
+        modelCoordinator.onDiscoveryChange = { [weak self] in self?.objectWillChange.send() }
     }
 
     func refreshOllama(presentation: SettingsActionPresentation? = nil) {
@@ -1477,9 +1484,7 @@ final class ApplicationCoordinator: ObservableObject {
             setError(message, code: code, presentation: activeRun?.errorPresentation ?? errorPresentation)
             notifyFailure(for: activeOperation, message: GenerationPresentation.error(message, code: code, language: presentationLanguage))
         case let .models(models, message):
-            availableModels = models
             modelCoordinator.receiveModels(models)
-            hasLoadedOllamaModels = true
             if let message {
                 status = message
             }
@@ -1489,7 +1494,6 @@ final class ApplicationCoordinator: ObservableObject {
             activeRun?.mlxDownloadInfo = info
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
-            modelCoordinator.receiveOllamaState(ollamaState)
             status = message ?? status
         case .benchmarkMetric, .benchmarkSample, .benchmarkDone:
             break
