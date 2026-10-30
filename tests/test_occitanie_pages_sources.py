@@ -62,11 +62,32 @@ def test_rtf_unicode_and_control_characters_are_escaped():
     assert sources.rtf_text("😀") == r"\u-10179?\u-8704?"
 
 
-def test_bold_lead_in_has_an_explicit_visible_separator():
+def test_supporting_report_uses_headings_and_paragraphs_not_bullet_lead_ins():
     content = sources.body_section(
         "Regional source", "A separate activity", formal=False
     )
-    assert r"Regional source.\b0\~ A separate activity" in content
+    assert r"\b Regional source\par" in content
+    assert r"\b0 A separate activity\par" in content
+    assert r"\u8226?" not in content
+    assert content.count(r"\li3800") == 2
+
+
+def test_current_reports_distinguish_model_generation_from_historical_catalogue():
+    for report in sources.REPORTS:
+        text = " ".join(text for page in report.pages for _, text in page.sections)
+        assert "V36" in text
+        assert "V35" in text
+        assert "Public V35 constructs" not in text
+        assert "model-free French route" not in text
+    technical = " ".join(
+        text for page in sources.TECHNICAL.pages for _, text in page.sections
+    )
+    assert "No complete V36 model-generated French paper has yet passed" in technical
+    assert "selected model writes" in technical
+    assert (
+        "Teacher review and learner timing studies have not been conducted" in technical
+    )
+    assert sources.DIAGRAMS["paper-structure.svg"][0] == "French V36"
 
 
 def test_existing_personal_documents_are_not_overwritten(tmp_path):
