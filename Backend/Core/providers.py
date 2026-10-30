@@ -611,7 +611,12 @@ class HostedLLMClient:
                 "model": self.model,
                 "input": request.prompt,
                 "stream": False,
-                "reasoning": {"effort": "high"},
+                # Reasoning and final JSON share the bounded output allowance.
+                "reasoning": {
+                    "effort": "low"
+                    if request.operation == "french_nsi_authoring"
+                    else "high"
+                },
                 "max_output_tokens": budget,
                 "text": {
                     "format": {

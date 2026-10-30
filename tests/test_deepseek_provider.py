@@ -79,7 +79,7 @@ def test_typed_vendor_payload_is_fixed_schema_bound_and_budgeted(monkeypatch):
         "model": "deepseek-flash",
         "input": typed_request().prompt,
         "stream": False,
-        "reasoning": {"effort": "high"},
+        "reasoning": {"effort": "low"},
         "max_output_tokens": 8192,
         "text": {
             "format": {
@@ -286,6 +286,26 @@ def test_usage_is_recorded_without_reasoning_text_or_headers(monkeypatch, capsys
     assert event["usage"]["reasoning_tokens"] == 150
     assert event["usage"]["cached_tokens"] == 20
     assert "not the answer" not in json.dumps(event) and KEY not in json.dumps(event)
+
+
+@pytest.mark.parametrize("budget", [8192, 6000, 4096])
+def test_french_low_effort_preserves_each_tasks_shared_output_allowance(
+    monkeypatch, budget
+):
+    calls = mock_transport(monkeypatch, response())
+    request = GenerationRequest(
+        "Return JSON.", "french_nsi_authoring", SCHEMA, output_budget=budget
+    )
+    assert client().generate_request(request) == {"answer": 42}
+    assert calls[0][1]["reasoning"] == {"effort": "low"}
+    assert calls[0][1]["max_output_tokens"] == budget
+
+
+def test_other_typed_deepseek_tasks_keep_the_existing_effort_policy(monkeypatch):
+    calls = mock_transport(monkeypatch, response())
+    request = GenerationRequest("Return JSON.", "solver", SCHEMA, output_budget=8192)
+    assert client().generate_request(request) == {"answer": 42}
+    assert calls[0][1]["reasoning"] == {"effort": "high"}
 
 
 def test_pro_is_an_explicit_supported_model_not_a_silent_fallback(monkeypatch):
