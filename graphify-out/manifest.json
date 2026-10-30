@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/family_adapter.py": {
-    "mtime": 1793225633.052119,
-    "ast_hash": "eda39afca22071544889904eddd2fb03",
+    "mtime": 1793353481.6314173,
+    "ast_hash": "1ca9753a3edb2d2080224947d0146f6d",
     "semantic_hash": ""
   },
   "Backend/Core/fonts/__init__.py": {
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793316270.2437148,
-    "ast_hash": "0c89a93c212ced79d758c0eadb21cd3c",
+    "mtime": 1793353481.6240745,
+    "ast_hash": "181959d4640c98adb0f1fa92f1d3306e",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3610,8 +3610,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ModelCoordinator.swift": {
-    "mtime": 1793206372.2523415,
-    "ast_hash": "8f3f6d30fcdc60ad175eb882c227da35",
+    "mtime": 1793353481.6243987,
+    "ast_hash": "448fe9d55c960a0870fec560fc6d17e3",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/RecentDocumentStore.swift": {
@@ -3885,8 +3885,8 @@
     "semantic_hash": ""
   },
   "docs/superpowers/plans/2026-10-28-implementation-quality-audit.md": {
-    "mtime": 1793274057.5192163,
-    "ast_hash": "e8cde9b791a2b262f225aebe118093c6",
+    "mtime": 1793353573.8828776,
+    "ast_hash": "f590a75fa246ac1836c46da0dea85b86",
     "semantic_hash": ""
   },
   "macOS/Tests/HistoryStorageTests.swift": {
@@ -4907,6 +4907,26 @@
   "docs/quality/french-nsi-v36-gemma-reasoning-run-2026-10-30.md": {
     "mtime": 1793352578.2748296,
     "ast_hash": "cfe3e9567623bda32aefc66f6d59915b",
+    "semantic_hash": ""
+  },
+  "Backend/Core/family_contracts.py": {
+    "mtime": 1793353481.63152,
+    "ast_hash": "57b665169b1b62e801fb9b5e39f966ff",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/ModelDiscoveryOwnershipTests.swift": {
+    "mtime": 1793353481.624515,
+    "ast_hash": "afb084ac3652d6c171d32d149c1e7df3",
+    "semantic_hash": ""
+  },
+  "tests/test_family_adapter_typing.py": {
+    "mtime": 1793353481.6317465,
+    "ast_hash": "6ecdfb6f1884df514663993ab9fb2070",
+    "semantic_hash": ""
+  },
+  "docs/quality/family-adapter-type-boundary-2026-10-30.md": {
+    "mtime": 1793353481.6316392,
+    "ast_hash": "6c31ed509702479f8aa579574f60e239",
     "semantic_hash": ""
   }
 }

@@ -398,6 +398,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/family_contracts.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/fonts/README.md",
       "classification": "documentation",
       "status": "excluded",
@@ -2900,6 +2906,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/family-adapter-type-boundary-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/final-native-presentation-notification-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4435,11 +4447,8 @@
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "05c5978a2f6fdb87606d27e7575656eabeb82f669308167720990c40aad5abce",
-      "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
-      "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/State/ModelDownloadPresentation.swift",
@@ -4590,6 +4599,12 @@
     },
     {
       "path": "macOS/Tests/MigrationTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/ModelDiscoveryOwnershipTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5100,6 +5115,12 @@
     },
     {
       "path": "tests/test_exam_pages.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_family_adapter_typing.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6466,11 +6487,8 @@
     {
       "path": "tools/typecheck.ini",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "66b08cc8de591929e54a4da500f875fafecdd859ce0475d32eeb74bab9b223fb",
-      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
-      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tools/validate_generator_migration.py",
