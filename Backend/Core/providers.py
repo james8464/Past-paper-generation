@@ -222,6 +222,7 @@ class HostedLLMClient:
             budget=budget,
             temperature=request.temperature if request is not None else 0.2,
             locale="fr_FR" if operation == "french_nsi_authoring" else "en_GB",
+            schema_mode=apple_intelligence.solver_schema_mode(operation, schema),
         )
         usage["requested_output_budget"] = requested
         self.usage_records.append(usage)

@@ -528,3 +528,103 @@ def test_full_french_pipeline_and_registry_do_not_claim_system_model_support(
     )
     with pytest.raises(ValueError, match="another provider"):
         llm_pipeline.generate(index_path=Path("unused.sqlite"), client=client, seed=42)
+
+
+def test_compatible_solver_selects_guidance_before_inference_with_full_schema(
+    monkeypatch,
+):
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["answer"],
+        "properties": {"answer": {"type": "string", "maxLength": 3}},
+    }
+    seen = []
+
+    def guided(payload):
+        seen.append(payload)
+        return {
+            **reply(payload),
+            "generation_mode": "guided_with_postvalidation",
+            "output": {"answer": "ok"},
+        }
+
+    monkeypatch.setattr(service, "roundtrip", guided)
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    assert client.generate_request(
+        GenerationRequest("Short owned task", "solver", schema)
+    ) == {"answer": "ok"}
+    assert len(seen) == 1
+    assert seen[0]["schema_mode"] == "guided_with_postvalidation"
+    assert seen[0]["schema"] == schema
+    assert (
+        service.strict_object(seen[0]["prompt"].rpartition("\nOUTPUT_SCHEMA=")[2])
+        == schema
+    )
+    assert client.usage_records[0]["generation_mode"] == "guided_with_postvalidation"
+
+
+def test_guided_overlong_string_still_refuses_original_schema_without_retry(
+    monkeypatch,
+):
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["answer"],
+        "properties": {"answer": {"type": "string", "maxLength": 3}},
+    }
+    calls = []
+
+    def guided(payload):
+        calls.append(payload)
+        return {
+            **reply(payload),
+            "generation_mode": "guided_with_postvalidation",
+            "output": {"answer": "overlong"},
+        }
+
+    monkeypatch.setattr(service, "roundtrip", guided)
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    with pytest.raises(GenerationEvidenceError) as caught:
+        client.generate_request(GenerationRequest("Short owned task", "solver", schema))
+    assert len(calls) == 1
+    assert caught.value.details["failure"] == "schema_mismatch"
+    assert caught.value.details["schema_path"] == ["properties", "answer", "maxLength"]
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        {"pattern": "^ok$"},
+        {"minLength": 1},
+        {"const": "ok"},
+        {"anyOf": [{"type": "string"}]},
+    ],
+)
+def test_unprojected_constraints_do_not_silently_enter_guided_mode(extra):
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["answer"],
+        "properties": {"answer": {"type": "string", **extra}},
+    }
+    assert service.solver_schema_mode("solver", schema) == "structured_text"
+    assert service.solver_schema_mode("review", schema) == "structured_text"
+
+
+@pytest.mark.parametrize(
+    "child",
+    [
+        {"type": ["string", "null"]},
+        {"type": "integer", "maximum": 10**400},
+        {"type": "number", "maximum": 10**400},
+    ],
+)
+def test_nonrepresentable_types_and_bounds_choose_text_without_crashing(child):
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["answer"],
+        "properties": {"answer": child},
+    }
+    assert service.solver_schema_mode("solver", schema) == "structured_text"
