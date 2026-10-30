@@ -280,7 +280,7 @@ def validate_package_novelty(
             continue
         try:
             historic = _load_package(historic_path)
-            historic_items = _items(historic)
+            historic_items = _historical_items(historic)
         except (OSError, ValueError, json.JSONDecodeError):
             skipped_history_packages += 1
             continue
@@ -350,3 +350,24 @@ def _items(package: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw_items, list):
         raise ValueError("assessment package items must be a list")
     return [item for item in raw_items if isinstance(item, dict)]
+
+
+def _historical_items(package: dict[str, Any]) -> list[dict[str, Any]]:
+    """Require usable comparison records, without claiming full package approval."""
+    raw_items = package.get("items")
+    if not isinstance(raw_items, list) or not raw_items:
+        raise ValueError("historical assessment items must be a nonempty list")
+    for item in raw_items:
+        if not isinstance(item, dict):
+            raise ValueError("historical assessment contains an invalid item")
+        for field in ("id", "subject", "paper", "prompt"):
+            value = item.get(field)
+            if not isinstance(value, str) or not value or value != value.strip():
+                raise ValueError(
+                    "historical assessment item has invalid comparison data"
+                )
+            if field != "prompt" and any(character.isspace() for character in value):
+                raise ValueError("historical assessment item has invalid metadata")
+        if not normalise_item_text(item["prompt"]):
+            raise ValueError("historical assessment item has no comparison text")
+    return raw_items

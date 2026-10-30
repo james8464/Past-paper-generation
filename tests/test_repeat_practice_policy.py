@@ -151,6 +151,76 @@ def test_corrupt_history_does_not_hide_observed_repeat_overlap(tmp_path):
         validate_package_novelty(current, history_root=tmp_path)
 
 
+@pytest.mark.parametrize(
+    "change",
+    [
+        {"items": []},
+        {"items": [None]},
+        {"items": [{}]},
+        *[
+            {"field": field, "value": value}
+            for field in ("id", "subject", "paper", "prompt")
+            for value in (None, True, "", " ")
+        ],
+        {"field": "subject", "value": " accounting "},
+        {"field": "subject", "value": "account ing"},
+        {"field": "id", "value": "q\n1"},
+        {"field": "prompt", "value": "???"},
+        {"field": "paper", "value": 2},
+        {"mixed": True},
+        {"missing_items": True},
+        *[{"missing_field": field} for field in ("id", "subject", "paper", "prompt")],
+    ],
+)
+def test_unusable_historical_items_never_claim_complete_history(tmp_path, change):
+    current = package(tmp_path / "current-assessment.json", [PROMPT])
+    historic = package(tmp_path / "earlier-assessment.json", [PROMPT])
+    raw = json.loads(historic.read_text(encoding="utf-8"))
+    if "items" in change:
+        raw["items"] = change["items"]
+    elif change.get("mixed"):
+        raw["items"].append(None)
+    elif change.get("missing_items"):
+        raw.pop("items")
+    elif "missing_field" in change:
+        raw["items"][0].pop(change["missing_field"])
+    else:
+        raw["items"][0][change["field"]] = change["value"]
+    historic.write_text(json.dumps(raw), encoding="utf-8")
+    before = historic.read_bytes()
+    report = validate_package_novelty(current, history_root=tmp_path)
+    assert report["passed"] is None
+    assert report["history_complete"] is False
+    assert report["skipped_history_packages"] == 1
+    assert report["historic_comparisons"] == 0
+    assert historic.read_bytes() == before
+
+
+def test_actual_exported_history_has_usable_similarity_items(tmp_path):
+    from Backend.Core.assessment_package import write_assessment_package
+    from tests.test_accounting_objectives import paper_for
+
+    history = tmp_path / "history"
+    history.mkdir()
+    historic = history / "actual-assessment.json"
+    write_assessment_package(
+        paper_for(),
+        historic,
+        subject="accounting",
+        paper_number="1",
+        preview=True,
+        provider=None,
+        model=None,
+    )
+    current = package(tmp_path / "current-assessment.json", [PROMPT], paper="2")
+    before = historic.read_bytes()
+    report = validate_package_novelty(current, history_root=history)
+    assert report["passed"] is True
+    assert report["history_complete"] is True
+    assert report["skipped_history_packages"] == 0
+    assert historic.read_bytes() == before
+
+
 def test_corrupt_current_package_is_not_skipped(tmp_path):
     current = tmp_path / "current-assessment.json"
     current.write_text('{"schema_version":1,"items":null}', encoding="utf-8")
