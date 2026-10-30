@@ -43,7 +43,7 @@ struct GeneratorWorkspace: View {
                         Button(action: application.generate) {
                             Label { Text(InterfaceText.localizedResource(createButtonTitle, locale: locale)) } icon: { Image(systemName: "doc.badge.plus") }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .nativePrimaryActionStyle()
                         .disabled(!application.canGenerate)
                         .help(generateHelp)
                         .accessibilityHint(generateHelp)
@@ -120,6 +120,7 @@ private struct PaperConfiguration: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(Color("ControlAccent"))
                 }
 
                 Picker(
@@ -136,6 +137,7 @@ private struct PaperConfiguration: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(Color("ControlAccent"))
 
                 LabeledContent("Assessment") {
                     Text(application.selectedPaperDetail)

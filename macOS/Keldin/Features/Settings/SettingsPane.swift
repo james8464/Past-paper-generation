@@ -181,6 +181,7 @@ private struct AISettingsTab: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(Color("ControlAccent"))
 
                 Text(InterfaceText.localizedResource(application.aiProvider.subtitleResource, locale: locale))
                     .foregroundStyle(.secondary)

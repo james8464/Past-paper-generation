@@ -27,7 +27,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>NSAccentColorName</key>
-	<string>AccentColor</string>
+	<string>ControlAccent</string>
 	<key>NSDocumentsFolderUsageDescription</key>
 	<string>Keldin can save generated PDFs to a folder you choose.</string>
 	<key>NSDownloadsFolderUsageDescription</key>

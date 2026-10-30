@@ -3425,6 +3425,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/orange-scene-accent-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4054,11 +4060,8 @@
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Read every line, traced startup migration and error presentation, and reviewed the subsequent selected-language recovery-copy fix. Data handling is unchanged.",
-      "source_sha256": "0372e24bee43137d50f1f4e7f0c421cb71e40398818af4efacb94f412ab243bb",
-      "review_evidence": "docs/quality/native-startup-and-report-audit-2026-10-29.md",
-      "review_evidence_sha256": "4face6325ec770161186435b564f59e3f144d348608c62dd9a338f3805641ed4"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
@@ -4077,6 +4080,12 @@
       "source_sha256": "ed44c09eb607fd8b92c330707eacdca824fbe6eb59d5e9d4ec6f3bbdd38f0d96",
       "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
       "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
+    },
+    {
+      "path": "macOS/Keldin/Assets.xcassets/AccentColor.colorset/Contents.json",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/AppIcon-128x128@1x.png",
@@ -4164,6 +4173,12 @@
       "source_sha256": "0fd49ba3c3585c709678e0046a821c3c60685ec7063720d30d3a3448be3a208b",
       "review_evidence": "docs/quality/release-configuration-file-review-2026-10-29.md",
       "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
+    },
+    {
+      "path": "macOS/Keldin/Assets.xcassets/ControlAccent.colorset/Contents.json",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Assets.xcassets/ForegroundAccent.colorset/Contents.json",
@@ -4399,11 +4414,8 @@
     {
       "path": "macOS/Keldin/Info.plist",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "6d3e3740f49cdea1c60243835561e219dcebf766c7de71dda250c8697a43d958",
-      "review_evidence": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
-      "review_evidence_sha256": "b7a3ff04f6a4a638cef56a16de250d8632a243968adb58aecc5b36d92fdd2755"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Keldin.entitlements",
@@ -4735,11 +4747,8 @@
     {
       "path": "macOS/project.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "5d3b91b929bd28bdcfb33b461cd19ffdc20579229b13d13505c5ca13c9a79811",
-      "review_evidence": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
-      "review_evidence_sha256": "b7a3ff04f6a4a638cef56a16de250d8632a243968adb58aecc5b36d92fdd2755"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/scripts/bootstrap_backend.sh",
