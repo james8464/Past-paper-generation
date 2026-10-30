@@ -27,6 +27,8 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var isRefreshingOllama = false
+    @Published var appleIntelligenceAvailability = AppleIntelligenceAvailability.unchecked
+    @Published var isRefreshingAppleIntelligence = false
     var ollamaState: OllamaState {
         get { modelCoordinator.ollamaState }
         set { modelCoordinator.receiveOllamaState(newValue) }
@@ -185,6 +187,8 @@ final class ApplicationCoordinator: ObservableObject {
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
         if !hasFrenchReferences { return "Prepare French references first." }
+        if aiProvider == .appleIntelligence, appleIntelligenceAvailability.available,
+           !appleIntelligenceAvailability.frenchSupported { return "Apple Intelligence does not support French on this Mac." }
         return providerGenerationBlockerResource
     }
 
@@ -216,6 +220,10 @@ final class ApplicationCoordinator: ObservableObject {
             return deepSeekAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter a DeepSeek API key in Settings." : nil
         case .apple:
             return MLXModelAccessPolicy.issue(model: appleModel, distributionMode: distributionMode)
+        case .appleIntelligence:
+            if !appleIntelligenceAvailability.checked { return "Check Apple Intelligence in Settings before generating." }
+            if !appleIntelligenceAvailability.available { return "Apple Intelligence is unavailable. Check System Settings and update macOS if needed." }
+            return nil
         }
     }
 
@@ -249,6 +257,7 @@ final class ApplicationCoordinator: ObservableObject {
         case .anthropic: anthropicModel
         case .deepSeek: deepSeekModel
         case .apple: appleModel
+        case .appleIntelligence: AppleIntelligenceAvailability.model
         }
     }
 
@@ -441,6 +450,11 @@ final class ApplicationCoordinator: ObservableObject {
             setError(InterfaceText.resolve(blocker, language: presentationLanguage))
             return
         }
+        if aiProvider == .appleIntelligence, !appleIntelligenceAvailability.frenchSupported {
+            pendingFrenchLargePrint = nil
+            setError(InterfaceText.resolve("Apple Intelligence does not support French on this Mac.", language: presentationLanguage))
+            return
+        }
         if MLXSetupPolicy.requiresSetup(provider: aiProvider, model: activeModelName,
                                        preparedModels: preparedMLXModels, usesAI: true, dryRun: false) {
             requestMLXDownloadInfo()
@@ -486,6 +500,7 @@ final class ApplicationCoordinator: ObservableObject {
             "KELDIN_PARALLEL_MLX_GENERATION": settingsStore.parallelMLXGeneration ? "1" : "0",
         ]
         if request.provider == .apple { environment["HF_HOME"] = AppDefaults.mlxCacheFolder().path }
+        if request.provider == .appleIntelligence { environment["KELDIN_APPLE_INTELLIGENCE_HELPER"] = AppleIntelligenceAvailability.helperURL(distributionMode: distributionMode).path }
         if request.provider == .openAI { environment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
         if request.provider == .anthropic { environment["KELDIN_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
         if request.provider == .deepSeek { environment["KELDIN_API_KEY"] = deepSeekAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
@@ -725,7 +740,20 @@ final class ApplicationCoordinator: ObservableObject {
         }
         aiProvider = provider
         modelCoordinator.provider = provider
+        if provider == .appleIntelligence { refreshAppleIntelligenceAvailability() }
         persistSettings(presentation: presentation)
+    }
+
+    func refreshAppleIntelligenceAvailability() {
+        guard !isRefreshingAppleIntelligence else { return }
+        isRefreshingAppleIntelligence = true
+        let helper = AppleIntelligenceAvailability.helperURL(distributionMode: distributionMode)
+        Task { [weak self] in
+            let result = await AppleIntelligenceAvailability.check(helper: helper)
+            guard let self else { return }
+            appleIntelligenceAvailability = result
+            isRefreshingAppleIntelligence = false
+        }
     }
 
     func acceptHostedAIConsent() {
@@ -806,6 +834,7 @@ final class ApplicationCoordinator: ObservableObject {
                 switch provider {
                 case .ollama: selectedModel = record.configuration.model
                 case .apple: appleModel = record.configuration.model
+                case .appleIntelligence: break
                 case .openAI: openAIModel = record.configuration.model
                 case .anthropic: anthropicModel = record.configuration.model
                 case .deepSeek: deepSeekModel = record.configuration.model
@@ -838,6 +867,8 @@ final class ApplicationCoordinator: ObservableObject {
             deepSeekModel = record.configuration.model
         case .apple:
             appleModel = record.configuration.model
+        case .appleIntelligence:
+            break
         }
         dryRun = record.configuration.dryRun
         pendingGenerationSeed = seed
@@ -951,8 +982,11 @@ final class ApplicationCoordinator: ObservableObject {
         if aiProvider == .apple {
             backendEnvironment["HF_HOME"] = AppDefaults.mlxCacheFolder().path
         }
+        if aiProvider == .appleIntelligence {
+            backendEnvironment["KELDIN_APPLE_INTELLIGENCE_HELPER"] = AppleIntelligenceAvailability.helperURL(distributionMode: distributionMode).path
+        }
         switch selectedBoard.usesAI ? aiProvider : .ollama {
-        case .ollama, .apple, .deepSeek:
+        case .ollama, .apple, .appleIntelligence, .deepSeek:
             break
         case .openAI:
             backendEnvironment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1370,7 +1404,7 @@ final class ApplicationCoordinator: ObservableObject {
         case .openAI: SecretAccount.openAIAPIKey
         case .anthropic: SecretAccount.anthropicAPIKey
         case .deepSeek: SecretAccount.deepSeekAPIKey
-        case .ollama, .apple: nil
+        case .ollama, .apple, .appleIntelligence: nil
         }
     }
 
@@ -1882,6 +1916,7 @@ final class ApplicationCoordinator: ObservableObject {
         switch aiProvider {
         case .ollama: settingsStore.parallelLocalReviews ? 2 : 1
         case .apple: settingsStore.parallelMLXGeneration ? 2 : 1
+        case .appleIntelligence: 1
         case .openAI, .anthropic, .deepSeek: nil
         }
     }

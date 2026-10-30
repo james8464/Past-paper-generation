@@ -304,7 +304,13 @@ def test_segmented_pickers_use_the_safe_native_control_fill():
             if line.strip() == ".pickerStyle(.segmented)":
                 assert lines[index + 1].strip() == '.tint(Color("ControlAccent"))', path
                 count += 1
-    assert count == 3
+    assert count == 2
+    # Six provider names no longer fit a segmented control at Settings' minimum width.
+    settings = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    provider = settings.split('Section("Provider")', 1)[1].split("providerSettings", 1)[
+        0
+    ]
+    assert ".pickerStyle(.menu)" in provider
 
 
 def test_external_links_use_the_text_tint_without_retinting_native_controls():

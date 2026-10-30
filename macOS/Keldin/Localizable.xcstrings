@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Local models (MLX)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Modèles locaux (MLX)"}}}},
+    "Uses Apple's on-device system model": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Utilise le modèle système local d’Apple"}}}},
+    "Uses Apple's on-device system model. No external model download or API key is needed.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Utilise le modèle système local d’Apple. Aucun téléchargement de modèle externe ni clé API n’est nécessaire."}}}},
+    "Check availability": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Vérifier la disponibilité"}}}},
+    "Available on this Mac": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Disponible sur ce Mac"}}}},
+    "Requires a compatible Mac, enabled Apple Intelligence and macOS 26.4 or later.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Nécessite un Mac compatible, Apple Intelligence activé et macOS 26.4 ou une version ultérieure."}}}},
+    "Availability depends on this Mac and System Settings. Paper quality has not been verified. Requests that exceed the system model's context stop without omitting content or switching providers.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La disponibilité dépend de ce Mac et des Réglages Système. La qualité des sujets n’a pas été validée. Les requêtes dépassant la capacité du contexte s’arrêtent sans supprimer de contenu ni changer de moteur."}}}},
+    "Check Apple Intelligence in Settings before generating.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Vérifiez Apple Intelligence dans Réglages avant de générer."}}}},
+    "Apple Intelligence is unavailable. Check System Settings and update macOS if needed.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Apple Intelligence est indisponible. Vérifiez les Réglages Système et mettez macOS à jour si nécessaire."}}}},
+    "Apple Intelligence does not support French on this Mac.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Apple Intelligence ne prend pas en charge le français sur ce Mac."}}}},
     "Drafting exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Rédaction de l’exercice %@"}}}},
     "Solving and checking exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Résolution et vérification de l’exercice %@"}}}},
     "Formatting and checking the document": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Mise en page et vérification du document"}}}},

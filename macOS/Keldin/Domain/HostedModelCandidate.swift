@@ -17,7 +17,7 @@ struct HostedModelCandidate: Identifiable {
         case .deepSeek:
             [Self(model: AppDefaults.deepSeekModel, role: "Lower-cost candidate"),
              Self(model: "deepseek-v4-pro", role: "Pro candidate, not yet qualified")]
-        case .ollama, .apple: []
+        case .ollama, .apple, .appleIntelligence: []
         }
     }
 }

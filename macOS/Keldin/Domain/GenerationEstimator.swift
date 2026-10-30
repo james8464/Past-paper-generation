@@ -246,6 +246,8 @@ enum GenerationEstimator {
             return (1.0, EstimateFactor(title: "AI provider", detail: "Local Ollama speed depends on this Mac.", impact: 1.0))
         case .apple:
             return (1.0, EstimateFactor(title: "AI provider", detail: "Local MLX speed depends on this Mac.", impact: 1.0))
+        case .appleIntelligence:
+            return (1.0, EstimateFactor(title: "AI provider", detail: "Apple Intelligence generation timing has not been measured.", impact: 1.0))
         case .openAI:
             return (0.72, EstimateFactor(title: "AI provider", detail: "Hosted OpenAI generation usually reduces local compute time.", impact: 0.72))
         case .anthropic:
