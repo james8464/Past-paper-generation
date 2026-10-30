@@ -26,14 +26,27 @@ exits. Do not catch a general `ValueError` or `GenerationEvidenceError` to retry
 Use a required source-bound policy such as
 `fr-nsi-v36-whole-exercise-redraft-v1`. Each exercise has round 1 and at most
 round 2. A round has at most two author-format attempts, one blind solve and
-one review: at most four physical calls. The paper maximum is therefore
-`3 exercises × 2 rounds × 4 calls = 24 calls`. Current French transports already
-use one physical call per logical request. Do not add hidden provider retries.
+one review: at most four generation attempts. The paper maximum is therefore
+`3 exercises × 2 rounds × 4 attempts = 24 generation attempts` for the current
+production typed, sequential French clients. This excludes ancillary HTTP
+requests such as Ollama's before/after model-identity lookup. Legacy client
+overrides need separate bounds. Concurrent MLX batching can attempt a batch and
+fall back to serial decoding, so any later parallel route must count both.
+Test the bound for every supported production provider. Do not add hidden retries.
+
+A call count is not a time or spending limit: 24 nominal 600-second calls can
+approach four hours, and the current DeepSeek output budgets can reserve up to
+589,824 output tokens. The private experiment needs explicit elapsed-time and
+spending ceilings before model testing. Cancellation stops local work but cannot
+promise that a remote provider stops inference or billing. Preserve the existing
+total US$5 diagnostic cap; no model calls are authorised by these unit tests.
 
 Capture policy, paper seed, exercise ID, round, request identity/hash and model
 identity. Derive any second-round seeds deterministically within signed bounds;
 do not reuse review/checkpoint evidence from a different candidate. Keep the
 existing accepted `authoring_attempts` and `reviews` linked to the final round.
+Only accepted cycles may update the shared topics and final attempt lists.
+Rejected topics must not leak into the replacement request or later exercises.
 Package replay must require and recompute ordered round evidence, including the
 exact accepted candidate link. Missing policy, removed rejected rounds,
 reordered rounds, forged outcomes and changed raw evidence must fail even when

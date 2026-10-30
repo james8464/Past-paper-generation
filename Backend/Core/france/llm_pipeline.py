@@ -746,7 +746,9 @@ class SemanticReviewRefusal(GenerationEvidenceError):
         """Lossless returned objects; separate from bounded diagnostic details."""
         return deepcopy(self._review_evidence)
 
-    def _capture_review(self, *, exercise: NSIExercise, blind: dict, review: dict):
+    def _capture_review(
+        self, *, exercise: NSIExercise, blind: dict, review: dict
+    ) -> None:
         records = {
             "exercise": exercise.model_dump(mode="json"),
             "blind_response": blind,

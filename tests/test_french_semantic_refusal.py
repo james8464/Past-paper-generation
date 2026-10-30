@@ -9,6 +9,17 @@ from tests.test_french_llm_pipeline import generate
 from tests.test_french_reviewed_redraft import ReviewedClient
 
 
+class RetainedResponseClient(ReviewedClient):
+    def generate_request(self, request):
+        response = super().generate_request(request)
+        properties = request.schema["properties"]
+        if "answers" in properties:
+            self.returned_blind = response
+        elif "id" not in properties:
+            self.returned_review = response
+        return response
+
+
 def test_negative_verdict_is_typed_and_preserves_untruncated_returned_objects(tmp_path):
     client = ReviewedClient()
     with pytest.raises(subject.SemanticReviewRefusal) as caught:
@@ -41,3 +52,30 @@ def test_nonsemantic_failure_is_not_typed_as_recoverable(tmp_path, failure, erro
     with pytest.raises(error) as caught:
         generate(tmp_path, ReviewedClient(failure=failure))
     assert not isinstance(caught.value, subject.SemanticReviewRefusal)
+
+
+def test_captured_evidence_does_not_alias_returned_provider_objects(tmp_path):
+    client = RetainedResponseClient()
+    with pytest.raises(subject.SemanticReviewRefusal) as caught:
+        generate(tmp_path, client)
+    snapshot = caught.value.review_evidence
+    client.returned_blind.clear()
+    client.returned_review.clear()
+    assert caught.value.review_evidence == snapshot
+
+
+def test_negative_first_question_does_not_hide_a_malformed_later_verdict(tmp_path):
+    class MixedReviewClient(ReviewedClient):
+        def generate_request(self, request):
+            response = super().generate_request(request)
+            properties = request.schema["properties"]
+            if "id" not in properties and "answers" not in properties:
+                assert response["1"]["correct"] is False
+                response["2"]["correct"] = "false"
+            return response
+
+    client = MixedReviewClient()
+    with pytest.raises(ValidationError) as caught:
+        generate(tmp_path, client)
+    assert not isinstance(caught.value, subject.SemanticReviewRefusal)
+    assert len(client.requests) == 3
