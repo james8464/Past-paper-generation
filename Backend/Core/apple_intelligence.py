@@ -205,10 +205,12 @@ def _stop(process: subprocess.Popen[bytes]) -> None:
     if process.poll() is None:
         process.terminate()
         try:
-            process.wait(timeout=2)
+            # The app force-stops the owning backend after two seconds. Reap
+            # this exact child well inside that window, even if it ignores TERM.
+            process.wait(timeout=0.25)
         except subprocess.TimeoutExpired:
             process.kill()
-            process.wait(timeout=2)
+            process.wait(timeout=0.25)
 
 
 def roundtrip(payload: dict[str, Any]) -> dict[str, Any]:
