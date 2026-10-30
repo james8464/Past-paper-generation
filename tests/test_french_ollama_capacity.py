@@ -29,6 +29,48 @@ def reply(**updates):
     }
 
 
+def test_neutral_repetition_penalty_is_exclusive_to_french_nsi(monkeypatch):
+    calls = []
+
+    def transport(url, data, headers, **kwargs):
+        calls.append((json.loads(data), kwargs))
+        return io.BytesIO(json.dumps(reply()).encode())
+
+    monkeypatch.setattr("Backend.Core.providers.urllib_request", transport)
+    client = HostedLLMClient(provider="ollama", model="fixture", api_key="")
+    for operation in ("french_nsi_authoring", "solver"):
+        client.generate_request(
+            GenerationRequest(
+                "Exercice français sans omission.",
+                operation,
+                {"type": "object"},
+                generation_seed=42,
+                temperature=0.6,
+                output_budget=8192,
+            )
+        )
+    french, legacy = [payload for payload, _ in calls]
+    common = {
+        "temperature": 0.6,
+        "top_p": 0.9,
+        "num_ctx": 16384,
+        "num_predict": 8192,
+        "repeat_last_n": 256,
+        "seed": 104771,
+    }
+    assert french["options"] == {**common, "repeat_penalty": 1.0}
+    assert legacy["options"] == {**common, "repeat_penalty": 1.15}
+    assert french["format"] == legacy["format"] == {"type": "object"}
+    assert french["messages"] == legacy["messages"]
+    assert french["think"] is None and legacy["think"] is False
+    assert french["truncate"] is False and french["shift"] is False
+    assert "truncate" not in legacy and "shift" not in legacy
+    assert [options for _, options in calls] == [
+        {"attempts": 1, "timeout_seconds": 600},
+        {"attempts": 2},
+    ]
+
+
 def test_french_uses_no_truncation_no_shift_one_http_attempt_and_scoped_timeout(
     monkeypatch, capsys
 ):

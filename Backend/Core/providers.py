@@ -214,7 +214,7 @@ class HostedLLMClient:
                     "num_ctx": 16384,
                     "num_predict": budget,
                     "repeat_last_n": 256,
-                    "repeat_penalty": 1.15,
+                    "repeat_penalty": 1.0 if french_nsi else 1.15,
                     "seed": _ollama_seed(prompt) if seed is None else seed,
                 },
             }
