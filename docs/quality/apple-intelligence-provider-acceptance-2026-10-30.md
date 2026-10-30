@@ -8,8 +8,9 @@ existing `apple` MLX provider or migrate saved model identities. No downloaded
 model, hosted API, credential or cloud fallback was used in these probes.
 
 The connector and capacity refusal work. A tiny French JSON task passed. The
-representative UK solver task did not pass its complete response contract, and
-complete French NSI generation does not fit this adapter's context allowance.
+representative UK solver task failed response validation and, in the final
+512-character-contract probe, arithmetic review. Complete French NSI generation
+does not fit this adapter's context allowance.
 These results do not qualify a paper, subject, marking scheme or provider-wide
 quality claim.
 
@@ -141,3 +142,19 @@ Git head `96f467d6df04de15d604b31964782c339feae539`, and helper SHA-256
 `d2121fae96e09e048c161f7603823a4def91c700ad56cfa7164f56c36b892b68`.
 Source and binary were checked unchanged afterward. No further call, answer
 repair or acceptance followed. This provider remains unqualified for this task.
+
+## Integrated application checks
+
+The integrated branch passed 92 focused Python tests and 14 helper tests.
+The native application suite executed 360 tests, with one skip and no failures.
+The shared English and French model advice names the observed calculation
+failure only for `apple_intelligence` / `apple-system-on-device`. Saved MLX
+identities keep their previous advice. Complete French generation remains
+disabled for the system provider.
+
+A second agent reviewed the helper's SDK checks, fixed-path packaging and
+protocol without finding an actionable regression. This was a code review,
+not a paper-quality review. The failed regex-guidance experiment is excluded
+from the application; production guidance retains original-schema
+postvalidation. Full regression, release-build and installed-UI results are
+recorded separately when completed.
