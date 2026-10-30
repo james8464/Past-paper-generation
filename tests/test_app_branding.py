@@ -253,14 +253,14 @@ def _contrast(first, second):
 def test_native_controls_use_the_requested_warm_scene_accent():
     assert (
         plistlib.loads((APP / "Info.plist").read_bytes())["NSAccentColorName"]
-        == "AccentColor"
+        == "ControlAccent"
     )
     assert _color_variants("AccentColor") == _color_variants("ForegroundAccent")
     for name in ("project.yml", "Keldin.xcodeproj/project.pbxproj"):
         assert (
-            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor"
+            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ControlAccent"
             if name.endswith(".yml")
-            else "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;"
+            else "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = ControlAccent;"
         ) in (ROOT / "macOS" / name).read_text()
     source = (APP / "Application/KeldinApp.swift").read_text()
     assert source.count('.tint(Color("AccentColor"))') == 2

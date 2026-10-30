@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793376657.9860091,
+    "mtime": 1793376848.2805655,
     "ast_hash": "932a1cf464cca5674d8ef9c84d5e12b1",
     "semantic_hash": ""
   },
@@ -2265,8 +2265,8 @@
     "semantic_hash": ""
   },
   "macOS/project.yml": {
-    "mtime": 1793376163.103091,
-    "ast_hash": "dc3e94e2a18f015bf9ed9cae1eacae1f",
+    "mtime": 1793376847.7533505,
+    "ast_hash": "313a6147ed31628970417534ef6a2747",
     "semantic_hash": ""
   },
   "requirements-build.txt": {
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793376646.8686652,
-    "ast_hash": "6188b79c8a62de438e9a12c9828a2068",
+    "mtime": 1793376836.4258955,
+    "ast_hash": "2ba978fc6a1f8a4c88442a052e638205",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793376657.8928766,
+    "mtime": 1793376848.1018274,
     "ast_hash": "aa4543cd21ca83da3ae5fd81f5e36114",
     "semantic_hash": ""
   },
@@ -5025,8 +5025,8 @@
     "semantic_hash": ""
   },
   "docs/quality/orange-scene-accent-review-2026-10-30.md": {
-    "mtime": 1793376657.6840446,
-    "ast_hash": "90413d2dda5adf6ebae7fb3214975f59",
+    "mtime": 1793376847.7545013,
+    "ast_hash": "e8a018496f53cf17ba6ec68bb065d464",
     "semantic_hash": ""
   },
   "macOS/Keldin/Assets.xcassets/ControlAccent.colorset/Contents.json": {
