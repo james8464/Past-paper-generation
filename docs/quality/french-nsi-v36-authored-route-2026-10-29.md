@@ -69,6 +69,10 @@ regeneration may address a safe missing-fence error; another occurrence refuses.
 Unsafe or imported code still refuses without a formatting retry, including
 when a safe missing fence appears earlier in another field. Fenced code remains
 subject to the exact printed-line and indentation comparison.
+Multiline Python suites in rubric criteria also refuse, even when fenced,
+because those cells use prose layout. The author is asked to put full code in
+the proposed answer and prose in the rubric. No code is moved or rewritten by
+the application; one-line code, SQL and mathematical prose are unaffected.
 
 A separate blind-solving request receives no proposed answers, marking criteria
 or verification contracts. A further full review compares the task, answer,

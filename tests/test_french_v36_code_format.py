@@ -121,3 +121,48 @@ def test_bare_class_constructor_is_a_format_error_not_an_unsafe_name_error():
 def test_other_obvious_multiline_suite_headers_need_fences(code):
     with pytest.raises(subject.PythonCodeFormatError):
         subject.validate_authored_exercise(draft(code), "1")
+
+
+def test_multiline_python_in_fenced_rubric_criterion_is_not_prose_layout_safe():
+    raw = raw_exercise()
+    raw["questions"][0]["marking"][0]["criterion"] = "```python\n" + BARE + "\n```"
+    original = deepcopy(raw)
+    with pytest.raises(subject.PythonCodeFormatError, match="réponse"):
+        subject.validate_authored_exercise(raw, "1")
+    assert raw == original
+
+
+def test_criterion_format_error_requests_full_regeneration_without_moving_code():
+    first = raw_exercise()
+    first["questions"][0]["marking"][0]["criterion"] = "```python\n" + BARE + "\n```"
+    original = deepcopy(first)
+    second = draft("```python\n" + BARE + "\n```")
+    client = Client(first, second)
+    exercise, record = subject._author(
+        client, subject.exercise_request("1", 42, []), "1"
+    )
+    assert len(client.requests) == record["attempts"] == 2
+    assert first == original
+    assert record["rejected"][0]["response"] == original
+    assert exercise.questions[0].answer == second["questions"][0]["answer"]
+    assert (
+        exercise.questions[0].marking[0].criterion
+        == second["questions"][0]["marking"][0]["criterion"]
+    )
+
+
+@pytest.mark.parametrize(
+    "criterion",
+    [
+        "Crédit pour le retour de la valeur avec `return resultat`.",
+        "SELECT nom FROM Eleve WHERE classe = 'Terminale';",
+        "La complexité est O(n²), car n lignes sont parcourues n fois.",
+    ],
+)
+def test_one_line_code_sql_and_mathematical_prose_in_criteria_are_unchanged(criterion):
+    raw = raw_exercise()
+    raw["questions"][0]["marking"][0]["criterion"] = criterion
+    assert (
+        subject.validate_authored_exercise(raw, "1").questions[0].marking[0].criterion
+        == criterion
+    )

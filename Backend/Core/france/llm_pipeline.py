@@ -148,8 +148,10 @@ def exercise_request(
         "justify; au plus une question recall et au moins une difficulté 4. Donne les données "
         "nécessaires; fournis des tableaux ou graphes structurés lorsqu'ils sont utiles, "
         "sinon materials doit être une liste vide explicite. Donne les fragments Python "
-        "syntaxiquement complets dans des blocs ```python. Aucun import, accès fichier, "
-        "réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
+        "syntaxiquement complets dans des blocs ```python. "
+        "Place les programmes multilignes dans les réponses proposées, pas dans les "
+        "critères du barème qui restent en prose avec éventuellement du code court. "
+        "Aucun import, accès fichier, réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
         "des programmes à exécuter sur la machine. Pour verification, utilise un contrat "
         "sql, python_trace ou shortest_path uniquement s'il correspond au travail réel; "
         'sinon {"kind":"human"}. N\'invente pas de preuve automatique. '
@@ -304,6 +306,21 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
     # Audit every field before a retryable formatting error, including fields
     # after the first missing fence. Unsafe code must never become a format retry.
     formatting_issues = [_bare_python_suite(text) for text in snippets]
+    criterion_formatting = [
+        _bare_python_suite(part)
+        for question in exercise.questions
+        for credit in question.marking
+        for part in [
+            credit.criterion,
+            *re.findall(
+                r"```(?:python)?[ \t]*\r?\n(.*?)```", credit.criterion, re.S | re.I
+            ),
+        ]
+    ]
+    if any(criterion_formatting):
+        raise PythonCodeFormatError(
+            "Le format du barème ne préserve pas les programmes multilignes : placez le code complet dans la réponse proposée et les critères en prose."
+        )
     if any(formatting_issues):
         raise PythonCodeFormatError(
             "Le code Python multiligne doit être délimité par un bloc ```python pour préserver son indentation."
