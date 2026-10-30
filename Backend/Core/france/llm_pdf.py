@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pymupdf
 
+from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.graph_pdf import validate_graph
 from Backend.Core.france.llm_pipeline import CHECKABLE, PRINT_POLICY
 from Backend.Core.france.nsi import (
@@ -13,7 +14,12 @@ from Backend.Core.france.nsi import (
     NSITableMaterial,
     NSIWeightedGraphMaterial,
 )
-from Backend.Core.france.print_policy import V34_FOOTER
+from Backend.Core.france.print_policy import (
+    V34_FOOTER,
+    V36_LEGACY_PRINT_POLICY,
+    V36_PRINT_POLICY,
+)
+from Backend.Core.france.sql_sources import sql_caption
 from Backend.Core.france.whole_case_pdf import (
     _compact,
     _expected_preface,
@@ -49,7 +55,7 @@ def _expected_exercise(exercise: NSIExercise, correction: bool) -> str:
                 and not material.id.startswith("recon_")
             ):
                 label += f" — {material.id}"
-            parts.extend([label, *material.columns])
+            parts.extend([label, sql_caption(material), *material.columns])
             for row in material.rows:
                 parts.extend(row)
         else:
@@ -84,14 +90,29 @@ class _FigurePage:
     def get_text(self, mode):
         return self.page.get_text(mode)
 
+    def get_texttrace(self):
+        return self.page.get_texttrace()
 
-def _check_graphs(pages, exercises, starts) -> None:
+
+def _check_graphs(
+    pages, exercises, starts, *, large_print=False, print_policy=PRINT_POLICY
+) -> None:
     for index, exercise in enumerate(exercises):
         graphs = [
             material
             for material in exercise.materials
             if isinstance(material, NSIWeightedGraphMaterial)
         ]
+        geometries = [
+            graph_layout(graph, large_print)
+            if print_policy == V36_PRINT_POLICY
+            else None
+            for graph in graphs
+        ]
+        diameters = {
+            2 * geometry.radius if geometry is not None else 32
+            for geometry in geometries
+        }
         scoped_pages = pages[
             starts[index] : starts[index + 1] if index + 1 < len(starts) else len(pages)
         ]
@@ -103,14 +124,17 @@ def _check_graphs(pages, exercises, starts) -> None:
                 if (
                     len(drawing["items"]) == 4
                     and all(item[0] == "c" for item in drawing["items"])
-                    and abs(rect.width - 32) < 0.4
-                    and abs(rect.height - 32) < 0.4
+                    and any(
+                        abs(rect.width - diameter) < 0.4
+                        and abs(rect.height - diameter) < 0.4
+                        for diameter in diameters
+                    )
                 ):
                     circles.append((page, drawing))
         if len(circles) != sum(len(graph.nodes) for graph in graphs):
             raise ValueError("Nombre de sommets imprimés incompatible avec les figures")
         offset = 0
-        for graph in graphs:
+        for graph, geometry in zip(graphs, geometries, strict=True):
             group = circles[offset : offset + len(graph.nodes)]
             offset += len(graph.nodes)
             page = group[0][0]
@@ -127,7 +151,9 @@ def _check_graphs(pages, exercises, starts) -> None:
                 for drawing in page.get_drawings()
                 if bounds.contains(drawing["rect"])
             ]
-            validate_graph([_FigurePage(page, figure_drawings)], graph)
+            validate_graph(
+                [_FigurePage(page, figure_drawings)], graph, geometry=geometry
+            )
 
 
 def _check_code_lines(pages, exercises, *, correction: bool) -> None:
@@ -165,10 +191,20 @@ def _check_code_lines(pages, exercises, *, correction: bool) -> None:
 
 
 def validate_llm_pdf(
-    path: Path, exercises: list[NSIExercise], *, correction: bool
+    path: Path,
+    exercises: list[NSIExercise],
+    *,
+    correction: bool,
+    large_print: bool = False,
+    print_policy: str = PRINT_POLICY,
 ) -> None:
     from Backend.Core.france.runtime import validate_pdf
 
+    if type(large_print) is not bool or print_policy not in {
+        V36_PRINT_POLICY,
+        V36_LEGACY_PRINT_POLICY,
+    }:
+        raise ValueError("Politique ou mode de rendu V36 invalide")
     if [exercise.id for exercise in exercises] != ["1", "2", "3"]:
         raise ValueError("Trois exercices ordonnés requis")
     validate_pdf(path)
@@ -210,7 +246,7 @@ def validate_llm_pdf(
             raise ValueError("Exercice absent ou dupliqué dans le PDF")
         positions = [text.index(heading) for heading in headings]
         if positions != sorted(positions) or text[: positions[0]] != _expected_preface(
-            correction, print_policy=PRINT_POLICY
+            correction, print_policy=print_policy
         ):
             raise ValueError("Couverture, rôle ou ordre des exercices invalide")
         for index, exercise in enumerate(exercises):
@@ -221,5 +257,11 @@ def validate_llm_pdf(
                 )
         if [index for index, _ in starts] != [0, 1, 2]:
             raise ValueError("Début des exercices ambigu")
-        _check_graphs(pages, exercises, [page for _, page in starts])
+        _check_graphs(
+            pages,
+            exercises,
+            [page for _, page in starts],
+            large_print=large_print,
+            print_policy=print_policy,
+        )
         _check_code_lines(pages, exercises, correction=correction)

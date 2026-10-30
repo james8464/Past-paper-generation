@@ -134,7 +134,7 @@ def _trace(code: str, variable: str):
     return environment[variable]
 
 
-def _sql(contract):
+def _sql(contract, *, sql_materials=None):
     schema, query = contract["schema"], contract["query"]
     if (
         not isinstance(schema, str)
@@ -152,6 +152,8 @@ def _sql(contract):
         db.setlimit(sqlite3.SQLITE_LIMIT_SQL_LENGTH, 8192)
         db.setlimit(sqlite3.SQLITE_LIMIT_COLUMN, 64)
         calls = 0
+        inspecting = False
+        query_tables = None
 
         def progress():
             nonlocal calls
@@ -169,6 +171,23 @@ def _sql(contract):
         }
 
         def authorize(action, arg1, arg2, _database, _trigger):
+            if inspecting:
+                return sqlite3.SQLITE_OK
+            if query_tables is not None:
+                if action == sqlite3.SQLITE_READ:
+                    return (
+                        sqlite3.SQLITE_OK
+                        if _database == "main"
+                        and arg1 in query_tables
+                        and (arg2 in query_tables[arg1] or arg2 == "")
+                        else sqlite3.SQLITE_DENY
+                    )
+                if action not in {
+                    sqlite3.SQLITE_SELECT,
+                    sqlite3.SQLITE_FUNCTION,
+                    sqlite3.SQLITE_RECURSIVE,
+                }:
+                    return sqlite3.SQLITE_DENY
             if action in denied or (
                 action == sqlite3.SQLITE_FUNCTION
                 and str(arg2).lower()
@@ -208,6 +227,16 @@ def _sql(contract):
                 db.execute(
                     f'INSERT INTO "{table}" VALUES ({",".join("?" for _ in row)})', row
                 )
+        if sql_materials is not None:
+            from Backend.Core.france.sql_sources import validate_database
+
+            inspecting = True
+            try:
+                query_tables = validate_database(db, sql_materials)
+            finally:
+                inspecting = False
+            # Invalidate prepared-statement permissions after owned inspection.
+            db.set_authorizer(authorize)
         cursor = db.execute(query)
         if "result_query" in contract:
             cursor = db.execute(contract["result_query"])
@@ -271,7 +300,7 @@ def _same_typed_value(actual, expected) -> bool:
     return actual == expected
 
 
-def verify_contract(contract: dict) -> dict:
+def verify_contract(contract: dict, *, sql_materials=None) -> dict:
     kind = contract.get("kind")
     if kind not in {
         "binary",
@@ -540,7 +569,7 @@ def verify_contract(contract: dict) -> dict:
                 raise ValueError("Nombre binaire invalide")
             actual = int(value, 2)
         elif kind == "sql":
-            actual = _sql(contract)
+            actual = _sql(contract, sql_materials=sql_materials)
         elif kind == "python_trace":
             actual = _trace(contract["code"], contract["variable"])
         else:

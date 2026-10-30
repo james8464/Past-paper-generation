@@ -32,6 +32,7 @@ from Backend.Core.france.code_layout import (
     code_layout,
     require_code_width,
 )
+from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
@@ -44,6 +45,7 @@ from Backend.Core.france.print_policy import (
     V34_CREDIT_NOTICE,
     V34_FOOTER,
     V34_REVIEW_NOTICE,
+    V36_PRINT_POLICY,
 )
 
 WHOLE_CASE_KINDS = frozenset(
@@ -105,6 +107,8 @@ def structured_material(
     available_width: float,
     show_id: bool = True,
     balance_columns: bool = False,
+    modern_graph: bool = False,
+    large_print: bool = False,
 ):
     heading = (
         f"{material.title} — {material.id}"
@@ -168,7 +172,69 @@ def structured_material(
                 ]
             )
         )
-        return KeepTogether([title, Spacer(1, 4), table, Spacer(1, 10)])
+        from Backend.Core.france.sql_sources import sql_caption
+
+        caption = sql_caption(material)
+        return KeepTogether(
+            [
+                title,
+                *([Paragraph(escape(caption), body)] if caption else []),
+                Spacer(1, 4),
+                table,
+                Spacer(1, 10),
+            ]
+        )
+
+    if modern_graph:
+        geometry = graph_layout(material, large_print, available_width)
+        drawing = Drawing(geometry.width, geometry.height)
+        for route in geometry.routes:
+            drawing.add(Line(*route.start, *route.end, strokeWidth=1.2))
+            if route.arrow:
+                drawing.add(
+                    Polygon(
+                        [value for point in route.arrow for value in point],
+                        fillColor=colors.black,
+                        strokeColor=colors.black,
+                    )
+                )
+        # Paint every label after the complete edge stream so a later edge
+        # cannot strike through an earlier weight.
+        for route in geometry.routes:
+            left, bottom, right, top = route.label_box
+            drawing.add(
+                Rect(
+                    left,
+                    bottom,
+                    right - left,
+                    top - bottom,
+                    fillColor=colors.white,
+                    strokeColor=None,
+                )
+            )
+            drawing.add(
+                String(
+                    *route.label_origin,
+                    route.label,
+                    fontName=geometry.regular_font,
+                    fontSize=geometry.font_size,
+                )
+            )
+        for node, (x, y) in geometry.positions.items():
+            drawing.add(
+                Circle(x, y, geometry.radius, fillColor=colors.white, strokeWidth=1.2)
+            )
+            drawing.add(
+                String(
+                    x,
+                    y - geometry.font_size * 0.3,
+                    node,
+                    textAnchor="middle",
+                    fontName=geometry.bold_font,
+                    fontSize=geometry.font_size,
+                )
+            )
+        return KeepTogether([title, Spacer(1, 4), drawing, Spacer(1, 10)])
 
     width = min(available_width, 440)
     height = min(280, max(180, 42 * len(material.nodes)))
@@ -581,6 +647,13 @@ def render_assessment(
                 continue
             if position % 2:
                 source = part.strip("\n")
+                if first_paragraph and print_policy == V36_PRINT_POLICY:
+                    marker = Paragraph(
+                        "&#160;", question_style, bulletText=f"{identifier}."
+                    )
+                    marker.keepWithNext = True
+                    story.append(marker)
+                    first_paragraph = False
                 listing = code_listing(source, code, layout.question_width)
                 story.append(
                     KeepTogether([listing])
@@ -721,6 +794,8 @@ def render_assessment(
                 and material.id not in {"case_states", "tree_nodes", "tree_states"}
                 and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
+                modern_graph=print_policy == V36_PRINT_POLICY,
+                large_print=large_print,
             )
             if flatten:
                 # Avoid nested KeepTogether blocks: the outer question group owns

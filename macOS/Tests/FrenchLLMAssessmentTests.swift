@@ -29,7 +29,9 @@ final class FrenchLLMAssessmentTests: XCTestCase {
             "teacher_review": "not_run", "empirical_calibration": "not_run",
             "identity": ["provider": "apple", "model": "chosen-model", "seed": 42,
                          "prompt_version": FrenchLLMAssessmentRequest.promptVersion,
-                         "print_policy": FrenchLLMAssessmentRequest.printPolicy],
+                         "print_policy": FrenchLLMAssessmentRequest.printPolicy,
+                         "sql_source_policy": FrenchLLMAssessmentRequest.sqlSourcePolicy,
+                         "source_policy": FrenchLLMAssessmentRequest.sourcePolicy],
         ]
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("FrenchLLM-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: file) }
@@ -97,13 +99,25 @@ final class FrenchLLMAssessmentTests: XCTestCase {
         XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: duplicateRoles, configuration: configuration))
         XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts + [artifacts[0]], configuration: configuration))
         for (key, value) in [("provider", "ollama" as Any), ("model", "other"), ("seed", 43), ("seed", true),
-                             ("prompt_version", "fr-nsi-written-2027-v35"), ("print_policy", "old")] {
+                             ("prompt_version", "fr-nsi-written-2027-v35"), ("print_policy", "old"),
+                             ("sql_source_policy", "old"), ("sql_source_policy", true), ("sql_source_policy", 1),
+                             ("source_policy", "old"), ("source_policy", true), ("source_policy", 1)] {
             var changed = publication
             var identity = try XCTUnwrap(changed["identity"] as? [String: Any])
             identity[key] = value
             changed["identity"] = identity
             XCTAssertThrowsError(try validate(changed), key)
         }
+        var missingPolicy = publication
+        var missingIdentity = try XCTUnwrap(missingPolicy["identity"] as? [String: Any])
+        missingIdentity.removeValue(forKey: "sql_source_policy")
+        missingPolicy["identity"] = missingIdentity
+        XCTAssertThrowsError(try validate(missingPolicy))
+        var missingSourcePolicy = publication
+        var incompleteIdentity = try XCTUnwrap(publication["identity"] as? [String: Any])
+        incompleteIdentity.removeValue(forKey: "source_policy")
+        missingSourcePolicy["identity"] = incompleteIdentity
+        XCTAssertThrowsError(try validate(missingSourcePolicy))
         publication["model_used"] = false
         XCTAssertThrowsError(try validate(publication))
     }

@@ -40,7 +40,7 @@ APPLICATION = Report(
                 ),
                 (
                     "Briefly introduce yourself",
-                    "I develop Keldin, a Mac application for preparing practice papers. The project brings together my interest in computing and a practical question: how can I check an AI-generated question before someone tries to learn from it? I have worked on the application, answer checks and printed papers. Further details of my studies and commitments: to complete.",
+                    "I am developing Keldin, a Mac application for preparing computing practice. My work covers the interface, the printed questions and the checks on their proposed answers. An answer can sound convincing and still be wrong, so checking it has become a substantial part of the project. Details of my studies and other commitments: to complete.",
                 ),
                 (
                     "Project title",
@@ -48,7 +48,7 @@ APPLICATION = Report(
                 ),
                 (
                     "Summary of your project",
-                    "Keldin asks a selected AI model to draft French NSI exercises and proposed corrections, then checks the work before producing two PDFs. Its V36 route targets three independent exercises, 18 technical points and a separate indicative 2-point language component. Complete model-generated papers have not yet passed the current qualification process.\nA working activity uses twelve public lycée records from four Occitanie communes. Students can investigate real data through Python and SQL. This activity works offline and is separate from exam-paper generation.",
+                    "Keldin includes a French activity built from twelve public lycée records in Occitanie. Students use Python and SQL to investigate the data, including two records with the same name but different identifiers. The worksheet and its proposed answers work offline.\nThe app also asks a selected AI model to write NSI practice papers and corrections: three independent exercises, 18 technical points and a separate indicative 2-point language component. It checks their structure and supported answers before producing PDFs. No complete paper from the current model-generated route has yet passed qualification.",
                 ),
             ),
         ),
@@ -57,15 +57,15 @@ APPLICATION = Report(
             (
                 (
                     "What is original about your project?",
-                    "Keldin treats the proposed correction as something to test. It asks the model to solve an exercise without seeing its first answer, reviews each question and runs supported answer checks. A disagreement can stop publication. Agreement alone cannot prove that a question is right.\nThe Occitanie activity starts with an actual data problem: two CLEMENT MAROT records share a name but have different identifiers and boarding flags. Indexing them by name loses a record. Students can see the error, explain it and choose a better identifier.",
+                    "The regional activity uses an error that students can reproduce. Two CLEMENT MAROT records have different school IDs and boarding flags. A dictionary indexed by name keeps only one of them. The questions ask students to explain the loss and use a suitable identifier.\nFor generated papers, Keldin asks the model to solve an exercise without seeing its proposed answer, then reviews the questions and runs supported executable checks. Disagreements can stop publication. I retain the failed attempts as well as the results that pass those checks.",
                 ),
                 (
                     "Who could benefit from your project?",
-                    "The intended users are people preparing NSI practice and students using it. Keldin runs on a Mac; the resulting documents can be read on any PDF reader or printed. Students do not need an AI account, and the app collects no pupil responses.\nThe regional worksheet gives an NSI lesson a local subject: the Region's own school data. I have not yet tested its educational benefit with learners or arranged a school partnership.",
+                    "People preparing NSI practice can use the Mac app and share its PDFs with students. A student can read or print the documents without an AI account. Keldin does not collect pupil responses.\nThe regional worksheet connects familiar programming operations to data about local schools. It is intended for teaching and practice; its educational benefit has not been measured with learners, and no school partnership has been arranged.",
                 ),
                 (
                     "What stage of development has your project reached?",
-                    "The app supports standard and enlarged print, progress updates and cancellation. Its regional activity produces a three-page worksheet and three-page correction. An earlier fixed catalogue, V35, underwent internal curriculum and page review. Those results do not validate the new model-generated papers.\nCurrent local models still make mistakes in complete French drafts. Improving model selection and checking the accepted papers are the immediate priorities. Difficulty and duration remain uncalibrated; French teacher review and learner timing evidence are unavailable. App Store publication is still pending.",
+                    "The regional activity produces a three-page worksheet and a three-page correction. The app has standard and enlarged print, visible progress and cancellation. Earlier fixed papers underwent internal curriculum and page review, but that work cannot establish the quality of a new AI draft.\nComplete French drafts from local models have contained mistakes. The immediate work is to evaluate stronger models and inspect their papers against the programme and official subjects. Difficulty and completion time have not been calibrated. French teacher review and learner timing evidence are unavailable; App Store publication is pending.",
                 ),
             ),
         ),
@@ -74,11 +74,11 @@ APPLICATION = Report(
             (
                 (
                     "Have you already presented this project, and has it been the subject of a request for support?",
-                    "I presented an earlier British version to a computing teacher. Comments on difficulty, SQL and the precision of marking criteria helped shape the software requirements. This was feedback on that version, not validation of the French papers.\nOther presentations, support requested or received, and previous funding: applicant to complete and confirm before submission.",
+                    "I presented an earlier British version to a computing teacher. The comments concerned difficulty, SQL and how precisely the marking criteria awarded credit. I used them when setting requirements for the software. They did not assess the French papers.\nOther presentations, support requested or received, and previous funding: applicant to complete and confirm before submission.",
                 ),
                 (
                     "Additional information to explain your project",
-                    "The regional activity uses three public establishments in each of Nîmes, Toulouse, Montpellier and Cahors. The 2025-2026 source was updated on 12 May 2026. Licence Ouverte 2.0 (Etalab) allows attributed reuse. The extract preserves the published labels; it cannot establish NSI provision or current boarding vacancies.\nDuring months 1 and 2, I would document failures and extend the checks. Months 3 to 6 would focus on complete papers and comparison with official questions. Months 7 to 9 would address PDF accessibility and further regional activities. I would use the final three months to assess what worked before extending the project. Any school study would need prior agreement.\nThe 1,000-euro prize could support testing on different Macs, accessibility work and regional data activities. The applicant must complete the budget allocation before submission. Reference-document rights, educational calibration and distribution requirements still need resolving. There is no regional endorsement or agreed school deployment.",
+                    "The extract contains three public establishments from each of Nîmes, Toulouse, Montpellier and Cahors. It retains the published labels from the 2025-2026 dataset, updated on 12 May 2026. Licence Ouverte 2.0 (Etalab) permits attributed reuse. These records do not establish NSI provision or current boarding vacancies.\nOver the next twelve months, I would spend months 1 and 2 recording failures and extending the checks. In months 3 to 6, I would compare complete papers with official questions. Months 7 to 9 would focus on PDF accessibility and further activities using regional data. The final three months would be used to assess the results before extending the project. Any school study would require agreement in advance.\nThe 1,000-euro prize could help pay for testing on different Macs, accessibility work and regional activities. Budget allocation: applicant to complete before submission. Reference-document rights, educational calibration and distribution requirements remain unresolved. No regional endorsement or school deployment has been agreed.",
                 ),
             ),
         ),
@@ -91,65 +91,65 @@ TECHNICAL = Report(
     "Technical and user report",
     (
         Page(
-            "Learning from Occitanie data",
+            "One name, two records",
             (
                 (
-                    "Twelve records, four communes",
-                    "Keldin's regional worksheet uses lycée data published by Région Occitanie. It takes three public establishments from each of Nîmes, Toulouse, Montpellier and Cahors. The 2025-2026 source was updated on 12 May 2026 and retrieved on 29 October. A fixed local extract lets the activity run without a network connection.",
+                    "",
+                    "Two records in Région Occitanie's lycée dataset are named CLEMENT MAROT. Their school IDs and boarding flags differ. Store them in a Python dictionary keyed by name and one record overwrites the other. Keldin's regional worksheet asks students to find the loss, explain it and choose an identifier that keeps both records.",
                 ),
                 (
-                    "When a name is not an identifier",
-                    "Two records are named CLEMENT MAROT. Their school IDs and boarding flags differ. Put them in a dictionary keyed by name and one overwrites the other. The same extract mixes uppercase and title case for communes: a lookup for MONTPELLIER misses records until the comparison handles case consistently. Accents still matter.",
+                    "",
+                    "The same extract mixes uppercase and title case for commune names. A lookup for MONTPELLIER misses records until the comparison handles case consistently. Accents still matter. Eight questions take these problems through dictionaries and SQL, including a join. The correction compares two SQLite results with separate Python selections.",
                 ),
                 (
-                    "From the record to the query",
-                    "Eight questions follow these problems through Python dictionaries and SQL, including a join. The correction checks two SQLite results against separate Python selections. Both documents have three pages. A recipient can use the unmarked activity with an ordinary PDF reader or a printed copy.",
+                    "A local activity",
+                    "The twelve records comprise three public establishments from each of Nîmes, Toulouse, Montpellier and Cahors. The fixed extract works offline. Its three-page worksheet and three-page correction can be printed or opened in an ordinary PDF reader, without an AI account.",
                 ),
                 (
-                    "What this example can show",
-                    "The activity gives data-quality work a local context. Its small selection is not representative and cannot guide admissions, show NSI provision or identify boarding vacancies. Contacts, pupil metrics and coordinates are omitted. Each PDF credits the producer and dataset, with its date and Licence Ouverte 2.0 (Etalab). No school partnership or regional endorsement has been obtained.",
+                    "Source and limits",
+                    "The 2025-2026 dataset was updated on 12 May 2026 and retrieved on 29 October. Each PDF credits the Region and dataset under Licence Ouverte 2.0 (Etalab). Contacts, pupil metrics and coordinates are omitted. This small selection cannot represent the region, guide admissions, establish NSI provision or identify boarding vacancies.",
                 ),
             ),
         ),
         Page(
-            "From a model to a practice paper",
+            "Making a practice paper",
             (
                 (
-                    "Drafting",
-                    "In V36, the selected model writes the French exercises and proposed corrections. The target is three independent exercises worth 6 technical points each, with a separate indicative 2-point language component. French programme and paper references inform the requests. The earlier five-family V35 catalogue is retained for historical checks; it is no longer the public authoring route.",
+                    "",
+                    "A user chooses an AI provider and model, then standard or enlarged print. Keldin asks the model to write three independent French NSI exercises and their proposed answers, using French programme and paper references. Each exercise is worth 6 technical points; an indicative 2-point language component is separate.",
                 ),
                 (
-                    "Checking the answer",
-                    "Keldin asks the model to solve each exercise without seeing its proposed answer, then review each question. Supported executable checks examine SQL, Python traces and shortest paths. A reported issue can stop the paper. The same model can make the same mistake twice, so these steps leave a draft that still needs reading.",
+                    "Checking the work",
+                    "The model then solves each exercise without seeing its proposed answer and reviews the questions individually. Supported executable checks examine SQL, Python traces and shortest paths. A reported issue can stop publication. Agreement between model calls cannot prove correctness: both can make the same mistake.",
                 ),
                 (
-                    "Using the app",
-                    "The user chooses a provider and model, then standard or enlarged print. Progress stays visible while other sections remain available, and generation can be cancelled. SwiftUI controls the Mac interface; a Python backend carries out generation and sends progress events. Keldin collects no pupil responses.",
+                    "",
+                    "The SwiftUI Mac interface passes the work to a Python backend, which reports progress. Other sections remain available, and the user can cancel. Local models run on the Mac. Hosted generation sends prompts after the user's consent and uses their API credits. Keldin does not collect pupil responses.",
                 ),
                 (
-                    "Two documents to read",
-                    "Keldin prepares the subject and correction privately and checks them before publication. Failed or cancelled work is not recorded as a completed paper. Technical records stay in private storage; users export the PDFs. The regional activity also publishes its pair together and refuses to replace existing output. Read both documents before sharing them.",
+                    "Saving the result",
+                    "The subject and correction are prepared in private storage and checked before publication. Failed or cancelled work is not recorded as a completed paper. Users export the PDFs; technical records stay private. The regional activity also publishes its pair together and refuses to replace existing output. Both documents should be read before they are shared.",
                 ),
             ),
         ),
         Page(
-            "What is ready, and what is not",
+            "Current state of the project",
             (
                 (
-                    "Paper review",
-                    "Internal review uses the programme, the announced 2027 written structure and the official 2026 Métropole subject. That subject has 36 questions over 16 pages. Review considers the steps a student must reason through, the information supplied and the proposed marks. Page count alone cannot establish comparable difficulty.",
+                    "French papers",
+                    "The current model-generated route, V36, has not yet produced a complete French paper that passes qualification. Local drafts have contained incorrect reasoning and code. Internal review compares the work with the programme, the announced 2027 structure and the 2026 Métropole subject, which has 36 questions over 16 pages. It examines reasoning, supplied information and credit, rather than treating page count as a difficulty measure.",
                 ),
                 (
-                    "Current result",
-                    "No complete V36 model-generated French paper has yet passed qualification. Local drafts have contained incorrect reasoning and code; the app has refused them. Earlier V35 page review covered 341 pages, inspected or matched to inspected pages. It does not establish the quality of new model output. Teacher review and learner timing studies have not been conducted.",
+                    "",
+                    "Earlier fixed papers, V35, received internal curriculum and page review. That evidence is historical. New model output needs its own inspection. French teacher review and learner timing studies have not been conducted, so difficulty and completion time remain uncalibrated. No school partnership or regional endorsement has been obtained.",
                 ),
                 (
-                    "Release work",
-                    "Developer-signed Mac builds have passed local checks, including selected native workflows. Testing every interaction on every Mac and full HIG compliance have not been established. App Store release still needs a personal Distribution identity and the remaining release requirements. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
+                    "Distribution",
+                    "Developer-signed Mac builds have passed local checks and selected native workflows. Testing does not cover every interaction on every Mac or establish full HIG compliance. App Store release still requires a personal Distribution identity and the remaining release work. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
                 ),
                 (
-                    "Source records",
-                    "Regional dataset: data.laregion.fr/explore/dataset/lycees-occitanie/\nWritten definition: education.gouv.fr/bo/2026/Special4/MENE2622643N\nThe repository retains the 28 October V35 review, 29 October regional activity review and subsequent V36 model diagnostics. These records identify the source versions and retain failed attempts.",
+                    "Sources",
+                    "Regional data: data.laregion.fr/explore/dataset/lycees-occitanie/\nWritten definition: education.gouv.fr/bo/2026/Special4/MENE2622643N\nThe repository retains the 28 October fixed-paper review, 29 October regional activity review and later model diagnostics, including failed attempts and source versions.",
                 ),
             ),
         ),
@@ -162,44 +162,44 @@ RELIABILITY = Report(
     "Reliability and validation",
     (
         Page(
-            "How a draft is checked",
+            "What the checks establish",
             (
                 (
-                    "Marks and structure",
-                    "A question's credits must add up to its stated mark. Exact decimal arithmetic checks these totals against three 6-point exercises. A separate indicative language component adds 2 points to the 18 technical points. The paper targets 210 minutes, but no learner study has measured its actual completion time.",
+                    "",
+                    "Keldin checks that a question's marking criteria add up to its stated mark, using exact decimal arithmetic. Three 6-point exercises give 18 technical points. A separate indicative language component adds 2. The target duration is 210 minutes; no learner study has measured the actual time needed.",
                 ),
                 (
-                    "Answers and disagreements",
-                    "V36 separates drafting from a solve attempt that cannot see the proposed answer. A further review records issues question by question. Supported executable checks cover SQL, Python traces and shortest paths. Some answers remain unchecked. Even a successful check cannot rule out a shared misunderstanding of the printed question.",
+                    "Answer checks",
+                    "In the current route, V36, a solve attempt cannot see the proposed answer. A further review records findings for each question. SQL, Python traces and shortest paths have supported executable checks; other work may remain unchecked. A successful check covers its defined case, and can still share a mistaken interpretation of the printed question.",
                 ),
                 (
-                    "The printed page",
-                    "The PDF checks look for missing or out-of-order content, incorrect dimensions, missing footers and empty page bodies. Visual review examines code indentation, diagrams and how a question continues across pages. A pixel match can carry forward an earlier inspection of an unchanged page. It does not add another independent review.",
+                    "Printed content",
+                    "PDF checks look for missing or out-of-order content, wrong dimensions, absent footers and empty page bodies. Visual inspection covers code indentation, diagrams and continuation across pages. An unchanged page can inherit its earlier inspection through a pixel match. That match is recorded as reused evidence, not a second independent review.",
                 ),
                 (
-                    "The regional activity",
-                    "Its two SQLite queries are compared with independent Python selections, and tests run the printed Python solutions. All six worksheet and correction pages were reviewed. The extract fixes twelve IDs and eight fields; its rows-only SHA-256 is 8a6a75c869d444fbd637af4976702dc7f2c436e08db5af0faa656df8ccd866f0. The hash identifies these rows, not the full dataset. A changed source needs fresh checks.",
+                    "Regional worksheet",
+                    "Tests compare its two SQLite queries with separate Python selections and run the printed Python solutions. All six worksheet and correction pages were reviewed. The extract contains twelve IDs and eight fields. Its rows-only SHA-256 is 8a6a75c869d444fbd637af4976702dc7f2c436e08db5af0faa656df8ccd866f0. This identifies the selected rows, not the full dataset; a source change needs fresh checks.",
                 ),
             ),
         ),
         Page(
-            "Reading the results",
+            "Evidence and remaining limits",
             (
                 (
-                    "Earlier fixed papers",
-                    "V35 contained five fixed families with 34 or 36 questions. Their standard subjects had 7 to 9 pages; the official comparator has 16 pages and 36 questions. Repeating a family or enlarging its print does not create another independent case. Those results remain historical evidence about V35, not acceptance of the current V36 model-generated route.",
+                    "Paper trials",
+                    "The first historical Gemma 4 12B French campaign accepted 0 of 10 complete papers. No complete current V36 paper has yet passed qualification. Small successful tasks and short parallel-task timings cannot establish complete-paper quality or faster generation across subjects. Results retain the model, settings and source version, including failed attempts.",
                 ),
                 (
-                    "Models still need qualification",
-                    "The first historical Gemma 4 12B French campaign accepted 0 of 10 complete papers. No complete current V36 French paper has yet passed qualification either. A small successful task cannot establish complete-paper quality. Each result needs its model, settings and source version, with failed attempts retained. Short parallel-task timings also cannot establish faster complete papers across subjects.",
+                    "Historical page review",
+                    "V35 contained five fixed families with 34 or 36 questions and standard subjects of 7 to 9 pages. Its 341-page review included fresh inspection and matches to previously inspected pages. The official comparator has 36 questions over 16 pages. Repeated families and enlarged copies are not independent cases, and their inspection cannot validate newly generated papers.",
                 ),
                 (
-                    "What has not been measured",
-                    "There is no French teacher panel or learner timing study. Teacher review and empirical calibration remain not run. The project has no examiner approval or evidence of national difficulty equivalence, learning gains or time savings. A timing study would need observed attempts and a stated treatment of unfinished work and accommodations.",
+                    "Educational evaluation",
+                    "French teacher review and empirical calibration remain not run. There is no examiner approval or evidence of national difficulty equivalence, learning gains or time savings. A timing study would need observed attempts and a stated treatment of unfinished work and accommodations.",
                 ),
                 (
-                    "Why sample size matters",
-                    "For n independent cases with zero blocking defects, a simple one-sided 95% upper bound is 1 - 0.05^(1/n). At n = 30 it is about 9.5%. This is an illustration of uncertainty, not a measured defect rate for Keldin. It cannot be applied to the failed campaign or repeated versions of the same five families.",
+                    "Small samples",
+                    "With zero blocking defects in n independent cases, a simple one-sided 95% upper bound is 1 - 0.05^(1/n). For n = 30, the bound is about 9.5%. This illustrative calculation is not Keldin's measured defect rate. It does not apply to a failed campaign or repeated versions of five fixed families.",
                 ),
             ),
         ),
@@ -290,7 +290,9 @@ def body_section(label: str, text: str, *, formal: bool) -> str:
         return paragraph(label, size=25, bold=True, after=120) + paragraph(
             text, after=230
         )
-    # Keep the illustration column; give each idea a heading and a paragraph.
+    # Unlabelled paragraphs let the narrative continue without another heading.
+    if not label:
+        return paragraph(text, indent=3800, after=240)
     return paragraph(label, size=22, bold=True, indent=3800, after=70) + paragraph(
         text, indent=3800, after=240
     )

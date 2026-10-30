@@ -160,3 +160,9 @@ def test_backend_bundle_keeps_source_used_in_french_corrections() -> None:
 def test_build_and_test_use_the_same_qualified_pdf_engine() -> None:
     for filename in ("requirements-build.txt", "requirements-test.txt"):
         assert "pymupdf==1.28.2" in (REPO_ROOT / filename).read_text().splitlines()
+
+
+def test_build_and_test_declare_the_material_serialization_dependency_floor() -> None:
+    # Field(exclude_if=...) preserves historical records only on Pydantic 2.12+.
+    for filename in ("requirements-build.txt", "requirements-test.txt"):
+        assert "pydantic>=2.12,<3" in (REPO_ROOT / filename).read_text().splitlines()

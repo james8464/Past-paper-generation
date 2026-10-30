@@ -4,7 +4,9 @@ import Foundation
 /// A model-authored draft. The older catalogue request remains available for saved-package replay.
 struct FrenchLLMAssessmentRequest {
     static let promptVersion = "fr-nsi-written-2027-v36-llm"
-    static let printPolicy = "fr-nsi-v36-model-review-v1"
+    static let printPolicy = "fr-nsi-v36-model-review-v2"
+    static let sqlSourcePolicy = "fr-nsi-v36-sql-source-v1"
+    static let sourcePolicy = "fr-nsi-v36-exercise-curriculum-scope-v1"
     let referenceIndex: URL
     let output: URL
     let seed: Int
@@ -36,7 +38,9 @@ struct FrenchLLMAssessmentRequest {
               publication.identity.model == configuration.model,
               publication.identity.seed == configuration.seed,
               publication.identity.promptVersion == promptVersion,
-              publication.identity.printPolicy == printPolicy else {
+              publication.identity.printPolicy == printPolicy,
+              publication.identity.sqlSourcePolicy == sqlSourcePolicy,
+              publication.identity.sourcePolicy == sourcePolicy else {
             throw CocoaError(.fileReadCorruptFile)
         }
     }
@@ -112,6 +116,8 @@ struct FrenchLLMAssessmentRequest {
             let seed: Int
             let promptVersion: String
             let printPolicy: String
+            let sqlSourcePolicy: String
+            let sourcePolicy: String
         }
     }
 }

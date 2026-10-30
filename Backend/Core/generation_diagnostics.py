@@ -8,6 +8,7 @@ import re
 import stat
 import time
 import uuid
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,81 @@ class GenerationEvidenceError(ValueError):
     def __init__(self, message: str, *, details: dict[str, Any]) -> None:
         super().__init__(message)
         self.details = details
+
+
+PROVIDER_CONTRACT_KIND = "provider_output_contract_v1"
+PROVIDER_CONTRACT_ISSUES = {
+    "invalid_json": "Le fournisseur n'a pas renvoyé un objet JSON valide.",
+    "schema_mismatch": "L'objet JSON ne respecte pas le schéma demandé.",
+}
+
+
+def validate_provider_contract_rejection(record: object, provider: str) -> None:
+    """Validate opaque failure evidence; a hash does not prove unseen contents."""
+    if (
+        not isinstance(record, dict)
+        or set(record)
+        != {"kind", "provider", "failure", "response_sha256", "schema_path", "issue"}
+        or record.get("kind") != PROVIDER_CONTRACT_KIND
+        or provider != "deepseek"
+        or record.get("provider") != provider
+        or not isinstance(record.get("failure"), str)
+        or record["failure"] not in PROVIDER_CONTRACT_ISSUES
+        or record.get("issue") != PROVIDER_CONTRACT_ISSUES[record["failure"]]
+        or not isinstance(record.get("response_sha256"), str)
+        or re.fullmatch(r"[0-9a-f]{64}", record["response_sha256"]) is None
+    ):
+        raise ValueError("Preuve de refus du fournisseur invalide")
+    path = record["schema_path"]
+    if (
+        not isinstance(path, list)
+        or len(path) > 24
+        or any(
+            not (type(part) is int and part >= 0)
+            and not (isinstance(part, str) and len(part) <= 80)
+            for part in path
+        )
+        or (record["failure"] == "invalid_json" and path)
+        or (record["failure"] == "schema_mismatch" and not path)
+    ):
+        raise ValueError("Chemin du schéma de refus invalide")
+
+
+class ProviderOutputContractError(GenerationEvidenceError):
+    """A completed DeepSeek output failed syntax/shape, not semantic review."""
+
+    def __init__(
+        self,
+        *,
+        failure: str,
+        response_sha256: str,
+        schema_path: list[str | int],
+        diagnostic: dict[str, Any],
+    ) -> None:
+        if not isinstance(failure, str) or failure not in PROVIDER_CONTRACT_ISSUES:
+            raise ValueError("Catégorie de refus du fournisseur invalide")
+        record = {
+            "kind": PROVIDER_CONTRACT_KIND,
+            "provider": "deepseek",
+            "failure": failure,
+            "response_sha256": response_sha256,
+            "schema_path": schema_path,
+            "issue": PROVIDER_CONTRACT_ISSUES[failure],
+        }
+        validate_provider_contract_rejection(record, "deepseek")
+        self._rejection = deepcopy(record)
+        super().__init__(
+            "DeepSeek returned invalid structured output.",
+            details={
+                **diagnostic,
+                "kind": "provider_structure",
+                "output_contract": record,
+            },
+        )
+
+    @property
+    def rejection_record(self) -> dict[str, Any]:
+        return deepcopy(self._rejection)
 
 
 def _bounded(value: Any, secrets: tuple[str, ...], depth: int = 0) -> Any:
