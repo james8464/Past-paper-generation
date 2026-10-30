@@ -34,22 +34,24 @@ import Testing
   }
 }
 
-@Test @available(macOS 26.0, *) func supportedAndUnsupportedSchemas() throws {
-  let supported = try JSONValue.decode(
-    Data(
-      #"{"type":"object","additionalProperties":false,"required":["result"],"properties":{"result":{"type":"integer","minimum":0,"maximum":10}}}"#
-        .utf8))
-  _ = try makeGenerationSchema(supported)
-  for json in [
-    #"{"type":"object","properties":{"x":{"type":"string","pattern":".*"}},"required":["x"],"additionalProperties":false}"#,
-    #"{"type":"object","properties":{},"additionalProperties":true}"#,
-    #"{"type":"object","properties":{"x":{"type":"string","minLength":1}},"required":["x"],"additionalProperties":false}"#,
-  ] {
-    #expect(throws: HelperFailure.self) {
-      try makeGenerationSchema(JSONValue.decode(Data(json.utf8)))
+#if canImport(FoundationModels)
+  @Test @available(macOS 26.0, *) func supportedAndUnsupportedSchemas() throws {
+    let supported = try JSONValue.decode(
+      Data(
+        #"{"type":"object","additionalProperties":false,"required":["result"],"properties":{"result":{"type":"integer","minimum":0,"maximum":10}}}"#
+          .utf8))
+    _ = try makeGenerationSchema(supported)
+    for json in [
+      #"{"type":"object","properties":{"x":{"type":"string","pattern":".*"}},"required":["x"],"additionalProperties":false}"#,
+      #"{"type":"object","properties":{},"additionalProperties":true}"#,
+      #"{"type":"object","properties":{"x":{"type":"string","minLength":1}},"required":["x"],"additionalProperties":false}"#,
+    ] {
+      #expect(throws: HelperFailure.self) {
+        try makeGenerationSchema(JSONValue.decode(Data(json.utf8)))
+      }
     }
   }
-}
+#endif
 
 @Test func generationBoundsAndBooleanCoercionAreRejected() throws {
   let raw =
@@ -66,34 +68,38 @@ import Testing
   }
 }
 
-@Test @available(macOS 26.0, *) func unsupportedKeywordsAreNeverSilentlyRemoved() throws {
-  for keyword in [
-    "$ref", "$defs", "oneOf", "pattern", "minLength", "maxLength", "uniqueItems", "const",
-  ] {
-    let raw = JSONValue.object([
-      "type": .string("object"), "properties": .object([:]),
-      "required": .array([]), "additionalProperties": .bool(false), keyword: .string("unsupported"),
-    ])
-    #expect(throws: HelperFailure.self) { try makeGenerationSchema(raw) }
-  }
-}
-
-@Test @available(macOS 26.0, *) func schemaBoundsAndNestedConstraintsAreChecked() throws {
-  let supported =
-    #"{"type":"object","additionalProperties":false,"required":["values"],"properties":{"values":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["a","b"]}},"optional":{"type":"boolean"}}}"#
-  _ = try makeGenerationSchema(JSONValue.decode(Data(supported.utf8)))
-  for invalid in [
-    supported.replacingOccurrences(of: "\"maxItems\":3", with: "\"maxItems\":513"),
-    supported.replacingOccurrences(of: "\"minItems\":1", with: "\"minItems\":-1"),
-    supported.replacingOccurrences(of: "[\"a\",\"b\"]", with: "[\"a\",\"a\"]"),
-    supported.replacingOccurrences(
-      of: "\"required\":[\"values\"]", with: "\"required\":[\"missing\"]"),
-  ] {
-    #expect(throws: HelperFailure.self) {
-      try makeGenerationSchema(JSONValue.decode(Data(invalid.utf8)))
+#if canImport(FoundationModels)
+  @Test @available(macOS 26.0, *) func unsupportedKeywordsAreNeverSilentlyRemoved() throws {
+    for keyword in [
+      "$ref", "$defs", "oneOf", "pattern", "minLength", "maxLength", "uniqueItems", "const",
+    ] {
+      let raw = JSONValue.object([
+        "type": .string("object"), "properties": .object([:]),
+        "required": .array([]), "additionalProperties": .bool(false),
+        keyword: .string("unsupported"),
+      ])
+      #expect(throws: HelperFailure.self) { try makeGenerationSchema(raw) }
     }
   }
-}
+
+  @Test @available(macOS 26.0, *) func schemaBoundsAndNestedConstraintsAreChecked() throws {
+    let supported =
+      #"{"type":"object","additionalProperties":false,"required":["values"],"properties":{"values":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["a","b"]}},"optional":{"type":"boolean"}}}"#
+    _ = try makeGenerationSchema(JSONValue.decode(Data(supported.utf8)))
+    for invalid in [
+      supported.replacingOccurrences(of: "\"maxItems\":3", with: "\"maxItems\":513"),
+      supported.replacingOccurrences(of: "\"minItems\":1", with: "\"minItems\":-1"),
+      supported.replacingOccurrences(of: "[\"a\",\"b\"]", with: "[\"a\",\"a\"]"),
+      supported.replacingOccurrences(
+        of: "\"required\":[\"values\"]", with: "\"required\":[\"missing\"]"),
+    ] {
+      #expect(throws: HelperFailure.self) {
+        try makeGenerationSchema(JSONValue.decode(Data(invalid.utf8)))
+      }
+    }
+  }
+
+#endif
 
 @Test func cancelledTaskStopsBeforeModelInference() async throws {
   let request = try HelperRequest.parse(

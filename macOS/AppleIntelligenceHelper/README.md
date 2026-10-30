@@ -4,7 +4,9 @@ This executable uses Apple's installed `SystemLanguageModel.default` only. It do
 
 ## Build and placement
 
-Build with `swift build --package-path macOS/AppleIntelligenceHelper -c release`. Obtain the product directory with the same command plus `--show-bin-path`. The application build must copy the executable to `Keldin.app/Contents/Helpers/KeldinAppleIntelligence` and sign it with the app's selected identity and applicable helper entitlements. This package does not change app signing or packaging. Unit tests use `swift test --package-path macOS/AppleIntelligenceHelper --disable-xctest --no-parallel`.
+The existing backend build phase invokes `macOS/scripts/build_apple_intelligence.sh` before checking the Python helper cache. SwiftPM incrementally builds one release product in this package's reusable `.build` directory, independent of per-test DerivedData copies. The script copies it to `Keldin.app/Contents/Helpers/KeldinAppleIntelligence`, signs and verifies that copy with the app's selected identity, then replaces the destination. Store builds use the existing inherited helper sandbox entitlements and hardened runtime. App Store preflight checks both helpers. There is no runtime compilation or package download.
+
+For standalone development, build with `swift build --package-path macOS/AppleIntelligenceHelper -c release`. Obtain the product directory with the same command plus `--show-bin-path`. Unit tests use `swift test --package-path macOS/AppleIntelligenceHelper --disable-xctest --no-parallel`. SDKs without FoundationModels compile an unavailable-only helper; supported SDKs weak-link the framework so old operating systems can still launch and report unavailable.
 
 ## One-request protocol
 

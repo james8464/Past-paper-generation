@@ -11,6 +11,9 @@ DIST_DIR="$WORK_DIR/dist"
 BACKEND_DIR="$HELPER_DIR/KeldinBackend"
 FINGERPRINT_FILE="$BACKEND_DIR/.build-fingerprint"
 
+# Native Apple Intelligence is packaged independently of the frozen Python cache.
+"$SRCROOT/scripts/build_apple_intelligence.sh"
+
 if [[ ! -x "$PYTHON" ]]; then
   echo "error: Missing $PYTHON. Create the project virtual environment first." >&2
   exit 1
