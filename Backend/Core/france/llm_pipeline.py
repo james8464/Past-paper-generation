@@ -25,6 +25,7 @@ from Backend.Core.france.code_layout import (
     require_code_width,
 )
 from Backend.Core.france.corpus import HOSTS
+from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -244,6 +245,10 @@ def exercise_request(
         f"question et {layout.columns(layout.content_width)} dans les réponses ou le "
         "contexte; indentation comprise, les mesures réelles restent obligatoires. "
         "Utilise uniquement des espaces pour l'indentation du code, pas de tabulations. "
+        f"Les sommets et poids des graphes sont imprimés en {14 if large_print else 10} "
+        "points avec des cercles adaptés aux noms. Utilise des noms de sommets courts "
+        "et des graphes lisibles sans chevauchement; un graphe trop dense ou des noms "
+        "trop longs seront refusés avant le contrôle des réponses. "
         "Les titres, cellules de tableau et étiquettes des graphes restent en texte "
         "ordinaire : place les blocs de code dans le contexte, une question ou une réponse. "
         "Aucun import, accès fichier, réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
@@ -448,6 +453,9 @@ def validate_authored_exercise(
     # supplies a strict mode and is checked before independent paid reviews.
     if large_print is not None:
         layout = code_layout(large_print)
+        for material in exercise.materials:
+            if not isinstance(material, NSITableMaterial):
+                graph_layout(material, large_print)
         fields = [("contexte", exercise.context, layout.content_width)]
         for question in exercise.questions:
             fields.extend(

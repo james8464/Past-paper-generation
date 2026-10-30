@@ -24,7 +24,7 @@ def test_code_first_question_number_precedes_listing(
     source = [first, *exercises()[1:]]
     path = tmp_path / "code-first-v2.pdf"
     render(path, source, large_print=large_print, correction=correction)
-    validate_llm_pdf(path, source, correction=correction)
+    validate_llm_pdf(path, source, correction=correction, large_print=large_print)
 
 
 def test_native_expected_policy_matches_current_backend():

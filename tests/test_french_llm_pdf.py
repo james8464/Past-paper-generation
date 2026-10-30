@@ -73,7 +73,9 @@ def test_real_generic_multimaterial_first_use_later_and_both_print_sizes(
     path = tmp_path / "paper.pdf"
     source = exercises()
     render(path, source, correction=correction, large_print=large_print)
-    llm_pdf.validate_llm_pdf(path, source, correction=correction)
+    llm_pdf.validate_llm_pdf(
+        path, source, correction=correction, large_print=large_print
+    )
 
 
 @pytest.mark.parametrize("correction", [False, True])

@@ -164,7 +164,13 @@ def handle_generate_llm_assessment(args) -> int:
                 role=role,
                 language="fr-FR",
             )
-            validate_llm_pdf(path, exercises, correction=correction)
+            validate_llm_pdf(
+                path,
+                exercises,
+                correction=correction,
+                large_print=args.large_print,
+                print_policy=identity["print_policy"],
+            )
             paths[role] = path
         atomic_json(staging / "assessment.json", package)
         paths["assessment_package"] = staging / "assessment.json"
