@@ -1,6 +1,20 @@
 # Occitanie dossier visual audit against Apple reports
 
-Updated 3 October 2026. This is a design comparison, not an endorsement by Apple or a claim that the project uses Apple's brand.
+This is a design and editorial comparison, not an endorsement by Apple or a claim that the project uses Apple's brand.
+
+## Editorial revision, 30 October 2026
+
+The three English reports have been rewritten after reading Apple's [Longevity, by Design](https://www.apple.com/environment/pdf/Longevity_by_Design-June_2024-Apple.pdf), especially its reliability examples on pages 3 to 5, and [A Day in the Life of Your Data](https://www.apple.com/privacy/docs/A_Day_in_the_Life_of_Your_Data.pdf), pages 3 to 8. These are references for clear explanations, not templates or text to copy.
+
+The revised technical report starts with the Occitanie activity and a specific problem in its source data: two CLEMENT MAROT records share a name but have different identifiers. It then explains how a user prepares a paper and how the app checks a draft. Ordinary paragraphs replace the repeated bullet-and-bold lead-ins. Short headings help readers find the evidence and its limits.
+
+The revision also corrects an important change in the product. V35's fixed catalogue is historical evidence. The public V36 route now asks the selected model to write French exercises. No complete V36 model-generated paper has yet passed qualification at this revision. The report distinguishes these results and retains the unresolved rights, educational calibration and distribution requirements. It claims no measured regional benefit, school partnership or prize outcome.
+
+The humanizer editing pass changes prose and paragraph treatment. It does not conceal how the project was developed or turn model agreement into independent validation. Final native Pages exports require a fresh page-by-page review after the text and diagrams are replaced.
+
+## Historical visual review, 3 October 2026
+
+The observations below describe the earlier dossier and app. They are not a current release-acceptance record.
 
 ## References and scope
 

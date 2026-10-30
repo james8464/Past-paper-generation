@@ -2300,8 +2300,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/apple-report-visual-audit.md": {
-    "mtime": 1791129181.5478954,
-    "ast_hash": "896593a8dd2ac32c954dfb086f8a7116",
+    "mtime": 1793357158.3242455,
+    "ast_hash": "e98eea3b15ca2ba72735aaac0d248368",
     "semantic_hash": ""
   },
   "Backend/Core/france/archetypes.py": {
@@ -4720,13 +4720,13 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
-    "mtime": 1793304373.1388543,
-    "ast_hash": "6f03413064f8f501b196b21d32d633c5",
+    "mtime": 1793356935.3285553,
+    "ast_hash": "5c13ad9d93d9bbf361e7ac15b7b5297d",
     "semantic_hash": ""
   },
   "tools/build_occitanie_pages_sources.py": {
-    "mtime": 1793304373.1391041,
-    "ast_hash": "aec3d859de8385c7aeb7480752577e30",
+    "mtime": 1793356935.3299239,
+    "ast_hash": "f7d6399a4817f2a1ecbff7d18d636572",
     "semantic_hash": ""
   },
   "docs/quality/accounting-equal-priority-correction-2026-10-29.md": {
