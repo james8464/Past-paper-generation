@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Mapping, Sequence
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
 
 from Backend.Core.ai_assessment import (
     ASSESSMENT_REVIEW_VERSION,
@@ -17,6 +14,10 @@ from Backend.Core.assessment_checkpoints import (
     identity_for_blueprint,
 )
 from Backend.Core.assessment_package import write_assessment_package
+from Backend.Core.family_contracts import ArtifactSpec as ArtifactSpec
+from Backend.Core.family_contracts import BuildResult as BuildResult
+from Backend.Core.family_contracts import FamilyAdapter as FamilyAdapter
+from Backend.Core.family_contracts import ProgressCallback as ProgressCallback
 from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
@@ -24,70 +25,9 @@ from Backend.Core.providers import HostedLLMClient
 from Backend.Core.reference_demand import profile_for
 from Backend.Core.render_transaction import render_pdf_atomically
 
-ProgressCallback = Callable[[str], None]
 
-
-@dataclass(frozen=True)
-class BuildResult:
-    assessment: Any
-    context: Any = None
-
-
-@dataclass(frozen=True)
-class ArtifactSpec:
-    role: str
-    filename: str
-    renderer: Callable[[Path], None]
-    progress_message: str
-
-
-@dataclass(frozen=True)
-class FamilyAdapter:
-    id: str
-    subject_label: str
-    backend_subject: str
-    load_message: str
-    build_message: str
-    prompt_version: str
-    load_syllabus: Callable[[Path], Any]
-    load_rule: Callable[[str], Any]
-    build: Callable[[Any, Any, int | None], BuildResult | Any]
-    artifacts: Callable[[Any, Any, Any, str], Sequence[ArtifactSpec]]
-    stem: Callable[[Any, str], str]
-    preview_message: str = "Using the deterministic blueprint preview"
-    validation_message: str = "Validating assessment package"
-    resolve_seed: Callable[[int | None], int | None] | None = None
-    seed_message: Callable[[int | None], str] | None = None
-    validate: Callable[[Any, Any, Any], None] | None = None
-    improve: (
-        Callable[
-            [
-                Any,
-                Any,
-                Any,
-                JSONGenerationClient,
-                ProgressCallback | None,
-                AssessmentCheckpointStore | None,
-            ],
-            Any,
-        ]
-        | None
-    ) = None
-    calibrate_difficulty: (
-        Callable[[Any, Any, Any, JSONGenerationClient, ProgressCallback | None], Any]
-        | None
-    ) = None
-    client_factory: Callable[[str, str], JSONGenerationClient] | None = None
-    checkpoint_identity: Callable[[Any, Any, str], Any] | None = None
-    supporting_artifacts: (
-        Callable[[Any, Any, Any, str, Path, ProgressCallback], Mapping[str, Path]]
-        | None
-    ) = None
-    output_order: tuple[str, ...] = ()
-
-
-def run_family_adapter(
-    adapter: FamilyAdapter,
+def run_family_adapter[Syllabus, Rule, Assessment, Context](
+    adapter: FamilyAdapter[Syllabus, Rule, Assessment, Context],
     *,
     paper: str,
     syllabus_path: Path,

@@ -437,3 +437,37 @@ These scoped reviews add file-level evidence; they do not finish the remaining
 repository-wide semantic audit. Keep the ledger's pending files visible. No
 performance gain, teacher validation, learner timing, whole-HIG compliance or
 Store approval follows from this checkpoint.
+
+## Remaining planned implementation, 30 October 2026
+
+Reconciliation of the current table identifies 26 task IDs. Earlier completion
+counts describe their dated snapshots, not an additional set of tasks. N1-N7,
+N9, P1-P4, P6-P7 and T1-T10 have scoped implementations and regressions recorded
+above. T6 deliberately retains identity/resource assertions alongside native
+behaviour tests; it does not require deleting those guards.
+
+The remaining N8 model-discovery duplication is now removed. ModelCoordinator
+owns the available-model list, loaded flag, refresh date and Ollama status.
+ApplicationCoordinator exposes compatibility accessors, with a weak, main-actor,
+pre-mutation notification bridge for its existing ObservableObject consumers.
+Current selection is passed into one model-option builder. Setter semantics,
+refresh epochs, settings and the existing refresh publisher remain intact.
+ModelDiscoveryOwnershipTests covers ownership, notifications, stable options and
+Observation invalidation. The three red regressions produced nine assertion
+failures; the scoped fixed native run passed 119 tests.
+
+P5 now uses a four-parameter FamilyAdapter and BuildResult contract tying
+syllabus, rule, assessment and context types together. Existing public imports
+re-export the same classes and runtime execution is unchanged. Static fixtures
+reject five mismatched hook arrangements, while runtime tests retain legacy
+adapter and publication behaviour. The scoped gate checks four files, including
+the new contract module; it does not claim that every legacy generator body or
+checkpoint implementation is statically checked. The focused runtime/static
+package passed 194 tests. See
+[the typed-boundary review](../../quality/family-adapter-type-boundary-2026-10-30.md).
+
+This completes the listed implementation packages, subject to the final combined
+regression and protected publication gates. It does not turn the file-review
+ledger into a whole-repository semantic certificate. Model capability, complete
+paper quality, final installed interaction tests and submission requirements
+remain separate release acceptance work.

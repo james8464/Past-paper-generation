@@ -7,11 +7,14 @@ import Observation
 @Observable
 final class ModelCoordinator {
     var provider: AIProvider = .ollama
-    var selectedModel = AppDefaults.ollamaModel
     private(set) var availableModels: [String] = []
+    private(set) var hasLoadedModels = false
     private(set) var lastRefreshDate: Date?
     private(set) var ollamaState = OllamaState()
-    var isRefreshing = false
+
+    // Legacy EnvironmentObject views need the same pre-mutation invalidation
+    // as views reading this observable owner directly.
+    @ObservationIgnored var onDiscoveryChange: (@MainActor () -> Void)?
 
     @ObservationIgnored private let clock: AppClock
     @ObservationIgnored private let staleAfter: TimeInterval
@@ -33,18 +36,31 @@ final class ModelCoordinator {
         OllamaModelGuide.currentRecommendation
     }
 
-    var modelOptions: [String] {
+    func modelOptions(selectedModel: String) -> [String] {
         var seen: Set<String> = []
         return ([selectedModel, recommendation.model] + availableModels)
             .filter { !$0.isEmpty && seen.insert($0).inserted }
     }
 
     func receiveModels(_ models: [String], at date: Date? = nil) {
+        onDiscoveryChange?()
         availableModels = models
         lastRefreshDate = date ?? clock.now
+        hasLoadedModels = true
+    }
+
+    func setAvailableModels(_ models: [String]) {
+        onDiscoveryChange?()
+        availableModels = models
+    }
+
+    func setHasLoadedModels(_ loaded: Bool) {
+        onDiscoveryChange?()
+        hasLoadedModels = loaded
     }
 
     func receiveOllamaState(_ state: OllamaState) {
+        onDiscoveryChange?()
         ollamaState = state
     }
 }

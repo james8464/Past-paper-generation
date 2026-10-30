@@ -8,22 +8,23 @@ ROOT = Path(__file__).resolve().parents[1] / "macOS" / "Keldin"
 def test_model_status_labels_use_semantic_primary_text():
     settings = (ROOT / "Features/Settings/SettingsPane.swift").read_text()
     workspace = (ROOT / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    guidance = (ROOT / "Features/Generation/GenerationGuidanceViews.swift").read_text()
     labels = (
-        settings.split('Label("Recommended model selected"', 1)[1].split("} else", 1)[
-            0
-        ],
+        settings.split('Label("Memory-fit suggestion selected"', 1)[1].split(
+            "} else", 1
+        )[0],
         settings.split("OllamaModelGuide.document.otherModelWarningResource,", 1)[
             1
         ].split("HStack", 1)[0],
-        workspace.split(
-            "if application.aiProvider == .ollama && !application.selectedModelIsRecommended {",
-            1,
-        )[1].split('LabeledContent("Save to")', 1)[0],
+        guidance.split("struct ModelQualityAdviceView", 1)[1].split(
+            "struct PaperQualitySummarySection", 1
+        )[0],
     )
     for label in labels:
         assert ".foregroundStyle(.primary)" in label
         assert ".foregroundStyle(.orange)" not in label
         assert ".foregroundStyle(.green)" not in label
+    assert "ModelQualityAdviceView(" in workspace
 
 
 def test_warning_keeps_a_symbol_and_explanation_without_colour():

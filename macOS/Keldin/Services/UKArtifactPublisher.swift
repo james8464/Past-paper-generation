@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 struct UKArtifactPublisher {
@@ -52,12 +53,31 @@ struct UKArtifactPublisher {
         try manager.createDirectory(at: staging, withIntermediateDirectories: false)
         defer { try? manager.removeItem(at: staging) }
         for file in files {
-            try copyFile(file.url, staging.appendingPathComponent(file.url.lastPathComponent))
+            let sourceHash = try fileHash(file.url)
+            let copy = staging.appendingPathComponent(file.url.lastPathComponent)
+            try copyFile(file.url, copy)
+            let values = try copy.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey])
+            guard values.isRegularFile == true, values.isSymbolicLink != true,
+                  try fileHash(copy) == sourceHash else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
         }
         // Both directories share their parent and volume. Publish the whole run
         // with one rename; existing papers and relative manifest paths stay intact.
         try commitDirectory(staging, destination)
         return files.map { relocated($0, to: destination.appendingPathComponent($0.url.lastPathComponent)) }
+    }
+
+    private func fileHash(_ url: URL) throws -> SHA256.Digest {
+        let handle = try FileHandle(forReadingFrom: url)
+        defer { try? handle.close() }
+        var hash = SHA256()
+        var chunk = try handle.read(upToCount: 1_048_576) ?? Data()
+        while !chunk.isEmpty {
+            hash.update(data: chunk)
+            chunk = try handle.read(upToCount: 1_048_576) ?? Data()
+        }
+        return hash.finalize()
     }
 
     private func relocated(_ file: GeneratedFile, to destination: URL) -> GeneratedFile {

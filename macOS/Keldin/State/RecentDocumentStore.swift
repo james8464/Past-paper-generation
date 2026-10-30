@@ -23,6 +23,7 @@ struct GenerationConfiguration: Codable, Equatable, Hashable {
     var educationSystem: String? = nil
     var assessmentID: String? = nil
     var documentLanguage: String? = nil
+    var authoringVersion: String? = nil
 }
 
 struct GenerationProvenance: Codable, Equatable {

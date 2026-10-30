@@ -303,7 +303,7 @@ private struct HelpTopicPage: View {
 
     private var frenchBaccalaureat: some View {
         Group {
-            Text("Five paper families are available and can be used again for practice.")
+            Text("The selected AI model writes a new draft from French references. Answers and difficulty still need review.")
                 .foregroundStyle(.secondary)
             Text("The French route creates original Terminale NSI written practice for the 2027 rules. It is separate from the UK exam-board generators and does not include the practical component.")
                 .foregroundStyle(.secondary)
@@ -328,7 +328,7 @@ private struct HelpTopicPage: View {
                 title: "Local data and deletion",
                 rows: [
                     "French source PDFs and their search index stay in Application Support until you delete them from the French workspace.",
-                    "French papers are built locally from a fixed catalogue. No AI model, Ollama installation or cloud service is needed.",
+                    "French drafts use the provider and model selected in Settings. Local providers run on this Mac; hosted providers require consent and an API key.",
                     "Generated bundles contain questions, corrections, provenance and validation evidence, but no student accounts or submitted answers.",
                 ]
             )

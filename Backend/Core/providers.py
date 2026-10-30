@@ -15,7 +15,14 @@ from urllib.parse import urlparse
 from Backend.Core.events import emit_progress
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, OutputContract
-from Backend.Core.mlx_batching import BatchUnavailable, CoalescingRunner, generate_batch
+from Backend.Core.mlx_batching import (
+    BatchUnavailable,
+    CoalescingRunner,
+    generate_batch,
+)
+from Backend.Core.mlx_batching import (
+    output_budget as mlx_output_budget,
+)
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
 
@@ -52,7 +59,9 @@ class HostedLLMClient:
         self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
         self._apple_batcher_lock = threading.Lock()
-        self._apple_batcher: CoalescingRunner[tuple[str, dict], str] | None = None
+        self._apple_batcher: (
+            CoalescingRunner[tuple[str, dict] | tuple[str, dict, int], str] | None
+        ) = None
 
     # Whether independent prompts may safely share this client.
     @property
@@ -82,6 +91,9 @@ class HostedLLMClient:
     ) -> dict[str, object]:
         if not 1 <= retries <= 3:
             raise ValueError("Structured-output attempts must be between 1 and 3.")
+        if request is not None and request.operation == "french_nsi_authoring":
+            # The French pipeline owns its one recorded structural regeneration.
+            retries = 1
         current_prompt = prompt
         last_error: ValueError | None = None
         for attempt in range(retries):
@@ -94,11 +106,36 @@ class HostedLLMClient:
                             output_budget=request.output_budget,
                             seed=request.seed,
                             temperature=0 if attempt else request.temperature,
+                            **(
+                                {"french_nsi": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
                         )
                     return self._ollama(current_prompt)
                 if self.provider == "openai":
+                    if request is not None:
+                        return self._openai(
+                            current_prompt,
+                            output_budget=request.output_budget,
+                            **(
+                                {"single_attempt": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
+                        )
                     return self._openai(current_prompt)
                 if self.provider == "anthropic":
+                    if request is not None:
+                        return self._anthropic(
+                            current_prompt,
+                            output_budget=request.output_budget,
+                            **(
+                                {"single_attempt": True}
+                                if request.operation == "french_nsi_authoring"
+                                else {}
+                            ),
+                        )
                     return self._anthropic(current_prompt)
                 if self.provider == "apple":
                     if request is not None:
@@ -106,10 +143,16 @@ class HostedLLMClient:
                             current_prompt,
                             schema=request.schema,
                             identifiers=request.expected_ids,
+                            output_budget=request.output_budget,
                         )
                     return self._apple(current_prompt)
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
             except ValueError as error:
+                if (
+                    isinstance(error, GenerationEvidenceError)
+                    and error.details.get("kind") == "context_capacity"
+                ):
+                    raise
                 last_error = error
                 if attempt == retries - 1:
                     raise
@@ -147,38 +190,77 @@ class HostedLLMClient:
         request_function: Any | None = None,
         strict_json: bool = False,
         temperature: float | None = None,
+        french_nsi: bool = False,
     ) -> dict[str, object]:
         schema = _ollama_json_schema(prompt) if schema is None else schema
+        budget = (
+            _ollama_output_budget(schema) if output_budget is None else output_budget
+        )
+        if french_nsi and (type(budget) is not int or not 1 <= budget <= 16384):
+            raise ValueError("French NSI output budget must be from 1 to 16384.")
         payload = json.dumps(
             {
                 "model": self.model,
                 "messages": [{"role": "user", "content": prompt}],
                 "stream": False,
-                "think": False,
+                "think": None if french_nsi else False,
                 "format": schema,
+                **({"truncate": False, "shift": False} if french_nsi else {}),
                 "options": {
                     "temperature": _ollama_temperature(prompt)
                     if temperature is None
                     else temperature,
                     "top_p": 0.9,
                     "num_ctx": 16384,
-                    "num_predict": _ollama_output_budget(schema)
-                    if output_budget is None
-                    else output_budget,
+                    "num_predict": budget,
                     "repeat_last_n": 256,
-                    "repeat_penalty": 1.15,
+                    "repeat_penalty": 1.0 if french_nsi else 1.15,
                     "seed": _ollama_seed(prompt) if seed is None else seed,
                 },
             }
         ).encode("utf-8")
-        request = (request_function or urllib_request)(
-            f"{self.base_url}/api/chat",
-            payload,
-            {"Content-Type": "application/json"},
-            attempts=2,
-        )
-        with request as response:
-            raw = _read_json_response(response)
+        try:
+            request = (request_function or urllib_request)(
+                f"{self.base_url}/api/chat",
+                payload,
+                {"Content-Type": "application/json"},
+                **(
+                    {"attempts": 1, "timeout_seconds": 600}
+                    if french_nsi
+                    else {"attempts": 2}
+                ),
+            )
+            with request as response:
+                raw = _read_json_response(response)
+        except RuntimeError as error:
+            from urllib.error import HTTPError
+
+            cause = error.__cause__
+            if (
+                french_nsi
+                and isinstance(cause, HTTPError)
+                and cause.code in {400, 413}
+                and any(
+                    message in str(error).lower()
+                    for message in (
+                        "prompt is longer than the context length",
+                        "input length exceeds the context length",
+                        "exceeds the available context",
+                    )
+                )
+            ):
+                raise GenerationEvidenceError(
+                    "Le contexte du modèle ne peut pas contenir cet exercice sans omission.",
+                    details={
+                        "kind": "context_capacity",
+                        "provider": "ollama",
+                        "http_status": cause.code,
+                        "context_window": 16384,
+                        "output_budget": budget,
+                        "prompt_sha256": hashlib.sha256(prompt.encode()).hexdigest(),
+                    },
+                ) from error
+            raise
         raw_dict = raw if isinstance(raw, dict) else {}
         diagnostic = {
             "kind": "provider_structure",
@@ -195,6 +277,36 @@ class HostedLLMClient:
             diagnostic["raw_response_sha256"] = hashlib.sha256(
                 response_text.encode("utf-8")
             ).hexdigest()
+        if french_nsi:
+            input_count, output_count = (
+                raw_dict.get("prompt_eval_count"),
+                raw_dict.get("eval_count"),
+            )
+            diagnostic.update(
+                input_tokens=input_count,
+                output_budget=budget,
+                context_window=16384,
+                truncate=False,
+                shift=False,
+            )
+            if (
+                type(input_count) is not int
+                or input_count < 1
+                or type(output_count) is not int
+                or output_count < 0
+                or input_count + budget > 16384
+                or input_count + output_count > 16384
+                or output_count > budget
+            ):
+                diagnostic["kind"] = "context_capacity"
+                raise GenerationEvidenceError(
+                    "Capacité du contexte non vérifiée ou insuffisante pour cet exercice. Aucun brouillon accepté.",
+                    details=diagnostic,
+                )
+            emit_progress(
+                f"Contexte du modèle : {input_count} jetons d'entrée, {output_count} de sortie, limite 16384.",
+                stage="provider_context",
+            )
         if raw_dict.get("done") is not True or raw_dict.get("done_reason") not in {
             None,
             "stop",
@@ -207,7 +319,7 @@ class HostedLLMClient:
                 "Ollama returned no generated JSON text.", details=diagnostic
             )
         try:
-            if strict_json:
+            if strict_json or french_nsi:
                 if len(response_text.encode("utf-8")) > 1_048_576:
                     raise ValueError("Model response exceeded the 1 MB JSON limit.")
                 parsed = json.loads(
@@ -230,7 +342,9 @@ class HostedLLMClient:
         *,
         schema: dict | None = None,
         identifiers: tuple[str, ...] | None = None,
+        output_budget: int | None = None,
     ) -> dict[str, object]:
+        mlx_output_budget(output_budget)
         source_prompt = prompt
         schema = _ollama_json_schema(prompt) if schema is None else schema
         if schema.get("required"):
@@ -243,9 +357,18 @@ class HostedLLMClient:
             with self._apple_batcher_lock:
                 if self._apple_batcher is None:
                     self._apple_batcher = CoalescingRunner(self._run_apple_batch)
-            response = self._apple_batcher.call((prompt, schema))
+            job = (
+                (prompt, schema)
+                if output_budget is None
+                else (prompt, schema, output_budget)
+            )
+            response = self._apple_batcher.call(job)
         else:
-            response = self._apple_response(prompt, schema)
+            response = (
+                self._apple_response(prompt, schema)
+                if output_budget is None
+                else self._apple_response(prompt, schema, output_budget)
+            )
         if schema.get("required"):
             # Never salvage a truncated constrained response or duplicate fields.
             if len(response.encode("utf-8")) > 1_048_576:
@@ -308,25 +431,36 @@ class HostedLLMClient:
                 tokenizer_config={"trust_remote_code": False, "local_files_only": True},
             )
 
-    def _apple_response(self, prompt: str, schema: dict) -> str:
+    def _apple_response(
+        self, prompt: str, schema: dict, output_budget: int | None = None
+    ) -> str:
+        budget = mlx_output_budget(output_budget)
         with self._apple_lock:
             self._load_apple_model()
             if schema.get("required"):
-                return self._mlx_structured_response(prompt, schema)
+                return (
+                    self._mlx_structured_response(prompt, schema)
+                    if output_budget is None
+                    else self._mlx_structured_response(prompt, schema, budget)
+                )
             from mlx_lm import generate
 
             return generate(
                 self._apple_model,
                 self._apple_tokenizer,
                 prompt=_mlx_json_prompt(self._apple_tokenizer, prompt),
-                max_tokens=4096,
+                max_tokens=budget,
                 verbose=False,
             )
 
     def _run_apple_batch(
-        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+        self,
+        requests: list[tuple[str, dict] | tuple[str, dict, int]],
+        cancelled: threading.Event,
     ) -> list[str | BaseException]:
-        if len(requests) == 2 and all(schema.get("required") for _, schema in requests):
+        if len(requests) == 2 and all(
+            request[1].get("required") for request in requests
+        ):
             with self._apple_lock:
                 self._load_apple_model()
                 try:
@@ -337,20 +471,22 @@ class HostedLLMClient:
                         stage="provider_serial_fallback",
                     )
         results: list[str | BaseException] = []
-        for prompt, schema in requests:
+        for request in requests:
             if cancelled.is_set():
                 from concurrent.futures import CancelledError
 
                 results.append(CancelledError("MLX generation was cancelled."))
                 continue
             try:
-                results.append(self._apple_response(prompt, schema))
+                results.append(self._apple_response(*request))
             except Exception as error:
                 results.append(error)
         return results
 
     def _mlx_batch_structured_responses(
-        self, requests: list[tuple[str, dict]], cancelled: threading.Event
+        self,
+        requests: list[tuple[str, dict] | tuple[str, dict, int]],
+        cancelled: threading.Event,
     ) -> list[str | BaseException]:
         try:
             import llguidance
@@ -369,7 +505,8 @@ class HostedLLMClient:
         backend = LLGuidanceBackend(self._apple_structured_model)
         processors = []
         prompts = []
-        for prompt, schema in requests:
+        for request in requests:
+            prompt, schema = request[:2]
             decoder_schema = json.dumps(_mlx_decoder_schema(schema))
             grammar_error = llguidance.LLMatcher.validate_grammar(
                 llguidance.grammar_from("json_schema", decoder_schema)
@@ -380,12 +517,26 @@ class HostedLLMClient:
                 raise BatchUnavailable("A request grammar needs individual validation.")
             processors.append(backend.get_json_schema_logits_processor(decoder_schema))
             prompts.append(_mlx_json_prompt(self._apple_tokenizer, prompt))
+        options = {}
+        if any(len(request) == 3 for request in requests):
+            options["output_budgets"] = [
+                mlx_output_budget(request[2] if len(request) == 3 else None)
+                for request in requests
+            ]
         return generate_batch(
-            self._apple_model, self._apple_tokenizer, prompts, processors, cancelled
+            self._apple_model,
+            self._apple_tokenizer,
+            prompts,
+            processors,
+            cancelled,
+            **options,
         )
 
     # Constrain syntax, public option values and batch IDs; validate correctness separately.
-    def _mlx_structured_response(self, prompt: str, schema: dict) -> str:
+    def _mlx_structured_response(
+        self, prompt: str, schema: dict, output_budget: int | None = None
+    ) -> str:
+        budget = mlx_output_budget(output_budget)
 
         try:
             import llguidance
@@ -419,7 +570,7 @@ class HostedLLMClient:
             _mlx_json_prompt(self._apple_tokenizer, prompt),
             JsonSchema(decoder_schema),
             backend="llguidance",
-            max_tokens=4096,
+            max_tokens=budget,
             verbose=False,
         )
         if len(response.encode("utf-8")) > 1_048_576:
@@ -433,15 +584,24 @@ class HostedLLMClient:
             ) from error
         return response
 
-    def _openai(self, prompt: str) -> dict[str, object]:
-        payload = json.dumps(
-            {
-                "model": self.model,
-                "input": prompt,
-                "store": False,
-                "text": {"format": {"type": "json_object"}},
-            }
-        ).encode("utf-8")
+    def _openai(
+        self,
+        prompt: str,
+        *,
+        output_budget: int | None = None,
+        single_attempt: bool = False,
+    ) -> dict[str, object]:
+        values = {
+            "model": self.model,
+            "input": prompt,
+            "store": False,
+            "text": {"format": {"type": "json_object"}},
+        }
+        if output_budget is not None:
+            values["max_output_tokens"] = _hosted_output_budget(
+                output_budget, minimum=16
+            )
+        payload = json.dumps(values).encode("utf-8")
         request = urllib_request(
             "https://api.openai.com/v1/responses",
             payload,
@@ -449,6 +609,7 @@ class HostedLLMClient:
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
+            **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
             raw = _read_json_response(response)
@@ -466,11 +627,19 @@ class HostedLLMClient:
             )
         return parse_json_object(str(text))
 
-    def _anthropic(self, prompt: str) -> dict[str, object]:
+    def _anthropic(
+        self,
+        prompt: str,
+        *,
+        output_budget: int | None = None,
+        single_attempt: bool = False,
+    ) -> dict[str, object]:
         payload = json.dumps(
             {
                 "model": self.model,
-                "max_tokens": 4096,
+                "max_tokens": 4096
+                if output_budget is None
+                else _hosted_output_budget(output_budget),
                 "messages": [
                     {
                         "role": "user",
@@ -487,6 +656,7 @@ class HostedLLMClient:
                 "anthropic-version": "2023-06-01",
                 "Content-Type": "application/json",
             },
+            **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
             raw = _read_json_response(response)
@@ -556,15 +726,18 @@ def urllib_request(
     headers: dict[str, str],
     *,
     attempts: int = 3,
+    timeout_seconds: int = 180,
 ) -> Any:
     import urllib.error
     import urllib.request
 
+    if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 600:
+        raise ValueError("Provider timeout must be an integer from 1 to 600 seconds.")
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     last_error: Exception | None = None
     for attempt in range(attempts):
         try:
-            return urllib.request.urlopen(request, timeout=180)
+            return urllib.request.urlopen(request, timeout=timeout_seconds)
         except urllib.error.HTTPError as error:
             last_error = error
             detail = error.read(2048).decode("utf-8", errors="ignore")
@@ -622,6 +795,14 @@ def parse_json_object(text: str) -> dict[str, object]:
             ) from None
     if not isinstance(value, dict):
         raise ValueError("Model returned JSON, but not an object.")
+    return value
+
+
+def _hosted_output_budget(value: int, *, minimum: int = 1) -> int:
+    if type(value) is not int or not minimum <= value <= 16384:
+        raise ValueError(
+            f"Hosted output budget must be an integer from {minimum} to 16384."
+        )
     return value
 
 

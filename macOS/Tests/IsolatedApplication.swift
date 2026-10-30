@@ -34,6 +34,17 @@ extension XCTestCase {
     }
 }
 
+extension ApplicationCoordinator {
+    /// Legacy isolation fixtures need an available model now that French drafts use an LLM.
+    @MainActor
+    func generateFrenchFixture(largePrint: Bool) {
+        if aiProvider == .ollama {
+            ollamaState = OllamaState(installed: true, running: true, message: "Ready")
+        }
+        generateFrenchPaper(largePrint: largePrint)
+    }
+}
+
 private final class IsolatedSecrets: SecretStoring {
     private var values: [String: String] = [:]
 

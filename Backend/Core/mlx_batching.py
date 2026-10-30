@@ -17,6 +17,15 @@ class BatchUnavailable(ValueError):
     """Use constrained serial decoding for this model or prompt pair."""
 
 
+def output_budget(value: int | None) -> int:
+    """Bound per-request decoding without changing legacy callers' limit."""
+    if value is None:
+        return 4096
+    if type(value) is not int or not 1 <= value <= 16384:
+        raise ValueError("MLX output budget must be an integer from 1 to 16384.")
+    return value
+
+
 @dataclass
 class _Pending[T, R]:
     value: T
@@ -105,9 +114,16 @@ def generate_batch(
     cancelled: Event,
     *,
     generator_factory: Callable[..., Any] | None = None,
+    output_budgets: list[int] | None = None,
 ) -> list[str | BaseException]:
     if len(prompts) != 2 or len(processors) != 2:
         raise ValueError("MLX batching requires two independent prompt/decoder pairs.")
+    if output_budgets is not None and (
+        len(output_budgets) != 2
+        or any(type(value) is not int for value in output_budgets)
+    ):
+        raise ValueError("MLX batching requires exactly two output budgets.")
+    budgets = [output_budget(value) for value in (output_budgets or [None, None])]
     tokens = [
         tokenizer.encode(
             prompt,
@@ -118,7 +134,7 @@ def generate_batch(
         )
         for prompt in prompts
     ]
-    if sum(map(len, tokens)) > 8192:
+    if sum(map(len, tokens)) > 8192 or sum(map(len, tokens)) + sum(budgets) > 16384:
         raise BatchUnavailable("The combined prompt context requires serial decoding.")
     if cancelled.is_set():
         raise CancelledError("MLX generation was cancelled.")
@@ -134,7 +150,7 @@ def generate_batch(
     generator = generator_factory(
         model,
         stop_tokens=set(tokenizer.eos_token_ids),
-        max_tokens=4096,
+        max_tokens=max(budgets),
         completion_batch_size=2,
         prefill_batch_size=2,
         prefill_step_size=512,
@@ -142,7 +158,7 @@ def generate_batch(
     try:
         uids = generator.insert(
             tokens,
-            max_tokens=4096,
+            max_tokens=4096 if output_budgets is None else budgets,
             logits_processors=[[processor] for processor in processors],
         )
         if (

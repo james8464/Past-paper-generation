@@ -2408,6 +2408,13 @@ def database_pdf_contract_version(prompt_version: str) -> str:
 
 
 def handle_generate_assessment(args) -> int:
+    if (
+        getattr(args, "provider", "ollama") != "application-owned"
+        and getattr(args, "authoring_version", "v32") == "v36"
+    ):
+        from Backend.Core.france.llm_runtime import handle_generate_llm_assessment
+
+        return handle_generate_llm_assessment(args)
     staging = None
     previous_handler = None
 

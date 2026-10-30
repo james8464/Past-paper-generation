@@ -86,7 +86,7 @@ struct FrenchAssessmentWorkspace: View {
                     .font(.title2.weight(.semibold))
                 Text("Original, non-official practice papers. Review the questions and proposed answers before use.")
                     .foregroundStyle(.secondary)
-                Text("Five paper families are available and can be used again for practice.")
+                Text("The selected AI model writes a new draft from French references. Answers and difficulty still need review.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                 LabeledContent("Written exam") {
@@ -111,9 +111,15 @@ struct FrenchAssessmentWorkspace: View {
                         .font(.callout)
                         .foregroundStyle(.secondary)
                 }
-                Text("This catalogue runs locally without an AI model or Ollama. It does not test model quality.")
+                LabeledContent("AI provider", value: application.aiProvider.title)
+                LabeledContent("Model", value: application.activeModelName)
+                ModelQualityAdviceView(provider: application.aiProvider, model: application.activeModelName)
+                Text("Local models run on this Mac. Hosted providers receive the generation prompts only after your consent.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
+                if let blocker = application.frenchGenerationBlockerResource {
+                    Text(blocker).foregroundStyle(.secondary)
+                }
                 Toggle("Enlarged print", isOn: $largePrint)
                     .disabled(application.isRunning)
                 DisclosureGroup("More options", isExpanded: $showMoreOptions) {
@@ -139,7 +145,7 @@ struct FrenchAssessmentWorkspace: View {
                 Button("Record a teacher review…") { showTeacherReview = true }
                     .disabled(application.isRunning)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
-                    Text("Official sources are downloaded with your permission. Papers are built on this Mac without model prompts or cloud generation.")
+                    Text("Official sources are downloaded with your permission. The chosen provider creates the draft; no official approval or calibrated difficulty is implied.")
                     if application.hasFrenchReferences {
                         Button("Delete downloaded French references", role: .destructive) {
                             showDeleteReferences = true
@@ -155,12 +161,15 @@ struct FrenchAssessmentWorkspace: View {
             if !application.isRunning, !application.progressEntries.isEmpty {
                 Section("Status") { Text(application.status) }
             }
+            if !application.isRunning, !application.currentGenerationFiles.isEmpty {
+                PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
+            }
         }
         .formStyle(.grouped)
     }
 
     private var canGenerate: Bool {
-        KeldinCreationContext.french(largePrint: largePrint).canCreate(
+        application.frenchGenerationBlockerResource == nil && KeldinCreationContext.french(largePrint: largePrint).canCreate(
             boardCanGenerate: false,
             hasFrenchReferences: application.hasFrenchReferences,
             isBusy: application.isRunning || application.benchmarkCoordinator.isRunning || application.showWelcome
@@ -175,7 +184,10 @@ struct FrenchAssessmentWorkspace: View {
     }
 
     private var createHelp: String {
-        localizedValue(presentation.blocker ?? "Create a non-official practice paper with indicative marking guidance.")
+        if let blocker = application.frenchGenerationBlockerResource {
+            return InterfaceText.resolve(blocker, language: interfaceLanguage)
+        }
+        return localizedValue(presentation.blocker ?? "Create a non-official practice paper with indicative marking guidance.")
     }
 
     private func localizedValue(_ key: String) -> String {

@@ -167,21 +167,15 @@ private struct PaperConfiguration: View {
                             .truncationMode(.middle)
                             .help(application.activeModelName)
                         if application.aiProvider == .ollama && application.selectedModelIsRecommended {
-                            Text("Recommended")
+                            Text("Memory fit")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
                     }
                 }
 
-                if application.aiProvider == .ollama && !application.selectedModelIsRecommended {
-                    Label(
-                        "These suggestions concern available memory. The models have not passed a complete paper-quality review. Results may vary with another model or quantisation.",
-                        systemImage: "exclamationmark.triangle.fill"
-                    )
-                    .font(.caption)
-                    .foregroundStyle(.primary)
-                    .fixedSize(horizontal: false, vertical: true)
+                if board.usesAI && !application.dryRun {
+                    ModelQualityAdviceView(provider: application.aiProvider, model: application.activeModelName)
                 }
 
                 LabeledContent("Save to") {
@@ -203,6 +197,11 @@ private struct PaperConfiguration: View {
                     )
                 )
                 .help("Preview layout without contacting an AI provider. Preview questions are not release output.")
+            }
+
+            if !application.isRunning,
+               application.lastQualityReport != nil || !application.currentGenerationFiles.isEmpty {
+                PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
             }
 
             if !application.isRunning, let blocker = application.generationBlockerResource {
@@ -266,6 +265,7 @@ private struct QualityReviewView: View {
 
     var body: some View {
         Form {
+            PaperQualitySummarySection(report: application.lastQualityReport, frenchReport: application.lastFrenchDraftQualityReport)
             Section("Qualification") {
                 qualityRow(
                     "Engineering",

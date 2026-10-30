@@ -101,8 +101,15 @@ def build_parser() -> argparse.ArgumentParser:
     assessment.add_argument("--model", default=DEFAULT_MODEL)
     assessment.add_argument(
         "--provider",
-        choices=["application-owned", "ollama"],
-        default="application-owned",
+        choices=["ollama", "apple", "openai", "anthropic", "application-owned"],
+        default="ollama",
+        help="Model provider; application-owned is reserved for historical catalogue replay",
+    )
+    assessment.add_argument(
+        "--authoring-version", choices=["v36", "v32"], default="v36"
+    )
+    assessment.add_argument(
+        "--api-key", default=environment_value("KELDIN_API_KEY", "")
     )
     assessment.add_argument("--ollama-url", default=DEFAULT_OLLAMA_URL)
     assessment.add_argument("--large-print", action="store_true")

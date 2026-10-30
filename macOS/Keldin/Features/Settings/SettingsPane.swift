@@ -195,6 +195,10 @@ private struct AISettingsTab: View {
 
             providerSettings
 
+            Section("Paper quality") {
+                ModelQualityAdviceView(provider: application.aiProvider, model: application.activeModelName)
+            }
+
         }
         .formStyle(.grouped)
         .disabled(application.isRunning)
@@ -211,7 +215,7 @@ private struct AISettingsTab: View {
         switch application.aiProvider {
         case .ollama:
             Section("Local model") {
-                LabeledContent("Recommended") {
+                LabeledContent("Memory-fit suggestion") {
                     VStack(alignment: .trailing, spacing: 2) {
                         Text(application.ollamaRecommendation.model)
                         Text(application.ollamaRecommendation.downloadResource(locale: locale))
@@ -226,12 +230,12 @@ private struct AISettingsTab: View {
 
                 HStack {
                     if application.recommendedModelIsInstalled {
-                        Button("Use Recommended Model") {
+                        Button("Use suggested model") {
                             application.useRecommendedOllamaModel(presentation: application.settingsPresentation)
                         }
                             .disabled(application.selectedModelIsRecommended)
                     } else if application.distributionMode.canManageOllama {
-                        Button("Download Recommended Model…") {
+                        Button("Download suggested model…") {
                             downloadPresentation.present(application.requestRecommendedOllamaModel())
                         }
                             .disabled(!application.canRequestModelDownload)
@@ -249,7 +253,7 @@ private struct AISettingsTab: View {
                 Picker("Model", selection: $application.selectedModel) {
                     ForEach(application.ollamaModelOptions, id: \.self) { model in
                         if model == application.ollamaRecommendation.model {
-                            Text("\(model) (recommended)").tag(model)
+                            Text("\(model) (memory suggestion)").tag(model)
                         } else {
                             Text(model).tag(model)
                         }
@@ -267,7 +271,7 @@ private struct AISettingsTab: View {
                 Link("Configure parallel requests in Ollama", destination: URL(string: "https://docs.ollama.com/faq")!)
 
                 if application.selectedModelIsRecommended {
-                    Label("Recommended model selected", systemImage: "checkmark.seal.fill")
+                    Label("Memory-fit suggestion selected", systemImage: "memorychip")
                         .foregroundStyle(.primary)
                 } else {
                     Label {
@@ -309,6 +313,7 @@ private struct AISettingsTab: View {
         case .openAI:
             Section("OpenAI") {
                 TextField("Model", text: $application.openAIModel)
+                HostedModelCandidatesView(provider: .openAI, model: $application.openAIModel)
                 SecureField("API key", text: $application.openAIAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)
@@ -317,6 +322,7 @@ private struct AISettingsTab: View {
         case .anthropic:
             Section("Anthropic") {
                 TextField("Model", text: $application.anthropicModel)
+                HostedModelCandidatesView(provider: .anthropic, model: $application.anthropicModel)
                 SecureField("API key", text: $application.anthropicAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)

@@ -3,6 +3,16 @@ from argparse import Namespace
 import pytest
 
 
+@pytest.fixture(autouse=True)
+def historical_tests_never_start_live_model_generation(monkeypatch):
+    def refuse(_args):
+        pytest.fail("Historical replay tests must select their provider explicitly")
+
+    monkeypatch.setattr(
+        "Backend.Core.france.llm_runtime.handle_generate_llm_assessment", refuse
+    )
+
+
 def _pin_v17_generation(monkeypatch, runtime):
     generate = runtime.generate_assessment
     monkeypatch.setattr(
@@ -990,7 +1000,9 @@ def test_runtime_publishes_v32_even_if_caller_requests_older_contract(
     assert (bundle / "corrige.pdf").is_file()
 
 
-def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatch):
+def test_explicit_historical_french_route_requires_no_model_or_network(
+    tmp_path, monkeypatch
+):
     import json
 
     from Backend.Core.cli import build_parser
@@ -1011,6 +1023,8 @@ def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatc
     args = build_parser().parse_args(
         [
             "generate-assessment",
+            "--provider",
+            "application-owned",
             "--assessment",
             "fr-bac-general-nsi-written-2027",
             "--reference-index",
@@ -1031,7 +1045,7 @@ def test_public_french_default_requires_no_model_or_network(tmp_path, monkeypatc
 
 
 @pytest.mark.parametrize("large_print", [False, True])
-def test_public_v35_uses_each_family_and_records_selected_seed(
+def test_explicit_historical_v35_uses_each_family_and_records_selected_seed(
     tmp_path, monkeypatch, capsys, large_print
 ):
     import json
@@ -1046,13 +1060,15 @@ def test_public_v35_uses_each_family_and_records_selected_seed(
     output = tmp_path / "output"
 
     def forbidden(*args, **kwargs):
-        pytest.fail("The public French route must not call a model or network")
+        pytest.fail("The historical catalogue must not call a model or network")
 
     monkeypatch.setattr(runtime, "model_identity", forbidden)
     monkeypatch.setattr(runtime, "FrenchOllamaClient", forbidden)
     monkeypatch.setattr(runtime, "validate_endpoint", forbidden)
     argv = [
         "generate-assessment",
+        "--provider",
+        "application-owned",
         "--assessment",
         "fr-bac-general-nsi-written-2027",
         "--reference-index",
@@ -1105,6 +1121,8 @@ def test_saved_families_are_excluded_in_a_fresh_output_folder(tmp_path):
     output = tmp_path / "new-output"
     argv = [
         "generate-assessment",
+        "--provider",
+        "application-owned",
         "--assessment",
         "fr-bac-general-nsi-written-2027",
         "--reference-index",
@@ -1133,7 +1151,9 @@ def test_saved_families_are_excluded_in_a_fresh_output_folder(tmp_path):
     assert not (other / ".keldin-checkpoints").exists()
 
 
-def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp_path):
+def test_historical_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(
+    tmp_path,
+):
     import json
 
     from Backend.Core.cli import build_parser
@@ -1151,6 +1171,8 @@ def test_public_upgrade_preserves_older_checkpoint_and_uses_its_own_identity(tmp
     args = build_parser().parse_args(
         [
             "generate-assessment",
+            "--provider",
+            "application-owned",
             "--assessment",
             "fr-bac-general-nsi-written-2027",
             "--reference-index",

@@ -27,9 +27,18 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var isRefreshingOllama = false
-    @Published var ollamaState = OllamaState()
-    @Published var availableModels: [String] = []
-    @Published var hasLoadedOllamaModels = false
+    var ollamaState: OllamaState {
+        get { modelCoordinator.ollamaState }
+        set { modelCoordinator.receiveOllamaState(newValue) }
+    }
+    var availableModels: [String] {
+        get { modelCoordinator.availableModels }
+        set { modelCoordinator.setAvailableModels(newValue) }
+    }
+    var hasLoadedOllamaModels: Bool {
+        get { modelCoordinator.hasLoadedModels }
+        set { modelCoordinator.setHasLoadedModels(newValue) }
+    }
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
@@ -58,6 +67,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var notificationsEnabled = true
     @Published var generationEstimate: GenerationEstimate?
     @Published var lastQualityReport: GenerationQualityReport?
+    @Published var lastFrenchDraftQualityReport: FrenchDraftQualityReport?
     @Published private(set) var previewedFileID: UUID?
 
     private(set) var pendingGenerationSeed: Int?
@@ -72,6 +82,7 @@ final class ApplicationCoordinator: ObservableObject {
     private var ollamaRefreshRevision = UUID()
     private var etaTimer: AnyCancellable?
     private var pendingHostedProvider: AIProvider?
+    private var pendingFrenchLargePrint: Bool?
     private var preparedMLXModels: Set<String> = []
     private var pendingMLXDownloadInfo: MLXDownloadInfo?
     private var pendingMLXSetupRetryTarget: GenerationRetryTarget?
@@ -102,7 +113,7 @@ final class ApplicationCoordinator: ObservableObject {
         GenerationRetryTarget(
             boardID: selectedBoardID, paperID: selectedPaperID, provider: aiProvider,
             model: activeModelName, dryRun: dryRun, output: outputFolder.standardizedFileURL,
-            seed: pendingGenerationSeed
+            seed: pendingGenerationSeed, frenchLargePrint: pendingFrenchLargePrint
         )
     }
 
@@ -163,6 +174,18 @@ final class ApplicationCoordinator: ObservableObject {
         if !selectedBoard.supports(aiProvider) {
             return "\(aiProvider.title) is not supported by this generator."
         }
+        return providerGenerationBlockerResource
+    }
+
+    var frenchGenerationBlockerResource: LocalizedStringResource? {
+        if isRunning { return "Generation is already running." }
+        if benchmarkCoordinator.isRunning { return "Benchmark is running." }
+        if showWelcome { return "Finish the welcome guide before creating a paper." }
+        if !hasFrenchReferences { return "Prepare French references first." }
+        return providerGenerationBlockerResource
+    }
+
+    private var providerGenerationBlockerResource: LocalizedStringResource? {
         if activeModelName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return "Choose a model before generating."
         }
@@ -214,9 +237,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var ollamaModelOptions: [String] {
-        var seen: Set<String> = []
-        return ([selectedModel, ollamaRecommendation.model] + availableModels)
-            .filter { !$0.isEmpty && seen.insert($0).inserted }
+        modelCoordinator.modelOptions(selectedModel: selectedModel)
     }
 
     var outputFolderDisplayPath: String {
@@ -272,7 +293,6 @@ final class ApplicationCoordinator: ObservableObject {
         aiProvider = settings.provider
         selectedModel = ollamaModel
         modelCoordinator.provider = settings.provider
-        modelCoordinator.selectedModel = ollamaModel
         modelToPull = ollamaModel
         openAIModel = settings.openAIModel
         anthropicModel = settings.anthropicModel
@@ -304,6 +324,7 @@ final class ApplicationCoordinator: ObservableObject {
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
+        modelCoordinator.onDiscoveryChange = { [weak self] in self?.objectWillChange.send() }
     }
 
     func refreshOllama(presentation: SettingsActionPresentation? = nil) {
@@ -379,27 +400,85 @@ final class ApplicationCoordinator: ObservableObject {
 
     func generateFrenchPaper(largePrint: Bool) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
-        let excludedFamilies: [Int]
-        do {
-            excludedFamilies = try savedFrenchFamilies()
-        } catch {
-            setError(error.localizedDescription)
+        pendingFrenchLargePrint = largePrint
+        if aiProvider.sendsPromptsOffDevice, !hasHostedAIConsent {
+            pendingHostedProvider = aiProvider
+            showHostedAIConsent = true
+            return
+        }
+        if let blocker = providerGenerationBlockerResource {
+            pendingFrenchLargePrint = nil
+            setError(InterfaceText.resolve(blocker, language: presentationLanguage))
+            return
+        }
+        if MLXSetupPolicy.requiresSetup(provider: aiProvider, model: activeModelName,
+                                       preparedModels: preparedMLXModels, usesAI: true, dryRun: false) {
+            requestMLXDownloadInfo()
+            return
+        }
+        if !persistSettings(includeCredentials: aiProvider.sendsPromptsOffDevice),
+           let account = activeSecretAccount, settingsStore.credentialFailure(for: account) != nil {
+            pendingFrenchLargePrint = nil
             return
         }
         let seed = pendingGenerationSeed ?? Int.random(in: 1 ... Int(Int32.max))
         pendingGenerationSeed = seed
-        let request = FrenchAssessmentRequest(
+        let request = FrenchLLMAssessmentRequest(
             referenceIndex: frenchReferencesFolder.appendingPathComponent("references.sqlite"),
             output: generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true),
-            seed: seed, largePrint: largePrint, excludedFamilies: excludedFamilies
+            seed: seed, largePrint: largePrint, provider: aiProvider, model: activeModelName
         )
-        startFrenchOperation(arguments: request.arguments, seed: seed, workingFolder: request.output)
+        startFrenchLLMGeneration(request)
+    }
+
+    private func startFrenchLLMGeneration(_ request: FrenchLLMAssessmentRequest) {
+        progressEntries.removeAll()
+        lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
+        mlxRecoveryState.beginGeneration()
+        status = "Starting"
+        generationProgress = 0.02
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(
+                boardID: "fr-national-nsi", paperID: "written-2027", provider: request.provider.backendID,
+                model: request.model, seed: request.seed, dryRun: false, educationSystem: "fr-national",
+                assessmentID: FrenchAssessmentRequest.assessmentID, documentLanguage: "fr-FR", authoringVersion: "v36"
+            ),
+            provenance: GenerationProvenance(
+                appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
+                provider: request.provider.backendID, model: request.model,
+                localGenerationWorkers: configuredLocalGenerationWorkers
+            ), state: .pending, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        var environment = [
+            "KELDIN_PARALLEL_LOCAL_REVIEWS": settingsStore.parallelLocalReviews ? "1" : "0",
+            "KELDIN_PARALLEL_MLX_GENERATION": settingsStore.parallelMLXGeneration ? "1" : "0",
+        ]
+        if request.provider == .apple { environment["HF_HOME"] = AppDefaults.mlxCacheFolder().path }
+        if request.provider == .openAI { environment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
+        if request.provider == .anthropic { environment["KELDIN_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
+        let session = beginRunSession(
+            intent: .paper, documents: RunDocuments(frameworkID: FrenchAssessmentRequest.assessmentID,
+                subject: "Baccalauréat général · NSI", paper: "Partie écrite · 2027", workingFolder: request.output),
+            model: request.model, retryTarget: generationRetryTarget
+        )
+        do {
+            try generationCoordinator.begin(record)
+            activeRun?.ownedJobID = record.id
+            let process = try backend.run(arguments: request.arguments + ["--ollama-url", ollamaURL], environment: environment) { [weak self] event in
+                self?.apply(event, from: session)
+            } onFinish: { [weak self] result in self?.finishRun(result, from: session) }
+            if activeRun?.id == session { activeRun?.process = process }
+            sendNotification(.paperStarted(subject: "NSI", paper: "Baccalauréat général · 2027"))
+        } catch { finishRun(.failure(error), from: session) }
     }
 
     func generateOccitanieActivity() {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         generationProgress = nil
         status = InterfaceText.resolve("Preparing the Occitanie case study", language: presentationLanguage)
         let working = generationRecordsFolder.appendingPathComponent(UUID().uuidString, isDirectory: true)
@@ -500,6 +579,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         status = statusMessage
         generationProgress = nil
         let session = beginRunSession(
@@ -577,6 +657,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard !isRunning else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         status = board.isReady ? "Ready" : "Coming Soon"
     }
 
@@ -584,6 +665,7 @@ final class ApplicationCoordinator: ObservableObject {
         guard catalogStore.selectPaperID(paperID, isLocked: isRunning) else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
     }
 
     func selectAssessmentKind(_ kind: AssessmentKind) {
@@ -621,6 +703,7 @@ final class ApplicationCoordinator: ObservableObject {
         pendingHostedProvider = nil
         showHostedAIConsent = false
         persistSettings()
+        if let largePrint = pendingFrenchLargePrint { generateFrenchPaper(largePrint: largePrint) }
     }
 
     func acceptHostedAIConsent(for provider: AIProvider, presentation: SettingsActionPresentation) {
@@ -636,6 +719,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     func cancelHostedAIConsent() {
         pendingHostedProvider = nil
+        pendingFrenchLargePrint = nil
         showHostedAIConsent = false
     }
 
@@ -681,12 +765,19 @@ final class ApplicationCoordinator: ObservableObject {
         if record.configuration.assessmentID == FrenchAssessmentRequest.assessmentID {
             guard !isRunning, record.configuration.educationSystem == "fr-national",
                   record.configuration.documentLanguage == "fr-FR",
-                  ["ollama", "application-owned"].contains(record.configuration.provider) else { return }
-            if record.configuration.provider == "ollama" {
-                selectedModel = record.configuration.model
+                  record.configuration.provider == "application-owned" || AIProvider(backendID: record.configuration.provider) != nil else { return }
+            if let provider = AIProvider(backendID: record.configuration.provider) {
+                aiProvider = provider
+                switch provider {
+                case .ollama: selectedModel = record.configuration.model
+                case .apple: appleModel = record.configuration.model
+                case .openAI: openAIModel = record.configuration.model
+                case .anthropic: anthropicModel = record.configuration.model
+                }
             }
             pendingGenerationSeed = seed
             lastQualityReport = nil
+            lastFrenchDraftQualityReport = nil
             sidebarSelection = .frenchBaccalaureat
             return
         }
@@ -717,6 +808,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func generate() {
+        pendingFrenchLargePrint = nil
         guard canGenerate else { return }
         guard let backendSubject = selectedBoard.backendSubject else {
             setError("This exam board is coming soon.")
@@ -746,6 +838,7 @@ final class ApplicationCoordinator: ObservableObject {
 
         progressEntries.removeAll()
         lastQualityReport = nil
+        lastFrenchDraftQualityReport = nil
         mlxRecoveryState.beginGeneration()
         status = "Starting"
         generationProgress = 0.02
@@ -940,6 +1033,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func cancelMLXSetup() {
+        pendingFrenchLargePrint = nil
         showMLXSetupConfirmation = false
         pendingMLXDownloadInfo = nil
         pendingMLXSetupRetryTarget = nil
@@ -947,6 +1041,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func cancelGeneration() {
+        pendingFrenchLargePrint = nil
         guard var run = activeRun else { return }
         ollamaRefreshRevision = UUID()
         run.phase = .cancelling
@@ -1332,6 +1427,17 @@ final class ApplicationCoordinator: ObservableObject {
         case let .file(role, path):
             // Setup and model-management output cannot become paper artifacts.
             if let intent = activeRun?.intent, intent == .mlxSetup || intent == .mlxDownloadInfo || intent == .modelPull { return }
+            if generationCoordinator.activeJob?.configuration.authoringVersion == "v36", var run = activeRun {
+                let inserted = run.receivedArtifactRoles.insert(role).inserted
+                if !inserted {
+                    let message = "The generation service returned duplicate document records. No paper was saved."
+                    run.backendErrorMessage = message
+                    activeRun = run
+                    setError(InterfaceText.resolve("The generation service returned duplicate document records. No paper was saved.", language: presentationLanguage))
+                    return
+                }
+                activeRun = run
+            }
             var hidden = hiddenRecentPaths
             hidden.remove(URL(fileURLWithPath: path).standardizedFileURL.path)
             defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
@@ -1350,6 +1456,9 @@ final class ApplicationCoordinator: ObservableObject {
             currentGenerationFileIDs.insert(file.id)
             if role == "package_manifest" {
                 lastQualityReport = GenerationQualityReport.load(from: file.url)
+            }
+            if role == "assessment_package" {
+                lastFrenchDraftQualityReport = FrenchDraftQualityReport.load(from: file.url)
             }
         case let .done(message):
             status = GenerationPresentation.completion(message, language: presentationLanguage)
@@ -1375,9 +1484,7 @@ final class ApplicationCoordinator: ObservableObject {
             setError(message, code: code, presentation: activeRun?.errorPresentation ?? errorPresentation)
             notifyFailure(for: activeOperation, message: GenerationPresentation.error(message, code: code, language: presentationLanguage))
         case let .models(models, message):
-            availableModels = models
             modelCoordinator.receiveModels(models)
-            hasLoadedOllamaModels = true
             if let message {
                 status = message
             }
@@ -1387,7 +1494,6 @@ final class ApplicationCoordinator: ObservableObject {
             activeRun?.mlxDownloadInfo = info
         case let .ollamaStatus(installed, running, command, message):
             ollamaState = OllamaState(installed: installed, running: running, command: command, message: message ?? "")
-            modelCoordinator.receiveOllamaState(ollamaState)
             status = message ?? status
         case .benchmarkMetric, .benchmarkSample, .benchmarkDone:
             break
@@ -1420,6 +1526,7 @@ final class ApplicationCoordinator: ObservableObject {
     private func finishMLXDownloadInfo(_ result: Result<Int32, Error>, run: BackendRun) {
         guard run.model == appleModel.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if case let .failure(error) = result {
+            pendingFrenchLargePrint = nil
             pendingMLXDownloadInfo = nil
             pendingMLXSetupRetryTarget = nil
             showMLXSetupConfirmation = false
@@ -1428,6 +1535,7 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
         guard case .success(0) = result, run.backendErrorMessage == nil, let info = run.mlxDownloadInfo else {
+            pendingFrenchLargePrint = nil
             pendingMLXDownloadInfo = nil
             pendingMLXSetupRetryTarget = nil
             showMLXSetupConfirmation = false
@@ -1492,6 +1600,8 @@ final class ApplicationCoordinator: ObservableObject {
             return
         }
 
+        defer { pendingFrenchLargePrint = nil }
+
         switch result {
         case let .success(code):
             if code == 0 && run.backendErrorMessage == nil {
@@ -1502,6 +1612,10 @@ final class ApplicationCoordinator: ObservableObject {
                     return
                 }
                 do {
+                    if let configuration = generationCoordinator.activeJob?.configuration,
+                       configuration.authoringVersion == "v36" {
+                        try FrenchLLMAssessmentRequest.validatePublication(artifacts: currentGenerationFiles, configuration: configuration)
+                    }
                     try moveGeneratedFilesToOutputFolderIfNeeded(documents: run.documents)
                 } catch {
                     let message = "The paper was created, but it could not be saved to the selected folder: \(error.localizedDescription)"
@@ -1517,7 +1631,7 @@ final class ApplicationCoordinator: ObservableObject {
                 do {
                     let frenchPolicy: FrenchAssessmentRequest.PracticePolicy = run.documents.frameworkID == FrenchAssessmentRequest.assessmentID && run.model == FrenchAssessmentRequest.modelID ? .repeatPractice : .strict
                     try generationCoordinator.complete(expectedJobID: jobID, artifacts: currentGenerationFiles, expectedFrenchPolicy: frenchPolicy)
-                    if run.documents.frameworkID == FrenchAssessmentRequest.assessmentID {
+                    if run.documents.frameworkID == FrenchAssessmentRequest.assessmentID, run.model == FrenchAssessmentRequest.modelID {
                         _ = try savedFrenchFamilies()
                     }
                 } catch {
@@ -1606,7 +1720,10 @@ final class ApplicationCoordinator: ObservableObject {
             notifySuccess(for: .mlxSetup)
             // Never turn a finished setup into a request for a different target.
             // A later selection stays intact and can be generated explicitly.
-            if let target = run.retryTarget, target == generationRetryTarget { generate() }
+            if let target = run.retryTarget, target == generationRetryTarget {
+                if let largePrint = target.frenchLargePrint { generateFrenchPaper(largePrint: largePrint) }
+                else { generate() }
+            }
         case let .success(code):
             if run.backendErrorMessage == nil {
                 let message = "Apple MLX setup could not finish (code \(code)). Check your connection and storage, then try Setup Again."
@@ -1890,6 +2007,7 @@ private struct BackendRun {
     var phase = BackendRunPhase.running
     var backendErrorMessage: String?
     var mlxDownloadInfo: MLXDownloadInfo?
+    var receivedArtifactRoles = Set<String>()
 }
 
 private struct GenerationRetryTarget: Equatable {
@@ -1900,6 +2018,7 @@ private struct GenerationRetryTarget: Equatable {
     let dryRun: Bool
     let output: URL
     let seed: Int?
+    let frenchLargePrint: Bool?
 }
 
 private enum BackendRunPhase {

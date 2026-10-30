@@ -12,18 +12,20 @@ The jury evaluates the relationship with Occitanie, originality, engineering cha
 
 The current working dossier is in English, as requested by James. Its native Pages documents and PDF exports belong in `output/occitanie-2026/pages-english-final/`. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the technical/user and reliability/mathematical reports are supporting documents. `tools/build_occitanie_pages_sources.py` prepares the English source material for the Pages workflow. Final acceptance requires inspecting every exported page and checking the formal application's three-page limit after personal details are filled in. The English draft is not a claim that the organiser has approved its language or accepted a submission.
 
-The earlier Word templates are retained separately. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate them. Use `--output` with a fresh directory to avoid replacing completed personal forms:
+Earlier Word exports are superseded. Their generated copies were removed from the working output folders on 30 October; the source builder remains available. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate them. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
 - `Prix-Occitanie-2026-Candidature-James-Durup.docx` — formal application (two pages before personal details; three-page maximum);
 - `Keldin-NSI-Technical-and-User-Report.docx` — technical and user dossier;
 - `Keldin-NSI-Mathematical-Analysis.docx` — measurement and decision framework.
 
 In that older Word set, the formal application is in French and the supporting
-reports are in English. Matching PDFs were rendered and visually checked page by page in
-`output/occitanie-2026/current-20261028/`: two A4 pages for the formal application, four for
-the technical/user dossier and three for the mathematical analysis. The directory
-is intentionally ignored by Git so personal submission copies are not published
-automatically. These older exports do not certify the current Pages dossier.
+reports are in English. Matching PDFs were previously rendered and visually checked:
+two A4 pages for the formal application, four for the technical/user dossier and three
+for the mathematical analysis. Those superseded exports do not certify the current
+Pages dossier. Output folders are ignored by Git so personal submission copies are
+not published automatically. Keep the current Pages documents and PDFs; older report
+exports are rebuildable and need not accumulate beside them. Retain unique paper
+validation evidence and failure records separately from submission exports.
 
 Only the three-page application is formally required. The two appendices and the demonstration video should be provided through a private link if the organisers accept supporting material. They must not cause the formal application to exceed three pages.
 

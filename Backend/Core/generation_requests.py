@@ -20,6 +20,7 @@ OPERATIONS = {
     "edexcel",
     "aqa_cs",
     "open_credit",
+    "french_nsi_authoring",
 }
 
 
