@@ -389,7 +389,7 @@ def test_requests_use_typed_schema_and_no_fixed_question_or_answer_bank(tmp_path
         ("apple", [8192, 6000, 4096]),
         ("openai", [8192, 6000, 4096]),
         ("anthropic", [8192, 6000, 4096]),
-        ("deepseek", [16384, 16384, 16384]),
+        ("deepseek", [32768, 16384, 16384]),
     ],
 )
 def test_phase_output_allowances_are_explicit_and_provider_scoped(
@@ -441,7 +441,7 @@ def test_structural_deepseek_regeneration_keeps_allowance_and_owned_schema_seed(
     ]
     assert [request.attempt for request in authors] == [1, 2] * 3
     for first, second in zip(authors[::2], authors[1::2], strict=True):
-        assert first.output_budget == second.output_budget == 16384
+        assert first.output_budget == second.output_budget == 32768
         assert first.schema == second.schema
         assert first.generation_seed == second.generation_seed
         assert first.temperature == second.temperature

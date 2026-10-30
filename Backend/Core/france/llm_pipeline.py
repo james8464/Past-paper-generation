@@ -82,9 +82,13 @@ def _digest(value: object) -> str:
     ).hexdigest()
 
 
-def _phase_output_budget(client: JSONGenerationClient, default: int) -> int:
+def _phase_output_budget(client: JSONGenerationClient, phase: str) -> int:
     # DeepSeek uses one shared allowance for reasoning and final JSON.
-    return 16384 if getattr(client, "provider", None) == "deepseek" else default
+    local_budgets = {"author": 8192, "blind": 6000, "review": 4096}
+    default = local_budgets[phase]
+    if getattr(client, "provider", None) == "deepseek":
+        return 32768 if phase == "author" else 16384
+    return default
 
 
 def exercise_request(
@@ -753,7 +757,7 @@ def _review(
             "french_nsi_authoring",
             blind_schema,
             generation_seed=seed,
-            output_budget=_phase_output_budget(client, 6000),
+            output_budget=_phase_output_budget(client, "blind"),
         ),
     )
     Draft202012Validator(blind_schema).validate(blind)
@@ -787,7 +791,7 @@ def _review(
             "french_nsi_authoring",
             review_schema,
             generation_seed=seed,
-            output_budget=_phase_output_budget(client, 4096),
+            output_budget=_phase_output_budget(client, "review"),
         ),
     )
     Draft202012Validator(review_schema).validate(review)
@@ -841,7 +845,7 @@ def generate(
                 seed + int(identifier),
                 references,
                 previous_topics=sorted(topics),
-                output_budget=_phase_output_budget(client, 8192),
+                output_budget=_phase_output_budget(client, "author"),
             ),
             identifier,
         )

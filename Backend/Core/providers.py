@@ -603,7 +603,10 @@ class HostedLLMClient:
         if not isinstance(self.api_key, str) or not self.api_key.strip():
             raise ValueError("Enter a DeepSeek API key before generating a draft.")
         key = self.api_key.strip()
-        budget = _hosted_output_budget(request.output_budget)
+        budget = _hosted_output_budget(
+            request.output_budget,
+            maximum=32768 if request.operation == "french_nsi_authoring" else 16384,
+        )
         schema = request.schema
         _require_local_schema_references(schema)
         Draft202012Validator.check_schema(schema)
@@ -991,10 +994,10 @@ def parse_json_object(text: str) -> dict[str, object]:
     return value
 
 
-def _hosted_output_budget(value: int, *, minimum: int = 1) -> int:
-    if type(value) is not int or not minimum <= value <= 16384:
+def _hosted_output_budget(value: int, *, minimum: int = 1, maximum: int = 16384) -> int:
+    if type(value) is not int or not minimum <= value <= maximum:
         raise ValueError(
-            f"Hosted output budget must be an integer from {minimum} to 16384."
+            f"Hosted output budget must be an integer from {minimum} to {maximum}."
         )
     return value
 

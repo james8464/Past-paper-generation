@@ -288,7 +288,7 @@ def test_usage_is_recorded_without_reasoning_text_or_headers(monkeypatch, capsys
     assert "not the answer" not in json.dumps(event) and KEY not in json.dumps(event)
 
 
-@pytest.mark.parametrize("budget", [8192, 6000, 4096])
+@pytest.mark.parametrize("budget", [8192, 6000, 4096, 16384, 32768])
 def test_french_low_effort_preserves_each_tasks_shared_output_allowance(
     monkeypatch, budget
 ):
@@ -306,6 +306,58 @@ def test_other_typed_deepseek_tasks_keep_the_existing_effort_policy(monkeypatch)
     request = GenerationRequest("Return JSON.", "solver", SCHEMA, output_budget=8192)
     assert client().generate_request(request) == {"answer": 42}
     assert calls[0][1]["reasoning"] == {"effort": "high"}
+
+
+@pytest.mark.parametrize(
+    "operation,budget",
+    [
+        ("french_nsi_authoring", 32769),
+        ("french_nsi_authoring", True),
+        ("french_nsi_authoring", 32768.0),
+        ("solver", 16385),
+        ("solver", 32768),
+    ],
+)
+def test_larger_allowance_is_strictly_bounded_to_french_deepseek(
+    monkeypatch, operation, budget
+):
+    calls = mock_transport(monkeypatch, response())
+    with pytest.raises(ValueError):
+        request = GenerationRequest(
+            "Return JSON.", operation, SCHEMA, output_budget=budget
+        )
+        client().generate_request(request)
+    assert not calls
+
+
+def test_larger_french_allowance_does_not_accept_an_incomplete_response(monkeypatch):
+    value = response()
+    value["status"] = "incomplete"
+    calls = mock_transport(monkeypatch, value)
+    request = GenerationRequest(
+        "Return JSON.", "french_nsi_authoring", SCHEMA, output_budget=32768
+    )
+    with pytest.raises(GenerationEvidenceError) as failure:
+        client().generate_request(request)
+    assert failure.value.details["kind"] == "provider_structure"
+    assert len(calls) == 1
+
+
+@pytest.mark.parametrize("provider", ["openai", "anthropic", "apple", "ollama"])
+def test_other_providers_cannot_use_the_deepseek_french_author_ceiling(
+    monkeypatch, provider
+):
+    monkeypatch.setattr(
+        "Backend.Core.providers.urllib_request",
+        lambda *args, **kwargs: pytest.fail("made network request"),
+    )
+    request = GenerationRequest(
+        "Return JSON.", "french_nsi_authoring", SCHEMA, output_budget=32768
+    )
+    with pytest.raises(ValueError, match="budget"):
+        HostedLLMClient(
+            provider=provider, model="fixture", api_key=KEY
+        ).generate_request(request)
 
 
 def test_pro_is_an_explicit_supported_model_not_a_silent_fallback(monkeypatch):
