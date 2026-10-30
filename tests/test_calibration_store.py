@@ -192,3 +192,50 @@ def test_aggregate_schema_requires_privacy_and_evidence_fields() -> None:
     assert "encrypted-local-only" in encoded
     assert '"candidate_id"' in encoded
     assert '"marker_id"' in encoded
+
+
+@pytest.mark.parametrize("field", ["score", "max_score", "time_seconds"])
+@pytest.mark.parametrize("value", ["nan", "NaN", "+Infinity", "-Infinity"])
+def test_non_finite_import_cannot_write_partial_or_invalid_data(
+    tmp_path: Path, field: str, value: str
+) -> None:
+    store = CalibrationStore(tmp_path / "store", key=Fernet.generate_key())
+    store.import_csv(
+        _csv(tmp_path / "valid.csv"), metadata=_metadata(), consents=_consents(4)
+    )
+    before = {path.name: path.read_bytes() for path in store.root.iterdir()}
+    invalid = tmp_path / "invalid.csv"
+    fields = ["p-1", "q1", "1", "1", "60", "A", "m1", "aqa-7136-v1.2"]
+    fields[{"score": 2, "max_score": 3, "time_seconds": 4}[field]] = value
+    invalid.write_text(
+        "candidate_id,item_id,score,max_score,time_seconds,group,marker_id,specification_version\n"
+        "p-0,q1,0.5,1,30,A,m1,aqa-7136-v1.2\n" + ",".join(fields) + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="non-finite"):
+        store.import_csv(invalid, metadata=_metadata(), consents=_consents(2))
+    assert {path.name: path.read_bytes() for path in store.root.iterdir()} == before
+
+
+def test_finite_fractional_scores_and_optional_timing_remain_valid(
+    tmp_path: Path,
+) -> None:
+    key = Fernet.generate_key()
+    store = CalibrationStore(tmp_path / "store", key=key)
+    path = tmp_path / "fractions.csv"
+    path.write_text(
+        "candidate_id,item_id,score,max_score,time_seconds,specification_version\n"
+        "p-0,q1,0.375,1.5,0.125,aqa-7136-v1.2\n"
+        "p-1,q1,1.5,1.5,,aqa-7136-v1.2\n"
+        "p-2,q1,0,1.5,0.000001,aqa-7136-v1.2\n",
+        encoding="utf-8",
+    )
+    dataset_id = store.import_csv(path, metadata=_metadata(), consents=_consents(3))
+    document = json.loads(
+        Fernet(key).decrypt(store.dataset_path(dataset_id).read_bytes())
+    )
+    assert [
+        (row["score"], row["max_score"], row["time_seconds"])
+        for row in document["responses"]
+    ] == [(0.375, 1.5, 0.125), (1.5, 1.5, None), (0.0, 1.5, 0.000001)]
+    assert store.aggregate(dataset_id)["sample"]["candidates"] == 3
