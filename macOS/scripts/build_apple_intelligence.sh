@@ -24,6 +24,15 @@ BUILD_ARGS=(
   --arch arm64
   --sdk "$SDK_PATH"
 )
+# A framework can exist in an older SDK without the 26.4 token-counting APIs.
+# Probe those members at compile time; runtime availability alone cannot guard
+# symbols the compiler has never seen. The probe does not load a model.
+if xcrun swiftc -typecheck -target arm64-apple-macos15.0 -sdk "$SDK_PATH" \
+  "$PACKAGE_DIR/CapabilityProbe.swift" > /dev/null 2>&1; then
+  BUILD_ARGS+=(-Xswiftc -DKELDIN_FOUNDATION_MODELS_CAPABLE)
+else
+  echo "Building Apple Intelligence availability stub: required SDK APIs are absent."
+fi
 xcrun swift build "${BUILD_ARGS[@]}"
 PRODUCT_DIR="$(xcrun swift build "${BUILD_ARGS[@]}" --show-bin-path)"
 SOURCE="$PRODUCT_DIR/KeldinAppleIntelligence"

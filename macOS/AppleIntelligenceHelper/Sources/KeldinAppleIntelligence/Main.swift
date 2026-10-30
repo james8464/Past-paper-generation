@@ -53,7 +53,7 @@ struct HelperMain {
 
   static func execute(_ request: HelperRequest) async -> JSONValue {
     if Task.isCancelled { return errorResponse(.cancelled, requestID: request.requestID) }
-    #if canImport(FoundationModels)
+    #if canImport(FoundationModels) && KELDIN_FOUNDATION_MODELS_CAPABLE
       guard #available(macOS 26.4, *) else {
         return errorResponse(.unavailable, requestID: request.requestID)
       }
@@ -63,7 +63,7 @@ struct HelperMain {
     #endif
   }
 
-  #if canImport(FoundationModels)
+  #if canImport(FoundationModels) && KELDIN_FOUNDATION_MODELS_CAPABLE
     @available(macOS 26.4, *)
     static func executeSupported(_ request: HelperRequest) async -> JSONValue {
       let model = SystemLanguageModel.default

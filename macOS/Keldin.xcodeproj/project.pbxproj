@@ -232,6 +232,7 @@
 				"$(SRCROOT)/../Backend/Core/mlx_setup.py",
 				"$(SRCROOT)/scripts/build_apple_intelligence.sh",
 				"$(SRCROOT)/AppleIntelligenceHelper/Package.swift",
+				"$(SRCROOT)/AppleIntelligenceHelper/CapabilityProbe.swift",
 				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Main.swift",
 				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Protocol.swift",
 				"$(SRCROOT)/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift",

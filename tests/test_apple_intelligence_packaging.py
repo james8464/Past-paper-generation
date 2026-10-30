@@ -32,6 +32,7 @@ def _fixture(tmp_path: Path, *, store: bool = False, sign_failure: bool = False)
         "if '--show-bin-path' in sys.argv: print(os.environ['FIXTURE_PRODUCT'])\n"
         "if '--show-sdk-path' in sys.argv: print(os.environ['FIXTURE_SDK'])\n"
         "if '--force' in sys.argv and os.environ.get('FAIL_SIGN')=='1': sys.exit(12)\n"
+        "if sys.argv[1:2]==['swiftc'] and os.environ.get('FAIL_CAPABILITY')=='1': sys.exit(1)\n"
     )
     for name in ("xcrun", "codesign"):
         path = bin_dir / name
@@ -157,3 +158,21 @@ def test_old_os_and_sdk_keep_a_bounded_unavailable_path():
     assert "#if canImport(FoundationModels)" in main
     assert "guard #available(macOS 26.4, *)" in main
     assert "return errorResponse(.unavailable, requestID: request.requestID)" in main
+
+
+def test_intermediate_sdk_builds_stub_when_required_api_probe_fails(tmp_path):
+    for available in (True, False):
+        source, calls, env = _fixture(tmp_path / str(available))
+        result = _run(source, {**env, "FAIL_CAPABILITY": "0" if available else "1"})
+        assert result.returncode == 0, result.stderr
+        commands = [json.loads(line) for line in calls.read_text().splitlines()]
+        probe = next(row for row in commands if row[:1] == ["swiftc"])
+        assert "-typecheck" in probe
+        assert any(value.endswith("CapabilityProbe.swift") for value in probe)
+        build = next(row for row in commands if row[:2] == ["swift", "build"])
+        assert ("-DKELDIN_FOUNDATION_MODELS_CAPABLE" in build) is available
+    main = (
+        ROOT
+        / "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Main.swift"
+    ).read_text()
+    assert "canImport(FoundationModels) && KELDIN_FOUNDATION_MODELS_CAPABLE" in main
