@@ -58,6 +58,21 @@ def make_package(tmp_path, model):
     return subject.generate(index_path=index, client=model, seed=42)
 
 
+def first_planned_author():
+    """Prepare a valid fixture for the package's owned curriculum scope."""
+    value = raw_exercise()
+    topic = subject.curriculum_plan(42)[0]
+    code = next(
+        code
+        for code, (domain, _) in subject.CURRICULUM_OBJECTIVES.items()
+        if domain == topic
+    )
+    value["topics"] = [topic]
+    for question in value["questions"]:
+        question["curriculum_codes"] = [code]
+    return value
+
+
 def resign(package):
     package["identity"]["content_sha256"] = subject._digest(
         {k: v for k, v in package.items() if k != "identity"}
@@ -69,7 +84,7 @@ def test_actual_hosted_provider_regenerates_once_before_blind_review(
     monkeypatch, tmp_path, failure
 ):
     invalid = '{"secret":"' + KEY + '",}' if failure == "json" else {"private": KEY}
-    calls = transport(monkeypatch, [invalid, raw_exercise()])
+    calls = transport(monkeypatch, [invalid, first_planned_author()])
     package = make_package(tmp_path, client())
     assert len(calls) == 10
     assert [
@@ -252,9 +267,9 @@ def test_invalid_owned_schema_refuses_before_any_physical_call(monkeypatch):
 def test_existing_local_rejection_record_still_rehashes_its_original_draft(
     monkeypatch, tmp_path
 ):
-    original = raw_exercise()
+    original = first_planned_author()
     original["questions"][0]["answer"] = "def total():\n    return 1"
-    transport(monkeypatch, [original, raw_exercise()])
+    transport(monkeypatch, [original, first_planned_author()])
     package = make_package(tmp_path, client())
     rejected = package["authoring_attempts"][0]["rejected"][0]
     assert set(rejected) == {"response", "response_sha256", "issue"}
@@ -267,7 +282,7 @@ def test_existing_local_rejection_record_still_rehashes_its_original_draft(
     "change", ["provider", "failure", "hash", "raw", "path", "issue"]
 )
 def test_opaque_failure_evidence_is_strict_on_replay(monkeypatch, tmp_path, change):
-    transport(monkeypatch, ['{"id":1,}', raw_exercise()])
+    transport(monkeypatch, ['{"id":1,}', first_planned_author()])
     package = make_package(tmp_path, client())
     rejected = package["authoring_attempts"][0]["rejected"][0]
     if change == "provider":
