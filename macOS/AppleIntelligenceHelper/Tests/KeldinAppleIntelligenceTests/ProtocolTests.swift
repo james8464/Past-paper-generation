@@ -24,6 +24,42 @@ import Testing
   #expect(throws: HelperFailure.self) { try HelperRequest.parse(Data("null".utf8)) }
 }
 
+@Test func integerTransportNeverRoundsAnUnrepresentableValue() {
+  for spelling in [
+    "9007199254740993", "-9007199254740993", "9007199254740993.0",
+    "9.007199254740993e15", "-9.007199254740993e15",
+    "9223372036854775807", "9223372036854775808", "-9223372036854775809",
+    "9.223372036854775807e18", "1e100", "9007199254740992.5", "1.0000000000000001",
+  ] {
+    #expect(throws: (any Error).self) {
+      try JSONValue.decode(Data("{\"output\":{\"integer\":\(spelling)}}".utf8))
+    }
+  }
+}
+
+@Test func supportedIntegersAndFractionalValuesKeepTheirValues() throws {
+  for integer in [
+    0, -1, 9_007_199_254_740_992, 9_007_199_254_740_994, 4_611_686_018_427_387_904, Int.min,
+  ] {
+    let value = try JSONValue.decode(Data("{\"n\":\(integer)}".utf8))
+    let encoded = try JSONEncoder().encode(value)
+    #expect(try JSONDecoder().decode([String: Int].self, from: encoded)["n"] == integer)
+  }
+  let data = Data(#"{"fraction":1.25,"negative":-0.5,"flag":true,"empty":null}"#.utf8)
+  let value = try JSONValue.decode(data)
+  #expect(value.object?["fraction"] == .number(1.25))
+  #expect(value.object?["negative"] == .number(-0.5))
+  #expect(value.object?["flag"] == .bool(true))
+  #expect(value.object?["empty"] == .null)
+  #expect(try JSONValue.decode(JSONEncoder().encode(value)) == value)
+  for spelling in ["9007199254740992.0", "9.007199254740992e15"] {
+    let value = try JSONValue.decode(Data("{\"n\":\(spelling)}".utf8))
+    let encoded = try JSONEncoder().encode(value)
+    #expect(
+      try JSONDecoder().decode([String: Int].self, from: encoded)["n"] == 9_007_199_254_740_992)
+  }
+}
+
 @Test func contextAdmissionIncludesOutputAndReserve() throws {
   try admitContext(inputTokens: 100, outputTokens: 64, contextSize: 8192)
   #expect(throws: HelperFailure.self) {

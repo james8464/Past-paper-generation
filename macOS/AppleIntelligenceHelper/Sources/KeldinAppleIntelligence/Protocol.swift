@@ -23,6 +23,13 @@ enum JSONValue: Codable, Sendable, Equatable {
     } else {
       let result = try value.decode(Double.self)
       guard result.isFinite else { throw HelperFailure.invalidRequest }
+      // Reject integer rounding before a guided response crosses the protocol.
+      if result.rounded() == result {
+        guard let integer = try? value.decode(Int.self),
+          Double(exactly: integer) == result,
+          let decimal = try? value.decode(Decimal.self), decimal == Decimal(integer)
+        else { throw HelperFailure.invalidRequest }
+      }
       self = .number(result)
     }
   }
@@ -33,7 +40,13 @@ enum JSONValue: Codable, Sendable, Equatable {
     case .object(let result): try value.encode(result)
     case .array(let result): try value.encode(result)
     case .string(let result): try value.encode(result)
-    case .number(let result): try value.encode(result)
+    case .number(let result):
+      if let integer = Int(exactly: result) {
+        // Floating notation can shorten a large exact integer's decimal digits.
+        try value.encode(integer)
+      } else {
+        try value.encode(result)
+      }
     case .bool(let result): try value.encode(result)
     case .null: try value.encodeNil()
     }
