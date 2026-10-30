@@ -781,6 +781,8 @@ class HostedLLMClient:
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json",
             },
+            fixed_host="api.openai.com",
+            secrets=(self.api_key,),
             **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
@@ -828,6 +830,8 @@ class HostedLLMClient:
                 "anthropic-version": "2023-06-01",
                 "Content-Type": "application/json",
             },
+            fixed_host="api.anthropic.com",
+            secrets=(self.api_key,),
             **({"attempts": 1, "timeout_seconds": 600} if single_attempt else {}),
         )
         with request as response:
