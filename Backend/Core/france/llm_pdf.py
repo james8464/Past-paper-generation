@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pymupdf
 
+from Backend.Core.france.code_fences import printed_text
+from Backend.Core.france.code_layout import code_blocks
 from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.graph_pdf import validate_graph
 from Backend.Core.france.llm_pipeline import CHECKABLE, PRINT_POLICY
@@ -16,8 +18,9 @@ from Backend.Core.france.nsi import (
 )
 from Backend.Core.france.print_policy import (
     V34_FOOTER,
-    V36_LEGACY_PRINT_POLICY,
+    V36_PRINT_POLICIES,
     V36_PRINT_POLICY,
+    V36_READABLE_PRINT_POLICIES,
 )
 from Backend.Core.france.sql_sources import sql_caption
 from Backend.Core.france.whole_case_pdf import (
@@ -28,14 +31,17 @@ from Backend.Core.france.whole_case_pdf import (
 )
 
 
-def _expected_exercise(exercise: NSIExercise, correction: bool) -> str:
+def _expected_exercise(
+    exercise: NSIExercise, correction: bool, *, print_policy=PRINT_POLICY
+) -> str:
+    prose = printed_text if print_policy == V36_PRINT_POLICY else _prose
     title = exercise.title.strip().rstrip(".")
     scope = (
         f"{title}."
         if title.lower().startswith("cet exercice")
         else f"Thème de l'exercice : « {title} »."
     )
-    parts = [_heading(exercise), scope, _prose(exercise.context)]
+    parts = [_heading(exercise), scope, prose(exercise.context)]
     # Generic exercises print every material before the first question. Unlike
     # the historical whole-case layout, first-use IDs do not stage these figures.
     for material in exercise.materials:
@@ -63,12 +69,12 @@ def _expected_exercise(exercise: NSIExercise, correction: bool) -> str:
     for question in exercise.questions:
         if question.verification.get("kind") not in CHECKABLE | {"human"}:
             raise ValueError("Ce contrôle exige le rendu générique V36")
-        parts.extend([f"{question.id}.", _prose(question.prompt)])
+        parts.extend([f"{question.id}.", prose(question.prompt)])
         if correction:
             parts.extend(
                 [
                     "Réponse attendue",
-                    _prose(question.answer),
+                    prose(question.answer),
                     f"Barème indicatif — question {question.id}",
                 ]
             )
@@ -105,7 +111,7 @@ def _check_graphs(
         ]
         geometries = [
             graph_layout(graph, large_print)
-            if print_policy == V36_PRINT_POLICY
+            if print_policy in V36_READABLE_PRINT_POLICIES
             else None
             for graph in graphs
         ]
@@ -156,7 +162,9 @@ def _check_graphs(
             )
 
 
-def _check_code_lines(pages, exercises, *, correction: bool) -> None:
+def _check_code_lines(
+    pages, exercises, *, correction: bool, print_policy=PRINT_POLICY
+) -> None:
     expected = []
     for exercise in exercises:
         texts = [exercise.context]
@@ -165,8 +173,12 @@ def _check_code_lines(pages, exercises, *, correction: bool) -> None:
             if correction:
                 texts.append(question.answer)
         for text in texts:
-            blocks = re.split(r"```(?:python|sql)?[ \t]*(?:\r?\n)?", text)
-            for code in blocks[1::2]:
+            blocks = (
+                code_blocks(text)
+                if print_policy == V36_PRINT_POLICY
+                else re.split(r"```(?:python|sql)?[ \t]*(?:\r?\n)?", text)[1::2]
+            )
+            for code in blocks:
                 expected.extend(
                     line.expandtabs(8).rstrip()
                     for line in code.strip("\n").splitlines()
@@ -200,10 +212,7 @@ def validate_llm_pdf(
 ) -> None:
     from Backend.Core.france.runtime import validate_pdf
 
-    if type(large_print) is not bool or print_policy not in {
-        V36_PRINT_POLICY,
-        V36_LEGACY_PRINT_POLICY,
-    }:
+    if type(large_print) is not bool or print_policy not in V36_PRINT_POLICIES:
         raise ValueError("Politique ou mode de rendu V36 invalide")
     if [exercise.id for exercise in exercises] != ["1", "2", "3"]:
         raise ValueError("Trois exercices ordonnés requis")
@@ -251,7 +260,9 @@ def validate_llm_pdf(
             raise ValueError("Couverture, rôle ou ordre des exercices invalide")
         for index, exercise in enumerate(exercises):
             end = positions[index + 1] if index + 1 < len(positions) else len(text)
-            if text[positions[index] : end] != _expected_exercise(exercise, correction):
+            if text[positions[index] : end] != _expected_exercise(
+                exercise, correction, print_policy=print_policy
+            ):
                 raise ValueError(
                     f"Contenu imprimé différent de l'exercice {exercise.id}"
                 )
@@ -264,4 +275,6 @@ def validate_llm_pdf(
             large_print=large_print,
             print_policy=print_policy,
         )
-        _check_code_lines(pages, exercises, correction=correction)
+        _check_code_lines(
+            pages, exercises, correction=correction, print_policy=print_policy
+        )
