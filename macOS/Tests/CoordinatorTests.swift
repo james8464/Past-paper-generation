@@ -273,9 +273,25 @@ final class CoordinatorTests: XCTestCase {
 
     private var temporaryDirectory: URL!
 
+    private static func fixtureRoot() -> URL {
+        FileManager.default.temporaryDirectory
+            .appendingPathComponent("KeldinCoordinatorTests-\(UUID().uuidString)")
+    }
+
+    private static func catalogSuiteName() -> String {
+        "KeldinCatalogTests-\(UUID().uuidString)"
+    }
+
+    func testFixtureRootsAndPreferenceDomainsAreUniqueAcrossConstructions() {
+        let firstRoot = Self.fixtureRoot()
+        let secondRoot = Self.fixtureRoot()
+        XCTAssertNotEqual(firstRoot, secondRoot)
+        XCTAssertEqual(firstRoot.deletingLastPathComponent(), FileManager.default.temporaryDirectory)
+        XCTAssertNotEqual(Self.catalogSuiteName(), Self.catalogSuiteName())
+    }
+
     override func setUpWithError() throws {
-        temporaryDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("KeldinCoordinatorTests-(UUID().uuidString)")
+        temporaryDirectory = Self.fixtureRoot()
         try FileManager.default.createDirectory(
             at: temporaryDirectory,
             withIntermediateDirectories: true
@@ -491,7 +507,7 @@ final class CoordinatorTests: XCTestCase {
 
     @MainActor
     func testCatalogStoreFiltersAndPersistsFavouritesAndRecentConfigurations() throws {
-        let suite = "KeldinCatalogTests-(UUID().uuidString)"
+        let suite = Self.catalogSuiteName()
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defer { defaults.removePersistentDomain(forName: suite) }
         let store = CatalogStore(subjects: ExamCatalog.subjects, defaults: defaults)
