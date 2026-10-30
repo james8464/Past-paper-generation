@@ -104,7 +104,12 @@ class BlindNoteClient(Client):
         properties = request.schema["properties"]
         if "question_review" in properties:
             self.requests.append(request)
-            assert "Une convention mérite une précision." in request.prompt
+            assert all(
+                note in request.prompt
+                for note in getattr(
+                    self, "notes", ["Une convention mérite une précision."]
+                )
+            )
             return {
                 "question_review": {
                     identifier: {
@@ -161,6 +166,10 @@ def test_blind_notes_are_adjudicated_and_retained_as_revalidated_warnings(tmp_pa
         lambda d: d["0"].update(issue_index=True),
         lambda d: d["0"].update(issue_index=1),
         lambda d: d["0"].update(blocking="false"),
+        lambda d: d["0"].update(blocking=0),
+        lambda d: d["0"].update(blocking=None),
+        lambda d: d.update({"20": deepcopy(d["0"])}),
+        lambda d: d["0"].update(rationale=""),
         lambda d: d["0"].update(rationale="   "),
         lambda d: d["0"].update(blocking=True),
     ],
@@ -219,6 +228,64 @@ def test_dispositions_must_cover_every_note_not_just_first(tmp_path):
     assert len(client.requests) == 3
 
 
+class TwoAdjudicatedNotes(BlindNoteClient):
+    notes = ("L’élève peut écrire « Noé ».", "Deux parcours équivalents : A→B ; A→C.")
+    reasons = (
+        "L’accent est conservé, sans normalisation.",
+        "L’ordre ne change pas leur validité.",
+    )
+
+    def generate_request(self, request):
+        value = super().generate_request(request)
+        if "answers" in value:
+            value["issues"] = list(self.notes)
+        if "question_review" in value:
+            # Deliberately reversed response key order, indexed notes remain ordered.
+            value["blind_issue_dispositions"] = {
+                str(index): {
+                    "issue_index": index,
+                    "blocking": False,
+                    "rationale": self.reasons[index],
+                }
+                for index in (1, 0)
+            }
+        return value
+
+
+def test_two_note_adjudication_retains_original_bytes_and_note_order(tmp_path):
+    client = TwoAdjudicatedNotes()
+    package = generate(tmp_path, client)
+    notes = [
+        w for w in package["warnings"] if w.get("code") == "blind_issue_nonblocking"
+    ]
+    for index, warning in enumerate(notes):
+        assert warning["issue_index"] == index % 2
+        assert warning["issue"].encode() == client.notes[index % 2].encode()
+        assert warning["rationale"].encode() == client.reasons[index % 2].encode()
+
+
+@pytest.mark.parametrize(
+    "target", ["duplicate_index", "missing_question", "unknown_question"]
+)
+def test_complete_adjudication_cannot_hide_bad_coverage(tmp_path, target):
+    class Invalid(TwoAdjudicatedNotes):
+        def generate_request(self, request):
+            value = super().generate_request(request)
+            if "question_review" in value:
+                if target == "duplicate_index":
+                    value["blind_issue_dispositions"]["1"]["issue_index"] = 0
+                elif target == "missing_question":
+                    value["question_review"].pop("1")
+                else:
+                    value["question_review"]["unknown"] = deepcopy(
+                        value["question_review"]["1"]
+                    )
+            return value
+
+    with pytest.raises(SchemaValidationError):
+        generate(tmp_path, Invalid())
+
+
 def test_no_blind_notes_retain_legacy_review_schema_and_evidence(tmp_path):
     client = Client()
     package = generate(tmp_path, client)
@@ -230,7 +297,17 @@ def test_no_blind_notes_retain_legacy_review_schema_and_evidence(tmp_path):
     )
 
 
-@pytest.mark.parametrize("target", ["disposition", "warning", "note"])
+@pytest.mark.parametrize(
+    "target",
+    [
+        "disposition",
+        "warning",
+        "note",
+        "edit_rationale",
+        "omit_rationale",
+        "warning_text",
+    ],
+)
 def test_blind_adjudication_package_tampering_refuses_with_new_content_hash(
     tmp_path, target
 ):
@@ -241,8 +318,18 @@ def test_blind_adjudication_package_tampering_refuses_with_new_content_hash(
         package["warnings"] = [
             w for w in package["warnings"] if w.get("code") != "blind_issue_nonblocking"
         ]
-    else:
+    elif target == "note":
         package["reviews"][0]["blind_solution"]["issues"].append("Nouvelle réserve.")
+    elif target == "edit_rationale":
+        package["reviews"][0]["blind_issue_dispositions"]["0"]["rationale"] = (
+            "Texte remplacé."
+        )
+    elif target == "omit_rationale":
+        package["reviews"][0]["blind_issue_dispositions"]["0"].pop("rationale")
+    else:
+        next(
+            w for w in package["warnings"] if w.get("code") == "blind_issue_nonblocking"
+        )["reason"] = "Avertissement masqué."
     package["identity"]["content_sha256"] = subject._digest(
         {key: value for key, value in package.items() if key != "identity"}
     )
