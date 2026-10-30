@@ -3,6 +3,17 @@ import XCTest
 @testable import Keldin
 
 final class FrenchDraftQualityReportTests: XCTestCase {
+    func testExerciseLevelBlindNoteKeepsConcernAndRationaleWithoutInventingAQuestion() throws {
+        let detail = "Concern: missing example row. Review: the task asks for a generic statement, not its result."
+        let report = try load(checks: [], warnings: [["exercise_id": "1", "question_id": "exercise", "reason": detail]])
+        let finding = try XCTUnwrap(report.warnings.first)
+        XCTAssertEqual(finding.detail, detail)
+        XCTAssertEqual(InterfaceText.resolve(finding.locationResource, language: "en"), "Exercise 1")
+        XCTAssertEqual(InterfaceText.resolve(finding.locationResource, language: "fr"), "Exercice 1")
+        let question = FrenchDraftQualityReport.Finding(exerciseID: "1", questionID: "1b", detail: "fixture")
+        XCTAssertEqual(InterfaceText.resolve(question.locationResource, language: "fr"), "Exercice 1, question 1b")
+    }
+
     func testHumanAndMissingChecksRemainNotCheckedDespiteModelReview() throws {
         let report = try load(checks: [
             ["exercise_id": "1", "question_id": "1a", "kind": "human", "state": "not_checked", "reason": "No executable proof"],

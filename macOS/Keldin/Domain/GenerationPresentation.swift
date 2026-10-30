@@ -4,7 +4,9 @@ import Foundation
 enum GenerationPresentation {
     static func estimatedTime(_ estimate: GenerationEstimate, locale: Locale) -> String {
         let resource: LocalizedStringResource
-        if estimate.remainingSeconds <= 0 {
+        if !estimate.hasDurationEstimate {
+            resource = "Time remaining is not yet known."
+        } else if estimate.remainingSeconds <= 0 {
             resource = "Taking longer than estimated"
         } else if estimate.lastUpdatedAt != nil, estimate.remainingSeconds < 5,
                   (estimate.lastObservedProgress ?? 0) < 0.9 {
@@ -12,6 +14,12 @@ enum GenerationPresentation {
         } else {
             resource = "Estimated time left: \(estimate.remainingText)"
         }
+        return String(localized: InterfaceText.localizedResource(resource, locale: locale))
+    }
+
+    static func elapsedTime(_ seconds: TimeInterval, locale: Locale) -> String {
+        let duration = GenerationEstimate.formatDuration(seconds)
+        let resource: LocalizedStringResource = "Elapsed: \(duration)"
         return String(localized: InterfaceText.localizedResource(resource, locale: locale))
     }
 

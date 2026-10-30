@@ -1,6 +1,9 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Exercice %@"}}}},
+    "Elapsed: %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Temps écoulé : %@"}}}},
+    "Time remaining is not yet known.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le temps restant n’est pas encore connu."}}}},
     "French NSI only, uses an API key": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"NSI française uniquement, avec une clé API"}}}},
     "DeepSeek receives generation prompts, excerpts from the public French references, draft questions, proposed answers and review requests at api.deepseek.com. Requests use your paid API credits. Your key stays in Keychain and is sent only to DeepSeek for authentication. DeepSeek is available for French NSI drafts only.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"DeepSeek reçoit les consignes de génération, des extraits des références françaises publiques, les brouillons de questions, les réponses proposées et les demandes de vérification à api.deepseek.com. Les requêtes consomment vos crédits API payants. Votre clé reste dans le Trousseau et n’est transmise qu’à DeepSeek pour l’authentification. DeepSeek est disponible uniquement pour les brouillons de NSI française."}}}},
     "DeepSeek is available for French NSI drafts only. Choose another provider for UK papers.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"DeepSeek est disponible uniquement pour les brouillons de NSI française. Choisissez un autre moteur pour les sujets britanniques."}}}},

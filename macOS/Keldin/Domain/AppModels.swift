@@ -554,12 +554,17 @@ struct GenerationEstimate: Equatable {
     var factors: [EstimateFactor]
     var lastUpdatedAt: Date? = nil
     var lastObservedProgress: Double? = nil
+    var elapsedSeconds: TimeInterval? = nil
+    var hasDurationEstimate = true
 
     var etaDate: Date {
         Date().addingTimeInterval(max(0, remainingSeconds))
     }
 
     var remainingText: String {
+        guard hasDurationEstimate else {
+            return String(localized: "Time remaining is not yet known.")
+        }
         guard remainingSeconds > 0 else {
             return String(localized: "Taking longer than estimated")
         }

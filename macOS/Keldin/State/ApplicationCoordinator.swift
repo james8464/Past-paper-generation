@@ -477,7 +477,7 @@ final class ApplicationCoordinator: ObservableObject {
             provenance: GenerationProvenance(
                 appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
                 provider: request.provider.backendID, model: request.model,
-                localGenerationWorkers: configuredLocalGenerationWorkers
+                localGenerationWorkers: request.provider.sendsPromptsOffDevice ? nil : 1
             ), state: .pending, artifacts: [],
             qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
         )
@@ -497,6 +497,10 @@ final class ApplicationCoordinator: ObservableObject {
         do {
             try generationCoordinator.begin(record)
             activeRun?.ownedJobID = record.id
+            generationEstimate = GenerationEstimator.initialFrenchEstimate(
+                configuration: record.configuration, recentRuns: recentDocumentStore.records
+            )
+            startEstimateTimer()
             let process = try backend.run(arguments: request.arguments + ["--ollama-url", ollamaURL], environment: environment) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in self?.finishRun(result, from: session) }
@@ -1893,6 +1897,10 @@ final class ApplicationCoordinator: ObservableObject {
             recentRuns: recentDocumentStore.records,
             localGenerationWorkers: configuredLocalGenerationWorkers ?? 1
         )
+        startEstimateTimer()
+    }
+
+    private func startEstimateTimer() {
         etaTimer?.cancel()
         etaTimer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()

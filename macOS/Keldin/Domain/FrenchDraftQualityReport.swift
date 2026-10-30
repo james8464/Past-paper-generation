@@ -7,6 +7,11 @@ struct FrenchDraftQualityReport: Equatable {
         let questionID: String
         let detail: String
         var id: String { "\(exerciseID)/\(questionID)/\(detail)" }
+
+        var locationResource: LocalizedStringResource {
+            if questionID == "exercise" { return "Exercise \(exerciseID)" }
+            return "Exercise \(exerciseID), question \(questionID)"
+        }
     }
 
     let questionCount: Int
