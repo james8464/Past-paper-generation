@@ -714,7 +714,7 @@ def generate(
         raise ValueError("Graine entière requise")
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
     if (
-        provider not in {"ollama", "apple", "openai", "anthropic"}
+        provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}
         or not isinstance(model, str)
         or not model.strip()
     ):
@@ -798,7 +798,8 @@ def validate_package(package: dict) -> list[NSIExercise]:
         or identity.get("print_policy") != PRINT_POLICY
         or identity.get("assessment") != asdict(NSI_2027)
         or identity.get("implementation_sha256") != implementation_identity()
-        or identity.get("provider") not in {"ollama", "apple", "openai", "anthropic"}
+        or identity.get("provider")
+        not in {"ollama", "apple", "openai", "anthropic", "deepseek"}
         or not isinstance(identity.get("model"), str)
         or not identity["model"].strip()
         or type(identity.get("seed")) is not int

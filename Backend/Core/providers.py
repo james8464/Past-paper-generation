@@ -12,7 +12,7 @@ from copy import deepcopy
 from typing import Any
 from urllib.parse import urlparse
 
-from Backend.Core.events import emit_progress
+from Backend.Core.events import emit, emit_progress
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, OutputContract
 from Backend.Core.mlx_batching import (
@@ -39,6 +39,7 @@ class HostedLLMClient:
         self.provider = provider
         self.model = model
         self.api_key = api_key
+        self.usage_records: list[dict[str, object]] = []
         self.base_url = _normalise_base_url(base_url)
         self.parallel_review_workers = (
             2
@@ -91,13 +92,21 @@ class HostedLLMClient:
     ) -> dict[str, object]:
         if not 1 <= retries <= 3:
             raise ValueError("Structured-output attempts must be between 1 and 3.")
-        if request is not None and request.operation == "french_nsi_authoring":
+        if self.provider == "deepseek" or (
+            request is not None and request.operation == "french_nsi_authoring"
+        ):
             # The French pipeline owns its one recorded structural regeneration.
             retries = 1
         current_prompt = prompt
         last_error: ValueError | None = None
         for attempt in range(retries):
             try:
+                if self.provider == "deepseek":
+                    if request is None:
+                        raise ValueError(
+                            "DeepSeek requires a typed JSON generation request."
+                        )
+                    return self._deepseek(request)
                 if self.provider == "ollama":
                     if request is not None:
                         return self._ollama(
@@ -584,6 +593,159 @@ class HostedLLMClient:
             ) from error
         return response
 
+    def _deepseek(self, request: GenerationRequest) -> dict[str, object]:
+        from jsonschema import Draft202012Validator
+        from jsonschema.exceptions import ValidationError
+
+        if self.model not in {"deepseek-flash", "deepseek-v4-pro"}:
+            raise ValueError("Choose deepseek-flash or deepseek-v4-pro for DeepSeek.")
+        if not isinstance(self.api_key, str) or not self.api_key.strip():
+            raise ValueError("Enter a DeepSeek API key before generating a draft.")
+        key = self.api_key.strip()
+        budget = _hosted_output_budget(request.output_budget)
+        schema = request.schema
+        _require_local_schema_references(schema)
+        Draft202012Validator.check_schema(schema)
+        payload = json.dumps(
+            {
+                "model": self.model,
+                "input": request.prompt,
+                "stream": False,
+                "reasoning": {"effort": "high"},
+                "max_output_tokens": budget,
+                "text": {
+                    "format": {
+                        "type": "json_schema",
+                        "name": "keldin_generation",
+                        "schema": schema,
+                    }
+                },
+            }
+        ).encode("utf-8")
+        with urllib_request(
+            "https://api.deepseek.com/responses",
+            payload,
+            {"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+            attempts=1,
+            timeout_seconds=600,
+            fixed_host="api.deepseek.com",
+            secrets=(key,),
+        ) as response:
+            raw = _read_json_response(response)
+        if not isinstance(raw, dict):
+            raise GenerationEvidenceError(
+                "DeepSeek returned no structured response.",
+                details={"kind": "provider_structure", "provider": "deepseek"},
+            )
+        usage = raw.get("usage") if isinstance(raw.get("usage"), dict) else {}
+        inputs, outputs = usage.get("input_tokens"), usage.get("output_tokens")
+        cached = usage.get("input_tokens_details", {})
+        cached = cached.get("cached_tokens", 0) if isinstance(cached, dict) else 0
+        reasoning = usage.get("output_tokens_details", {})
+        reasoning = (
+            reasoning.get("reasoning_tokens") if isinstance(reasoning, dict) else None
+        )
+        record = {
+            "provider": "deepseek",
+            "model": self.model,
+            "response_id": str(raw.get("id", "")).replace(key, "[redacted]")[:200],
+            "input_tokens": inputs if type(inputs) is int else None,
+            "output_tokens": outputs if type(outputs) is int else None,
+            "cached_tokens": cached if type(cached) is int else None,
+            "reasoning_tokens": reasoning if type(reasoning) is int else None,
+            "output_budget": budget,
+            "returned_model": str(raw.get("model", "")).replace(key, "[redacted]")[
+                :200
+            ],
+            "identity_matches": raw.get("model") == self.model,
+        }
+        self.usage_records.append(record)
+        emit(
+            "progress",
+            stage="provider_usage",
+            message="Réponse DeepSeek reçue; vérification en cours.",
+            usage=record,
+        )
+        diagnostic = {
+            "provider": "deepseek",
+            "usage": record,
+            "prompt_sha256": hashlib.sha256(request.prompt.encode()).hexdigest(),
+        }
+        if (
+            raw.get("status") != "completed"
+            or raw.get("error")
+            or raw.get("incomplete_details")
+        ):
+            raise GenerationEvidenceError(
+                "DeepSeek returned incomplete structured output.",
+                details={**diagnostic, "kind": "provider_structure"},
+            )
+        if raw.get("model") != self.model:
+            raise GenerationEvidenceError(
+                "DeepSeek returned an unexpected model identity.",
+                details={**diagnostic, "kind": "provider_identity"},
+            )
+        if (
+            type(inputs) is not int
+            or inputs < 1
+            or type(outputs) is not int
+            or not 1 <= outputs <= budget
+            or type(cached) is not int
+            or not 0 <= cached <= inputs
+            or (
+                reasoning is not None
+                and (type(reasoning) is not int or not 0 <= reasoning <= outputs)
+            )
+        ):
+            raise GenerationEvidenceError(
+                "DeepSeek returned unverified token usage.",
+                details={**diagnostic, "kind": "provider_usage"},
+            )
+        try:
+            output = raw.get("output")
+            if not isinstance(output, list) or any(
+                not isinstance(item, dict)
+                or item.get("type") not in {"message", "reasoning"}
+                for item in output
+            ):
+                raise ValueError("Unexpected response items")
+            messages = [item for item in output if item.get("type") == "message"]
+            if (
+                len(messages) != 1
+                or messages[0].get("role") != "assistant"
+                or messages[0].get("status") not in {None, "completed"}
+            ):
+                raise ValueError("Missing complete assistant response")
+            parts = messages[0].get("content")
+            if (
+                not isinstance(parts, list)
+                or not parts
+                or any(
+                    not isinstance(part, dict)
+                    or part.get("type") != "output_text"
+                    or not isinstance(part.get("text"), str)
+                    for part in parts
+                )
+            ):
+                raise ValueError("Missing output text")
+            text = "".join(part["text"] for part in parts)
+            if len(text.encode()) > 1_048_576:
+                raise ValueError("Response too large")
+            candidate = json.loads(
+                text,
+                object_pairs_hook=_unique_json_fields,
+                parse_constant=_reject_json_constant,
+            )
+            if not isinstance(candidate, dict):
+                raise ValueError("Response is not a JSON object")
+            Draft202012Validator(schema).validate(candidate)
+        except (ValueError, ValidationError) as error:
+            raise GenerationEvidenceError(
+                "DeepSeek returned invalid structured output.",
+                details={**diagnostic, "kind": "provider_structure"},
+            ) from error
+        return candidate
+
     def _openai(
         self,
         prompt: str,
@@ -727,20 +889,44 @@ def urllib_request(
     *,
     attempts: int = 3,
     timeout_seconds: int = 180,
+    fixed_host: str | None = None,
+    secrets: tuple[str, ...] = (),
 ) -> Any:
     import urllib.error
     import urllib.request
 
     if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 600:
         raise ValueError("Provider timeout must be an integer from 1 to 600 seconds.")
+    open_request = urllib.request.urlopen
+    if fixed_host is not None:
+        target = urlparse(url)
+        if (
+            target.scheme != "https"
+            or target.hostname != fixed_host
+            or target.port not in (None, 443)
+            or target.username
+            or target.password
+            or target.query
+            or target.fragment
+        ):
+            raise ValueError("Provider destination must match its fixed HTTPS host.")
+
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, headers, newurl):
+                return None
+
+        open_request = urllib.request.build_opener(NoRedirect()).open
     request = urllib.request.Request(url, data=data, headers=headers, method="POST")
     last_error: Exception | None = None
     for attempt in range(attempts):
         try:
-            return urllib.request.urlopen(request, timeout=timeout_seconds)
+            return open_request(request, timeout=timeout_seconds)
         except urllib.error.HTTPError as error:
             last_error = error
             detail = error.read(2048).decode("utf-8", errors="ignore")
+            for secret in secrets:
+                if secret:
+                    detail = detail.replace(secret, "[redacted]")
             retryable = error.code in {408, 409, 429, 500, 502, 503, 504}
             if not retryable or attempt == attempts - 1:
                 raise RuntimeError(
@@ -804,6 +990,23 @@ def _hosted_output_budget(value: int, *, minimum: int = 1) -> int:
             f"Hosted output budget must be an integer from {minimum} to 16384."
         )
     return value
+
+
+def _require_local_schema_references(value: object) -> None:
+    if isinstance(value, dict):
+        for name, child in value.items():
+            if name in {"$ref", "$dynamicRef"} and (
+                not isinstance(child, str) or not child.startswith("#")
+            ):
+                raise ValueError("DeepSeek schema references must remain local.")
+            _require_local_schema_references(child)
+    elif isinstance(value, list):
+        for child in value:
+            _require_local_schema_references(child)
+
+
+def _reject_json_constant(_value: str) -> None:
+    raise ValueError("Non-finite constants are not JSON values.")
 
 
 def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

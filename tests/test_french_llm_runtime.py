@@ -23,7 +23,9 @@ def test_public_cli_defaults_to_model_authored_french():
     assert args.authoring_version == "v36"
 
 
-@pytest.mark.parametrize("provider", ["ollama", "apple", "openai", "anthropic"])
+@pytest.mark.parametrize(
+    "provider", ["ollama", "apple", "openai", "anthropic", "deepseek"]
+)
 def test_new_public_route_never_calls_the_catalogue(monkeypatch, provider):
     from Backend.Core.france import llm_runtime, runtime
 
