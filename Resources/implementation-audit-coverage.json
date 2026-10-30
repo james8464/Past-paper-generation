@@ -797,6 +797,24 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/llm_pdf.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/france/llm_pipeline.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/france/llm_runtime.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/loan_case.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -2885,6 +2903,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-model-capability-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-nsi-archive-discovery-2026-09-28.json",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3095,6 +3119,18 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-nsi-v36-authored-route-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-ollama-context-capacity-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-repeat-practice-policy-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3192,6 +3228,12 @@
     },
     {
       "path": "docs/quality/mlx-installed-accounting-acceptance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/mlx-typed-output-budgets-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3910,20 +3952,14 @@
     {
       "path": "macOS/Keldin/Application/AppCommands.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Read every line and traced focused creation, document commands, disabled contexts and menu destinations. No new defect found; reviewed scope is recorded in the evidence.",
-      "source_sha256": "ff7c33d3c342e662decb1b7d0430656a9e506d32bdb0050335f7501e442a7f9e",
-      "review_evidence": "docs/quality/native-startup-and-report-audit-2026-10-29.md",
-      "review_evidence_sha256": "4face6325ec770161186435b564f59e3f144d348608c62dd9a338f3805641ed4"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Application/AppConfiguration.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Read every line and reviewed Store-owned output/model storage, direct Downloads defaults and stable persistence/secret keys. No new defect found.",
-      "source_sha256": "7405617194fe8ad1651c421f11f17a1534b492f6d8e8fc355539e2866e75238f",
-      "review_evidence": "docs/quality/native-startup-and-report-audit-2026-10-29.md",
-      "review_evidence_sha256": "4face6325ec770161186435b564f59e3f144d348608c62dd9a338f3805641ed4"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
@@ -4106,6 +4142,18 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Keldin/Domain/FrenchDraftQualityReport.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin/Domain/FrenchReviewRequest.swift",
       "classification": "maintained-source",
       "status": "pending",
@@ -4119,6 +4167,12 @@
     },
     {
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4152,6 +4206,12 @@
       "source_sha256": "83dd834ae716938cc6c411aee53ca787725d12e73975c55a0c93852cc0cb637f",
       "review_evidence": "docs/quality/native-release-safety-review-2026-10-29.md",
       "review_evidence_sha256": "67053cc5cc00ad0a12244a3b787c06427c802aa8b28680fa9883eeb395c1fd0c"
+    },
+    {
+      "path": "macOS/Keldin/Domain/PaperQualityGuidance.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Domain/WorkNotification.swift",
@@ -4196,6 +4256,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Keldin/Features/Generation/GenerationGuidanceViews.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin/Features/Generation/GenerationProgress.swift",
       "classification": "maintained-source",
       "status": "pending",
@@ -4215,6 +4281,12 @@
     },
     {
       "path": "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Keldin/Features/Settings/HostedModelCandidatesView.swift",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -4439,6 +4511,18 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Tests/FrenchDraftQualityReportTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/FrenchLLMAssessmentTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Tests/GenerationEstimatorTests.swift",
       "classification": "test",
       "status": "pending",
@@ -4485,6 +4569,12 @@
     },
     {
       "path": "macOS/Tests/MigrationTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/ModelQualityGuidanceTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5321,7 +5411,31 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_llm_pdf.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_llm_pipeline.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_llm_runtime.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_loan_case.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_model_capability.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5418,6 +5532,12 @@
     },
     {
       "path": "tests/test_french_network_reasoning_contract.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_ollama_capacity.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5543,6 +5663,18 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_v36_code_format.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_v36_profile_warnings.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_whole_case_benchmark.py",
       "classification": "test",
       "status": "pending",
@@ -5610,6 +5742,18 @@
     },
     {
       "path": "tests/test_hosted_generation_cancellation.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_hosted_model_defaults.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_hosted_output_budgets.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5720,6 +5864,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_mlx_output_budgets.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_mlx_setup.py",
       "classification": "test",
       "status": "pending",
@@ -5739,6 +5889,12 @@
     },
     {
       "path": "tests/test_model_review.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_native_model_quality_guidance.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6144,6 +6300,12 @@
     },
     {
       "path": "tools/difficulty_calibration.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tools/french_model_capability.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793317659.0599313,
-    "ast_hash": "537472c225b063cf24d4047a79a91e57",
+    "mtime": 1793319427.509798,
+    "ast_hash": "984bdba5798e7c030370520a032fb598",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2075,8 +2075,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1793304841.9067242,
-    "ast_hash": "79ecdd2237344f4e123ea3d091e18bec",
+    "mtime": 1793319980.0273778,
+    "ast_hash": "959655ddd2c36aca6c623efc7c534485",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
@@ -3435,8 +3435,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/AppConfiguration.swift": {
-    "mtime": 1793294386.6565437,
-    "ast_hash": "0454c114e02c34b8e029304ac79b550c",
+    "mtime": 1793319230.1963768,
+    "ast_hash": "85b935019272e765fd745b7d90fb0c45",
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/KeldinApp.swift": {
@@ -3560,8 +3560,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793315678.7942705,
-    "ast_hash": "742647294a1e9895529a45cfd9522ee8",
+    "mtime": 1793319230.1977587,
+    "ast_hash": "918197fb0defd39870709ab2eff9181f",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793310884.2307248,
-    "ast_hash": "bed4dd6b11f38166ac0ad43cd0970962",
+    "mtime": 1793319987.715681,
+    "ast_hash": "b7351b4951f4895cdaffe18b38592dbc",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4050,8 +4050,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
-    "mtime": 1793302747.6089451,
-    "ast_hash": "67a95da877493be827f65ec92aac43fc",
+    "mtime": 1793319230.199353,
+    "ast_hash": "0776cc02390fbcfbdbdb1a5b26e320ee",
     "semantic_hash": ""
   },
   "macOS/Tests/StorageLocalizationTests.swift": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793318225.6220095,
-    "ast_hash": "09fecbae017054b9dd4dbba68bdc7534",
+    "mtime": 1793319230.1826863,
+    "ast_hash": "a46725ba9a98d7612fcd590f7ddbf53c",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4780,8 +4780,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
-    "mtime": 1793316785.8840837,
-    "ast_hash": "53b1a8b0f1f8e9e15fb9886a30142943",
+    "mtime": 1793319230.1971087,
+    "ast_hash": "286885791bde23a2ec05141140e34f57",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GenerationGuidanceViews.swift": {
@@ -4800,8 +4800,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
-    "mtime": 1793316785.8846357,
-    "ast_hash": "fc0040da6227813135afdeaaef92ad2b",
+    "mtime": 1793319230.1989715,
+    "ast_hash": "0f3dbe98dbba1aa70db97a34520d582a",
     "semantic_hash": ""
   },
   "tests/test_french_llm_pdf.py": {
@@ -4850,8 +4850,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v36-authored-route-2026-10-29.md": {
-    "mtime": 1793317620.4108145,
-    "ast_hash": "0be497a7d972216d1b0a98cfd39f18c8",
+    "mtime": 1793319230.1828918,
+    "ast_hash": "ffb67349c7d804f8aa42e80668b4102b",
     "semantic_hash": ""
   },
   "docs/quality/mlx-typed-output-budgets-2026-10-29.md": {
@@ -4872,6 +4872,26 @@
   "tests/test_french_v36_profile_warnings.py": {
     "mtime": 1793317620.4103556,
     "ast_hash": "3aa508481daf1e95256e6bcf6361b93f",
+    "semantic_hash": ""
+  },
+  "macOS/Keldin/Domain/HostedModelCandidate.swift": {
+    "mtime": 1793319230.1966028,
+    "ast_hash": "c8ad4e936733a4dddcc7c76ecfff9a7a",
+    "semantic_hash": ""
+  },
+  "macOS/Keldin/Features/Settings/HostedModelCandidatesView.swift": {
+    "mtime": 1793319230.1973827,
+    "ast_hash": "5751d1ec91e866287ce779f5e3274a26",
+    "semantic_hash": ""
+  },
+  "tests/test_french_v36_code_format.py": {
+    "mtime": 1793319230.1832626,
+    "ast_hash": "ba61e34ceca17d16227df8d0f2761c30",
+    "semantic_hash": ""
+  },
+  "tests/test_hosted_model_defaults.py": {
+    "mtime": 1793319230.1995394,
+    "ast_hash": "093d469df8fa81c2a0056dde49d447d2",
     "semantic_hash": ""
   }
 }
