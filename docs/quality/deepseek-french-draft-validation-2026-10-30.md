@@ -4,7 +4,7 @@
 
 DeepSeek is a candidate provider for model-authored French NSI drafts, not a qualified paper generator. It is unavailable for UK papers. Flash and V4 Pro use a fixed HTTPS endpoint, separate credentials and separate consent. The app sends the French references, prompts, drafts, proposed corrections and review material needed for generation. This does not imply that the provider keeps no logs.
 
-The implementation uses typed JSON requests and validates the returned model, completion state, schema and finite values. It refuses redirects, malformed output and unbounded requests. French phases use low reasoning effort and a 16,384-token ceiling, including reasoning and final text. Other providers keep their existing budgets. These settings follow DeepSeek's [Responses API](https://api-docs.deepseek.com/api/create-response/) and [thinking-mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/), checked on 30 October 2026.
+The implementation uses typed JSON requests and validates the returned model, completion state, schema and finite values. It refuses redirects, malformed output and unbounded requests. French phases use low reasoning effort. DeepSeek authoring allows 32,768 output tokens; blind solving and review allow 16,384 each. Reasoning and final text share those ceilings. Other providers and operations keep their existing budgets. These settings follow DeepSeek's [Responses API](https://api-docs.deepseek.com/api/create-response/) and [thinking-mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/), checked on 30 October 2026.
 
 ## Live diagnostic evidence
 
@@ -23,6 +23,7 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Flash 16k | Two complete authoring responses; first had an invalid table cell, second used decimal commas in credit fields | Schema/validator mismatch exposed; no PDF published |
 | Pro 16k, aligned schema | All three first-exercise calls completed; review refused an unstated tree-height convention | No PDF published; independent review also found that the convention needed clarification |
 | Pro 16k, connected brief | First authoring response completed; display-only Python filter rejected `nonlocal` | Overbroad display restriction reproduced; no PDF published |
+| Pro 16k, separated display boundary | First exercise passed authoring, blind solving and review; second authoring response exhausted 16,384 tokens | No complete paper or PDF; authoring ceiling raised separately from review budgets |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
