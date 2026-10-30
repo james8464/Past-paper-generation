@@ -112,3 +112,32 @@ execution uses its own helper rather than an inherited development override.
 No App Store upload, approval, whole-HIG certification, learner calibration or
 teacher review occurred. Native UI interaction coverage is separate from the
 unit/build checks recorded here.
+
+## Final private-reasoning contract check
+
+The shared solver's private `steps` field now permits up to 512 Unicode
+codepoints per step rather than reusing the 240-character short-field limit.
+This applies generally to open, multiple-choice and response-slot solvers, not
+to one expected answer. Other short fields, supplied-choice enums, 16-step
+limit, output budgets and semantic checks are unchanged. A red test reproduced
+the old limit; 153 focused tests then passed, including 513-character refusal,
+retained short-field limits and decomposed-Unicode counting.
+
+Exactly one fresh actual FIFO call used this new original schema and the old
+working guided-with-postvalidation helper, without native regex guidance. It
+failed both response structure and independent mathematical review. Step 7
+contained 1,145 characters against 512. Earlier steps incorrectly stated
+`80 × 12 = 9600`, `120 × 15 = 18000` and `150 × 24 = 36000`; the actual values
+are 960, 1,800 and 3,600. It also subtracted all purchased inventory instead of
+the FIFO cost of the 150 units sold, which is 2,010. The final supplied choice
+GBP1,590 was explicitly used as a placeholder after asserting that no choice
+was valid. It is not evidence of a correct solution.
+
+The call took 18.4413 seconds, with 1,334 input tokens and a 1,536-token output
+allowance. Evidence remains in `uk-fifo-run4-reasoning-contract`, including the
+unaltered helper reply. Core identity was
+`746cc72bb2837d6a48773eb7f26ba126aa4997a48e20adaaadad09f7657f1145`,
+Git head `96f467d6df04de15d604b31964782c339feae539`, and helper SHA-256
+`d2121fae96e09e048c161f7603823a4def91c700ad56cfa7164f56c36b892b68`.
+Source and binary were checked unchanged afterward. No further call, answer
+repair or acceptance followed. This provider remains unqualified for this task.
