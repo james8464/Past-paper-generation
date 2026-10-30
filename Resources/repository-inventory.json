@@ -3,17 +3,17 @@
     "build-release-configuration": 27,
     "design-resource": 1,
     "development-configuration": 10,
-    "documentation": 188,
+    "documentation": 190,
     "durable-derived-configuration": 1,
     "durable-derived-metadata": 14,
     "runtime-resource": 169,
     "runtime-source": 282,
-    "test": 299,
+    "test": 300,
     "test-configuration": 2,
     "tooling": 34
   },
   "forbidden": [],
   "schema_version": 1,
-  "tracked_files": 1027,
+  "tracked_files": 1030,
   "unclassified": []
 }

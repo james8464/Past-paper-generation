@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793319427.509798,
-    "ast_hash": "984bdba5798e7c030370520a032fb598",
+    "mtime": 1793352578.5832744,
+    "ast_hash": "7cdf61a041ed619a8524338a10d9c5cc",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793315678.8110216,
-    "ast_hash": "ba51c6a0a3649fa33623e32e4c4eb81c",
+    "mtime": 1793352562.6977134,
+    "ast_hash": "bdc3d6143513a506a45edcb47c4bcb04",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793319987.715681,
-    "ast_hash": "b7351b4951f4895cdaffe18b38592dbc",
+    "mtime": 1793352578.4894793,
+    "ast_hash": "0f7628f8191e2c7175a6bde23fd8a6c6",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793319230.1826863,
-    "ast_hash": "a46725ba9a98d7612fcd590f7ddbf53c",
+    "mtime": 1793352131.0217116,
+    "ast_hash": "4444b5b6bfe4c875bcfce709cff52b50",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4850,8 +4850,8 @@
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v36-authored-route-2026-10-29.md": {
-    "mtime": 1793319230.1828918,
-    "ast_hash": "ffb67349c7d804f8aa42e80668b4102b",
+    "mtime": 1793352131.0062659,
+    "ast_hash": "07398b8c7ebb5601146efbc9e184a27f",
     "semantic_hash": ""
   },
   "docs/quality/mlx-typed-output-budgets-2026-10-29.md": {
@@ -4892,6 +4892,21 @@
   "tests/test_hosted_model_defaults.py": {
     "mtime": 1793319230.1995394,
     "ast_hash": "093d469df8fa81c2a0056dde49d447d2",
+    "semantic_hash": ""
+  },
+  "tests/test_french_v36_rejection_evidence.py": {
+    "mtime": 1793352131.0219007,
+    "ast_hash": "34b4a2a6fb622ee26feede2c7669ce48",
+    "semantic_hash": ""
+  },
+  "docs/quality/concurrency-publication-implementation-review-2026-10-30.md": {
+    "mtime": 1793352001.432112,
+    "ast_hash": "9ffb10f2e09e4b45849be6cb62f50922",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-nsi-v36-gemma-reasoning-run-2026-10-30.md": {
+    "mtime": 1793352578.2748296,
+    "ast_hash": "cfe3e9567623bda32aefc66f6d59915b",
     "semantic_hash": ""
   }
 }

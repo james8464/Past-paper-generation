@@ -3140,6 +3140,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-nsi-v36-gemma-reasoning-run-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-ollama-context-capacity-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5685,6 +5691,12 @@
     },
     {
       "path": "tests/test_french_v36_profile_warnings.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_v36_rejection_evidence.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
