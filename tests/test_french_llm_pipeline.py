@@ -286,6 +286,20 @@ class Client:
         properties = request.schema["properties"]
         if "id" in properties:
             result = raw_exercise(properties["id"]["const"], self.marker)
+            import json
+
+            data = json.loads(
+                request.prompt.split("DONNÉES_JSON\n")[1].split("\nOUTPUT_SCHEMA=")[0]
+            )
+            if topic := data.get("primary_topic"):
+                result["topics"] = [topic]
+                code = next(
+                    code
+                    for code, (domain, _) in subject.CURRICULUM_OBJECTIVES.items()
+                    if domain == topic
+                )
+                for question in result["questions"]:
+                    question["curriculum_codes"] = [code]
             if self.mutate:
                 self.mutate(result)
             return result

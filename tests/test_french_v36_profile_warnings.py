@@ -52,18 +52,23 @@ def test_repeated_broad_topic_is_a_profile_warning_not_a_question_rewrite(tmp_pa
         for question in raw["questions"]:
             question["curriculum_codes"] = ["SD-LINEAIRE"]
 
-    package = generate(tmp_path, Client(mutate=repeat))
+    exercises = []
+    for identifier in ("1", "2", "3"):
+        raw = raw_exercise(identifier)
+        repeat(raw)
+        exercises.append(subject.validate_authored_exercise(raw, identifier))
+    _, evidence_warnings = subject._verification_evidence(exercises)
     warnings = [
         item
-        for item in package["warnings"]
+        for item in evidence_warnings
         if item.get("code") == "repeated_broad_topics"
     ]
     assert [item["exercise_id"] for item in warnings] == ["2", "3"]
     assert all(item["question_id"] == "1" for item in warnings)
-    assert [item["topics"] for item in package["exercises"]] == [
-        ["structures-donnees"]
-    ] * 3
-    assert len(subject.validate_package(package)) == 3
+    assert [list(item.topics) for item in exercises] == [["structures-donnees"]] * 3
+    # Current source scoping additionally requires each assigned primary domain.
+    with pytest.raises(ValueError, match="domaine principal"):
+        generate(tmp_path, Client(mutate=repeat))
 
 
 def test_explicit_material_free_v36_is_valid_but_missing_field_and_legacy_generation_refuse(
@@ -142,6 +147,15 @@ def test_domain_label_mismatch_warns_only_in_v36_and_preserves_model_fields(
             raw["topics"].append("algorithmique")
 
     raw = raw_exercise()
+    primary_topic = subject.curriculum_plan(42)[0]
+    raw["topics"] = [primary_topic]
+    primary_code = next(
+        code
+        for code, (topic, _) in subject.CURRICULUM_OBJECTIVES.items()
+        if topic == primary_topic
+    )
+    for question in raw["questions"]:
+        question["curriculum_codes"] = [primary_code]
     mismatch(raw)
     with pytest.raises(ValueError, match=r"Capacité incompatible|thème annoncé"):
         NSIExercise.model_validate(raw)
