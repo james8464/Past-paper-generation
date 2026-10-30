@@ -7,6 +7,7 @@ struct FrenchLLMAssessmentRequest {
     static let printPolicy = "fr-nsi-v36-model-review-v3"
     static let sqlSourcePolicy = "fr-nsi-v36-sql-source-v1"
     static let sourcePolicy = "fr-nsi-v36-exercise-curriculum-scope-v1"
+    static let reviewRecoveryPolicy = "fr-nsi-v36-whole-exercise-redraft-v1"
     let referenceIndex: URL
     let output: URL
     let seed: Int
@@ -40,7 +41,8 @@ struct FrenchLLMAssessmentRequest {
               publication.identity.promptVersion == promptVersion,
               publication.identity.printPolicy == printPolicy,
               publication.identity.sqlSourcePolicy == sqlSourcePolicy,
-              publication.identity.sourcePolicy == sourcePolicy else {
+              publication.identity.sourcePolicy == sourcePolicy,
+              publication.identity.reviewRecoveryPolicy == reviewRecoveryPolicy else {
             throw CocoaError(.fileReadCorruptFile)
         }
     }
@@ -118,6 +120,7 @@ struct FrenchLLMAssessmentRequest {
             let printPolicy: String
             let sqlSourcePolicy: String
             let sourcePolicy: String
+            let reviewRecoveryPolicy: String
         }
     }
 }
