@@ -533,6 +533,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/code_layout.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review and exact-byte evidence; wider implementation audit and release acceptance remain separate.",
+      "source_sha256": "7d7136e22014f189ab448be76e3eb642dfb23d7d8179154fd87ebb51079b12dd",
+      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
+      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
+    },
+    {
       "path": "Backend/Core/france/corpus.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -812,19 +821,19 @@
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "333121cdefe6752b7a8d64e5a0166c9dfa796139f675d18ab884497aa3085d67",
-      "review_evidence": "docs/quality/french-question-advisory-review-2026-10-30.md",
-      "review_evidence_sha256": "83755c1febf2695fa1afb4f9b15dd0fbb26d252b069343edf39c0d904736e6ea"
+      "reason": "Complete-file baseline and subsequent complete diff review within the recorded scope; wider implementation audit and release acceptance remain separate.",
+      "source_sha256": "a9b43141df5d61cebc603db015bff7f6595ebc3ebfc9286d9e3cb97fd503d210",
+      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
+      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "a00b33867a94a757c2c2b346b9e86166067744c80da2a669873e5c63ca4304e1",
-      "review_evidence": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
-      "review_evidence_sha256": "b7a3ff04f6a4a638cef56a16de250d8632a243968adb58aecc5b36d92fdd2755"
+      "reason": "Complete-file baseline and subsequent complete diff review within the recorded scope; wider implementation audit and release acceptance remain separate.",
+      "source_sha256": "da544b85b6f52573a834e54109a2ae3ae28516e106b7f1df03b1eded811c5793",
+      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
+      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -3197,6 +3206,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-navigation-and-performance-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5256,6 +5271,12 @@
     },
     {
       "path": "tests/test_french_closed_prose_authoring.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_code_layout.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
