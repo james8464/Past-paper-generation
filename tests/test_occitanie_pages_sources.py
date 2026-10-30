@@ -52,7 +52,6 @@ def test_form_has_translated_official_headings_and_language_notice():
         text = " ".join(
             value for page in report.pages for pair in page.sections for value in pair
         )
-        assert "V35" in text
         assert "—" not in text and "–" not in text
         assert "à compléter" not in text and "Présentation" not in text
 
@@ -70,10 +69,13 @@ def test_supporting_report_uses_headings_and_paragraphs_not_bullet_lead_ins():
     assert r"\b0 A separate activity\par" in content
     assert r"\u8226?" not in content
     assert content.count(r"\li3800") == 2
+    continuation = sources.body_section("", "The next paragraph.", formal=False)
+    assert continuation.count(r"\par") == 2  # one paragraph command and its terminator
+    assert r"\b " not in continuation
 
 
 def test_current_reports_distinguish_model_generation_from_historical_catalogue():
-    for report in sources.REPORTS:
+    for report in (sources.TECHNICAL, sources.RELIABILITY):
         text = " ".join(text for page in report.pages for _, text in page.sections)
         assert "V36" in text
         assert "V35" in text
@@ -82,12 +84,38 @@ def test_current_reports_distinguish_model_generation_from_historical_catalogue(
     technical = " ".join(
         text for page in sources.TECHNICAL.pages for _, text in page.sections
     )
-    assert "No complete V36 model-generated French paper has yet passed" in technical
-    assert "selected model writes" in technical
     assert (
-        "Teacher review and learner timing studies have not been conducted" in technical
+        "has not yet produced a complete French paper that passes qualification"
+        in technical
+    )
+    assert "asks the model to write" in technical
+    assert (
+        "French teacher review and learner timing studies have not been conducted"
+        in technical
     )
     assert sources.DIAGRAMS["paper-structure.svg"][0] == "French V36"
+
+
+def test_report_leads_with_regional_problem_and_avoids_labelled_block_rhythm():
+    first_page = sources.TECHNICAL.pages[0]
+    assert "CLEMENT MAROT" in first_page.sections[0][1]
+    assert (
+        sum(not label for page in sources.TECHNICAL.pages for label, _ in page.sections)
+        >= 4
+    )
+    application = " ".join(
+        text for page in sources.APPLICATION.pages for _, text in page.sections
+    )
+    assert "V35" not in application and "V36" not in application
+    assert "Budget allocation: applicant to complete" in application
+    for report in sources.REPORTS:
+        text = " ".join(text for page in report.pages for _, text in page.sections)
+        assert "not just" not in text and "not only" not in text
+    reliability = " ".join(
+        text for page in sources.RELIABILITY.pages for _, text in page.sections
+    )
+    assert "341-page review" in reliability
+    assert "0 of 10" in reliability and "9.5%" in reliability
 
 
 def test_existing_personal_documents_are_not_overwritten(tmp_path):
