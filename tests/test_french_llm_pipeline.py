@@ -18,7 +18,10 @@ def test_authoring_explains_prior_domains_without_fixing_tasks_or_reference_them
     assert "prérequis ou représentations communs restent possibles" in prompt
     assert "Un changement de contexte seul ne suffit pas" in prompt
     assert "leurs thèmes ne sont pas des choix obligatoires" in prompt
-    assert '"previous_topics": ["algorithmique", "structures-donnees"]' in prompt
+    import json
+
+    data = json.loads(prompt.split("DONNÉES_JSON\n")[1].split("\nOUTPUT_SCHEMA=")[0])
+    assert data["previous_topics"] == ["algorithmique", "structures-donnees"]
 
 
 @pytest.mark.parametrize("shared_pages", [False, True])

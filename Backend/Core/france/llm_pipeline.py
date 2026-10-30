@@ -335,9 +335,10 @@ def exercise_request(
                 "references": references,
             },
             ensure_ascii=False,
+            separators=(",", ":"),
         )
         + "\nOUTPUT_SCHEMA="
-        + json.dumps(schema, ensure_ascii=False)
+        + json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
     )
     return GenerationRequest(
         prompt,
