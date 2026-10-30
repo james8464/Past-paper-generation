@@ -1170,6 +1170,7 @@ def _ollama_json_schema(
         contract.operation if contract is not None else _legacy_schema_operation(prompt)
     )
     short_text = {"type": "string", "maxLength": 240}
+    reasoning_step = {"type": "string", "maxLength": 512}
     text_list = {
         "type": "array",
         "items": short_text,
@@ -1201,7 +1202,7 @@ def _ollama_json_schema(
             return {
                 "type": "object",
                 "properties": {
-                    "steps": {"type": "array", "items": short_text, "maxItems": 16},
+                    "steps": {"type": "array", "items": reasoning_step, "maxItems": 16},
                     "answer": answers,
                     "mark_points": answers,
                     "evidence_ids": text_list,
@@ -1222,7 +1223,7 @@ def _ollama_json_schema(
             }
     if operation == "solver":
         properties = {
-            "steps": {"type": "array", "items": short_text, "maxItems": 16},
+            "steps": {"type": "array", "items": reasoning_step, "maxItems": 16},
             "answer": {"type": "string", "minLength": 1, "maxLength": 2400},
             "mark_points": {"type": "array", "items": short_text, "maxItems": 16},
             "evidence_ids": text_list,
