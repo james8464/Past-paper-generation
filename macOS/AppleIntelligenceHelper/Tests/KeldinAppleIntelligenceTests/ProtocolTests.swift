@@ -169,6 +169,14 @@ import Testing
 }
 
 #if canImport(FoundationModels)
+  @Test func requiredPropertyOrderPrecedesSortedOptionalProperties() {
+    #expect(
+      orderedPropertyNames(
+        required: ["reasoning", "conclusion"], properties: ["z", "conclusion", "a", "reasoning"])
+        == ["reasoning", "conclusion", "a", "z"])
+    #expect(orderedPropertyNames(required: [], properties: ["z", "a"]) == ["a", "z"])
+  }
+
   @Test @available(macOS 26.0, *) func postvalidatedGuidanceDelegatesOnlyStringMaximumLength()
     throws
   {

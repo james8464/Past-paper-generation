@@ -3,6 +3,11 @@ import Foundation
 #if canImport(FoundationModels)
   import FoundationModels
 
+  // Call only after validating required names are unique and belong to properties.
+  func orderedPropertyNames(required: [String], properties: [String]) -> [String] {
+    required + properties.filter { !required.contains($0) }.sorted()
+  }
+
   // This decoder projection delegates only maxLength. The full original schema
   // remains in the prompt and must still pass the backend's admission validator.
   func projectPostvalidatedSchema(_ value: JSONValue, depth: Int = 0) throws -> JSONValue {
@@ -62,7 +67,7 @@ import Foundation
       else { throw HelperFailure.unsupportedSchema }
       let name = "Object\(nodes)"
       var converted: [DynamicGenerationSchema.Property] = []
-      for key in properties.keys.sorted() {
+      for key in orderedPropertyNames(required: required, properties: Array(properties.keys)) {
         guard !key.isEmpty, key.utf8.count <= 128, let child = properties[key] else {
           throw HelperFailure.unsupportedSchema
         }
