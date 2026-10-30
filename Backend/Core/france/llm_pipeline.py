@@ -204,7 +204,13 @@ def _safe_python(text: str) -> None:
     for code in re.findall(r"```python\s*\n(.*?)```", text, re.S | re.I):
         tree = ast.parse(code)
         for node in ast.walk(tree):
-            if isinstance(node, (ast.Import, ast.ImportFrom, ast.Global, ast.Nonlocal)):
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                raise ValueError("Fragment Python avec accès non autorisé")
+            # Scope declarations are display text, not executable capabilities.
+            # Their identifiers are strings rather than ast.Name children.
+            if isinstance(node, (ast.Global, ast.Nonlocal)) and any(
+                name in FORBIDDEN_NAMES or name.startswith("__") for name in node.names
+            ):
                 raise ValueError("Fragment Python avec accès non autorisé")
             if isinstance(node, ast.Name) and (
                 node.id in FORBIDDEN_NAMES or node.id.startswith("__")
@@ -261,7 +267,7 @@ def _bare_python_suite(text: str) -> bool:
                 io.StringIO("\n".join(lines[index:end])).readline
             ):
                 if token.type == tokenize.NAME and (
-                    token.string in {"import", "global", "nonlocal"}
+                    token.string == "import"
                     or token.string in FORBIDDEN_NAMES
                     or (
                         token.string.startswith("__")
