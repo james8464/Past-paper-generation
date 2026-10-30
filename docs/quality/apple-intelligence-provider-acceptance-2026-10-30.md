@@ -156,5 +156,15 @@ A second agent reviewed the helper's SDK checks, fixed-path packaging and
 protocol without finding an actionable regression. This was a code review,
 not a paper-quality review. The failed regex-guidance experiment is excluded
 from the application; production guidance retains original-schema
-postvalidation. Full regression, release-build and installed-UI results are
-recorded separately when completed.
+postvalidation.
+
+The signed direct Release and personal-development-signed Store preflight
+passed. Computer control selected Apple Intelligence in the direct candidate,
+confirmed `apple-system-on-device` and the calculation warning, and refreshed
+availability successfully in Settings. There were no download or API-key
+controls for this provider. The French workspace displayed its capacity
+explanation and disabled creation. The original Computer Science/AQA selection
+was restored and the candidate closed. No paper was generated in this UI check;
+saved documents and output settings were unchanged. The user requested the
+Apple provider, so that selection was retained. Installation and full-regression
+results are recorded separately when completed.
