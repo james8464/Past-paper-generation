@@ -3,6 +3,18 @@ import XCTest
 @testable import Keldin
 
 final class AppleIntelligenceProviderTests: XCTestCase {
+    func testCloudPlaceholderIsLocalisedWithoutAddingASelectableProvider() {
+        XCTAssertEqual(InterfaceText.resolve(AppleCloudPlaceholder.title, language: "en"), "Apple cloud models (planned)")
+        XCTAssertEqual(InterfaceText.resolve(AppleCloudPlaceholder.title, language: "fr"), "Modèles Apple dans le cloud (prévus)")
+        XCTAssertEqual(InterfaceText.resolve(AppleCloudPlaceholder.detail, language: "fr"), "Non disponible dans Keldin. L’accès nécessite une adhésion à l’Apple Developer Program, une inscription à l’App Store Small Business Program, moins de 2 millions de premiers téléchargements d’apps et l’autorisation Private Cloud Compute d’Apple.")
+        let detail = InterfaceText.resolve(AppleCloudPlaceholder.detail, language: "en")
+        for requirement in ["Not available", "Developer Program", "Small Business Program", "2 million", "entitlement"] {
+            XCTAssertTrue(detail.contains(requirement))
+        }
+        XCTAssertFalse(AIProvider.allCases.contains { $0.backendID == "apple_cloud" })
+        XCTAssertFalse(AIProvider.appleIntelligence.sendsPromptsOffDevice)
+    }
+
     func testProviderIdentityDoesNotMigrateSavedMLXSettings() {
         XCTAssertEqual(AIProvider(backendID: "apple"), .apple)
         XCTAssertEqual(AIProvider(rawValue: "apple"), .apple)

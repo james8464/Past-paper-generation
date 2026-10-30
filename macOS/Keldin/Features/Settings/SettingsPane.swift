@@ -396,12 +396,28 @@ private struct AISettingsTab: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
+                Label {
+                    Text(InterfaceText.localizedResource(AppleCloudPlaceholder.title, locale: locale))
+                } icon: {
+                    Image(systemName: "cloud").accessibilityHidden(true)
+                }
+                .foregroundStyle(.secondary)
+                Text(InterfaceText.localizedResource(AppleCloudPlaceholder.detail, locale: locale))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .task {
                 if !application.appleIntelligenceAvailability.checked { application.refreshAppleIntelligenceAvailability() }
             }
         }
     }
+}
+
+enum AppleCloudPlaceholder {
+    static let title: LocalizedStringResource = "Apple cloud models (planned)"
+    // Eligibility: https://developer.apple.com/private-cloud-compute/
+    static let detail: LocalizedStringResource = "Not available in Keldin. Access requires Apple Developer Program membership, App Store Small Business Program enrolment, fewer than 2 million first-time app downloads and Apple's Private Cloud Compute entitlement."
 }
 
 private struct OutputSettingsTab: View {
