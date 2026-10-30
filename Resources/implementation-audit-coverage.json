@@ -1046,6 +1046,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/recovery_evidence.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/rendering.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -3267,6 +3273,12 @@
     },
     {
       "path": "docs/quality/french-question-advisory-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-recovery-storage-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5952,6 +5964,12 @@
     },
     {
       "path": "tests/test_french_question_advisories.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_recovery_store.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

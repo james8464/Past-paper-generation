@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793389180.1900642,
-    "ast_hash": "c47fafda0e9b5fccae505cb4c17e5c73",
+    "mtime": 1793390723.3062775,
+    "ast_hash": "65eca7467d2ace2ea9bb6c7e556df875",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793389180.105792,
-    "ast_hash": "a3ac7cb06ae6b6ffa0887da903ca8953",
+    "mtime": 1793390723.2268744,
+    "ast_hash": "bf069cf60f651b1284c34315f5a55f52",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5227,6 +5227,21 @@
   "docs/quality/model-guidance-validation-2026-10-30.md": {
     "mtime": 1793390705.5426524,
     "ast_hash": "aa8c3f5b6d242a323bba3245cea5452a",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/recovery_evidence.py": {
+    "mtime": 1793403180.530017,
+    "ast_hash": "5c69cb587118f2d2d45e33859ed18dfe",
+    "semantic_hash": ""
+  },
+  "tests/test_french_recovery_store.py": {
+    "mtime": 1793403180.632802,
+    "ast_hash": "7fa6ccf78d9d9dddf4c0db7b11b4434a",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-recovery-storage-review-2026-10-30.md": {
+    "mtime": 1793403496.8129432,
+    "ast_hash": "185485e4f36d401eb9580b02a6849356",
     "semantic_hash": ""
   }
 }
