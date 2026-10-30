@@ -817,11 +817,8 @@
     {
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file control-flow review of model identity, cancellation, validated staging and publication; no new consequential finding within the documented scope. No fresh tests or model qualification claimed.",
-      "source_sha256": "aaf2f2de18bc11ed7951c125543a44b19c9d18e47789f6f4c02326d920f95ee1",
-      "review_evidence": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
-      "review_evidence_sha256": "42f8ac6c4b5094ac46f4b9485fcfc80b71faba158ee12e18c73bdf7435a532a1"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -2888,6 +2885,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/deepseek-french-draft-validation-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/difficulty-calibration-v2-report.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4535,6 +4538,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Tests/DeepSeekProviderTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Tests/DocumentPickerTests.swift",
       "classification": "test",
       "status": "pending",
@@ -4548,6 +4557,12 @@
     },
     {
       "path": "macOS/Tests/FrenchDraftQualityReportTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/FrenchGenerationEstimateTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5046,6 +5061,12 @@
       "source_sha256": "a334c53011454b2b611350f3e1e1f32dd19540d47a175152ebdd397263e13d32",
       "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
       "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+    },
+    {
+      "path": "tests/test_deepseek_provider.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_difficulty_calibration.py",
