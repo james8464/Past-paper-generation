@@ -97,7 +97,7 @@ def exercise_request(
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
-    schema = authoring_schema()
+    schema = authoring_schema(machine_field_constraints=True)
     schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
     schema["properties"]["minutes"] = {"type": "integer", "const": 70}
