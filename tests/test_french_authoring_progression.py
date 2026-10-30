@@ -33,4 +33,6 @@ def test_progression_brief_preserves_transport_marks_and_historical_schema_defau
     assert "Ne sélectionne pas une famille connue" in request.prompt
     assert "ne reformule pas un sujet de référence" in request.prompt
     assert authoring_schema()["properties"]["materials"]["minItems"] == 1
-    assert "pattern" not in authoring_schema()["$defs"]["Credit"]["properties"]["points"]
+    assert (
+        "pattern" not in authoring_schema()["$defs"]["Credit"]["properties"]["points"]
+    )
