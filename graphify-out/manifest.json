@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793376848.2805655,
+    "mtime": 1793377016.1031792,
     "ast_hash": "932a1cf464cca5674d8ef9c84d5e12b1",
     "semantic_hash": ""
   },
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793376836.4258955,
-    "ast_hash": "2ba978fc6a1f8a4c88442a052e638205",
+    "mtime": 1793377005.612973,
+    "ast_hash": "6bd5b3c0def89c352e6a54e616b92282",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3545,8 +3545,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1793376657.682803,
-    "ast_hash": "ad25c97859126e70c28a26ecb5774c8f",
+    "mtime": 1793377015.6697438,
+    "ast_hash": "fe55776ec3251367e2283b732bf39177",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -3555,8 +3555,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793371612.2854874,
-    "ast_hash": "e96c5013b0ce74c14942be61e325437d",
+    "mtime": 1793377015.6705725,
+    "ast_hash": "109696582ac644eae1e7d906df45e5ef",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793376848.1018274,
+    "mtime": 1793377016.0048552,
     "ast_hash": "aa4543cd21ca83da3ae5fd81f5e36114",
     "semantic_hash": ""
   },
@@ -5025,8 +5025,8 @@
     "semantic_hash": ""
   },
   "docs/quality/orange-scene-accent-review-2026-10-30.md": {
-    "mtime": 1793376847.7545013,
-    "ast_hash": "e8a018496f53cf17ba6ec68bb065d464",
+    "mtime": 1793377015.671248,
+    "ast_hash": "e93972c8a5ed6417f95e99ac43f397bc",
     "semantic_hash": ""
   },
   "macOS/Keldin/Assets.xcassets/ControlAccent.colorset/Contents.json": {

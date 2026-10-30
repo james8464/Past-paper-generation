@@ -288,9 +288,23 @@ def test_native_selected_and_filled_controls_keep_white_foreground_contrast():
     sidebar = (APP / "Navigation/SidebarView.swift").read_text()
     assert '.tint(Color("ControlAccent"))' in sidebar
     style = (APP / "Components/NativeVisualStyle.swift").read_text()
-    assert 'buttonStyle(.borderedProminent)\n            .tint(Color("ControlAccent"))' in style
+    assert (
+        'buttonStyle(.borderedProminent)\n            .tint(Color("ControlAccent"))'
+        in style
+    )
     for path in (APP / "Features").rglob("*.swift"):
         assert ".buttonStyle(.borderedProminent)" not in path.read_text(), path
+
+
+def test_segmented_pickers_use_the_safe_native_control_fill():
+    count = 0
+    for path in APP.rglob("*.swift"):
+        lines = path.read_text().splitlines()
+        for index, line in enumerate(lines):
+            if line.strip() == ".pickerStyle(.segmented)":
+                assert lines[index + 1].strip() == '.tint(Color("ControlAccent"))', path
+                count += 1
+    assert count == 3
 
 
 def test_external_links_use_the_text_tint_without_retinting_native_controls():

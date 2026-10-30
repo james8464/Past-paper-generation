@@ -120,6 +120,7 @@ private struct PaperConfiguration: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(Color("ControlAccent"))
                 }
 
                 Picker(
@@ -136,6 +137,7 @@ private struct PaperConfiguration: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .tint(Color("ControlAccent"))
 
                 LabeledContent("Assessment") {
                     Text(application.selectedPaperDetail)
