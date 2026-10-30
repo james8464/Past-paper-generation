@@ -249,3 +249,70 @@ def test_bounded_taller_figure_admits_common_seven_room_graph(tmp_path):
     path = tmp_path / "seven-room-enlarged.pdf"
     render(path, source, large_print=True)
     validate_llm_pdf(path, source, correction=False, large_print=True)
+
+
+def test_real_route_never_passes_through_unrelated_named_node(tmp_path):
+    from math import hypot
+
+    names = tuple(f"Accueil{letter}" for letter in "ABCDEFGH")
+    graph = NSIWeightedGraphMaterial(
+        kind="weighted_graph",
+        id="skip_room",
+        title="Saut de salle",
+        nodes=names,
+        edges=((names[0], names[2], 137),),
+        directed=False,
+    )
+    geometry = graph_layout(graph, True)
+    source = with_graph()
+    source[0] = source[0].model_copy(
+        update={"materials": (*source[0].materials[:-1], graph)}
+    )
+    path = tmp_path / "unrelated-node-route.pdf"
+    render(path, source, large_print=True)
+    validate_llm_pdf(path, source, correction=False, large_print=True)
+    start, end = geometry.routes[0].start, geometry.routes[0].end
+    point = geometry.positions[names[1]]
+    vx, vy = end[0] - start[0], end[1] - start[1]
+    t = max(
+        0,
+        min(
+            1,
+            ((point[0] - start[0]) * vx + (point[1] - start[1]) * vy)
+            / (vx * vx + vy * vy),
+        ),
+    )
+    distance = hypot(point[0] - start[0] - t * vx, point[1] - start[1] - t * vy)
+    assert distance >= geometry.radius + 2, "edge crosses an unrelated node"
+
+
+@pytest.mark.parametrize(
+    "point,start,end,expected",
+    [
+        ((5, 2), (0, 0), (10, 0), 2),
+        ((-3, 4), (0, 0), (10, 0), 5),
+        ((13, 4), (0, 0), (10, 0), 5),
+        ((5, 5), (0, 0), (10, 10), 0),
+    ],
+)
+def test_segment_clearance_uses_clamped_actual_route(point, start, end, expected):
+    from Backend.Core.france.graph_layout import _segment_distance
+
+    assert _segment_distance(point, start, end) == pytest.approx(expected)
+    assert _segment_distance(point, end, start) == pytest.approx(expected)
+
+
+def test_reciprocal_offset_that_cannot_clear_neighbour_refuses():
+    from Backend.Core.france.code_layout import CodeLayoutError
+
+    names = tuple(f"Accueil{letter}" for letter in "ABCDEFGH")
+    graph = NSIWeightedGraphMaterial(
+        kind="weighted_graph",
+        id="no_clearance",
+        title="Arcs réciproques trop proches",
+        nodes=names,
+        edges=((names[0], names[2], 137), (names[2], names[0], 251)),
+        directed=True,
+    )
+    with pytest.raises(CodeLayoutError, match="arc traverse"):
+        graph_layout(graph, True)

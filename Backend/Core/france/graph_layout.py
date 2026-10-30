@@ -48,6 +48,17 @@ def _intersects(first: Box, second: Box, gap: float = 2) -> bool:
     )
 
 
+def _segment_distance(point: Point, start: Point, end: Point) -> float:
+    vx, vy = end[0] - start[0], end[1] - start[1]
+    projection = ((point[0] - start[0]) * vx + (point[1] - start[1]) * vy) / (
+        vx * vx + vy * vy
+    )
+    fraction = max(0, min(1, projection))
+    return hypot(
+        point[0] - start[0] - fraction * vx, point[1] - start[1] - fraction * vy
+    )
+
+
 def graph_layout(
     material: NSIWeightedGraphMaterial,
     large_print: bool,
@@ -120,6 +131,15 @@ def _fit_graph(
         offset = radius / 2 if reciprocal else 0
         line_start = (x1 + nx * offset, y1 + ny * offset)
         line_end = (x2 + nx * offset, y2 + ny * offset)
+        # Four points also clear the arrowhead's ~3pt half-width plus stroke.
+        if any(
+            _segment_distance(point, line_start, line_end) < radius + 4
+            for node, point in positions.items()
+            if node not in {start, end}
+        ):
+            raise _CongestedGraph(
+                "Un arc traverse un autre sommet dans ce format : rédiger un graphe lisible avec des noms plus courts."
+            )
         arrow: tuple[Point, ...] = ()
         if material.directed:
             boundary = sqrt(radius * radius - offset * offset)
