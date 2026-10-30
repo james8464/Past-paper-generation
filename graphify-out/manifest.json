@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793380754.194531,
-    "ast_hash": "5b7a53564d618b57a6aeb3a24add0832",
+    "mtime": 1793382647.457644,
+    "ast_hash": "5726988222eb94eaa62ce2ab58ae426e",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3555,8 +3555,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793380754.2733982,
-    "ast_hash": "67dda7661f1c13e9b06736efc0af5bb9",
+    "mtime": 1793382628.5084245,
+    "ast_hash": "d5ffe3aa06f5c7675256bb1959e82faf",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -4180,8 +4180,8 @@
     "semantic_hash": ""
   },
   "tests/fixtures/assessment_prompt_snapshots.json": {
-    "mtime": 1793298086.080482,
-    "ast_hash": "a7fef0290ccc22354d87806c38a0c091",
+    "mtime": 1793382655.3765554,
+    "ast_hash": "85209e1aa19a66b21a836581768e4077",
     "semantic_hash": ""
   },
   "tests/test_assessment_prompt_characterisation.py": {
@@ -5145,8 +5145,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppleIntelligenceProviderTests.swift": {
-    "mtime": 1793380754.274833,
-    "ast_hash": "a2bd426a53f194b047df94677c581351",
+    "mtime": 1793382628.5089965,
+    "ast_hash": "9c7d054e42b55dab929c6a183caab2a4",
     "semantic_hash": ""
   },
   "macOS/scripts/build_apple_intelligence.sh": {
@@ -5170,8 +5170,8 @@
     "semantic_hash": ""
   },
   "docs/quality/apple-intelligence-provider-acceptance-2026-10-30.md": {
-    "mtime": 1793381992.9525928,
-    "ast_hash": "3ca65b05f35246df6a9704f47f98a2fd",
+    "mtime": 1793382427.8036191,
+    "ast_hash": "24539cdb1a8c910e9fea7d41d2150ffb",
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/README.md": {
