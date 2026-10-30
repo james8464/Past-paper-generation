@@ -14,7 +14,10 @@ from typing import Any
 from urllib.parse import urlparse
 
 from Backend.Core.events import emit, emit_progress
-from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_diagnostics import (
+    GenerationEvidenceError,
+    ProviderOutputContractError,
+)
 from Backend.Core.generation_requests import GenerationRequest, OutputContract
 from Backend.Core.mlx_batching import (
     BatchUnavailable,
@@ -749,6 +752,12 @@ class HostedLLMClient:
             text = "".join(part["text"] for part in parts)
             if len(text.encode()) > 1_048_576:
                 raise ValueError("Response too large")
+        except ValueError as error:
+            raise GenerationEvidenceError(
+                "DeepSeek returned invalid structured output.",
+                details={**diagnostic, "kind": "provider_structure"},
+            ) from error
+        try:
             candidate = json.loads(
                 text,
                 object_pairs_hook=_unique_json_fields,
@@ -759,10 +768,24 @@ class HostedLLMClient:
                 raise ValueError("Response is not a JSON object")
             Draft202012Validator(schema).validate(candidate)
         except (ValueError, ValidationError) as error:
-            raise GenerationEvidenceError(
-                "DeepSeek returned invalid structured output.",
-                details={**diagnostic, "kind": "provider_structure"},
-            ) from error
+            if isinstance(error, ValidationError):
+                failure = "schema_mismatch"
+                path = [
+                    part
+                    if type(part) is int
+                    else str(part).replace(key, "[redacted]")[:80]
+                    for part in list(error.absolute_schema_path)[:24]
+                ]
+            else:
+                failure, path = "invalid_json", []
+            # No candidate text, values or verbose validator message enters the
+            # typed error. Suppress its original parsing/validation traceback.
+            raise ProviderOutputContractError(
+                failure=failure,
+                response_sha256=hashlib.sha256(text.encode()).hexdigest(),
+                schema_path=path,
+                diagnostic=diagnostic,
+            ) from None
         return candidate
 
     def _openai(

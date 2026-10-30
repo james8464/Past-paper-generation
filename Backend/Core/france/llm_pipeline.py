@@ -39,7 +39,11 @@ from Backend.Core.france.nsi import (
 from Backend.Core.france.print_policy import V36_PRINT_POLICY
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
-from Backend.Core.generation_diagnostics import GenerationEvidenceError
+from Backend.Core.generation_diagnostics import (
+    GenerationEvidenceError,
+    ProviderOutputContractError,
+    validate_provider_contract_rejection,
+)
 from Backend.Core.generation_requests import GenerationRequest, request_json
 from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
@@ -917,8 +921,9 @@ def _author(client, request, exercise_id, *, large_print: bool = False):
     """Regenerate one malformed structure; never patch its answer or rubric."""
     rejected = []
     for attempt in (1, 2):
-        raw = request_json(client, request)
+        raw = None
         try:
+            raw = request_json(client, request)
             exercise = validate_authored_exercise(
                 raw, exercise_id, large_print=large_print
             )
@@ -927,8 +932,21 @@ def _author(client, request, exercise_id, *, large_print: bool = False):
             ModelValidationError,
             PythonCodeFormatError,
             CodeLayoutError,
+            ProviderOutputContractError,
         ) as error:
-            issue = str(error).split("\n\n")[0][:1800]
+            if isinstance(error, ProviderOutputContractError):
+                refusal = error.rejection_record
+                validate_provider_contract_rejection(
+                    refusal, getattr(client, "provider", "")
+                )
+                issue = refusal["issue"]
+            else:
+                issue = str(error).split("\n\n")[0][:1800]
+                refusal = {
+                    "response": raw,
+                    "response_sha256": _digest(raw),
+                    "issue": issue,
+                }
             if attempt == 2:
                 raise GenerationEvidenceError(
                     f"L'exercice {exercise_id} reste mal structuré après deux tentatives : {issue}",
@@ -938,32 +956,32 @@ def _author(client, request, exercise_id, *, large_print: bool = False):
                         "attempts": [
                             {
                                 "attempt": i + 1,
-                                "response_sha256": item["response_sha256"],
-                                "raw_response": json.dumps(
-                                    item["response"], ensure_ascii=False
+                                **(
+                                    item
+                                    if "kind" in item
+                                    else {
+                                        "response_sha256": item["response_sha256"],
+                                        "raw_response": json.dumps(
+                                            item["response"], ensure_ascii=False
+                                        ),
+                                        "issue": item["issue"],
+                                    }
                                 ),
-                                "issue": item["issue"],
                             }
-                            for i, item in enumerate(
-                                [
-                                    *rejected,
-                                    {
-                                        "response": raw,
-                                        "response_sha256": _digest(raw),
-                                        "issue": issue,
-                                    },
-                                ]
-                            )
+                            for i, item in enumerate([*rejected, refusal])
                         ],
                     },
                 ) from error
-            rejected.append(
-                {"response": raw, "response_sha256": _digest(raw), "issue": issue}
-            )
+            rejected.append(refusal)
+            feedback = issue
+            if "kind" in refusal and refusal["schema_path"]:
+                feedback += " Chemin du schéma : " + "/".join(
+                    str(part) for part in refusal["schema_path"]
+                )
             request = GenerationRequest(
                 request.prompt
                 + "\nREGENERATION: Le brouillon ne respecte pas le contrat: "
-                + issue
+                + feedback
                 + ". Rédige un nouvel exercice entier conforme aux mêmes contraintes. "
                 "Ne complète pas les données manquantes avec un sujet prédéfini.",
                 request.operation,
@@ -1209,6 +1227,9 @@ def validate_package(package: dict) -> list[NSIExercise]:
         ):
             raise ValueError("Historique de rédaction incohérent")
         for rejected in record["rejected"]:
+            if isinstance(rejected, dict) and "kind" in rejected:
+                validate_provider_contract_rejection(rejected, identity["provider"])
+                continue
             if (
                 not isinstance(rejected, dict)
                 or not isinstance(rejected.get("issue"), str)
