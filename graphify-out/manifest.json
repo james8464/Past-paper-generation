@@ -280,8 +280,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/model_recommendations.py": {
-    "mtime": 1793225633.0739524,
-    "ast_hash": "022ed7a0a690263a953ede7645d0be99",
+    "mtime": 1793390654.6074464,
+    "ast_hash": "b7b9deab274eafac81f58e915af2d3df",
     "semantic_hash": ""
   },
   "Backend/Core/model_review.py": {
@@ -1590,8 +1590,8 @@
     "semantic_hash": ""
   },
   "tests/test_model_recommendations.py": {
-    "mtime": 1793225633.1521773,
-    "ast_hash": "82923c78a75376365ffdcd6f4e665331",
+    "mtime": 1793390654.7061894,
+    "ast_hash": "f67797db34447e1c66f2f4f78e9f25ab",
     "semantic_hash": ""
   },
   "tests/test_model_review.py": {
@@ -5222,6 +5222,11 @@
   "docs/quality/french-format-and-data-review-2026-10-30.md": {
     "mtime": 1793389133.7353625,
     "ast_hash": "a29ed79440ad2f9c5dbf9fc8ddf96847",
+    "semantic_hash": ""
+  },
+  "docs/quality/model-guidance-validation-2026-10-30.md": {
+    "mtime": 1793390705.5426524,
+    "ast_hash": "aa8c3f5b6d242a323bba3245cea5452a",
     "semantic_hash": ""
   }
 }

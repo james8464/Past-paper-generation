@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from dataclasses import dataclass
 from functools import lru_cache
 from itertools import pairwise
@@ -40,7 +41,8 @@ def model_recommendations() -> OllamaModelRecommendations:
 def parse_model_recommendations(
     payload: dict[str, Any],
 ) -> OllamaModelRecommendations:
-    if payload.get("schema_version") != 1:
+    version = payload.get("schema_version")
+    if type(version) is not int or version != 1:
         raise ValueError("unsupported Ollama model recommendation schema")
     default_model = _required_text(payload, "default_model")
     warning = _required_text(payload, "other_model_warning")
@@ -52,23 +54,27 @@ def parse_model_recommendations(
     for raw in raw_tiers:
         if not isinstance(raw, dict):
             raise ValueError("each Ollama model tier must be an object")
-        minimum = raw.get("minimum_memory_gb")
-        maximum = raw.get("maximum_memory_gb")
-        if not isinstance(minimum, (int, float)) or minimum < 0:
+        minimum = _memory_boundary(raw.get("minimum_memory_gb"), "minimum_memory_gb")
+        raw_maximum = raw.get("maximum_memory_gb")
+        maximum = (
+            _memory_boundary(raw_maximum, "maximum_memory_gb")
+            if raw_maximum is not None
+            else None
+        )
+        if minimum < 0:
             raise ValueError("minimum_memory_gb must be non-negative")
-        if maximum is not None and (
-            not isinstance(maximum, (int, float)) or maximum <= minimum
-        ):
+        if maximum is not None and maximum <= minimum:
             raise ValueError("maximum_memory_gb must be greater than its minimum")
+        qualified = raw.get("validated_for_full_matrix")
+        if type(qualified) is not bool:
+            raise ValueError("validated_for_full_matrix must be a boolean")
         tiers.append(
             OllamaModelTier(
                 id=_required_text(raw, "id"),
-                minimum_memory_gb=float(minimum),
-                maximum_memory_gb=float(maximum) if maximum is not None else None,
+                minimum_memory_gb=minimum,
+                maximum_memory_gb=maximum,
                 model=_required_text(raw, "model"),
-                validated_for_full_matrix=bool(
-                    raw.get("validated_for_full_matrix", False)
-                ),
+                validated_for_full_matrix=qualified,
             )
         )
 
@@ -93,6 +99,18 @@ def parse_model_recommendations(
 
 def default_ollama_model() -> str:
     return model_recommendations().default_model
+
+
+def _memory_boundary(value: object, name: str) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{name} must be a finite number")
+    try:
+        boundary = float(value)
+    except OverflowError as error:
+        raise ValueError(f"{name} must be a finite number") from error
+    if not math.isfinite(boundary):
+        raise ValueError(f"{name} must be a finite number")
+    return boundary
 
 
 def _required_text(payload: dict[str, Any], name: str) -> str:
