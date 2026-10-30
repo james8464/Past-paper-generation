@@ -143,6 +143,71 @@ def test_requests_use_typed_schema_and_no_fixed_question_or_answer_bank(tmp_path
     }
 
 
+@pytest.mark.parametrize(
+    "provider,budgets",
+    [
+        ("ollama", [8192, 6000, 4096]),
+        ("apple", [8192, 6000, 4096]),
+        ("openai", [8192, 6000, 4096]),
+        ("anthropic", [8192, 6000, 4096]),
+        ("deepseek", [16384, 16384, 16384]),
+    ],
+)
+def test_phase_output_allowances_are_explicit_and_provider_scoped(
+    tmp_path, provider, budgets
+):
+    client = Client()
+    client.provider = provider
+    generate(tmp_path, client)
+    assert [request.output_budget for request in client.requests] == budgets * 3
+
+
+def test_authoring_budget_override_does_not_modify_schema_prompt_or_sampling_identity():
+    default = subject.exercise_request(
+        "1", 42, [], previous_topics=("Bases de données",)
+    )
+    larger = subject.exercise_request(
+        "1", 42, [], previous_topics=("Bases de données",), output_budget=16384
+    )
+    assert default.output_budget == 8192 and larger.output_budget == 16384
+    for field in (
+        "prompt",
+        "operation",
+        "schema",
+        "generation_seed",
+        "seed",
+        "attempt",
+        "temperature",
+        "expected_ids",
+    ):
+        assert getattr(default, field) == getattr(larger, field)
+
+
+def test_structural_deepseek_regeneration_keeps_allowance_and_owned_schema_seed(
+    tmp_path,
+):
+    class Retry(Client):
+        provider = "deepseek"
+
+        def generate_request(self, request):
+            result = super().generate_request(request)
+            if "id" in request.schema["properties"] and request.attempt == 1:
+                result["topics"] = ["not-in-the-taxonomy"]
+            return result
+
+    client = Retry()
+    generate(tmp_path, client)
+    authors = [
+        request for request in client.requests if "id" in request.schema["properties"]
+    ]
+    assert [request.attempt for request in authors] == [1, 2] * 3
+    for first, second in zip(authors[::2], authors[1::2], strict=True):
+        assert first.output_budget == second.output_budget == 16384
+        assert first.schema == second.schema
+        assert first.generation_seed == second.generation_seed
+        assert first.temperature == second.temperature
+
+
 def test_authoring_grammar_exposes_the_taxonomy_and_contract_keys():
     from jsonschema import Draft202012Validator
 

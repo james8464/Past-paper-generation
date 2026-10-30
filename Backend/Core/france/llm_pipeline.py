@@ -82,8 +82,18 @@ def _digest(value: object) -> str:
     ).hexdigest()
 
 
+def _phase_output_budget(client: JSONGenerationClient, default: int) -> int:
+    # DeepSeek uses one shared allowance for reasoning and final JSON.
+    return 16384 if getattr(client, "provider", None) == "deepseek" else default
+
+
 def exercise_request(
-    exercise_id: str, seed: int, references: list[dict], *, previous_topics=()
+    exercise_id: str,
+    seed: int,
+    references: list[dict],
+    *,
+    previous_topics=(),
+    output_budget: int = 8192,
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
@@ -177,7 +187,7 @@ def exercise_request(
         schema,
         generation_seed=seed,
         temperature=0.6,
-        output_budget=8192,
+        output_budget=output_budget,
     )
 
 
@@ -660,7 +670,7 @@ def _review(
             "french_nsi_authoring",
             blind_schema,
             generation_seed=seed,
-            output_budget=6000,
+            output_budget=_phase_output_budget(client, 6000),
         ),
     )
     Draft202012Validator(blind_schema).validate(blind)
@@ -693,7 +703,7 @@ def _review(
             "french_nsi_authoring",
             review_schema,
             generation_seed=seed,
-            output_budget=4096,
+            output_budget=_phase_output_budget(client, 4096),
         ),
     )
     Draft202012Validator(review_schema).validate(review)
@@ -745,6 +755,7 @@ def generate(
                 seed + int(identifier),
                 references,
                 previous_topics=sorted(topics),
+                output_budget=_phase_output_budget(client, 8192),
             ),
             identifier,
         )
