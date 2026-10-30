@@ -22,6 +22,7 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Pro 16k, repaired review flow | All three first-exercise calls completed; incorrect shortest-path selection order refused | Genuine worked-answer error, despite the correct final distance |
 | Flash 16k | Two complete authoring responses; first had an invalid table cell, second used decimal commas in credit fields | Schema/validator mismatch exposed; no PDF published |
 | Pro 16k, aligned schema | All three first-exercise calls completed; review refused an unstated tree-height convention | No PDF published; independent review also found that the convention needed clarification |
+| Pro 16k, connected brief | First authoring response completed; display-only Python filter rejected `nonlocal` | Overbroad display restriction reproduced; no PDF published |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
@@ -56,6 +57,20 @@ The marking criterion for that correction does not explicitly credit minimum sel
 The candidate contains four top-level question objects and ten numbered subparts. Object counts are not directly comparable with official paper question counts. No complete French paper has qualified from these attempts. Teacher review and empirical learner calibration remain `not_run`.
 
 A later candidate declares attributes `gauche` and `droit`, but its faulty height function calls `droite` and omits the increment. One internal blind reviewer initially missed the attribute mismatch and incorrectly reported only one definite defect. The original note is retained and marked superseded. There are two defects under the node-count convention; the convention itself remains unspecified. The model review refused that ambiguity. Internal review can also be wrong and is not teacher attestation.
+
+## Display and execution boundaries
+
+The connected-brief attempt included `nonlocal` in a printed correction. The display checker parses fragments without executing them; treating every scope declaration as unauthorized access was overbroad. Harmless declarations are now admitted as text. Declared identifiers still pass the forbidden-name checks. Import, file, network, dynamic-execution and reflective-access restrictions remain.
+
+Executable `python_trace` verification uses a separate bounded interpreter. Its allowed statements and refusal of scope declarations/functions are unchanged. Targeted tests cover both boundaries. Revalidating the retained response after this fix admits its structure without executing its code; that replay is not a fresh generation or semantic qualification.
+
+## Native interface evidence
+
+The candidate Release showed the DeepSeek model choices and paid-credit warning. Without a saved key, French Create remained disabled with an instruction to enter one. UK creation remained disabled for DeepSeek even with layout preview enabled. No real key was saved during UI testing.
+
+A separate native check found that the visible UK model name was missing from accessibility output after switching providers. The model row now supplies a localized label and spoken value. It does not reset the form or preview state. A selected DeepSeek provider also has a visible French-only label in the UK picker, where it is genuinely nonselectable through SwiftUI's `selectionDisabled`, not a blanket `disabled` modifier. The four supported UK alternatives are unchanged. Actual accessibility observations verified both fixes; the candidate was closed and the original provider, model, preview, language and output preferences restored.
+
+French elapsed time starts with generation. An ETA uses matching completed French provider/model/version history; without that history it says remaining time is unknown. This measures software runtime, not learner timing. Native tests cover timer cleanup, cancellation, navigation and exercise-level advisory headings. These scoped checks do not establish complete interaction coverage.
 
 ## Remaining acceptance
 
