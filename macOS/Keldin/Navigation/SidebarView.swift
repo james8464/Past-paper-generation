@@ -26,6 +26,7 @@ struct Sidebar: View {
             expandedSubjectIDs: $expandedSubjectIDs
         )
         .navigationTitle("Keldin")
+        .tint(Color("ControlAccent"))
         .frame(minWidth: 220)
         .onAppear(perform: expandSelectedSubject)
         .onChange(of: selection) { _, _ in expandSelectedSubject() }

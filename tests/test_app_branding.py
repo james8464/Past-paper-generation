@@ -250,16 +250,23 @@ def _contrast(first, second):
     return (max(one, two) + 0.05) / (min(one, two) + 0.05)
 
 
-def test_native_controls_keep_system_managed_accent_colours():
-    assert "NSAccentColorName" not in plistlib.loads((APP / "Info.plist").read_bytes())
-    assert not (APP / "Assets.xcassets/AccentColor.colorset/Contents.json").exists()
+def test_native_controls_use_the_requested_warm_scene_accent():
+    assert (
+        plistlib.loads((APP / "Info.plist").read_bytes())["NSAccentColorName"]
+        == "ControlAccent"
+    )
+    assert _color_variants("AccentColor") == _color_variants("ForegroundAccent")
     for name in ("project.yml", "Keldin.xcodeproj/project.pbxproj"):
         assert (
-            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME"
-            not in (ROOT / "macOS" / name).read_text()
-        )
-    for path in APP.rglob("*.swift"):
-        assert '.tint(Color("AccentColor"))' not in path.read_text(), path
+            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: ControlAccent"
+            if name.endswith(".yml")
+            else "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = ControlAccent;"
+        ) in (ROOT / "macOS" / name).read_text()
+    source = (APP / "Application/KeldinApp.swift").read_text()
+    assert source.count('.tint(Color("AccentColor"))') == 2
+    for appearance, rgb in _color_variants("AccentColor").items():
+        if ("luminosity", "dark") not in appearance:
+            assert _contrast(rgb, (255, 255, 255)) >= 4.5
 
 
 def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
@@ -273,6 +280,31 @@ def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
         )
         for backdrop in backdrops:
             assert _contrast(rgb, backdrop) >= 4.5, (appearance, backdrop)
+
+
+def test_native_selected_and_filled_controls_keep_white_foreground_contrast():
+    for appearance, rgb in _color_variants("ControlAccent").items():
+        assert _contrast(rgb, (255, 255, 255)) >= 4.5, appearance
+    sidebar = (APP / "Navigation/SidebarView.swift").read_text()
+    assert '.tint(Color("ControlAccent"))' in sidebar
+    style = (APP / "Components/NativeVisualStyle.swift").read_text()
+    assert (
+        'buttonStyle(.borderedProminent)\n            .tint(Color("ControlAccent"))'
+        in style
+    )
+    for path in (APP / "Features").rglob("*.swift"):
+        assert ".buttonStyle(.borderedProminent)" not in path.read_text(), path
+
+
+def test_segmented_pickers_use_the_safe_native_control_fill():
+    count = 0
+    for path in APP.rglob("*.swift"):
+        lines = path.read_text().splitlines()
+        for index, line in enumerate(lines):
+            if line.strip() == ".pickerStyle(.segmented)":
+                assert lines[index + 1].strip() == '.tint(Color("ControlAccent"))', path
+                count += 1
+    assert count == 3
 
 
 def test_external_links_use_the_text_tint_without_retinting_native_controls():

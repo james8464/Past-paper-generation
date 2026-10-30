@@ -50,7 +50,7 @@ struct FrenchAssessmentWorkspace: View {
                     Button("Create a draft", systemImage: "doc.badge.plus") {
                         application.generateFrenchPaper(largePrint: largePrint)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .nativePrimaryActionStyle()
                     .disabled(!canGenerate)
                     .help(createHelp)
                     .accessibilityHint(createHelp)
@@ -262,7 +262,7 @@ private struct FrenchTeacherReviewSheet: View {
                     if outcome.closesReviewForm { dismiss() }
                 }
                 .keyboardShortcut(.defaultAction)
-                .buttonStyle(.borderedProminent)
+                .nativePrimaryActionStyle()
                 .disabled(
                     reviewer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                         || notes.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
