@@ -40,11 +40,14 @@ from Backend.Core.france.verification import verify_contract
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest, request_json
 from Backend.Core.json_client import JSONGenerationClient
-from Backend.Core.scoped_references import ReferenceIndex
+from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
 
 VERSION = "fr-nsi-written-2027-v36-llm"
 PRINT_POLICY = "fr-nsi-v36-model-review-v1"
 CHECKABLE = frozenset({"sql", "python_trace", "shortest_path"})
+PROGRAMME_REFERENCE_LIMIT = 10
+OFFICIAL_PAPER_REFERENCE_LIMIT = 2
+REFERENCE_LIMIT = PROGRAMME_REFERENCE_LIMIT + OFFICIAL_PAPER_REFERENCE_LIMIT
 FORBIDDEN_NAMES = frozenset(
     {
         "eval",
@@ -807,8 +810,10 @@ def _verification_evidence(
 
 
 def _validate_references(references: list[dict]) -> None:
-    if not isinstance(references, list) or not 2 <= len(references) <= 4:
+    if not isinstance(references, list) or not 2 <= len(references) <= REFERENCE_LIMIT:
         raise ValueError("Références françaises incomplètes")
+    identities = set()
+    counts = {"programme": 0, "official_paper": 0}
     for item in references:
         if (
             not isinstance(item, dict)
@@ -827,6 +832,11 @@ def _validate_references(references: list[dict]) -> None:
             or not isinstance(item.get("url"), str)
         ):
             raise ValueError("Référence française invalide")
+        identity = (item["source_id"], item["source_sha256"], item["page"])
+        if identity in identities:
+            raise ValueError("Référence française répétée")
+        identities.add(identity)
+        counts[item["category"]] += 1
         url = urlparse(item["url"])
         if (
             url.scheme != "https"
@@ -838,6 +848,60 @@ def _validate_references(references: list[dict]) -> None:
             raise ValueError("Source française non officielle")
     if {item["category"] for item in references} != {"programme", "official_paper"}:
         raise ValueError("Programme et sujet officiel requis")
+    if (
+        counts["programme"] > PROGRAMME_REFERENCE_LIMIT
+        or counts["official_paper"] > OFFICIAL_PAPER_REFERENCE_LIMIT
+    ):
+        raise ValueError("Trop de références françaises dans une catégorie")
+
+
+def _retrieve_references(index_path: Path) -> list[dict]:
+    """Balance programme excerpts without claiming comprehensive coverage."""
+    queries = [
+        (
+            "programme",
+            " ".join(
+                text
+                for domain, text in CURRICULUM_OBJECTIVES.values()
+                if domain == topic
+            ),
+        )
+        for topic in sorted(TOPICS)
+    ]
+    queries.append(
+        (
+            "official_paper",
+            "structures données algorithmique programmation bases données réseaux",
+        )
+    )
+    references = {}
+    with ReferenceIndex(index_path, read_only=True) as index:
+        for category, query in queries:
+            try:
+                hits = index.retrieve(
+                    NSI_CONTEXT,
+                    NSI_2027.curriculum_version,
+                    query,
+                    categories=(category,),
+                    limit=2,
+                )
+            except EvidenceGap:
+                # A sparse programme is not evidence for an absent domain.
+                # Never widen its source scope; both categories remain required.
+                if category == "programme":
+                    continue
+                raise
+            for hit in hits:
+                identity = (hit.source_id, hit.source_sha256, hit.page)
+                item = asdict(hit)
+                if identity in references and references[identity] != item:
+                    raise ValueError(
+                        "Contenu contradictoire pour une référence française"
+                    )
+                references[identity] = item
+    result = list(references.values())
+    _validate_references(result)
+    return result
 
 
 def _author(client, request, exercise_id, *, large_print: bool = False):
@@ -1003,20 +1067,7 @@ def generate(
         or not model.strip()
     ):
         raise ValueError("Identité du fournisseur et du modèle requise")
-    references = []
-    with ReferenceIndex(index_path, read_only=True) as index:
-        for category in ("programme", "official_paper"):
-            references.extend(
-                asdict(hit)
-                for hit in index.retrieve(
-                    NSI_CONTEXT,
-                    NSI_2027.curriculum_version,
-                    "structures données algorithmique programmation bases données réseaux",
-                    categories=(category,),
-                    limit=2,
-                )
-            )
-    _validate_references(references)
+    references = _retrieve_references(index_path)
     exercises, reviews, attempts = [], [], []
     topics: set[str] = set()
     for identifier in ("1", "2", "3"):

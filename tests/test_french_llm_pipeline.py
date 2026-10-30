@@ -21,6 +21,210 @@ def test_authoring_explains_prior_domains_without_fixing_tasks_or_reference_them
     assert '"previous_topics": ["algorithmique", "structures-donnees"]' in prompt
 
 
+@pytest.mark.parametrize("shared_pages", [False, True])
+def test_balanced_references_are_bounded_scoped_deterministic_and_deduplicated(
+    monkeypatch, tmp_path, shared_pages
+):
+    from Backend.Core.education_context import NSI_2027, NSI_CONTEXT
+    from Backend.Core.scoped_references import ReferenceHit
+
+    calls = []
+
+    class Index:
+        def __init__(self, path, *, read_only):
+            assert path == tmp_path / "references.sqlite" and read_only is True
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            pass
+
+        def retrieve(self, context, curriculum, query, *, categories, limit):
+            assert context == NSI_CONTEXT
+            assert curriculum == NSI_2027.curriculum_version
+            assert limit == 2
+            calls.append((categories, query))
+            category = categories[0]
+            start = (
+                1
+                if shared_pages or category == "official_paper"
+                else 2 * (len(calls) - 1) + 1
+            )
+            return [
+                ReferenceHit(
+                    category,
+                    "a" * 64,
+                    page,
+                    "Programme données",
+                    "https://eduscol.education.gouv.fr/test",
+                    category,
+                )
+                for page in (start, start + 1)
+            ]
+
+    monkeypatch.setattr(subject, "ReferenceIndex", Index)
+    first = subject._retrieve_references(tmp_path / "references.sqlite")
+    first_calls = list(calls)
+    calls.clear()
+    assert subject._retrieve_references(tmp_path / "references.sqlite") == first
+    expected_queries = [
+        " ".join(
+            text
+            for domain, text in subject.CURRICULUM_OBJECTIVES.values()
+            if domain == topic
+        )
+        for topic in sorted(subject.TOPICS)
+    ]
+    assert first_calls == [(("programme",), query) for query in expected_queries] + [
+        (
+            ("official_paper",),
+            "structures données algorithmique programmation bases données réseaux",
+        )
+    ]
+    assert len(first) == (4 if shared_pages else 12)
+    assert [item["category"] for item in first[-2:]] == ["official_paper"] * 2
+    assert len(
+        {(item["source_id"], item["source_sha256"], item["page"]) for item in first}
+    ) == len(first)
+
+
+def test_balanced_reference_lookup_preserves_foreign_holdout_and_curriculum_filters(
+    tmp_path,
+):
+    from dataclasses import replace
+    from hashlib import sha256
+
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.scoped_references import ReferenceIndex, SourceDocument
+
+    path = tmp_path / "references.sqlite"
+    make_index(path)
+    text = "Structures données algorithmique programmation bases données réseaux."
+    with ReferenceIndex(path) as index:
+        for identifier, context, split, curriculum in (
+            (
+                "uk",
+                replace(NSI_CONTEXT, country="GB", education_system="uk"),
+                "reference",
+                "nsi-2019",
+            ),
+            ("holdout", NSI_CONTEXT, "holdout", "nsi-2019"),
+            ("obsolete", NSI_CONTEXT, "reference", "obsolete"),
+        ):
+            index.add(
+                SourceDocument(
+                    identifier,
+                    context,
+                    curriculum,
+                    "programme",
+                    "MEN",
+                    "https://eduscol.education.gouv.fr/test",
+                    "2026-09-28T12:00:00+00:00",
+                    sha256(text.encode()).hexdigest(),
+                    2026,
+                    "national",
+                    "reference-only",
+                    split,
+                ),
+                text,
+                [(1, text)],
+            )
+    before = sha256(path.read_bytes()).hexdigest()
+    hits = subject._retrieve_references(path)
+    assert {hit["source_id"] for hit in hits} == {"programme", "official_paper"}
+    assert sha256(path.read_bytes()).hexdigest() == before
+
+
+def test_expanded_reference_bounds_and_duplicate_identity_refuse_tampering():
+    references = [
+        dict(
+            source_id="programme",
+            source_sha256="a" * 64,
+            page=i + 1,
+            text="Programme",
+            url="https://eduscol.education.gouv.fr/test",
+            category="programme",
+        )
+        for i in range(10)
+    ]
+    references.extend(
+        dict(
+            source_id="paper",
+            source_sha256="b" * 64,
+            page=i + 1,
+            text="Sujet",
+            url="https://eduscol.education.gouv.fr/test",
+            category="official_paper",
+        )
+        for i in range(2)
+    )
+    subject._validate_references(references)
+    for invalid in (
+        [*references, dict(references[0], page=11)],
+        [*references[:9], dict(references[-1], page=3), *references[-2:]],
+        [*references[:-1], dict(references[0], text="changed")],
+        [*references[:-1], references[0]],
+    ):
+        with pytest.raises(ValueError):
+            subject._validate_references(invalid)
+
+
+def test_conflicting_duplicate_hit_is_not_silently_deduplicated(monkeypatch, tmp_path):
+    from dataclasses import replace
+
+    from Backend.Core.scoped_references import ReferenceIndex
+
+    path = tmp_path / "references.sqlite"
+    make_index(path)
+    retrieve = ReferenceIndex.retrieve
+    calls = 0
+
+    def changed_hit(index, *args, **kwargs):
+        nonlocal calls
+        calls += 1
+        hits = retrieve(index, *args, **kwargs)
+        return (
+            [replace(hit, text="Contradiction") for hit in hits] if calls == 2 else hits
+        )
+
+    monkeypatch.setattr(ReferenceIndex, "retrieve", changed_hit)
+    with pytest.raises(ValueError, match="contradictoire"):
+        subject._retrieve_references(path)
+
+
+@pytest.mark.parametrize("missing", ["programme", "official_paper"])
+def test_balancing_never_invents_a_missing_reference_category(tmp_path, missing):
+    from Backend.Core.scoped_references import ReferenceIndex
+
+    path = tmp_path / "references.sqlite"
+    make_index(path)
+    with ReferenceIndex(path) as index:
+        index.connection.execute("DELETE FROM chunks WHERE source_id=?", (missing,))
+        index.connection.execute("DELETE FROM sources WHERE id=?", (missing,))
+        index.connection.commit()
+    client = Client()
+    with pytest.raises(ValueError):
+        subject.generate(index_path=path, client=client, seed=42)
+    assert client.requests == []
+
+
+def test_balancing_propagates_index_failures_instead_of_skipping_them(
+    monkeypatch, tmp_path
+):
+    from Backend.Core.scoped_references import ReferenceIndex
+
+    path = tmp_path / "references.sqlite"
+    make_index(path)
+
+    def broken(*_args, **_kwargs):
+        raise ValueError("Corrupt reference record")
+
+    monkeypatch.setattr(ReferenceIndex, "retrieve", broken)
+    with pytest.raises(ValueError, match="Corrupt reference record"):
+        subject._retrieve_references(path)
+
+
 def raw_exercise(identifier="1", marker="Aventure originale"):
     topic, code = {
         "1": ("structures-donnees", "SD-LINEAIRE"),
