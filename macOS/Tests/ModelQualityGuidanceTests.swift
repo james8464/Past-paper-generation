@@ -9,6 +9,9 @@ final class ModelQualityGuidanceTests: XCTestCase {
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:9b"), .nsiProbeFailed)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .apple, model: "qwen3.5:9b"), .unverified)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:27b"), .unverified)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .anthropic, model: "claude-sonnet-4-20250514"), .retiredModel)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .openAI, model: "claude-sonnet-4-20250514"), .unverified)
+        XCTAssertEqual(InterfaceText.resolve(ModelQualityAdvice.retiredModel.title, language: "fr"), "Ce modèle a été retiré")
         for (provider, model) in [(AIProvider.ollama, "llama3.2:3b"), (.ollama, "qwen2.5:7b"), (.apple, "/private/model-cache"), (.apple, "other/Model-120B"), (.openAI, "future-model"), (.anthropic, "future-model")] {
             XCTAssertEqual(ModelQualityAdvice.forModel(provider: provider, model: model), .unverified)
         }

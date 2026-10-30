@@ -7,6 +7,31 @@ final class SecretStoreTests: XCTestCase {
     private let account = "fixture-account"
 
     @MainActor
+    func testFreshHostedDefaultsAreCurrentCandidatesWithoutWritingOrReplacingStoredModels() {
+        for mode in [DistributionMode.appStore, .direct] {
+            let defaults = isolatedDefaults()
+            let fresh = SettingsStore(defaults: defaults, secrets: FakeCredentialStore(), distributionMode: mode)
+            XCTAssertEqual(fresh.openAIModel, "gpt-6.1-sol")
+            XCTAssertEqual(fresh.anthropicModel, "claude-sonnet-5-5")
+            XCTAssertNil(defaults.object(forKey: AppStorageKey.openAIModel))
+            XCTAssertNil(defaults.object(forKey: AppStorageKey.anthropicModel))
+            for saved in ["custom-pinned-model", "", "claude-sonnet-4-20250514"] {
+                defaults.set(saved, forKey: AppStorageKey.openAIModel)
+                defaults.set(saved, forKey: AppStorageKey.anthropicModel)
+                let restored = SettingsStore(defaults: defaults, secrets: FakeCredentialStore(), distributionMode: mode)
+                XCTAssertEqual(restored.openAIModel, saved)
+                XCTAssertEqual(restored.anthropicModel, saved)
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.openAIModel), saved)
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.anthropicModel), saved)
+            }
+        }
+        XCTAssertEqual(HostedModelCandidate.forProvider(.openAI).map(\.model), ["gpt-6.1-sol", "gpt-6-astra"])
+        XCTAssertEqual(HostedModelCandidate.forProvider(.anthropic).map(\.model), ["claude-sonnet-5-5", "claude-opus-5-5"])
+        XCTAssertTrue(HostedModelCandidate.forProvider(.apple).isEmpty)
+        XCTAssertTrue(HostedModelCandidate.forProvider(.ollama).isEmpty)
+    }
+
+    @MainActor
     func testFreshProviderDefaultUsesBundledEngineOnlyForStoreDistribution() {
         for (mode, expected) in [(DistributionMode.appStore, AIProvider.apple), (.direct, .ollama)] {
             let defaults = isolatedDefaults()

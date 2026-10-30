@@ -313,6 +313,7 @@ private struct AISettingsTab: View {
         case .openAI:
             Section("OpenAI") {
                 TextField("Model", text: $application.openAIModel)
+                HostedModelCandidatesView(provider: .openAI, model: $application.openAIModel)
                 SecureField("API key", text: $application.openAIAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)
@@ -321,6 +322,7 @@ private struct AISettingsTab: View {
         case .anthropic:
             Section("Anthropic") {
                 TextField("Model", text: $application.anthropicModel)
+                HostedModelCandidatesView(provider: .anthropic, model: $application.anthropicModel)
                 SecureField("API key", text: $application.anthropicAPIKey)
                 Text("Your key is stored in Keychain.")
                     .foregroundStyle(.secondary)

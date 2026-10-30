@@ -4,8 +4,8 @@ import Foundation
 
 enum AppDefaults {
     static let ollamaModel = OllamaModelGuide.currentRecommendation.model
-    static let openAIModel = "gpt-4.1"
-    static let anthropicModel = "claude-sonnet-4-20250514"
+    static let openAIModel = "gpt-6.1-sol"
+    static let anthropicModel = "claude-sonnet-5-5"
     static let appleModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
     static let ollamaURL = "http://localhost:11434"
     static let benchmarkDurationSeconds = 30.0

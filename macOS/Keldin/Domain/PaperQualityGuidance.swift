@@ -1,7 +1,7 @@
 import Foundation
 
 enum ModelQualityAdvice: Equatable {
-    case answerChecksFailed, nsiProbeFailed, reviewIncomplete, unverified
+    case answerChecksFailed, nsiProbeFailed, retiredModel, reviewIncomplete, unverified
 
     static func forModel(provider: AIProvider, model: String) -> Self {
         let model = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -10,6 +10,7 @@ enum ModelQualityAdvice: Equatable {
         }
         if provider == .ollama, model == "gemma4:12b" { return .reviewIncomplete }
         if provider == .ollama, model == "qwen3.5:9b" { return .nsiProbeFailed }
+        if provider == .anthropic, model == "claude-sonnet-4-20250514" { return .retiredModel }
         return .unverified
     }
 
@@ -17,6 +18,7 @@ enum ModelQualityAdvice: Equatable {
         switch self {
         case .answerChecksFailed: "Known answer-check failure"
         case .nsiProbeFailed: "Wrong answers in an NSI probe"
+        case .retiredModel: "This model has been retired"
         case .reviewIncomplete: "Paper-quality review incomplete"
         case .unverified: "Paper quality unverified"
         }
@@ -28,6 +30,8 @@ enum ModelQualityAdvice: Equatable {
             "This Apple MLX model failed answer checks in an Accounting test. Memory fit does not establish paper quality."
         case .nsiProbeFailed:
             "A tested revision returned wrong answers in a small NSI reasoning probe with reasoning off. Full-paper quality remains unverified."
+        case .retiredModel:
+            "Anthropic retired claude-sonnet-4-20250514. Choose an active model in Settings. Your saved choice has not been changed."
         case .reviewIncomplete:
             "Paper-quality evidence for this model is incomplete. A memory-fit suggestion does not mean its papers passed."
         case .unverified:
