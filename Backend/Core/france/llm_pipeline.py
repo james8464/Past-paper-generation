@@ -35,6 +35,7 @@ from Backend.Core.france.nsi import (
     cognitive_profile_findings,
     require_authoring_fields,
 )
+from Backend.Core.france.print_policy import V36_PRINT_POLICY
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
@@ -43,7 +44,7 @@ from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
 
 VERSION = "fr-nsi-written-2027-v36-llm"
-PRINT_POLICY = "fr-nsi-v36-model-review-v1"
+PRINT_POLICY = V36_PRINT_POLICY
 CHECKABLE = frozenset({"sql", "python_trace", "shortest_path"})
 PROGRAMME_REFERENCE_LIMIT = 10
 OFFICIAL_PAPER_REFERENCE_LIMIT = 2

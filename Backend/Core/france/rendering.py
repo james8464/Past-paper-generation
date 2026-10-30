@@ -44,6 +44,7 @@ from Backend.Core.france.print_policy import (
     V34_CREDIT_NOTICE,
     V34_FOOTER,
     V34_REVIEW_NOTICE,
+    V36_PRINT_POLICY,
 )
 
 WHOLE_CASE_KINDS = frozenset(
@@ -581,6 +582,13 @@ def render_assessment(
                 continue
             if position % 2:
                 source = part.strip("\n")
+                if first_paragraph and print_policy == V36_PRINT_POLICY:
+                    marker = Paragraph(
+                        "&#160;", question_style, bulletText=f"{identifier}."
+                    )
+                    marker.keepWithNext = True
+                    story.append(marker)
+                    first_paragraph = False
                 listing = code_listing(source, code, layout.question_width)
                 story.append(
                     KeepTogether([listing])

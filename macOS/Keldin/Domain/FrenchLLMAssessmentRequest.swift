@@ -4,7 +4,7 @@ import Foundation
 /// A model-authored draft. The older catalogue request remains available for saved-package replay.
 struct FrenchLLMAssessmentRequest {
     static let promptVersion = "fr-nsi-written-2027-v36-llm"
-    static let printPolicy = "fr-nsi-v36-model-review-v1"
+    static let printPolicy = "fr-nsi-v36-model-review-v2"
     let referenceIndex: URL
     let output: URL
     let seed: Int
