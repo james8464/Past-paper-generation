@@ -61,3 +61,15 @@ retries, including all five prior-topic labels. Input counts were 7,152, 7,583,
 a universal bound for arbitrary error text. The later bounded prompt hint still
 requires final integrated capacity verification. No server setting, model weight,
 source excerpt or answer allowance changed during those probes.
+
+The final integrated canonical-hint probes also passed for all five domains.
+With the actual 320-character bounded hint and all prior-topic labels, input
+counts were 6,877, 7,308, 7,143, 7,139 and 7,535. Each reserved the full 8,192-token
+answer allowance in the 16,384-token window; the smallest remaining margin was
+657 tokens. The source, model and reference index stayed unchanged. This
+establishes capacity for those exact measured requests, not the quality of a
+generated question or a guarantee for every future reference corpus.
+
+The fixed-source local Python suite passed 5,562 tests with two skips in
+621.07 seconds. Native, packaged and protected-check results remain separate
+release gates and must refer to the latest published head.
