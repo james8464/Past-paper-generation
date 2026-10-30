@@ -218,9 +218,9 @@ def test_fallback_icons_and_design_master_match_current_composer_export():
     }
 
 
-def test_warm_accent_has_hig_appearance_and_contrast_variants():
+def _color_variants(name):
     asset = json.loads(
-        (APP / "Assets.xcassets/AccentColor.colorset/Contents.json").read_text()
+        (APP / f"Assets.xcassets/{name}.colorset/Contents.json").read_text()
     )
     actual = {}
     for color in asset["colors"]:
@@ -231,12 +231,73 @@ def test_warm_accent_has_hig_appearance_and_contrast_variants():
         actual[appearances] = tuple(
             int(components[key], 16) for key in ("red", "green", "blue")
         )
-    assert actual == {
-        frozenset(): (255, 141, 40),
-        frozenset({("luminosity", "dark")}): (255, 146, 48),
-        frozenset({("contrast", "high")}): (197, 83, 0),
-        frozenset({("luminosity", "dark"), ("contrast", "high")}): (255, 160, 86),
-    }
+    return actual
+
+
+def _contrast(first, second):
+    def luminance(rgb):
+        components = [value / 255 for value in rgb]
+        linear = [
+            value / 12.92 if value <= 0.04045 else ((value + 0.055) / 1.055) ** 2.4
+            for value in components
+        ]
+        return sum(
+            value * weight
+            for value, weight in zip(linear, (0.2126, 0.7152, 0.0722), strict=True)
+        )
+
+    one, two = luminance(first), luminance(second)
+    return (max(one, two) + 0.05) / (min(one, two) + 0.05)
+
+
+def test_native_controls_keep_system_managed_accent_colours():
+    assert "NSAccentColorName" not in plistlib.loads((APP / "Info.plist").read_bytes())
+    assert not (APP / "Assets.xcassets/AccentColor.colorset/Contents.json").exists()
+    for name in ("project.yml", "Keldin.xcodeproj/project.pbxproj"):
+        assert (
+            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME"
+            not in (ROOT / "macOS" / name).read_text()
+        )
+    for path in APP.rglob("*.swift"):
+        assert '.tint(Color("AccentColor"))' not in path.read_text(), path
+
+
+def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
+    variants = _color_variants("ForegroundAccent")
+    assert variants.keys() == _color_variants("BrandAccent").keys()
+    for appearance, rgb in variants.items():
+        backdrop = (
+            (30, 30, 30) if ("luminosity", "dark") in appearance else (255, 255, 255)
+        )
+        assert _contrast(rgb, backdrop) >= 4.5, appearance
+
+
+def test_external_links_use_the_text_tint_without_retinting_native_controls():
+    count = 0
+    for path in (APP / "Features").rglob("*.swift"):
+        lines = path.read_text().splitlines()
+        for index, line in enumerate(lines):
+            if re.match(r"\s*Link\(", line):
+                assert (
+                    lines[index + 1].strip()
+                    == '.foregroundStyle(Color("ForegroundAccent"))'
+                ), path
+                count += 1
+    assert count == 8
+
+
+def test_benchmark_data_stroke_uses_the_foreground_role_not_the_control_fill():
+    source = (APP / "Features/Benchmark/BenchmarkView.swift").read_text()
+    assert (
+        '.tint(Color("ForegroundAccent"))\n                    .chartXAxisLabel'
+        in source
+    )
+    assert ".foregroundStyle(.tint)" in source
+    for appearance, rgb in _color_variants("ForegroundAccent").items():
+        backdrop = (
+            (30, 30, 30) if ("luminosity", "dark") in appearance else (255, 255, 255)
+        )
+        assert _contrast(rgb, backdrop) >= 3, appearance
 
 
 def test_active_code_and_build_names_only_use_legacy_identity_in_migration_readers():

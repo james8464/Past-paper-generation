@@ -271,6 +271,7 @@ private struct BenchmarkChart: View {
                         .interpolationMethod(.catmullRom)
                         .foregroundStyle(.tint.opacity(0.12))
                     }
+                    .tint(Color("ForegroundAccent"))
                     .chartXAxisLabel("seconds")
                     .chartYAxisLabel(NativeInterfaceCopy.benchmarkUnit(unit, locale: locale))
                     .frame(height: 150)

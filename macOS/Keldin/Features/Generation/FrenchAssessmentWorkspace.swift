@@ -155,6 +155,7 @@ struct FrenchAssessmentWorkspace: View {
                         .disabled(application.isRunning)
                     }
                     Link("Official NSI examination rules", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
+                        .foregroundStyle(Color("ForegroundAccent"))
                     Button("Open the French NSI help guide") {
                         application.showHelpGuide(topic: .frenchBaccalaureat)
                     }

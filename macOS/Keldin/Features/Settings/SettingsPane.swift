@@ -272,6 +272,7 @@ private struct AISettingsTab: View {
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
                 Link("Configure parallel requests in Ollama", destination: URL(string: "https://docs.ollama.com/faq")!)
+                    .foregroundStyle(Color("ForegroundAccent"))
 
                 if application.selectedModelIsRecommended {
                     Label("Memory-fit suggestion selected", systemImage: "memorychip")
@@ -463,6 +464,7 @@ private struct PrivacySettingsTab: View {
                 LabeledContent("API keys", value: "Keychain")
                 LabeledContent("Hosted AI consent", value: application.hasHostedAIConsent ? "Accepted" : "Not accepted")
                 Link("Privacy Policy", destination: AppLinks.privacyPolicy)
+                    .foregroundStyle(Color("ForegroundAccent"))
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
                     .foregroundStyle(.secondary)
             }

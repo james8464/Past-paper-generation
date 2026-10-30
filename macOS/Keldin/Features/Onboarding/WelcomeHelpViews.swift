@@ -241,7 +241,9 @@ private struct HelpTopicPage: View {
 
             HStack {
                 Link("Ollama model details", destination: AppLinks.gemmaModel)
+                    .foregroundStyle(Color("ForegroundAccent"))
                 Link("Structured-output guide", destination: AppLinks.ollamaStructuredOutputs)
+                    .foregroundStyle(Color("ForegroundAccent"))
             }
         }
     }
@@ -335,7 +337,9 @@ private struct HelpTopicPage: View {
 
             HStack {
                 Link("Official 2027 NSI definition", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
+                    .foregroundStyle(Color("ForegroundAccent"))
                 Link("Official language rubric", destination: URL(string: "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")!)
+                    .foregroundStyle(Color("ForegroundAccent"))
             }
         }
     }
@@ -357,6 +361,7 @@ private struct HelpTopicPage: View {
                 ]
             )
             Link("Read the Privacy Policy", destination: AppLinks.privacyPolicy)
+                .foregroundStyle(Color("ForegroundAccent"))
         }
     }
 
