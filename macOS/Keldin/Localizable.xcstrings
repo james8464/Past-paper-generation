@@ -1,6 +1,8 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Complete French NSI papers require another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les sujets complets de NSI française nécessitent un autre moteur."}}}},
+    "Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Apple Intelligence prend en charge des tâches courtes, mais pas les sujets complets de NSI française dans Keldin. Choisissez un autre moteur."}}}},
     "Local models (MLX)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Modèles locaux (MLX)"}}}},
     "Uses Apple's on-device system model": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Utilise le modèle système local d’Apple"}}}},
     "Uses Apple's on-device system model. No external model download or API key is needed.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Utilise le modèle système local d’Apple. Aucun téléchargement de modèle externe ni clé API n’est nécessaire."}}}},

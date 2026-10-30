@@ -390,6 +390,8 @@ private struct AISettingsTab: View {
                 }
                 Text("Requires a compatible Mac, enabled Apple Intelligence and macOS 26.4 or later.")
                     .foregroundStyle(.secondary)
+                Text("Complete French NSI papers require another provider.")
+                    .foregroundStyle(.secondary)
                 Text("Availability depends on this Mac and System Settings. Paper quality has not been verified. Requests that exceed the system model's context stop without omitting content or switching providers.")
                     .font(.caption)
                     .foregroundStyle(.secondary)

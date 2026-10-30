@@ -16,6 +16,7 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as SchemaValidationError
 from pydantic import ValidationError as ModelValidationError
 
+from Backend.Core.apple_intelligence import FRENCH_FULL_PAPER_ERROR
 from Backend.Core.education_context import NSI_2027, NSI_CONTEXT
 from Backend.Core.france.code_layout import (
     CODE_LAYOUT_POLICY,
@@ -1305,12 +1306,13 @@ def generate(
         raise ValueError("Graine entière requise")
     code_layout(large_print)
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
+    if provider == "apple_intelligence":
+        raise ValueError(FRENCH_FULL_PAPER_ERROR)
     if (
         provider
         not in {
             "ollama",
             "apple",
-            "apple_intelligence",
             "openai",
             "anthropic",
             "deepseek",
@@ -1419,7 +1421,6 @@ def validate_package(package: dict) -> list[NSIExercise]:
         not in {
             "ollama",
             "apple",
-            "apple_intelligence",
             "openai",
             "anthropic",
             "deepseek",

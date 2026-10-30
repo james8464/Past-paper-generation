@@ -9,6 +9,9 @@ from Backend.Core import apple_intelligence as service
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest
 from Backend.Core.providers import HostedLLMClient
+from tests.test_french_llm_runtime import publication as _publication
+
+publication = _publication
 
 
 def reply(payload, output='{"answer":4}'):
@@ -488,3 +491,40 @@ def test_bundled_process_never_prefers_an_external_development_helper(
     bundled.unlink()
     with pytest.raises(RuntimeError, match="missing"):
         service.helper_path()
+
+
+def test_full_french_runtime_refuses_before_model_or_reference_work(
+    publication, monkeypatch
+):
+    runtime, args, events = publication
+    args.provider = service.PROVIDER
+    args.model = service.MODEL
+    monkeypatch.setattr(
+        runtime,
+        "HostedLLMClient",
+        lambda **kwargs: pytest.fail("unsupported full paper reached model"),
+    )
+    assert runtime.handle_generate_llm_assessment(args) == 1
+    assert "another provider" in events[-1]["message"]
+    assert not any(event["type"] in {"file", "done"} for event in events)
+
+
+def test_full_french_pipeline_and_registry_do_not_claim_system_model_support(
+    monkeypatch,
+):
+    from Backend.Core.france import llm_pipeline
+    from Backend.Core.paths import REPO_ROOT
+
+    registry = json.loads((REPO_ROOT / "Resources/generator-registry.json").read_text())
+    assert (
+        service.PROVIDER
+        not in registry["assessment_frameworks"][0]["supported_providers"]
+    )
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    monkeypatch.setattr(
+        llm_pipeline,
+        "_retrieve_references",
+        lambda *args, **kwargs: pytest.fail("unsupported full paper loaded references"),
+    )
+    with pytest.raises(ValueError, match="another provider"):
+        llm_pipeline.generate(index_path=Path("unused.sqlite"), client=client, seed=42)

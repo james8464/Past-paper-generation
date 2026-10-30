@@ -188,6 +188,7 @@ final class ApplicationCoordinator: ObservableObject {
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
+        if aiProvider == .appleIntelligence { return "Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider." }
         if !hasFrenchReferences { return "Prepare French references first." }
         if aiProvider == .appleIntelligence, appleIntelligenceAvailability.available,
            !appleIntelligenceAvailability.frenchSupported { return "Apple Intelligence does not support French on this Mac." }
@@ -444,6 +445,11 @@ final class ApplicationCoordinator: ObservableObject {
 
     func generateFrenchPaper(largePrint: Bool) {
         guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        if aiProvider == .appleIntelligence {
+            pendingFrenchLargePrint = nil
+            setError(InterfaceText.resolve("Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider.", language: presentationLanguage))
+            return
+        }
         pendingFrenchLargePrint = largePrint
         if aiProvider.sendsPromptsOffDevice, !hasHostedAIConsent {
             pendingHostedProvider = aiProvider

@@ -59,6 +59,22 @@ final class AppleIntelligenceProviderTests: XCTestCase {
     }
 
     @MainActor
+    func testFrenchFullPaperToolbarAndDirectActionRemainUnsupported() {
+        let backend = ControlledRunBackend()
+        let app = isolatedApplication(backend: backend)
+        app.showWelcome = false
+        app.aiProvider = .appleIntelligence
+        app.appleIntelligenceAvailability = AppleIntelligenceAvailability(checked: true, available: true, contextSize: 8192, frenchSupported: true)
+        let blocker = app.frenchGenerationBlockerResource.map { InterfaceText.resolve($0, language: "en") }
+        XCTAssertTrue(blocker?.contains("Choose another provider") == true)
+        XCTAssertFalse(KeldinCreationContext.french(largePrint: false).canCreate(boardCanGenerate: true,
+            hasFrenchReferences: app.frenchGenerationBlockerResource == nil, isBusy: false))
+        app.generateFrenchPaper(largePrint: false)
+        XCTAssertTrue(backend.requests.isEmpty)
+        XCTAssertFalse(app.isRunning)
+    }
+
+    @MainActor
     func testRestoredSystemProviderStartsAvailabilityCheckWithoutOpeningSettings() async {
         let defaults = isolatedDefaults()
         defaults.set(AIProvider.appleIntelligence.rawValue, forKey: AppStorageKey.aiProvider)

@@ -10,6 +10,7 @@ import tempfile
 from hashlib import sha256
 from pathlib import Path
 
+from Backend.Core.apple_intelligence import FRENCH_FULL_PAPER_ERROR
 from Backend.Core.events import emit, emit_progress
 from Backend.Core.france import llm_pipeline
 from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
@@ -76,10 +77,11 @@ def handle_generate_llm_assessment(args) -> int:
 
     try:
         definition = assessment_framework(args.assessment)
+        if args.provider == "apple_intelligence":
+            raise ValueError(FRENCH_FULL_PAPER_ERROR)
         if args.provider not in {
             "ollama",
             "apple",
-            "apple_intelligence",
             "openai",
             "anthropic",
             "deepseek",
@@ -211,8 +213,6 @@ def handle_generate_llm_assessment(args) -> int:
             "model_snapshot_sha256": model_snapshot,
             "model_snapshot_status": "pinned_local_data"
             if model_snapshot
-            else "system_model_revision_not_available"
-            if args.provider == "apple_intelligence"
             else "hosted_revision_not_available",
             "large_print": args.large_print,
             "warnings": package["warnings"],

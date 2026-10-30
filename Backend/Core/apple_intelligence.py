@@ -19,6 +19,7 @@ from Backend.Core.generation_diagnostics import GenerationEvidenceError
 PROVIDER = "apple_intelligence"
 MODEL = "apple-system-on-device"
 HELPER_NAME = "KeldinAppleIntelligence"
+FRENCH_FULL_PAPER_ERROR = "Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider."
 ERRORS = {
     "invalid_request": "Apple Intelligence received an unsupported request.",
     "unsupported_schema": "This request uses an unsupported Apple Intelligence schema.",
@@ -254,7 +255,7 @@ def generate(
     try:
         candidate = strict_object(raw_output)
         Draft202012Validator(schema).validate(candidate)
-    except (ValueError, ValidationError):
+    except (ValueError, ValidationError) as error:
         raise GenerationEvidenceError(
             "Apple Intelligence returned invalid structured output. No response was accepted.",
             details={
@@ -264,6 +265,12 @@ def generate(
                 if isinstance(raw_output, str)
                 else None,
                 "generation_mode": "structured_text",
+                "failure": "schema_mismatch"
+                if isinstance(error, ValidationError)
+                else "invalid_json",
+                "schema_path": list(error.absolute_schema_path)[:24]
+                if isinstance(error, ValidationError)
+                else [],
                 "input_tokens": inputs,
                 "output_budget": budget,
                 "context_window": reply["context_size"],
