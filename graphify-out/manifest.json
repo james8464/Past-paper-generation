@@ -10,8 +10,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
-    "mtime": 1793292824.4890099,
-    "ast_hash": "b2c2c3b69ea7c9f0239a78faf2d232a8",
+    "mtime": 1793386889.8431869,
+    "ast_hash": "5f45c436db8682f8c063c1e4afec9b20",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_contracts.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/events.py": {
-    "mtime": 1793297039.8456326,
-    "ast_hash": "c0c30d36d4a5b47d7d600076b6c00fb7",
+    "mtime": 1793386847.7761657,
+    "ast_hash": "c0cdb4e04bb6a125519250b4acc45caf",
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/ollama.py": {
-    "mtime": 1793225633.076755,
-    "ast_hash": "d7eaaf569857e26091a2a8c0b48dd33b",
+    "mtime": 1793386833.647982,
+    "ast_hash": "79f7f2d5436e0110e5bc3d728201b1e2",
     "semantic_hash": ""
   },
   "Backend/Core/open_credit.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793382684.904585,
-    "ast_hash": "3b7c90681c5caf4ba6707a6f3b0ec5fc",
+    "mtime": 1793386957.2629435,
+    "ast_hash": "4eb72dc7503a81a9c3eb61203f0d5b4f",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1360,8 +1360,8 @@
     "semantic_hash": "28d1f1539be05829782da075913c3a93"
   },
   "tests/test_assessment_checkpoints.py": {
-    "mtime": 1793225633.126958,
-    "ast_hash": "ca312fcf20ae43de8705a2f88c8f9b45",
+    "mtime": 1793386672.0039325,
+    "ast_hash": "b8d3a39fb072f1192c56c85619f25a8f",
     "semantic_hash": ""
   },
   "tests/test_assessment_contracts.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793382684.816167,
-    "ast_hash": "529ec80e5d0f00661ee677e4627813f9",
+    "mtime": 1793386957.1739976,
+    "ast_hash": "ee8b9f18166abf2dd30869e0276e5569",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5105,8 +5105,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/apple_intelligence.py": {
-    "mtime": 1793380754.316022,
-    "ast_hash": "c8ba6b39680c2b48f1bb21ee6950ac37",
+    "mtime": 1793386633.2616267,
+    "ast_hash": "283077c7a671f68d309d3da1eac43ea2",
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/CapabilityProbe.swift": {
@@ -5125,8 +5125,8 @@
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Protocol.swift": {
-    "mtime": 1793380754.3035216,
-    "ast_hash": "5c635f9b5a99a0d72b84c9435da04790",
+    "mtime": 1793386707.4910986,
+    "ast_hash": "78ce662b2995074f566c5b50e6beef0e",
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift": {
@@ -5135,8 +5135,8 @@
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/Tests/KeldinAppleIntelligenceTests/ProtocolTests.swift": {
-    "mtime": 1793380754.3295496,
-    "ast_hash": "3fb01088e307df009d8d2a5a4263f2ec",
+    "mtime": 1793386707.4912994,
+    "ast_hash": "c3823ca6cea8e38b716790608896a1a1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/AppleIntelligenceAvailability.swift": {
@@ -5182,6 +5182,26 @@
   "tests/test_french_malformed_python_retry.py": {
     "mtime": 1793384811.924962,
     "ast_hash": "aa247a9d5b40ecd4e7e673481aa299e0",
+    "semantic_hash": ""
+  },
+  "tests/test_apple_owned_helper_shutdown.py": {
+    "mtime": 1793386662.4269145,
+    "ast_hash": "65d9f68abc0593be4a7be2d204af8f70",
+    "semantic_hash": ""
+  },
+  "tests/test_events_subprocess.py": {
+    "mtime": 1793386833.6480865,
+    "ast_hash": "f77ae426fa900b1e07d3fc3a7e81a492",
+    "semantic_hash": ""
+  },
+  "tests/test_ollama_status.py": {
+    "mtime": 1793386833.6481888,
+    "ast_hash": "fd84a31fc1f16c96d588a90c8fec5b50",
+    "semantic_hash": ""
+  },
+  "docs/quality/local-provider-boundary-review-2026-10-30.md": {
+    "mtime": 1793386937.4503624,
+    "ast_hash": "0cb84691e6a64047dbf1fb16ba925c29",
     "semantic_hash": ""
   }
 }

@@ -166,14 +166,20 @@
     {
       "path": "Backend/Core/apple_intelligence.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
+      "source_sha256": "f72fbe40505c53ac8b8951377938a529c4ea763af7fda4d928375349fafc165d",
+      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
     },
     {
       "path": "Backend/Core/assessment_checkpoints.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
+      "source_sha256": "a7df228605c6e70184189378739612bd53405638579a6930412d1ade02f54a5b",
+      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
     },
     {
       "path": "Backend/Core/assessment_contracts.py",
@@ -376,8 +382,11 @@
     {
       "path": "Backend/Core/events.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
+      "source_sha256": "5af17abdf2ccc45275dfd99b427848599b5b1e98a6302a36d2b441a210998c72",
+      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
     },
     {
       "path": "Backend/Core/exam_blueprints.py",
@@ -1270,8 +1279,11 @@
     {
       "path": "Backend/Core/ollama.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
+      "source_sha256": "bf25ece5ea0bb93a312ce8fc9456c511eaeeb2bc4df9130188926eeb6f0ec53b",
+      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
     },
     {
       "path": "Backend/Core/open_credit.py",
@@ -3323,6 +3335,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/merged-native-integrity-acceptance-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4018,8 +4036,11 @@
     {
       "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Protocol.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
+      "source_sha256": "ce8bd852ebf9f880a941bceb44236435c8cb35bcfa516188455c86f444627f34",
+      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
+      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
     },
     {
       "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift",
@@ -5042,6 +5063,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_apple_owned_helper_shutdown.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_aqa_accounting_calibration.py",
       "classification": "test",
       "status": "pending",
@@ -5301,6 +5328,12 @@
     },
     {
       "path": "tests/test_events_progress.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_events_subprocess.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6315,6 +6348,12 @@
     },
     {
       "path": "tests/test_ollama_parallel_jobs.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ollama_status.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
