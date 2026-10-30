@@ -57,4 +57,34 @@ final class AppleIntelligenceProviderTests: XCTestCase {
         XCTAssertEqual(AppleIntelligenceAvailability.helperURL(bundleURL: bundle, distributionMode: .appStore).path,
                        "/Applications/Keldin.app/Contents/Helpers/KeldinAppleIntelligence")
     }
+
+    @MainActor
+    func testRestoredSystemProviderStartsAvailabilityCheckWithoutOpeningSettings() async {
+        let defaults = isolatedDefaults()
+        defaults.set(AIProvider.appleIntelligence.rawValue, forKey: AppStorageKey.aiProvider)
+        defaults.set("retained-mlx-model", forKey: AppStorageKey.appleModel)
+        let counter = AvailabilityCounter()
+        let app = ApplicationCoordinator(defaults: defaults, secrets: EmptyAppleSecrets(),
+            backend: ControlledRunBackend(), appleIntelligenceChecker: { _ in
+                await counter.record()
+                return AppleIntelligenceAvailability(checked: true, available: true, contextSize: 8192, frenchSupported: true)
+            })
+        XCTAssertTrue(app.isRefreshingAppleIntelligence)
+        await app.refreshAppleIntelligenceAvailability()?.value
+        let count = await counter.calls
+        XCTAssertEqual(count, 1)
+        XCTAssertTrue(app.appleIntelligenceAvailability.available)
+        XCTAssertEqual(app.appleModel, "retained-mlx-model")
+        XCTAssertEqual(app.activeModelName, "apple-system-on-device")
+    }
+}
+
+private actor AvailabilityCounter {
+    var calls = 0
+    func record() { calls += 1 }
+}
+
+private final class EmptyAppleSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) {}
 }

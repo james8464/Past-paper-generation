@@ -32,17 +32,17 @@ ERRORS = {
 
 def helper_path() -> Path:
     configured = os.environ.get("KELDIN_APPLE_INTELLIGENCE_HELPER")
-    if configured:
+    contents = next(
+        (p for p in Path(sys.executable).parents if p.name == "Contents"), None
+    )
+    if contents is not None:
+        candidate = contents / "Helpers" / HELPER_NAME
+    elif configured:
         candidate = Path(configured).expanduser()
     else:
-        contents = next(
-            (p for p in Path(sys.executable).parents if p.name == "Contents"), None
+        raise RuntimeError(
+            "The Apple Intelligence helper is not bundled. Set its explicit development path before testing."
         )
-        if contents is None:
-            raise RuntimeError(
-                "The Apple Intelligence helper is not bundled. Set its explicit development path before testing."
-            )
-        candidate = contents / "Helpers" / HELPER_NAME
     if (
         not candidate.is_absolute()
         or candidate.name != HELPER_NAME

@@ -466,3 +466,25 @@ def test_oversized_prepared_prompt_refuses_before_launch(transport):
             locale="en_GB",
         )
     assert not transport
+
+
+def test_bundled_process_never_prefers_an_external_development_helper(
+    monkeypatch, tmp_path
+):
+    contents = tmp_path / "Keldin.app" / "Contents"
+    bundled = contents / "Helpers" / service.HELPER_NAME
+    external = tmp_path / "external" / service.HELPER_NAME
+    for path in (bundled, external):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("fixture, never executed")
+        path.chmod(0o700)
+    monkeypatch.setattr(
+        service.sys,
+        "executable",
+        str(contents / "Resources/KeldinBackend/KeldinBackend"),
+    )
+    monkeypatch.setenv("KELDIN_APPLE_INTELLIGENCE_HELPER", str(external))
+    assert service.helper_path() == bundled
+    bundled.unlink()
+    with pytest.raises(RuntimeError, match="missing"):
+        service.helper_path()

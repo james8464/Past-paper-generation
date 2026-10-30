@@ -82,6 +82,8 @@ final class ApplicationCoordinator: ObservableObject {
     private let defaults: UserDefaults
     private let outputFolderBookmark: (URL) throws -> Data
     private let generationRecordsFolder: URL
+    private let appleIntelligenceChecker: @Sendable (URL) async -> AppleIntelligenceAvailability
+    private var appleIntelligenceCheckTask: Task<Void, Never>?
     private let notificationCenter = UNUserNotificationCenter.current()
     private var ollamaRefreshRevision = UUID()
     private var etaTimer: AnyCancellable?
@@ -299,6 +301,7 @@ final class ApplicationCoordinator: ObservableObject {
         historyDirectory: URL? = nil,
         backend: any BackendRunning = BackendClient(),
         distributionMode: DistributionMode = .current,
+        appleIntelligenceChecker: @escaping @Sendable (URL) async -> AppleIntelligenceAvailability = { await AppleIntelligenceAvailability.check(helper: $0) },
         outputFolderBookmark: @escaping (URL) throws -> Data = { url in
             try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
         },
@@ -309,6 +312,7 @@ final class ApplicationCoordinator: ObservableObject {
         self.defaults = defaults
         self.backend = backend
         self.distributionMode = distributionMode
+        self.appleIntelligenceChecker = appleIntelligenceChecker
         self.outputFolderBookmark = outputFolderBookmark
         generationRecordsFolder = (historyDirectory ?? AppDefaults.jobHistoryFolder())
             .appendingPathComponent("Generation records", isDirectory: true)
@@ -364,6 +368,7 @@ final class ApplicationCoordinator: ObservableObject {
         benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
         modelCoordinator.onDiscoveryChange = { [weak self] in self?.objectWillChange.send() }
+        if aiProvider == .appleIntelligence { refreshAppleIntelligenceAvailability() }
     }
 
     func refreshOllama(presentation: SettingsActionPresentation? = nil) {
@@ -744,16 +749,20 @@ final class ApplicationCoordinator: ObservableObject {
         persistSettings(presentation: presentation)
     }
 
-    func refreshAppleIntelligenceAvailability() {
-        guard !isRefreshingAppleIntelligence else { return }
+    @discardableResult
+    func refreshAppleIntelligenceAvailability() -> Task<Void, Never>? {
+        guard !isRefreshingAppleIntelligence else { return appleIntelligenceCheckTask }
         isRefreshingAppleIntelligence = true
         let helper = AppleIntelligenceAvailability.helperURL(distributionMode: distributionMode)
-        Task { [weak self] in
-            let result = await AppleIntelligenceAvailability.check(helper: helper)
+        let checker = appleIntelligenceChecker
+        let task = Task { [weak self] in
+            let result = await checker(helper)
             guard let self else { return }
             appleIntelligenceAvailability = result
             isRefreshingAppleIntelligence = false
         }
+        appleIntelligenceCheckTask = task
+        return task
     }
 
     func acceptHostedAIConsent() {
