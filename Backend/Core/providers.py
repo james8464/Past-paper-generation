@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import re
 import threading
@@ -740,6 +741,7 @@ class HostedLLMClient:
                 text,
                 object_pairs_hook=_unique_json_fields,
                 parse_constant=_reject_json_constant,
+                parse_float=_finite_json_float,
             )
             if not isinstance(candidate, dict):
                 raise ValueError("Response is not a JSON object")
@@ -1012,6 +1014,13 @@ def _require_local_schema_references(value: object) -> None:
 
 def _reject_json_constant(_value: str) -> None:
     raise ValueError("Non-finite constants are not JSON values.")
+
+
+def _finite_json_float(value: str) -> float:
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError("JSON number exceeds the finite float range.")
+    return parsed
 
 
 def _unique_json_fields(pairs: list[tuple[str, Any]]) -> dict[str, Any]:

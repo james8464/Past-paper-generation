@@ -410,3 +410,51 @@ def test_non_json_numeric_constants_refuse_even_without_a_property_type(
     )
     with pytest.raises(GenerationEvidenceError, match="structured"):
         client().generate_request(typed_request({"type": "object"}))
+
+
+@pytest.mark.parametrize("literal", ["1e999", "-1e999", "1.0e999"])
+def test_exponent_overflow_refuses_even_when_original_schema_accepts_number(
+    monkeypatch, literal
+):
+    mock_transport(
+        monkeypatch,
+        response(
+            output=[
+                {
+                    "type": "message",
+                    "role": "assistant",
+                    "content": [
+                        {"type": "output_text", "text": '{"answer":' + literal + "}"}
+                    ],
+                }
+            ]
+        ),
+    )
+    schema = {
+        "type": "object",
+        "required": ["answer"],
+        "properties": {"answer": {"type": "number"}},
+    }
+    with pytest.raises(GenerationEvidenceError, match="structured"):
+        client().generate_request(typed_request(schema))
+
+
+def test_finite_exponents_keep_the_existing_float_value(monkeypatch):
+    mock_transport(
+        monkeypatch,
+        response(
+            output=[
+                {
+                    "type": "message",
+                    "role": "assistant",
+                    "content": [{"type": "output_text", "text": '{"answer":1.25e2}'}],
+                }
+            ]
+        ),
+    )
+    schema = {
+        "type": "object",
+        "required": ["answer"],
+        "properties": {"answer": {"type": "number"}},
+    }
+    assert client().generate_request(typed_request(schema)) == {"answer": 125.0}
