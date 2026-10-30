@@ -129,10 +129,11 @@ struct HelperRequest: Sendable {
     let instructions = value["instructions"]?.string ?? ""
     let schemaMode = value["schema_mode"]?.string ?? "structured_text"
     let binding = value["prompt_includes_schema"] ?? .bool(false)
-    guard instructions.utf8.count <= 32_768, ["guided", "structured_text"].contains(schemaMode),
+    guard instructions.utf8.count <= 32_768,
+      ["guided", "structured_text", "guided_with_postvalidation"].contains(schemaMode),
       value["schema_mode"] == nil || value["schema_mode"]?.string != nil,
       binding == .bool(false) || binding == .bool(true),
-      binding == .bool(false) || schemaMode == "structured_text"
+      binding == .bool(false) || schemaMode != "guided"
     else { throw HelperFailure.invalidRequest }
     return HelperRequest(
       requestID: requestID, operation: operation, locale: locale,
@@ -142,7 +143,7 @@ struct HelperRequest: Sendable {
   }
 
   func completePrompt() throws -> String {
-    guard schemaMode == "structured_text", let schema else { return prompt }
+    guard schemaMode != "guided", let schema else { return prompt }
     if promptIncludesSchema {
       guard let marker = prompt.range(of: "\nOUTPUT_SCHEMA=", options: .backwards),
         let supplied = try? JSONValue.decode(Data(prompt[marker.upperBound...].utf8)),

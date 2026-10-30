@@ -167,3 +167,45 @@ import Testing
   }
   #expect(throws: HelperFailure.self) { try request(prompt, flag: .number(1)) }
 }
+
+#if canImport(FoundationModels)
+  @Test @available(macOS 26.0, *) func postvalidatedGuidanceDelegatesOnlyStringMaximumLength()
+    throws
+  {
+    let original = try JSONValue.decode(
+      Data(
+        #"{"type":"object","additionalProperties":false,"required":["steps"],"properties":{"steps":{"type":"array","minItems":1,"maxItems":4,"items":{"type":"string","maxLength":240}}}}"#
+          .utf8))
+    let snapshot = original
+    let projected = try projectPostvalidatedSchema(original)
+    _ = try makeGenerationSchema(projected)
+    #expect(original == snapshot)
+    let items = projected.object?["properties"]?.object?["steps"]?.object
+    #expect(items?["minItems"] == .number(1))
+    #expect(items?["maxItems"] == .number(4))
+    #expect(items?["items"]?.object?["maxLength"] == nil)
+    #expect(
+      original.object?["properties"]?.object?["steps"]?.object?["items"]?.object?["maxLength"]
+        == .number(240))
+    #expect(throws: HelperFailure.self) { try makeGenerationSchema(original) }
+    for keyword in ["pattern", "minLength", "const", "oneOf"] {
+      let invalid = try JSONValue.decode(
+        Data(
+          #"{"type":"object","additionalProperties":false,"required":["x"],"properties":{"x":{"type":"string","KEY":1}}}"#
+            .replacingOccurrences(of: "KEY", with: keyword).utf8))
+      #expect(throws: HelperFailure.self) {
+        try makeGenerationSchema(projectPostvalidatedSchema(invalid))
+      }
+    }
+  }
+#endif
+
+@Test func postvalidatedModeKeepsCompleteOriginalSchemaInPrompt() throws {
+  let raw =
+    #"{"protocol_version":1,"request_id":"g","operation":"generate","locale":"en_GB","prompt":"Solve the question.","schema":{"type":"object","additionalProperties":false,"required":["answer"],"properties":{"answer":{"type":"string","maxLength":240}}},"max_output_tokens":64,"temperature":0,"schema_mode":"guided_with_postvalidation"}"#
+  let request = try HelperRequest.parse(Data(raw.utf8))
+  #expect(request.schemaMode == "guided_with_postvalidation")
+  let prompt = try request.completePrompt()
+  let suffix = try #require(prompt.components(separatedBy: "\nOUTPUT_SCHEMA=").last)
+  #expect(try JSONValue.decode(Data(suffix.utf8)) == request.schema)
+}

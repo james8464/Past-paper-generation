@@ -3,6 +3,26 @@ import Foundation
 #if canImport(FoundationModels)
   import FoundationModels
 
+  // This decoder projection delegates only maxLength. The full original schema
+  // remains in the prompt and must still pass the backend's admission validator.
+  func projectPostvalidatedSchema(_ value: JSONValue, depth: Int = 0) throws -> JSONValue {
+    guard depth <= 16, var schema = value.object else { throw HelperFailure.unsupportedSchema }
+    if schema["type"] == .string("string"), let bound = schema["maxLength"] {
+      guard let length = bound.integer, (0...131_072).contains(length) else {
+        throw HelperFailure.unsupportedSchema
+      }
+      schema.removeValue(forKey: "maxLength")
+    }
+    if let properties = schema["properties"]?.object {
+      schema["properties"] = .object(
+        try properties.mapValues { try projectPostvalidatedSchema($0, depth: depth + 1) })
+    }
+    if let items = schema["items"] {
+      schema["items"] = try projectPostvalidatedSchema(items, depth: depth + 1)
+    }
+    return .object(schema)
+  }
+
   @available(macOS 26.0, *)
   func makeGenerationSchema(_ value: JSONValue) throws -> GenerationSchema {
     guard value.object?["type"]?.string == "object" else { throw HelperFailure.unsupportedSchema }

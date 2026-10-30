@@ -96,7 +96,11 @@ struct HelperMain {
           throw HelperFailure.unsupportedLocale
         }
         guard let rawSchema = request.schema else { throw HelperFailure.invalidRequest }
-        let schema = request.schemaMode == "guided" ? try makeGenerationSchema(rawSchema) : nil
+        let decoderSchema =
+          request.schemaMode == "guided_with_postvalidation"
+          ? try projectPostvalidatedSchema(rawSchema) : rawSchema
+        let schema =
+          request.schemaMode != "structured_text" ? try makeGenerationSchema(decoderSchema) : nil
         let instructions = Instructions(request.instructions)
         let prompt = try request.completePrompt()
         var input = try await model.tokenCount(for: prompt) + model.tokenCount(for: instructions)
