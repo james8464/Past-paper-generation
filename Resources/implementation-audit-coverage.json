@@ -811,8 +811,11 @@
     {
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file control-flow review of model identity, cancellation, validated staging and publication; no new consequential finding within the documented scope. No fresh tests or model qualification claimed.",
+      "source_sha256": "aaf2f2de18bc11ed7951c125543a44b19c9d18e47789f6f4c02326d920f95ee1",
+      "review_evidence": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
+      "review_evidence_sha256": "42f8ac6c4b5094ac46f4b9485fcfc80b71faba158ee12e18c73bdf7435a532a1"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1189,8 +1192,11 @@
     {
       "path": "Backend/Core/mlx_batching.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file control-flow review of bounded coalescing, owner-thread cancellation, decoder and UID isolation, per-request limits and cleanup; no new consequential finding within the documented scope.",
+      "source_sha256": "698a8f535389e9ca20211474efe9cbec98d393c95e1e4a6cbab39738e93434c6",
+      "review_evidence": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
+      "review_evidence_sha256": "42f8ac6c4b5094ac46f4b9485fcfc80b71faba158ee12e18c73bdf7435a532a1"
     },
     {
       "path": "Backend/Core/mlx_download_info.py",
@@ -1369,8 +1375,11 @@
     {
       "path": "Backend/Core/review_workers.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file control-flow review of worker limits, indexed result order, exception and cancellation paths, and caller-owned acceptance; no new consequential finding within the documented scope.",
+      "source_sha256": "c37f2b86049b6b23dc252ae10008549fca6b1faa2ececd4a476ac52053b38171",
+      "review_evidence": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
+      "review_evidence_sha256": "42f8ac6c4b5094ac46f4b9485fcfc80b71faba158ee12e18c73bdf7435a532a1"
     },
     {
       "path": "Backend/Core/scoped_references.py",
@@ -2844,6 +2853,12 @@
     },
     {
       "path": "docs/quality/checkpoint-seed-integrity-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
