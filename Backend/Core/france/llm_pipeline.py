@@ -7,6 +7,7 @@ import io
 import json
 import re
 import tokenize
+from copy import deepcopy
 from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
@@ -733,13 +734,39 @@ def _blind_note_warnings(
     ]
 
 
+class SemanticReviewRefusal(GenerationEvidenceError):
+    """A schema-valid negative verdict, not permission to retry generation."""
+
+    def __init__(self, message: str, *, details: dict) -> None:
+        super().__init__(message, details=details)
+        self._review_evidence: dict | None = None
+
+    @property
+    def review_evidence(self) -> dict | None:
+        """Lossless returned objects; separate from bounded diagnostic details."""
+        return deepcopy(self._review_evidence)
+
+    def _capture_review(self, *, exercise: NSIExercise, blind: dict, review: dict):
+        records = {
+            "exercise": exercise.model_dump(mode="json"),
+            "blind_response": blind,
+            "review_response": review,
+        }
+        self._review_evidence = deepcopy(
+            {
+                **records,
+                **{name + "_sha256": _digest(value) for name, value in records.items()},
+            }
+        )
+
+
 def _review_rejection(
     exercise: NSIExercise,
     *,
     stage: str,
     issues: list[str] | None = None,
     questions: dict | None = None,
-) -> GenerationEvidenceError:
+) -> SemanticReviewRefusal:
     """Retain bounded review evidence, without copying prompts or proposed answers."""
     rejected = []
     for question_id, item in (questions or {}).items():
@@ -781,7 +808,7 @@ def _review_rejection(
         categories = ", ".join(labels[name] for name in first["failed_flags"])
         categories = categories or "problème signalé"
         reason = f"question {first['question_id']} ({categories})"
-    return GenerationEvidenceError(
+    return SemanticReviewRefusal(
         f"Le contrôle refuse le brouillon de l'exercice {exercise.id} : {reason}.",
         details=details,
     )
@@ -1315,7 +1342,11 @@ def _review(
     }
     if blind["issues"]:
         evidence["blind_issue_dispositions"] = review["blind_issue_dispositions"]
-    _validate_review(exercise, evidence)
+    try:
+        _validate_review(exercise, evidence)
+    except SemanticReviewRefusal as error:
+        error._capture_review(exercise=exercise, blind=blind, review=review)
+        raise
     return evidence
 
 

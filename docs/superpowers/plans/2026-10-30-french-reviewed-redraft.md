@@ -1,8 +1,8 @@
 # Bounded French whole-exercise re-drafting
 
-Status: private design and red specifications only. Not implemented or ready to
-merge. Base: `463d9c4c`. Do not change installed behavior until integration gates
-pass.
+Status: private design, red recovery specifications and typed refusal foundation.
+Automatic recovery is not implemented or ready to merge. Base: `463d9c4c`.
+Do not change installed behavior until integration gates pass.
 
 ## Intended behavior
 
@@ -92,3 +92,15 @@ reports limits and possible degradation in intrinsic reasoning correction.
 Fresh independent checks and a terminal refusal therefore remain mandatory.
 Neither paper establishes this application's efficacy, exam equivalence or
 calibration.
+
+## Private foundation checkpoint
+
+`SemanticReviewRefusal` now distinguishes schema-valid negative verdicts from
+malformed responses and transport, safety or cancellation failures. It remains a
+`GenerationEvidenceError`, with unchanged messages and bounded diagnostic details.
+The exception separately retains deep-copied, untruncated returned blind/reviewer
+objects and the canonical admitted exercise, each hashed. The canonical exercise
+is not described as the raw author response. No recovery loop, new package policy,
+lossless author capture, private persistence or native admission is activated.
+The three recovery specifications therefore remain deliberately red. This branch
+is not release-ready.
