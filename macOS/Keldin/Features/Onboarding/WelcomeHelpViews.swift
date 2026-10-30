@@ -241,7 +241,9 @@ private struct HelpTopicPage: View {
 
             HStack {
                 Link("Ollama model details", destination: AppLinks.gemmaModel)
+                    .foregroundStyle(Color("ForegroundAccent"))
                 Link("Structured-output guide", destination: AppLinks.ollamaStructuredOutputs)
+                    .foregroundStyle(Color("ForegroundAccent"))
             }
         }
     }
@@ -335,7 +337,9 @@ private struct HelpTopicPage: View {
 
             HStack {
                 Link("Official 2027 NSI definition", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
+                    .foregroundStyle(Color("ForegroundAccent"))
                 Link("Official language rubric", destination: URL(string: "https://www.education.gouv.fr/sites/default/files/document/annexe-attendus-et-observables-redactionnels-520693.pdf")!)
+                    .foregroundStyle(Color("ForegroundAccent"))
             }
         }
     }
@@ -352,11 +356,12 @@ private struct HelpTopicPage: View {
             HelpSection(
                 title: "Hosted AI",
                 rows: [
-                    "OpenAI and Anthropic receive the generation prompt, relevant syllabus context, and draft assessment data when selected.",
+                    "OpenAI, Anthropic and DeepSeek receive generation prompts and draft content when selected. DeepSeek is available for French NSI drafts only; its disclosure includes public French reference excerpts.",
                     "API keys are stored in Keychain. Hosted generation remains blocked until you accept the disclosure.",
                 ]
             )
             Link("Read the Privacy Policy", destination: AppLinks.privacyPolicy)
+                .foregroundStyle(Color("ForegroundAccent"))
         }
     }
 

@@ -52,6 +52,7 @@ struct PaperQualitySummarySection: View {
 }
 
 private struct FrenchDraftQualitySummarySection: View {
+    @Environment(\.locale) private var locale
     let report: FrenchDraftQualityReport
 
     var body: some View {
@@ -76,7 +77,7 @@ private struct FrenchDraftQualitySummarySection: View {
             Text(title).font(.headline)
             if entries.isEmpty { Text("No entries in this part of the record. This is not an all-clear.").font(.caption) }
             ForEach(entries) { entry in
-                Text("Exercise \(entry.exerciseID), question \(entry.questionID)").font(.caption.weight(.semibold))
+                Text(InterfaceText.localizedResource(entry.locationResource, locale: locale)).font(.caption.weight(.semibold))
                 if !entry.detail.isEmpty { Text(verbatim: entry.detail).font(.caption) }
             }
         }

@@ -4,7 +4,9 @@ import Foundation
 enum GenerationPresentation {
     static func estimatedTime(_ estimate: GenerationEstimate, locale: Locale) -> String {
         let resource: LocalizedStringResource
-        if estimate.remainingSeconds <= 0 {
+        if !estimate.hasDurationEstimate {
+            resource = "Time remaining is not yet known."
+        } else if estimate.remainingSeconds <= 0 {
             resource = "Taking longer than estimated"
         } else if estimate.lastUpdatedAt != nil, estimate.remainingSeconds < 5,
                   (estimate.lastObservedProgress ?? 0) < 0.9 {
@@ -15,18 +17,39 @@ enum GenerationPresentation {
         return String(localized: InterfaceText.localizedResource(resource, locale: locale))
     }
 
+    static func elapsedTime(_ seconds: TimeInterval, locale: Locale) -> String {
+        let duration = GenerationEstimate.formatDuration(seconds)
+        let resource: LocalizedStringResource = "Elapsed: \(duration)"
+        return String(localized: InterfaceText.localizedResource(resource, locale: locale))
+    }
+
     static func progress(_ message: String, language: String = "system") -> String {
         switch message {
         case "Préparation de l'extrait public d'Occitanie", "Préparation de l’extrait public d’Occitanie":
             return localized("Preparing the Occitanie case study", language: language)
         case "Création de l'activité annulée", "Création de l’activité annulée":
             return localized("Occitanie case study cancelled.", language: language)
+        case "Mise en page et vérification du document":
+            return localized("Formatting and checking the document", language: language)
         case "Apple MLX is decoding two tasks together.":
             return localized("Apple MLX is working on two tasks.", language: language)
         case "Apple MLX is using serial decoding for this model or prompt pair.":
             return localized("Apple MLX is working on one task at a time for this model or these prompts.", language: language)
         default:
             break
+        }
+        for identifier in ["1", "2", "3"] {
+            let prefix = "Rédaction originale de l'exercice \(identifier) par "
+            if message.hasPrefix(prefix) {
+                let model = message.dropFirst(prefix.count)
+                if !model.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                   !model.contains("\n"), !model.contains("\r") {
+                    return localized("Drafting exercise \(identifier)", language: language)
+                }
+            }
+            if message == "Résolution et contrôle indépendants de l'exercice \(identifier)" {
+                return localized("Solving and checking exercise \(identifier)", language: language)
+            }
         }
         if let range = message.range(of: #"^Accepted [0-9]+ of [0-9]+ AI (items|questions)$"#, options: .regularExpression),
            range == (message.startIndex..<message.endIndex) {
@@ -87,6 +110,9 @@ enum GenerationPresentation {
     }
 
     static func completion(_ message: String, language: String = "system") -> String {
+        if message == "Brouillon NSI généré par le modèle. Consultez les avertissements avant utilisation." {
+            return localized("NSI draft created by the model. Read the warnings before use.", language: language)
+        }
         if [
             "Activité Occitanie créée. Document indépendant, sans note d'examen.",
             "Activité Occitanie créée. Document indépendant, sans note d’examen.",

@@ -5,6 +5,63 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "macOS/Keldin"
 
 
+def test_uk_model_accessibility_refresh_is_scoped_to_the_read_only_row():
+    workspace = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    model_row = workspace.split('LabeledContent("Model") {', 1)[1].split(
+        "if board.usesAI && !application.dryRun", 1
+    )[0]
+    assert ".id(" not in model_row
+    assert "Text(application.activeModelName)" in model_row
+    assert ".help(application.activeModelName)" in model_row
+    assert 'Text("Memory fit")' in model_row
+    assert ".accessibilityElement(children: .ignore)" in model_row
+    assert '.accessibilityLabel("Model")' in model_row
+    assert ".accessibilityValue(Text(verbatim: modelAccessibilityValue))" in model_row
+    assert 'InterfaceText.localizedResource("Memory fit", locale: locale)' in workspace
+    assert (
+        "guard application.aiProvider == .ollama, application.selectedModelIsRecommended"
+        in workspace
+    )
+    assert "get: { application.dryRun }" in workspace
+    assert "set: { application.setDryRun($0) }" in workspace
+    assert "Form {\n" in workspace
+    assert ".formStyle(.grouped)\n        .disabled(application.isRunning)" in workspace
+
+
+def test_uk_provider_picker_labels_deepseek_without_making_it_selectable():
+    workspace = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    selected_only = workspace.split("if application.aiProvider == .deepSeek {", 1)[
+        1
+    ].split("ForEach(board.supportedProviders)", 1)[0]
+    assert 'Label("DeepSeek (French NSI only)"' in selected_only
+    assert (
+        ".tag(AIProvider.deepSeek)\n                            .selectionDisabled(true)"
+        in selected_only
+    )
+    assert "ForEach(board.supportedProviders)" in workspace
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    assert (
+        catalog["DeepSeek (French NSI only)"]["localizations"]["fr"]["stringUnit"][
+            "value"
+        ]
+        == "DeepSeek (NSI française uniquement)"
+    )
+
+
+def test_hosted_provider_label_and_disclosure_summary_have_french_copy():
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    for key, expected in (
+        ("AI provider", "Fournisseur d’IA"),
+        (
+            "Prompts and subject context may be sent to the selected provider.",
+            "Les consignes et le contexte de la matière peuvent être transmis au fournisseur sélectionné.",
+        ),
+    ):
+        unit = catalog[key]["localizations"]["fr"]["stringUnit"]
+        assert unit["state"] == "translated"
+        assert unit["value"] == expected
+
+
 def test_model_quality_guidance_is_separate_from_memory_suggestions():
     policy = (APP / "Domain/PaperQualityGuidance.swift").read_text()
     assert "llama-3.2-3b-instruct-4bit" in policy

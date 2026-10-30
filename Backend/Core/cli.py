@@ -101,7 +101,14 @@ def build_parser() -> argparse.ArgumentParser:
     assessment.add_argument("--model", default=DEFAULT_MODEL)
     assessment.add_argument(
         "--provider",
-        choices=["ollama", "apple", "openai", "anthropic", "application-owned"],
+        choices=[
+            "ollama",
+            "apple",
+            "openai",
+            "anthropic",
+            "deepseek",
+            "application-owned",
+        ],
         default="ollama",
         help="Model provider; application-owned is reserved for historical catalogue replay",
     )

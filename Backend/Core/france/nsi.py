@@ -366,12 +366,26 @@ AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
 
 
 # Require generation-only fields without changing legacy package readers.
-def authoring_schema() -> dict:
+def authoring_schema(*, machine_field_constraints: bool = False) -> dict:
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
     schema["properties"]["materials"]["minItems"] = 1
     question = schema["$defs"]["NSIQuestion"]
     question["required"].extend(AUTHORING_REQUIRED_QUESTION_FIELDS)
+    if not machine_field_constraints:
+        return schema
+    # Generation uses machine-readable dot decimals, not French display commas.
+    # Keep runtime fullmatch/positive-credit/sum validation: portable JSON Schema
+    # '$' handling can still admit a final newline in some regex implementations.
+    for field in (
+        schema["properties"]["target_points"],
+        question["properties"]["points"],
+        schema["$defs"]["Credit"]["properties"]["points"],
+    ):
+        field.update(pattern=r"^[0-9]{1,6}(\.[0-9]{1,4})?$", minLength=1, maxLength=11)
+    table = schema["$defs"]["NSITableMaterial"]["properties"]
+    for cell in (table["columns"]["items"], table["rows"]["items"]["items"]):
+        cell.update(minLength=1, maxLength=180, pattern=r"\S")
     return schema
 
 

@@ -19,6 +19,11 @@ struct GenerationProgress: View {
                     ProgressView(application.status)
                 }
                 if let estimate = application.generationEstimate {
+                    if let elapsed = estimate.elapsedSeconds {
+                        Text(GenerationPresentation.elapsedTime(elapsed, locale: locale))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                     Text(GenerationPresentation.estimatedTime(estimate, locale: locale))
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -40,6 +45,9 @@ struct GenerationProgress: View {
             parts.append(progress.formatted(.percent.precision(.fractionLength(0))))
         }
         if let estimate = application.generationEstimate {
+            if let elapsed = estimate.elapsedSeconds {
+                parts.append(GenerationPresentation.elapsedTime(elapsed, locale: locale))
+            }
             parts.append(GenerationPresentation.estimatedTime(estimate, locale: locale))
         }
         return parts.joined(separator: ", ")

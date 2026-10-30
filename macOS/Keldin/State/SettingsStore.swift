@@ -10,6 +10,7 @@ final class SettingsStore {
     var ollamaModel: String
     var openAIModel: String
     var anthropicModel: String
+    var deepSeekModel: String
     var appleModel: String
     var dryRun: Bool
     var parallelLocalReviews: Bool
@@ -18,6 +19,7 @@ final class SettingsStore {
     var historyRetentionLimit: Int
     var openAIAPIKey = ""
     var anthropicAPIKey = ""
+    var deepSeekAPIKey = ""
 
     @ObservationIgnored private let defaults: UserDefaults
     @ObservationIgnored private let secrets: SecretStoring
@@ -40,6 +42,8 @@ final class SettingsStore {
             ?? AppDefaults.openAIModel
         anthropicModel = defaults.string(forKey: AppStorageKey.anthropicModel)
             ?? AppDefaults.anthropicModel
+        deepSeekModel = defaults.string(forKey: AppStorageKey.deepSeekModel)
+            ?? AppDefaults.deepSeekModel
         appleModel = defaults.string(forKey: AppStorageKey.appleModel)
             ?? AppDefaults.appleModel
         dryRun = defaults.bool(forKey: AppStorageKey.dryRun)
@@ -52,6 +56,7 @@ final class SettingsStore {
         historyRetentionLimit = retention > 0 ? retention : 60
         openAIAPIKey = loadCredential(SecretAccount.openAIAPIKey)
         anthropicAPIKey = loadCredential(SecretAccount.anthropicAPIKey)
+        deepSeekAPIKey = loadCredential(SecretAccount.deepSeekAPIKey)
     }
 
     @discardableResult
@@ -61,6 +66,7 @@ final class SettingsStore {
         defaults.set(ollamaModel, forKey: AppStorageKey.ollamaModel)
         defaults.set(openAIModel, forKey: AppStorageKey.openAIModel)
         defaults.set(anthropicModel, forKey: AppStorageKey.anthropicModel)
+        defaults.set(deepSeekModel, forKey: AppStorageKey.deepSeekModel)
         defaults.set(appleModel, forKey: AppStorageKey.appleModel)
         defaults.set(dryRun, forKey: AppStorageKey.dryRun)
         defaults.set(parallelLocalReviews, forKey: AppStorageKey.parallelLocalReviews)
@@ -73,6 +79,7 @@ final class SettingsStore {
         if includeCredentials {
             saveCredential(openAIAPIKey, account: SecretAccount.openAIAPIKey)
             saveCredential(anthropicAPIKey, account: SecretAccount.anthropicAPIKey)
+            saveCredential(deepSeekAPIKey, account: SecretAccount.deepSeekAPIKey)
         }
         return credentialFailures.isEmpty
     }
@@ -82,7 +89,7 @@ final class SettingsStore {
     }
 
     func secretFailureMessage(language: String) -> String? {
-        for account in [SecretAccount.openAIAPIKey, SecretAccount.anthropicAPIKey] {
+        for account in [SecretAccount.openAIAPIKey, SecretAccount.anthropicAPIKey, SecretAccount.deepSeekAPIKey] {
             if let error = credentialFailures[account] { return error.message(language: language) }
         }
         return nil

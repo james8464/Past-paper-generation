@@ -42,6 +42,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var modelToPull = AppDefaults.ollamaModel
     @Published var openAIModel = AppDefaults.openAIModel
     @Published var anthropicModel = AppDefaults.anthropicModel
+    @Published var deepSeekModel = AppDefaults.deepSeekModel
     @Published var appleModel = AppDefaults.appleModel {
         didSet {
             if appleModel != oldValue {
@@ -57,6 +58,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
     @Published var openAIAPIKey = ""
     @Published var anthropicAPIKey = ""
+    @Published var deepSeekAPIKey = ""
     @Published var showHostedAIConsent = false
     @Published var showMLXSetupConfirmation = false
     @Published var showError = false
@@ -168,6 +170,7 @@ final class ApplicationCoordinator: ObservableObject {
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
+        if aiProvider == .deepSeek { return "DeepSeek is available for French NSI drafts only. Choose another provider for UK papers." }
         if !selectedBoard.isReady { return "\(selectedBoard.subjectTitle) \(selectedBoard.title) is coming soon." }
         if dryRun { return nil }
         if !selectedBoard.usesAI { return nil }
@@ -206,13 +209,37 @@ final class ApplicationCoordinator: ObservableObject {
             if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
             if anthropicAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.anthropicAPIKey) { return "\(error.message(language: presentationLanguage))" }
             return anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter an Anthropic API key in Settings." : nil
+        case .deepSeek:
+            if !AppDefaults.deepSeekModels.contains(deepSeekModel) { return "Choose DeepSeek Flash or DeepSeek V4 Pro in Settings." }
+            if !hasHostedAIConsent { return "Review and accept the hosted AI disclosure in Settings." }
+            if deepSeekAPIKey.isEmpty, let error = settingsStore.credentialFailure(for: SecretAccount.deepSeekAPIKey) { return "\(error.message(language: presentationLanguage))" }
+            return deepSeekAPIKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? "Enter a DeepSeek API key in Settings." : nil
         case .apple:
             return MLXModelAccessPolicy.issue(model: appleModel, distributionMode: distributionMode)
         }
     }
 
     var hasHostedAIConsent: Bool {
-        defaults.bool(forKey: AppStorageKey.hostedAIConsentAccepted)
+        hasHostedAIConsent(for: aiProvider)
+    }
+
+    func hasHostedAIConsent(for provider: AIProvider) -> Bool {
+        if provider == .deepSeek {
+            return defaults.string(forKey: AppStorageKey.deepSeekConsentVersion) == AppDefaults.deepSeekConsentVersion
+        }
+        return defaults.bool(forKey: AppStorageKey.hostedAIConsentAccepted)
+    }
+
+    var pendingHostedDisclosureResource: LocalizedStringResource {
+        (pendingHostedProvider ?? aiProvider).hostedDisclosureResource
+    }
+
+    private func recordHostedAIConsent(for provider: AIProvider) {
+        if provider == .deepSeek {
+            defaults.set(AppDefaults.deepSeekConsentVersion, forKey: AppStorageKey.deepSeekConsentVersion)
+        } else {
+            defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
+        }
     }
 
     var activeModelName: String {
@@ -220,6 +247,7 @@ final class ApplicationCoordinator: ObservableObject {
         case .ollama: selectedModel
         case .openAI: openAIModel
         case .anthropic: anthropicModel
+        case .deepSeek: deepSeekModel
         case .apple: appleModel
         }
     }
@@ -296,6 +324,7 @@ final class ApplicationCoordinator: ObservableObject {
         modelToPull = ollamaModel
         openAIModel = settings.openAIModel
         anthropicModel = settings.anthropicModel
+        deepSeekModel = settings.deepSeekModel
         appleModel = settings.appleModel
         preparedMLXModels = Set(
             defaults.stringArray(forKey: AppStorageKey.preparedMLXModels) ?? []
@@ -303,6 +332,7 @@ final class ApplicationCoordinator: ObservableObject {
         dryRun = settings.dryRun
         openAIAPIKey = settings.openAIAPIKey
         anthropicAPIKey = settings.anthropicAPIKey
+        deepSeekAPIKey = settings.deepSeekAPIKey
         notificationCenter.delegate = NotificationPresenter.shared
         notificationsEnabled = settings.notificationsEnabled
         showWelcome = !defaults.bool(forKey: AppStorageKey.hasSeenWelcome)
@@ -447,7 +477,7 @@ final class ApplicationCoordinator: ObservableObject {
             provenance: GenerationProvenance(
                 appVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "development",
                 provider: request.provider.backendID, model: request.model,
-                localGenerationWorkers: configuredLocalGenerationWorkers
+                localGenerationWorkers: request.provider.sendsPromptsOffDevice ? nil : 1
             ), state: .pending, artifacts: [],
             qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
         )
@@ -458,6 +488,7 @@ final class ApplicationCoordinator: ObservableObject {
         if request.provider == .apple { environment["HF_HOME"] = AppDefaults.mlxCacheFolder().path }
         if request.provider == .openAI { environment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
         if request.provider == .anthropic { environment["KELDIN_API_KEY"] = anthropicAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
+        if request.provider == .deepSeek { environment["KELDIN_API_KEY"] = deepSeekAPIKey.trimmingCharacters(in: .whitespacesAndNewlines) }
         let session = beginRunSession(
             intent: .paper, documents: RunDocuments(frameworkID: FrenchAssessmentRequest.assessmentID,
                 subject: "Baccalauréat général · NSI", paper: "Partie écrite · 2027", workingFolder: request.output),
@@ -466,6 +497,10 @@ final class ApplicationCoordinator: ObservableObject {
         do {
             try generationCoordinator.begin(record)
             activeRun?.ownedJobID = record.id
+            generationEstimate = GenerationEstimator.initialFrenchEstimate(
+                configuration: record.configuration, recentRuns: recentDocumentStore.records
+            )
+            startEstimateTimer()
             let process = try backend.run(arguments: request.arguments + ["--ollama-url", ollamaURL], environment: environment) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in self?.finishRun(result, from: session) }
@@ -679,7 +714,7 @@ final class ApplicationCoordinator: ObservableObject {
     func selectAIProvider(_ provider: AIProvider, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
         guard provider != aiProvider else { return }
-        if provider.sendsPromptsOffDevice && !hasHostedAIConsent {
+        if provider.sendsPromptsOffDevice && !hasHostedAIConsent(for: provider) {
             if let presentation {
                 presentation.requestConsent(for: provider)
                 return
@@ -695,7 +730,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     func acceptHostedAIConsent() {
         guard !isRunning else { return }
-        defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
+        recordHostedAIConsent(for: pendingHostedProvider ?? aiProvider)
         if let provider = pendingHostedProvider {
             aiProvider = provider
             modelCoordinator.provider = provider
@@ -711,7 +746,7 @@ final class ApplicationCoordinator: ObservableObject {
             presentation.reportError(InterfaceText.resolve("Generation is already running.", language: presentationLanguage))
             return
         }
-        defaults.set(true, forKey: AppStorageKey.hostedAIConsentAccepted)
+        recordHostedAIConsent(for: provider)
         aiProvider = provider
         modelCoordinator.provider = provider
         persistSettings(presentation: presentation)
@@ -773,6 +808,7 @@ final class ApplicationCoordinator: ObservableObject {
                 case .apple: appleModel = record.configuration.model
                 case .openAI: openAIModel = record.configuration.model
                 case .anthropic: anthropicModel = record.configuration.model
+                case .deepSeek: deepSeekModel = record.configuration.model
                 }
             }
             pendingGenerationSeed = seed
@@ -798,6 +834,8 @@ final class ApplicationCoordinator: ObservableObject {
             openAIModel = record.configuration.model
         case .anthropic:
             anthropicModel = record.configuration.model
+        case .deepSeek:
+            deepSeekModel = record.configuration.model
         case .apple:
             appleModel = record.configuration.model
         }
@@ -914,7 +952,7 @@ final class ApplicationCoordinator: ObservableObject {
             backendEnvironment["HF_HOME"] = AppDefaults.mlxCacheFolder().path
         }
         switch selectedBoard.usesAI ? aiProvider : .ollama {
-        case .ollama, .apple:
+        case .ollama, .apple, .deepSeek:
             break
         case .openAI:
             backendEnvironment["KELDIN_API_KEY"] = openAIAPIKey.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1308,11 +1346,13 @@ final class ApplicationCoordinator: ObservableObject {
         settingsStore.ollamaModel = selectedModel
         settingsStore.openAIModel = openAIModel
         settingsStore.anthropicModel = anthropicModel
+        settingsStore.deepSeekModel = deepSeekModel
         settingsStore.appleModel = appleModel
         settingsStore.dryRun = dryRun
         settingsStore.notificationsEnabled = notificationsEnabled
         settingsStore.openAIAPIKey = openAIAPIKey
         settingsStore.anthropicAPIKey = anthropicAPIKey
+        settingsStore.deepSeekAPIKey = deepSeekAPIKey
         let saved = saveSettingsAndReportSecretFailure(includeCredentials: includeCredentials, presentation: presentation)
         defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         return saved
@@ -1329,6 +1369,7 @@ final class ApplicationCoordinator: ObservableObject {
         switch aiProvider {
         case .openAI: SecretAccount.openAIAPIKey
         case .anthropic: SecretAccount.anthropicAPIKey
+        case .deepSeek: SecretAccount.deepSeekAPIKey
         case .ollama, .apple: nil
         }
     }
@@ -1841,7 +1882,7 @@ final class ApplicationCoordinator: ObservableObject {
         switch aiProvider {
         case .ollama: settingsStore.parallelLocalReviews ? 2 : 1
         case .apple: settingsStore.parallelMLXGeneration ? 2 : 1
-        case .openAI, .anthropic: nil
+        case .openAI, .anthropic, .deepSeek: nil
         }
     }
 
@@ -1856,6 +1897,10 @@ final class ApplicationCoordinator: ObservableObject {
             recentRuns: recentDocumentStore.records,
             localGenerationWorkers: configuredLocalGenerationWorkers ?? 1
         )
+        startEstimateTimer()
+    }
+
+    private func startEstimateTimer() {
         etaTimer?.cancel()
         etaTimer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()

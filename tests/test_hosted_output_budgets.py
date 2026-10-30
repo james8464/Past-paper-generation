@@ -15,7 +15,8 @@ def test_typed_hosted_requests_honor_budgets_without_new_schema_modes(
 ):
     payloads = []
 
-    def transport(url, data, headers):
+    def transport(url, data, headers, **kwargs):
+        assert kwargs == {"fixed_host": f"api.{provider}.com", "secrets": ("private",)}
         payloads.append(json.loads(data))
         reply = (
             {"status": "completed", "output_text": '{"answer":"ready"}'}

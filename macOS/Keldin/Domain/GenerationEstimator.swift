@@ -122,6 +122,49 @@ enum GenerationEstimator {
         )
     }
 
+    static func initialFrenchEstimate(
+        configuration: GenerationConfiguration,
+        recentRuns: [GenerationJobRecord],
+        now: Date = Date()
+    ) -> GenerationEstimate {
+        // French exercise authoring, solving and review run sequentially. UK
+        // parallel preferences and historical fixed catalogues are not timings
+        // for this workflow. These are software runtimes, not learner timings.
+        let durations = recentRuns.filter { run in
+            let saved = run.configuration
+            return configuration.assessmentID == FrenchAssessmentRequest.assessmentID
+                && configuration.authoringVersion == "v36"
+                && run.state == .completed && !saved.dryRun
+                && saved.boardID == configuration.boardID
+                && saved.paperID == configuration.paperID
+                && saved.assessmentID == configuration.assessmentID
+                && saved.authoringVersion == configuration.authoringVersion
+                && saved.educationSystem == "fr-national" && saved.documentLanguage == "fr-FR"
+                && saved.provider == configuration.provider && saved.model == configuration.model
+                && run.provenance.provider == configuration.provider && run.provenance.model == configuration.model
+                && run.provenance.effectiveLocalGenerationWorkers == 1
+                && run.updatedAt <= now
+        }
+        .sorted { $0.createdAt > $1.createdAt }
+        .compactMap { run -> TimeInterval? in
+            let duration = run.updatedAt.timeIntervalSince(run.createdAt)
+            return duration.isFinite && (1...86_400).contains(duration) ? duration : nil
+        }
+        .prefix(5).sorted()
+        let duration: TimeInterval
+        if durations.isEmpty {
+            duration = 0
+        } else {
+            let middle = durations.count / 2
+            duration = durations.count.isMultiple(of: 2)
+                ? (durations[middle - 1] + durations[middle]) / 2 : durations[middle]
+        }
+        return GenerationEstimate(startedAt: now, totalSeconds: duration,
+            remainingSeconds: duration,
+            confidence: durations.isEmpty ? 0 : EstimateTuning.noBenchmarkConfidence,
+            factors: [], elapsedSeconds: 0, hasDurationEstimate: !durations.isEmpty)
+    }
+
     static func update(
         estimate: GenerationEstimate,
         progress: Double?,
@@ -137,6 +180,12 @@ enum GenerationEstimator {
         let elapsed = max(0, now.timeIntervalSince(estimate.startedAt))
         let interval = now.timeIntervalSince(previousUpdate)
         var updated = estimate
+        if estimate.elapsedSeconds != nil { updated.elapsedSeconds = elapsed }
+        if !estimate.hasDurationEstimate {
+            updated.lastUpdatedAt = now
+            updated.lastObservedProgress = currentProgress
+            return updated
+        }
         var targetRemaining = max(0, estimate.totalSeconds - elapsed)
         if currentProgress > EstimateTuning.observedProgressThreshold {
             let observedTotal = elapsed / currentProgress
@@ -201,6 +250,8 @@ enum GenerationEstimator {
             return (0.72, EstimateFactor(title: "AI provider", detail: "Hosted OpenAI generation usually reduces local compute time.", impact: 0.72))
         case .anthropic:
             return (0.78, EstimateFactor(title: "AI provider", detail: "Hosted Anthropic generation usually reduces local compute time.", impact: 0.78))
+        case .deepSeek:
+            return (1.0, EstimateFactor(title: "AI provider", detail: "DeepSeek generation timing has not been measured.", impact: 1.0))
         }
     }
 

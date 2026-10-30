@@ -74,7 +74,7 @@ def handle_generate_llm_assessment(args) -> int:
 
     try:
         definition = assessment_framework(args.assessment)
-        if args.provider not in {"ollama", "apple", "openai", "anthropic"}:
+        if args.provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}:
             raise ValueError("Un fournisseur de modèle est requis")
         if getattr(args, "repeat_practice", False) or getattr(
             args, "exclude_family", []
@@ -88,9 +88,11 @@ def handle_generate_llm_assessment(args) -> int:
             raise ValueError(
                 "Préparez les références françaises avant de créer un sujet."
             )
-        if args.provider in {"openai", "anthropic"} and not getattr(
+        if args.provider in {"openai", "anthropic", "deepseek"} and not getattr(
             args, "api_key", ""
         ):
+            raise ValueError("Ajoutez la clé du fournisseur dans les réglages.")
+        if args.provider == "deepseek" and not args.api_key.strip():
             raise ValueError("Ajoutez la clé du fournisseur dans les réglages.")
         reference_hash = _file_hash(args.reference_index)
         source_hash = implementation_identity()

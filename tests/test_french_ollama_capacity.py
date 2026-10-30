@@ -229,4 +229,11 @@ def test_french_hosted_calls_also_have_one_physical_attempt(monkeypatch, provide
     assert HostedLLMClient(
         provider=provider, model="fixture", api_key="private"
     ).generate_request(request()) == {"answer": "ready"}
-    assert calls == [{"attempts": 1, "timeout_seconds": 600}]
+    assert calls == [
+        {
+            "attempts": 1,
+            "timeout_seconds": 600,
+            "fixed_host": f"api.{provider}.com",
+            "secrets": ("private",),
+        }
+    ]
