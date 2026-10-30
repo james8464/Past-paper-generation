@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793360791.2686148,
-    "ast_hash": "458f07bc9bd62a069429005f8af531ac",
+    "mtime": 1793361294.2718344,
+    "ast_hash": "c67309ef7cf62d637a7b24dade0eb1a7",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3550,8 +3550,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1793315843.1219895,
-    "ast_hash": "510376b05f4e2c8e559706f9a9ddf48a",
+    "mtime": 1793363016.3132129,
+    "ast_hash": "bf9e051d7300f3d94d405a9c7c027474",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793360791.3761642,
-    "ast_hash": "97be2275367d38099ef72a8b6f97f494",
+    "mtime": 1793361294.3863115,
+    "ast_hash": "4c033364befc62238a783722ae94a0c2",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793361242.392652,
-    "ast_hash": "e48065c4a7dbc8d357b4015825d9d9f8",
+    "mtime": 1793362662.365805,
+    "ast_hash": "caea4013145fcb8300870a1d9dc96fbd",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4835,8 +4835,8 @@
     "semantic_hash": ""
   },
   "tests/test_native_model_quality_guidance.py": {
-    "mtime": 1793361208.5876076,
-    "ast_hash": "07d2d3fac658c924e9ae54deaeeac4dd",
+    "mtime": 1793363016.3145304,
+    "ast_hash": "251c1465ca6d69c93225e445f761397a",
     "semantic_hash": ""
   },
   "tools/french_model_capability.py": {
@@ -4895,8 +4895,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_v36_rejection_evidence.py": {
-    "mtime": 1793352131.0219007,
-    "ast_hash": "34b4a2a6fb622ee26feede2c7669ce48",
+    "mtime": 1793362028.6661687,
+    "ast_hash": "8ac721f151b502e26f4734ad2cdee567",
     "semantic_hash": ""
   },
   "docs/quality/concurrency-publication-implementation-review-2026-10-30.md": {
@@ -4945,8 +4945,8 @@
     "semantic_hash": ""
   },
   "docs/quality/deepseek-french-draft-validation-2026-10-30.md": {
-    "mtime": 1793361243.5050616,
-    "ast_hash": "ade75011390620b247b5ef13323d5b7b",
+    "mtime": 1793363227.1848335,
+    "ast_hash": "6640584bd8cc101b95b917a7b7f7e913",
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchGenerationEstimateTests.swift": {
@@ -4957,6 +4957,16 @@
   "tests/test_french_authoring_field_schema.py": {
     "mtime": 1793361242.3932247,
     "ast_hash": "eec9e6c7b2f38db40d5ff62d043e4df9",
+    "semantic_hash": ""
+  },
+  "tests/test_french_authoring_progression.py": {
+    "mtime": 1793362121.4474497,
+    "ast_hash": "6b0393995196aad02e5cf384db3faf2d",
+    "semantic_hash": ""
+  },
+  "tests/test_french_display_python_scope.py": {
+    "mtime": 1793362662.3661678,
+    "ast_hash": "63acd5c437ad8f670ea8de6271d90929",
     "semantic_hash": ""
   }
 }

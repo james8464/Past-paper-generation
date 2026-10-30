@@ -5186,6 +5186,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_authoring_progression.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_benchmark_runner.py",
       "classification": "test",
       "status": "pending",
@@ -5337,6 +5343,12 @@
     },
     {
       "path": "tests/test_french_directory_exercise.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_display_python_scope.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
