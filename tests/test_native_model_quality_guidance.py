@@ -18,6 +18,7 @@ def test_hosted_provider_label_and_disclosure_summary_have_french_copy():
         assert unit["state"] == "translated"
         assert unit["value"] == expected
 
+
 def test_model_quality_guidance_is_separate_from_memory_suggestions():
     policy = (APP / "Domain/PaperQualityGuidance.swift").read_text()
     assert "llama-3.2-3b-instruct-4bit" in policy

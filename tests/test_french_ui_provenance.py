@@ -38,7 +38,7 @@ def test_provider_and_model_refresh_only_their_read_only_accessibility_rows():
         assert expected in workspace
     # Identities belong to these display-only rows, not the Form or its controls.
     assert workspace.count(r"\(application.aiProvider.rawValue)") == 2
-    assert '@State private var largePrint = false' in workspace
+    assert "@State private var largePrint = false" in workspace
     assert 'Toggle("Enlarged print", isOn: $largePrint)' in workspace
 
 
