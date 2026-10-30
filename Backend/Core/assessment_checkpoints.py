@@ -278,7 +278,7 @@ class AssessmentCheckpointStore:
             }
         try:
             document = json.loads(self.path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as error:
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
             raise CheckpointCorrupt(f"checkpoint is unreadable: {self.path}") from error
         if not isinstance(document, dict) or document.get("schema_version") != 1:
             raise CheckpointCorrupt("checkpoint has an unsupported schema version")

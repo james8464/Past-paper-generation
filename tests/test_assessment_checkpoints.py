@@ -166,6 +166,30 @@ def test_corrupt_checkpoint_fails_closed_with_actionable_identity(
         AssessmentCheckpointStore(path, identity())
 
 
+@pytest.mark.parametrize("content", [b"\xff", b"\x80", b'{"items": "\xc3'])
+def test_non_utf8_checkpoint_is_actionable_and_preserved(
+    tmp_path: Path, content: bytes
+) -> None:
+    path = tmp_path / "job.json"
+    path.write_bytes(content)
+
+    with pytest.raises(
+        CheckpointCorrupt, match=r"checkpoint is unreadable.*job.json"
+    ) as caught:
+        AssessmentCheckpointStore(path, identity())
+
+    assert isinstance(caught.value.__cause__, UnicodeDecodeError)
+    assert path.read_bytes() == content
+    assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_valid_utf8_checkpoint_preserves_french_text(tmp_path: Path) -> None:
+    store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
+    payload = {"prompt": "Expliquez pourquoi le coût augmente."}
+    store.save_payload("question-1", payload)
+    assert store.load_payload("question-1") == payload
+
+
 def test_checkpoint_round_trips_family_specific_payload(tmp_path: Path) -> None:
     store = AssessmentCheckpointStore(tmp_path / "job.json", identity())
     payload = {"number": "1", "prompt": "Explain the relationship."}
