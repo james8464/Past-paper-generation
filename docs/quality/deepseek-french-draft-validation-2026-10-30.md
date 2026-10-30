@@ -21,6 +21,7 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Pro 16k | First exercise and blind solution completed; review stopped on a blind note before third review | Review-flow defect reproduced; no PDF published |
 | Pro 16k, repaired review flow | All three first-exercise calls completed; incorrect shortest-path selection order refused | Genuine worked-answer error, despite the correct final distance |
 | Flash 16k | Two complete authoring responses; first had an invalid table cell, second used decimal commas in credit fields | Schema/validator mismatch exposed; no PDF published |
+| Pro 16k, aligned schema | All three first-exercise calls completed; review refused an unstated tree-height convention | No PDF published; independent review also found that the convention needed clarification |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
@@ -44,6 +45,8 @@ The exported schema originally described credit as arbitrary text, while the exi
 
 This changes what the model is asked to produce, not its completed answers. No decimal or table value is rewritten after generation. Historical authoring schemas and package readers retain their previous behavior.
 
+The authoring brief now asks for a connected problem: interpret a supplied representation, construct or adapt a solution, then examine its behavior and justify its limits. It permits related subparts within an exercise while retaining independence between exercises. It also asks for explicit definitions, conventions and boundary behavior, with each requested item answered and credited. This is prospective instruction, not a deterministic depth check or evidence that a generated paper improved.
+
 ## Internal first-exercise review
 
 Two internal reviewers independently derived the graph representations, SQL and minimum routes before comparing the proposed correction. Exhaustive simple-path enumeration found a minimum of 25 through four tied routes. The proposed recursive correction uses a path-local visited set and handles dead-end branches without an empty minimum.
@@ -51,6 +54,8 @@ Two internal reviewers independently derived the graph representations, SQL and 
 The marking criterion for that correction does not explicitly credit minimum selection, although the task requires it. Its allocation also appears small relative to the requested construction. The database decomposition assumes a current contact record per technician without stating that business rule. These concerns remain recorded; the generated question, answer and rubric were not manually patched.
 
 The candidate contains four top-level question objects and ten numbered subparts. Object counts are not directly comparable with official paper question counts. No complete French paper has qualified from these attempts. Teacher review and empirical learner calibration remain `not_run`.
+
+A later candidate declares attributes `gauche` and `droit`, but its faulty height function calls `droite` and omits the increment. One internal blind reviewer initially missed the attribute mismatch and incorrectly reported only one definite defect. The original note is retained and marked superseded. There are two defects under the node-count convention; the convention itself remains unspecified. The model review refused that ambiguity. Internal review can also be wrong and is not teacher attestation.
 
 ## Remaining acceptance
 
