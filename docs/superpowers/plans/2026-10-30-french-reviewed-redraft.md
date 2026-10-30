@@ -1,7 +1,8 @@
 # Bounded French whole-exercise re-drafting
 
-Status: private design, red recovery specifications and typed refusal foundation.
-Automatic recovery is not implemented or ready to merge. Base: `463d9c4c`.
+Status: private Python generation and replay implemented; not ready to merge or
+release. Base: `463d9c4c`, implementation follows foundation `b88647ba`.
+Durable evidence storage, native admission and deadline/cost gates are pending.
 Do not change installed behavior until integration gates pass.
 
 ## Intended behavior
@@ -89,10 +90,13 @@ learner calibration remain `not_run`.
 
 The private fake-provider specifications cover refusal followed by a fresh
 complete pass, two terminal refusals, frozen earlier exercises, malformed
-reviews, unsafe authoring, transport errors and cancellation. They are currently
-red against the unchanged implementation. Before integration, add replay
-tampering tests with recomputed hashes and private persistence tests covering
-size limits, failed writes, permissions, symlinks and atomic replacement.
+reviews, unsafe authoring, transport errors and cancellation. The original three
+red recovery specifications now pass. Replay tests cover removed/reordered rounds,
+changed raw evidence with recomputed outer hashes, forged outcomes, strict scalar
+types, terminal histories and accepted-result links. A 24-call fixture exercises
+both structural and semantic rounds for all three exercises.
+Before integration, add private persistence tests covering size limits, failed
+writes, permissions, symlinks and atomic replacement.
 Run focused regression tests first, then root-owned combined and protected
 release gates. No paid or local-model calls are part of this preparatory work.
 
@@ -106,14 +110,41 @@ Fresh independent checks and a terminal refusal therefore remain mandatory.
 Neither paper establishes this application's efficacy, exam equivalence or
 calibration.
 
-## Private foundation checkpoint
+## Private Python checkpoint
 
 `SemanticReviewRefusal` now distinguishes schema-valid negative verdicts from
 malformed responses and transport, safety or cancellation failures. It remains a
 `GenerationEvidenceError`, with unchanged messages and bounded diagnostic details.
 The exception separately retains deep-copied, untruncated returned blind/reviewer
 objects and the canonical admitted exercise, each hashed. The canonical exercise
-is not described as the raw author response. No recovery loop, new package policy,
-lossless author capture, private persistence or native admission is activated.
-The three recovery specifications therefore remain deliberately red. This branch
-is not release-ready.
+is not described as the raw author response.
+
+The private generation path now records the raw accepted author response for
+each round, all structural-attempt records and raw blind/reviewer responses.
+The required recovery policy is bound in the package identity. Request hashes,
+seeds, phase budgets and round numbers are reconstructed on replay; reference
+object keys are canonicalised without removing or changing reference content.
+Only an accepted round updates final authoring/review/exercise lists and topics.
+Terminal semantic refusal includes both rounds and every previously accepted
+exercise's round history, source identity and curriculum plan.
+`validate_rejected_rounds` rechecks that in-memory terminal evidence.
+
+Historical standalone review objects still use the existing legacy validator.
+They cannot replace captured current-policy package responses. No older source
+package is silently migrated. Hashes and replay consistency do not authenticate
+remote model provenance or prove that a fabricated, fully reconstructed transcript
+was ever returned by a provider.
+
+399 focused tests passed, including existing fence, SQL source, transport,
+layout, rendering, profile-warning and historical-review checks. Ruff lint and
+format checks pass. These tests use fake providers or retained fixtures, not
+fresh model inference, and establish no paper-quality improvement.
+
+This branch is not release-ready: terminal evidence exists only in memory. A
+nonsemantic failure in a later cycle propagates unchanged; earlier completed
+rounds are not yet durably saved before that call. The existing truncated
+diagnostic writer must not be described as lossless storage. No total wall-clock
+deadline or spending cap has been added. Native completion does not yet require
+the recovery policy, and the current runtime manifest/checkpoint boundary still
+needs root integration. No native/public release, paid call, model inference or
+full-suite/build acceptance was performed here.
