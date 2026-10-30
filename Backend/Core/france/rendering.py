@@ -24,7 +24,14 @@ from reportlab.platypus import (
     TableStyle,
 )
 
-from Backend.Core.fonts import register_font, register_fonts
+from Backend.Core.fonts import register_fonts
+from Backend.Core.france.code_layout import (
+    CODE_FENCE_PATTERN,
+    LEFT_MARGIN,
+    RIGHT_MARGIN,
+    code_layout,
+    require_code_width,
+)
 from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
@@ -292,14 +299,7 @@ def structured_material(
 
 # Never rewrite executable text to make it fit a page.
 def code_listing(source: str, style: ParagraphStyle, available_width: float):
-    if any(
-        stringWidth(line, style.fontName, style.fontSize) > available_width
-        for line in source.splitlines()
-    ):
-        raise ValueError(
-            "Une ligne de code dépasse la largeur disponible. Reformuler le "
-            "programme sans modifier son résultat avant de publier le PDF."
-        )
+    require_code_width(source, style.fontName, style.fontSize, available_width)
     return Preformatted(source, style, dedent=0)
 
 
@@ -454,8 +454,9 @@ def render_assessment(
     regular = faces["ExamSans"]
     bold = faces["ExamSans-Bold"]
     italic = faces["ExamSans-Italic"]
-    mono = register_font("AQACourier", fallback="Courier")
-    size = 16 if large_print else 12
+    layout = code_layout(large_print)
+    mono = layout.font_name
+    size = layout.font_size
     body = ParagraphStyle(
         "NSIBody",
         fontName=regular,
@@ -523,8 +524,8 @@ def render_assessment(
     doc = SimpleDocTemplate(
         str(path),
         pagesize=A4,
-        leftMargin=70,
-        rightMargin=54,
+        leftMargin=LEFT_MARGIN,
+        rightMargin=RIGHT_MARGIN,
         topMargin=60,
         bottomMargin=65,
         title=(
@@ -543,9 +544,7 @@ def render_assessment(
 
     def content(text, *, paragraph_style=body):
         first_paragraph = True
-        for position, part in enumerate(
-            re.split(r"```(?:python|sql)?[ \t]*(?:\r?\n)?", text)
-        ):
+        for position, part in enumerate(re.split(CODE_FENCE_PATTERN, text)):
             if not part.strip():
                 continue
             if position % 2:
@@ -553,7 +552,7 @@ def render_assessment(
                     code_listing(
                         part.strip("\n"),
                         code,
-                        doc.width - 12,
+                        layout.content_width,
                     )
                 )
             else:
@@ -577,14 +576,12 @@ def render_assessment(
 
     def question_content(identifier: str, text: str) -> None:
         first_paragraph = True
-        for position, part in enumerate(
-            re.split(r"```(?:python|sql)?[ \t]*(?:\r?\n)?", text)
-        ):
+        for position, part in enumerate(re.split(CODE_FENCE_PATTERN, text)):
             if not part.strip():
                 continue
             if position % 2:
                 source = part.strip("\n")
-                listing = code_listing(source, code, doc.width - 42)
+                listing = code_listing(source, code, layout.question_width)
                 story.append(
                     KeepTogether([listing])
                     if large_print and len(source.splitlines()) <= 24

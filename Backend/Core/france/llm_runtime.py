@@ -12,6 +12,7 @@ from pathlib import Path
 
 from Backend.Core.events import emit, emit_progress
 from Backend.Core.france import llm_pipeline
+from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
 from Backend.Core.france.llm_pdf import validate_llm_pdf
 from Backend.Core.france.pipeline import atomic_json, digest
 from Backend.Core.france.rendering import render_assessment
@@ -121,6 +122,7 @@ def handle_generate_llm_assessment(args) -> int:
             client=client,
             seed=args.seed,
             progress=progress,
+            large_print=args.large_print,
         )
         exercises = llm_pipeline.validate_package(package)
         identity = package["identity"]
@@ -129,6 +131,9 @@ def handle_generate_llm_assessment(args) -> int:
             or identity["model"] != args.model
             or identity["seed"] != args.seed
             or identity["implementation_sha256"] != source_hash
+            or identity.get("layout_policy") != CODE_LAYOUT_POLICY
+            or type(identity.get("large_print")) is not bool
+            or identity["large_print"] is not args.large_print
         ):
             raise ValueError(
                 "Le brouillon ne correspond pas au modèle et à la demande."

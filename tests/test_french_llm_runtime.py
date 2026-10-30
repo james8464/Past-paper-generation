@@ -99,9 +99,32 @@ def test_real_pdf_publication_keeps_model_identity_and_private_evidence(
     assert manifest["model_snapshot_sha256"] == "a" * 64
     assert manifest["teacher_review"] == manifest["empirical_calibration"] == "not_run"
     assert manifest["large_print"] is large_print
+    assert manifest["identity"]["large_print"] is large_print
+    assert manifest["identity"]["layout_policy"] == "fr-nsi-v36-code-layout-v1"
     assert manifest["warnings"]
     assert not list(args.output.glob(".nsi-llm-*"))
     assert events[-1]["type"] == "done"
+
+
+@pytest.mark.parametrize("change", ["missing", "mismatch"])
+def test_live_runtime_requires_selected_layout_even_for_legacy_readable_package(
+    publication, monkeypatch, change
+):
+    subject, args, events = publication
+    original = subject.llm_pipeline.generate
+
+    def wrong_layout(**kwargs):
+        package = original(**kwargs)
+        if change == "missing":
+            package["identity"].pop("layout_policy")
+            package["identity"].pop("large_print")
+        else:
+            package["identity"]["large_print"] = True
+        return package
+
+    monkeypatch.setattr(subject.llm_pipeline, "generate", wrong_layout)
+    assert subject.handle_generate_llm_assessment(args) == 1
+    assert not any(event["type"] in {"file", "done"} for event in events)
 
 
 def test_render_failure_never_publishes_partial_output(publication, monkeypatch):
