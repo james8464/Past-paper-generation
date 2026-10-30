@@ -152,6 +152,11 @@ private struct PaperConfiguration: View {
                         set: { application.selectAIProvider($0) }
                     )
                 ) {
+                    if application.aiProvider == .deepSeek {
+                        Label("DeepSeek (French NSI only)", systemImage: AIProvider.deepSeek.systemImage)
+                            .tag(AIProvider.deepSeek)
+                            .selectionDisabled(true)
+                    }
                     ForEach(board.supportedProviders) { provider in
                         Label(provider.title, systemImage: provider.systemImage)
                             .tag(provider)
@@ -173,6 +178,10 @@ private struct PaperConfiguration: View {
                         }
                     }
                 }
+                // LabeledContent does not expose every Text child in this row on macOS.
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Model")
+                .accessibilityValue(Text(verbatim: modelAccessibilityValue))
 
                 if board.usesAI && !application.dryRun {
                     ModelQualityAdviceView(provider: application.aiProvider, model: application.activeModelName)
@@ -229,6 +238,14 @@ private struct PaperConfiguration: View {
         application.selectedPaper.assessmentKind == .questionBank
             ? board.questionBanks
             : board.fullPapers
+    }
+
+    private var modelAccessibilityValue: String {
+        guard application.aiProvider == .ollama, application.selectedModelIsRecommended else {
+            return application.activeModelName
+        }
+        let memoryFit = String(localized: InterfaceText.localizedResource("Memory fit", locale: locale))
+        return "\(application.activeModelName), \(memoryFit)"
     }
 }
 

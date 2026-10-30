@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "DeepSeek (French NSI only)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"DeepSeek (NSI française uniquement)"}}}},
     "Exercise %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Exercice %@"}}}},
     "Elapsed: %@": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Temps écoulé : %@"}}}},
     "Time remaining is not yet known.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le temps restant n’est pas encore connu."}}}},
