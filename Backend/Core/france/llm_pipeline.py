@@ -23,6 +23,7 @@ from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     TOPICS,
     NSIExercise,
+    NSITableMaterial,
     authoring_schema,
     cognitive_profile_findings,
     require_authoring_fields,
@@ -170,6 +171,8 @@ def exercise_request(
         "syntaxiquement complets dans des blocs ```python. "
         "Place les programmes multilignes dans les réponses proposées, pas dans les "
         "critères du barème qui restent en prose avec éventuellement du code court. "
+        "Les titres, cellules de tableau et étiquettes des graphes restent en texte "
+        "ordinaire : place les blocs de code dans le contexte, une question ou une réponse. "
         "Aucun import, accès fichier, réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
         "des programmes à exécuter sur la machine. Pour verification, utilise un contrat "
         "sql, python_trace ou shortest_path uniquement s'il correspond au travail réel; "
@@ -301,7 +304,15 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
         or exercise.minutes != 70
     ):
         raise ValueError("Allocation NSI modifiée")
-    snippets = [exercise.context]
+    prose_only = [exercise.title]
+    for material in exercise.materials:
+        prose_only.append(material.title)
+        if isinstance(material, NSITableMaterial):
+            prose_only.extend(material.columns)
+            prose_only.extend(value for row in material.rows for value in row)
+        else:
+            prose_only.extend(material.nodes)
+    snippets = [exercise.context, *prose_only]
     for question in exercise.questions:
         if (
             not question.prompt.strip()
@@ -331,6 +342,10 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
     # Audit every field before a retryable formatting error, including fields
     # after the first missing fence. Unsafe code must never become a format retry.
     formatting_issues = [_bare_python_suite(text) for text in snippets]
+    if any("```" in text or _bare_python_suite(text) for text in prose_only):
+        raise PythonCodeFormatError(
+            "Le format des titres et des documents structurés ne préserve pas les blocs de code : placez-les dans le contexte, une question ou une réponse avec un bloc adapté."
+        )
     criterion_formatting = [
         _bare_python_suite(part)
         for question in exercise.questions
@@ -362,7 +377,12 @@ def _solution_schema(exercise: NSIExercise) -> dict:
                 "type": "object",
                 "additionalProperties": False,
                 "properties": {
-                    q.id: {"type": "string", "minLength": 1, "maxLength": 6000}
+                    q.id: {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 6000,
+                        "pattern": r"\S",
+                    }
                     for q in exercise.questions
                 },
                 "required": [q.id for q in exercise.questions],
