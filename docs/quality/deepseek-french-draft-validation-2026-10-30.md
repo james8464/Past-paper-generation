@@ -19,6 +19,8 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Tiny Pro probe | Completed; 2 + 2 returned 4 | Connector and structured-output smoke test only |
 | Flash 8k, low reasoning | Incomplete; some final text, but no complete exercise | No paper-quality verdict |
 | Pro 16k | First exercise and blind solution completed; review stopped on a blind note before third review | Review-flow defect reproduced; no PDF published |
+| Pro 16k, repaired review flow | All three first-exercise calls completed; incorrect shortest-path selection order refused | Genuine worked-answer error, despite the correct final distance |
+| Flash 16k | Two complete authoring responses; first had an invalid table cell, second used decimal commas in credit fields | Schema/validator mismatch exposed; no PDF published |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
@@ -35,6 +37,12 @@ The previous flow refused every blind note before the third review could assess 
 - Accepted advisory notes remain visible warnings with the original concern and rationale. Package revalidation recomputes those warnings.
 
 Empty-note review schemas and saved evidence retain their previous shape. This is still model review, not independent proof. A second call to the same model can rationalise an error; manual subject review remains necessary.
+
+## Authoring-schema alignment
+
+The exported schema originally described credit as arbitrary text, while the existing validator required machine-readable dot decimals. V36 now includes that syntax constraint, plus the existing nonblank and 180-character limits for table cells. The original validator still checks positive credit, exact totals and table structure. It remains the final authority for edge cases such as trailing newlines in portable regular expressions.
+
+This changes what the model is asked to produce, not its completed answers. No decimal or table value is rewritten after generation. Historical authoring schemas and package readers retain their previous behavior.
 
 ## Internal first-exercise review
 
