@@ -168,3 +168,36 @@ was restored and the candidate closed. No paper was generated in this UI check;
 saved documents and output settings were unchanged. The user requested the
 Apple provider, so that selection was retained. Installation and full-regression
 results are recorded separately when completed.
+
+## Protected publication and installed follow-up
+
+PR #132 merged at `b97beeeb7e30953fb85dc1fafba4d72a85f647b6` after Backend
+passed in 13m30s and macOS in 9m13s. The final local suite passed 5,654 Python
+tests with two skips in 536.92 seconds. The native suite executed 361 tests,
+with one skip and no failures. Direct Release and personal-development-signed
+Store preflight passed. These results supersede the earlier two-failure fixture
+run; no Core edits occurred during the final run. Logs are in the isolated
+checkout's `tmp/final-validation-20261030/apple-final-*.log`.
+
+The squash tree matched the tested head. Local main was fast-forwarded while
+preserving the user's staged test whitespace and localisation edits. The new
+translation keys were reconciled without dropping the user's extraction
+metadata or deletions. Those user edits remain uncommitted.
+
+The installed direct app passed strict signature verification and exact
+frontend, frozen-backend and Apple-helper byte comparisons with the tested
+Release. Computer control confirmed Apple Intelligence, its availability
+refresh, model identity, calculation warning and nonselectable cloud placeholder.
+The signed Store-mode app also reported Apple availability through its sandbox;
+its original Ollama preference was restored and the candidate closed. The helper
+was no longer running after the checks. No security setting was weakened.
+
+Further installed-app checks opened and cancelled both the output-folder and
+legacy-import choosers. Downloads remained selected and no data was imported.
+Print, Export, Quick Look, Reveal and Copy Provenance were disabled in Settings.
+These observations do not establish every-action, VoiceOver or paper-quality
+coverage. No cloud model was called, and the failed FIFO result remains failed.
+
+The prior installed bundle and obsolete generated build/preview copies were
+deleted after replacement verification at the user's request. No app archive was
+kept. Source, current reports and user papers/history were preserved.

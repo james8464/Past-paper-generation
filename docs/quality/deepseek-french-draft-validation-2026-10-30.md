@@ -85,4 +85,62 @@ French elapsed time starts with generation. An ETA uses matching completed Frenc
 
 ## Remaining acceptance
 
+### Later frozen-source checks
+
+The Pro 18 run used seed 270100 on `a3e14e6a`. Its three calls completed in
+204.59 seconds. Both solving and review identified an unstated tree-height
+convention. An independent derivation found a longest branch with three edges
+or four nodes, while the proposed credit accepted only three. That is a genuine
+answerability and marking ambiguity. No paper or PDF was published.
+
+Pro 19 used seed 270200 on merged PR #132 source
+`b97beeeb7e30953fb85dc1fafba4d72a85f647b6`. Four calls completed in 299.75
+seconds with unchanged Core identity
+`746cc72bb2837d6a48773eb7f26ba126aa4997a48e20adaaadad09f7657f1145`.
+The first exercise passed the automated author, solver and review stages.
+The second author returned standalone indented methods in a Python answer
+block. Python raised `IndentationError`; publication stopped without a PDF.
+
+Independent question-only review also found substantive problems in the first
+exercise despite its automated pass. Its description equates purity with not
+modifying another function, although its ordinary memo-dictionary solution
+mutates a caller-supplied argument. Its fourth question and rubric identify
+recursive memoisation and iteration as two different programming paradigms.
+Recursion alone does not establish functional programming. A private or copied
+cache can avoid external mutation, so this finding is about the supplied task
+and rubric, not a claim that all memoisation is impure.
+
+The internal reviewer derived `trajets(4) = 5` with nine recursive calls and a
+faulty iterative result of six instead of eight before reading any proposed
+answers or model reviews. The progression is connected Terminale work; its
+70-minute label is not observed learner timing or evidence of equivalent demand.
+Eduscol's [functional-programming guidance](https://eduscol.education.gouv.fr/sites/default/files/document/ra21lyceegtnsiparadigmefonctionnelpdf-70551.pdf),
+pages 3 and 5, was rendered and visually checked. It distinguishes side effects,
+pure functions and functional composition. The official guidance PDF hash is
+`703cbd759841b016d5acac15df02a3c17ef273430e28f46fd5d9498b0606d3f5`.
+The question-only request hash is
+`6ca6c0134666b570639fb7060b6543ad3a2060be52aa5e68464cdd5949b04ec5`.
+
+The indentation failure exposed a separate recovery defect. A raw syntax error
+escaped the existing bounded format-regeneration path. The prospective fix
+audits every field and fence before classifying fully tokenised malformed code
+as a formatting failure. Unsafe names, imports and incomplete lexical audits
+still stop without retry. The existing limit remains two whole-exercise attempts;
+this display audit does not dedent, repair or execute code, or patch an answer
+or rubric.
+Twenty regressions reproduced eighteen failures before the fix; all 103 focused
+code-format, layout, scope and provider-contract tests passed afterward.
+Two further negative cases showed that a definition keyword could exempt a
+later dunder token across an intervening operator. The audit now permits that
+exception only for the immediate method or class name. Those cases and a
+legitimate indented `__init__` definition pass with the correction.
+
+An explicitly labelled offline replay confirms that the unchanged second
+response now raises the typed format error. Its SHA-256 remains
+`8500d8cd6384807f127ef529dd1afade40a5de40c12976c2a1a1964b3cb34433`.
+That replay is not another live run or acceptance of its content. Both live
+attempts remain failed, and the first exercise's conceptual problems are not
+resolved by this recovery fix. Final integrated tests and protected publication
+are separate gates.
+
 The repaired flow needs a fresh complete live paper, independent checks of every answer and rubric, and every-page comparison with the official comparator before any qualification claim changes. Native acceptance also needs the final integrated build. Store signing, third-party rights and the wider supported-paper matrix remain separate release requirements.

@@ -61,7 +61,7 @@ qualification. The later DeepSeek Pro 18 diagnostic correctly refused an unstate
 tree-height convention; the draft was not accepted.
 
 The earlier V35 route offered five finite whole-paper families without a model
-call. Its source and saved packages remain historical evidence. The
+call. Its versioned source and recorded reviews remain historical evidence. The
 [local corpus audit](../../quality/french-nsi-corpus-rights-audit-2026-10-11.md)
 verified 81 registered files. Its 79 indexed sources comprise 77 distinct paper
 contents and two foundational documents, with 66 reference / 13 holdout sources.
@@ -88,9 +88,9 @@ Difficulty and duration are uncalibrated. No model qualification, teacher
 recommendation or learner calibration is claimed. The official Métropole paper
 is a development reference, not evidence of an unseen-holdout pass.
 
-Apple Intelligence is a separate on-device provider in the PR #132 candidate,
-which is installed for testing while protected checks and its merge into public
-main are pending. It uses Apple's system model without a downloaded MLX model.
+Apple Intelligence is a separate on-device provider published through PR #132
+and installed after signed-build and native checks. It uses Apple's system model
+without a downloaded MLX model.
 A tiny strict-JSON task passed. A shared FIFO solver task failed structural and
 arithmetic checks, and the actual 8,192-token context cannot hold the current full
 French author request. French creation is therefore disabled for this provider.
