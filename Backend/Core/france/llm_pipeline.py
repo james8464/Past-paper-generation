@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import ast
+import io
 import json
 import re
+import tokenize
 from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
@@ -177,6 +179,10 @@ def exercise_request(
     )
 
 
+class PythonCodeFormatError(ValueError):
+    """A safe, obvious Python suite is outside an indentation-preserving block."""
+
+
 def _safe_python(text: str) -> None:
     for code in re.findall(r"```python\s*\n(.*?)```", text, re.S | re.I):
         tree = ast.parse(code)
@@ -189,6 +195,69 @@ def _safe_python(text: str) -> None:
                 raise ValueError("Fragment Python avec accès non autorisé")
             if isinstance(node, ast.Attribute) and node.attr.startswith("__"):
                 raise ValueError("Fragment Python avec accès non autorisé")
+
+
+def _bare_python_suite(text: str) -> bool:
+    """Recognise ordinary suite headers only, not every possible Python fragment."""
+    outside = re.sub(r"```.*?```", "\n", text, flags=re.S)
+    lines = outside.splitlines()
+    header = re.compile(
+        r"[ \t]*(?:(?:async[ \t]+)?def[ \t]+\w+[ \t]*\([^\n]*\)(?:[ \t]*->[^\n:]+)?"
+        r"|class[ \t]+\w+[^\n:]*|(?:async[ \t]+)?for[ \t]+[^\n:]+[ \t]+in[ \t]+[^\n:]+"
+        r"|(?:if|elif|while|with|match|case)[ \t]+[^\n:]+|try|else|finally|except(?:[ \t]+[^\n:]+)?)"
+        r"[ \t]*:[ \t]*(?:#.*)?"
+    )
+    found = False
+    for index, line in enumerate(lines):
+        if re.match(r"[ \t]*(?:import[ \t]+|from[ \t]+\S+[ \t]+import[ \t]+)", line):
+            try:
+                imported = ast.parse(line.strip())
+            except SyntaxError:
+                pass
+            else:
+                if any(
+                    isinstance(node, (ast.Import, ast.ImportFrom))
+                    for node in ast.walk(imported)
+                ):
+                    raise ValueError("Fragment Python avec accès non autorisé")
+        if header.fullmatch(line) is None or index + 1 == len(lines):
+            continue
+        indentation = len(line) - len(line.lstrip(" \t"))
+        following = lines[index + 1]
+        if len(following) - len(
+            following.lstrip(" \t")
+        ) <= indentation and not line.lstrip().startswith(
+            ("def ", "async def ", "class ")
+        ):
+            continue
+        end = index + 1
+        while end < len(lines) and (
+            not lines[end].strip()
+            or len(lines[end]) - len(lines[end].lstrip(" \t")) > indentation
+        ):
+            end += 1
+        # Check unsafe names before reporting a repairable formatting problem.
+        # Tokenising does not execute code and ignores comments/string literals.
+        try:
+            previous_name = ""
+            for token in tokenize.generate_tokens(
+                io.StringIO("\n".join(lines[index:end])).readline
+            ):
+                if token.type == tokenize.NAME and (
+                    token.string in {"import", "global", "nonlocal"}
+                    or token.string in FORBIDDEN_NAMES
+                    or (
+                        token.string.startswith("__")
+                        and previous_name not in {"def", "class"}
+                    )
+                ):
+                    raise ValueError("Fragment Python avec accès non autorisé")
+                if token.type == tokenize.NAME:
+                    previous_name = token.string
+        except (tokenize.TokenError, IndentationError):
+            pass
+        found = True
+    return found
 
 
 def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
@@ -232,6 +301,13 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
             raise ValueError(f"Vérification générique échouée : {question.id}")
     for text in snippets:
         _safe_python(text)
+    # Audit every field before a retryable formatting error, including fields
+    # after the first missing fence. Unsafe code must never become a format retry.
+    formatting_issues = [_bare_python_suite(text) for text in snippets]
+    if any(formatting_issues):
+        raise PythonCodeFormatError(
+            "Le code Python multiligne doit être délimité par un bloc ```python pour préserver son indentation."
+        )
     return exercise
 
 
@@ -433,7 +509,11 @@ def _author(client, request, exercise_id):
         raw = request_json(client, request)
         try:
             exercise = validate_authored_exercise(raw, exercise_id)
-        except (SchemaValidationError, ModelValidationError) as error:
+        except (
+            SchemaValidationError,
+            ModelValidationError,
+            PythonCodeFormatError,
+        ) as error:
             issue = str(error).split("\n\n")[0][:1800]
             if attempt == 2:
                 raise GenerationEvidenceError(

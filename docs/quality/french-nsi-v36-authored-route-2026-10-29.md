@@ -61,6 +61,15 @@ stops generation. Successful packages retain the rejected draft and its hash;
 final structural failures keep bounded private diagnostic evidence. A negative
 correctness review or failed executable contract is not a formatting retry.
 
+Obvious multiline Python suite headers in unfenced prose are a typed structural
+format error: prose layout cannot preserve their indentation. This guard covers
+ordinary function, class and control-suite headers, not every possible Python
+fragment. It does not wrap or rewrite code. The existing single full-exercise
+regeneration may address a safe missing-fence error; another occurrence refuses.
+Unsafe or imported code still refuses without a formatting retry, including
+when a safe missing fence appears earlier in another field. Fenced code remains
+subject to the exact printed-line and indentation comparison.
+
 A separate blind-solving request receives no proposed answers, marking criteria
 or verification contracts. A further full review compares the task, answer,
 rubric, blind solution and references, question by question. Missing fields,
