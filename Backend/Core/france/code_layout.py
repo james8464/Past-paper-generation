@@ -1,6 +1,5 @@
 """Shared physical code-line limits, without modifying printable source."""
 
-import re
 from collections.abc import Iterator
 from dataclasses import dataclass
 
@@ -8,6 +7,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase.pdfmetrics import stringWidth
 
 from Backend.Core.fonts import register_font
+from Backend.Core.france.code_fences import fenced_parts
 
 CODE_LAYOUT_POLICY = "fr-nsi-v36-code-layout-v1"
 CODE_FENCE_PATTERN = r"```(?:python|sql)?[ \t]*(?:\r?\n)?"
@@ -39,9 +39,9 @@ def code_layout(large_print: bool) -> CodeLayout:
 
 
 def code_blocks(text: str) -> Iterator[str]:
-    for block in re.split(CODE_FENCE_PATTERN, text)[1::2]:
-        if block.strip():
-            yield block.strip("\n")
+    for part in fenced_parts(text):
+        if part.language is not None and part.text.strip():
+            yield part.text.strip("\r\n")
 
 
 def require_code_width(

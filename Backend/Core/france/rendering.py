@@ -25,6 +25,7 @@ from reportlab.platypus import (
 )
 
 from Backend.Core.fonts import register_fonts
+from Backend.Core.france.code_fences import fenced_parts
 from Backend.Core.france.code_layout import (
     CODE_FENCE_PATTERN,
     LEFT_MARGIN,
@@ -46,6 +47,7 @@ from Backend.Core.france.print_policy import (
     V34_FOOTER,
     V34_REVIEW_NOTICE,
     V36_PRINT_POLICY,
+    V36_READABLE_PRINT_POLICIES,
 )
 
 WHOLE_CASE_KINDS = frozenset(
@@ -369,6 +371,25 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
+def _content_parts(text: str, print_policy: str | None):
+    if print_policy == V36_PRINT_POLICY:
+        # Preformatted splits on LF; retain logical CRLF source lines without
+        # painting a carriage-return glyph. Stored source remains untouched.
+        return [
+            (
+                part.language is not None,
+                part.text.replace("\r\n", "\n")
+                if part.language is not None
+                else part.text,
+            )
+            for part in fenced_parts(text)
+        ]
+    return [
+        (bool(index % 2), part)
+        for index, part in enumerate(re.split(CODE_FENCE_PATTERN, text))
+    ]
+
+
 # New renders use Keldin; validators still recognise retained publisher labels.
 class NumberedCanvas(Canvas):
     def __init__(self, *args, brand_name="Keldin", print_policy=None, **kwargs):
@@ -610,13 +631,15 @@ def render_assessment(
 
     def content(text, *, paragraph_style=body):
         first_paragraph = True
-        for position, part in enumerate(re.split(CODE_FENCE_PATTERN, text)):
+        for is_code, part in _content_parts(text, print_policy):
             if not part.strip():
                 continue
-            if position % 2:
+            if is_code:
                 story.append(
                     code_listing(
-                        part.strip("\n"),
+                        part.strip("\r\n")
+                        if print_policy == V36_PRINT_POLICY
+                        else part.strip("\n"),
                         code,
                         layout.content_width,
                     )
@@ -642,12 +665,16 @@ def render_assessment(
 
     def question_content(identifier: str, text: str) -> None:
         first_paragraph = True
-        for position, part in enumerate(re.split(CODE_FENCE_PATTERN, text)):
+        for is_code, part in _content_parts(text, print_policy):
             if not part.strip():
                 continue
-            if position % 2:
-                source = part.strip("\n")
-                if first_paragraph and print_policy == V36_PRINT_POLICY:
+            if is_code:
+                source = (
+                    part.strip("\r\n")
+                    if print_policy == V36_PRINT_POLICY
+                    else part.strip("\n")
+                )
+                if first_paragraph and print_policy in V36_READABLE_PRINT_POLICIES:
                     marker = Paragraph(
                         "&#160;", question_style, bulletText=f"{identifier}."
                     )
@@ -794,7 +821,7 @@ def render_assessment(
                 and material.id not in {"case_states", "tree_nodes", "tree_states"}
                 and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
-                modern_graph=print_policy == V36_PRINT_POLICY,
+                modern_graph=print_policy in V36_READABLE_PRINT_POLICIES,
                 large_print=large_print,
             )
             if flatten:

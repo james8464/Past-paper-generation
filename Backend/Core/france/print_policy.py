@@ -3,9 +3,12 @@
 V34_PRINT_POLICY = "fr-nsi-v34-internal-review-v1"
 V35_PRINT_POLICY = "fr-nsi-v35-internal-review-v1"
 V36_LEGACY_PRINT_POLICY = "fr-nsi-v36-model-review-v1"
-V36_PRINT_POLICY = "fr-nsi-v36-model-review-v2"
+V36_READABLE_PRINT_POLICY = "fr-nsi-v36-model-review-v2"
+V36_PRINT_POLICY = "fr-nsi-v36-model-review-v3"
+V36_READABLE_PRINT_POLICIES = frozenset({V36_READABLE_PRINT_POLICY, V36_PRINT_POLICY})
+V36_PRINT_POLICIES = V36_READABLE_PRINT_POLICIES | {V36_LEGACY_PRINT_POLICY}
 INTERNAL_REVIEW_POLICIES = frozenset(
-    {V34_PRINT_POLICY, V35_PRINT_POLICY, V36_LEGACY_PRINT_POLICY, V36_PRINT_POLICY}
+    {V34_PRINT_POLICY, V35_PRINT_POLICY, *V36_PRINT_POLICIES}
 )
 V34_REVIEW_NOTICE = "Entraînement non officiel. Difficulté et durée non calibrées."
 V34_CREDIT_NOTICE = "Barème indicatif, sans validation enseignante."

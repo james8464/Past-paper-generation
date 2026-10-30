@@ -100,6 +100,7 @@ final class FrenchLLMAssessmentTests: XCTestCase {
         XCTAssertThrowsError(try FrenchLLMAssessmentRequest.validatePublication(artifacts: artifacts + [artifacts[0]], configuration: configuration))
         for (key, value) in [("provider", "ollama" as Any), ("model", "other"), ("seed", 43), ("seed", true),
                              ("prompt_version", "fr-nsi-written-2027-v35"), ("print_policy", "old"),
+                             ("print_policy", "fr-nsi-v36-model-review-v2"), ("print_policy", true),
                              ("sql_source_policy", "old"), ("sql_source_policy", true), ("sql_source_policy", 1),
                              ("source_policy", "old"), ("source_policy", true), ("source_policy", 1)] {
             var changed = publication

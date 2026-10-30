@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import os
 import re
 import shutil
@@ -314,6 +315,10 @@ def _normalise_row(
         time_seconds = float(raw_time) if raw_time else None
     except (TypeError, ValueError) as error:
         raise ValueError(f"response row {row_number} has non-numeric values") from error
+    if not math.isfinite(score) or not math.isfinite(max_score):
+        raise ValueError(f"response row {row_number} has a non-finite score")
+    if time_seconds is not None and not math.isfinite(time_seconds):
+        raise ValueError(f"response row {row_number} has non-finite timing")
     if max_score <= 0 or score < 0 or score > max_score:
         raise ValueError(f"response row {row_number} has an invalid score range")
     if time_seconds is not None and time_seconds <= 0:

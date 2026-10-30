@@ -18,6 +18,7 @@ from pydantic import ValidationError as ModelValidationError
 
 from Backend.Core.apple_intelligence import FRENCH_FULL_PAPER_ERROR
 from Backend.Core.education_context import NSI_2027, NSI_CONTEXT
+from Backend.Core.france.code_fences import fenced_parts
 from Backend.Core.france.code_layout import (
     CODE_LAYOUT_POLICY,
     CodeLayoutError,
@@ -379,8 +380,12 @@ def _audit_python_tokens(code: str) -> None:
 
 
 def _safe_python(text: str) -> bool:
-    malformed = False
-    for code in re.findall(r"```python\s*\n(.*?)```", text, re.S | re.I):
+    parts = fenced_parts(text, require_closed=False)
+    malformed = any(not part.closed for part in parts)
+    for part in parts:
+        if part.language != "python":
+            continue
+        code = part.text
         try:
             tree = ast.parse(code)
         except SyntaxError:
@@ -407,7 +412,11 @@ def _safe_python(text: str) -> bool:
 
 def _bare_python_suite(text: str) -> bool:
     """Recognise ordinary suite headers only, not every possible Python fragment."""
-    outside = re.sub(r"```.*?```", "\n", text, flags=re.S)
+    outside = "\n".join(
+        part.text
+        for part in fenced_parts(text, require_closed=False)
+        if part.language is None
+    )
     lines = outside.splitlines()
     header = re.compile(
         r"[ \t]*(?:(?:async[ \t]+)?def[ \t]+\w+[ \t]*\([^\n]*\)(?:[ \t]*->[^\n:]+)?"
@@ -545,8 +554,10 @@ def validate_authored_exercise(
         for credit in question.marking
         for part in [
             credit.criterion,
-            *re.findall(
-                r"```(?:python)?[ \t]*\r?\n(.*?)```", credit.criterion, re.S | re.I
+            *(
+                part.text
+                for part in fenced_parts(credit.criterion, require_closed=False)
+                if part.language in {"", "python"}
             ),
         ]
     ]

@@ -269,6 +269,7 @@ def validate_package_novelty(
     assert_distinct_items(current_items, threshold=threshold)
 
     comparisons = 0
+    skipped_history_packages = 0
     historical_overlap = False
     nearest: dict[str, Any] | None = None
     for historic_path in sorted(history_root.glob("*-assessment.json")):
@@ -279,10 +280,12 @@ def validate_package_novelty(
             continue
         try:
             historic = _load_package(historic_path)
+            historic_items = _historical_items(historic)
         except (OSError, ValueError, json.JSONDecodeError):
+            skipped_history_packages += 1
             continue
         for item in current_items:
-            for historic_item in _items(historic):
+            for historic_item in historic_items:
                 if item.get("subject") != historic_item.get("subject") or item.get(
                     "paper"
                 ) != historic_item.get("paper"):
@@ -312,8 +315,12 @@ def validate_package_novelty(
         "threshold": threshold,
         "historic_comparisons": comparisons,
         "nearest_match": nearest,
-        # Permitted repetition is not a successful cross-history originality test.
-        "passed": not historical_overlap,
+        # Neither permitted overlap nor unreadable history proves originality.
+        "passed": False
+        if historical_overlap
+        else (None if skipped_history_packages else True),
+        "history_complete": skipped_history_packages == 0,
+        "skipped_history_packages": skipped_history_packages,
         "cross_generation_policy": cross_generation_policy,
         "within_paper_passed": True,
         "historical_overlap": historical_overlap,
@@ -343,3 +350,24 @@ def _items(package: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw_items, list):
         raise ValueError("assessment package items must be a list")
     return [item for item in raw_items if isinstance(item, dict)]
+
+
+def _historical_items(package: dict[str, Any]) -> list[dict[str, Any]]:
+    """Require usable comparison records, without claiming full package approval."""
+    raw_items = package.get("items")
+    if not isinstance(raw_items, list) or not raw_items:
+        raise ValueError("historical assessment items must be a nonempty list")
+    for item in raw_items:
+        if not isinstance(item, dict):
+            raise ValueError("historical assessment contains an invalid item")
+        for field in ("id", "subject", "paper", "prompt"):
+            value = item.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise ValueError(
+                    "historical assessment item has invalid comparison data"
+                )
+            if field != "prompt" and any(character.isspace() for character in value):
+                raise ValueError("historical assessment item has invalid metadata")
+        if not normalise_item_text(item["prompt"]):
+            raise ValueError("historical assessment item has no comparison text")
+    return raw_items

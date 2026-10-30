@@ -170,7 +170,7 @@ def handle_generate_llm_assessment(args) -> int:
                     large_print=args.large_print,
                     human_readable_graph_titles=True,
                     coherent_material_flow=True,
-                    print_policy=llm_pipeline.PRINT_POLICY,
+                    print_policy=identity["print_policy"],
                 ),
                 role=role,
                 language="fr-FR",
