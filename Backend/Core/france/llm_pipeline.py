@@ -1371,12 +1371,19 @@ def _review_evidence(exercise: NSIExercise, blind: dict, review: dict) -> dict:
     return evidence
 
 
+def _signed_phase_seed(value: int) -> int:
+    """Wrap derived seeds without changing any value already in signed int32."""
+    if type(value) is not int:
+        raise ValueError("Graine entière stricte requise")
+    return (value + 2**31) % 2**32 - 2**31
+
+
 def _round_request(
     client, scope, seed, identifier, number, topics, large_print, refusal
 ):
-    round_seed = seed + int(identifier)
-    if number == 2:
-        round_seed = (round_seed + 1_000_003) % 2_147_483_647
+    round_seed = _signed_phase_seed(
+        seed + int(identifier) + (1_000_003 if number == 2 else 0)
+    )
     request = exercise_request(
         identifier,
         round_seed,
@@ -1414,7 +1421,7 @@ def _round_request(
         "operation": request.operation,
         "temperature": request.temperature,
         "output_budget": request.output_budget,
-        "review_seed": round_seed + 100,
+        "review_seed": _signed_phase_seed(round_seed + 100),
     }
     return request, identity
 
@@ -1482,15 +1489,16 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
             not isinstance(history, dict)
             or set(history) != {"exercise_id", "accepted_round", "rounds"}
             or history["exercise_id"] != identifier
-            or (
-                history["accepted_round"] is not None
-                if failed
-                else type(history["accepted_round"]) is not int
-                or history["accepted_round"] not in (1, 2)
-            )
             or not isinstance(history["rounds"], list)
-            or len(history["rounds"]) != (2 if failed else history["accepted_round"])
         ):
+            raise ValueError("Historique des contrôles incohérent")
+        accepted_round = history["accepted_round"]
+        if failed:
+            if accepted_round is not None:
+                raise ValueError("Historique des contrôles incohérent")
+        elif type(accepted_round) is not int or accepted_round not in (1, 2):
+            raise ValueError("Historique des contrôles incohérent")
+        if len(history["rounds"]) != (2 if failed else accepted_round):
             raise ValueError("Historique des contrôles incohérent")
         refusal = None
         for number, record in enumerate(history["rounds"], 1):

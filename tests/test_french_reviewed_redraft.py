@@ -348,3 +348,65 @@ def test_worst_case_is_twenty_four_calls_with_both_format_and_semantic_recovery(
     assert [h["accepted_round"] for h in package["exercise_attempts"]] == [2, 2, 2]
     assert [a["attempts"] for a in package["authoring_attempts"]] == [2, 2, 2]
     assert subject.validate_package(package)
+
+
+@pytest.mark.parametrize("seed", [-(2**31), 2**31 - 1, 2**31 - 4])
+@pytest.mark.parametrize("identifier", ["1", "2", "3"])
+@pytest.mark.parametrize("number", [1, 2])
+def test_author_and_review_seeds_wrap_deterministically_into_signed_range(
+    seed, identifier, number
+):
+    from types import SimpleNamespace
+
+    scope = {
+        "references": [],
+        "primary_topic": subject.curriculum_plan(seed)[int(identifier) - 1],
+    }
+    request, identity = subject._round_request(
+        SimpleNamespace(provider="ollama"),
+        scope,
+        seed,
+        identifier,
+        number,
+        set(),
+        False,
+        None if number == 1 else {"issue": "Refus indépendant."},
+    )
+    unwrapped = seed + int(identifier) + (1_000_003 if number == 2 else 0)
+    expected = (unwrapped + 2**31) % 2**32 - 2**31
+    assert request.generation_seed == identity["generation_seed"] == expected
+    assert identity["review_seed"] == (expected + 100 + 2**31) % 2**32 - 2**31
+    assert -(2**31) <= request.generation_seed <= 2**31 - 1
+    assert -(2**31) <= identity["review_seed"] <= 2**31 - 1
+    if number == 1 and -(2**31) <= unwrapped <= 2**31 - 1:
+        assert request.generation_seed == unwrapped
+
+
+@pytest.mark.parametrize("seed", [-(2**31), 2**31 - 1])
+def test_edge_seeds_replay_all_three_exercises_and_both_semantic_rounds(tmp_path, seed):
+    from tests.test_nsi_pipeline import make_index
+
+    class EveryExerciseClient(ReviewedClient):
+        def generate_request(self, request):
+            response = super().generate_request(request)
+            props = request.schema["properties"]
+            if "id" not in props and "answers" not in props:
+                first = self.authors[self.active] == 1
+                response["1"]["correct"] = not first
+                response["1"]["issues"] = ["Désaccord de fond."] if first else []
+            return response
+
+    path = tmp_path / "index.sqlite"
+    make_index(path)
+    client = EveryExerciseClient()
+    package = subject.generate(index_path=path, client=client, seed=seed)
+    assert len(client.requests) == 18
+    assert [h["accepted_round"] for h in package["exercise_attempts"]] == [2, 2, 2]
+    assert all(-(2**31) <= r.generation_seed <= 2**31 - 1 for r in client.requests)
+    assert subject.validate_package(package)
+
+
+@pytest.mark.parametrize("value", [True, 1.0, "1", None])
+def test_phase_seed_requires_strict_integer(value):
+    with pytest.raises(ValueError):
+        subject._signed_phase_seed(value)
