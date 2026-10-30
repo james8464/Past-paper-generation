@@ -17,6 +17,13 @@ from jsonschema.exceptions import ValidationError as SchemaValidationError
 from pydantic import ValidationError as ModelValidationError
 
 from Backend.Core.education_context import NSI_2027, NSI_CONTEXT
+from Backend.Core.france.code_layout import (
+    CODE_LAYOUT_POLICY,
+    CodeLayoutError,
+    code_blocks,
+    code_layout,
+    require_code_width,
+)
 from Backend.Core.france.corpus import HOSTS
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
@@ -99,9 +106,11 @@ def exercise_request(
     *,
     previous_topics=(),
     output_budget: int = 8192,
+    large_print: bool = False,
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
+    layout = code_layout(large_print)
     schema = authoring_schema(machine_field_constraints=True)
     schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
@@ -217,6 +226,14 @@ def exercise_request(
         "syntaxiquement complets dans des blocs ```python. "
         "Place les programmes multilignes dans les réponses proposées, pas dans les "
         "critères du barème qui restent en prose avec éventuellement du code court. "
+        f"Mise en page demandée : {'agrandie' if large_print else 'normale'}, "
+        f"code monospace {layout.font_size} points. Les lignes de code, indentation "
+        f"comprise, doivent tenir sur {layout.question_width:.2f} points dans les "
+        f"questions et {layout.content_width:.2f} points dans le contexte et les réponses. "
+        f"Vise au plus {layout.columns(layout.question_width)} caractères par ligne de "
+        f"question et {layout.columns(layout.content_width)} dans les réponses ou le "
+        "contexte; indentation comprise, les mesures réelles restent obligatoires. "
+        "Utilise uniquement des espaces pour l'indentation du code, pas de tabulations. "
         "Les titres, cellules de tableau et étiquettes des graphes restent en texte "
         "ordinaire : place les blocs de code dans le contexte, une question ou une réponse. "
         "Aucun import, accès fichier, réseau, système ni exécution dynamique. Les snippets sont des documents, pas "
@@ -340,7 +357,9 @@ def _bare_python_suite(text: str) -> bool:
     return found
 
 
-def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
+def validate_authored_exercise(
+    raw: dict, exercise_id: str, *, large_print: bool | None = None
+) -> NSIExercise:
     if not isinstance(raw, dict) or len(json.dumps(raw, ensure_ascii=False)) > 160000:
         raise ValueError("Exercice NSI absent ou trop volumineux")
     Draft202012Validator(exercise_request(exercise_id, 0, []).schema).validate(raw)
@@ -415,6 +434,32 @@ def validate_authored_exercise(raw: dict, exercise_id: str) -> NSIExercise:
         raise PythonCodeFormatError(
             "Le code Python multiligne doit être délimité par un bloc ```python pour préserver son indentation."
         )
+    # Legacy readers do not infer an unrecorded print mode. New authoring always
+    # supplies a strict mode and is checked before independent paid reviews.
+    if large_print is not None:
+        layout = code_layout(large_print)
+        fields = [("contexte", exercise.context, layout.content_width)]
+        for question in exercise.questions:
+            fields.extend(
+                [
+                    (f"question {question.id}", question.prompt, layout.question_width),
+                    (f"réponse {question.id}", question.answer, layout.content_width),
+                ]
+            )
+        for location, text, width in fields:
+            for block, source in enumerate(code_blocks(text), 1):
+                if "\t" in source:
+                    raise CodeLayoutError(
+                        f"Le code de {location}, bloc {block}, contient une tabulation. "
+                        "Rédiger le code avec des espaces pour préserver l'indentation imprimée."
+                    )
+                require_code_width(
+                    source,
+                    layout.font_name,
+                    layout.font_size,
+                    width,
+                    location=f"{location}, bloc {block}",
+                )
     return exercise
 
 
@@ -789,17 +834,20 @@ def _validate_references(references: list[dict]) -> None:
         raise ValueError("Programme et sujet officiel requis")
 
 
-def _author(client, request, exercise_id):
+def _author(client, request, exercise_id, *, large_print: bool = False):
     """Regenerate one malformed structure; never patch its answer or rubric."""
     rejected = []
     for attempt in (1, 2):
         raw = request_json(client, request)
         try:
-            exercise = validate_authored_exercise(raw, exercise_id)
+            exercise = validate_authored_exercise(
+                raw, exercise_id, large_print=large_print
+            )
         except (
             SchemaValidationError,
             ModelValidationError,
             PythonCodeFormatError,
+            CodeLayoutError,
         ) as error:
             issue = str(error).split("\n\n")[0][:1800]
             if attempt == 2:
@@ -932,10 +980,16 @@ def _review(
 
 
 def generate(
-    *, index_path: Path, client: JSONGenerationClient, seed: int, progress=None
+    *,
+    index_path: Path,
+    client: JSONGenerationClient,
+    seed: int,
+    progress=None,
+    large_print: bool = False,
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Graine entière requise")
+    code_layout(large_print)
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
     if (
         provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}
@@ -970,8 +1024,10 @@ def generate(
                 references,
                 previous_topics=sorted(topics),
                 output_budget=_phase_output_budget(client, "author"),
+                large_print=large_print,
             ),
             identifier,
+            large_print=large_print,
         )
         attempts.append(authoring)
         topics.update(exercise.topics)
@@ -1007,6 +1063,8 @@ def generate(
         "seed": seed,
         "prompt_version": VERSION,
         "print_policy": PRINT_POLICY,
+        "layout_policy": CODE_LAYOUT_POLICY,
+        "large_print": large_print,
         "assessment": asdict(NSI_2027),
         "implementation_sha256": implementation_identity(),
         "content_sha256": _digest(body),
@@ -1020,6 +1078,12 @@ def validate_package(package: dict) -> list[NSIExercise]:
     if not isinstance(package, dict) or not isinstance(package.get("identity"), dict):
         raise ValueError("Paquet V36 absent")
     identity = package["identity"]
+    has_layout = "layout_policy" in identity or "large_print" in identity
+    if has_layout and (
+        identity.get("layout_policy") != CODE_LAYOUT_POLICY
+        or type(identity.get("large_print")) is not bool
+    ):
+        raise ValueError("Politique ou mode de mise en page V36 invalide")
     if (
         identity.get("prompt_version") != VERSION
         or identity.get("print_policy") != PRINT_POLICY
@@ -1052,7 +1116,10 @@ def validate_package(package: dict) -> list[NSIExercise]:
     if not isinstance(raw, list) or len(raw) != 3:
         raise ValueError("Trois exercices indépendants requis")
     exercises = [
-        validate_authored_exercise(value, str(i)) for i, value in enumerate(raw, 1)
+        validate_authored_exercise(
+            value, str(i), large_print=identity["large_print"] if has_layout else None
+        )
+        for i, value in enumerate(raw, 1)
     ]
     _validate_references(package.get("references"))
     reviews = package.get("reviews")

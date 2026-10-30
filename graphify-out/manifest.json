@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793225633.0636141,
-    "ast_hash": "195a815b99fe0db1277e5971034ffe10",
+    "mtime": 1793369545.2954192,
+    "ast_hash": "d9faac3f28675a81a6c440b102548b5e",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793367049.1345732,
-    "ast_hash": "7e211cd4590dc5d242f918ae6662032f",
+    "mtime": 1793367793.8401902,
+    "ast_hash": "fdd2d114c1e78e0da4a0032760a025b6",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793367776.5721638,
-    "ast_hash": "dcb31ec042de8f1aff2a76e2b7d252a1",
+    "mtime": 1793369774.6537914,
+    "ast_hash": "28179b2307355313134399c697e7a459",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4755,13 +4755,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793367737.4944127,
-    "ast_hash": "9ed6773cce869ab966ac11667c2cf3a2",
+    "mtime": 1793369545.2945466,
+    "ast_hash": "29fc5272cf8e59aa937d15c6066feef4",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1793358909.479925,
-    "ast_hash": "8992c7e4e562cdd4cbf3fa5d5c40e5c3",
+    "mtime": 1793369545.2948809,
+    "ast_hash": "5b36281d592036b623977b4988b209fd",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4810,8 +4810,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
-    "mtime": 1793358909.480938,
-    "ast_hash": "1573968c8c6c4dec9bda2975f5277386",
+    "mtime": 1793369545.2958124,
+    "ast_hash": "0e6154cef03036549bb67ca9802792f4",
     "semantic_hash": ""
   },
   "tests/test_french_model_capability.py": {
@@ -5002,6 +5002,21 @@
   "docs/quality/french-question-advisory-review-2026-10-30.md": {
     "mtime": 1793367765.4503806,
     "ast_hash": "bfe82d95d1bfc67ff741d9474d76a4da",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/code_layout.py": {
+    "mtime": 1793369545.293638,
+    "ast_hash": "f620b727b7948b5bb136a594fef5c873",
+    "semantic_hash": ""
+  },
+  "tests/test_french_code_layout.py": {
+    "mtime": 1793369545.295576,
+    "ast_hash": "92afd36e47122cf90cb1de61a8993149",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-v36-print-layout-admission-2026-10-30.md": {
+    "mtime": 1793369672.6669898,
+    "ast_hash": "0e9d63eff84185b318316135a3f95b58",
     "semantic_hash": ""
   }
 }
