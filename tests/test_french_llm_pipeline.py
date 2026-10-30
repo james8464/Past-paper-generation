@@ -9,6 +9,18 @@ from Backend.Core.france import llm_pipeline as subject
 from tests.test_nsi_pipeline import make_index
 
 
+def test_authoring_explains_prior_domains_without_fixing_tasks_or_reference_themes():
+    prompt = subject.exercise_request(
+        "2", 42, [], previous_topics=("algorithmique", "structures-donnees")
+    ).prompt
+    assert "previous_topics indique les domaines déjà abordés" in prompt
+    assert "tâches principales évaluées différentes" in prompt
+    assert "prérequis ou représentations communs restent possibles" in prompt
+    assert "Un changement de contexte seul ne suffit pas" in prompt
+    assert "leurs thèmes ne sont pas des choix obligatoires" in prompt
+    assert '"previous_topics": ["algorithmique", "structures-donnees"]' in prompt
+
+
 def raw_exercise(identifier="1", marker="Aventure originale"):
     topic, code = {
         "1": ("structures-donnees", "SD-LINEAIRE"),
