@@ -76,7 +76,14 @@ def handle_generate_llm_assessment(args) -> int:
 
     try:
         definition = assessment_framework(args.assessment)
-        if args.provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}:
+        if args.provider not in {
+            "ollama",
+            "apple",
+            "apple_intelligence",
+            "openai",
+            "anthropic",
+            "deepseek",
+        }:
             raise ValueError("Un fournisseur de modèle est requis")
         if getattr(args, "repeat_practice", False) or getattr(
             args, "exclude_family", []
@@ -204,6 +211,8 @@ def handle_generate_llm_assessment(args) -> int:
             "model_snapshot_sha256": model_snapshot,
             "model_snapshot_status": "pinned_local_data"
             if model_snapshot
+            else "system_model_revision_not_available"
+            if args.provider == "apple_intelligence"
             else "hosted_revision_not_available",
             "large_print": args.large_print,
             "warnings": package["warnings"],

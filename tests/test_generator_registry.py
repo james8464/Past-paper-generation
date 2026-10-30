@@ -95,6 +95,7 @@ def test_every_advertised_generator_creates_unique_ai_content() -> None:
             "openai",
             "anthropic",
             "apple",
+            "apple_intelligence",
         }
 
 

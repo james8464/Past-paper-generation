@@ -126,6 +126,8 @@ def _phase_output_budget(client: JSONGenerationClient, phase: str) -> int:
     # DeepSeek uses one shared allowance for reasoning and final JSON.
     local_budgets = {"author": 8192, "blind": 6000, "review": 4096}
     default = local_budgets[phase]
+    if getattr(client, "provider", None) == "apple_intelligence":
+        return {"author": 4096, "blind": 2048, "review": 2048}[phase]
     if getattr(client, "provider", None) == "deepseek":
         return 32768 if phase == "author" else 16384
     return default
@@ -1304,7 +1306,15 @@ def generate(
     code_layout(large_print)
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
     if (
-        provider not in {"ollama", "apple", "openai", "anthropic", "deepseek"}
+        provider
+        not in {
+            "ollama",
+            "apple",
+            "apple_intelligence",
+            "openai",
+            "anthropic",
+            "deepseek",
+        }
         or not isinstance(model, str)
         or not model.strip()
     ):
@@ -1406,7 +1416,14 @@ def validate_package(package: dict) -> list[NSIExercise]:
         or identity.get("assessment") != asdict(NSI_2027)
         or identity.get("implementation_sha256") != implementation_identity()
         or identity.get("provider")
-        not in {"ollama", "apple", "openai", "anthropic", "deepseek"}
+        not in {
+            "ollama",
+            "apple",
+            "apple_intelligence",
+            "openai",
+            "anthropic",
+            "deepseek",
+        }
         or not isinstance(identity.get("model"), str)
         or not identity["model"].strip()
         or type(identity.get("seed")) is not int

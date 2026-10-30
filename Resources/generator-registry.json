@@ -51,7 +51,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -169,7 +170,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -330,7 +332,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -491,7 +494,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -706,7 +710,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -824,7 +829,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -984,7 +990,8 @@
         "ollama",
         "openai",
         "anthropic",
-        "apple"
+        "apple",
+        "apple_intelligence"
       ],
       "outputs_by_paper": {
         "1": [
@@ -1145,7 +1152,7 @@
       "blueprint_version": "7357-v1",
       "reference_demand_profile": "reference-demand-profiles.json",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": ["ollama", "openai", "anthropic", "apple", "apple_intelligence"],
       "outputs_by_paper": {
         "1": ["question_paper", "mark_scheme", "assessment_package"],
         "2": ["question_paper", "mark_scheme", "assessment_package"],
@@ -1207,7 +1214,7 @@
       "specification_version": "9708-2026-2028",
       "blueprint_version": "9708-2026-v1",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": ["ollama", "openai", "anthropic", "apple", "apple_intelligence"],
       "outputs_by_paper": {
         "1": ["question_paper", "mark_scheme", "assessment_package"],
         "2": ["question_paper", "mark_scheme", "assessment_package"],
@@ -1281,7 +1288,7 @@
       "specification_version": "9618-2026",
       "blueprint_version": "9618-2026-v1",
       "content_mode": "ai-assisted",
-      "supported_providers": ["ollama", "openai", "anthropic", "apple"],
+      "supported_providers": ["ollama", "openai", "anthropic", "apple", "apple_intelligence"],
       "outputs_by_paper": {
         "1": ["question_paper", "mark_scheme", "assessment_package"],
         "2": ["question_paper", "mark_scheme", "assessment_package"],
