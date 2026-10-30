@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793369545.2954192,
-    "ast_hash": "d9faac3f28675a81a6c440b102548b5e",
+    "mtime": 1793372004.3063931,
+    "ast_hash": "15e7df72242979379ede488bef1332cf",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793364788.1874099,
-    "ast_hash": "a12c3ee21a0fb42e2ea8558acf428d93",
+    "mtime": 1793372004.2848155,
+    "ast_hash": "69a884058d84e3a9462847aa4f78fbad",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793367793.8401902,
-    "ast_hash": "fdd2d114c1e78e0da4a0032760a025b6",
+    "mtime": 1793369791.7056062,
+    "ast_hash": "196dc5c5e9b9b54b732be4594d1adc23",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3400,8 +3400,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/print_policy.py": {
-    "mtime": 1793315029.7831442,
-    "ast_hash": "d09d1c678bb5173bc3eb47d0471907a3",
+    "mtime": 1793372004.2943194,
+    "ast_hash": "5f33b69b543f2ae651b6cd0bc9f21129",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v34-public-flow-acceptance-2026-10-28.md": {
@@ -3785,8 +3785,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/graph_pdf.py": {
-    "mtime": 1793206372.1425462,
-    "ast_hash": "712be14af362d8052f4ff76e1df1bcb8",
+    "mtime": 1793372004.3057203,
+    "ast_hash": "ba9ff6796b2f6dd23d3fcc246bca5996",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/tests/test_component_scope.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793369774.6537914,
-    "ast_hash": "28179b2307355313134399c697e7a459",
+    "mtime": 1793369791.629566,
+    "ast_hash": "add040d43a67b29eda6ffb60d3cbbe43",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4750,18 +4750,18 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pdf.py": {
-    "mtime": 1793316148.9778156,
-    "ast_hash": "714f5fc9111d31f2b19910e2c879b6fc",
+    "mtime": 1793372004.3059013,
+    "ast_hash": "b0b262b94094534557027eb139c3422e",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793369545.2945466,
-    "ast_hash": "29fc5272cf8e59aa937d15c6066feef4",
+    "mtime": 1793372004.3060744,
+    "ast_hash": "80ed028e901ab9bfb6e0a7f106957889",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1793369545.2948809,
-    "ast_hash": "5b36281d592036b623977b4988b209fd",
+    "mtime": 1793372004.3062356,
+    "ast_hash": "6b65c5c604757e47cbefd3100a43ca87",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4770,8 +4770,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift": {
-    "mtime": 1793317471.768784,
-    "ast_hash": "80a923658ac765d31d069f1caf178ad9",
+    "mtime": 1793372004.2949066,
+    "ast_hash": "402c8152141c93a8bfc5803871179ce1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
@@ -4800,13 +4800,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_pdf.py": {
-    "mtime": 1793316148.9784005,
-    "ast_hash": "8923ffecabe91ad00b19febd1ca4f698",
+    "mtime": 1793372004.30653,
+    "ast_hash": "336c1d96f213fff287bea08ab012e698",
     "semantic_hash": ""
   },
   "tests/test_french_llm_pipeline.py": {
-    "mtime": 1793367737.4946811,
-    "ast_hash": "df78d6228cf5d3b82bf08053bbd9f4bd",
+    "mtime": 1793372004.2781594,
+    "ast_hash": "303497c849a1d18b375fb8bb6132f144",
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
@@ -4935,8 +4935,8 @@
     "semantic_hash": ""
   },
   "tests/test_deepseek_provider.py": {
-    "mtime": 1793363660.6246614,
-    "ast_hash": "01dd1e30f72851cd6960f6a7d39b83c8",
+    "mtime": 1793372004.2851105,
+    "ast_hash": "d89ec163a6b91826471090a59a6edc39",
     "semantic_hash": ""
   },
   "docs/quality/deepseek-french-draft-validation-2026-10-30.md": {
@@ -5017,6 +5017,26 @@
   "docs/quality/french-v36-print-layout-admission-2026-10-30.md": {
     "mtime": 1793369672.6669898,
     "ast_hash": "0e9d63eff84185b318316135a3f95b58",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/graph_layout.py": {
+    "mtime": 1793372004.3148234,
+    "ast_hash": "4a79059d9cfc400709cbd34fd8405066",
+    "semantic_hash": ""
+  },
+  "tests/test_deepseek_json_instructions.py": {
+    "mtime": 1793372004.284943,
+    "ast_hash": "9d3017ed775db3e68135d33eda24dd2d",
+    "semantic_hash": ""
+  },
+  "tests/test_french_v36_code_first.py": {
+    "mtime": 1793372004.3066332,
+    "ast_hash": "49530b161a74f805ef9688bff46994b8",
+    "semantic_hash": ""
+  },
+  "tests/test_french_v36_graph_layout.py": {
+    "mtime": 1793372004.3149729,
+    "ast_hash": "79843c2a9a746c10f882ad1eb204781d",
     "semantic_hash": ""
   }
 }

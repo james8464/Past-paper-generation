@@ -710,6 +710,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/graph_layout.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/graph_pdf.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -820,20 +826,14 @@
     {
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file baseline and subsequent complete diff review within the recorded scope; wider implementation audit and release acceptance remain separate.",
-      "source_sha256": "a9b43141df5d61cebc603db015bff7f6595ebc3ebfc9286d9e3cb97fd503d210",
-      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
-      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file baseline and subsequent complete diff review within the recorded scope; wider implementation audit and release acceptance remain separate.",
-      "source_sha256": "da544b85b6f52573a834e54109a2ae3ae28516e106b7f1df03b1eded811c5793",
-      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
-      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1333,11 +1333,8 @@
     {
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file review and follow-up diff review within the documented scope; broader audit and release acceptance remain separate.",
-      "source_sha256": "f6df0a30db0e7ed97e5e55cf89e677d15310ae9dd0f3e40faba60d76698c8157",
-      "review_evidence": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
-      "review_evidence_sha256": "b7a3ff04f6a4a638cef56a16de250d8632a243968adb58aecc5b36d92fdd2755"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -3195,6 +3192,12 @@
     },
     {
       "path": "docs/quality/french-question-advisory-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-reference-and-figure-follow-up-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5117,6 +5120,12 @@
       "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
     },
     {
+      "path": "tests/test_deepseek_json_instructions.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_deepseek_provider.py",
       "classification": "test",
       "status": "pending",
@@ -5822,7 +5831,19 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_v36_code_first.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_v36_code_format.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_v36_graph_layout.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
