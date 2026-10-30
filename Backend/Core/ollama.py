@@ -24,13 +24,18 @@ def api_models() -> list[str] | None:
     try:
         with urllib.request.urlopen(f"{OLLAMA_API}/api/tags", timeout=5) as response:
             payload = json.loads(response.read().decode("utf-8"))
-    except (OSError, urllib.error.URLError, json.JSONDecodeError):
+    except (OSError, urllib.error.URLError, UnicodeDecodeError, json.JSONDecodeError):
         return None
-    return [
-        str(model["name"])
-        for model in payload.get("models", [])
-        if isinstance(model, dict) and model.get("name")
-    ]
+    if not isinstance(payload, dict) or not isinstance(payload.get("models"), list):
+        return None
+    if any(
+        not isinstance(model, dict)
+        or not isinstance(model.get("name"), str)
+        or not model["name"].strip()
+        for model in payload["models"]
+    ):
+        return None
+    return [model["name"] for model in payload["models"]]
 
 
 def ollama_command() -> str | None:
