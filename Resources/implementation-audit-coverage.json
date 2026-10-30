@@ -118,8 +118,11 @@
     {
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "68cb5c3a91bb8f85b9034680aea270a89f24a2c9d8bcd3ca219e8f2a67c669ba",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": ".gitignore",
@@ -160,8 +163,11 @@
     {
       "path": "Backend/Core/answer_projection.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "c929b0c81b1390dba5dd18b5214d2482cc37ebfefca81275ca0434c9a9f5a633",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/apple_intelligence.py",
@@ -184,20 +190,29 @@
     {
       "path": "Backend/Core/assessment_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "29b9102a463b7bdf8887e57cf6abfe42d0a41c1c17991341c3953837ff9d5a8e",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/assessment_objectives.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "521de62e826064c0f3fc94e4ed5af124dd2c8fa6bc6f4f3cd5b524f0a3ca1734",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/assessment_package.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "52b14aa7074c25589ece964f82b91e219831cd29b4f565726351a7d932f6b48b",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/assessment_prompts.py",
@@ -208,8 +223,11 @@
     {
       "path": "Backend/Core/assessment_quality.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "1669264dee9d075be1dd3ace628eb7c0dde93753869ef29caef2bc3ba2dcf6b2",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/benchmark.py",
@@ -232,8 +250,11 @@
     {
       "path": "Backend/Core/calibration_store.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "c56a69078804c2dd0f18868ece272b0731e09b78fc486a8eaed221e1cf093cbd",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/candidate_identity.py",
@@ -548,13 +569,22 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/code_fences.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "324032100a397474dee35419759e997d1385acd0aff69bab1f6397a36ca78d52",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+    },
+    {
       "path": "Backend/Core/france/code_layout.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file semantic review and exact-byte evidence; wider implementation audit and release acceptance remain separate.",
-      "source_sha256": "7d7136e22014f189ab448be76e3eb642dfb23d7d8179154fd87ebb51079b12dd",
-      "review_evidence": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
-      "review_evidence_sha256": "da580b3c0510444d4232252beaed048b340a3e17dffb39782230fdad05186c20"
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "5202282c79f9acc3f5eef12e2904cc2077b636c0debe6e509081120ae480a5a3",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/france/corpus.py",
@@ -997,8 +1027,11 @@
     {
       "path": "Backend/Core/france/print_policy.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
+      "source_sha256": "85dc61e3321f0e9b3ca97cae651250f673da5739a8b4095ef5d23ab419079ffa",
+      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
       "path": "Backend/Core/france/provider.py",
@@ -2975,6 +3008,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-format-and-data-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-framework-migration-ledger.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4823,6 +4862,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Tests/NoveltyQualityReportTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Tests/PDFDocumentAccessTests.swift",
       "classification": "test",
       "status": "pending",
@@ -5619,6 +5664,12 @@
     },
     {
       "path": "tests/test_french_extended_pipeline.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_fence_boundaries.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
