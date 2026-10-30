@@ -1,0 +1,135 @@
+import Foundation
+import Testing
+
+@testable import KeldinAppleIntelligence
+
+@Test func requestAdmissionIsStrict() throws {
+  let request = try HelperRequest.parse(
+    Data(
+      #"{"protocol_version":1,"request_id":"a","operation":"availability","locale":"fr_FR"}"#.utf8))
+  #expect(request.operation == "availability")
+  for json in [
+    #"{"protocol_version":true,"request_id":"a","operation":"availability","locale":"fr_FR"}"#,
+    #"{"protocol_version":1,"request_id":"a","operation":"availability","locale":"fr_FR","endpoint":"https://example.com"}"#,
+    #"{"protocol_version":1,"request_id":"a","operation":"cloud","locale":"fr_FR"}"#,
+  ] {
+    #expect(throws: HelperFailure.self) { try HelperRequest.parse(Data(json.utf8)) }
+  }
+}
+
+@Test func oversizedAndInvalidRequestsFailBeforeInference() {
+  #expect(throws: HelperFailure.self) {
+    try HelperRequest.parse(Data(repeating: 32, count: 262_145))
+  }
+  #expect(throws: HelperFailure.self) { try HelperRequest.parse(Data("null".utf8)) }
+}
+
+@Test func contextAdmissionIncludesOutputAndReserve() throws {
+  try admitContext(inputTokens: 100, outputTokens: 64, contextSize: 8192)
+  #expect(throws: HelperFailure.self) {
+    try admitContext(inputTokens: 8100, outputTokens: 64, contextSize: 8192)
+  }
+  #expect(throws: HelperFailure.self) {
+    try admitContext(inputTokens: 0, outputTokens: 8192, contextSize: 8192)
+  }
+}
+
+@Test @available(macOS 26.0, *) func supportedAndUnsupportedSchemas() throws {
+  let supported = try JSONValue.decode(
+    Data(
+      #"{"type":"object","additionalProperties":false,"required":["result"],"properties":{"result":{"type":"integer","minimum":0,"maximum":10}}}"#
+        .utf8))
+  _ = try makeGenerationSchema(supported)
+  for json in [
+    #"{"type":"object","properties":{"x":{"type":"string","pattern":".*"}},"required":["x"],"additionalProperties":false}"#,
+    #"{"type":"object","properties":{},"additionalProperties":true}"#,
+    #"{"type":"object","properties":{"x":{"type":"string","minLength":1}},"required":["x"],"additionalProperties":false}"#,
+  ] {
+    #expect(throws: HelperFailure.self) {
+      try makeGenerationSchema(JSONValue.decode(Data(json.utf8)))
+    }
+  }
+}
+
+@Test func generationBoundsAndBooleanCoercionAreRejected() throws {
+  let raw =
+    #"{"protocol_version":1,"request_id":"g","operation":"generate","locale":"fr_FR","prompt":"2+2","schema":{"type":"object"},"max_output_tokens":64,"temperature":0}"#
+  #expect(try HelperRequest.parse(Data(raw.utf8)).outputTokens == 64)
+  for invalid in [
+    raw.replacingOccurrences(of: "\"max_output_tokens\":64", with: "\"max_output_tokens\":true"),
+    raw.replacingOccurrences(of: "\"max_output_tokens\":64", with: "\"max_output_tokens\":64.5"),
+    raw.replacingOccurrences(of: "\"temperature\":0", with: "\"temperature\":1e999"),
+    raw.replacingOccurrences(of: "\"temperature\":0", with: "\"temperature\":true"),
+    raw.replacingOccurrences(of: "\"prompt\":\"2+2\"", with: "\"prompt\":\"   \""),
+  ] {
+    #expect(throws: HelperFailure.self) { try HelperRequest.parse(Data(invalid.utf8)) }
+  }
+}
+
+@Test @available(macOS 26.0, *) func unsupportedKeywordsAreNeverSilentlyRemoved() throws {
+  for keyword in [
+    "$ref", "$defs", "oneOf", "pattern", "minLength", "maxLength", "uniqueItems", "const",
+  ] {
+    let raw = JSONValue.object([
+      "type": .string("object"), "properties": .object([:]),
+      "required": .array([]), "additionalProperties": .bool(false), keyword: .string("unsupported"),
+    ])
+    #expect(throws: HelperFailure.self) { try makeGenerationSchema(raw) }
+  }
+}
+
+@Test @available(macOS 26.0, *) func schemaBoundsAndNestedConstraintsAreChecked() throws {
+  let supported =
+    #"{"type":"object","additionalProperties":false,"required":["values"],"properties":{"values":{"type":"array","minItems":1,"maxItems":3,"items":{"type":"string","enum":["a","b"]}},"optional":{"type":"boolean"}}}"#
+  _ = try makeGenerationSchema(JSONValue.decode(Data(supported.utf8)))
+  for invalid in [
+    supported.replacingOccurrences(of: "\"maxItems\":3", with: "\"maxItems\":513"),
+    supported.replacingOccurrences(of: "\"minItems\":1", with: "\"minItems\":-1"),
+    supported.replacingOccurrences(of: "[\"a\",\"b\"]", with: "[\"a\",\"a\"]"),
+    supported.replacingOccurrences(
+      of: "\"required\":[\"values\"]", with: "\"required\":[\"missing\"]"),
+  ] {
+    #expect(throws: HelperFailure.self) {
+      try makeGenerationSchema(JSONValue.decode(Data(invalid.utf8)))
+    }
+  }
+}
+
+@Test func cancelledTaskStopsBeforeModelInference() async throws {
+  let request = try HelperRequest.parse(
+    Data(
+      #"{"protocol_version":1,"request_id":"cancel","operation":"generate","locale":"fr_FR","prompt":"2+2","schema":{"type":"object","additionalProperties":false,"required":["result"],"properties":{"result":{"type":"integer"}}},"max_output_tokens":64,"temperature":0}"#
+        .utf8))
+  let task = Task {
+    withUnsafeCurrentTask { $0?.cancel() }
+    return await HelperMain.execute(request)
+  }
+  let result = await task.value
+  #expect(result.object?["error"]?.object?["code"] == .string("cancelled"))
+}
+
+@Test func errorsDoNotContainInputPayloads() throws {
+  let response = HelperMain.errorResponse(.unsupportedSchema, requestID: "safe")
+  let encoded = String(decoding: try JSONEncoder().encode(response), as: UTF8.self)
+  #expect(encoded.count < 1000)
+  #expect(response.object?["error"]?.object?["code"] == .string("unsupported_schema"))
+  #expect(!encoded.contains("prompt"))
+}
+
+@Test func structuredTextCarriesEveryOriginalConstraintWithoutPretendingToConstrainDecoder() throws
+{
+  let raw =
+    #"{"protocol_version":1,"request_id":"g","operation":"generate","locale":"fr_FR","prompt":"Écris du code Python.","schema":{"type":"object","additionalProperties":false,"required":["code"],"properties":{"code":{"type":"string","minLength":1,"maxLength":200,"pattern":"def"}}},"max_output_tokens":64,"temperature":0,"schema_mode":"structured_text"}"#
+  let request = try HelperRequest.parse(Data(raw.utf8))
+  #expect(request.schemaMode == "structured_text")
+  let complete = try request.completePrompt()
+  let section = try #require(complete.components(separatedBy: "\n\nOUTPUT_SCHEMA\n").last)
+  let schemaText = try #require(section.components(separatedBy: "\n\nReturn exactly").first)
+  #expect(try JSONValue.decode(Data(schemaText.utf8)) == request.schema)
+  #expect(complete.contains("inside JSON string values are allowed"))
+  #expect(complete.contains("Écris du code Python."))
+  #expect(throws: HelperFailure.self) {
+    try HelperRequest.parse(
+      Data(raw.replacingOccurrences(of: "structured_text", with: "cloud").utf8))
+  }
+}
