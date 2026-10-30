@@ -474,6 +474,17 @@ final class KeldinTests: XCTestCase {
         }
     }
 
+    func testSkippedHistoryRemainsUnknownInQualityPresentation() throws {
+        for policy in ["strict-cross-generation-v1", "repeat-practice-v1"] {
+            let report = try loadQualityReport("""
+            {"request":{"preview_mode":false},"evidence":{"assessment_validation":{"item_count":1},"novelty_validation":{"passed":null,"cross_generation_policy":"\(policy)","within_paper_passed":true,"historical_overlap":false,"history_complete":false,"skipped_history_packages":1}},"outputs":{}}
+            """)
+            XCTAssertNil(report.noveltyPassed)
+            XCTAssertEqual(GenerationQualityPolicy.presentation(for: report).originalityState, .unknown)
+            XCTAssertTrue(GenerationIssueSummary(report: report).notChecked.contains { $0.id == "originality-review" })
+        }
+    }
+
     func testKnownStrictPolicyRetainsItsExistingSimilarityInterpretation() throws {
         let report = try loadQualityReport(#"{"request":{"preview_mode":false},"evidence":{"assessment_validation":{"item_count":1,"authoring_provenance":{"schema_version":1,"items":1,"reviewed_fixed_items":1,"ai_authored_items":0,"ai_authored_stem_items":0,"unreviewed_or_builtin_items":0,"unknown_items":0}},"novelty_validation":{"passed":true,"cross_generation_policy":"strict-cross-generation-v1","within_paper_passed":true,"historical_overlap":false}},"outputs":{}}"#)
         XCTAssertEqual(GenerationQualityPolicy.presentation(for: report).originalityState, .passed)

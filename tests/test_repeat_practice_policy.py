@@ -107,6 +107,89 @@ def test_unknown_cross_generation_policy_fails_closed(tmp_path):
         )
 
 
+@pytest.mark.parametrize(
+    "corrupt_bytes",
+    [b'{"schema_version":1,"items":null}', b'{"schema_version":1,"items":', b"\xff"],
+)
+@pytest.mark.parametrize("policy", ["strict-cross-generation-v1", "repeat-practice-v1"])
+def test_corrupt_history_is_preserved_and_comparison_is_unknown(
+    tmp_path, corrupt_bytes, policy
+):
+    current = package(tmp_path / "current-assessment.json", [PROMPT])
+    historic = tmp_path / "corrupt-assessment.json"
+    historic.write_bytes(corrupt_bytes)
+    current_before = current.read_bytes()
+
+    report = validate_package_novelty(
+        current, history_root=tmp_path, cross_generation_policy=policy
+    )
+
+    assert report["passed"] is None
+    assert report["history_complete"] is False
+    assert report["skipped_history_packages"] == 1
+    assert report["historic_comparisons"] == 0
+    assert report["within_paper_passed"] is True
+    assert historic.read_bytes() == corrupt_bytes
+    assert current.read_bytes() == current_before
+    assert historic.name not in json.dumps(report)
+
+
+def test_corrupt_history_does_not_hide_observed_repeat_overlap(tmp_path):
+    current = package(tmp_path / "current-assessment.json", [PROMPT])
+    package(tmp_path / "earlier-assessment.json", [PROMPT])
+    (tmp_path / "corrupt-assessment.json").write_text(
+        '{"schema_version":1,"items":null}', encoding="utf-8"
+    )
+    report = validate_package_novelty(
+        current, history_root=tmp_path, cross_generation_policy="repeat-practice-v1"
+    )
+    assert report["passed"] is False
+    assert report["historical_overlap"] is True
+    assert report["historic_comparisons"] == 1
+    assert report["history_complete"] is False
+    with pytest.raises(ValueError, match="too similar"):
+        validate_package_novelty(current, history_root=tmp_path)
+
+
+def test_corrupt_current_package_is_not_skipped(tmp_path):
+    current = tmp_path / "current-assessment.json"
+    current.write_text('{"schema_version":1,"items":null}', encoding="utf-8")
+    before = current.read_bytes()
+    with pytest.raises(ValueError, match="items must be a list"):
+        validate_package_novelty(current, history_root=tmp_path)
+    assert current.read_bytes() == before
+
+
+def test_manifest_preserves_unknown_history_evidence(tmp_path, monkeypatch):
+    current = package(tmp_path / "current-assessment.json", [PROMPT])
+    (tmp_path / "corrupt-assessment.json").write_text(
+        '{"schema_version":1,"items":null}', encoding="utf-8"
+    )
+    evidence = validate_package_novelty(current, history_root=tmp_path)
+    monkeypatch.setattr(generation, "_repository_commit", lambda: "a" * 40)
+    monkeypatch.setattr(generation, "_generator_version", lambda _: "test")
+    monkeypatch.setattr(generation, "_sha256", lambda _: "b" * 64)
+    path = generation._write_package_manifest(
+        args=argparse.Namespace(
+            subject="accounting_aqa",
+            paper="2",
+            seed=1,
+            dry_run=False,
+            provider="ollama",
+            model="test",
+        ),
+        capability=generation.generator_capability("accounting_aqa"),
+        staging_dir=tmp_path,
+        paths={"assessment_package": current},
+        pdf_validation={},
+        assessment_validation={},
+        novelty_validation=evidence,
+    )
+    saved = json.loads(path.read_text(encoding="utf-8"))
+    assert saved["evidence"]["novelty_validation"] == evidence
+    assert saved["evidence"]["novelty_validation"]["passed"] is None
+
+
 def test_public_generation_explicitly_uses_repeat_practice(tmp_path, monkeypatch):
     staging = tmp_path / "staging"
     staging.mkdir()
