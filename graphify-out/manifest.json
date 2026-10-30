@@ -180,8 +180,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/nsi.py": {
-    "mtime": 1793317581.438678,
-    "ast_hash": "c8aa350570a2e08b0e87044e60c23a6f",
+    "mtime": 1793361242.392992,
+    "ast_hash": "5d922cfdd5f2106bd9ff75a75269b879",
     "semantic_hash": ""
   },
   "Backend/Core/france/pipeline.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793360564.517482,
-    "ast_hash": "d4083ff574fc39fe020c83789dfaba17",
+    "mtime": 1793360791.2686148,
+    "ast_hash": "458f07bc9bd62a069429005f8af531ac",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3295,8 +3295,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_ui_provenance.py": {
-    "mtime": 1793358909.522932,
-    "ast_hash": "bae0fac69118d57a120dcad450009b18",
+    "mtime": 1793361208.5876145,
+    "ast_hash": "fb4380abb6bde6b6e42f80813ab4d540",
     "semantic_hash": ""
   },
   "tests/test_french_whole_case_benchmark.py": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793360564.6446042,
-    "ast_hash": "895d3c09600315fbdee19236a30d8c9e",
+    "mtime": 1793360791.3761642,
+    "ast_hash": "97be2275367d38099ef72a8b6f97f494",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793360427.2485023,
-    "ast_hash": "090f5a004a12ac7f469281bbfa2966aa",
+    "mtime": 1793361242.392652,
+    "ast_hash": "e48065c4a7dbc8d357b4015825d9d9f8",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4835,8 +4835,8 @@
     "semantic_hash": ""
   },
   "tests/test_native_model_quality_guidance.py": {
-    "mtime": 1793359550.500186,
-    "ast_hash": "4be15e925ca938fe19bd7b7ab71652e0",
+    "mtime": 1793361208.5876076,
+    "ast_hash": "07d2d3fac658c924e9ae54deaeeac4dd",
     "semantic_hash": ""
   },
   "tools/french_model_capability.py": {
@@ -4945,13 +4945,18 @@
     "semantic_hash": ""
   },
   "docs/quality/deepseek-french-draft-validation-2026-10-30.md": {
-    "mtime": 1793360511.4237127,
-    "ast_hash": "f11dcfc27ac14565ee9adeefa7d3d8d8",
+    "mtime": 1793361243.5050616,
+    "ast_hash": "ade75011390620b247b5ef13323d5b7b",
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchGenerationEstimateTests.swift": {
     "mtime": 1793360725.891767,
     "ast_hash": "47487c7ea6dc90e1ec1123c617098f3f",
+    "semantic_hash": ""
+  },
+  "tests/test_french_authoring_field_schema.py": {
+    "mtime": 1793361242.3932247,
+    "ast_hash": "eec9e6c7b2f38db40d5ff62d043e4df9",
     "semantic_hash": ""
   }
 }
