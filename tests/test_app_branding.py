@@ -266,10 +266,13 @@ def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
     variants = _color_variants("ForegroundAccent")
     assert variants.keys() == _color_variants("BrandAccent").keys()
     for appearance, rgb in variants.items():
-        backdrop = (
-            (30, 30, 30) if ("luminosity", "dark") in appearance else (255, 255, 255)
+        backdrops = (
+            ((30, 30, 30), (44, 44, 44))
+            if ("luminosity", "dark") in appearance
+            else ((255, 255, 255), (246, 246, 246), (236, 236, 236))
         )
-        assert _contrast(rgb, backdrop) >= 4.5, appearance
+        for backdrop in backdrops:
+            assert _contrast(rgb, backdrop) >= 4.5, (appearance, backdrop)
 
 
 def test_external_links_use_the_text_tint_without_retinting_native_controls():
