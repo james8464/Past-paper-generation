@@ -25,6 +25,7 @@ Timings are observations, not controlled speed comparisons.
 | Current scoped French author request with original reference material | `9080773d` | Refused before inference: 7,552 input + 4,096 output + 256 reserve exceeds the actual 8,192 context. No reference, schema or question was shortened. |
 | Original shared UK FIFO solver, structured text | `2cd15ce1` | Refused invalid structured output after 9.6067 seconds. 990 input tokens and 1,536 output allowance fit the context. No accepted mathematical answer. |
 | Same owned FIFO problem, fresh explicit guided-with-postvalidation mode | `5a5d3776` | Complete JSON returned, but an explanation step had 288 characters against the unchanged 240-character limit. Original-schema validation refused it after 13.1861 seconds. |
+| Same owned FIFO problem, bounded native string-length guidance | `00b2a11e` | Refused `generation_failed` after 0.9872 seconds, with 1,409 input tokens. No candidate or mathematical verdict. The new guide's runtime support was not established. |
 
 The final task used the actual shared `IndependentSolver` request and schema.
 Its public data were purchases of 80 units at GBP12 and 120 at GBP15, followed
@@ -41,6 +42,17 @@ helper reply. It forwarded both unchanged. Evidence:
 - `final-adapter-run1/{identity,availability,tiny,capacity}.json`
 - `uk-fifo-run1/{item,requests,responses,result}.json`
 - `uk-fifo-run2-guided/{item,transport-requests,transport-replies,result}.json`
+- `uk-fifo-run3-bounded-guidance/{item,transport-requests,transport-replies,result}.json`
+
+The last helper-only experiment added native regex guidance for the existing
+string length limit, without changing that limit or the original-schema check.
+Its helper SHA-256 was
+`ff887078536d783da9e53dea4c703462bcd6cf4c1b5c6a2c51c3c3dacb44ebcd`.
+The Core identity stayed unchanged. Its helper returned a classified generation
+error rather than a candidate. The record-only wrapper sat above protocol error
+handling, so it retained the exact request and classified error but no raw error
+envelope; `transport-replies.json` is empty. No further model call followed.
+Compile-time guide support is not proof of working model-time guidance.
 
 Final guided probe pins:
 
