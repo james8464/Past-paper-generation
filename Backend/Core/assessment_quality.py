@@ -362,7 +362,7 @@ def _historical_items(package: dict[str, Any]) -> list[dict[str, Any]]:
             raise ValueError("historical assessment contains an invalid item")
         for field in ("id", "subject", "paper", "prompt"):
             value = item.get(field)
-            if not isinstance(value, str) or not value or value != value.strip():
+            if not isinstance(value, str) or not value.strip():
                 raise ValueError(
                     "historical assessment item has invalid comparison data"
                 )

@@ -35,6 +35,20 @@ def package(path: Path, prompts: list[str], *, subject="accounting", paper="2"):
 PROMPT = "Calculate contribution when selling price is £45 and variable cost is £10."
 
 
+def test_historical_prompt_whitespace_keeps_complete_comparison_evidence(tmp_path):
+    current = package(tmp_path / "current-assessment.json", [PROMPT])
+    historic = package(tmp_path / "earlier-assessment.json", [f"\n  {PROMPT}\n"])
+    before = historic.read_bytes()
+    report = validate_package_novelty(
+        current, history_root=tmp_path, cross_generation_policy="repeat-practice-v1"
+    )
+    assert report["history_complete"] is True
+    assert report["skipped_history_packages"] == 0
+    assert report["historical_overlap"] is True
+    assert report["passed"] is False
+    assert historic.read_bytes() == before
+
+
 def test_repeat_practice_records_overlap_without_claiming_originality(tmp_path):
     current = package(tmp_path / "current-assessment.json", [PROMPT])
     historic = package(tmp_path / "earlier-assessment.json", [PROMPT])
