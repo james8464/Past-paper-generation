@@ -18,19 +18,31 @@ def test_native_test_host_and_bundle_share_the_personal_signing_team():
     assert "DEVELOPMENT_TEAM: Z29CKRV8C9" in test_target
     assert "CODE_SIGN_STYLE: Automatic" in test_target
     project = (ROOT / "macOS/Keldin.xcodeproj/project.pbxproj").read_text()
-    configurations = re.findall(
-        r'/\* (Debug|Release) configuration for PBXNativeTarget "(Keldin(?:Tests)?)" \*/ = \{'
-        r".*?buildSettings = \{(.*?)\n\t\t\t\};",
+    configuration_lists = re.findall(
+        r'/\* Build configuration list for PBXNativeTarget "(Keldin(?:Tests)?)" \*/ = \{'
+        r".*?buildConfigurations = \((.*?)\n\t\t\t\);",
         project,
         re.DOTALL,
     )
-    assert len(configurations) == 4
-    for configuration, target, settings in configurations:
-        assert "DEVELOPMENT_TEAM = Z29CKRV8C9;" in settings, (
-            configuration,
-            target,
+    assert {target for target, _ in configuration_lists} == {"Keldin", "KeldinTests"}
+    for target, entries in configuration_lists:
+        configurations = re.findall(
+            r"([A-F0-9]{24}) /\* (Debug|Release)(?: configuration.*?)? \*/",
+            entries,
         )
-        assert "CODE_SIGN_STYLE = Automatic;" in settings
+        assert {name for _, name in configurations} == {"Debug", "Release"}
+        assert len(configurations) == 2
+        for identifier, configuration in configurations:
+            settings_match = re.search(
+                rf"{identifier} /\* .*? \*/ = \{{\n\t\t\tisa = XCBuildConfiguration;"
+                r".*?buildSettings = \{(.*?)\n\t\t\t\};",
+                project,
+                re.DOTALL,
+            )
+            assert settings_match is not None, (target, configuration)
+            settings = settings_match.group(1)
+            assert "DEVELOPMENT_TEAM = Z29CKRV8C9;" in settings, (configuration, target)
+            assert "CODE_SIGN_STYLE = Automatic;" in settings
 
 
 def test_startup_migration_failure_uses_selected_language_and_preserves_copy():

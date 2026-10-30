@@ -444,7 +444,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "maxLength": 240
+              "maxLength": 512
             },
             "maxItems": 16
           },
@@ -505,7 +505,7 @@
           "follow_through_rules"
         ]
       },
-      "schema_sha256": "8df49fd72f308456c2c307a77486fea2c98af1e36d90e70e43116ec36b0a47ac"
+      "schema_sha256": "778b44eef12109b83cc631b26da67b966e77fabc66471b9084533dd576b3abfd"
     }
   },
   "solver_closed": {
@@ -527,7 +527,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "maxLength": 240
+              "maxLength": 512
             },
             "maxItems": 16
           },
@@ -615,7 +615,7 @@
         ],
         "additionalProperties": false
       },
-      "schema_sha256": "e2252ae4b97b7d7b466c1673e81c8fe57bdda73c7edcd72c20fd7f48a31edd6c"
+      "schema_sha256": "5c32e7f7372246c8a8857c8a16673ba2b91f5dc3f3abf41319c396888b8cca45"
     }
   },
   "solver_mcq": {
@@ -637,7 +637,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "maxLength": 240
+              "maxLength": 512
             },
             "maxItems": 16
           },
@@ -708,7 +708,7 @@
           "has_single_valid_choice"
         ]
       },
-      "schema_sha256": "acf9f6165f7ff817f2275fa6901278854914a9974c0279bbad67cbe7996a597b"
+      "schema_sha256": "57f37c2b88b9ede83b0e179e56dace894b481f74431c3b876bc86af9f60b529c"
     }
   },
   "solver_sql_correction": {
@@ -730,7 +730,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "maxLength": 240
+              "maxLength": 512
             },
             "maxItems": 16
           },
@@ -791,7 +791,7 @@
           "follow_through_rules"
         ]
       },
-      "schema_sha256": "8df49fd72f308456c2c307a77486fea2c98af1e36d90e70e43116ec36b0a47ac"
+      "schema_sha256": "778b44eef12109b83cc631b26da67b966e77fabc66471b9084533dd576b3abfd"
     }
   }
 }
