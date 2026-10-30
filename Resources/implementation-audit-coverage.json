@@ -3278,6 +3278,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-recovery-integration-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-recovery-storage-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5970,6 +5976,12 @@
     },
     {
       "path": "tests/test_french_question_advisories.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_recovery_recording.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

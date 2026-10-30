@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793403860.2145834,
-    "ast_hash": "c41001d1022a2b18f1150b34029630f3",
+    "mtime": 1793404563.3098273,
+    "ast_hash": "7c0600fcebc719c88343d0d8f9aca51e",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793403860.1373224,
-    "ast_hash": "0098844a6629fe4cdc2bf078dad799fb",
+    "mtime": 1793404563.2264433,
+    "ast_hash": "9dec3022d353c07efadbcda24da44397",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4755,13 +4755,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793403839.8644454,
-    "ast_hash": "07e2133333ae07105210d269ed0018d0",
+    "mtime": 1793404166.3370736,
+    "ast_hash": "d5ee765c3981f1759f4935685911ce84",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1793388656.540153,
-    "ast_hash": "b08f0258eda06db6180e105800684be2",
+    "mtime": 1793404098.979121,
+    "ast_hash": "1a4785c07b897b17d0e026ced7328993",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4770,8 +4770,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift": {
-    "mtime": 1793388656.5409112,
-    "ast_hash": "93a22d5602a9a7f96729a62d839947a6",
+    "mtime": 1793403981.3861372,
+    "ast_hash": "b35f1fa5f4da40500f6622fb1a196082",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
@@ -4790,8 +4790,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchLLMAssessmentTests.swift": {
-    "mtime": 1793388656.5410502,
-    "ast_hash": "b872255759054a2a3ae6b7e3ca7a182d",
+    "mtime": 1793403981.3863757,
+    "ast_hash": "980ff3fb04c641a546dd9922138a5e83",
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
@@ -5257,6 +5257,16 @@
   "docs/superpowers/plans/2026-10-30-french-reviewed-redraft.md": {
     "mtime": 1793403839.8648753,
     "ast_hash": "2585545d9a8fcc778f3ded06cdfad7d2",
+    "semantic_hash": ""
+  },
+  "tests/test_french_recovery_recording.py": {
+    "mtime": 1793404159.3359878,
+    "ast_hash": "31188a393500eeb3f486223520cda2f4",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-recovery-integration-2026-10-30.md": {
+    "mtime": 1793404480.5807986,
+    "ast_hash": "4f0fd58f25f7b492a98465da286ffdcf",
     "semantic_hash": ""
   }
 }

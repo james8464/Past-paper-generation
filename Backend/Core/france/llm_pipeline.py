@@ -1685,6 +1685,34 @@ def validate_rejected_rounds(details: dict) -> None:
         raise ValueError("Motif du refus final modifié")
 
 
+def _record_recovery_round(
+    recorder, *, provider, model, seed, large_print, plan, histories, state
+):
+    if recorder is None:
+        return
+    snapshot = {
+        "state": state,
+        "review_recovery_policy": REVIEW_RECOVERY_POLICY,
+        "recovery_identity": _recovery_identity(provider, model, seed, large_print),
+        "curriculum_plan": plan,
+        "exercise_attempts": histories,
+        "teacher_review": "not_run",
+        "empirical_calibration": "not_run",
+    }
+    if state == "refused":
+        snapshot.update(histories[-1]["rounds"][-1]["refusal"])
+        validate_rejected_rounds(snapshot)
+    try:
+        recorder(deepcopy(snapshot))
+    except InterruptedError:
+        raise
+    except Exception as error:
+        raise GenerationEvidenceError(
+            "L'historique du contrôle n'a pas pu être conservé; création interrompue.",
+            details={"stage": "recovery_storage", "snapshot_saved": False},
+        ) from error
+
+
 def generate(
     *,
     index_path: Path,
@@ -1692,6 +1720,7 @@ def generate(
     seed: int,
     progress=None,
     large_print: bool = False,
+    record_round=None,
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Graine entière requise")
@@ -1761,6 +1790,16 @@ def generate(
                         number, request_identity, authoring, captured, refusal
                     )
                 )
+                _record_recovery_round(
+                    record_round,
+                    provider=provider,
+                    model=model,
+                    seed=seed,
+                    large_print=large_print,
+                    plan=plan,
+                    histories=exercise_attempts,
+                    state="refused" if number == 2 else "review_in_progress",
+                )
                 if number == 2:
                     error.details = {
                         **error.details,
@@ -1778,6 +1817,16 @@ def generate(
                 _round_record(number, request_identity, authoring, captured, None)
             )
             history["accepted_round"] = number
+            _record_recovery_round(
+                record_round,
+                provider=provider,
+                model=model,
+                seed=seed,
+                large_print=large_print,
+                plan=plan,
+                histories=exercise_attempts,
+                state="review_complete" if identifier == "3" else "review_in_progress",
+            )
             attempts.append(authoring)
             topics.update(exercise.topics)
             reviews.append(review)

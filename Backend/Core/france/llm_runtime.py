@@ -16,6 +16,7 @@ from Backend.Core.france import llm_pipeline
 from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
 from Backend.Core.france.llm_pdf import validate_llm_pdf
 from Backend.Core.france.pipeline import atomic_json, digest
+from Backend.Core.france.recovery_evidence import save_recovery_evidence
 from Backend.Core.france.rendering import render_assessment
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.sql_sources import SQL_SOURCE_POLICY
@@ -133,6 +134,9 @@ def handle_generate_llm_assessment(args) -> int:
             seed=args.seed,
             progress=progress,
             large_print=args.large_print,
+            record_round=lambda snapshot: save_recovery_evidence(
+                output, snapshot, secrets=(getattr(args, "api_key", ""),)
+            ),
         )
         exercises = llm_pipeline.validate_package(package)
         identity = package["identity"]
@@ -143,6 +147,8 @@ def handle_generate_llm_assessment(args) -> int:
             or identity["implementation_sha256"] != source_hash
             or identity.get("layout_policy") != CODE_LAYOUT_POLICY
             or identity.get("sql_source_policy") != SQL_SOURCE_POLICY
+            or identity.get("review_recovery_policy")
+            != llm_pipeline.REVIEW_RECOVERY_POLICY
             or type(identity.get("large_print")) is not bool
             or identity["large_print"] is not args.large_print
         ):
