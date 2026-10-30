@@ -373,8 +373,7 @@ def _audit_python_tokens(code: str) -> None:
                 )
             ):
                 raise ValueError("Fragment Python avec accès non autorisé")
-            if token.type == tokenize.NAME:
-                previous_name = token.string
+            previous_name = token.string if token.type == tokenize.NAME else ""
     except (tokenize.TokenError, IndentationError) as error:
         raise ValueError("Fragment Python : audit lexical incomplet") from error
 

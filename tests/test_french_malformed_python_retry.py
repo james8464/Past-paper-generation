@@ -75,6 +75,29 @@ def test_strings_and_comments_do_not_become_forbidden_names():
 
 
 @pytest.mark.parametrize(
+    "header",
+    [
+        "def + __class__",
+        "class - __bases__",
+        "def\n    __class__",
+        "def # unfinished definition\n    __class__",
+    ],
+)
+def test_definition_keyword_does_not_exempt_later_dunder_usage(header):
+    client = Client(draft(fenced(f"    {header}\n")))
+    with pytest.raises(ValueError, match="non autorisé") as caught:
+        subject._author(client, subject.exercise_request("1", 42, []), "1")
+    assert not isinstance(caught.value, subject.PythonCodeFormatError)
+    assert len(client.requests) == 1
+
+
+def test_immediate_dunder_method_definition_is_not_a_forbidden_access():
+    raw = draft(fenced("    def __init__(self):\n        self.valeurs = []\n"))
+    with pytest.raises(subject.PythonCodeFormatError):
+        subject.validate_authored_exercise(raw, "1")
+
+
+@pytest.mark.parametrize(
     "code",
     ['    texte = "unfinished\n', "    valeur = (\n", "    valeur = 1\n  autre = 2\n"],
 )
