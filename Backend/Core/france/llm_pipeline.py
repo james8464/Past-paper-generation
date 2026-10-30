@@ -38,6 +38,7 @@ from Backend.Core.france.nsi import (
 )
 from Backend.Core.france.print_policy import V36_PRINT_POLICY
 from Backend.Core.france.source_identity import implementation_identity
+from Backend.Core.france.sql_sources import SQL_SOURCE_POLICY, bound_materials
 from Backend.Core.france.verification import verify_contract
 from Backend.Core.generation_diagnostics import (
     GenerationEvidenceError,
@@ -116,6 +117,7 @@ def exercise_request(
     previous_topics=(),
     output_budget: int = 8192,
     large_print: bool = False,
+    sql_source_binding: bool = True,
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
@@ -164,7 +166,23 @@ def exercise_request(
             "autorisées : count, sum, min, max, avg, abs, round, length, lower, upper, coalesce. "
             "Pas de base externe, ATTACH/DETACH, PRAGMA, table virtuelle, déclencheur ou "
             "load_extension. Une preuve théorique ou un effet non représenté par le résultat "
-            "doit utiliser human."
+            "doit utiliser human. "
+            + (
+                "source_material_ids désigne uniquement les tableaux imprimés référencés "
+                "par la question. Chacun déclare sql avec table_name, column_types "
+                "(INTEGER, TEXT ou REAL) et nullable (booléens, une valeur par colonne). "
+                "Les noms des colonnes sont les identifiants SQL exacts. Toutes les tables "
+                "privées doivent reproduire exactement ces lignes et types, sans autre "
+                "table, vue, index ou transformation. INTEGER est un entier canonique signé "
+                "sur 64 bits, sans zéro initial. REAL est un décimal fini avec point, au "
+                "plus 15 chiffres avant et 14 après, préservé par son aller-retour flottant. "
+                "TEXT conserve exactement accents, casse et zéros. Le texte NULL signifie "
+                "une valeur absente seulement si la colonne est nullable. query doit être "
+                "une lecture seule; une modification ou une conversion ambiguë exige une "
+                "nouvelle rédaction explicitement human, jamais une preuve SQL fictive."
+                if sql_source_binding
+                else ""
+            )
         ),
         "shortest_path": (
             "Calcul de la distance minimale seulement, entre start et end, avec end "
@@ -183,6 +201,18 @@ def exercise_request(
             "schema": {"type": "string", "maxLength": 8000},
             "query": {"type": "string", "maxLength": 8000},
             "expected": {},
+            **(
+                {
+                    "source_material_ids": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "minItems": 1,
+                        "maxItems": 6,
+                    }
+                }
+                if sql_source_binding
+                else {}
+            ),
         },
         "python_trace": {
             "code": {"type": "string", "maxLength": 8000},
@@ -376,12 +406,29 @@ def _bare_python_suite(text: str) -> bool:
     return found
 
 
+def _verify_question(exercise, question, *, sql_source_binding: bool) -> dict:
+    contract = question.verification
+    if contract["kind"] == "sql" and sql_source_binding:
+        return verify_contract(
+            contract, sql_materials=bound_materials(exercise, question)
+        )
+    return verify_contract(contract)
+
+
 def validate_authored_exercise(
-    raw: dict, exercise_id: str, *, large_print: bool | None = None
+    raw: dict,
+    exercise_id: str,
+    *,
+    large_print: bool | None = None,
+    sql_source_binding: bool = True,
 ) -> NSIExercise:
     if not isinstance(raw, dict) or len(json.dumps(raw, ensure_ascii=False)) > 160000:
         raise ValueError("Exercice NSI absent ou trop volumineux")
-    Draft202012Validator(exercise_request(exercise_id, 0, []).schema).validate(raw)
+    Draft202012Validator(
+        exercise_request(
+            exercise_id, 0, [], sql_source_binding=sql_source_binding
+        ).schema
+    ).validate(raw)
     require_authoring_fields(raw, allow_empty_materials=True)
     exercise = NSIExercise.model_validate(
         raw, context={"authoring_profile": "v36-model-authored"}
@@ -393,6 +440,13 @@ def validate_authored_exercise(
     ):
         raise ValueError("Allocation NSI modifiée")
     prose_only = [exercise.title]
+    sql_names = [
+        material.sql.table_name.lower()
+        for material in exercise.materials
+        if isinstance(material, NSITableMaterial) and material.sql
+    ]
+    if sql_source_binding and len(sql_names) != len(set(sql_names)):
+        raise ValueError("Relations SQL imprimées répétées dans l'exercice")
     for material in exercise.materials:
         prose_only.append(material.title)
         if isinstance(material, NSITableMaterial):
@@ -423,8 +477,15 @@ def validate_authored_exercise(
             raise ValueError(
                 "Une vérification non exécutée ne doit pas déclarer de résultat"
             )
-        if kind in CHECKABLE and verify_contract(contract).get("passed") is not True:
-            raise ValueError(f"Vérification générique échouée : {question.id}")
+        if kind in CHECKABLE:
+            result = _verify_question(
+                exercise, question, sql_source_binding=sql_source_binding
+            )
+            if result.get("passed") is not True:
+                detail = str(result.get("reason", "résultat différent"))[:500]
+                raise ValueError(
+                    f"Vérification générique échouée : {question.id} : {detail}"
+                )
     for text in snippets:
         _safe_python(text)
     # Audit every field before a retryable formatting error, including fields
@@ -738,6 +799,8 @@ def _question_review_warnings(
 
 def _verification_evidence(
     exercises: list[NSIExercise],
+    *,
+    sql_source_binding: bool = True,
 ) -> tuple[list[dict], list[dict]]:
     checks, warnings = [], []
     covered_topics: set[str] = set()
@@ -753,7 +816,9 @@ def _verification_evidence(
                     {"exercise_id": exercise.id, "question_id": question.id, **result}
                 )
             else:
-                result = verify_contract(question.verification)
+                result = _verify_question(
+                    exercise, question, sql_source_binding=sql_source_binding
+                )
             checks.append(
                 {
                     "exercise_id": exercise.id,
@@ -1148,6 +1213,7 @@ def generate(
         "prompt_version": VERSION,
         "print_policy": PRINT_POLICY,
         "layout_policy": CODE_LAYOUT_POLICY,
+        "sql_source_policy": SQL_SOURCE_POLICY,
         "large_print": large_print,
         "assessment": asdict(NSI_2027),
         "implementation_sha256": implementation_identity(),
@@ -1162,6 +1228,8 @@ def validate_package(package: dict) -> list[NSIExercise]:
     if not isinstance(package, dict) or not isinstance(package.get("identity"), dict):
         raise ValueError("Paquet V36 absent")
     identity = package["identity"]
+    if identity.get("sql_source_policy") != SQL_SOURCE_POLICY:
+        raise ValueError("Politique de source SQL V36 invalide")
     has_layout = "layout_policy" in identity or "large_print" in identity
     if has_layout and (
         identity.get("layout_policy") != CODE_LAYOUT_POLICY
@@ -1201,7 +1269,10 @@ def validate_package(package: dict) -> list[NSIExercise]:
         raise ValueError("Trois exercices indépendants requis")
     exercises = [
         validate_authored_exercise(
-            value, str(i), large_print=identity["large_print"] if has_layout else None
+            value,
+            str(i),
+            large_print=identity["large_print"] if has_layout else None,
+            sql_source_binding=True,
         )
         for i, value in enumerate(raw, 1)
     ]

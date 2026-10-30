@@ -172,7 +172,18 @@ def structured_material(
                 ]
             )
         )
-        return KeepTogether([title, Spacer(1, 4), table, Spacer(1, 10)])
+        from Backend.Core.france.sql_sources import sql_caption
+
+        caption = sql_caption(material)
+        return KeepTogether(
+            [
+                title,
+                *([Paragraph(escape(caption), body)] if caption else []),
+                Spacer(1, 4),
+                table,
+                Spacer(1, 10),
+            ]
+        )
 
     if modern_graph:
         geometry = graph_layout(material, large_print, available_width)

@@ -1,6 +1,7 @@
 # French NSI authoring records and prompts, written for the French curriculum.
 
 import json
+import re
 from decimal import Decimal
 from typing import Annotated, Any, Literal
 
@@ -8,6 +9,7 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
+    StrictBool,
     ValidationInfo,
     field_validator,
     model_validator,
@@ -168,6 +170,17 @@ class Credit(BaseModel):
         return value
 
 
+class NSISQLDescriptor(BaseModel):
+    """Candidate-visible SQLite interpretation of a printed table."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+    table_name: str = Field(pattern=r"^[A-Za-z][A-Za-z0-9_]{0,31}$")
+    column_types: tuple[Literal["INTEGER", "TEXT", "REAL"], ...] = Field(
+        min_length=2, max_length=8
+    )
+    nullable: tuple[StrictBool, ...] = Field(min_length=2, max_length=8)
+
+
 class NSITableMaterial(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
     kind: Literal["table"]
@@ -175,6 +188,9 @@ class NSITableMaterial(BaseModel):
     title: str = Field(min_length=3, max_length=160)
     columns: tuple[str, ...] = Field(min_length=2, max_length=8)
     rows: tuple[tuple[str, ...], ...] = Field(min_length=1, max_length=30)
+    sql: NSISQLDescriptor | None = Field(
+        default=None, exclude_if=lambda value: value is None
+    )
 
     @model_validator(mode="after")
     def rectangular(self):
@@ -188,6 +204,20 @@ class NSITableMaterial(BaseModel):
             for value in row
         ):
             raise ValueError("Cellule de tableau vide ou trop longue")
+        if self.sql is None:
+            return self
+        if (
+            len(self.sql.column_types) != len(self.columns)
+            or len(self.sql.nullable) != len(self.columns)
+            or any(
+                re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,31}", value) is None
+                for value in self.columns
+            )
+            or len({value.lower() for value in self.columns}) != len(self.columns)
+            or self.sql.table_name.lower().startswith("sqlite_")
+            or re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,31}", self.sql.table_name) is None
+        ):
+            raise ValueError("Descripteur SQL imprimé invalide")
         return self
 
 
@@ -373,6 +403,9 @@ def authoring_schema(*, machine_field_constraints: bool = False) -> dict:
     question = schema["$defs"]["NSIQuestion"]
     question["required"].extend(AUTHORING_REQUIRED_QUESTION_FIELDS)
     if not machine_field_constraints:
+        # Optional new material metadata must not change historical author schemas.
+        schema["$defs"]["NSITableMaterial"]["properties"].pop("sql")
+        schema["$defs"].pop("NSISQLDescriptor")
         return schema
     # Generation uses machine-readable dot decimals, not French display commas.
     # Keep runtime fullmatch/positive-credit/sum validation: portable JSON Schema

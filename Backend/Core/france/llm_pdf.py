@@ -19,6 +19,7 @@ from Backend.Core.france.print_policy import (
     V36_LEGACY_PRINT_POLICY,
     V36_PRINT_POLICY,
 )
+from Backend.Core.france.sql_sources import sql_caption
 from Backend.Core.france.whole_case_pdf import (
     _compact,
     _expected_preface,
@@ -54,7 +55,7 @@ def _expected_exercise(exercise: NSIExercise, correction: bool) -> str:
                 and not material.id.startswith("recon_")
             ):
                 label += f" — {material.id}"
-            parts.extend([label, *material.columns])
+            parts.extend([label, sql_caption(material), *material.columns])
             for row in material.rows:
                 parts.extend(row)
         else:

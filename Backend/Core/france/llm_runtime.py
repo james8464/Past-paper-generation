@@ -17,6 +17,7 @@ from Backend.Core.france.llm_pdf import validate_llm_pdf
 from Backend.Core.france.pipeline import atomic_json, digest
 from Backend.Core.france.rendering import render_assessment
 from Backend.Core.france.source_identity import implementation_identity
+from Backend.Core.france.sql_sources import SQL_SOURCE_POLICY
 from Backend.Core.generation_diagnostics import save_failure_diagnostic
 from Backend.Core.generator_registry import assessment_framework
 from Backend.Core.providers import HostedLLMClient
@@ -132,6 +133,7 @@ def handle_generate_llm_assessment(args) -> int:
             or identity["seed"] != args.seed
             or identity["implementation_sha256"] != source_hash
             or identity.get("layout_policy") != CODE_LAYOUT_POLICY
+            or identity.get("sql_source_policy") != SQL_SOURCE_POLICY
             or type(identity.get("large_print")) is not bool
             or identity["large_print"] is not args.large_print
         ):
