@@ -164,6 +164,7 @@ def test_blind_notes_are_adjudicated_and_retained_as_revalidated_warnings(tmp_pa
         lambda d: d.clear(),
         lambda d: d.update({"1": d.pop("0")}),
         lambda d: d["0"].update(issue_index=True),
+        lambda d: d["0"].update(issue_index=0.0),
         lambda d: d["0"].update(issue_index=1),
         lambda d: d["0"].update(blocking="false"),
         lambda d: d["0"].update(blocking=0),

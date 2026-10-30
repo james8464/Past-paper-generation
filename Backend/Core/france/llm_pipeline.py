@@ -517,6 +517,9 @@ def _validate_review(exercise: NSIExercise, review: dict) -> None:
         Draft202012Validator(_adjudication_schema(exercise, blind["issues"])).validate(
             {"question_review": questions, "blind_issue_dispositions": dispositions}
         )
+        # JSON Schema treats 0.0 as an integer; stored indices use strict JSON ints.
+        if any(type(item["issue_index"]) is not int for item in dispositions.values()):
+            raise ValueError("Indice entier strict requis pour chaque réserve")
         blocking = [
             issue
             for index, issue in enumerate(blind["issues"])
