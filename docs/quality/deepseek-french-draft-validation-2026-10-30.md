@@ -24,6 +24,7 @@ Evidence is retained under `tmp/french-v36-live-20261030/`:
 | Pro 16k, aligned schema | All three first-exercise calls completed; review refused an unstated tree-height convention | No PDF published; independent review also found that the convention needed clarification |
 | Pro 16k, connected brief | First authoring response completed; display-only Python filter rejected `nonlocal` | Overbroad display restriction reproduced; no PDF published |
 | Pro 16k, separated display boundary | First exercise passed authoring, blind solving and review; second authoring response exhausted 16,384 tokens | No complete paper or PDF; authoring ceiling raised separately from review budgets |
+| Pro 32k, audited admission | First exercise passed all three stages; second authoring response completed but used a full function in a bounded `python_trace` contract | Unsupported proof contract refused; no PDF published, and no automatic mathematical-error verdict |
 
 The first tiny-probe attempt called a nonexistent harness method and sent no request. It remains separate from model failures. Raw attempts, request settings, usage and hashes are retained. Do not describe replayed evidence as a new live run.
 
@@ -64,6 +65,8 @@ A later candidate declares attributes `gauche` and `droit`, but its faulty heigh
 The connected-brief attempt included `nonlocal` in a printed correction. The display checker parses fragments without executing them; treating every scope declaration as unauthorized access was overbroad. Harmless declarations are now admitted as text. Declared identifiers still pass the forbidden-name checks. Import, file, network, dynamic-execution and reflective-access restrictions remain.
 
 Executable `python_trace` verification uses a separate bounded interpreter. Its allowed statements and refusal of scope declarations/functions are unchanged. Targeted tests cover both boundaries. Revalidating the retained response after this fix admits its structure without executing its code; that replay is not a fresh generation or semantic qualification.
+
+The 32k attempt exposed a separate authoring-documentation gap: the schema did not describe the interpreter's supported subset. Its descriptions now state the exact Python, SQLite and shortest-path verification capabilities and limits. Unsupported tasks must explicitly request human verification. Failed executable contracts still refuse; the app never silently relabels them. This change has not yet qualified a fresh live paper.
 
 ## Native interface evidence
 
