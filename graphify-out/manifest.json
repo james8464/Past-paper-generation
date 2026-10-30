@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793358909.514051,
-    "ast_hash": "d0143355e064b57c009accfc9a766ef3",
+    "mtime": 1793363660.6243815,
+    "ast_hash": "b713f824586331a8a6edc5941a1667df",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793361294.2718344,
-    "ast_hash": "c67309ef7cf62d637a7b24dade0eb1a7",
+    "mtime": 1793363433.0853806,
+    "ast_hash": "ff8367f3ba015642835b08020c7863f3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793361294.3863115,
-    "ast_hash": "4c033364befc62238a783722ae94a0c2",
+    "mtime": 1793363433.1672902,
+    "ast_hash": "378324c4519daced31ab7964ca885224",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793362662.365805,
-    "ast_hash": "caea4013145fcb8300870a1d9dc96fbd",
+    "mtime": 1793363660.6237714,
+    "ast_hash": "1add973418c9409426421cdec8a599bb",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4810,8 +4810,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_pipeline.py": {
-    "mtime": 1793360427.2487183,
-    "ast_hash": "99b934848ec4380ab63d9956e4a1515b",
+    "mtime": 1793363660.6249259,
+    "ast_hash": "f50559571c6e1d4cc55ea859ca7922f6",
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
@@ -4940,13 +4940,13 @@
     "semantic_hash": ""
   },
   "tests/test_deepseek_provider.py": {
-    "mtime": 1793358909.514427,
-    "ast_hash": "796ea617dee7aa57c1a19baa297810ab",
+    "mtime": 1793363660.6246614,
+    "ast_hash": "01dd1e30f72851cd6960f6a7d39b83c8",
     "semantic_hash": ""
   },
   "docs/quality/deepseek-french-draft-validation-2026-10-30.md": {
-    "mtime": 1793363227.1848335,
-    "ast_hash": "6640584bd8cc101b95b917a7b7f7e913",
+    "mtime": 1793363810.7258034,
+    "ast_hash": "1667599536bfe2279fd5a9edadffb6c4",
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchGenerationEstimateTests.swift": {
@@ -4960,8 +4960,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_authoring_progression.py": {
-    "mtime": 1793362121.4474497,
-    "ast_hash": "6b0393995196aad02e5cf384db3faf2d",
+    "mtime": 1793363660.545396,
+    "ast_hash": "3eeeb933642e13e4846fd2016925e3dc",
     "semantic_hash": ""
   },
   "tests/test_french_display_python_scope.py": {
