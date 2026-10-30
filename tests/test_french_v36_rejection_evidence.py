@@ -21,6 +21,28 @@ class RejectingClient(Client):
         self.mode = mode
 
     def generate_request(self, request):
+        properties = request.schema["properties"]
+        if "blind_issue_dispositions" in properties:
+            self.requests.append(request)
+            return {
+                "question_review": {
+                    identifier: {
+                        name: [] if name == "issues" else True
+                        for name in item["properties"]
+                    }
+                    for identifier, item in properties["question_review"][
+                        "properties"
+                    ].items()
+                },
+                "blind_issue_dispositions": {
+                    index: {
+                        "issue_index": int(index),
+                        "blocking": True,
+                        "rationale": "Une donnée indispensable manque à la résolution.",
+                    }
+                    for index in properties["blind_issue_dispositions"]["properties"]
+                },
+            }
         result = super().generate_request(request)
         if "answers" in request.schema["properties"] and self.mode == "blind":
             result["issues"] = ["Donnée absente private-token " + "x" * 20_000]
@@ -50,7 +72,7 @@ def test_review_rejection_retains_bounded_private_evidence(tmp_path, mode):
         "blind_solution" if mode == "blind" else "question_review"
     )
     assert "answers" not in error.details and "prompt" not in error.details
-    assert len(client.requests) == (1 if mode == "blind" else 2)
+    assert len(client.requests) == 2
     if mode != "blind":
         assert "question 1" in str(error)
         assert error.details["question_reviews"][0]["question_id"] == "1"
