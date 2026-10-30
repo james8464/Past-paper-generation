@@ -128,8 +128,8 @@ def progress_emitter() -> Callable[[str | GenerationUpdate], None]:
     def callback(message: str | GenerationUpdate) -> None:
         nonlocal last_progress
         if isinstance(message, GenerationUpdate):
-            progress = 0.08 + message.progress * 0.70
-            last_progress = max(last_progress, progress)
+            item_progress = 0.08 + message.progress * 0.70
+            last_progress = max(last_progress, item_progress)
             emit(
                 "progress",
                 stage=message.stage,
