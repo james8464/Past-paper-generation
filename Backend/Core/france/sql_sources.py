@@ -11,6 +11,21 @@ from Backend.Core.france.nsi import NSIExercise, NSIQuestion, NSITableMaterial
 
 SQL_SOURCE_POLICY = "fr-nsi-v36-sql-source-v1"
 
+# Only unquoted SQL words can introduce COLLATE. Quoted identifiers/literals
+# and comments are inert here; SQLite has already parsed the complete DDL.
+_DDL_TOKENS = re.compile(
+    r"--[^\r\n]*|/\*.*?\*/|'(?:[^']|'')*'|\"(?:[^\"]|\"\")*\""
+    r"|`(?:[^`]|``)*`|\[[^\]]*\]|(?P<word>[A-Za-z_][A-Za-z_0-9]*)",
+    re.S,
+)
+
+
+def _has_collation(declaration: str) -> bool:
+    return any(
+        match.group("word") is not None and match.group("word").upper() == "COLLATE"
+        for match in _DDL_TOKENS.finditer(declaration)
+    )
+
 
 def sql_caption(material: NSITableMaterial) -> str:
     descriptor = material.sql
@@ -93,18 +108,34 @@ def validate_database(
     if len({name.lower() for name in expected}) != len(materials):
         raise ValueError("Relations SQL imprimées répétées")
     objects = db.execute(
-        "SELECT name,type,sql FROM main.sqlite_schema UNION ALL "
-        "SELECT name,type,sql FROM temp.sqlite_schema"
+        "SELECT 'main',name,type,tbl_name,sql FROM main.sqlite_schema UNION ALL "
+        "SELECT 'temp',name,type,tbl_name,sql FROM temp.sqlite_schema"
     ).fetchall()
-    if any(kind != "table" or name not in expected for name, kind, _ in objects):
-        raise ValueError("Objet SQL privé sans source imprimée")
-    if {name for name, _, _ in objects} != set(expected) or len(objects) != len(
-        expected
-    ):
+    tables = []
+    for database, name, kind, owner, declaration in objects:
+        # SQLite owns these reserved, SQL-less indexes for PRIMARY KEY/UNIQUE.
+        # They add no source relation. Explicit/user indexes remain unsupported.
+        if (
+            database == "main"
+            and kind == "index"
+            and declaration is None
+            and owner in expected
+            and re.fullmatch(
+                r"sqlite_autoindex_" + re.escape(owner) + r"_[1-9][0-9]*", name
+            )
+        ):
+            continue
+        if (
+            database != "main"
+            or kind != "table"
+            or name not in expected
+            or owner != name
+        ):
+            raise ValueError("Objet SQL privé sans source imprimée")
+        tables.append((name, declaration))
+    if {name for name, _ in tables} != set(expected) or len(tables) != len(expected):
         raise ValueError("Relation SQL imprimée absente ou répétée")
-    if any(
-        re.search(r"\bCOLLATE\b", declaration, re.I) for _, _, declaration in objects
-    ):
+    if any(_has_collation(declaration) for _, declaration in tables):
         raise ValueError("Collation SQL privée non déclarée dans la source imprimée")
     for name, material in expected.items():
         assert material.sql is not None

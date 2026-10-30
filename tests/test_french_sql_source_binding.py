@@ -503,3 +503,110 @@ def test_pdf_gate_refuses_missing_type_null_caption(tmp_path, monkeypatch):
     render(path, exercises)
     with pytest.raises(ValueError):
         llm_pdf.validate_llm_pdf(path, exercises, correction=False)
+
+
+@pytest.mark.parametrize("constraint", ["PRIMARY KEY", "UNIQUE"])
+def test_sqlite_owned_text_key_indexes_do_not_create_private_relations(constraint):
+    public = material()
+    public.update(columns=["code", "nom_client"], rows=[["A", "Alice"], ["B", "Bob"]])
+    public["sql"].update(column_types=["TEXT", "TEXT"])
+    data = contract()
+    data.update(
+        schema=f"CREATE TABLE clients(code TEXT {constraint}, nom_client TEXT); INSERT INTO clients VALUES('A','Alice'),('B','Bob');",
+        query="SELECT nom_client FROM clients WHERE code='B'",
+        expected=[["Bob"]],
+    )
+    assert (
+        verify_contract(data, sql_materials=[NSITableMaterial.model_validate(public)])[
+            "passed"
+        ]
+        is True
+    )
+    data.update(query="SELECT name FROM sqlite_schema", expected=[])
+    assert (
+        verify_contract(data, sql_materials=[NSITableMaterial.model_validate(public)])[
+            "passed"
+        ]
+        is False
+    )
+
+
+def test_sqlite_composite_key_and_foreign_key_tables_are_bound_exactly():
+    public = material()
+    public.update(columns=["code", "version"], rows=[["A", "1"], ["A", "2"]])
+    public["sql"].update(column_types=["TEXT", "INTEGER"])
+    related = material()
+    related.update(id="commandes", columns=["code", "version"], rows=[["A", "2"]])
+    related["sql"].update(table_name="commandes", column_types=["TEXT", "INTEGER"])
+    data = contract()
+    data.update(
+        schema="CREATE TABLE clients(code TEXT, version INTEGER, PRIMARY KEY(code,version)); INSERT INTO clients VALUES('A',1),('A',2); CREATE TABLE commandes(code TEXT, version INTEGER, PRIMARY KEY(code,version), FOREIGN KEY(code,version) REFERENCES clients(code,version)); INSERT INTO commandes VALUES('A',2);",
+        query="SELECT c.code,c.version FROM clients c JOIN commandes q ON c.code=q.code AND c.version=q.version",
+        expected=[["A", 2]],
+    )
+    sources = [NSITableMaterial.model_validate(value) for value in (public, related)]
+    assert verify_contract(data, sql_materials=sources)["passed"] is True
+    assert verify_contract(data, sql_materials=sources[:1])["passed"] is False
+
+
+@pytest.mark.parametrize(
+    "decoration",
+    [
+        "/* COLLATE NOCASE */",
+        "-- COLLATE RTRIM\n",
+        "DEFAULT 'COLLATE'",
+        "DEFAULT 'one''COLLATE two'",
+    ],
+)
+def test_quoted_collate_column_comments_and_default_strings_are_not_collations(
+    decoration,
+):
+    public = material()
+    public.update(columns=["id_client", "COLLATE"], rows=[["1", "Claire"]])
+    data = contract()
+    data.update(
+        schema=f"CREATE TABLE clients(id_client INTEGER, \"COLLATE\" TEXT {decoration}); INSERT INTO clients VALUES(1,'Claire');",
+        query='SELECT "COLLATE" FROM clients WHERE id_client=1',
+        expected=[["Claire"]],
+    )
+    assert (
+        verify_contract(data, sql_materials=[NSITableMaterial.model_validate(public)])[
+            "passed"
+        ]
+        is True
+    )
+
+
+@pytest.mark.parametrize("collation", ["NOCASE", "RTRIM", '"NOCASE"', "[RTRIM]"])
+def test_actual_collation_on_autoindexed_keys_still_refuses(collation):
+    public = material()
+    data = contract()
+    data["schema"] = data["schema"].replace(
+        "nom_client TEXT", f"nom_client TEXT UNIQUE COLLATE {collation}"
+    )
+    result = verify_contract(
+        data, sql_materials=[NSITableMaterial.model_validate(public)]
+    )
+    assert result["passed"] is False
+    assert "Collation SQL" in result["reason"]
+
+
+@pytest.mark.parametrize(
+    "declaration",
+    [
+        'CREATE TABLE clients(id INTEGER, "COLLATE" TEXT)',
+        "CREATE TABLE clients(id INTEGER, [COLLATE] TEXT)",
+        "CREATE TABLE clients(id INTEGER, `COLLATE` TEXT)",
+        "CREATE TABLE clients(id INTEGER, name TEXT DEFAULT 'one''COLLATE two')",
+        'CREATE TABLE clients(id INTEGER, "one""COLLATE two" TEXT)',
+        "CREATE TABLE clients(id INTEGER, name TEXT /* COLLATE NOCASE */)",
+    ],
+)
+def test_collation_detection_skips_only_quoted_or_commented_words(declaration):
+    from Backend.Core.france.sql_sources import _has_collation
+
+    assert _has_collation(declaration) is False
+    assert (
+        _has_collation(declaration[:-1] + ', other TEXT COLLATE /* gap */ "NOCASE")')
+        is True
+    )
