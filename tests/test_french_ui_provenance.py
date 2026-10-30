@@ -19,6 +19,29 @@ def test_fixed_assessment_values_defer_localization_to_swiftui():
         assert f'.id("{row}-\\(interfaceLanguage)")' in workspace
 
 
+def test_provider_and_model_refresh_only_their_read_only_accessibility_rows():
+    workspace = (
+        ROOT / "Features/Generation/FrenchAssessmentWorkspace.swift"
+    ).read_text()
+    identity = (
+        r"\(application.aiProvider.rawValue)-\(application.activeModelName)-"
+        r"\(interfaceLanguage)"
+    )
+    for label, value, row in (
+        ("AI provider", "application.aiProvider.title", "ai-provider"),
+        ("Model", "application.activeModelName", "ai-model"),
+    ):
+        expected = (
+            f'LabeledContent("{label}", value: {value})\n'
+            f'                    .id("{row}-{identity}")'
+        )
+        assert expected in workspace
+    # Identities belong to these display-only rows, not the Form or its controls.
+    assert workspace.count(r"\(application.aiProvider.rawValue)") == 2
+    assert '@State private var largePrint = false' in workspace
+    assert 'Toggle("Enlarged print", isOn: $largePrint)' in workspace
+
+
 def test_french_workspace_explains_model_authoring_in_both_languages():
     workspace = (
         ROOT / "Features/Generation/FrenchAssessmentWorkspace.swift"

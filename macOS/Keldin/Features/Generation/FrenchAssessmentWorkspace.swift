@@ -112,7 +112,9 @@ struct FrenchAssessmentWorkspace: View {
                         .foregroundStyle(.secondary)
                 }
                 LabeledContent("AI provider", value: application.aiProvider.title)
+                    .id("ai-provider-\(application.aiProvider.rawValue)-\(application.activeModelName)-\(interfaceLanguage)")
                 LabeledContent("Model", value: application.activeModelName)
+                    .id("ai-model-\(application.aiProvider.rawValue)-\(application.activeModelName)-\(interfaceLanguage)")
                 ModelQualityAdviceView(provider: application.aiProvider, model: application.activeModelName)
                 Text("Local models run on this Mac. Hosted providers receive the generation prompts only after your consent.")
                     .font(.callout)
