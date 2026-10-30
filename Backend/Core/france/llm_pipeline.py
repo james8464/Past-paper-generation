@@ -354,12 +354,40 @@ def exercise_request(
 
 
 class PythonCodeFormatError(ValueError):
-    """A safe, obvious Python suite is outside an indentation-preserving block."""
+    """Audited display Python needs a complete, indentation-preserving block."""
 
 
-def _safe_python(text: str) -> None:
+def _audit_python_tokens(code: str) -> None:
+    """Audit malformed display text without repairing or executing it."""
+    previous_name = ""
+    try:
+        for token in tokenize.generate_tokens(io.StringIO(code).readline):
+            if token.type == tokenize.ERRORTOKEN and not token.string.isspace():
+                raise ValueError("Fragment Python : audit lexical incomplet")
+            if token.type == tokenize.NAME and (
+                token.string == "import"
+                or token.string in FORBIDDEN_NAMES
+                or (
+                    token.string.startswith("__")
+                    and previous_name not in {"def", "class"}
+                )
+            ):
+                raise ValueError("Fragment Python avec accès non autorisé")
+            if token.type == tokenize.NAME:
+                previous_name = token.string
+    except (tokenize.TokenError, IndentationError) as error:
+        raise ValueError("Fragment Python : audit lexical incomplet") from error
+
+
+def _safe_python(text: str) -> bool:
+    malformed = False
     for code in re.findall(r"```python\s*\n(.*?)```", text, re.S | re.I):
-        tree = ast.parse(code)
+        try:
+            tree = ast.parse(code)
+        except SyntaxError:
+            _audit_python_tokens(code)
+            malformed = True
+            continue
         for node in ast.walk(tree):
             if isinstance(node, (ast.Import, ast.ImportFrom)):
                 raise ValueError("Fragment Python avec accès non autorisé")
@@ -375,6 +403,7 @@ def _safe_python(text: str) -> None:
                 raise ValueError("Fragment Python avec accès non autorisé")
             if isinstance(node, ast.Attribute) and node.attr.startswith("__"):
                 raise ValueError("Fragment Python avec accès non autorisé")
+    return malformed
 
 
 def _bare_python_suite(text: str) -> bool:
@@ -418,24 +447,7 @@ def _bare_python_suite(text: str) -> bool:
             end += 1
         # Check unsafe names before reporting a repairable formatting problem.
         # Tokenising does not execute code and ignores comments/string literals.
-        try:
-            previous_name = ""
-            for token in tokenize.generate_tokens(
-                io.StringIO("\n".join(lines[index:end])).readline
-            ):
-                if token.type == tokenize.NAME and (
-                    token.string == "import"
-                    or token.string in FORBIDDEN_NAMES
-                    or (
-                        token.string.startswith("__")
-                        and previous_name not in {"def", "class"}
-                    )
-                ):
-                    raise ValueError("Fragment Python avec accès non autorisé")
-                if token.type == tokenize.NAME:
-                    previous_name = token.string
-        except (tokenize.TokenError, IndentationError):
-            pass
+        _audit_python_tokens("\n".join(lines[index:end]))
         found = True
     return found
 
@@ -520,8 +532,7 @@ def validate_authored_exercise(
                 raise ValueError(
                     f"Vérification générique échouée : {question.id} : {detail}"
                 )
-    for text in snippets:
-        _safe_python(text)
+    malformed_python = [_safe_python(text) for text in snippets]
     # Audit every field before a retryable formatting error, including fields
     # after the first missing fence. Unsafe code must never become a format retry.
     formatting_issues = [_bare_python_suite(text) for text in snippets]
@@ -540,6 +551,10 @@ def validate_authored_exercise(
             ),
         ]
     ]
+    if any(malformed_python):
+        raise PythonCodeFormatError(
+            "Le code Python imprimé doit former un fragment syntaxiquement complet dans son bloc, avec une indentation cohérente."
+        )
     if any(criterion_formatting):
         raise PythonCodeFormatError(
             "Le format du barème ne préserve pas les programmes multilignes : placez le code complet dans la réponse proposée et les critères en prose."
