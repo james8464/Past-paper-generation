@@ -43,7 +43,7 @@ struct GeneratorWorkspace: View {
                         Button(action: application.generate) {
                             Label { Text(InterfaceText.localizedResource(createButtonTitle, locale: locale)) } icon: { Image(systemName: "doc.badge.plus") }
                         }
-                        .buttonStyle(.borderedProminent)
+                        .nativePrimaryActionStyle()
                         .disabled(!application.canGenerate)
                         .help(generateHelp)
                         .accessibilityHint(generateHelp)

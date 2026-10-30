@@ -67,7 +67,7 @@ struct BenchmarkWorkspace: View {
                             systemImage: "play.fill"
                         )
                     }
-                    .buttonStyle(.borderedProminent)
+                    .nativePrimaryActionStyle()
                     .disabled(application.isRunning)
                 }
             }

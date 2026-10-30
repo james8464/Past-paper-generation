@@ -35,6 +35,7 @@ enum WorkspaceLayoutPolicy {
 extension View {
     func nativePrimaryActionStyle() -> some View {
         buttonStyle(.borderedProminent)
+            .tint(Color("ControlAccent"))
     }
 
 }

@@ -4166,6 +4166,12 @@
       "review_evidence_sha256": "d53bef3a6c3b434af79ffc3308e1f44741395ce155c087bc98f1108083734521"
     },
     {
+      "path": "macOS/Keldin/Assets.xcassets/ControlAccent.colorset/Contents.json",
+      "classification": "configuration-or-runtime-data",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "macOS/Keldin/Assets.xcassets/ForegroundAccent.colorset/Contents.json",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",

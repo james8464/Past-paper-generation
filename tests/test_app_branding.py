@@ -282,6 +282,17 @@ def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
             assert _contrast(rgb, backdrop) >= 4.5, (appearance, backdrop)
 
 
+def test_native_selected_and_filled_controls_keep_white_foreground_contrast():
+    for appearance, rgb in _color_variants("ControlAccent").items():
+        assert _contrast(rgb, (255, 255, 255)) >= 4.5, appearance
+    sidebar = (APP / "Navigation/SidebarView.swift").read_text()
+    assert '.tint(Color("ControlAccent"))' in sidebar
+    style = (APP / "Components/NativeVisualStyle.swift").read_text()
+    assert 'buttonStyle(.borderedProminent)\n            .tint(Color("ControlAccent"))' in style
+    for path in (APP / "Features").rglob("*.swift"):
+        assert ".buttonStyle(.borderedProminent)" not in path.read_text(), path
+
+
 def test_external_links_use_the_text_tint_without_retinting_native_controls():
     count = 0
     for path in (APP / "Features").rglob("*.swift"):
