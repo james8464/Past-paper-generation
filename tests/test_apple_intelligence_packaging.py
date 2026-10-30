@@ -11,6 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "macOS/scripts/build_apple_intelligence.sh"
 
 
+def test_ci_runs_the_pure_apple_helper_protocol_regressions():
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+    assert (
+        "swift test --package-path macOS/AppleIntelligenceHelper "
+        "--scratch-path macOS/build/apple-helper-tests -Xswiftc -warnings-as-errors"
+    ) in workflow
+
+
 def _fixture(tmp_path: Path, *, store: bool = False, sign_failure: bool = False):
     checkout = tmp_path / "checkout"
     source = checkout / "macOS/scripts/build_apple_intelligence.sh"

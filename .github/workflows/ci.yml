@@ -63,6 +63,8 @@ jobs:
           cache: pip
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
+      - name: Test Apple helper protocol
+        run: swift test --package-path macOS/AppleIntelligenceHelper --scratch-path macOS/build/apple-helper-tests -Xswiftc -warnings-as-errors
       - name: Install project tools
         run: brew install xcodegen
       - name: Generate the Xcode project
