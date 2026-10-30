@@ -352,7 +352,7 @@ private struct HelpTopicPage: View {
             HelpSection(
                 title: "Hosted AI",
                 rows: [
-                    "OpenAI and Anthropic receive the generation prompt, relevant syllabus context, and draft assessment data when selected.",
+                    "OpenAI, Anthropic and DeepSeek receive generation prompts and draft content when selected. DeepSeek is available for French NSI drafts only; its disclosure includes public French reference excerpts.",
                     "API keys are stored in Keychain. Hosted generation remains blocked until you accept the disclosure.",
                 ]
             )

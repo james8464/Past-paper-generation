@@ -6,6 +6,9 @@ enum AppDefaults {
     static let ollamaModel = OllamaModelGuide.currentRecommendation.model
     static let openAIModel = "gpt-6.1-sol"
     static let anthropicModel = "claude-sonnet-5-5"
+    static let deepSeekModel = "deepseek-flash"
+    static let deepSeekModels = ["deepseek-flash", "deepseek-v4-pro"]
+    static let deepSeekConsentVersion = "deepseek-french-references-v1"
     static let appleModel = "mlx-community/Llama-3.2-3B-Instruct-4bit"
     static let ollamaURL = "http://localhost:11434"
     static let benchmarkDurationSeconds = 30.0
@@ -89,9 +92,11 @@ enum AppDefaults {
 enum AppStorageKey {
     static let aiProvider = "aiProvider"
     static let hostedAIConsentAccepted = "hostedAIConsentAccepted"
+    static let deepSeekConsentVersion = "deepSeekConsentVersion"
     static let ollamaModel = "ollamaModel"
     static let openAIModel = "openAIModel"
     static let anthropicModel = "anthropicModel"
+    static let deepSeekModel = "deepSeekModel"
     static let appleModel = "appleModel"
     static let preparedMLXModels = "preparedMLXModels"
     static let dryRun = "dryRun"
@@ -119,6 +124,7 @@ enum AppStorageKey {
 enum SecretAccount {
     static let openAIAPIKey = "openai-api-key"
     static let anthropicAPIKey = "anthropic-api-key"
+    static let deepSeekAPIKey = "deepseek-api-key"
 }
 
 enum AppLinks {

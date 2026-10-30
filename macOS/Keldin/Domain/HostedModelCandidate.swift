@@ -14,6 +14,9 @@ struct HostedModelCandidate: Identifiable {
         case .anthropic:
             [Self(model: AppDefaults.anthropicModel, role: "Balanced candidate"),
              Self(model: "claude-opus-5-5", role: "Higher-capability candidate")]
+        case .deepSeek:
+            [Self(model: AppDefaults.deepSeekModel, role: "Lower-cost candidate"),
+             Self(model: "deepseek-v4-pro", role: "Pro candidate, not yet qualified")]
         case .ollama, .apple: []
         }
     }

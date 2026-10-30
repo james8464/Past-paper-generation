@@ -61,7 +61,7 @@ struct ContentView: View {
             Button("Use Hosted AI", action: application.acceptHostedAIConsent)
             Button("Cancel", role: .cancel, action: application.cancelHostedAIConsent)
         } message: {
-            Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
+            Text(InterfaceText.localizedResource(application.pendingHostedDisclosureResource, locale: interfaceLocale))
         }
         .confirmationDialog(
             "Set Up Apple MLX?",

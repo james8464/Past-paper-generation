@@ -201,6 +201,8 @@ enum GenerationEstimator {
             return (0.72, EstimateFactor(title: "AI provider", detail: "Hosted OpenAI generation usually reduces local compute time.", impact: 0.72))
         case .anthropic:
             return (0.78, EstimateFactor(title: "AI provider", detail: "Hosted Anthropic generation usually reduces local compute time.", impact: 0.78))
+        case .deepSeek:
+            return (1.0, EstimateFactor(title: "AI provider", detail: "DeepSeek generation timing has not been measured.", impact: 1.0))
         }
     }
 

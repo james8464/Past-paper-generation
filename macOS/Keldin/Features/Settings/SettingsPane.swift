@@ -70,6 +70,7 @@ struct SettingsPane: View {
 
 private struct SettingsActionHost: ViewModifier {
     @EnvironmentObject private var application: ApplicationCoordinator
+    @Environment(\.locale) private var locale
     @ObservedObject var presentation: SettingsActionPresentation
     @ObservedObject var download: ModelDownloadPresentation
     @State private var isAttached = false
@@ -90,8 +91,8 @@ private struct SettingsActionHost: ViewModifier {
                 }
             } message: { request in
                 switch request.kind {
-                case .hostedConsent:
-                    Text("OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local.")
+                case let .hostedConsent(provider):
+                    Text(InterfaceText.localizedResource(provider.hostedDisclosureResource, locale: locale))
                 case let .error(message): Text(message)
                 }
             }
@@ -205,9 +206,11 @@ private struct AISettingsTab: View {
         .onChange(of: application.selectedModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
         .onChange(of: application.openAIModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
         .onChange(of: application.anthropicModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.deepSeekModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
         .onChange(of: application.appleModel) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
         .onChange(of: application.openAIAPIKey) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
         .onChange(of: application.anthropicAPIKey) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
+        .onChange(of: application.deepSeekAPIKey) { _, _ in application.saveAISettings(presentation: application.settingsPresentation) }
     }
 
     @ViewBuilder
@@ -325,6 +328,20 @@ private struct AISettingsTab: View {
                 HostedModelCandidatesView(provider: .anthropic, model: $application.anthropicModel)
                 SecureField("API key", text: $application.anthropicAPIKey)
                 Text("Your key is stored in Keychain.")
+                    .foregroundStyle(.secondary)
+            }
+
+        case .deepSeek:
+            Section("DeepSeek") {
+                Picker("Model", selection: $application.deepSeekModel) {
+                    Text("DeepSeek Flash").tag("deepseek-flash")
+                    Text("DeepSeek V4 Pro").tag("deepseek-v4-pro")
+                }
+                HostedModelCandidatesView(provider: .deepSeek, model: $application.deepSeekModel)
+                SecureField("API key", text: $application.deepSeekAPIKey)
+                Text("Your key is stored in Keychain.")
+                    .foregroundStyle(.secondary)
+                Text("DeepSeek is available for French NSI drafts only. Paper quality remains unverified. API requests use your paid credits.")
                     .foregroundStyle(.secondary)
             }
 

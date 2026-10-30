@@ -430,6 +430,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case ollama
     case openAI
     case anthropic
+    case deepSeek
     case apple
 
     var id: String { rawValue }
@@ -439,6 +440,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "Ollama"
         case .openAI: "OpenAI"
         case .anthropic: "Anthropic"
+        case .deepSeek: "DeepSeek"
         case .apple: "Apple MLX"
         }
     }
@@ -448,6 +450,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "Runs locally via Ollama"
         case .openAI: "Uses an API key"
         case .anthropic: "Uses an API key"
+        case .deepSeek: "French NSI only, uses an API key"
         case .apple: "Runs locally on Apple Silicon"
         }
     }
@@ -457,7 +460,14 @@ enum AIProvider: String, CaseIterable, Identifiable {
     }
 
     var sendsPromptsOffDevice: Bool {
-        self == .openAI || self == .anthropic
+        self == .openAI || self == .anthropic || self == .deepSeek
+    }
+
+    var hostedDisclosureResource: LocalizedStringResource {
+        if self == .deepSeek {
+            return "DeepSeek receives generation prompts, excerpts from the public French references, draft questions, proposed answers and review requests at api.deepseek.com. Requests use your paid API credits. Your key stays in Keychain and is sent only to DeepSeek for authentication. DeepSeek is available for French NSI drafts only."
+        }
+        return "OpenAI and Anthropic generation sends prompts, selected syllabus context, and draft question content to the provider you choose. API keys stay in Keychain. Ollama keeps generation local."
     }
 
     var systemImage: String {
@@ -465,6 +475,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "desktopcomputer"
         case .openAI: "sparkles"
         case .anthropic: "text.bubble"
+        case .deepSeek: "network"
         case .apple: "applelogo"
         }
     }
@@ -474,6 +485,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .ollama: "ollama"
         case .openAI: "openai"
         case .anthropic: "anthropic"
+        case .deepSeek: "deepseek"
         case .apple: "apple"
         }
     }
@@ -483,6 +495,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case "ollama": self = .ollama
         case "openai": self = .openAI
         case "anthropic": self = .anthropic
+        case "deepseek": self = .deepSeek
         case "apple": self = .apple
         default: return nil
         }

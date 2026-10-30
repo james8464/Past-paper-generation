@@ -1026,9 +1026,9 @@ final class KeldinTests: XCTestCase {
         let aqa = try XCTUnwrap(ExamCatalog.board(id: "economics-aqa"))
 
         XCTAssertTrue(edexcel.usesAI)
-        XCTAssertEqual(Set(edexcel.supportedProviders), Set(AIProvider.allCases))
+        XCTAssertEqual(Set(edexcel.supportedProviders), Set(AIProvider.allCases.filter { $0 != .deepSeek }))
         XCTAssertTrue(aqa.usesAI)
-        XCTAssertEqual(Set(aqa.supportedProviders), Set(AIProvider.allCases))
+        XCTAssertEqual(Set(aqa.supportedProviders), Set(AIProvider.allCases.filter { $0 != .deepSeek }))
         XCTAssertTrue(aqa.papers.allSatisfy { !$0.readiness.empiricallyCalibrated })
     }
 
