@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793369791.7056062,
-    "ast_hash": "196dc5c5e9b9b54b732be4594d1adc23",
+    "mtime": 1793372627.5797906,
+    "ast_hash": "e1d703524674ab6ac5493580d6aae420",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793369791.629566,
-    "ast_hash": "add040d43a67b29eda6ffb60d3cbbe43",
+    "mtime": 1793372627.4850595,
+    "ast_hash": "41e6a3d93843f6946a0e003f83b7c2fe",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4715,13 +4715,13 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
-    "mtime": 1793356935.3285553,
-    "ast_hash": "5c13ad9d93d9bbf361e7ac15b7b5297d",
+    "mtime": 1793373254.0412743,
+    "ast_hash": "68e8fc676b170e0c4684c7ade7a732f2",
     "semantic_hash": ""
   },
   "tools/build_occitanie_pages_sources.py": {
-    "mtime": 1793356935.3299239,
-    "ast_hash": "f7d6399a4817f2a1ecbff7d18d636572",
+    "mtime": 1793373254.0414846,
+    "ast_hash": "86281e7a1d69825c63369d1ff96684b2",
     "semantic_hash": ""
   },
   "docs/quality/accounting-equal-priority-correction-2026-10-29.md": {
@@ -5037,6 +5037,11 @@
   "tests/test_french_v36_graph_layout.py": {
     "mtime": 1793372004.3149729,
     "ast_hash": "79843c2a9a746c10f882ad1eb204781d",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-reference-and-figure-follow-up-2026-10-30.md": {
+    "mtime": 1793372619.5070343,
+    "ast_hash": "814ed59a5efca7c5db30dd3e127e3b26",
     "semantic_hash": ""
   }
 }
