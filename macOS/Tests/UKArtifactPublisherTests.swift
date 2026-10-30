@@ -124,7 +124,8 @@ final class UKArtifactPublisherTests: XCTestCase {
                 "status": "unreviewed_draft", "generation_origin": "model_authored", "model_used": true,
                 "teacher_review": "not_run", "empirical_calibration": "not_run",
                 "identity": ["provider": application.aiProvider.backendID, "model": application.activeModelName,
-                    "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy, "seed": seed],
+                    "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy,
+                    "sql_source_policy": FrenchLLMAssessmentRequest.sqlSourcePolicy, "seed": seed],
             ]
             var bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
             try bytes.write(to: manifest)

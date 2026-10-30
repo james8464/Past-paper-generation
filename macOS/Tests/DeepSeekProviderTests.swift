@@ -166,7 +166,8 @@ final class DeepSeekProviderTests: XCTestCase {
             provider: "deepseek", model: "deepseek-v4-pro", seed: 42, dryRun: false,
             assessmentID: FrenchAssessmentRequest.assessmentID, authoringVersion: "v36")
         var identity: [String: Any] = ["provider": "deepseek", "model": "deepseek-v4-pro", "seed": 42,
-            "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy]
+            "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy,
+            "sql_source_policy": FrenchLLMAssessmentRequest.sqlSourcePolicy]
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("DeepSeek-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: file) }
         func write() throws {
