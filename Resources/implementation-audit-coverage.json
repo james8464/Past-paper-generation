@@ -1040,6 +1040,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/sql_sources.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/synthesized_authoring.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -3191,6 +3197,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-provider-contract-regeneration-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-question-advisory-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3204,6 +3216,12 @@
     },
     {
       "path": "docs/quality/french-repeat-practice-policy-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-sql-source-binding-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4822,20 +4840,14 @@
     {
       "path": "requirements-build.txt",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Reviewed packaged runtime dependencies and Darwin/arm64 markers for MLX and its grammar support. This does not establish model quality or a fresh dependency-resolution result.",
-      "source_sha256": "f2d7914ef11c95181e869de340888c5d1823d24f755c85fbb2a6adc79b122029",
-      "review_evidence": "docs/quality/implementation-audit-boundary-review-2026-10-29.md",
-      "review_evidence_sha256": "0b14a4a4e206c2681325c915ace3675a126c9ebc0ff9e831795909f6c1d9f25d"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "requirements-test.txt",
       "classification": "configuration-or-runtime-data",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "54ea1e390e4228fe315b5c60967f5cc9f30d775b19d7491824a102b5b3647d3f",
-      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
-      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "ruff.toml",
@@ -5312,6 +5324,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_curricular_scoping.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_database_audit_authoring.py",
       "classification": "test",
       "status": "pending",
@@ -5732,7 +5750,19 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_prompt_compaction.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_provider.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_provider_contract_retry.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5775,6 +5805,18 @@
     },
     {
       "path": "tests/test_french_runtime.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_sql_source_binding.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_structural_feedback.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

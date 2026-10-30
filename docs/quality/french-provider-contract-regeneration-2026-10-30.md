@@ -41,3 +41,23 @@ Mocked real-adapter/pipeline tests cover a successful regeneration, two failures
 mixed local/provider failures, strict replay, bounded redacted diagnostics and
 single-call hard refusals. No inference or paid service calls were used for
 these tests. Complete live-paper review and publication remain separate gates.
+
+Local structural regeneration now uses a separate prompt hint of at most 320
+characters. It contains fixed validation categories and bounded paths drawn from
+owned schema field names, never the rejected candidate's values or exception
+message. The private rejection record, original issue text and response hashes
+remain unchanged. This prevents model-written content in an error from becoming
+new repair instructions and bounds the retry's input overhead. It does not add
+semantic retries or change the two-attempt limit.
+
+Actual one-token Qwen 3.5 9B capacity probes found that the earlier broad request
+used 9,871 input tokens, too large to reserve the existing 8,192-token answer
+allowance in a 16,384-token window. Exercise-scoped references reduced initial
+requests, but two representative 1,800-character retries still exceeded that
+reservation. Removing JSON separator whitespace, without changing any parsed
+source string, schema or curriculum data, then fitted all five measured domain
+retries, including all five prior-topic labels. Input counts were 7,152, 7,583,
+7,418, 7,414 and 7,810. These are transport probes, not generated-paper passes or
+a universal bound for arbitrary error text. The later bounded prompt hint still
+requires final integrated capacity verification. No server setting, model weight,
+source excerpt or answer allowance changed during those probes.
