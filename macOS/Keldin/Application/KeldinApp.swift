@@ -50,6 +50,7 @@ struct Keldin: App {
     var body: some Scene {
         WindowGroup("Keldin", id: MainWindowRouting.sceneID, for: MainWindowIdentity.self) { _ in
             ContentView()
+                .tint(Color("AccentColor"))
                 .environmentObject(application)
                 .environment(application.catalogStore)
                 .environment(application.benchmarkCoordinator)
@@ -64,6 +65,7 @@ struct Keldin: App {
 
         Settings {
             SettingsPane()
+                .tint(Color("AccentColor"))
                 .environmentObject(application)
                 .environment(application.catalogStore)
                 .environment(application.benchmarkCoordinator)

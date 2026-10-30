@@ -250,16 +250,23 @@ def _contrast(first, second):
     return (max(one, two) + 0.05) / (min(one, two) + 0.05)
 
 
-def test_native_controls_keep_system_managed_accent_colours():
-    assert "NSAccentColorName" not in plistlib.loads((APP / "Info.plist").read_bytes())
-    assert not (APP / "Assets.xcassets/AccentColor.colorset/Contents.json").exists()
+def test_native_controls_use_the_requested_warm_scene_accent():
+    assert (
+        plistlib.loads((APP / "Info.plist").read_bytes())["NSAccentColorName"]
+        == "AccentColor"
+    )
+    assert _color_variants("AccentColor") == _color_variants("ForegroundAccent")
     for name in ("project.yml", "Keldin.xcodeproj/project.pbxproj"):
         assert (
-            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME"
-            not in (ROOT / "macOS" / name).read_text()
-        )
-    for path in APP.rglob("*.swift"):
-        assert '.tint(Color("AccentColor"))' not in path.read_text(), path
+            "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor"
+            if name.endswith(".yml")
+            else "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;"
+        ) in (ROOT / "macOS" / name).read_text()
+    source = (APP / "Application/KeldinApp.swift").read_text()
+    assert source.count('.tint(Color("AccentColor"))') == 2
+    for appearance, rgb in _color_variants("AccentColor").items():
+        if ("luminosity", "dark") not in appearance:
+            assert _contrast(rgb, (255, 255, 255)) >= 4.5
 
 
 def test_warm_links_keep_text_contrast_on_light_and_dark_surfaces():
