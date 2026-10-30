@@ -2936,6 +2936,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-model-neutral-sampling-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-nsi-archive-discovery-2026-09-28.json",
       "classification": "historical-evidence",
       "status": "excluded",

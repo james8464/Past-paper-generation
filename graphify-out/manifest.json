@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
-    "mtime": 1793317748.2008154,
-    "ast_hash": "6a09c7965f31bbc6969d385ef82215c9",
+    "mtime": 1793354999.1427464,
+    "ast_hash": "eacd917342184e5c76996b687147729f",
     "semantic_hash": ""
   },
   "Backend/Core/psychometrics.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793352578.5832744,
-    "ast_hash": "7cdf61a041ed619a8524338a10d9c5cc",
+    "mtime": 1793355081.6930146,
+    "ast_hash": "565b9498763a877d389573751d7135c2",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4025,8 +4025,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793352578.4894793,
-    "ast_hash": "0f7628f8191e2c7175a6bde23fd8a6c6",
+    "mtime": 1793355081.5813758,
+    "ast_hash": "89c0bc3a0cf2ab44dc0a3b347a066b86",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4860,8 +4860,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_ollama_capacity.py": {
-    "mtime": 1793317748.2013724,
-    "ast_hash": "f8443fc153092bd542dac18b753afc3c",
+    "mtime": 1793354999.145075,
+    "ast_hash": "f8d146bf63d57f311dacef53a0763478",
     "semantic_hash": ""
   },
   "docs/quality/french-ollama-context-capacity-2026-10-29.md": {
@@ -4927,6 +4927,11 @@
   "docs/quality/family-adapter-type-boundary-2026-10-30.md": {
     "mtime": 1793353481.6316392,
     "ast_hash": "6c31ed509702479f8aa579574f60e239",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-model-neutral-sampling-2026-10-30.md": {
+    "mtime": 1793355045.6485553,
+    "ast_hash": "78f6e5e31ea6357f65890b0ea11431f0",
     "semantic_hash": ""
   }
 }
