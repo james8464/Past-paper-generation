@@ -9,3 +9,4 @@ sympy>=1.14,<2
 cryptography>=46,<47
 python-docx>=1.2,<2
 jsonschema==4.26.0
+pydantic>=2.12,<3

@@ -610,3 +610,23 @@ def test_collation_detection_skips_only_quoted_or_commented_words(declaration):
         _has_collation(declaration[:-1] + ', other TEXT COLLATE /* gap */ "NOCASE")')
         is True
     )
+
+
+def test_sqlite_discards_trailing_unterminated_comment_before_source_inspection():
+    import sqlite3
+
+    declaration = "CREATE TABLE clients(id_client INTEGER, nom_client TEXT) /* COLLATE"
+    with sqlite3.connect(":memory:") as db:
+        db.execute(declaration)
+        stored = db.execute(
+            "SELECT sql FROM sqlite_schema WHERE name='clients'"
+        ).fetchone()[0]
+    assert stored == "CREATE TABLE clients(id_client INTEGER, nom_client TEXT)"
+    data = contract()
+    data["schema"] += " /* COLLATE"
+    assert (
+        verify_contract(
+            data, sql_materials=[NSITableMaterial.model_validate(material())]
+        )["passed"]
+        is True
+    )
