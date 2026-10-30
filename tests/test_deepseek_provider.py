@@ -78,6 +78,7 @@ def test_typed_vendor_payload_is_fixed_schema_bound_and_budgeted(monkeypatch):
     assert body == {
         "model": "deepseek-flash",
         "input": typed_request().prompt,
+        "instructions": body["instructions"],
         "stream": False,
         "reasoning": {"effort": "low"},
         "max_output_tokens": 8192,

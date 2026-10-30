@@ -614,6 +614,15 @@ class HostedLLMClient:
             {
                 "model": self.model,
                 "input": request.prompt,
+                "instructions": (
+                    "Return exactly one valid JSON object matching OUTPUT_SCHEMA. "
+                    "Do not use an outer Markdown code fence, JSON comments, or trailing commas. "
+                    "Requested code fences and markup inside JSON string values are allowed; "
+                    "escape quotes, backslashes and line breaks as required by JSON. "
+                    "Preserve the language and content requirements of the user request. "
+                    "\nOUTPUT_SCHEMA=\n"
+                    + json.dumps(schema, ensure_ascii=False, allow_nan=False)
+                ),
                 "stream": False,
                 # Reasoning and final JSON share the bounded output allowance.
                 "reasoning": {
