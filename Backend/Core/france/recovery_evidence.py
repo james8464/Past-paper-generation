@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import stat
 import uuid
 from contextlib import ExitStack, suppress
 from datetime import UTC, datetime
@@ -12,6 +13,135 @@ from pathlib import Path
 from typing import Any
 
 MAX_EVIDENCE_BYTES = 32 * 1024 * 1024
+
+
+def _ordered_rounds(snapshot: dict[str, Any]) -> list[bytes]:
+    histories = snapshot.get("exercise_attempts")
+    if not isinstance(histories, list) or not 1 <= len(histories) <= 3:
+        raise ValueError("Recovery snapshot must extend ordered exercise rounds.")
+    rounds: list[bytes] = []
+    for index, history in enumerate(histories, 1):
+        if (
+            not isinstance(history, dict)
+            or history.get("exercise_id") != str(index)
+            or not isinstance(history.get("rounds"), list)
+            or len(history["rounds"]) > 2
+            or (not history["rounds"] and index != len(histories))
+        ):
+            raise ValueError("Recovery snapshot must extend ordered exercise rounds.")
+        rounds.extend(_encode([str(index), record]) for record in history["rounds"])
+    return rounds
+
+
+class RecoveryEvidenceRecorder:
+    """Retire only this recorder's previous file after a complete cumulative save."""
+
+    def __init__(self, directory: Path, *, secrets: tuple[str, ...] = ()):
+        self.directory = directory
+        self.secrets = secrets
+        self.retention_warning: str | None = None
+        self._previous: tuple[str, bytes, tuple[int, int]] | None = None
+        self._snapshot: dict[str, Any] | None = None
+
+    def __call__(self, snapshot: dict[str, Any]) -> Path:
+        canonical = _encode(snapshot)
+        rounds = _ordered_rounds(snapshot)
+        bindings = (
+            "review_recovery_policy",
+            "recovery_identity",
+            "curriculum_plan",
+            "teacher_review",
+            "empirical_calibration",
+        )
+        if any(key not in snapshot for key in bindings):
+            raise ValueError(
+                "Recovery snapshot must extend a declared source identity."
+            )
+        if self._snapshot is not None:
+            before = _ordered_rounds(self._snapshot)
+            if (
+                len(rounds) < len(before)
+                or rounds[: len(before)] != before
+                or len(snapshot["exercise_attempts"])
+                < len(self._snapshot["exercise_attempts"])
+                or any(
+                    previous.get("accepted_round") is not None
+                    and _encode(previous.get("accepted_round"))
+                    != _encode(current.get("accepted_round"))
+                    for previous, current in zip(
+                        self._snapshot["exercise_attempts"],
+                        snapshot["exercise_attempts"],
+                        strict=False,
+                    )
+                )
+                or any(
+                    key not in snapshot
+                    or key not in self._snapshot
+                    or _encode(snapshot[key]) != _encode(self._snapshot[key])
+                    for key in bindings
+                )
+            ):
+                raise ValueError(
+                    "Recovery snapshot must extend its original source and rounds."
+                )
+        path = save_recovery_evidence(self.directory, snapshot, secrets=self.secrets)
+        # Cleanup errors cannot turn a genuinely saved snapshot into a false
+        # snapshot_saved=False report. Keep both records and expose a warning.
+        ownership = None
+        try:
+            information = path.stat(follow_symlinks=False)
+            if not stat.S_ISREG(information.st_mode):
+                raise OSError("Saved recovery evidence changed.")
+            ownership = (path.name, canonical, (information.st_dev, information.st_ino))
+            self._retire_previous()
+        except OSError:
+            self.retention_warning = "The latest recovery evidence was saved, but cleanup of earlier records could not be confirmed."
+        self._previous = ownership
+        self._snapshot = json.loads(canonical)
+        return path
+
+    def _retire_previous(self) -> None:
+        if self._previous is None:
+            return
+        name, expected_snapshot, inode = self._previous
+        flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+        with ExitStack() as descriptors:
+            root = os.open(self.directory, flags)
+            descriptors.callback(os.close, root)
+            folder = os.open(".keldin-recovery", flags, dir_fd=root)
+            descriptors.callback(os.close, folder)
+            descriptor = os.open(name, os.O_RDONLY | os.O_NOFOLLOW, dir_fd=folder)
+            descriptors.callback(os.close, descriptor)
+            original = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(original.st_mode)
+                or (original.st_dev, original.st_ino) != inode
+                or original.st_size > MAX_EVIDENCE_BYTES
+            ):
+                raise OSError("Previous recovery evidence changed.")
+            raw = bytearray()
+            while chunk := os.read(
+                descriptor, min(65536, MAX_EVIDENCE_BYTES + 1 - len(raw))
+            ):
+                raw.extend(chunk)
+                if len(raw) > MAX_EVIDENCE_BYTES:
+                    raise OSError("Previous recovery evidence changed.")
+            try:
+                record = json.loads(raw)
+                unchanged = (
+                    isinstance(record, dict)
+                    and _encode(record.get("snapshot")) == expected_snapshot
+                    and record.get("snapshot_sha256")
+                    == hashlib.sha256(expected_snapshot).hexdigest()
+                )
+            except (ValueError, UnicodeDecodeError):
+                unchanged = False
+            if not unchanged or not os.path.samestat(
+                original, os.stat(name, dir_fd=folder, follow_symlinks=False)
+            ):
+                raise OSError("Previous recovery evidence changed.")
+            os.unlink(name, dir_fd=folder)
+            os.fsync(folder)
 
 
 def _encode(value: object) -> bytes:

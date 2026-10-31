@@ -230,3 +230,152 @@ def test_filename_failure_opens_no_descriptors(tmp_path, monkeypatch):
     with pytest.raises(RuntimeError, match="entropy failure"):
         subject.save_recovery_evidence(directory, {"rounds": []})
     assert not opened
+
+
+def cumulative(rounds):
+    return {
+        "review_recovery_policy": "test-policy",
+        "recovery_identity": {"implementation_sha256": "a" * 64, "seed": 42},
+        "curriculum_plan": [{"exercise_id": "1"}],
+        "teacher_review": "not_run",
+        "empirical_calibration": "not_run",
+        "exercise_attempts": [
+            {
+                "exercise_id": "1",
+                "accepted_round": None,
+                "rounds": [{"number": value} for value in rounds],
+            }
+        ],
+    }
+
+
+def test_cumulative_recorder_keeps_newest_with_all_earlier_rounds(tmp_path):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    second = recorder(cumulative([1, 2]))
+    assert not first.exists()
+    assert list(second.parent.iterdir()) == [second]
+    assert json.loads(second.read_bytes())["snapshot"] == cumulative([1, 2])
+    assert recorder.retention_warning is None
+
+
+@pytest.mark.parametrize("change", ["round", "identity", "policy", "plan"])
+def test_changed_prefix_or_identity_preserves_prior(tmp_path, change):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    before = first.read_bytes()
+    changed = cumulative([1, 2])
+    if change == "round":
+        changed["exercise_attempts"][0]["rounds"][0]["number"] = 9
+    elif change == "identity":
+        changed["recovery_identity"]["seed"] = 43
+    elif change == "policy":
+        changed["review_recovery_policy"] = "other"
+    else:
+        changed["curriculum_plan"] = []
+    with pytest.raises(ValueError, match="extend"):
+        recorder(changed)
+    assert first.read_bytes() == before
+    assert list(first.parent.iterdir()) == [first]
+
+
+def test_new_save_failure_preserves_prior_snapshot(tmp_path, monkeypatch):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    before = first.read_bytes()
+    monkeypatch.setattr(
+        subject,
+        "save_recovery_evidence",
+        lambda *a, **k: (_ for _ in ()).throw(OSError("write failure")),
+    )
+    with pytest.raises(OSError, match="write failure"):
+        recorder(cumulative([1, 2]))
+    assert first.read_bytes() == before
+
+
+def test_cleanup_failure_keeps_new_snapshot_and_warns(tmp_path, monkeypatch):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    unlink = os.unlink
+
+    def fail_previous(name, **kwargs):
+        if name == first.name:
+            raise OSError("retirement failure")
+        return unlink(name, **kwargs)
+
+    monkeypatch.setattr(os, "unlink", fail_previous)
+    second = recorder(cumulative([1, 2]))
+    assert first.exists() and second.exists()
+    assert recorder.retention_warning
+    assert first.name not in recorder.retention_warning
+
+
+@pytest.mark.parametrize("symlink", [False, True])
+def test_replaced_prior_file_is_never_retired(tmp_path, symlink):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    first.unlink()
+    outside = tmp_path / "outside"
+    outside.write_text("retain")
+    if symlink:
+        first.symlink_to(outside)
+    else:
+        first.write_text("replacement")
+    second = recorder(cumulative([1, 2]))
+    assert second.exists() and first.exists()
+    assert recorder.retention_warning
+    assert outside.read_text() == "retain"
+
+
+def test_partial_stop_and_empty_next_history_keep_completed_rounds(tmp_path):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    stopped = cumulative([1])
+    stopped["state"] = "stopped"
+    stopped["partial_round"] = {"stage": "blind", "author": {"raw": "retained"}}
+    second = recorder(stopped)
+    assert not first.exists()
+    extended = cumulative([1])
+    extended["exercise_attempts"].append(
+        {"exercise_id": "2", "accepted_round": None, "rounds": []}
+    )
+    third = recorder(extended)
+    assert not second.exists()
+    assert json.loads(third.read_bytes())["snapshot"] == extended
+
+
+def test_first_partial_round_can_be_saved_without_completed_rounds(tmp_path):
+    snapshot = cumulative([])
+    snapshot["state"] = "stopped"
+    snapshot["partial_round"] = {"stage": "author"}
+    path = subject.RecoveryEvidenceRecorder(job(tmp_path))(snapshot)
+    assert json.loads(path.read_bytes())["snapshot"] == snapshot
+
+
+def test_new_directory_sync_failure_preserves_prior_snapshot(tmp_path, monkeypatch):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    before = first.read_bytes()
+    sync = os.fsync
+
+    def fail_directory(descriptor):
+        if stat.S_ISDIR(os.fstat(descriptor).st_mode):
+            raise OSError("sync failure")
+        sync(descriptor)
+
+    monkeypatch.setattr(os, "fsync", fail_directory)
+    with pytest.raises(OSError, match="sync failure"):
+        recorder(cumulative([1, 2]))
+    assert first.read_bytes() == before
+    assert list(first.parent.iterdir()) == [first]
+
+
+def test_foreign_replacement_with_identical_bytes_is_preserved(tmp_path):
+    recorder = subject.RecoveryEvidenceRecorder(job(tmp_path))
+    first = recorder(cumulative([1]))
+    moved = tmp_path / "moved-original"
+    first.rename(moved)
+    first.write_bytes(moved.read_bytes())
+    second = recorder(cumulative([1, 2]))
+    assert first.exists() and second.exists() and moved.exists()
+    assert recorder.retention_warning
