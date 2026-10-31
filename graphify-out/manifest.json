@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793405868.3217368,
+    "mtime": 1793406499.9115527,
     "ast_hash": "d91780646be8e89fbdf6b4cfbed3a270",
     "semantic_hash": ""
   },
@@ -4890,8 +4890,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_v36_rejection_evidence.py": {
-    "mtime": 1793367737.4953792,
-    "ast_hash": "736d9f4a5292427931296606fc154da0",
+    "mtime": 1793406481.5303495,
+    "ast_hash": "8b05ad528f66d075793724c070f7b59f",
     "semantic_hash": ""
   },
   "docs/quality/concurrency-publication-implementation-review-2026-10-30.md": {

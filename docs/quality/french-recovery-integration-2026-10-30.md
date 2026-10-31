@@ -27,7 +27,8 @@ Native completion now requires the exact string
 `fr-nsi-v36-whole-exercise-redraft-v1`. A small Swift/Foundation harness compiled
 the production validator and passed six publication-boundary cases after the
 red run. The XCTest source parses, but the full native application suite and
-signed builds have not run for this candidate.
+signed builds had not run at that checkpoint. The later acceptance checks are
+listed below.
 
 The generation/replay change passed 399 focused tests before the seed follow-up;
 149 focused tests passed after that follow-up. Those scopes overlap. The first
@@ -53,9 +54,32 @@ it is not a hard in-flight timeout. Socket timeouts do not guarantee that a
 remote server stops work or billing. Hosted generation displays a charge notice
 before its first request. Manifest and failure diagnostics record the counters.
 
-Release work remains: full native and packaged CLI
-acceptance, a frozen-source full regression run, protected checks and a fresh
+Release work remains: final native user-interface acceptance, a green
+frozen-source full regression run, protected checks and a fresh
 live French paper review, including the existing US$5 total test budget guard.
 The 24-attempt bound concerns current sequential
 typed inference clients, not ancillary HTTP requests, wall-clock duration or
 remote billing after cancellation. No model calls were made for this change.
+
+## Build and offline acceptance, 31 October
+
+The full native suite ran 362 tests with one optional skip and no failures.
+Two older publication fixtures needed the newly required recovery-policy field;
+production validation was not relaxed. Personal-development-signed direct
+Release and Store preflight builds passed, including strict signature checks.
+Neither build was installed or submitted.
+
+The exact direct Release backend passed three synthetic HTTP transport tests:
+one rejected exercise was rewritten and both PDFs published after 12 requests;
+two rejected rounds stopped after six requests without publishing files; a
+malformed review stopped after three requests with partial private evidence.
+Each run retained one cumulative recovery record. These tests used an isolated
+localhost fixture, not an AI model, and establish no educational-quality result.
+
+The first completed Python regression run had 5,932 passes, three failures and
+two skips. Its failures were older rejection-test expectations: no recovery
+JSON anywhere, and an exercise-specific refusal even when the configured test
+credential was echoed and storage correctly refused it. The revised 17-case
+scope separates those behaviours, preserving no-publication, no-secret-storage,
+permission and call-count checks. A fresh full run is required; the failed run
+is not release acceptance. Logs remain under `tmp/final-validation-20261030`.
