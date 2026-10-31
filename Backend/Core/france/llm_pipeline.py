@@ -29,6 +29,7 @@ from Backend.Core.france.code_layout import (
     require_code_width,
 )
 from Backend.Core.france.corpus import HOSTS
+from Backend.Core.france.generation_budget import FrenchGenerationBudget
 from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
@@ -1201,6 +1202,8 @@ def _author(client, request, exercise_id, *, large_print: bool = False, capture=
             if capture is not None:
                 capture["author_response"] = deepcopy(raw)
                 capture.setdefault("author_returns", []).append(deepcopy(raw))
+            if isinstance(client, FrenchGenerationBudget):
+                client.check()
             exercise = validate_authored_exercise(
                 raw, exercise_id, large_print=large_print
             )
@@ -1305,6 +1308,8 @@ def _review(
     )
     if capture is not None:
         capture["blind_response"] = deepcopy(blind)
+    if isinstance(client, FrenchGenerationBudget):
+        client.check()
     Draft202012Validator(blind_schema).validate(blind)
     review_schema = _adjudication_schema(
         exercise, blind["issues"], include_advisories=True
@@ -1348,6 +1353,8 @@ def _review(
     )
     if capture is not None:
         capture["review_response"] = deepcopy(review)
+    if isinstance(client, FrenchGenerationBudget):
+        client.check()
     Draft202012Validator(review_schema).validate(review)
     evidence = _review_evidence(exercise, blind, review)
     try:
@@ -1744,6 +1751,8 @@ def generate(
     if type(seed) is not int:
         raise ValueError("Graine entière requise")
     code_layout(large_print)
+    if not isinstance(client, FrenchGenerationBudget):
+        client = FrenchGenerationBudget(client)
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
     if provider == "apple_intelligence":
         raise ValueError(FRENCH_FULL_PAPER_ERROR)
@@ -1887,6 +1896,7 @@ def generate(
             reviews.append(review)
             exercises.append(exercise)
             break
+    client.check()
     checks, warnings = _verification_evidence(exercises)
     warnings.extend(_blind_note_warnings(exercises, reviews))
     warnings.extend(_question_review_warnings(exercises, reviews))

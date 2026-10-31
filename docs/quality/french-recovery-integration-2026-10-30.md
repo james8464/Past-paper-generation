@@ -37,9 +37,25 @@ failed and its corrected scope passed 110 tests. These are separate scopes,
 not numbers to add or a whole-suite result. Logs remain in
 `tmp/final-validation-20261030/recovery-*` and the contributing worktrees.
 
-Release work remains: retention, total elapsed-time and spending controls,
-honest capture of partial nonsemantic failures, full native and packaged CLI
+Private follow-up now saves partial nonsemantic failures without retrying them.
+Returned drafts are recorded before validation; cancellation still bypasses
+storage. A per-job recorder saves the new cumulative record before retiring
+only its owned previous file. If cleanup fails, both remain and a progress
+notice explains the failure. Operational notices are separate from the
+source-bound paper-quality warnings.
+
+Request admission is limited to 24 typed generation dispatches and 589,824
+reserved output tokens per paper. The token figure is an allowance, not observed
+usage or a price guarantee. Failed requests consume their reservation. The
+30-minute elapsed check runs before each dispatch, after capturing each returned
+object and before publication. It rejects late results and further requests;
+it is not a hard in-flight timeout. Socket timeouts do not guarantee that a
+remote server stops work or billing. Hosted generation displays a charge notice
+before its first request. Manifest and failure diagnostics record the counters.
+
+Release work remains: full native and packaged CLI
 acceptance, a frozen-source full regression run, protected checks and a fresh
-live French paper review. The 24-attempt bound concerns current sequential
+live French paper review, including the existing US$5 total test budget guard.
+The 24-attempt bound concerns current sequential
 typed inference clients, not ancillary HTTP requests, wall-clock duration or
 remote billing after cancellation. No model calls were made for this change.

@@ -102,6 +102,9 @@ def test_real_pdf_publication_keeps_model_identity_and_private_evidence(
     assert manifest["identity"]["large_print"] is large_print
     assert manifest["identity"]["layout_policy"] == "fr-nsi-v36-code-layout-v1"
     assert manifest["warnings"]
+    assert manifest["generation_limits"]["started_requests"] == 9
+    assert manifest["generation_limits"]["completed_requests"] == 9
+    assert manifest["generation_limits"]["max_requests"] == 24
     assert not list(args.output.glob(".nsi-llm-*"))
     assert events[-1]["type"] == "done"
     recovery = list((args.output / ".keldin-recovery").glob("*.json"))
@@ -174,6 +177,50 @@ def test_render_failure_never_publishes_partial_output(publication, monkeypatch)
     assert not any(event["type"] in {"file", "done"} for event in events)
     assert not list(args.output.glob(".nsi-llm-*"))
     assert not list(args.output.rglob("*.pdf"))
+
+
+def test_elapsed_limit_is_checked_again_before_publication(publication, monkeypatch):
+    from Backend.Core.france import generation_budget
+
+    subject, args, events = publication
+    now = [0.0]
+    monkeypatch.setattr(generation_budget.time, "monotonic", lambda: now[0])
+    original = subject.atomic_json
+
+    def expire_after_manifest(path, data):
+        original(path, data)
+        if path.name == "manifest.json":
+            now[0] = generation_budget.MAX_ELAPSED_SECONDS + 1
+
+    monkeypatch.setattr(subject, "atomic_json", expire_after_manifest)
+    assert subject.handle_generate_llm_assessment(args) == 1
+    assert not any(event["type"] in {"file", "done"} for event in events)
+    assert not list(args.output.glob(".nsi-llm-*"))
+    assert not list(args.output.rglob("*.pdf"))
+
+
+def test_hosted_charge_notice_precedes_first_generation_request(
+    publication, monkeypatch
+):
+    from tests.test_french_llm_pipeline import Client
+
+    subject, args, events = publication
+    args.provider = "deepseek"
+    args.api_key = "test-only-key"
+    notices = []
+    monkeypatch.setattr(
+        subject, "emit_progress", lambda message, **kwargs: notices.append(message)
+    )
+
+    class HostedFixture(Client):
+        provider = "deepseek"
+
+        def generate_request(self, request):
+            assert any("24" in message and "frais" in message for message in notices)
+            return super().generate_request(request)
+
+    monkeypatch.setattr(subject, "HostedLLMClient", lambda **kwargs: HostedFixture())
+    assert subject.handle_generate_llm_assessment(args) == 0, events
 
 
 def test_different_actual_model_is_not_published_under_requested_identity(

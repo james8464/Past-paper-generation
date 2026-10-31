@@ -14,6 +14,7 @@ from Backend.Core.apple_intelligence import FRENCH_FULL_PAPER_ERROR
 from Backend.Core.events import emit, emit_progress
 from Backend.Core.france import llm_pipeline
 from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
+from Backend.Core.france.generation_budget import FrenchGenerationBudget
 from Backend.Core.france.llm_pdf import validate_llm_pdf
 from Backend.Core.france.pipeline import atomic_json, digest
 from Backend.Core.france.recovery_evidence import RecoveryEvidenceRecorder
@@ -71,6 +72,7 @@ def _model_snapshot(args) -> str | None:
 def handle_generate_llm_assessment(args) -> int:
     staging = None
     previous_handler = None
+    client = None
     output = Path(args.output).expanduser().absolute()
 
     def cancel(_signal, _frame):
@@ -111,12 +113,19 @@ def handle_generate_llm_assessment(args) -> int:
         model_snapshot = _model_snapshot(args)
         output.mkdir(parents=True, exist_ok=True)
         previous_handler = signal.signal(signal.SIGTERM, cancel)
-        client = HostedLLMClient(
-            provider=args.provider,
-            model=args.model,
-            api_key=getattr(args, "api_key", ""),
-            base_url=args.ollama_url,
+        client = FrenchGenerationBudget(
+            HostedLLMClient(
+                provider=args.provider,
+                model=args.model,
+                api_key=getattr(args, "api_key", ""),
+                base_url=args.ollama_url,
+            )
         )
+        if args.provider in {"openai", "anthropic", "deepseek"}:
+            emit_progress(
+                "Ce sujet peut nécessiter jusqu'à 24 requêtes de génération, y compris les reprises. Des frais du fournisseur peuvent s'appliquer; annuler ne garantit pas l'arrêt de sa facturation.",
+                stage="french_generation",
+            )
         steps = 0
 
         def progress(message):
@@ -144,6 +153,7 @@ def handle_generate_llm_assessment(args) -> int:
             notice = "L'historique du contrôle est enregistré, mais certains anciens relevés privés n'ont pas pu être supprimés."
             operational_warnings.append(notice)
             emit_progress(notice, stage="french_generation")
+        client.check()
         exercises = llm_pipeline.validate_package(package)
         identity = package["identity"]
         if (
@@ -229,12 +239,14 @@ def handle_generate_llm_assessment(args) -> int:
             "large_print": args.large_print,
             "warnings": package["warnings"],
             "operational_warnings": operational_warnings,
+            "generation_limits": client.snapshot(),
         }
         atomic_json(staging / "manifest.json", manifest)
         paths["package_manifest"] = staging / "manifest.json"
         destination = output / f"nsi-2027-v36-{args.seed}-{digest(artifacts)[:12]}"
         if destination.exists():
             raise ValueError("Ce dossier existe déjà; aucun document n'a été remplacé.")
+        client.check()
         os.rename(staging, destination)
         staging = None
         for role, path in paths.items():
@@ -256,6 +268,7 @@ def handle_generate_llm_assessment(args) -> int:
                 "assessment": args.assessment,
                 "provider": args.provider,
                 "model": args.model,
+                "generation_limits": client.snapshot() if client is not None else None,
             },
         )
         emit("error", message=str(error), code="french_generation_failed")
