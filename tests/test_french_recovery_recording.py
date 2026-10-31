@@ -1,6 +1,8 @@
+import json
 from copy import deepcopy
 
 import pytest
+from jsonschema.exceptions import ValidationError
 
 from Backend.Core.france import llm_pipeline as subject
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
@@ -86,3 +88,96 @@ def test_recorder_cannot_mutate_the_generation_history(tmp_path, monkeypatch):
     result = generate(tmp_path, ReviewedClient())
     assert len(result["exercise_attempts"]) == 3
     assert saved[-1]["exercise_attempts"] == result["exercise_attempts"]
+
+
+@pytest.mark.parametrize(
+    "failure,error,calls,returned",
+    [
+        ("unsafe", ValueError, 1, {"author_response"}),
+        ("transport", RuntimeError, 3, {"author_response", "blind_response"}),
+        (
+            "malformed",
+            ValidationError,
+            3,
+            {"author_response", "blind_response", "review_response"},
+        ),
+    ],
+)
+def test_partial_nonsemantic_failure_keeps_returned_objects_without_retry(
+    tmp_path, monkeypatch, failure, error, calls, returned
+):
+    snapshots = []
+    original = subject.generate
+    monkeypatch.setattr(
+        subject,
+        "generate",
+        lambda **kwargs: original(**kwargs, record_round=snapshots.append),
+    )
+    client = ReviewedClient(failure=failure)
+    with pytest.raises(error):
+        generate(tmp_path, client)
+    assert len(client.requests) == calls
+    assert snapshots[-1]["state"] == "stopped"
+    captured = snapshots[-1]["partial_round"]["returned"]
+    assert {key for key in captured if key.endswith("_response")} == returned
+    assert snapshots[-1]["exercise_attempts"][0]["accepted_round"] is None
+
+
+def test_partial_storage_failure_keeps_the_original_error_type(tmp_path, monkeypatch):
+    original = subject.generate
+
+    def fail(snapshot):
+        raise OSError("storage unavailable")
+
+    monkeypatch.setattr(
+        subject, "generate", lambda **kwargs: original(**kwargs, record_round=fail)
+    )
+    client = ReviewedClient(failure="malformed")
+    with pytest.raises(ValidationError):
+        generate(tmp_path, client)
+    assert len(client.requests) == 3
+
+
+def test_cancellation_does_not_wait_for_a_partial_snapshot(tmp_path, monkeypatch):
+    original = subject.generate
+    snapshots = []
+    monkeypatch.setattr(
+        subject,
+        "generate",
+        lambda **kwargs: original(**kwargs, record_round=snapshots.append),
+    )
+    with pytest.raises(KeyboardInterrupt):
+        generate(tmp_path, ReviewedClient(failure="cancel"))
+    assert snapshots == []
+
+
+def test_later_transport_failure_retains_accepted_rounds_on_disk(tmp_path, monkeypatch):
+    from Backend.Core.france.recovery_evidence import RecoveryEvidenceRecorder
+
+    recorder = RecoveryEvidenceRecorder(tmp_path)
+    original = subject.generate
+    monkeypatch.setattr(
+        subject, "generate", lambda **kwargs: original(**kwargs, record_round=recorder)
+    )
+
+    class Client(ReviewedClient):
+        def generate_request(self, request):
+            if self.active == "3" and "answers" in request.schema["properties"]:
+                self.failure = "transport"
+            return super().generate_request(request)
+
+    client = Client(refuse_rounds=())
+    with pytest.raises(RuntimeError, match="transport"):
+        generate(tmp_path, client)
+    assert len(client.requests) == 9
+    paths = list((tmp_path / ".keldin-recovery").glob("*.json"))
+    assert len(paths) == 1
+    snapshot = json.loads(paths[0].read_text())["snapshot"]
+    assert snapshot["state"] == "stopped"
+    assert [history["accepted_round"] for history in snapshot["exercise_attempts"]] == [
+        1,
+        1,
+        None,
+    ]
+    assert snapshot["partial_round"]["exercise_id"] == "3"
+    assert recorder.retention_warning is None

@@ -104,6 +104,42 @@ def test_real_pdf_publication_keeps_model_identity_and_private_evidence(
     assert manifest["warnings"]
     assert not list(args.output.glob(".nsi-llm-*"))
     assert events[-1]["type"] == "done"
+    recovery = list((args.output / ".keldin-recovery").glob("*.json"))
+    assert len(recovery) == 1
+    snapshot = json.loads(recovery[0].read_text())["snapshot"]
+    assert snapshot["state"] == "review_complete"
+    assert len(snapshot["exercise_attempts"]) == 3
+
+
+def test_recovery_cleanup_warning_is_reported_without_failing_publication(
+    publication, monkeypatch
+):
+    subject, args, events = publication
+    notices = []
+    monkeypatch.setattr(
+        subject, "emit_progress", lambda message, **kwargs: notices.append(message)
+    )
+
+    class Recorder:
+        retention_warning = "Cleanup could not be confirmed."
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __call__(self, snapshot):
+            pass
+
+    monkeypatch.setattr(subject, "RecoveryEvidenceRecorder", Recorder)
+    assert subject.handle_generate_llm_assessment(args) == 0
+    path = next(
+        Path(event["path"])
+        for event in events
+        if event.get("role") == "package_manifest"
+    )
+    manifest = json.loads(path.read_text())
+    assert any("anciens" in warning for warning in manifest["operational_warnings"])
+    assert any("anciens" in message for message in notices)
+    assert all(isinstance(warning, dict) for warning in manifest["warnings"])
 
 
 @pytest.mark.parametrize("change", ["missing", "mismatch"])

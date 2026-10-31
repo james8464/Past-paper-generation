@@ -16,7 +16,7 @@ from Backend.Core.france import llm_pipeline
 from Backend.Core.france.code_layout import CODE_LAYOUT_POLICY
 from Backend.Core.france.llm_pdf import validate_llm_pdf
 from Backend.Core.france.pipeline import atomic_json, digest
-from Backend.Core.france.recovery_evidence import save_recovery_evidence
+from Backend.Core.france.recovery_evidence import RecoveryEvidenceRecorder
 from Backend.Core.france.rendering import render_assessment
 from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.sql_sources import SQL_SOURCE_POLICY
@@ -128,16 +128,22 @@ def handle_generate_llm_assessment(args) -> int:
                 progress=min(0.8, 0.04 + steps * 0.08),
             )
 
+        recorder = RecoveryEvidenceRecorder(
+            output, secrets=(getattr(args, "api_key", ""),)
+        )
         package = llm_pipeline.generate(
             index_path=args.reference_index,
             client=client,
             seed=args.seed,
             progress=progress,
             large_print=args.large_print,
-            record_round=lambda snapshot: save_recovery_evidence(
-                output, snapshot, secrets=(getattr(args, "api_key", ""),)
-            ),
+            record_round=recorder,
         )
+        operational_warnings = []
+        if recorder.retention_warning:
+            notice = "L'historique du contrôle est enregistré, mais certains anciens relevés privés n'ont pas pu être supprimés."
+            operational_warnings.append(notice)
+            emit_progress(notice, stage="french_generation")
         exercises = llm_pipeline.validate_package(package)
         identity = package["identity"]
         if (
@@ -222,6 +228,7 @@ def handle_generate_llm_assessment(args) -> int:
             else "hosted_revision_not_available",
             "large_print": args.large_print,
             "warnings": package["warnings"],
+            "operational_warnings": operational_warnings,
         }
         atomic_json(staging / "manifest.json", manifest)
         paths["package_manifest"] = staging / "manifest.json"

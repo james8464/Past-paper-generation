@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793404563.2264433,
+    "mtime": 1793405301.9147108,
     "ast_hash": "9dec3022d353c07efadbcda24da44397",
     "semantic_hash": ""
   },
@@ -4755,13 +4755,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793404166.3370736,
-    "ast_hash": "d5ee765c3981f1759f4935685911ce84",
+    "mtime": 1793405262.534792,
+    "ast_hash": "bb24524cb0cb8bf68ce841420fa53a2a",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1793404098.979121,
-    "ast_hash": "1a4785c07b897b17d0e026ced7328993",
+    "mtime": 1793405336.3875859,
+    "ast_hash": "f12af8f98236fad022c96fc34a70b912",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4810,8 +4810,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
-    "mtime": 1793369545.2958124,
-    "ast_hash": "0e6154cef03036549bb67ca9802792f4",
+    "mtime": 1793405342.5065064,
+    "ast_hash": "83e0b00b33c55458ffba8f967d777a0f",
     "semantic_hash": ""
   },
   "tests/test_french_model_capability.py": {
@@ -5230,13 +5230,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/recovery_evidence.py": {
-    "mtime": 1793403180.530017,
-    "ast_hash": "5c69cb587118f2d2d45e33859ed18dfe",
+    "mtime": 1793405229.7416742,
+    "ast_hash": "4678a4f2cf1d1651efe7a115b1b4339f",
     "semantic_hash": ""
   },
   "tests/test_french_recovery_store.py": {
-    "mtime": 1793403180.632802,
-    "ast_hash": "7fa6ccf78d9d9dddf4c0db7b11b4434a",
+    "mtime": 1793405229.7419147,
+    "ast_hash": "b7f4765d9cbae3830e6107406c74e10f",
     "semantic_hash": ""
   },
   "docs/quality/french-recovery-storage-review-2026-10-30.md": {
@@ -5260,8 +5260,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_recovery_recording.py": {
-    "mtime": 1793404159.3359878,
-    "ast_hash": "31188a393500eeb3f486223520cda2f4",
+    "mtime": 1793405365.3593442,
+    "ast_hash": "f51c487dc3664a52abac1dc04f64c691",
     "semantic_hash": ""
   },
   "docs/quality/french-recovery-integration-2026-10-30.md": {

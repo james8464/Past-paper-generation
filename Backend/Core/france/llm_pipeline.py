@@ -1198,6 +1198,9 @@ def _author(client, request, exercise_id, *, large_print: bool = False, capture=
         raw = None
         try:
             raw = request_json(client, request)
+            if capture is not None:
+                capture["author_response"] = deepcopy(raw)
+                capture.setdefault("author_returns", []).append(deepcopy(raw))
             exercise = validate_authored_exercise(
                 raw, exercise_id, large_print=large_print
             )
@@ -1221,6 +1224,8 @@ def _author(client, request, exercise_id, *, large_print: bool = False, capture=
                     "response_sha256": _digest(raw),
                     "issue": issue,
                 }
+            if capture is not None:
+                capture.setdefault("author_rejections", []).append(deepcopy(refusal))
             if attempt == 2:
                 raise GenerationEvidenceError(
                     f"L'exercice {exercise_id} reste mal structuré après deux tentatives : {issue}",
@@ -1262,8 +1267,6 @@ def _author(client, request, exercise_id, *, large_print: bool = False, capture=
                 output_budget=request.output_budget,
             )
             continue
-        if capture is not None:
-            capture["author_response"] = deepcopy(raw)
         return exercise, {
             "exercise_id": exercise_id,
             "attempts": attempt,
@@ -1300,6 +1303,8 @@ def _review(
             output_budget=_phase_output_budget(client, "blind"),
         ),
     )
+    if capture is not None:
+        capture["blind_response"] = deepcopy(blind)
     Draft202012Validator(blind_schema).validate(blind)
     review_schema = _adjudication_schema(
         exercise, blind["issues"], include_advisories=True
@@ -1341,10 +1346,9 @@ def _review(
             output_budget=_phase_output_budget(client, "review"),
         ),
     )
-    Draft202012Validator(review_schema).validate(review)
     if capture is not None:
-        capture["blind_response"] = deepcopy(blind)
         capture["review_response"] = deepcopy(review)
+    Draft202012Validator(review_schema).validate(review)
     evidence = _review_evidence(exercise, blind, review)
     try:
         _validate_review(exercise, evidence)
@@ -1454,13 +1458,17 @@ def _validate_authoring_record(exercise, record, provider):
 
 
 def _round_record(number, request_identity, authoring, captured, refusal):
+    responses = {
+        name: captured[name]
+        for name in ("author_response", "blind_response", "review_response")
+    }
     return deepcopy(
         {
             "round": number,
             "request": request_identity,
             "authoring": authoring,
-            **captured,
-            **{name + "_sha256": _digest(value) for name, value in captured.items()},
+            **responses,
+            **{name + "_sha256": _digest(value) for name, value in responses.items()},
             "outcome": "accepted" if refusal is None else "rejected",
             "refusal": refusal,
         }
@@ -1686,7 +1694,16 @@ def validate_rejected_rounds(details: dict) -> None:
 
 
 def _record_recovery_round(
-    recorder, *, provider, model, seed, large_print, plan, histories, state
+    recorder,
+    *,
+    provider,
+    model,
+    seed,
+    large_print,
+    plan,
+    histories,
+    state,
+    partial=None,
 ):
     if recorder is None:
         return
@@ -1699,6 +1716,8 @@ def _record_recovery_round(
         "teacher_review": "not_run",
         "empirical_calibration": "not_run",
     }
+    if partial is not None:
+        snapshot["partial_round"] = partial
     if state == "refused":
         snapshot.update(histories[-1]["rounds"][-1]["refusal"])
         validate_rejected_rounds(snapshot)
@@ -1767,15 +1786,21 @@ def generate(
                 client, scope, seed, identifier, number, topics, large_print, refusal
             )
             captured = {}
-            exercise, authoring = _author(
-                client, request, identifier, large_print=large_print, capture=captured
-            )
-            _require_primary_topic(exercise, scope["primary_topic"])
-            if progress:
-                progress(
-                    f"Résolution et contrôle indépendants de l'exercice {identifier}"
-                )
+            phase = "author"
             try:
+                exercise, authoring = _author(
+                    client,
+                    request,
+                    identifier,
+                    large_print=large_print,
+                    capture=captured,
+                )
+                _require_primary_topic(exercise, scope["primary_topic"])
+                if progress:
+                    progress(
+                        f"Résolution et contrôle indépendants de l'exercice {identifier}"
+                    )
+                phase = "review"
                 review = _review(
                     client,
                     exercise,
@@ -1784,6 +1809,8 @@ def generate(
                     capture=captured,
                 )
             except SemanticReviewRefusal as error:
+                if phase != "review":
+                    raise
                 refusal = deepcopy(error.details)
                 history["rounds"].append(
                     _round_record(
@@ -1813,6 +1840,34 @@ def generate(
                     validate_rejected_rounds(error.details)
                     raise
                 continue
+            except InterruptedError:
+                raise
+            except Exception as error:
+                # Keep returned drafts for diagnosis without retrying an unrelated failure.
+                try:
+                    _record_recovery_round(
+                        record_round,
+                        provider=provider,
+                        model=model,
+                        seed=seed,
+                        large_print=large_print,
+                        plan=plan,
+                        histories=exercise_attempts,
+                        state="stopped",
+                        partial={
+                            "exercise_id": identifier,
+                            "round": number,
+                            "request": request_identity,
+                            "phase": phase,
+                            "returned": captured,
+                            "failure_type": type(error).__name__,
+                        },
+                    )
+                except InterruptedError:
+                    raise
+                except Exception:
+                    error.add_note("Partial French review evidence could not be saved.")
+                raise
             history["rounds"].append(
                 _round_record(number, request_identity, authoring, captured, None)
             )
