@@ -81,5 +81,14 @@ two skips. Its failures were older rejection-test expectations: no recovery
 JSON anywhere, and an exercise-specific refusal even when the configured test
 credential was echoed and storage correctly refused it. The revised 17-case
 scope separates those behaviours, preserving no-publication, no-secret-storage,
-permission and call-count checks. A fresh full run is required; the failed run
-is not release acceptance. Logs remain under `tmp/final-validation-20261030`.
+permission and call-count checks. The fresh frozen-source full run then passed
+5,937 tests with two skips and five existing third-party warnings in 545.58
+seconds. The earlier failed run is not acceptance evidence. Logs remain under
+`tmp/final-validation-20261030`.
+
+Computer control also verified the exact direct Release candidate's French
+workspace and disabled toolbar/File-menu creation for the unsupported Apple
+on-device model. The original Economics selection was restored and only the
+candidate was quit; the user's separate Xcode process stayed open. No model
+request or generated user document was involved. Protected GitHub checks,
+merge/install acceptance and a new live French quality review remain.
