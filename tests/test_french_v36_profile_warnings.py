@@ -131,7 +131,7 @@ def test_low_labels_do_not_override_negative_answer_review(tmp_path, review_fiel
     client = Negative(mutate=low_labels)
     with pytest.raises(ValueError, match="refuse"):
         generate(tmp_path, client)
-    assert len(client.requests) == 3
+    assert len(client.requests) == 6
 
 
 @pytest.mark.parametrize(

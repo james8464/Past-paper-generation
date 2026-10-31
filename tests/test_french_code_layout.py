@@ -83,11 +83,12 @@ def test_source_guard_uses_exact_metrics_and_preserves_tabs():
         subject.validate_authored_exercise(raw, "1", large_print=False)
 
 
-def test_legacy_package_without_layout_policy_keeps_legacy_reading(tmp_path):
+def test_current_recovery_package_cannot_drop_captured_layout_mode(tmp_path):
     package = generate(tmp_path, Client())
     package["identity"].pop("layout_policy")
     package["identity"].pop("large_print")
-    assert subject.validate_package(package)
+    with pytest.raises(ValueError, match="mise en page"):
+        subject.validate_package(package)
     package["identity"]["large_print"] = False
     with pytest.raises(ValueError):
         subject.validate_package(package)

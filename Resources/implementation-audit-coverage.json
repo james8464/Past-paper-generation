@@ -755,6 +755,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Backend/Core/france/generation_budget.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/france/graph_layout.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -1041,6 +1047,12 @@
     },
     {
       "path": "Backend/Core/france/question_review.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/france/recovery_evidence.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -3272,6 +3284,18 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-recovery-integration-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-recovery-storage-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-reference-and-figure-follow-up-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3831,6 +3855,12 @@
     },
     {
       "path": "docs/superpowers/plans/2026-10-28-trusted-generation-requests.md",
+      "classification": "documentation",
+      "status": "excluded",
+      "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-30-french-reviewed-redraft.md",
       "classification": "documentation",
       "status": "excluded",
       "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
@@ -5687,6 +5717,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_generation_budget.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_graph_resilience_authoring.py",
       "classification": "test",
       "status": "pending",
@@ -5957,6 +5993,18 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_recovery_recording.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_recovery_store.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_repeat_practice.py",
       "classification": "test",
       "status": "pending",
@@ -5964,6 +6012,12 @@
     },
     {
       "path": "tests/test_french_review.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_reviewed_redraft.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -5988,6 +6042,12 @@
     },
     {
       "path": "tests/test_french_runtime.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_semantic_refusal.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
