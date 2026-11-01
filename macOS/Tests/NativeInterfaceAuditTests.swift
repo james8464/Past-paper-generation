@@ -7,12 +7,21 @@ final class NativeInterfaceAuditTests: XCTestCase {
         let labels: [(LocalizedStringResource, String, String)] = [
             ("Quality review", "Quality review", "Contrôle de qualité"),
             ("Quality", "Quality", "Qualité"),
+            ("Qualification", "Qualification", "État des vérifications"),
             ("Close", "Close", "Fermer"),
         ]
         for (resource, english, french) in labels {
             XCTAssertEqual(InterfaceText.resolve(resource, language: "en"), english)
             XCTAssertEqual(InterfaceText.resolve(resource, language: "fr"), french)
             XCTAssertEqual(InterfaceText.resolve(resource, language: "system"), String(localized: resource))
+        }
+    }
+
+    func testFrenchQualityCountsReadNaturallyForZeroOneAndManyChecks() {
+        for count in [0, 1, 2] {
+            let resource: LocalizedStringResource = "\(count) issues · \(count) warnings · \(count) not checked"
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "fr"),
+                "Problèmes : \(count) · Avertissements : \(count) · Contrôles non effectués : \(count)")
         }
     }
 

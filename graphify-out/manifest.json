@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793568116.8314018,
+    "mtime": 1793569496.05475,
     "ast_hash": "86cb30281412afffac724b9399345203",
     "semantic_hash": ""
   },
@@ -3415,8 +3415,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_interface_copy.py": {
-    "mtime": 1793569425.021371,
-    "ast_hash": "5ac5f9a717e2be7bb8ac5c4afa8c7486",
+    "mtime": 1793569807.7403154,
+    "ast_hash": "bb958466177fc02c9e19c6685ad80bc5",
     "semantic_hash": ""
   },
   "Backend/Core/legacy_migration.py": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793568116.7501605,
+    "mtime": 1793569495.9625077,
     "ast_hash": "5366e63340016c538c6f7963b23535c0",
     "semantic_hash": ""
   },
@@ -4105,8 +4105,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/NativeInterfaceAuditTests.swift": {
-    "mtime": 1793569425.0206513,
-    "ast_hash": "dca99f9bbb83d458bed9049e9c3f5fff",
+    "mtime": 1793569807.7407057,
+    "ast_hash": "4ef779d6be691e87052e96c212a6f58a",
     "semantic_hash": ""
   },
   "tests/test_selected_response_dispatch.py": {
