@@ -237,7 +237,10 @@ def _print_policy_failures(
         if not page["safe_print"]:
             failures.append(f"page {number} crosses the safe-print boundary")
         if page["reading_order_score"] < profile.minimum_reading_order_score:
-            failures.append(f"page {number} has unstable reading order")
+            failures.append(
+                f"page {number} has unstable content-block geometric order; "
+                "manual reading-order review required"
+            )
         if (
             profile.monochrome
             and page["monochrome_minimum_contrast"] < profile.minimum_contrast_ratio
@@ -1630,6 +1633,9 @@ def _document_result(
             "maximum": max(value["pages"] for value in reference_sources.values()),
         },
         "print_evidence": {
+            "extractor_schema_version": generated_print["schema_version"],
+            "reading_order_basis": generated_print["reading_order_basis"],
+            "semantic_order": generated_print["semantic_order"],
             "passed": not print_failures,
             "failures": print_failures,
             "tagged": generated_print["tagged"],

@@ -11,6 +11,7 @@ from tools.paper_fidelity_audit import (
     PageRoleMatcher,
     _compact_profile,
     _document_page_roles,
+    _document_result,
     _font_family,
     _generated_document,
     _geometry_scores,
@@ -32,6 +33,29 @@ from tools.paper_fidelity_audit import (
 def test_open_metric_compatible_fonts_match_reference_families() -> None:
     assert _font_family("Arimo-Bold") == _font_family("Arial-BoldMT")
     assert _font_family("Tinos-Italic") == _font_family("TimesNewRomanPS-ItalicMT")
+
+
+def test_fidelity_summary_retains_order_evidence_provenance(tmp_path: Path) -> None:
+    path = tmp_path / "paper.pdf"
+    with fitz.open() as document:
+        page = document.new_page()
+        page.insert_text((72, 72), "Question paper")
+        document.save(path)
+    measured = profile(path)
+    original = path.read_bytes()
+
+    result = _document_result(
+        path,
+        path,
+        {"generated": measured, "reference": measured},
+        perceptual_dpi=36,
+    )
+
+    summary = result["print_evidence"]
+    assert summary["extractor_schema_version"] == 2
+    assert summary["reading_order_basis"] == "content_block_geometry_v1"
+    assert summary["semantic_order"] == "not_assessed"
+    assert path.read_bytes() == original
 
 
 def _threshold_report(

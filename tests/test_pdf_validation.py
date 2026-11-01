@@ -3,10 +3,12 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
+import pymupdf as fitz
 import pytest
 from PIL import Image
 from reportlab.pdfgen import canvas
 
+from Backend.Core.pdf_accessibility import add_page_structure_tree
 from Backend.Core.pdf_validation import (
     GlyphMetric,
     _normalise_font,
@@ -313,6 +315,27 @@ def test_print_evidence_reports_reading_order_tags_margin_and_monochrome(
     assert page["safe_print"] is False
     assert page["reading_order_score"] < 1
     assert page["monochrome_minimum_contrast"] < 4.5
+
+    original = path.read_bytes()
+    assert extract_pdf_evidence(path, non_printable_margin_mm=5.0) == evidence
+    assert path.read_bytes() == original
+    with fitz.open(path) as document:
+        text = document[0].get_text("rawdict")
+        pixels = document[0].get_pixmap().samples
+
+    add_page_structure_tree(path)
+    tagged_bytes = path.read_bytes()
+    tagged = extract_pdf_evidence(path, non_printable_margin_mm=5.0)
+
+    assert tagged["tagged"] is True
+    assert tagged["pages"] == evidence["pages"]
+    assert tagged["schema_version"] == 2
+    assert tagged["reading_order_basis"] == "content_block_geometry_v1"
+    assert tagged["semantic_order"] == "not_assessed"
+    assert path.read_bytes() == tagged_bytes
+    with fitz.open(path) as document:
+        assert document[0].get_text("rawdict") == text
+        assert document[0].get_pixmap().samples == pixels
 
 
 def test_glyph_metric_contract_is_immutable() -> None:
