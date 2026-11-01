@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793557653.7358868,
+    "mtime": 1793565349.6385903,
     "ast_hash": "86cb30281412afffac724b9399345203",
     "semantic_hash": ""
   },
@@ -3480,8 +3480,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/SharedViews.swift": {
-    "mtime": 1793543563.4386833,
-    "ast_hash": "626c6426945ca5ef333a0e2c02017487",
+    "mtime": 1793565312.3315115,
+    "ast_hash": "f434cdb0ec6a79a1306a2ce4d1eaf5cb",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AppModels.swift": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793557582.8057017,
-    "ast_hash": "25848b98523b551762dc52d9d523ee17",
+    "mtime": 1793565312.332222,
+    "ast_hash": "2268bf18a99818d8ea9994e4b8d6cb9a",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793557582.8062837,
-    "ast_hash": "4df24546f90bba0bf8a7d312e63ada13",
+    "mtime": 1793565312.332845,
+    "ast_hash": "1aea4d508960d14180cae8eb315183c8",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793557634.4390407,
+    "mtime": 1793565332.7374556,
     "ast_hash": "5366e63340016c538c6f7963b23535c0",
     "semantic_hash": ""
   },
@@ -4530,8 +4530,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
-    "mtime": 1793543563.4491951,
-    "ast_hash": "1310d1c05bc56b791e8f817aeb7e0e10",
+    "mtime": 1793565394.2555685,
+    "ast_hash": "9174ab3c032db1f0574cd802acb34898",
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {

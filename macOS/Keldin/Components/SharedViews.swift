@@ -63,6 +63,7 @@ struct GeneratedFilesTable: View {
                     Button("Remove from Recents") {
                         application.removeGeneratedFile(file)
                     }
+                    .disabled(!application.canRemoveGeneratedFile(file))
                 }
             }
         }

@@ -1,4 +1,5 @@
 import AppKit
+import PDFKit
 import SwiftUI
 import XCTest
 @testable import Keldin
@@ -18,10 +19,28 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         let backend = ControlledRunBackend()
         let application = ApplicationCoordinator(defaults: defaults, secrets: NavigationCheckSecrets(),
             historyDirectory: folder.appendingPathComponent("history"), backend: backend)
+        defer {
+            application.cancelGeneration()
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: folder)
+        }
         application.outputFolder = folder.appendingPathComponent("output")
+        try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
+        let olderURL = folder.appendingPathComponent("older-controlled.pdf")
+        let currentURL = application.outputFolder.appendingPathComponent("current-controlled.pdf")
+        for url in [olderURL, currentURL] {
+            let pdf = PDFDocument()
+            pdf.insert(PDFPage(), at: 0)
+            XCTAssertTrue(pdf.write(to: url))
+        }
+        let older = GeneratedFile(role: "mark_scheme", url: olderURL,
+            subject: "Older controlled paper", paper: "Saved before this run")
+        application.generatedFiles = [older]
         application.dryRun = true
         application.generate()
         let original = try XCTUnwrap(application.generationCoordinator.activeJob)
+        backend.requests.first?.onEvent(.file(role: "question_paper", path: currentURL.path))
+        let current = try XCTUnwrap(application.currentGenerationFiles.first)
         backend.requests.first?.onEvent(.progress(stage: "review",
             message: "Checking reference demand 2/17: 1b", progress: 0.8))
 
@@ -42,17 +61,16 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         window.contentView = NSHostingView(rootView: content)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        defer {
-            application.cancelGeneration()
-            window.close()
-            defaults.removePersistentDomain(forName: suite)
-            try? FileManager.default.removeItem(at: folder)
-        }
+        defer { window.close() }
         print("KELDIN_INTERACTIVE_NAVIGATION_READY")
+        print("RECENTS_CHECK: current-controlled.pdf must refuse removal; remove only older-controlled.pdf before finishing.")
         await fulfillment(of: [finished], timeout: 180)
         XCTAssertTrue(application.isRunning)
         XCTAssertEqual(application.generationCoordinator.activeJob, original)
         XCTAssertEqual(backend.requests.count, 1)
+        XCTAssertTrue(application.currentGenerationFiles.contains { $0.id == current.id })
+        XCTAssertFalse(application.generatedFiles.contains { $0.id == older.id })
+        XCTAssertTrue(FileManager.default.fileExists(atPath: olderURL.path))
     }
 }
 

@@ -1312,7 +1312,18 @@ final class ApplicationCoordinator: ObservableObject {
         _ = persistSettings(includeCredentials: false, presentation: settingsPresentation)
     }
 
+    func canRemoveGeneratedFile(_ file: GeneratedFile) -> Bool {
+        guard let run = activeRun, run.intent.operation == .generation else { return true }
+        let path = file.url.standardizedFileURL.path
+        return !generatedFiles.contains {
+            run.documents.fileIDs.contains($0.id) && $0.url.standardizedFileURL.path == path
+        }
+    }
+
     func removeGeneratedFile(_ file: GeneratedFile) {
+        // Recents is also the active publication collection. Hiding an owned
+        // path (even via a stale identity) must not discard a run's inputs.
+        guard canRemoveGeneratedFile(file) else { return }
         let path = file.url.standardizedFileURL.path
         var hidden = hiddenRecentPaths
         hidden.insert(path)

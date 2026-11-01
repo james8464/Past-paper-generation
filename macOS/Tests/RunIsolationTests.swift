@@ -6,6 +6,70 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testRemovingStreamedRecentCannotDropAPaperFromSuccessfulPublication() throws {
+        let backend = ControlledRunBackend()
+        let defaults = isolatedDefaults()
+        let history = try temporaryHistoryURL()
+        let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+        application.outputFolder = history.deletingLastPathComponent().appendingPathComponent("exports")
+        let older = GeneratedFile(role: "question_paper", url: history.deletingLastPathComponent().appendingPathComponent("older.pdf"))
+        application.apply(.file(role: older.role, path: older.url.path))
+        application.setDryRun(true)
+        application.generate()
+        let request = try XCTUnwrap(backend.requests.first)
+        let outputIndex = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
+        let working = URL(fileURLWithPath: request.arguments[outputIndex + 1])
+        try FileManager.default.createDirectory(at: working, withIntermediateDirectories: true)
+        for role in ["question_paper", "mark_scheme"] {
+            let url = working.appendingPathComponent(role + ".pdf")
+            let pdf = PDFDocument()
+            pdf.insert(PDFPage(), at: 0)
+            XCTAssertTrue(pdf.write(to: url))
+            request.onEvent(.file(role: role, path: url.path))
+        }
+        let manifest = working.appendingPathComponent("manifest.json")
+        try Data("{}".utf8).write(to: manifest)
+        request.onEvent(.file(role: "package_manifest", path: manifest.path))
+        let owned = application.currentGenerationFiles
+        let question = try XCTUnwrap(owned.first { $0.role == "question_paper" })
+        let active = try XCTUnwrap(application.generationCoordinator.activeJob)
+
+        let alias = GeneratedFile(role: question.role, url: question.url)
+        XCTAssertTrue(application.canRemoveGeneratedFile(older))
+        XCTAssertFalse(application.canRemoveGeneratedFile(question))
+        XCTAssertFalse(application.canRemoveGeneratedFile(alias))
+        application.removeGeneratedFile(older)
+        application.removeGeneratedFile(question)
+        application.removeGeneratedFile(alias)
+
+        XCTAssertFalse(application.generatedFiles.contains { $0.url == older.url })
+        XCTAssertEqual(application.currentGenerationFiles, owned)
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertTrue(application.isRunning)
+        XCTAssertFalse((defaults.stringArray(forKey: AppStorageKey.hiddenRecentDocumentPaths) ?? []).contains(question.url.standardizedFileURL.path))
+        request.onFinish(.success(0))
+
+        XCTAssertFalse(application.showError, application.errorMessage)
+        let completed = try XCTUnwrap(application.recentDocumentStore.records.first { $0.id == active.id })
+        XCTAssertEqual(completed.state, .completed)
+        XCTAssertEqual(completed.artifacts.first { $0.role == "package_manifest" }?.url, manifest)
+        XCTAssertEqual(Set(completed.artifacts.filter { $0.url.pathExtension == "pdf" }.map(\.role)), ["question_paper", "mark_scheme"])
+        let folders = try FileManager.default.contentsOfDirectory(at: application.outputFolder, includingPropertiesForKeys: nil)
+        XCTAssertEqual(folders.count, 1)
+        let published = try XCTUnwrap(folders.first)
+        XCTAssertEqual(Set(try FileManager.default.contentsOfDirectory(atPath: published.path)), ["question_paper.pdf", "mark_scheme.pdf"])
+        for artifact in completed.artifacts where artifact.url.pathExtension == "pdf" {
+            XCTAssertEqual(artifact.url.deletingLastPathComponent().resolvingSymlinksInPath(), published.resolvingSymlinksInPath())
+            XCTAssertTrue(artifact.exists)
+        }
+        let publishedQuestion = try XCTUnwrap(completed.artifacts.first { $0.role == "question_paper" })
+        XCTAssertTrue(application.canRemoveGeneratedFile(publishedQuestion))
+        application.removeGeneratedFile(publishedQuestion)
+        XCTAssertFalse(application.generatedFiles.contains { $0.id == publishedQuestion.id })
+        XCTAssertTrue(publishedQuestion.exists, "Removing a completed recent must not delete the user's PDF.")
+    }
+
+    @MainActor
     func testHistoryOpenBeyondRecentLimitRemainsFirstAndUnhiddenAfterRelaunch() throws {
         let defaults = isolatedDefaults()
         let history = try temporaryHistoryURL()
@@ -1027,6 +1091,7 @@ final class RunIsolationTests: XCTestCase {
 
             run.onEvent(.file(role: "question_paper", path: "/fixture/not-a-paper.pdf"))
             XCTAssertEqual(application.currentGenerationFiles, files)
+            XCTAssertTrue(application.canRemoveGeneratedFile(try XCTUnwrap(files.first)), "Model management must not lock previously completed papers.")
             application.cancelGeneration()
             run.onFinish(.success(0))
 
