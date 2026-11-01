@@ -696,6 +696,12 @@ def test_checkpoint_replay_rejects_product_rename():
         "A factory reallocates resources: product X increases from 30 to 20 units; product Y decreases from 68 to 80 units. Select the quantity sacrificed to expand product X by 10 units.",
         "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. Select the opportunity cost per unit of the extra 10 units of product X.",
         "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. Select the opportunity cost of the extra 10 units of product Y.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X? Y output actually rises.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X when output is reducing?",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X? Assume there is no sacrifice.",
+        "The stated changes are false: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "Product X increases from 20 to 30 units; however these changes are false; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "Product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X in units of product Y, although no output is forgone?",
     ],
 )
 def test_opportunity_cost_rejects_changed_public_fact_roles_at_every_boundary(
@@ -736,6 +742,7 @@ def test_opportunity_cost_rejects_changed_public_fact_roles_at_every_boundary(
         "Production of PRODUCT  X changes from 20 to 30 units while production of Product\nY moves from 80 to 68 units. What is the opportunity cost?",
         "Product Y falls from 80 to 68 units while product X rises from 20 to 30 units. Identify the opportunity cost of increasing product X.",
         "Product X's output rises from 20 to 30 units; product Y’s production falls from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "The output of product X increases from 20 to 30 units whereas the production of product Y declines from 80 to 68 units. Which option gives the opportunity cost in units of product Y?",
     ],
 )
 def test_opportunity_cost_fact_binding_allows_source_preserving_wording(
@@ -796,6 +803,14 @@ def test_opportunity_cost_parser_accepts_source_preserving_reordered_clauses():
         lambda text: (
             text.split("What is")[0]
             + "What is the opportunity cost of reducing product X?"
+        ),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost of reducing output?"
+        ),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost? Assume there is no sacrifice."
         ),
     ],
 )
