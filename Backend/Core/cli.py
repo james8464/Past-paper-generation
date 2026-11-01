@@ -18,6 +18,7 @@ from Backend.Core.mlx_download_info import handle_mlx_download_info
 from Backend.Core.mlx_setup import handle_mlx_status, handle_setup_mlx
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.ollama import (
+    OLLAMA_API,
     handle_list_models,
     handle_ollama_status,
     handle_pull_model,
@@ -35,6 +36,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     status = subparsers.add_parser("ollama-status")
+    status.add_argument("--ollama-url", default=OLLAMA_API)
+    status.add_argument("--allow-remote", action="store_true")
     status.set_defaults(handler=handle_ollama_status)
 
     bundle_check = subparsers.add_parser(
@@ -44,6 +47,8 @@ def build_parser() -> argparse.ArgumentParser:
     bundle_check.set_defaults(handler=handle_bundle_check)
 
     models = subparsers.add_parser("list-models")
+    models.add_argument("--ollama-url", default=OLLAMA_API)
+    models.add_argument("--allow-remote", action="store_true")
     models.set_defaults(handler=handle_list_models)
 
     pull = subparsers.add_parser("pull-model")

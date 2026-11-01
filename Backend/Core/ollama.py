@@ -9,8 +9,10 @@ import subprocess
 import urllib.error
 import urllib.request
 from pathlib import Path
+from urllib.parse import urlparse
 
 from Backend.Core.events import emit, emit_progress, run_subprocess_json
+from Backend.Core.france.network import open_ollama_request, validate_endpoint
 
 OLLAMA_FALLBACK_COMMANDS = (
     "/opt/homebrew/bin/ollama",
@@ -20,10 +22,18 @@ OLLAMA_FALLBACK_COMMANDS = (
 OLLAMA_API = "http://127.0.0.1:11434"
 
 
-def api_models() -> list[str] | None:
+def api_models(
+    url: str = OLLAMA_API, *, allow_remote: bool = False
+) -> list[str] | None:
+    validate_endpoint(url, allow_remote=allow_remote)
     try:
-        with urllib.request.urlopen(f"{OLLAMA_API}/api/tags", timeout=5) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        with open_ollama_request(
+            urllib.request.Request(f"{url.rstrip('/')}/api/tags"), timeout=5
+        ) as response:
+            content = response.read(4 * 1024 * 1024 + 1)
+            if len(content) > 4 * 1024 * 1024:
+                return None
+            payload = json.loads(content.decode("utf-8"))
     except (OSError, urllib.error.URLError, UnicodeDecodeError, json.JSONDecodeError):
         return None
     if not isinstance(payload, dict) or not isinstance(payload.get("models"), list):
@@ -51,14 +61,33 @@ def ollama_command() -> str | None:
     )
 
 
-def handle_ollama_status(_args: argparse.Namespace) -> int:
-    models = api_models()
+def _default_endpoint(url: str) -> bool:
+    parsed = urlparse(url)
+    return (
+        parsed.scheme == "http"
+        and parsed.hostname in {"localhost", "127.0.0.1"}
+        and parsed.port == 11434
+    )
+
+
+def handle_ollama_status(args: argparse.Namespace) -> int:
+    endpoint = getattr(args, "ollama_url", OLLAMA_API)
+    models = api_models(endpoint, allow_remote=getattr(args, "allow_remote", False))
     if models is not None:
         emit(
             "ollama_status",
             installed=True,
             running=True,
             message="Ollama is available.",
+        )
+        return 0
+
+    if not _default_endpoint(endpoint):
+        emit(
+            "ollama_status",
+            installed=True,
+            running=False,
+            message="The configured Ollama server is not responding.",
         )
         return 0
 
@@ -96,8 +125,9 @@ def handle_ollama_status(_args: argparse.Namespace) -> int:
     return 0
 
 
-def handle_list_models(_args: argparse.Namespace) -> int:
-    api_result = api_models()
+def handle_list_models(args: argparse.Namespace) -> int:
+    endpoint = getattr(args, "ollama_url", OLLAMA_API)
+    api_result = api_models(endpoint, allow_remote=getattr(args, "allow_remote", False))
     if api_result is not None:
         emit(
             "models",
@@ -105,6 +135,17 @@ def handle_list_models(_args: argparse.Namespace) -> int:
             message=f"Found {len(api_result)} Ollama model(s).",
         )
         return 0
+
+    if not _default_endpoint(endpoint):
+        emit(
+            "models",
+            models=[],
+            message="No models received from the configured Ollama server.",
+        )
+        emit(
+            "error", message="Could not list models from the configured Ollama server."
+        )
+        return 1
 
     command = ollama_command()
     if not command:

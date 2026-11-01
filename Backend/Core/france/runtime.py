@@ -9,7 +9,6 @@ import tempfile
 from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
-from urllib.parse import urlparse
 from urllib.request import Request
 
 import pymupdf
@@ -67,7 +66,7 @@ from Backend.Core.france.graph_two_outage_contract import (
     GraphTwoOutageContract,
     build_graph_two_outage_contract,
 )
-from Backend.Core.france.network import open_ollama_request
+from Backend.Core.france.network import open_ollama_request, validate_endpoint
 from Backend.Core.france.network_binding import network_materials
 from Backend.Core.france.network_contract import NetworkContract, build_network_contract
 from Backend.Core.france.network_depth_contract import (
@@ -133,27 +132,6 @@ from Backend.Core.legacy_migration import LEGACY_PUBLISHER, output_directory
 from Backend.Core.render_transaction import render_pdf_atomically
 
 REPEAT_PRACTICE_POLICY = "repeat-practice-v1"
-
-
-def validate_endpoint(url: str, *, allow_remote: bool):
-    parsed = urlparse(url)
-    if (
-        parsed.scheme not in {"http", "https"}
-        or not parsed.hostname
-        or parsed.username
-        or parsed.password
-        or parsed.query
-        or parsed.fragment
-        or parsed.path not in ("", "/")
-    ):
-        raise ValueError("Adresse Ollama invalide")
-    if parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
-        if not allow_remote:
-            raise ValueError(
-                "Un serveur Ollama distant nécessite votre accord explicite"
-            )
-        if parsed.scheme != "https":
-            raise ValueError("Un serveur distant doit utiliser HTTPS")
 
 
 def model_identity(url: str, name: str) -> str:

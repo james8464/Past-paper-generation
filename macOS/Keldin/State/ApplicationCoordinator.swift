@@ -18,7 +18,15 @@ final class ApplicationCoordinator: ObservableObject {
 
     @Published var selectedModel = AppDefaults.ollamaModel
     @Published var aiProvider: AIProvider = .ollama
-    @Published var ollamaURL = AppDefaults.ollamaURL
+    @Published var ollamaURL = AppDefaults.ollamaURL {
+        didSet {
+            guard oldValue != ollamaURL else { return }
+            ollamaRefreshRevision = UUID()
+            availableModels = []
+            hasLoadedOllamaModels = false
+            ollamaState = OllamaState()
+        }
+    }
     @Published var outputFolder = AppDefaults.defaultOutputFolder()
     @Published var dryRun = false
     @Published private var activeRun: BackendRun?
@@ -377,14 +385,15 @@ final class ApplicationCoordinator: ObservableObject {
         isRefreshingOllama = true
         status = "Checking Ollama"
         let revision = ollamaRefreshRevision
+        let endpoint = ollamaURL
         Task {
             defer { isRefreshingOllama = false }
             guard ollamaRefreshRevision == revision else { return }
             do {
-                let statusEvents = try await backend.collect(arguments: ["ollama-status"])
+                let statusEvents = try await backend.collect(arguments: ["ollama-status", "--ollama-url", endpoint])
                 guard ollamaRefreshRevision == revision else { return }
                 statusEvents.forEach { apply($0, errorPresentation: presentation) }
-                let modelEvents = try await backend.collect(arguments: ["list-models"])
+                let modelEvents = try await backend.collect(arguments: ["list-models", "--ollama-url", endpoint])
                 guard ollamaRefreshRevision == revision else { return }
                 modelEvents.forEach { apply($0, errorPresentation: presentation) }
             } catch {

@@ -1,6 +1,33 @@
 # Keep French inference on the explicitly selected server, without proxy routing.
 
+from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+
+
+def validate_endpoint(url: str, *, allow_remote: bool):
+    parsed = urlparse(url)
+    try:
+        port = parsed.port
+    except ValueError:
+        raise ValueError("Adresse Ollama invalide") from None
+    if (
+        parsed.scheme not in {"http", "https"}
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or parsed.query
+        or parsed.fragment
+        or parsed.path not in ("", "/")
+        or port == 0
+    ):
+        raise ValueError("Adresse Ollama invalide")
+    if parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
+        if not allow_remote:
+            raise ValueError(
+                "Un serveur Ollama distant nécessite votre accord explicite"
+            )
+        if parsed.scheme != "https":
+            raise ValueError("Un serveur distant doit utiliser HTTPS")
 
 
 class NoRedirects(HTTPRedirectHandler):
