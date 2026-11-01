@@ -370,9 +370,9 @@ def emit_final_metrics(samples: list[Sample]) -> None:
         )
 
     if score >= READY_SCORE:
-        verdict = "Ready for local generation"
+        verdict = "Hardware check passed"
         detail = (
-            "This Mac should generate papers comfortably with the selected local setup."
+            "This checks the Mac's hardware, not the selected model's speed or paper quality."
         )
     elif score >= CAPABLE_SCORE:
         verdict = "Capable with slower local models"

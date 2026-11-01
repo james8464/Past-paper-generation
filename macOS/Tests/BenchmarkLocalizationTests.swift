@@ -34,6 +34,8 @@ final class BenchmarkLocalizationTests: XCTestCase {
 
     func testEveryKnownVerdictAndDetailUsesChosenEnglishOrFrench() {
         let cases = [
+            ("Hardware check passed", "Vérification du matériel réussie"),
+            ("This checks the Mac's hardware, not the selected model's speed or paper quality.", "Ce test vérifie le matériel du Mac, pas la vitesse du modèle sélectionné ni la qualité des sujets."),
             ("Benchmark failed", "Échec du test de performance"),
             ("No samples were collected.", "Aucun échantillon n’a été recueilli."),
             ("Ready for local generation", "Prêt pour la création locale"),
