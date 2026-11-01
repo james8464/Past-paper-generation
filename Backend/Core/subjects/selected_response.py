@@ -328,10 +328,115 @@ def _solve_opportunity_cost_change(
         or secondary_loss <= 0
     ):
         raise ValueError("opportunity-cost source has invalid public values")
+    _validate_opportunity_cost_stem(prompt, values)
     expected_text = _quantity_choice(choices, secondary_loss, contract.decimal_places)
     steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
     numeric_results = {"opportunity_cost": float(secondary_loss)}
     return _SelectedResult(expected_text, steps, numeric_results)
+
+
+def _validate_opportunity_cost_stem(prompt: str, values: dict[str, Decimal]) -> None:
+    """Bind the supported public facts, not the whole authored sentence.
+
+    This closed operation owns X's increase and Y's sacrifice. Unsupported or
+    ambiguous wording needs regeneration, not a guessed semantic interpretation.
+    Clause order, ordinary change verbs, case and whitespace are not fixed.
+    """
+    text = " ".join(prompt.casefold().split())
+    number = r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)"
+    if re.search(
+        r"[%£$€]|\b(?:per|each|every|average|marginal|ratio|percentage|percent|not|never|instead|rather|except|unless)\b",
+        text,
+    ):
+        raise ValueError("opportunity-cost facts or total-output target are ambiguous")
+    transition = re.compile(
+        rf"\bproduct (?P<label>x|y)\b(?:['’]s)?\s*"
+        rf"(?:(?:output|production)\s+)?"
+        rf"(?P<verb>rises?|increases?|grows?|expands?|falls?|decreases?|declines?|"
+        rf"drops?|changes?|moves?|goes?)\s+from\s+(?P<before>{number})"
+        rf"(?:\s+units)?\s+to\s+(?P<after>{number})\s+units\b"
+    )
+    facts = list(transition.finditer(text))
+    if len(facts) != 2 or {fact["label"] for fact in facts} != {"x", "y"}:
+        raise ValueError(
+            "opportunity-cost public product/value roles are missing or ambiguous"
+        )
+    for fact in facts:
+        role = "primary" if fact["label"] == "x" else "secondary"
+        before, after = Decimal(fact["before"]), Decimal(fact["after"])
+        up = fact["verb"] in {
+            "rise",
+            "rises",
+            "increase",
+            "increases",
+            "grow",
+            "grows",
+            "expand",
+            "expands",
+        }
+        down = fact["verb"] in {
+            "fall",
+            "falls",
+            "decrease",
+            "decreases",
+            "decline",
+            "declines",
+            "drop",
+            "drops",
+        }
+        if (
+            (before, after) != (values[f"{role}_before"], values[f"{role}_after"])
+            or (up and after <= before)
+            or (down and after >= before)
+        ):
+            raise ValueError("opportunity-cost public product/value roles changed")
+
+    # Only the task remains after removing the two validated fact spans. Never
+    # let a second, conflicting source claim hide behind a correct first claim.
+    task = transition.sub(" ", text)
+    if not re.search(
+        r"\b(?:what|which|select|calculate|identify|determine|find)\b", task
+    ) or not re.search(
+        r"\bopportunity cost\b|\b(?:quantity|output|units)\s+(?:sacrificed|forgone|given up)\b",
+        task,
+    ):
+        raise ValueError("opportunity-cost total-output task is missing or ambiguous")
+    # An explicit answer unit is allowed only for the sacrificed product Y.
+    task = re.sub(r"\bin units of product y\b", " ", task)
+    if (
+        re.search(r"\bproduct\s+(?!x\b)\w+", task)
+        or len(re.findall(r"\bproduct x\b", task)) > 1
+    ):
+        raise ValueError("opportunity-cost task must target the increase in product X")
+    target = re.search(
+        rf"\b(?:extra|additional)\s+(?P<amount>{number})\s+units(?:\s+of\s+product x)?\b"
+        rf"|\b(?:expand|increase|raise)\s+(?:the\s+)?(?:output\s+of\s+)?product x\s+by\s+(?P<gain>{number})\s+units\b",
+        task,
+    )
+    if (
+        "product x" in task
+        and target is None
+        and not re.search(
+            r"\b(?:increasing|expanding|raising)\s+(?:the\s+)?(?:output\s+of\s+)?product x\b",
+            task,
+        )
+    ):
+        raise ValueError("opportunity-cost task must target the increase in product X")
+    quantities = re.findall(number, task)
+    if not quantities and re.search(r"\bunits?\b", task):
+        raise ValueError(
+            "opportunity-cost requested increase or quantity unit is ambiguous"
+        )
+    if quantities:
+        gain = values["primary_after"] - values["primary_before"]
+        if (
+            len(quantities) != 1
+            or target is None
+            or Decimal(target["amount"] or target["gain"]) != gain
+        ):
+            raise ValueError(
+                "opportunity-cost requested increase or quantity unit changed"
+            )
 
 
 def _solve_elastic_revenue_change(
