@@ -127,6 +127,40 @@ def test_existing_personal_documents_are_not_overwritten(tmp_path):
     assert len(list(tmp_path.iterdir())) == 1
 
 
+def test_november_sources_keep_regional_proposal_and_recovery_limits():
+    assert sources.DATE == "1 November 2026"
+    assert sources.DEFAULT_OUTPUT.name == "pages-20261101-english"
+    application = " ".join(
+        text for page in sources.APPLICATION.pages for _, text in page.sections
+    )
+    assert "computing practice with Occitanie's open data" in application
+    assert "500-euro" in application
+    assert "already funded through other channels" in application
+    technical = " ".join(
+        text for page in sources.TECHNICAL.pages for _, text in page.sections
+    )
+    assert "two whole-exercise rounds" in technical
+    assert "private recovery record" in technical
+    assert "synthetic transport tests" in technical
+    assert "no live-model quality result" in technical
+    reliability = " ".join(
+        text for page in sources.RELIABILITY.pages for _, text in page.sections
+    )
+    assert "software regression tests" in reliability
+    assert "common defect probability" in reliability
+
+
+def test_active_email_matches_experimental_model_route():
+    email = (
+        sources.ROOT / "docs/competition/occitanie-2026/submission-email.md"
+    ).read_text()
+    assert "Dear Ms de Ferry" in email
+    assert "no complete paper" in email
+    assert "current route has yet passed qualification" in email
+    assert "without a model" not in email
+    assert "sans appel" not in email
+
+
 def test_original_diagrams_are_valid_bounded_svg(tmp_path):
     sources.build(tmp_path)
     assert len(list(tmp_path.glob("*.svg"))) == 4

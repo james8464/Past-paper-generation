@@ -640,7 +640,7 @@ def test_requests_use_typed_schema_and_no_fixed_question_or_answer_bank(tmp_path
         ("apple", [8192, 6000, 4096]),
         ("openai", [8192, 6000, 4096]),
         ("anthropic", [8192, 6000, 4096]),
-        ("deepseek", [32768, 16384, 16384]),
+        ("deepseek", [32768, 16384, 32768]),
     ],
 )
 def test_phase_output_allowances_are_explicit_and_provider_scoped(
@@ -650,6 +650,56 @@ def test_phase_output_allowances_are_explicit_and_provider_scoped(
     client.provider = provider
     generate(tmp_path, client)
     assert [request.output_budget for request in client.requests] == budgets * 3
+
+
+@pytest.mark.parametrize("model", ["deepseek-flash", "deepseek-v4-pro"])
+def test_final_deepseek_review_capacity_failure_preserves_prior_work_without_retry(
+    tmp_path, monkeypatch, model
+):
+    from tests.test_deepseek_provider import client, mock_transport, response
+
+    envelope = response(model=model, status="incomplete")
+    envelope["incomplete_details"] = {"reason": "max_output_tokens"}
+    envelope["usage"]["output_tokens"] = 32768
+    envelope["usage"]["output_tokens_details"]["reasoning_tokens"] = 32147
+    calls = mock_transport(monkeypatch, envelope)
+    transport = client()
+    transport.model = model
+
+    class FinalReviewFailure(Client):
+        provider = "deepseek"
+
+        def generate_request(self, request):
+            result = super().generate_request(request)
+            if len(self.requests) == 9:
+                assert request.output_budget == 32768
+                return transport.generate_request(request)
+            return result
+
+    fixture = FinalReviewFailure()
+    fixture.model = model
+    index = tmp_path / "index.sqlite"
+    make_index(index)
+    saved = []
+    with pytest.raises(subject.GenerationEvidenceError) as caught:
+        subject.generate(
+            index_path=index, client=fixture, seed=42, record_round=saved.append
+        )
+    assert caught.value.details["kind"] == "provider_structure"
+    assert len(fixture.requests) == 9
+    assert len(calls) == 1
+    assert calls[0][1]["max_output_tokens"] == 32768
+    assert calls[0][1]["reasoning"] == {"effort": "low"}
+    assert saved[-1]["state"] == "stopped"
+    assert [item["accepted_round"] for item in saved[-1]["exercise_attempts"]] == [
+        1,
+        1,
+        None,
+    ]
+    partial = saved[-1]["partial_round"]["returned"]
+    assert "author_response" in partial and "blind_response" in partial
+    assert "review_response" not in partial
+    assert not list(tmp_path.rglob("*.pdf"))
 
 
 def test_authoring_budget_override_does_not_modify_schema_prompt_or_sampling_identity():
