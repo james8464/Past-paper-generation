@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "The cancellation could not be saved in history. The job may still appear as running.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’annulation n’a pas pu être enregistrée dans l’historique. La tâche peut encore apparaître comme en cours."}}}},
     "Open PDF": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF"}}}},
     "Open the selected history PDF in Documents.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF sélectionné dans Documents."}}}},
     "Reference layout": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Présentation de référence"}}}},

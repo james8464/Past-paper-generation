@@ -6,6 +6,52 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testCancellationHistoryWriteFailureStillStopsRunAndWarnsWithoutInventingSavedState() throws {
+        for (language, warning) in [
+            ("en", "The cancellation could not be saved in history. The job may still appear as running."),
+            ("fr", "L’annulation n’a pas pu être enregistrée dans l’historique. La tâche peut encore apparaître comme en cours."),
+        ] {
+            let defaults = isolatedDefaults()
+            defaults.set(language, forKey: "interfaceLanguage")
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+            application.setDryRun(true)
+            application.generate()
+            let run = try XCTUnwrap(backend.requests.first)
+            let process = try XCTUnwrap(backend.lastProcess as? ControlledProcess)
+            let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+            let records = application.recentDocumentStore.records
+            let filename = "\(job.id.uuidString).json"
+            let original = try Data(contentsOf: history.appendingPathComponent(filename))
+            let backup = history.deletingLastPathComponent().appendingPathComponent("preserved-history")
+            try FileManager.default.moveItem(at: history, to: backup)
+            try Data("not a directory".utf8).write(to: history)
+
+            application.cancelGeneration()
+
+            XCTAssertEqual(process.terminationRequests, 1)
+            XCTAssertFalse(application.isRunning)
+            XCTAssertNil(application.generationEstimate)
+            XCTAssertNil(application.generationProgress)
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            XCTAssertEqual(application.recentDocumentStore.records, records)
+            XCTAssertEqual(try Data(contentsOf: backup.appendingPathComponent(filename)), original)
+            XCTAssertTrue(application.showError)
+            XCTAssertEqual(application.errorMessage, warning)
+            XCTAssertTrue(application.progressEntries.contains { $0.stage == "error" && $0.message == warning })
+            XCTAssertTrue(application.progressEntries.contains { $0.stage == "history" && !$0.message.isEmpty })
+            let message = application.errorMessage
+            run.onEvent(.progress(stage: "late", message: "Late progress", progress: 0.9))
+            run.onFinish(.success(0))
+            XCTAssertEqual(application.errorMessage, message)
+            XCTAssertNil(application.generationEstimate)
+            XCTAssertEqual(application.generationCoordinator.activeJob, job)
+            XCTAssertEqual(process.terminationRequests, 1)
+        }
+    }
+
+    @MainActor
     func testRemovingStreamedRecentCannotDropAPaperFromSuccessfulPublication() throws {
         let backend = ControlledRunBackend()
         let defaults = isolatedDefaults()
@@ -1782,6 +1828,7 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     }
 
     private(set) var requests: [Request] = []
+    private(set) var lastProcess: Process?
     var launchError: Error?
 
     func run(
@@ -1791,14 +1838,17 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     ) throws -> Process {
         if let launchError { throw launchError }
         requests.append(Request(arguments: arguments, environment: environment, onEvent: onEvent, onFinish: onFinish))
-        return ControlledProcess()
+        let process = ControlledProcess()
+        lastProcess = process
+        return process
     }
 
     func collect(arguments: [String]) async throws -> [BackendEvent] { [] }
 }
 
 private final class ControlledProcess: Process, @unchecked Sendable {
-    override func terminate() {}
+    private(set) var terminationRequests = 0
+    override func terminate() { terminationRequests += 1 }
 }
 
 // Continuations may be installed on a background executor. Protect their queue
