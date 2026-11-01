@@ -96,7 +96,7 @@ def _line_parts(line: str) -> list[tuple[str, bool]]:
     return parts
 
 
-def _parts(text: str) -> list[tuple[str, bool]]:
+def _unfenced_parts(text: str) -> list[tuple[str, bool]]:
     result = []
     for line in text.splitlines(keepends=True):
         body = line.rstrip("\r\n")
@@ -105,8 +105,22 @@ def _parts(text: str) -> list[tuple[str, bool]]:
     return result
 
 
+def _parts(text: str) -> list[tuple[str, bool]]:
+    result = []
+    for index, part in enumerate(
+        fenced_parts(text, require_closed=False, include_delimiters=True)
+    ):
+        # Direct prose fields (notably credits and scope) retain delimiters as
+        # literal text. Unsupported and unclosed fences are equally opaque.
+        if index % 2:
+            result.append((part.text, False))
+        else:
+            result.extend(_unfenced_parts(part.text))
+    return result
+
+
 def inline_text(text: str) -> str:
-    """Visible text of inline prose, with entities left exactly as supplied."""
+    """Visible prose text; entities and complete fenced spans stay literal."""
     return "".join(value for value, _ in _parts(text))
 
 

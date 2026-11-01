@@ -5,8 +5,13 @@ from copy import deepcopy
 import pymupdf
 import pytest
 
+from Backend.Core.france.code_fences import fenced_parts
 from Backend.Core.france.inline_prose import inline_markup, inline_text, printed_prose
 from Backend.Core.france.llm_pdf import validate_llm_pdf
+from Backend.Core.france.llm_pipeline import (
+    PythonCodeFormatError,
+    validate_authored_exercise,
+)
 from Backend.Core.france.print_policy import (
     V35_PRINT_POLICY,
     V36_LEGACY_PRINT_POLICY,
@@ -92,6 +97,74 @@ def test_unknown_and_empty_fences_keep_contents_opaque(newline):
     assert printed_prose(source) == (
         "avant\n<u>brut</u> `brut`\napres".replace("\n", newline)
     )
+
+
+@pytest.mark.parametrize("language", ["text", "python", "sql", ""])
+def test_direct_inline_entrypoints_preserve_fences_including_delimiters(language):
+    fence = f"```{language}\nvaleur = '<u>brut</u> `brut`'\n```"
+    source = "Avant `prose`.\n" + fence + "\nAprès <u>texte</u>."
+    assert inline_text(source) == "Avant prose.\n" + fence + "\nAprès texte."
+    assert inline_markup(source) == (
+        "Avant prose.<br/>"
+        + fence.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br/>")
+        + "<br/>Après <u>texte</u>."
+    )
+
+
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+@pytest.mark.parametrize("closed", [False, True])
+@pytest.mark.parametrize("language", ["text", "python", "sql", ""])
+def test_opt_in_fence_spans_retain_all_source_bytes(newline, closed, language):
+    fence = f"  ```{language}\n<u>brut</u> `brut`\n"
+    if closed:
+        fence += "  ```  \n"
+    source = ("Avant `prose`.\n" + fence).replace("\n", newline)
+    parts = fenced_parts(source, require_closed=False, include_delimiters=True)
+    assert "".join(part.text for part in parts) == source
+    assert parts[1].closed is closed
+    assert inline_text(source) == ("Avant prose.\n" + fence).replace("\n", newline)
+
+
+@pytest.mark.parametrize("language", ["text", "python", "sql", ""])
+@pytest.mark.parametrize("field", ["criterion", "scope"])
+@pytest.mark.parametrize("large_print", [False, True])
+def test_direct_pdf_prose_fields_leave_fenced_contents_literal(
+    tmp_path, language, field, large_print
+):
+    source = exercises()
+    fence = f"```{language}\nvaleur = '<u>brut</u> `brut`'\n```"
+    value = "Prose `avant`.\n" + fence + "\n<u>apres</u>."
+    if field == "criterion":
+        question = source[0].questions[0]
+        question = question.model_copy(
+            update={
+                "marking": (
+                    question.marking[0].model_copy(update={"criterion": value}),
+                    *question.marking[1:],
+                )
+            }
+        )
+        source[0] = source[0].model_copy(
+            update={"questions": (question, *source[0].questions[1:])}
+        )
+        # Short expression/listing criteria are permitted, unlike bare suites.
+        validate_authored_exercise(source[0].model_dump(mode="json"), "1")
+    else:
+        source[0] = source[0].model_copy(update={"title": value})
+        # The renderer stays fail-safe even for a direct diagnostic model; this
+        # does not relax the stricter authoring boundary on titles/documents.
+        with pytest.raises(PythonCodeFormatError):
+            validate_authored_exercise(source[0].model_dump(mode="json"), "1")
+    before = deepcopy([item.model_dump(mode="json") for item in source])
+    path = tmp_path / "direct-prose.pdf"
+    render(path, source, correction=True, large_print=large_print)
+    validate_llm_pdf(path, source, correction=True, large_print=large_print)
+    assert [item.model_dump(mode="json") for item in source] == before
+    with pymupdf.open(path) as pdf:
+        visible = "".join("".join(page.get_text().split()) for page in pdf)
+        assert "<u>brut</u>`brut`" in visible
+        assert f"```{language}" in visible
+        assert "Proseavant." in visible
 
 
 def marked_exercises():
