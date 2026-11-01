@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 12740 nodes, 37408 edges, 529 communities. Commit: 7683fca</p>
+<p class="subtitle">Generated from graphify knowledge graph: 12740 nodes, 37408 edges, 529 communities. Commit: 5d9239b</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -76,8 +76,8 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#string">String</a>
     <a href="#sql-contracts-py">sql_contracts.py</a>
     <a href="#codingkeys">CodingKeys</a>
-    <a href="#secretstoreerror">SecretStoreError</a>
     <a href="#settingsactionhost">SettingsActionHost</a>
+    <a href="#secretstoreerror">SecretStoreError</a>
     <a href="#other">Other</a>
 </div>
 
@@ -92,7 +92,7 @@ flowchart LR
     class EXTRACT_PIPELINE_5F350230 module;
     BUILD_GRAPH_321CBB04("Graph Build<br/><small>1602 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>1001 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>997 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
     OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>96 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
@@ -104,32 +104,32 @@ flowchart LR
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>7689 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>7674 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
-    STRING_ECB25204("String<br/><small>183 nodes</small>")
+    STRING_ECB25204("String<br/><small>191 nodes</small>")
     class STRING_ECB25204 module;
     SQL_CONTRACTS_PY_D75AD132("sql_contracts.py<br/><small>50 nodes</small>")
     class SQL_CONTRACTS_PY_D75AD132 module;
     CODINGKEYS_2CCF71B7("CodingKeys<br/><small>49 nodes</small>")
     class CODINGKEYS_2CCF71B7 module;
+    SETTINGSACTIONHOST_8BEF91E0("SettingsActionHost<br/><small>36 nodes</small>")
+    class SETTINGSACTIONHOST_8BEF91E0 module;
     SECRETSTOREERROR_21C2231C("SecretStoreError<br/><small>35 nodes</small>")
     class SECRETSTOREERROR_21C2231C module;
-    SETTINGSACTIONHOST_8BEF91E0("SettingsActionHost<br/><small>31 nodes</small>")
-    class SETTINGSACTIONHOST_8BEF91E0 module;
-    OTHER_D0941E68("Other<br/><small>1469 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>1475 nodes</small>")
     class OTHER_D0941E68 module;
     TESTS_FIXTURES_B84B1DCC -->|calls x540| ANALYSIS_CLUSTERING_C79796DA
     BUILD_GRAPH_321CBB04 -->|calls x483| TESTS_FIXTURES_B84B1DCC
-    ANALYSIS_CLUSTERING_C79796DA -->|imports x471| TESTS_FIXTURES_B84B1DCC
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x465| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|imports x297| BUILD_GRAPH_321CBB04
-    STRING_ECB25204 -->|references x145| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x118| OTHER_D0941E68
+    STRING_ECB25204 -->|references x150| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x127| OTHER_D0941E68
     INGEST_CACHE_UPDATE_FF457338 -->|references x112| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|calls x110| INGEST_CACHE_UPDATE_FF457338
-    OTHER_D0941E68 -->|calls x91| TESTS_FIXTURES_B84B1DCC
+    OTHER_D0941E68 -->|calls x89| TESTS_FIXTURES_B84B1DCC
     CLI_SKILLS_9964CBB8 -->|calls x87| TESTS_FIXTURES_B84B1DCC
     TESTS_FIXTURES_B84B1DCC -->|calls x38| CLI_SKILLS_9964CBB8
-    SERVE_API_35EC8E86 -->|imports x26| TESTS_FIXTURES_B84B1DCC
+    STRING_ECB25204 -->|references x28| INGEST_CACHE_UPDATE_FF457338
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,7 +146,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>82</td><td><code>113, 299, 158, 408, 198, 296, 419, 344</code></td></tr><tr><td>Graph Build</td><td>1602</td><td><code>83, 31, 81, 25, 179, 40, 28, 48, 60, 73, 98, 127, 93, 21, 109, 101, 178, 116, 155, 118, 231, 337, 59, 78, 407, 115, 122, 136, 139, 142, 143, 274, 104, 149, 481, 154, 131, 166, 168, 175, 188, 402, 180, 141, 181, 182, 189, 217, 509, 538, 111, 161, 192, 194, 196, 458, 482, 495, 514, 266, 297, 347, 515, 516, 333, 455, 280, 433, 518, 520, 521, 212, 213, 218, 352, 446, 503, 505, 523, 526, 527, 435, 513</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>1001</td><td><code>119, 123, 17, 20, 29, 6, 16, 26, 476, 44, 68, 292, 77, 245, 71, 268, 269, 270, 271, 272, 273, 493</code></td></tr><tr><td>Outputs &amp; Docs</td><td>96</td><td><code>338, 183, 199, 354, 316, 437, 492, 504, 448, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>80</td><td><code>63, 55, 524, 427, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>265</td><td><code>49, 38, 464, 453</code></td></tr><tr><td>Serving API</td><td>100</td><td><code>23, 265, 463, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>7689</td><td><code>0, 97, 1, 12, 310, 3, 7, 112, 61, 42, 383, 208, 5, 14, 110, 24, 30, 27, 216, 9, 173, 34, 106, 57, 66, 363, 132, 45, 52, 22, 319, 33, 157, 67, 475, 135, 35, 88, 176, 43, 133, 150, 103, 348, 13, 62, 10, 120, 134, 96, 2, 364, 70, 92, 129, 4, 46, 79, 82, 163, 41, 438, 80, 301, 65, 32, 228, 496, 50, 174, 162, 100, 137, 219, 519, 185, 138, 282, 89, 94, 494, 53, 54, 64, 85, 56, 58, 99, 125, 126, 107, 114, 286, 39, 86, 87, 95, 128, 160, 351, 91, 298, 502, 152, 184, 242, 146, 51, 72, 153, 159, 171, 412, 102, 203, 288, 330, 384, 151, 190, 360, 401, 466, 19, 204, 340, 388, 74, 105, 117, 169, 206, 69, 293, 346, 263, 289, 130, 177, 281, 311, 349, 409, 8, 148, 369, 278, 366, 375, 357, 377, 393, 382, 327, 359, 394, 170, 329, 325, 331, 399, 468, 356, 467, 485, 469, 471, 473, 75, 291, 410, 422, 507, 191, 416, 456, 488, 489, 498, 499, 147, 426, 459, 525, 370, 434, 487</code></td></tr><tr><td>String</td><td>183</td><td><code>37</code></td></tr><tr><td>sql_contracts.py</td><td>50</td><td><code>11</code></td></tr><tr><td>CodingKeys</td><td>49</td><td><code>18</code></td></tr><tr><td>SecretStoreError</td><td>35</td><td><code>36</code></td></tr><tr><td>SettingsActionHost</td><td>31</td><td><code>368</code></td></tr><tr><td>Other</td><td>1469</td><td><code>309, 124, 250, 279, 84, 90, 76, 108, 15, 201, 156, 144, 400, 167, 371, 164, 315, 367, 172, 214, 378, 193, 195, 197, 205, 244, 256, 257, 215, 260, 350, 220, 246, 247, 365, 373, 381, 418, 470, 500, 251, 290, 440, 441, 47, 165, 252, 253, 254, 255, 392, 443, 474, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 395, 403, 406, 439, 491, 517, 187, 248, 261, 303, 304, 339, 342, 379, 413, 414, 430, 436, 444, 445, 462, 477, 478, 490, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 335, 353, 362, 380, 404, 411, 415, 420, 421, 450, 451, 452, 480, 486, 186, 267, 302, 305, 314, 322, 323, 341, 355, 376, 385, 396, 423, 424, 431, 432, 501, 522, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 447, 454, 457, 472, 506, 209, 210, 211, 343, 389, 442, 465, 508, 202, 224, 225, 283, 284, 285, 324, 336, 345, 358, 372, 390, 391, 449, 460, 461, 479, 483, 484, 497, 510, 511, 512, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>82</td><td><code>113, 299, 158, 408, 198, 296, 419, 344</code></td></tr><tr><td>Graph Build</td><td>1602</td><td><code>83, 31, 81, 25, 179, 40, 28, 48, 60, 73, 127, 337, 93, 21, 98, 101, 109, 178, 116, 155, 118, 231, 59, 78, 407, 115, 122, 136, 139, 142, 143, 274, 104, 149, 481, 154, 131, 166, 168, 175, 188, 402, 180, 141, 181, 182, 189, 217, 509, 538, 111, 161, 192, 194, 196, 458, 482, 495, 514, 266, 297, 347, 515, 516, 333, 455, 280, 433, 518, 520, 521, 212, 213, 218, 352, 446, 503, 505, 523, 526, 527, 435, 513</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>997</td><td><code>119, 123, 17, 20, 29, 6, 16, 26, 476, 44, 68, 292, 77, 245, 71, 268, 269, 270, 271, 272, 273, 493</code></td></tr><tr><td>Outputs &amp; Docs</td><td>96</td><td><code>338, 183, 199, 354, 316, 437, 492, 504, 448, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>80</td><td><code>63, 55, 524, 427, 226</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>265</td><td><code>49, 38, 464, 453</code></td></tr><tr><td>Serving API</td><td>100</td><td><code>23, 265, 463, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>7674</td><td><code>0, 97, 1, 12, 310, 3, 7, 112, 61, 383, 42, 5, 208, 110, 24, 30, 27, 216, 9, 173, 106, 14, 57, 66, 34, 363, 132, 45, 52, 150, 22, 35, 319, 33, 67, 157, 475, 135, 88, 176, 43, 133, 103, 13, 348, 62, 10, 134, 96, 2, 364, 70, 92, 129, 4, 46, 79, 82, 41, 438, 80, 301, 298, 65, 32, 228, 496, 50, 174, 162, 100, 137, 219, 519, 185, 138, 203, 282, 89, 94, 494, 53, 54, 64, 85, 56, 58, 99, 125, 126, 107, 114, 120, 286, 39, 86, 87, 95, 128, 160, 351, 91, 184, 502, 152, 163, 242, 146, 51, 72, 153, 159, 171, 412, 102, 288, 330, 384, 151, 190, 360, 401, 466, 19, 204, 340, 388, 74, 105, 117, 169, 206, 69, 293, 346, 263, 289, 130, 177, 281, 311, 349, 409, 8, 148, 278, 366, 375, 357, 377, 393, 382, 327, 359, 394, 170, 329, 325, 331, 399, 468, 356, 467, 485, 440, 471, 473, 75, 291, 410, 422, 507, 191, 416, 456, 488, 489, 498, 499, 147, 426, 459, 525, 370, 434, 487</code></td></tr><tr><td>String</td><td>191</td><td><code>37</code></td></tr><tr><td>sql_contracts.py</td><td>50</td><td><code>11</code></td></tr><tr><td>CodingKeys</td><td>49</td><td><code>18</code></td></tr><tr><td>SettingsActionHost</td><td>36</td><td><code>368</code></td></tr><tr><td>SecretStoreError</td><td>35</td><td><code>36</code></td></tr><tr><td>Other</td><td>1475</td><td><code>309, 124, 250, 279, 84, 90, 76, 108, 15, 201, 156, 144, 400, 167, 371, 164, 315, 367, 172, 214, 378, 193, 195, 197, 205, 244, 256, 257, 369, 215, 260, 350, 220, 246, 247, 365, 373, 381, 418, 470, 500, 251, 290, 441, 47, 165, 252, 253, 254, 255, 392, 443, 474, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 395, 403, 406, 439, 491, 517, 187, 248, 261, 303, 304, 339, 342, 379, 413, 414, 430, 436, 444, 445, 462, 477, 478, 490, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 335, 353, 362, 380, 404, 411, 415, 420, 421, 450, 451, 452, 480, 486, 186, 267, 302, 305, 314, 322, 323, 341, 355, 376, 385, 396, 423, 424, 431, 432, 501, 522, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 447, 454, 457, 472, 506, 209, 210, 211, 343, 389, 442, 465, 469, 508, 202, 224, 225, 283, 284, 285, 324, 336, 345, 358, 372, 390, 391, 449, 460, 461, 479, 483, 484, 497, 510, 511, 512, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -158,7 +158,7 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>12740 nodes · 37408 edges · 529 communities (475 shown, 54 thin omitted)</li>
+      <li>12740 nodes · 37408 edges · 529 communities (474 shown, 55 thin omitted)</li>
       <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 2226 edges (avg confidence: 0.67)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `NSIExercise` - 300 edges</li>
@@ -886,12 +886,12 @@ flowchart LR
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 1001 nodes and 3228 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 997 nodes and 3223 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (1001 nodes, 3228 edges)
+    %% Section: Analysis &amp; Clustering (997 nodes, 3223 edges)
     subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
         backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
         backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
@@ -928,7 +928,7 @@ flowchart LR
     backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
     backend_core_benchmark_emit_static_metrics_c43bbe70 -->|calls| backend_core_benchmark_apple_cpu_core_split_fcd9b541
     backend_core_exam_blueprints_validate_generated_223baf80 -->|calls| resources_economics_ocr_generator_ocregen_genera_dc315622
-    %% Omitted for readability: 983 nodes, 0 edges
+    %% Omitted for readability: 979 nodes, 0 edges
     class backend_core_benchmark_handle_benchmark_303eb156 function;
     class backend_core_benchmark_cpu_load_percent_a21569b0 function;
     class backend_core_benchmark_cpu_probe_6744e47e function;
@@ -1227,7 +1227,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x1079, references x755, contains x753, imports x169. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x1080, contains x752, references x752, imports x169. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2387,7 +2387,7 @@ flowchart LR
   <td><code>accounting_selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/accounting_selected_response.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>Decimal</code><br><code>selected_response.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/selected_response.py</small><br><code>selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/selected_response.py</small></td>
+  <td><code>Decimal</code><br><code>selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/selected_response.py</small><br><code>selected_response.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/selected_response.py</small></td>
   <td>Module file in Core/subjects/accounting_selected_response.py.</td>
 </tr>
 <tr>
@@ -2781,12 +2781,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, backend, french, mostly in tests/test_nsi_pipeline.py, macOS/Tests/RunIsolationTests.swift, macOS/Tests/CoordinatorTests.swift. This section covers 7689 nodes and 24114 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, backend, french, mostly in tests/test_nsi_pipeline.py, macOS/Tests/RunIsolationTests.swift, macOS/Tests/CoordinatorTests.swift. This section covers 7674 nodes and 24068 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (7689 nodes, 24114 edges)
+    %% Section: Tests &amp; Fixtures (7674 nodes, 24068 edges)
     subgraph tests_fixtures_Backend_Core_accounting_scheme_co_dec83d5b["Backend/Core/accounting_scheme_content.py"]
         backend_core_accounting_scheme_content_compact_a121d0c5("_compact()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
         backend_core_accounting_scheme_content_verify_ac_24f00372("verify_accounting_scheme()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
@@ -2826,7 +2826,7 @@ flowchart LR
     backend_core_ai_assessment_assessmentllmclient_af77fd0e -->|method| backend_core_ai_assessment_assessmentllmclient_s_2b7acbd9
     backend_core_independent_solver_independentsolve_ca9b7e1f -->|calls| backend_core_independent_solver_reconcile_soluti_03e71447
     backend_core_layout_conformance_conform_generate_0ef03e33 -->|calls| backend_core_layout_master_layoutconformanceerro_412f2f66
-    %% Omitted for readability: 7671 nodes, 0 edges
+    %% Omitted for readability: 7656 nodes, 0 edges
     class backend_core_accounting_scheme_content_compact_a121d0c5 function;
     class backend_core_accounting_scheme_content_verify_ac_24f00372 function;
     class backend_core_accounting_scheme_content_require_p_c51a4e97 function;
@@ -2958,7 +2958,7 @@ flowchart LR
   <td>12</td>
   <td><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+9 more</td>
+  <td><code>_build()</code><br><small style="color:var(--muted)">Core/france/expanded_pipeline.py</small><br><code>_build()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br><code>_catalogue()</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+9 more</td>
   <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_build()</code><br><small style="color:var(--muted)">Core/france/synthesized_pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+30 more</td>
   <td>digest() node in Core/france/pipeline.py.</td>
 </tr>
@@ -2980,6 +2980,22 @@ flowchart LR
 </tr>
 <tr>
   <td>15</td>
+  <td><code>_invalid_marking_allocation()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>points()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>assemble_planned_question()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td>_invalid_marking_allocation() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>assemble_planned_question()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>invalid marking allocation()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>points()</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small></td>
+  <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>exact decimal credit()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>missing curriculum evidence()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+2 more</td>
+  <td>assemble_planned_question() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>17</td>
   <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td><code>assemble_planned_question()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -2987,7 +3003,7 @@ flowchart LR
   <td>_assemble_planned_exercise() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>18</td>
   <td><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>digest()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>invalid marking allocation()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -2995,7 +3011,7 @@ flowchart LR
   <td>_replay_targeted_repairs() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>19</td>
   <td><code>require_declared_relations()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3003,7 +3019,7 @@ flowchart LR
   <td>require_declared_relations() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>20</td>
   <td><code>require_consistent_tree_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3011,7 +3027,7 @@ flowchart LR
   <td>require_consistent_tree_premises() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>21</td>
   <td><code>require_algorithm_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3019,7 +3035,7 @@ flowchart LR
   <td>require_algorithm_premises() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>22</td>
   <td><code>require_tree_constructor_context()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3027,7 +3043,7 @@ flowchart LR
   <td>require_tree_constructor_context() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>23</td>
   <td><code>require_tree_complexity_premise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3035,7 +3051,7 @@ flowchart LR
   <td>require_tree_complexity_premise() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>24</td>
   <td><code>require_semantic_material_integrity()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>consistent tree premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>require_algorithm_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>require_declared_relations()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+2 more</td>
@@ -3043,7 +3059,7 @@ flowchart LR
   <td>require_semantic_material_integrity() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>25</td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v15()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+33 more</td>
@@ -3051,7 +3067,7 @@ flowchart LR
   <td>generate_assessment() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>26</td>
   <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_assemble_planned_exercise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+39 more</td>
@@ -3059,7 +3075,7 @@ flowchart LR
   <td>validate_package() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>25</td>
+  <td>27</td>
   <td><code>repair_question_prompt()</code><br><small style="color:var(--muted)">Core/france/question_review.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
@@ -3067,7 +3083,7 @@ flowchart LR
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>28</td>
   <td><code>exercise_scope_text()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -3075,7 +3091,7 @@ flowchart LR
   <td>exercise_scope_text() node in Core/france/rendering.py.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>29</td>
   <td><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td><code>_QuestionGroup</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>code_layout()</code><br><small style="color:var(--muted)">Core/france/code_layout.py</small><br><code>correction_prompt()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+9 more</td>
@@ -3083,28 +3099,12 @@ flowchart LR
   <td>render_assessment() node in Core/france/rendering.py.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>30</td>
   <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>Path node in project.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>validate_graph_two_outage_pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>graph_edge_manifest()</code><br><small style="color:var(--muted)">Core/france/graph_tree_binding.py</small><br><code>route selection pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><code>and rejects mutations()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_pdf.py</small><br><code>answer and credit()</code><br><small style="color:var(--muted)">tests/test_french_route_task_families.py</small><br><code>catalogue and construction()</code><br><small style="color:var(--muted)">tests/test_french_route_selection.py</small><br>+5 more</td>
-  <td>Builds dependency relationships and graph data.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>validate_network_depth_contract_pdf()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>locked pdf facts()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>on separate lines()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>test_french_runtime.py</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small></td>
-  <td>validate_network_depth_contract_pdf() node in Core/france/runtime.py.</td>
 </tr>
 </table>
 
@@ -3119,25 +3119,25 @@ flowchart LR
 <tr><td><code>generator/tests/test_question_styles.py</code></td><td>62 nodes</td></tr>
 <tr><td><code>tools/paper_fidelity_audit.py</code></td><td>60 nodes</td></tr>
 <tr><td><code>Core/france/llm_pipeline.py</code></td><td>59 nodes</td></tr>
-<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>58 nodes</td></tr>
+<tr><td><code>macOS/Tests/AppTests.swift</code></td><td>59 nodes</td></tr>
 <tr><td><code>tests/test_ai_assessment.py</code></td><td>54 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x9793, contains x4779, references x3086, imports x2485. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x9776, contains x4768, references x3075, imports x2481. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 11. String ====== -->
 <h2 id="string">11. String</h2>
-<p>String groups implementation around macos, keldin, domain, appmodelsswift, mostly in Keldin/Domain/AppModels.swift, Keldin/State/RecentDocumentStore.swift, Keldin/Domain/FrenchReviewRequest.swift. This section covers 183 nodes and 317 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>String groups implementation around macos, keldin, domain, appmodelsswift, mostly in Keldin/Domain/AppModels.swift, Keldin/Domain/FrenchReviewRequest.swift, Keldin/State/RecentDocumentStore.swift. This section covers 191 nodes and 327 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: String (183 nodes, 317 edges)
+    %% Section: String (191 nodes, 327 edges)
     subgraph string_Keldin_Domain_AppModels_swift_f8bac635["Keldin/Domain/AppModels.swift"]
         macos_keldin_domain_appmodels_catalogloader_load_6e2357b8("load()<br/><small>Keldin/Domain/AppModels.swift</small>")
         macos_keldin_domain_appmodels_aiprovider_d4e33bdd("AIProvider<br/><small>Keldin/Domain/AppModels.swift</small>")
@@ -3168,7 +3168,7 @@ flowchart LR
     macos_keldin_domain_appmodels_generatorcontentmo_78185958 -->|method| macos_keldin_domain_appmodels_generatorcontentmo_07b7580b
     macos_keldin_domain_appmodels_examboardoption_69d1c1f3 -->|calls| macos_keldin_domain_appmodels_catalogloader_load_6e2357b8
     macos_keldin_domain_appmodels_catalogloader_load_6e2357b8 -->|calls| macos_keldin_domain_appmodels_aiprovider_d4e33bdd
-    %% Omitted for readability: 165 nodes, 0 edges
+    %% Omitted for readability: 173 nodes, 0 edges
     class macos_keldin_domain_appmodels_catalogloader_load_6e2357b8 function;
     class macos_keldin_domain_appmodels_aiprovider_d4e33bdd klass;
     class macos_keldin_domain_appmodels_examboardoption_69d1c1f3 klass;
@@ -3456,8 +3456,8 @@ flowchart LR
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>Keldin/Domain/AppModels.swift</code></td><td>122 nodes</td></tr>
+<tr><td><code>Keldin/Domain/FrenchReviewRequest.swift</code></td><td>14 nodes</td></tr>
 <tr><td><code>Keldin/State/RecentDocumentStore.swift</code></td><td>12 nodes</td></tr>
-<tr><td><code>Keldin/Domain/FrenchReviewRequest.swift</code></td><td>6 nodes</td></tr>
 <tr><td><code>macOS/Tests/AppTests.swift</code></td><td>6 nodes</td></tr>
 <tr><td><code>Keldin/State/ApplicationCoordinator.swift</code></td><td>5 nodes</td></tr>
 <tr><td><code>Keldin/Domain/HostedModelCandidate.swift</code></td><td>4 nodes</td></tr>
@@ -3467,7 +3467,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x104, case of x56, method x49, implements x41. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: references x106, case of x59, method x51, implements x42. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -4153,8 +4153,355 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. SecretStoreError ====== -->
-<h2 id="secretstoreerror">14. SecretStoreError</h2>
+<!-- ====== 14. SettingsActionHost ====== -->
+<h2 id="settingsactionhost">14. SettingsActionHost</h2>
+<p>SettingsActionHost groups implementation around macos, keldin, features, settings, mostly in Features/Settings/SettingsPane.swift, Features/Settings/HostedModelCandidatesView.swift. This section covers 36 nodes and 57 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: SettingsActionHost (36 nodes, 57 edges)
+    subgraph settingsactionhost_Features_Settings_SettingsPan_8296171c["Features/Settings/SettingsPane.swift"]
+        macos_keldin_features_settings_settingspane_sett_45fc8ac5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_b49fec01("SettingsWindowConfiguration<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_29e18bfa("SettingsPane<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_aise_4a0a6aa4("AISettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_8cec07b7("SettingsActionHost<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_e8390576(".downloadConfirmationBinding<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_outp_2c23e433("OutputSettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_priv_ecfed267("PrivacySettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_aise_1efd1ad5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_aise_95e94544(".providerSettings<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_outp_2c6837f9(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_47dc0026(".presentedBinding<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_e5dd67ed(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_21e85c7a("SettingsPaneID<br/><small>Features/Settings/SettingsPane.swift</small>")
+        macos_keldin_features_settings_settingspane_sett_b96ab3c8(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
+    end
+    subgraph settingsactionhost_Features_Settings_HostedModel_fdf1d88e["Features/Settings/HostedModelCandidatesView.swift"]
+        macos_keldin_features_settings_hostedmodelcandid_10dcb752("HostedModelCandidatesView<br/><small>Features/Settings/HostedModelCandidatesView.swift</small>")
+        macos_keldin_features_settings_hostedmodelcandid_c548560e(".body<br/><small>Features/Settings/HostedModelCandidatesView.swift</small>")
+    end
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42("Binding")
+    macos_keldin_features_settings_hostedmodelcandid_10dcb752 -->|method| macos_keldin_features_settings_hostedmodelcandid_c548560e
+    macos_keldin_features_settings_settingspane_sett_29e18bfa -->|method| macos_keldin_features_settings_settingspane_sett_45fc8ac5
+    macos_keldin_features_settings_settingspane_sett_29e18bfa -->|method| macos_keldin_features_settings_settingspane_sett_e8390576
+    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_aise_4a0a6aa4
+    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_outp_2c23e433
+    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_priv_ecfed267
+    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_sett_8cec07b7
+    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_sett_b49fec01
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_aise_1efd1ad5
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_aise_95e94544
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_outp_2c6837f9
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_sett_47dc0026
+    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_sett_e8390576
+    macos_keldin_features_settings_settingspane_sett_8cec07b7 -->|method| macos_keldin_features_settings_settingspane_sett_47dc0026
+    macos_keldin_features_settings_settingspane_sett_8cec07b7 -->|method| macos_keldin_features_settings_settingspane_sett_e5dd67ed
+    macos_keldin_features_settings_settingspane_sett_21e85c7a -->|method| macos_keldin_features_settings_settingspane_sett_b96ab3c8
+    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_1efd1ad5
+    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_95e94544
+    macos_keldin_features_settings_settingspane_outp_2c23e433 -->|method| macos_keldin_features_settings_settingspane_outp_2c6837f9
+    %% Omitted for readability: 18 nodes, 0 edges
+    class macos_keldin_features_settings_settingspane_sett_45fc8ac5 function;
+    class macos_keldin_features_settings_settingspane_sett_b49fec01 klass;
+    class macos_keldin_features_settings_settingspane_sett_29e18bfa klass;
+    class macos_keldin_features_settings_settingspane_aise_4a0a6aa4 klass;
+    class macos_keldin_features_settings_settingspane_sett_8cec07b7 klass;
+    class macos_keldin_features_settings_settingspane_sett_e8390576 function;
+    class macos_keldin_features_settings_settingspane_outp_2c23e433 klass;
+    class macos_keldin_features_settings_settingspane_priv_ecfed267 klass;
+    class macos_keldin_features_settings_settingspane_aise_1efd1ad5 function;
+    class macos_keldin_features_settings_settingspane_aise_95e94544 function;
+    class macos_keldin_features_settings_settingspane_outp_2c6837f9 function;
+    class macos_keldin_features_settings_settingspane_sett_47dc0026 function;
+    class macos_keldin_features_settings_settingspane_sett_e5dd67ed function;
+    class macos_keldin_features_settings_settingspane_sett_21e85c7a klass;
+    class macos_keldin_features_settings_settingspane_sett_b96ab3c8 function;
+    class macos_keldin_features_settings_hostedmodelcandid_10dcb752 klass;
+    class macos_keldin_features_settings_hostedmodelcandid_c548560e function;
+    class macos_keldin_features_settings_settingspane_swif_a3e5fe42 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>HostedModelCandidatesView.swift</code><br><small style="color:var(--muted)">Features/Settings/HostedModelCandidatesView.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>HostedModelCandidatesView.swift node in Features/Settings/HostedModelCandidatesView.swift.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>HostedModelCandidatesView</code><br><small style="color:var(--muted)">Features/Settings/HostedModelCandidatesView.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/HostedModelCandidatesView.swift</small><br><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>HostedModelCandidatesView node in Features/Settings/HostedModelCandidatesView.swift.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ApplicationCoordinator node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>String</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>String node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/HostedModelCandidatesView.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>HostedModelCandidatesView</code><br><small style="color:var(--muted)">Features/Settings/HostedModelCandidatesView.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Settings/HostedModelCandidatesView.swift.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>SettingsPane.swift</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SettingsPane.swift node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>SettingsPane node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ApplicationCoordinator node in project.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br>+2 more</td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Binding</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br>+2 more</td>
+  <td>Binding node in project.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Bool node in project.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Binding</code><br><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.downloadConfirmationBinding node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>.presentedBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>SettingsActionHost node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>ViewModifier</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ViewModifier node in project.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.title node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>.presentedBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>Binding</code><br><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.presentedBinding node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>SettingsPaneID node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>ai</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ai node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>output</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>output node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>privacy</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>privacy node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>LocalizedStringResource</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>LocalizedStringResource node in project.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.title node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>.makeNSView() node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>Context</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Context node in project.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>NSView</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>NSView node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>.updateNSView() node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>.configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td>AISettingsTab node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>Binding</code><br><code>LocalizedStringResource</code></td>
+  <td>No direct outbound edge</td>
+  <td>.body node in Features/Settings/SettingsPane.swift.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>24 nodes</td></tr>
+<tr><td><code>Features/Settings/HostedModelCandidatesView.swift</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: references x17, method x13, calls x13, contains x9. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 15. SecretStoreError ====== -->
+<h2 id="secretstoreerror">15. SecretStoreError</h2>
 <p>SecretStoreError groups implementation around macos, keldin, secretstoreswift, services, mostly in Keldin/Services/SecretStore.swift, Keldin/State/CoordinatorDependencies.swift, macOS/Tests/StorageLocalizationTests.swift. This section covers 35 nodes and 76 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4506,361 +4853,14 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. SettingsActionHost ====== -->
-<h2 id="settingsactionhost">15. SettingsActionHost</h2>
-<p>SettingsActionHost groups implementation around settingspaneswift, macos, keldin, features, mostly in Features/Settings/SettingsPane.swift. This section covers 31 nodes and 52 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: SettingsActionHost (31 nodes, 52 edges)
-    subgraph settingsactionhost_Features_Settings_SettingsPan_8296171c["Features/Settings/SettingsPane.swift"]
-        macos_keldin_features_settings_settingspane_sett_45fc8ac5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_b49fec01("SettingsWindowConfiguration<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_29e18bfa("SettingsPane<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_aise_4a0a6aa4("AISettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_8cec07b7("SettingsActionHost<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_e8390576(".downloadConfirmationBinding<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_outp_2c23e433("OutputSettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_priv_ecfed267("PrivacySettingsTab<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_aise_1efd1ad5(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_aise_95e94544(".providerSettings<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_outp_2c6837f9(".body<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_47dc0026(".presentedBinding<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_e5dd67ed(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_21e85c7a("SettingsPaneID<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_b96ab3c8(".title<br/><small>Features/Settings/SettingsPane.swift</small>")
-        macos_keldin_features_settings_settingspane_sett_3ebefbc1("configure()<br/><small>Features/Settings/SettingsPane.swift</small>")
-    end
-    subgraph settingsactionhost_External_generated_de459258["External / generated"]
-        macos_keldin_features_settings_settingspane_swif_a3e5fe42("Binding")
-        macos_keldin_features_settings_settingspane_swif_20e8ca24("LocalizedStringResource")
-    end
-    macos_keldin_features_settings_settingspane_sett_29e18bfa -->|method| macos_keldin_features_settings_settingspane_sett_45fc8ac5
-    macos_keldin_features_settings_settingspane_sett_29e18bfa -->|method| macos_keldin_features_settings_settingspane_sett_e8390576
-    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_aise_4a0a6aa4
-    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_outp_2c23e433
-    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_priv_ecfed267
-    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_sett_8cec07b7
-    macos_keldin_features_settings_settingspane_sett_45fc8ac5 -->|calls| macos_keldin_features_settings_settingspane_sett_b49fec01
-    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_aise_1efd1ad5
-    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_aise_95e94544
-    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_outp_2c6837f9
-    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_sett_47dc0026
-    macos_keldin_features_settings_settingspane_swif_a3e5fe42 -->|calls| macos_keldin_features_settings_settingspane_sett_e8390576
-    macos_keldin_features_settings_settingspane_sett_8cec07b7 -->|method| macos_keldin_features_settings_settingspane_sett_47dc0026
-    macos_keldin_features_settings_settingspane_sett_8cec07b7 -->|method| macos_keldin_features_settings_settingspane_sett_e5dd67ed
-    macos_keldin_features_settings_settingspane_sett_21e85c7a -->|method| macos_keldin_features_settings_settingspane_sett_b96ab3c8
-    macos_keldin_features_settings_settingspane_swif_20e8ca24 -->|calls| macos_keldin_features_settings_settingspane_aise_1efd1ad5
-    macos_keldin_features_settings_settingspane_sett_b49fec01 -->|method| macos_keldin_features_settings_settingspane_sett_3ebefbc1
-    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_1efd1ad5
-    macos_keldin_features_settings_settingspane_aise_4a0a6aa4 -->|method| macos_keldin_features_settings_settingspane_aise_95e94544
-    macos_keldin_features_settings_settingspane_outp_2c23e433 -->|method| macos_keldin_features_settings_settingspane_outp_2c6837f9
-    %% Omitted for readability: 13 nodes, 0 edges
-    class macos_keldin_features_settings_settingspane_sett_45fc8ac5 function;
-    class macos_keldin_features_settings_settingspane_sett_b49fec01 klass;
-    class macos_keldin_features_settings_settingspane_sett_29e18bfa klass;
-    class macos_keldin_features_settings_settingspane_aise_4a0a6aa4 klass;
-    class macos_keldin_features_settings_settingspane_sett_8cec07b7 klass;
-    class macos_keldin_features_settings_settingspane_sett_e8390576 function;
-    class macos_keldin_features_settings_settingspane_outp_2c23e433 klass;
-    class macos_keldin_features_settings_settingspane_priv_ecfed267 klass;
-    class macos_keldin_features_settings_settingspane_aise_1efd1ad5 function;
-    class macos_keldin_features_settings_settingspane_aise_95e94544 function;
-    class macos_keldin_features_settings_settingspane_outp_2c6837f9 function;
-    class macos_keldin_features_settings_settingspane_sett_47dc0026 function;
-    class macos_keldin_features_settings_settingspane_sett_e5dd67ed function;
-    class macos_keldin_features_settings_settingspane_sett_21e85c7a klass;
-    class macos_keldin_features_settings_settingspane_sett_b96ab3c8 function;
-    class macos_keldin_features_settings_settingspane_sett_3ebefbc1 function;
-    class macos_keldin_features_settings_settingspane_swif_a3e5fe42 klass;
-    class macos_keldin_features_settings_settingspane_swif_20e8ca24 klass;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>SettingsPane.swift</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>SettingsPane.swift node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>SettingsPane node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>ApplicationCoordinator</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ApplicationCoordinator node in project.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br>+2 more</td>
-  <td>.body node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Binding</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br>+2 more</td>
-  <td>Binding node in project.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Bool</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Bool node in project.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>.downloadConfirmationBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Binding</code><br><code>SettingsPane</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.downloadConfirmationBinding node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>.presentedBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>SettingsActionHost node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>ViewModifier</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ViewModifier node in project.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.title node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>.presentedBinding</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Binding</code><br><code>SettingsActionHost</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.presentedBinding node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>SettingsPaneID node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>ai</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>ai node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>output</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>output node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>privacy</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>privacy node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>LocalizedStringResource</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>LocalizedStringResource node in project.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>.title</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsPaneID</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.title node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>.makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>.makeNSView() node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Context</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Context node in project.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>NSView</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>NSView node in project.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>.updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>.updateNSView() node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>.configure()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>makeNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>SettingsWindowConfiguration</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>updateNSView()</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>Reads, resolves, or persists project configuration.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>AISettingsTab node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>Binding</code><br><code>LocalizedStringResource</code></td>
-  <td>No direct outbound edge</td>
-  <td>.body node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>.providerSettings</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>AISettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small><br><code>Binding</code></td>
-  <td>No direct outbound edge</td>
-  <td>.providerSettings node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>AppleCloudPlaceholder</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>AppleCloudPlaceholder node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>OutputSettingsTab node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Binding</code><br><code>OutputSettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>No direct outbound edge</td>
-  <td>.body node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>PrivacySettingsTab</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Settings/SettingsPane.swift</small></td>
-  <td>PrivacySettingsTab node in Features/Settings/SettingsPane.swift.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Features/Settings/SettingsPane.swift</code></td><td>24 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: references x15, calls x13, method x12, contains x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
 <!-- ====== 16. Other ====== -->
 <h2 id="other">16. Other</h2>
-<p>Other groups implementation around 2026, docs, quality, french, mostly in generator/aqaaccountgen/case_data.py, docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md. This section covers 1469 nodes and 1657 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Other groups implementation around 2026, docs, quality, french, mostly in generator/aqaaccountgen/case_data.py, docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md. This section covers 1475 nodes and 1684 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Other (1469 nodes, 1657 edges)
+    %% Section: Other (1475 nodes, 1684 edges)
     subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
         backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
         backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
@@ -4894,7 +4894,7 @@ flowchart LR
     backend_core_document_dsl_components_component_8b7221e2 -->|method| backend_core_document_dsl_components_component_m_1d9cfe77
     backend_core_document_dsl_components_text_lines_c015ad95 -->|calls| backend_core_document_dsl_components_instruction_43769cdc
     backend_core_document_dsl_components_text_lines_c015ad95 -->|calls| backend_core_document_dsl_components_instruction_4442a629
-    %% Omitted for readability: 1451 nodes, 0 edges
+    %% Omitted for readability: 1457 nodes, 0 edges
     class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
     class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
     class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
@@ -4947,7 +4947,7 @@ flowchart LR
   <td><code>GeneratorWorkspace</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Keldin/Navigation/ContentView.swift</small><br><code>.createButtonTitle</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br>+1 more</td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Keldin/Navigation/ContentView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br><code>.createButtonTitle</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small><br>+1 more</td>
   <td>GeneratorWorkspace node in Features/Generation/GeneratorWorkspaceView.swift.</td>
 </tr>
 <tr>
@@ -5193,7 +5193,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x983, calls x239, references x217, method x146. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x990, calls x253, references x227, method x144. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5223,7 +5223,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-11-01 23:38 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-01 23:41 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

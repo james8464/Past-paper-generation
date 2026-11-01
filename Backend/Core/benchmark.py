@@ -371,9 +371,7 @@ def emit_final_metrics(samples: list[Sample]) -> None:
 
     if score >= READY_SCORE:
         verdict = "Hardware check passed"
-        detail = (
-            "This checks the Mac's hardware, not the selected model's speed or paper quality."
-        )
+        detail = "This checks the Mac's hardware, not the selected model's speed or paper quality."
     elif score >= CAPABLE_SCORE:
         verdict = "Capable with slower local models"
         detail = "Generation should work, but large Ollama models may take noticeably longer."
