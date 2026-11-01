@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import random
 import re
 from copy import deepcopy
@@ -780,6 +781,145 @@ def test_opportunity_cost_parser_accepts_source_preserving_reordered_clauses():
         solve_selected_response(candidate.model_dump(mode="json"))["answer"]
         == "12 units of product Y"
     )
+
+
+def test_opportunity_cost_writer_receives_the_validators_public_stem_grammar():
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _generation_prompt,
+        _tasks,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    tasks = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})
+    arguments = dict(subject="Economics", seed=26092844, attempt=1, previous_failure="")
+    prompt = _generation_prompt([tasks[0]], **arguments)
+    data = json.loads(prompt.split("BLUEPRINT_DATA=", 1)[1])[0]
+    shape = data["public_stem_constraints"]
+    assert shape["operation"] == "opportunity_cost_change"
+    assert set(shape["grammar_patterns"]) == {
+        "prefix",
+        "fact",
+        "shared_facts",
+        "connector",
+        "task",
+    }
+    assert shape["facts"][0]["before_field"] == "primary_before"
+    assert shape["facts"][1]["after_field"] == "secondary_after"
+    assert shape["facts"][0]["direction"] == "increase"
+    assert re.fullmatch(shape["facts"][0]["verb_pattern"], "increases")
+    assert not re.fullmatch(shape["facts"][0]["verb_pattern"], "falls")
+    assert "12 units of product Y" not in json.dumps(shape)
+    assert not {"mark_scheme", "correct_choice", "solution"} & shape.keys()
+    assert "public_stem_constraints" in prompt.split("BLUEPRINT_DATA=", 1)[0]
+    grammar = shape["grammar_patterns"]
+    for prefix in shape["prefix_examples"]:
+        assert re.fullmatch(grammar["prefix"], prefix.casefold())
+    for connector in shape["connector_examples"]:
+        assert re.fullmatch(grammar["connector"], connector)
+    for fact in shape["facts"]:
+        assert re.fullmatch(grammar["fact"], fact["clause_example"].casefold())
+    for request in shape["task_examples"]:
+        assert re.fullmatch(grammar["task"], request.casefold())
+
+    # Compose from disclosed public clauses, not a hidden draft or solved key.
+    supported = (
+        shape["prefix_examples"][1]
+        + shape["facts"][1]["clause_example"]
+        + shape["connector_examples"][0]
+        + shape["facts"][0]["clause_example"]
+        + ". "
+        + shape["task_examples"][0]
+    )
+    candidate = _candidate_question(
+        tasks[0],
+        {"prompt": supported},
+        client=SimpleNamespace(provider="fixture", model="fixture"),
+        policy=GenerationPolicy(),
+    )
+    assert (
+        solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+        == "12 units of product Y"
+    )
+
+    unrelated = _generation_prompt([tasks[1]], **arguments)
+    unrelated_data = json.loads(unrelated.split("BLUEPRINT_DATA=", 1)[1])[0]
+    assert "public_stem_constraints" not in unrelated_data
+    assert "public_stem_constraints" not in unrelated.split("BLUEPRINT_DATA=", 1)[0]
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
+@pytest.mark.parametrize(
+    "variant", ["valid", "reordered", "swapped", "reversed", "tail", "unit"]
+)
+def test_legacy_shared_verb_opportunity_cost_keeps_bound_roles(entrypoint, variant):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _tasks,
+        _validate_checkpoint_item,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    task = replace(
+        task,
+        question=task.question.model_copy(
+            update={
+                "prompt": (
+                    "A producer raises output of product X from 20 to 30 units, while output of product Y "
+                    "falls from 80 to 68 units. What is the opportunity cost?"
+                )
+            }
+        ),
+    )
+    prompt = (
+        "A producer moves output of product X from 20 to 30 units and product Y from 80 to 68 units. "
+        "Select the quantity of product Y forgone."
+    )
+    if variant == "reordered":
+        prompt = "A producer changes output of product Y from 80 to 68 units and output of product X from 20 to 30 units. Calculate the opportunity cost."
+    elif variant == "swapped":
+        prompt = (
+            prompt.replace("product X", "product Z", 1)
+            .replace("product Y", "product X", 1)
+            .replace("product Z", "product Y", 1)
+        )
+    elif variant == "reversed":
+        prompt = prompt.replace("20 to 30", "30 to 20").replace("80 to 68", "68 to 80")
+    elif variant == "tail":
+        prompt += " Y output actually rises."
+    elif variant == "unit":
+        prompt = prompt.replace("quantity of product Y", "quantity of product X")
+    candidate = task.question.model_copy(update={"prompt": prompt})
+
+    def check():
+        if entrypoint == "parser":
+            _candidate_question(
+                task,
+                {"prompt": prompt},
+                client=SimpleNamespace(provider="fixture", model="fixture"),
+                policy=GenerationPolicy(),
+            )
+        elif entrypoint == "checkpoint":
+            _validate_checkpoint_item(task, candidate)
+        else:
+            assert (
+                solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+                == "12 units of product Y"
+            )
+
+    if variant in {"valid", "reordered"}:
+        check()
+    else:
+        with pytest.raises(ValueError, match="opportunity-cost"):
+            check()
 
 
 @pytest.mark.parametrize(
