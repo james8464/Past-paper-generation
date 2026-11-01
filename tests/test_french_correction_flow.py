@@ -197,3 +197,71 @@ def test_current_correction_does_not_leave_a_spacer_before_exercise_page_break(
     path = tmp_path / "boundaries.pdf"
     render(path, source)
     validate_llm_pdf(path, source, correction=True)
+
+
+def test_near_full_intermediate_questions_cannot_leave_a_spacer_only_page(tmp_path):
+    source = source_with_small_questions()
+    first = source[0]
+    questions = list(first.questions)
+    # In normal print the context plus Q1 occupy 701 of 704.89 frame points;
+    # Q2 alone occupies 701. A standalone five-point spacer spills between them.
+    for index, lines in ((0, 35), (1, 40)):
+        question = questions[index]
+        questions[index] = question.model_copy(
+            update={
+                "answer": "\n".join(
+                    f"RESULTAT_{index + 1} ligne {line:02d}." for line in range(lines)
+                ),
+                "marking": tuple(
+                    question.marking[0].model_copy(
+                        update={
+                            "points": "0.5",
+                            "criterion": f"CREDIT_{index + 1} partie {part}.",
+                        }
+                    )
+                    for part in (1, 2)
+                ),
+            }
+        )
+    source[0] = first.model_copy(update={"questions": tuple(questions)})
+    before = deepcopy([item.model_dump(mode="json") for item in source])
+    path = tmp_path / "near-full-boundary.pdf"
+    render(path, source)
+    validate_llm_pdf(path, source, correction=True)
+    with pymupdf.open(path) as pdf:
+        for index in (1, 2):
+            assert (
+                page_of(pdf, f"QUESTION_{index}")
+                == page_of(pdf, f"RESULTAT_{index}")
+                == page_of(pdf, f"CREDIT_{index}")
+            )
+        assert page_of(pdf, "QUESTION_2") == page_of(pdf, "QUESTION_1") + 1
+    assert [item.model_dump(mode="json") for item in source] == before
+
+
+def test_interquestion_spacing_is_per_instance_and_discardable_at_frame_top(
+    tmp_path, monkeypatch
+):
+    original = rendering.SimpleDocTemplate.build
+    source = source_with_small_questions()
+
+    def checked_build(document, story, *args, **kwargs):
+        groups = [item for item in story if isinstance(item, rendering._QuestionGroup)]
+        offset = 0
+        for exercise in source:
+            for question_index in range(len(exercise.questions)):
+                group = groups[offset]
+                expected = 0 if question_index == 0 else 5
+                assert group.getSpaceBefore() == expected
+                assert group._content[0].getSpaceBefore() == expected
+                assert group._content[0].style.spaceBefore == 0
+                offset += 1
+        for index, item in enumerate(story[:-1]):
+            if isinstance(item, rendering._QuestionGroup):
+                assert not isinstance(story[index + 1], rendering.Spacer)
+        return original(document, story, *args, **kwargs)
+
+    monkeypatch.setattr(rendering.SimpleDocTemplate, "build", checked_build)
+    path = tmp_path / "owned-spacing.pdf"
+    render(path, source)
+    validate_llm_pdf(path, source, correction=True)
