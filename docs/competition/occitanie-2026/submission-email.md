@@ -1,23 +1,20 @@
 # Submission email draft
 
-**To:** information@centralesupelec-alumni.org  
-**Subject:** Candidature au Prix Occitanie 2026 : Keldin, pratique NSI et données d’Occitanie
+Do not send until personal fields, eligibility and previous funding have been confirmed and the final application PDF has been checked. English acceptance remains unconfirmed. Attach only the application unless the organisers request supporting material.
 
-Madame, Monsieur,
+To: information@centralesupelec-alumni.org
+Subject: Prix Occitanie 2026 application: Keldin, computing practice with Occitanie's open data
 
-Veuillez trouver ci-joint ma candidature au Prix Occitanie 2026 pour le projet « Keldin, pratique NSI et données d’Occitanie ».
+Dear Ms de Ferry,
 
-Keldin est une application macOS qui prépare des documents d’entraînement en Numérique et sciences informatiques à partir de cinq familles de sujets, sans appel à un modèle d’IA. Chaque document est accompagné d’un corrigé proposé et de contrôles internes. La difficulté et la durée ne sont pas calibrées auprès d’élèves.
+Please find attached my application for the Prix Occitanie 2026: Keldin, computing practice with Occitanie's open data.
 
-Une activité distincte utilise déjà des données ouvertes de la Région Occitanie sur les lycées pour l’année scolaire 2025–2026. Les élèves peuvent étudier les identifiants, les doublons de noms et le traitement des données en Python et SQL. L’activité fonctionne hors ligne et indique sa source, sa licence et les limites de son extrait. Aucune validation ou participation de la Région n’est revendiquée.
+The project includes an offline Python and SQL activity using twelve public lycée records from the Région Occitanie's open-data portal. It also includes an experimental French NSI paper-generation route; no complete paper from that current route has yet passed qualification.
 
-La candidature principale respecte la limite de trois pages prévue par le règlement. Je peux également mettre à disposition, si vous le souhaitez, un dossier technique, une note sur le protocole de mesure et une courte démonstration vidéo.
+The application is in English and is within the three-page limit. Please let me know if a French version is required. A technical report, validation note and demonstration can be provided if supporting material is useful.
 
-Je reste à votre disposition pour toute précision.
+Kind regards,
 
-Bien cordialement,
-
-James Durup  
-Étudiant à CentraleSupélec  
+James Durup
 james.durup@student-cs.fr
 

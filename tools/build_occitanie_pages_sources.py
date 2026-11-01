@@ -8,8 +8,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUTPUT = ROOT / "output/occitanie-2026/pages-20261030-english"
-DATE = "30 October 2026"
+DEFAULT_OUTPUT = ROOT / "output/occitanie-2026/pages-20261101-english"
+DATE = "1 November 2026"
 
 
 @dataclass(frozen=True)
@@ -44,11 +44,11 @@ APPLICATION = Report(
                 ),
                 (
                     "Project title",
-                    "Keldin: NSI practice and an Occitanie open-data activity",
+                    "Keldin: computing practice with Occitanie's open data",
                 ),
                 (
                     "Summary of your project",
-                    "Keldin includes a French activity built from twelve public lycée records in Occitanie. Students use Python and SQL to investigate the data, including two records with the same name but different identifiers. The worksheet and its proposed answers work offline.\nThe app also asks a selected AI model to write NSI practice papers and corrections: three independent exercises, 18 technical points and a separate indicative 2-point language component. It checks their structure and supported answers before producing PDFs. No complete paper from the current model-generated route has yet passed qualification.",
+                    "Keldin includes a French Python and SQL activity built from twelve public lycée records in Occitanie. Two schools share a published name but have different identifiers. Students investigate why storing the records by name loses information, then choose an identifier that preserves both. The worksheet and proposed answers work offline.\nI want to extend this regional work through activities that teach students to inspect public data, write queries and explain the limits of a result. The app also asks a selected AI model to write NSI practice papers and corrections. It checks their structure and supported answers, but no complete paper from the current model-generated route has yet passed qualification.",
                 ),
             ),
         ),
@@ -61,7 +61,7 @@ APPLICATION = Report(
                 ),
                 (
                     "Who could benefit from your project?",
-                    "People preparing NSI practice can use the Mac app and share its PDFs with students. A student can read or print the documents without an AI account. Keldin does not collect pupil responses.\nThe regional worksheet connects familiar programming operations to data about local schools. It is intended for teaching and practice; its educational benefit has not been measured with learners, and no school partnership has been arranged.",
+                    "People preparing NSI practice can use the Mac app and share its PDFs with students. Students do not need a Mac, the app or an AI account to read or print the documents. Keldin does not collect pupil responses.\nThe regional worksheet connects programming operations to records from Nîmes, Toulouse, Montpellier and Cahors. Its educational benefit has not been measured with learners. No school or regional partnership has been arranged.",
                 ),
                 (
                     "What stage of development has your project reached?",
@@ -74,11 +74,11 @@ APPLICATION = Report(
             (
                 (
                     "Have you already presented this project, and has it been the subject of a request for support?",
-                    "I presented an earlier British version to a computing teacher. The comments concerned difficulty, SQL and how precisely the marking criteria awarded credit. I used them when setting requirements for the software. They did not assess the French papers.\nOther presentations, support requested or received, and previous funding: applicant to complete and confirm before submission.",
+                    "I presented an earlier British version to a computing teacher. The comments concerned difficulty, SQL and how precisely the marking criteria awarded credit. I used them when setting requirements for the software. They did not assess the French papers.\nApplicant to confirm this account and complete all other presentations, support requested or received, and previous funding. The rules exclude projects already funded through other channels.",
                 ),
                 (
                     "Additional information to explain your project",
-                    "The extract contains three public establishments from each of Nîmes, Toulouse, Montpellier and Cahors. It retains the published labels from the 2025-2026 dataset, updated on 12 May 2026. Licence Ouverte 2.0 (Etalab) permits attributed reuse. These records do not establish NSI provision or current boarding vacancies.\nOver the next twelve months, I would spend months 1 and 2 recording failures and extending the checks. In months 3 to 6, I would compare complete papers with official questions. Months 7 to 9 would focus on PDF accessibility and further activities using regional data. The final three months would be used to assess the results before extending the project. Any school study would require agreement in advance.\nThe 1,000-euro prize could help pay for testing on different Macs, accessibility work and regional activities. Budget allocation: applicant to complete before submission. Reference-document rights, educational calibration and distribution requirements remain unresolved. No regional endorsement or school deployment has been agreed.",
+                    "The extract contains three public establishments from each of four Occitanie communes. It uses the Région's 2025-2026 lycée dataset, updated on 12 May 2026, under Licence Ouverte 2.0 (Etalab). These records do not establish NSI provision or current boarding vacancies.\nOver the next twelve months, I propose to spend months 1 and 2 recording failures and extending the checks. During months 3 to 6, I would compare complete papers with official questions and develop further regional data activities. Months 7 to 9 would focus on PDF accessibility and testing on different Macs. I would use the final three months to assess the results before extending the project. Any school study would require agreement in advance.\nThe prize would support testing on different Macs, accessibility work and regional activities. Budget allocation: applicant to complete for a 1,000-euro award and a reduced 500-euro plan. Reference-document rights, educational calibration and distribution requirements remain unresolved. No regional endorsement or school deployment has been agreed.",
                 ),
             ),
         ),
@@ -120,7 +120,7 @@ TECHNICAL = Report(
                 ),
                 (
                     "Checking the work",
-                    "The model then solves each exercise without seeing its proposed answer and reviews the questions individually. Supported executable checks examine SQL, Python traces and shortest paths. A reported issue can stop publication. Agreement between model calls cannot prove correctness: both can make the same mistake.",
+                    "The model solves each exercise without seeing its proposed answer, then reviews each question. Supported executable checks examine SQL, Python traces and shortest paths. A validated semantic refusal permits at most two whole-exercise rounds; other failures stop. Agreement between model calls cannot prove correctness: both can make the same mistake.",
                 ),
                 (
                     "",
@@ -128,7 +128,7 @@ TECHNICAL = Report(
                 ),
                 (
                     "Saving the result",
-                    "The subject and correction are prepared in private storage and checked before publication. Failed or cancelled work is not recorded as a completed paper. Users export the PDFs; technical records stay private. The regional activity also publishes its pair together and refuses to replace existing output. Both documents should be read before they are shared.",
+                    "The subject and correction are checked in private storage before publication. A private recovery record retains returned drafts and review evidence; replay does not approve a paper. Failed or cancelled work is not recorded as completed. Users export PDFs, not technical records. The regional activity publishes its pair together without replacing existing output. Read both documents before sharing.",
                 ),
             ),
         ),
@@ -145,7 +145,7 @@ TECHNICAL = Report(
                 ),
                 (
                     "Distribution",
-                    "Developer-signed Mac builds have passed local checks and selected native workflows. Testing does not cover every interaction on every Mac or establish full HIG compliance. App Store release still requires a personal Distribution identity and the remaining release work. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
+                    "The current developer-signed build passed software checks and synthetic transport tests before installation. These provide no live-model quality result. Testing does not cover every interaction or establish full compliance with Apple's interface guidance. App Store publication is pending. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
                 ),
                 (
                     "Sources",
@@ -187,7 +187,7 @@ RELIABILITY = Report(
             (
                 (
                     "Paper trials",
-                    "The first historical Gemma 4 12B French campaign accepted 0 of 10 complete papers. No complete current V36 paper has yet passed qualification. Small successful tasks and short parallel-task timings cannot establish complete-paper quality or faster generation across subjects. Results retain the model, settings and source version, including failed attempts.",
+                    "The first historical Gemma 4 12B French campaign accepted 0 of 10 complete papers. No complete current V36 paper has yet passed qualification. Recovery and software regression tests use controlled cases, not independent complete-paper trials. Small successful tasks cannot establish complete-paper quality. Results retain model settings and source versions, including failed attempts.",
                 ),
                 (
                     "Historical page review",
@@ -199,7 +199,7 @@ RELIABILITY = Report(
                 ),
                 (
                     "Small samples",
-                    "With zero blocking defects in n independent cases, a simple one-sided 95% upper bound is 1 - 0.05^(1/n). For n = 30, the bound is about 9.5%. This illustrative calculation is not Keldin's measured defect rate. It does not apply to a failed campaign or repeated versions of five fixed families.",
+                    "With zero blocking defects in n independent cases sharing a common defect probability, a one-sided 95% upper bound is 1 - 0.05^(1/n). At n = 30, it is about 9.5%. This illustration is not Keldin's measured defect rate. It does not describe failed campaigns, repeated families or undetected errors.",
                 ),
             ),
         ),
@@ -329,7 +329,7 @@ def render(report: Report) -> str:
         if report.formal and index == 0:
             blocks.append(
                 paragraph(
-                    "English working draft. This is not a French filing translation; confirm the accepted submission language before sending.",
+                    "English working draft. Submission language not yet confirmed.",
                     after=220,
                 )
             )

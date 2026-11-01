@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 30 October 2026.
+Updated 1 November 2026.
 
 ## Formal requirement
 
@@ -8,7 +8,24 @@ The published call requires a concise application in PDF format, limited to thre
 
 The jury evaluates the relationship with Occitanie, originality, engineering character, feasibility, realism and the work planned for the following twelve months. A personal link with Occitanie is not required.
 
+The live announcement, application form and rules were checked on 1 November.
+The form asks applicants to preserve its paragraph topics; its optional
+illustrations may occupy at most one page within the overall three-page maximum.
+Neither linked PDF states a language condition, but English acceptance has not
+been expressly confirmed. Explain the planned use of either award without
+inventing costs: the reduced EUR 500 plan also needs the applicant's decision.
+
 ## Prepared files
+
+The current Pages-source builder is dated 1 November and centres the regional
+activity and proposed twelve-month work. Generate into a fresh folder with
+`python tools/build_occitanie_pages_sources.py --output output/occitanie-2026/pages-20261101-english`.
+Its explicit page structure remains three application pages, four technical-report
+pages and three reliability-note pages. RTF page breaks and word-count tests do
+not certify Pages pagination: native editing, PDF export and inspection of every
+new page are still required. Preserve the current orange Keldin icon and report
+cover whitespace when editing in Pages. The active English email draft no longer
+describes the historical fixed-paper route as current.
 
 The current dossier is in English, as requested by James. Its native Pages documents and PDF exports are in `output/occitanie-2026/pages-english-final/`. All ten exported A4 pages were reviewed on 30 October: three for the application, four for the technical/user report and three for the reliability/validation note. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. `tools/build_occitanie_pages_sources.py` prepares the English source material for the Pages workflow. Recheck the three-page application limit after filling in personal details. The organiser has not confirmed the draft's submission language or accepted a submission.
 
@@ -52,6 +69,13 @@ Before sending, James must also confirm that he remains eligible under the exact
 - [ ] Send before midnight on 2 November 2026 and retain the sent message and attachment hash.
 
 ## Evidence boundaries
+
+PR #137 is merged and its developer-signed build installed after strict signature
+and backend-byte checks on 1 November. Recovery permits at most two whole-exercise
+rounds after a validated semantic refusal and retains private returned-object
+evidence. Synthetic HTTP transport checks and software regression tests establish
+bounded software behaviour, not complete-paper or educational quality. Replay
+does not approve a paper. No complete current French paper has passed qualification.
 
 The current public French route is V36. The selected model writes the exercise
 contexts, materials, questions, proposed answers and marking criteria. Independent
