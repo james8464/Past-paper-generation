@@ -6,6 +6,65 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testHistoryBrowsingBeyondRecentLimitPreservesStreamedRunArtifacts() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        var record = pendingJob(seed: 47)
+        record.artifacts = (0 ..< 65).map { index in
+            GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/history-\(index).pdf"))
+        }
+        try application.recentDocumentStore.save(record)
+        application.setDryRun(true)
+        application.generate()
+        let request = try XCTUnwrap(backend.requests.first)
+        request.onEvent(.file(role: "question_paper", path: "/fixture/streamed-question.pdf"))
+        request.onEvent(.file(role: "mark_scheme", path: "/fixture/streamed-scheme.pdf"))
+        let files = application.currentGenerationFiles
+        XCTAssertEqual(files.count, 2)
+        let active = application.generationCoordinator.activeJob
+
+        for file in record.artifacts {
+            application.openHistoryPDF(from: [record.id], fileID: file.id)
+        }
+
+        XCTAssertEqual(application.currentGenerationFiles, files)
+        XCTAssertEqual(application.generatedFiles.count, 60)
+        XCTAssertEqual(application.previewedFileID, record.artifacts.last?.id)
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertTrue(application.isRunning)
+        XCTAssertEqual(backend.requests.count, 1)
+        application.cancelGeneration()
+    }
+
+    @MainActor
+    func testHistoryOpeningOwnedURLKeepsTheStreamedArtifactIdentity() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let historical = GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/shared.pdf"))
+        var record = pendingJob(seed: 48)
+        record.artifacts = [historical]
+        try application.recentDocumentStore.save(record)
+        application.setDryRun(true)
+        application.generate()
+        let request = try XCTUnwrap(backend.requests.first)
+        request.onEvent(.file(role: "question_paper", path: historical.url.path))
+        request.onEvent(.file(role: "mark_scheme", path: "/fixture/owned-scheme.pdf"))
+        let files = application.currentGenerationFiles
+        let owned = try XCTUnwrap(files.first { $0.url == historical.url })
+        XCTAssertNotEqual(owned.id, historical.id)
+        let active = application.generationCoordinator.activeJob
+
+        application.openHistoryPDF(from: [record.id], fileID: historical.id)
+
+        XCTAssertEqual(application.previewedFileID, owned.id)
+        XCTAssertEqual(application.currentGenerationFiles, files)
+        XCTAssertEqual(application.generatedFiles.filter { $0.url == historical.url }, [owned])
+        XCTAssertEqual(application.generationCoordinator.activeJob, active)
+        XCTAssertTrue(application.isRunning)
+        application.cancelGeneration()
+    }
+
+    @MainActor
     func testHistoryPDFChoicesPreferQuestionThenSchemeAndExcludeNonPDFs() throws {
         let application = application(backend: ControlledRunBackend())
         let question = GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/question.PDF"))
