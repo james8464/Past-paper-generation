@@ -29,6 +29,10 @@ from Backend.Core.exam_blueprints import (
     validate_rule,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
+from Backend.Core.shared_source_scope import (
+    owns_shared_source,
+    uses_shared_option_source,
+)
 from Backend.Core.subjects.accounting import management_input_contract
 from Backend.Core.subjects.accounting_selected_response import (
     accounting_selected_response_contract,
@@ -362,6 +366,20 @@ def build_paper(
             chart_values=values,
             questions=questions,
         )
+        if rule.id == "paper_2" and section_rule.id in {"A", "B"}:
+            # Only the first section extract is printed. Keep planning draws and
+            # chart values for seeded arithmetic, not as candidate evidence.
+            public_option = option.model_dump(mode="json")
+            for question in questions:
+                public_question = question.model_dump(mode="json")
+                if not owns_shared_source(
+                    public_question
+                ) and uses_shared_option_source(public_question, public_option):
+                    question.authoring_context["candidate_source"] = {
+                        "source_type": "accounting_printed_section_extract_v1",
+                        "business": business,
+                        "printed_extract": planning_extracts[0],
+                    }
         sections.append(
             GeneratedSection(
                 id=section_rule.id,
