@@ -139,7 +139,10 @@ def test_november_sources_keep_regional_proposal_and_recovery_limits():
     technical = " ".join(
         text for page in sources.TECHNICAL.pages for _, text in page.sections
     )
+    assert "The authoring step can regenerate a malformed draft once." in technical
     assert "two whole-exercise rounds" in technical
+    assert "unrecovered failures stop" in technical
+    assert "other failures stop" not in technical
     assert "private recovery record" in technical
     assert "synthetic transport tests" in technical
     assert "no live-model quality result" in technical

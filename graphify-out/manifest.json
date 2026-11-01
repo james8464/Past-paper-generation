@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793556688.591985,
+    "mtime": 1793557653.7358868,
     "ast_hash": "86cb30281412afffac724b9399345203",
     "semantic_hash": ""
   },
@@ -1950,8 +1950,8 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1793543563.3105936,
-    "ast_hash": "4bf056f4bc1955ccb404de162d303e73",
+    "mtime": 1793558954.7735047,
+    "ast_hash": "f05902de414df0c016e9f5818971b1ff",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/data/notes/text/1.1. Nature of Economics.txt": {
@@ -4715,13 +4715,13 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
-    "mtime": 1793543938.1441252,
-    "ast_hash": "737477ce652811168bad395e685c270b",
+    "mtime": 1793559009.1995347,
+    "ast_hash": "ac43ae3443c797ee3d73feeb5c6eab0a",
     "semantic_hash": ""
   },
   "tools/build_occitanie_pages_sources.py": {
-    "mtime": 1793543938.144475,
-    "ast_hash": "a328dc9bb72846866ee4dbbd61ae3596",
+    "mtime": 1793559009.1993225,
+    "ast_hash": "0bd0c8202cfd9004e4a954429e6ca9fc",
     "semantic_hash": ""
   },
   "docs/quality/accounting-equal-priority-correction-2026-10-29.md": {
