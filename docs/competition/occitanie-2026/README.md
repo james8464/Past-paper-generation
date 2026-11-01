@@ -27,7 +27,7 @@ new page are still required. Preserve the current orange Keldin icon and report
 cover whitespace when editing in Pages. The active English email draft no longer
 describes the historical fixed-paper route as current.
 
-The current dossier is in English, as requested by James. Its native Pages documents and PDF exports are in `output/occitanie-2026/pages-english-final/`. All ten exported A4 pages were reviewed on 30 October: three for the application, four for the technical/user report and three for the reliability/validation note. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. `tools/build_occitanie_pages_sources.py` prepares the English source material for the Pages workflow. Recheck the three-page application limit after filling in personal details. The organiser has not confirmed the draft's submission language or accepted a submission.
+The current English working dossier is in `output/occitanie-2026/pages-20261101-english/`: three native Pages documents, their matching PDFs and `Read before sending.txt`. All ten exported A4 pages were visually reviewed on 1 November: three application pages, four technical/user-report pages and three reliability-note pages. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. The working application is not submit-ready until James completes the facts below, removes drafting notices and placeholders, re-exports it and checks that it remains at most three A4 pages. The organiser has not confirmed English acceptance or accepted a submission.
 
 Earlier Word exports are superseded. Their generated copies were removed from the working output folders on 30 October. The legacy builder still recreates historical V35 content and must not be used as the current submission without a separate update and review. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate that older set. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
@@ -50,21 +50,24 @@ Only the three-page application is formally required. The two appendices and the
 
 The application deliberately leaves these fields blank because the repository cannot establish them:
 
-- promotion/year group;
-- postal address;
-- telephone number;
-- whether this project has received or requested any previous financial support.
+- promotion/year group, postal address and telephone number;
+- a short account of studies, interests and commitments;
+- confirmation of current 2026-2027 student status and eligibility;
+- confirmation of the earlier British teacher presentation and all other presentations;
+- all support requested or received, including previous funding;
+- intended use of a EUR 1,000 award and a reduced EUR 500 plan.
 
 Before sending, James must also confirm that he remains eligible under the exact wording of the rules and that the receiving email address has not changed.
 
 ## Submission checklist
 
-- [ ] Fill the four personal facts above in the current editable application.
+- [ ] Complete every applicant-only fact above in the current editable Pages application.
 - [ ] Confirm no disqualifying prior outside funding.
-- [ ] Export the edited formal application to PDF and confirm it remains at most three A4 pages.
-- [ ] Search the final PDF for comments, tracked changes and placeholders.
+- [ ] Resolve submission language; English acceptance remains unconfirmed.
+- [ ] Remove working-draft notices, comments, tracked changes and all completion placeholders.
+- [ ] Re-export the edited application to PDF; inspect every page and confirm at most three A4 pages.
 - [ ] Confirm that every claim still matches `docs/competition/occitanie-2026/claims-register.md`.
-- [ ] Record a demonstration of the final tested build without presenting failed or historical output as a qualified current paper.
+- [ ] If offering a demonstration, do not present failed, historical or manually held output as a qualified current paper.
 - [ ] Keep the video and appendices behind a view-only link unless the organisers ask for attachments.
 - [ ] Send before midnight on 2 November 2026 and retain the sent message and attachment hash.
 

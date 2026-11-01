@@ -1237,6 +1237,60 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
+    func testOllamaRefreshCapturesConfiguredEndpointForStatusAndModels() async {
+        let backend = DeferredRefreshBackend(defersModels: true)
+        let application = application(backend: backend)
+        application.ollamaURL = "http://127.0.0.1:11435"
+        application.refreshOllama()
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        backend.resumeNext(.success([]))
+        await fulfillment(of: [backend.modelsStarted], timeout: 2)
+        backend.resumeNext(.success([.models(["fixture:latest"], message: nil)]))
+        await waitForRefreshCompletion(application)
+        XCTAssertEqual(backend.collectionArguments, [
+            ["ollama-status", "--ollama-url", "http://127.0.0.1:11435"],
+            ["list-models", "--ollama-url", "http://127.0.0.1:11435"]
+        ])
+        XCTAssertEqual(application.availableModels, ["fixture:latest"])
+    }
+
+    @MainActor
+    func testEndpointChangeInvalidatesDiscoveryAndInFlightStatusEvenIfChangedBack() async {
+        let backend = DeferredRefreshBackend()
+        let application = application(backend: backend)
+        application.ollamaURL = "http://127.0.0.1:11435"
+        application.availableModels = ["previous:latest"]
+        application.hasLoadedOllamaModels = true
+        application.refreshOllama()
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        application.ollamaURL = "http://127.0.0.1:11436"
+        application.ollamaURL = "http://127.0.0.1:11435"
+        backend.resumeNext(.success([.ollamaStatus(installed: true, running: true, command: nil, message: "Stale endpoint")]))
+        await waitForRefreshCompletion(application)
+        XCTAssertTrue(application.availableModels.isEmpty)
+        XCTAssertFalse(application.hasLoadedOllamaModels)
+        XCTAssertFalse(application.ollamaState.running)
+        XCTAssertEqual(backend.collectionArguments.count, 1)
+    }
+
+    @MainActor
+    func testEndpointChangeRejectsInFlightModelsAndKeepsCapturedRequestURL() async {
+        let backend = DeferredRefreshBackend(defersModels: true)
+        let application = application(backend: backend)
+        application.ollamaURL = "http://127.0.0.1:11435"
+        application.refreshOllama()
+        await fulfillment(of: [backend.statusStarted], timeout: 2)
+        backend.resumeNext(.success([]))
+        await fulfillment(of: [backend.modelsStarted], timeout: 2)
+        application.ollamaURL = "http://127.0.0.1:11436"
+        backend.resumeNext(.success([.models(["stale:latest"], message: nil)]))
+        await waitForRefreshCompletion(application)
+        XCTAssertTrue(application.availableModels.isEmpty)
+        XCTAssertFalse(application.hasLoadedOllamaModels)
+        XCTAssertEqual(backend.collectionArguments.last, ["list-models", "--ollama-url", "http://127.0.0.1:11435"])
+    }
+
+    @MainActor
     func testLateOllamaStatusCannotPoisonModelFreeFrenchGeneration() async throws {
         let backend = DeferredRefreshBackend()
         let application = application(backend: backend)
@@ -1254,7 +1308,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(application.generationCoordinator.activeJob?.id, jobID)
         XCTAssertFalse(application.showError)
         XCTAssertTrue(application.progressEntries.isEmpty)
-        XCTAssertEqual(backend.collectionArguments, [["ollama-status"]])
+        XCTAssertEqual(backend.collectionArguments, [["ollama-status", "--ollama-url", AppDefaults.ollamaURL]])
         application.cancelGeneration()
     }
 
@@ -1316,7 +1370,7 @@ final class RunIsolationTests: XCTestCase {
 
         XCTAssertEqual(application.errorMessage, error)
         XCTAssertEqual(application.progressEntries, entries)
-        XCTAssertEqual(backend.collectionArguments, [["ollama-status"]])
+        XCTAssertEqual(backend.collectionArguments, [["ollama-status", "--ollama-url", AppDefaults.ollamaURL]])
     }
 
     @MainActor
@@ -1335,7 +1389,7 @@ final class RunIsolationTests: XCTestCase {
         XCTAssertEqual(application.status, status)
         XCTAssertFalse(application.showError)
         XCTAssertNil(application.benchmarkCoordinator.errorMessage)
-        XCTAssertEqual(backend.collectionArguments, [["ollama-status"]])
+        XCTAssertEqual(backend.collectionArguments, [["ollama-status", "--ollama-url", AppDefaults.ollamaURL]])
         application.cancelBenchmark()
     }
 

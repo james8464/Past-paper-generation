@@ -1327,11 +1327,8 @@
     {
       "path": "Backend/Core/ollama.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
-      "source_sha256": "bf25ece5ea0bb93a312ce8fc9456c511eaeeb2bc4df9130188926eeb6f0ec53b",
-      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
-      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/open_credit.py",
@@ -5534,6 +5531,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_correction_flow.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_french_curricular_scoping.py",
       "classification": "test",
       "status": "pending",
@@ -6474,6 +6477,12 @@
     },
     {
       "path": "tests/test_ocr_scheme_content.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ollama_endpoint.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
