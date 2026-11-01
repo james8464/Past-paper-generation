@@ -803,6 +803,7 @@ def test_opportunity_cost_writer_receives_the_validators_public_stem_grammar():
     assert set(shape["grammar_patterns"]) == {
         "prefix",
         "fact",
+        "preposed_fact",
         "shared_facts",
         "connector",
         "task",
@@ -947,6 +948,75 @@ def test_legacy_shared_verb_opportunity_cost_keeps_bound_roles(entrypoint, varia
         prompt += " Y output actually rises."
     elif variant == "unit":
         prompt = prompt.replace("quantity of product Y", "quantity of product X")
+    candidate = task.question.model_copy(update={"prompt": prompt})
+
+    def check():
+        if entrypoint == "parser":
+            _candidate_question(
+                task,
+                {"prompt": prompt},
+                client=SimpleNamespace(provider="fixture", model="fixture"),
+                policy=GenerationPolicy(),
+            )
+        elif entrypoint == "checkpoint":
+            _validate_checkpoint_item(task, candidate)
+        else:
+            assert (
+                solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+                == "12 units of product Y"
+            )
+
+    if variant in {"valid", "reordered"}:
+        check()
+    else:
+        with pytest.raises(ValueError, match="opportunity-cost"):
+            check()
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
+@pytest.mark.parametrize(
+    "variant", ["valid", "reordered", "swapped", "reversed", "tail"]
+)
+def test_legacy_preposed_verb_opportunity_cost_keeps_bound_roles(entrypoint, variant):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _tasks,
+        _validate_checkpoint_item,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    task = replace(
+        task,
+        question=task.question.model_copy(
+            update={
+                "prompt": (
+                    "Output of product Y declines from 80 units to 68 units. The production of product X "
+                    "grows from 20 to 30 units. Calculate the opportunity cost."
+                )
+            }
+        ),
+    )
+    prompt = (
+        "A producer raises output of product X from 20 to 30 units, while output of product Y "
+        "falls from 80 to 68 units. What is the opportunity cost?"
+    )
+    if variant == "reordered":
+        prompt = "A producer decreases output of product Y from 80 to 68 units, while output of product X increases from 20 to 30 units. Determine the opportunity cost."
+    elif variant == "swapped":
+        prompt = (
+            prompt.replace("product X", "product Z")
+            .replace("product Y", "product X")
+            .replace("product Z", "product Y")
+        )
+    elif variant == "reversed":
+        prompt = prompt.replace("20 to 30", "30 to 20").replace("80 to 68", "68 to 80")
+    elif variant == "tail":
+        prompt += " Y output actually rises."
     candidate = task.question.model_copy(update={"prompt": prompt})
 
     def check():

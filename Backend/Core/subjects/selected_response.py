@@ -352,7 +352,7 @@ def _opportunity_cost_source_values(
 
 _OPPORTUNITY_COST_NUMBER = r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)"
 _OPPORTUNITY_COST_VERBS = {
-    "increase": r"rises?|increases?|grows?|expands?",
+    "increase": r"rises?|raises?|increases?|grows?|expands?",
     "decrease": r"falls?|decreases?|declines?|drops?",
     "neutral": r"changes?|moves?|goes",
 }
@@ -380,15 +380,19 @@ def _opportunity_cost_stem_grammar() -> dict[str, str]:
     sacrifice += r"|(?:quantity|output) of product y (?:forgone|sacrificed|given up)"
     request = r"(?:what is|which option (?:gives|shows)|select|calculate|identify|determine|find)\s+(?:the\s+)?"
     return {
-        "prefix": r"(?:a factory reallocates resources:\s*)?",
+        "prefix": r"(?:a factory reallocates resources:\s*|a producer\s+)?",
         "fact": fact,
+        "preposed_fact": (
+            rf"\b(?P<verb>{verbs})\s+(?:the\s+)?(?:output|production) of product "
+            rf"(?P<label>x|y) from (?P<before>{number})(?: units)? to (?P<after>{number}) units\b"
+        ),
         "shared_facts": (
             rf"a producer (?P<verb>moves|changes) output of product (?P<first_label>x|y) "
             rf"from (?P<first_before>{number}) to (?P<first_after>{number}) units "
             rf"and (?:output of )?product (?P<second_label>x|y) "
             rf"from (?P<second_before>{number}) to (?P<second_after>{number}) units\b"
         ),
-        "connector": r"\s*(?:while|whereas|and|;|\.)\s*",
+        "connector": r"\s*(?:,?\s*(?:while|whereas|and)|;|\.)\s*",
         "task": rf"[.;]?\s*{request}(?:{cost}|{sacrifice})(?:,?\s+in units of product y)?[?.]?",
     }
 
@@ -438,7 +442,7 @@ def public_selected_response_stem_constraints(
         ),
         "grammar_patterns": _opportunity_cost_stem_grammar(),
         "facts": facts,
-        "prefix_examples": ["", "A factory reallocates resources: "],
+        "prefix_examples": ["", "A factory reallocates resources: ", "A producer "],
         "connector_examples": ["; ", " while ", " whereas ", " and ", ". "],
         "task_examples": [
             f"Select the quantity sacrificed to expand product X by {gain_text} units.",
@@ -465,7 +469,13 @@ def _validate_opportunity_cost_stem(prompt: str, values: dict[str, Decimal]) -> 
         ]
         task_start = shared.end()
     else:
-        spans = list(re.finditer(grammar["fact"], text))
+        spans = sorted(
+            [
+                *re.finditer(grammar["fact"], text),
+                *re.finditer(grammar["preposed_fact"], text),
+            ],
+            key=lambda match: match.start(),
+        )
         if len(spans) != 2:
             raise ValueError(
                 "opportunity-cost public fact clauses are missing or ambiguous"
