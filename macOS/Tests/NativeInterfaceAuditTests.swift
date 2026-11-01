@@ -3,6 +3,19 @@ import XCTest
 @testable import Keldin
 
 final class NativeInterfaceAuditTests: XCTestCase {
+    func testQualitySheetChromeUsesSelectedLanguageAndSystemLocale() {
+        let labels: [(LocalizedStringResource, String, String)] = [
+            ("Quality review", "Quality review", "Contrôle de qualité"),
+            ("Quality", "Quality", "Qualité"),
+            ("Close", "Close", "Fermer"),
+        ]
+        for (resource, english, french) in labels {
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "en"), english)
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "fr"), french)
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "system"), String(localized: resource))
+        }
+    }
+
     @MainActor
     func testRemovedRecentsStayHiddenAcrossRestartAndDuplicateHistory() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRecentVisibility-\(UUID().uuidString)")

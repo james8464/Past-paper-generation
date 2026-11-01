@@ -4041,7 +4041,7 @@
         }
       }
     },
-    "Quality": {},
+    "Quality": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Qualité"}}}},
     "Quality of French": {
       "extractionState": "stale",
       "localizations": {

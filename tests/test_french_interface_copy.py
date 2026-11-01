@@ -17,6 +17,31 @@ def translated(key):
     return unit["value"]
 
 
+def test_quality_review_sheet_carries_the_selected_locale_across_presentation():
+    source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    sheet = source.split(".sheet(isPresented: $showsQualityReview)", 1)[1].split(
+        "private var workspace", 1
+    )[0]
+    assert r".environment(\.locale, locale)" in sheet
+    assert "QualityReviewView()" in sheet
+    assert '.navigationTitle("Quality review")' in sheet
+    assert 'Button("Close")' in sheet
+
+
+def test_quality_review_sheet_chrome_and_evidence_copy_have_french_translations():
+    for key in (
+        "Quality",
+        "Quality review",
+        "Close",
+        "Engineering",
+        "At creation",
+        "Reference layout",
+        "Reference reviewed",
+        "The reference layout has been reviewed. This does not verify the generated PDF.",
+    ):
+        translated(key)
+
+
 def test_custom_commands_resolve_the_selected_language():
     source = (APP / "Application/AppCommands.swift").read_text()
     assert '@AppStorage("interfaceLanguage")' in source
