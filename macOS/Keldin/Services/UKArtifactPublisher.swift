@@ -2,6 +2,15 @@ import CryptoKit
 import Foundation
 
 struct UKArtifactPublisher {
+    static func prepareOutputFolder(_ output: URL) throws {
+        guard output.isFileURL else { throw CocoaError(.fileWriteInvalidFileName) }
+        let manager = FileManager.default
+        try manager.createDirectory(at: output, withIntermediateDirectories: true)
+        guard manager.isWritableFile(atPath: output.path) else {
+            throw CocoaError(.fileWriteNoPermission)
+        }
+    }
+
     private let copyFile: (URL, URL) throws -> Void
     private let commitDirectory: (URL, URL) throws -> Void
 
@@ -43,7 +52,7 @@ struct UKArtifactPublisher {
             }
         }
 
-        try manager.createDirectory(at: output, withIntermediateDirectories: true)
+        try Self.prepareOutputFolder(output)
         let transaction = UUID().uuidString
         let staging = output.appendingPathComponent(".keldin-export-\(transaction)", isDirectory: true)
         let destination = output.appendingPathComponent("Keldin-\(transaction)", isDirectory: true)
