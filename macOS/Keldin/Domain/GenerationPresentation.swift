@@ -1,7 +1,40 @@
 import Foundation
 
+struct ReferenceLayoutPresentation {
+    let state: GenerationQualityState
+    let status: String
+    let detail: String
+}
+
 /// Short status text belongs in the workspace; original messages stay in diagnostics.
 enum GenerationPresentation {
+    static func referenceLayout(
+        savedReviewed: Bool?, hasSavedReport: Bool, currentReviewed: Bool,
+        locale: Locale = .current
+    ) -> ReferenceLayoutPresentation {
+        func text(_ resource: LocalizedStringResource) -> String {
+            String(localized: InterfaceText.localizedResource(resource, locale: locale))
+        }
+        let reviewed = hasSavedReport ? savedReviewed : currentReviewed
+        switch reviewed {
+        case .some(true):
+            return ReferenceLayoutPresentation(
+                state: .passed, status: text("Reference reviewed"),
+                detail: text("The reference layout has been reviewed. This does not verify the generated PDF.")
+            )
+        case .some(false):
+            return ReferenceLayoutPresentation(
+                state: .pending, status: text("Not reviewed"),
+                detail: text("The reference layout has not been reviewed.")
+            )
+        case nil:
+            return ReferenceLayoutPresentation(
+                state: .unknown, status: text("Unknown"),
+                detail: text("This evidence is not recorded in the saved package.")
+            )
+        }
+    }
+
     static func estimatedTime(_ estimate: GenerationEstimate, locale: Locale) -> String {
         let resource: LocalizedStringResource
         if !estimate.hasDurationEstimate {

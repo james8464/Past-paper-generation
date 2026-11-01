@@ -307,17 +307,10 @@ private struct QualityReviewView: View {
                     state: originalityState
                 )
                 qualityRow(
-                    "Visual profile",
-                    detail: qualificationDetail(
-                        saved: application.lastQualityReport?.visuallyCalibrated,
-                        current: application.selectedPaper.readiness.visuallyCalibrated,
-                        passed: "Reference geometry has been reviewed.",
-                        pending: "This paper still needs a completed visual calibration."
-                    ),
-                    state: qualificationState(
-                        saved: application.lastQualityReport?.visuallyCalibrated,
-                        current: application.selectedPaper.readiness.visuallyCalibrated
-                    )
+                    "Reference layout",
+                    detail: referenceLayout.detail,
+                    state: referenceLayout.state,
+                    status: referenceLayout.status
                 )
                 qualityRow(
                     "Reference demand",
@@ -467,7 +460,8 @@ private struct QualityReviewView: View {
     private func qualityRow(
         _ title: LocalizedStringResource,
         detail: String,
-        state: GenerationQualityState
+        state: GenerationQualityState,
+        status: String? = nil
     ) -> some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: state.systemImage)
@@ -478,7 +472,7 @@ private struct QualityReviewView: View {
                 HStack {
                     Text(InterfaceText.localizedResource(title, locale: locale))
                     Spacer()
-                    Text(InterfaceText.localizedResource(state.titleResource, locale: locale))
+                    Text(status ?? text(state.titleResource))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -492,6 +486,15 @@ private struct QualityReviewView: View {
 
     private var presentation: GenerationQualityPresentation {
         GenerationQualityPolicy.presentation(for: application.lastQualityReport, locale: locale)
+    }
+
+    private var referenceLayout: ReferenceLayoutPresentation {
+        GenerationPresentation.referenceLayout(
+            savedReviewed: application.lastQualityReport?.visuallyCalibrated,
+            hasSavedReport: application.lastQualityReport != nil,
+            currentReviewed: application.selectedPaper.readiness.visuallyCalibrated,
+            locale: locale
+        )
     }
 
     private var originalityState: GenerationQualityState {

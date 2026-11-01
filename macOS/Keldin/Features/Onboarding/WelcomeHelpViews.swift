@@ -173,7 +173,7 @@ private struct HelpTopicPage: View {
             HelpSteps(
                 rows: [
                     ("Choose a generator", "Select a supported subject and exam board in the sidebar."),
-                    ("Prepare AI", "For local generation, install Ollama and use the model recommended for this Mac."),
+                    ("Prepare AI", "Choose Apple Intelligence on a compatible Mac, an installed Ollama model, or a hosted provider in Settings. Read the model's quality warnings before generating."),
                     ("Configure the paper", "Choose a paper, output folder, and provider. Leave preview mode off for new AI-written questions."),
                     ("Create and review", "Create the paper, then inspect both PDFs and the quality evidence before using them."),
                 ]
@@ -257,7 +257,7 @@ private struct HelpTopicPage: View {
                     ("Select subject and board", "Only implemented generators appear. Their papers come from the canonical generator registry."),
                     ("Choose the assessment", "Select a full paper or, where available, Topic Practice. The blueprint locks marks, command words, syllabus scope, and expected demand."),
                     ("Check the provider", "Ollama must be running and the selected model must be installed. Hosted providers require a key and explicit consent."),
-                    ("Choose a folder", "The question paper, mark scheme, assessment evidence, and package manifest are published together only after validation passes."),
+                    ("Choose a folder", "PDFs and any supporting files go to your chosen folder after validation. Technical validation records stay in Keldin's private storage."),
                     ("Create the assessment", "Generation can take several minutes. Progress and the estimated time remain visible, and Command-Period cancels safely."),
                     ("Preview and reuse", "Documents opens every generated PDF in the app. History can duplicate a setup or create a new form with a new seed."),
                 ]

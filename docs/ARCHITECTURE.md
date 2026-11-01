@@ -218,10 +218,32 @@ event rather than raw package-manager or traceback output.
 
 Every PDF role is rendered inside `render_pdf_atomically`. Before promotion,
 the transaction embeds a page-level PDF structure tree, marks each page's
-ordered content with an MCID, declares `en-GB`, and preserves the renderer's
+content with an MCID, declares the document language (`en-GB` by default;
+`fr-FR` for French papers), and preserves the renderer's
 content-stream order for assistive technology. Supporting Computer Science
 documents use the same transaction, so preliminary material and electronic
 answer documents cannot bypass accessibility or atomic-publication checks.
+
+Structure-tree presence is not proof of correct reading order. Print-evidence
+schema 2 measures `reading_order_score` from content-block stream order against
+geometric top-to-bottom/left-to-right order for both tagged and untagged PDFs.
+The evidence records `reading_order_basis: content_block_geometry_v1` and
+`semantic_order: not_assessed`; these and the extractor schema version also
+appear in fresh fidelity-report print summaries. `tagged` remains a separate
+document-level structure-presence marker. Even a score of 1 (including a
+single-block page) does not certify semantic order, heading/table navigation,
+accessibility, or PDF/UA compliance. Columns and tables can require manual
+review; roles are not inferred from fonts. The existing print-profile
+thresholds are unchanged.
+
+Schema 1 could substitute a perfect score merely because page-level tags were
+present. Retained reports are historical evidence, not silently rewritten or
+upgraded; their scores must not be treated as schema-2 measurements. Fresh
+fidelity comparisons extract both documents using the same current method.
+Extraction is read-only and changes neither PDF bytes nor rendering. Logical
+order requires correct tag order and marked-content order within each tag,
+not just a whole-page section wrapper (see [W3C PDF3](https://www.w3.org/TR/WCAG20-TECHS/PDF3.html)
+and the [PDF Association accessibility glossary](https://pdfa.org/glossary-of-accessibility-terminology-in-pdf/)).
 
 Typography uses bundled OFL-licensed Arimo and Tinos files behind semantic font
 tokens. This removes host-font substitution while retaining the Arial and Times

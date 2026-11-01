@@ -6586,11 +6586,8 @@
     {
       "path": "tests/test_render_transaction.py",
       "classification": "test",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "e2a9410b1dd68a7aff97ac3a1dd6b31c6d486c4452df41d7bb3f228fbbdc93e2",
-      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
-      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_renderer_contracts.py",

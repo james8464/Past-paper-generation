@@ -47,11 +47,30 @@ def test_render_pdf_atomically_promotes_a_readable_document(tmp_path: Path) -> N
     evidence = extract_pdf_evidence(output)
     assert evidence["tagged"] is True
     assert evidence["pages"][0]["reading_order_score"] == 1.0
+    assert evidence["reading_order_basis"] == "content_block_geometry_v1"
+    assert evidence["semantic_order"] == "not_assessed"
     with fitz.open(output) as document:
         catalog = document.pdf_catalog()
         assert document.xref_get_key(catalog, "MarkInfo")[1] == "<</Marked true>>"
         assert b"/MCID 0" in document[0].read_contents()
     assert list(tmp_path.glob(".paper.pdf.*.tmp")) == []
+
+
+def test_render_tags_do_not_certify_misordered_content(tmp_path: Path) -> None:
+    output = tmp_path / "misordered.pdf"
+
+    def render(path: Path) -> None:
+        with fitz.open() as document:
+            page = document.new_page()
+            page.insert_text((72, 170), "Lower block first")
+            page.insert_text((72, 72), "Upper block second")
+            document.save(path)
+
+    render_pdf_atomically(output, render, role="question paper")
+    evidence = extract_pdf_evidence(output)
+    assert evidence["tagged"] is True
+    assert evidence["pages"][0]["reading_order_score"] < 1.0
+    assert evidence["semantic_order"] == "not_assessed"
 
 
 def test_render_failure_preserves_an_existing_document(tmp_path: Path) -> None:

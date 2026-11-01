@@ -16,7 +16,6 @@ from typing import Any
 import pymupdf as fitz
 
 from Backend.Core.paths import REPO_ROOT
-from Backend.Core.pdf_accessibility import has_logical_page_order
 
 CONTROLLED_FONT_PREFIXES = {
     "economics": (
@@ -114,12 +113,13 @@ def extract_pdf_evidence(
                 font_files=font_files,
                 margin_points=margin_points,
                 maximum_glyphs=maximum_glyphs_per_page,
-                logical_order=has_logical_page_order(document, page),
             )
             for page in document
         ]
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "reading_order_basis": "content_block_geometry_v1",
+        "semantic_order": "not_assessed",
         "path": str(path),
         "tagged": tagged,
         "fonts": fonts,
@@ -240,7 +240,6 @@ def _page_print_evidence(
     font_files: dict[str, str | None],
     margin_points: float,
     maximum_glyphs: int,
-    logical_order: bool,
 ) -> dict[str, Any]:
     raw = page.get_text("rawdict")
     drawings = page.get_drawings()
@@ -369,7 +368,7 @@ def _page_print_evidence(
         "minimum_rule_width": min((item["width"] for item in rules), default=None),
         "answer_line_spacing": answer_spacing,
         "mark_positions": mark_positions,
-        "reading_order_score": 1.0 if logical_order else _reading_order_score(page),
+        "reading_order_score": _reading_order_score(page),
         "safe_print": content_rect is None or safe_box.contains(content_rect),
         "safe_print_box": tuple(round(float(value), 3) for value in safe_box),
         "monochrome_minimum_contrast": round(min(contrasts), 3) if contrasts else 21.0,
@@ -440,6 +439,8 @@ def _table_geometry(rules: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _reading_order_score(page: fitz.Page) -> float:
+    # Stream/geometric block agreement only: tags and semantic roles are not
+    # inspected. A perfect score is not an accessibility-conformance claim.
     origins = [
         (float(block[1]), float(block[0]))
         for block in page.get_text("blocks", sort=False)

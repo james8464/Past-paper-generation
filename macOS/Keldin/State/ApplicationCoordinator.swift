@@ -831,6 +831,42 @@ final class ApplicationCoordinator: ObservableObject {
         catalogStore.show(.documents)
     }
 
+    func historyPDFs(for recordID: GenerationJobRecord.ID) -> [GeneratedFile] {
+        guard let record = recentDocumentStore.records.first(where: { $0.id == recordID }) else { return [] }
+        let files = record.artifacts.filter { $0.url.isFileURL && $0.url.pathExtension.lowercased() == "pdf" }
+        let preferredRoles = ["question_paper", "mark_scheme"]
+        let ordered = preferredRoles.flatMap { role in files.filter { $0.role == role } }
+            + files.filter { !preferredRoles.contains($0.role) }
+        var seen = Set<URL>()
+        return ordered.filter { seen.insert($0.url.standardizedFileURL).inserted }
+    }
+
+    func openHistoryPDF(from selection: Set<GenerationJobRecord.ID>, fileID: GeneratedFile.ID? = nil) {
+        guard selection.count == 1, let recordID = selection.first else { return }
+        let files = historyPDFs(for: recordID)
+        let chosen = if let fileID { files.first { $0.id == fileID } } else { files.first }
+        guard let chosen else { return }
+        let ownedIDs = activeRun?.documents.fileIDs ?? []
+        let ownedFiles = generatedFiles.filter { ownedIDs.contains($0.id) }
+        // A historical path can refer to a currently streamed artifact. Keep
+        // its run-owned identity, which publication still needs to resolve.
+        let file = ownedFiles.first { $0.url.standardizedFileURL == chosen.url.standardizedFileURL } ?? chosen
+        // Opening is a document action, not a new generation or configuration.
+        // Restore only the explicitly chosen artifact; keep other hidden paths.
+        var hidden = hiddenRecentPaths
+        hidden.remove(file.url.standardizedFileURL.path)
+        defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
+        let pinned = ownedFiles + (ownedIDs.contains(file.id) ? [] : [file])
+        let remaining = generatedFiles.filter {
+            !ownedIDs.contains($0.id) && $0.url.standardizedFileURL != file.url.standardizedFileURL
+        }
+        // The recent-document cap must never evict active publication inputs.
+        generatedFiles = Array((pinned + remaining).prefix(max(60, pinned.count)))
+        persistRecentDocuments()
+        // Even missing files reach the existing unavailable / access-recovery UI.
+        previewGeneratedFile(file)
+    }
+
     func previewGeneratedFile(role: String) {
         guard let file = generatedFile(role: role) else { return }
         previewGeneratedFile(file)
@@ -1898,7 +1934,21 @@ final class ApplicationCoordinator: ObservableObject {
         // records alongside the authoritative artifacts from full-paper jobs.
         let relocated = documents.map { KeldinMigration.relocatedArtifact($0, defaults: defaults) }
         let independent = relocated.filter { $0.subject == "Étude de cas Occitanie" && $0.paper == "Activité indépendante, sans note d’examen" }
-        generatedFiles = latestDocumentVersions(jobArtifacts.isEmpty ? relocated : independent + jobArtifacts)
+        guard !jobArtifacts.isEmpty else {
+            generatedFiles = latestDocumentVersions(relocated)
+            return
+        }
+        // Saved recents supply ordering hints, never stale history payloads.
+        // Resolve each path to its newest authoritative artifact before trimming.
+        let authoritative = jobArtifacts + independent
+        var byPath: [URL: GeneratedFile] = [:]
+        for file in authoritative where byPath[file.url.standardizedFileURL] == nil {
+            byPath[file.url.standardizedFileURL] = file
+        }
+        let ordered = (relocated + authoritative).compactMap {
+            byPath.removeValue(forKey: $0.url.standardizedFileURL)
+        }
+        generatedFiles = latestDocumentVersions(ordered)
     }
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {
