@@ -34,6 +34,7 @@ from Backend.Core.france.code_layout import (
     require_code_width,
 )
 from Backend.Core.france.graph_layout import graph_layout
+from Backend.Core.france.inline_prose import inline_markup
 from Backend.Core.france.nsi import (
     LANGUAGE_RUBRIC_2027,
     NSIExercise,
@@ -87,10 +88,10 @@ def correction_prompt(text: str) -> str:
 
 
 # Escape prose and bind French punctuation, never executable listings.
-def french_prose_markup(text: str) -> str:
+def french_prose_markup(text: str, *, inline: bool = False) -> str:
     text = re.sub(r"[ \t]+([?!;:»])", "\u00a0\\1", text)
     text = re.sub(r"«[ \t]+", "«\u00a0", text)
-    return escape(text).replace("\n", "<br/>")
+    return inline_markup(text) if inline else escape(text).replace("\n", "<br/>")
 
 
 def exercise_scope_text(title: str) -> str:
@@ -626,12 +627,19 @@ def render_assessment(
     # Platypus frames reserve six points of padding on each side.
     story = [Spacer(1, doc.height - 14), PageBreak()]
 
-    def paragraph(text, style=body):
-        story.append(Paragraph(french_prose_markup(text), style))
+    def paragraph(text, style=body, *, inline=None):
+        if inline is None:
+            inline = print_policy == V36_PRINT_POLICY
+        story.append(
+            Paragraph(
+                french_prose_markup(text, inline=inline),
+                style,
+            )
+        )
 
     def content(text, *, paragraph_style=body):
         first_paragraph = True
-        for is_code, part in _content_parts(text, print_policy):
+        for index, (is_code, part) in enumerate(_content_parts(text, print_policy)):
             if not part.strip():
                 continue
             if is_code:
@@ -645,7 +653,13 @@ def render_assessment(
                     )
                 )
             else:
-                paragraph(part.strip(), paragraph_style if first_paragraph else body)
+                paragraph(
+                    part.strip(),
+                    paragraph_style if first_paragraph else body,
+                    # Current parser alternates prose/fence/prose, preserving
+                    # empty segments. Unsupported fences stay literal prose.
+                    inline=print_policy == V36_PRINT_POLICY and index % 2 == 0,
+                )
                 first_paragraph = False
 
     def network_depth_trace_answer(answer: str) -> None:
@@ -665,7 +679,7 @@ def render_assessment(
 
     def question_content(identifier: str, text: str) -> None:
         first_paragraph = True
-        for is_code, part in _content_parts(text, print_policy):
+        for index, (is_code, part) in enumerate(_content_parts(text, print_policy)):
             if not part.strip():
                 continue
             if is_code:
@@ -688,7 +702,10 @@ def render_assessment(
                     else listing
                 )
             else:
-                value = french_prose_markup(part.strip())
+                value = french_prose_markup(
+                    part.strip(),
+                    inline=print_policy == V36_PRINT_POLICY and index % 2 == 0,
+                )
                 story.append(
                     Paragraph(
                         value,
@@ -985,7 +1002,11 @@ def render_assessment(
                     [
                         Paragraph(escape(point_label(item.points)), body),
                         Paragraph(
-                            escape(
+                            (
+                                inline_markup
+                                if print_policy == V36_PRINT_POLICY
+                                else escape
+                            )(
                                 printable_database_criterion(item.criterion)
                                 if question.verification.get("kind")
                                 == "database_depth_contract"

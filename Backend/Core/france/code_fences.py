@@ -18,7 +18,13 @@ class FencedPart:
 _DELIMITER = re.compile(r"[ \t]*```(?P<info>[^`\r\n]*)(?:\r?\n)?")
 
 
-def fenced_parts(text: str, *, require_closed: bool = True) -> list[FencedPart]:
+def fenced_parts(
+    text: str,
+    *,
+    require_closed: bool = True,
+    include_delimiters: bool = False,
+) -> list[FencedPart]:
+    """Alternate prose/fence parts; optionally retain fence delimiters verbatim."""
     parts = []
     opening = None
     prose_start = offset = 0
@@ -32,12 +38,23 @@ def fenced_parts(text: str, *, require_closed: bool = True) -> list[FencedPart]:
                 # Pair every fence, but keep unsupported contents as prose so
                 # they remain visible to the ordinary printed-text safety checks.
                 opening = (
+                    offset,
                     offset + len(line),
                     language if language in {"", "python", "sql"} else None,
                 )
         elif match and not match["info"].strip():
-            start, language = opening
-            parts.append(FencedPart(text[start:offset], language))
+            start, content_start, language = opening
+            parts.append(
+                FencedPart(
+                    text[
+                        start if include_delimiters else content_start : offset
+                        + len(line)
+                        if include_delimiters
+                        else offset
+                    ],
+                    language,
+                )
+            )
             prose_start = offset + len(line)
             opening = None
         offset += len(line)
@@ -46,8 +63,14 @@ def fenced_parts(text: str, *, require_closed: bool = True) -> list[FencedPart]:
             raise CodeFenceError(
                 "Un bloc de code ne possède pas de délimiteur final sur sa propre ligne."
             )
-        start, language = opening
-        parts.append(FencedPart(text[start:], language, closed=False))
+        start, content_start, language = opening
+        parts.append(
+            FencedPart(
+                text[start if include_delimiters else content_start :],
+                language,
+                closed=False,
+            )
+        )
     else:
         parts.append(FencedPart(text[prose_start:]))
     return parts

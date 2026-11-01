@@ -188,8 +188,8 @@ def test_later_unsafe_fence_is_still_audited_after_literal_mentions():
         subject.validate_authored_exercise(raw, "1")
 
 
-def test_display_fragment_completeness_policy_is_not_relaxed():
-    raw = draft("```python\n    elif valeur:\n        return 1\n```")
+def test_conditional_display_fragment_without_colon_still_refuses():
+    raw = draft("```python\n    elif valeur\n        return 1\n```")
     with pytest.raises(subject.PythonCodeFormatError):
         subject.validate_authored_exercise(raw, "1")
 

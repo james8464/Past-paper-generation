@@ -11,6 +11,7 @@ from copy import deepcopy
 from dataclasses import asdict
 from hashlib import sha256
 from pathlib import Path
+from textwrap import dedent
 from types import SimpleNamespace
 from urllib.parse import urlparse
 
@@ -297,6 +298,8 @@ def exercise_request(
         "les conventions, les cas limites et le comportement attendu nécessaires à une "
         "réponse déterminée. Vérifie les exemples et les programmes, puis assure-toi que "
         "chaque élément demandé est traité dans la réponse et crédité dans le barème. "
+        "Le barème ne doit imposer aucune méthode, contrainte ou gestion de cas hors du domaine demandé. "
+        "Accorde le crédit à toute solution correcte respectant les contraintes explicites de la question. "
         "Respecte les capacités du programme et les bornes du schéma. "
         "Dans topics, utilise les noms des domaines, pas les codes des capacités. "
         "La somme des points des questions doit valoir 6 et chaque barème doit totaliser "
@@ -305,7 +308,9 @@ def exercise_request(
         "justify; au plus une question recall et au moins une difficulté 4. Donne les données "
         "nécessaires; fournis des tableaux ou graphes structurés lorsqu'ils sont utiles, "
         "sinon materials doit être une liste vide explicite. Donne les fragments Python "
-        "syntaxiquement complets dans des blocs ```python. "
+        "syntaxiquement complets dans des blocs ```python. Un remplacement de clauses "
+        "elif/else peut être un fragment contextuel : fournis dans la question le code "
+        "environnant et l'emplacement du remplacement; ce fragment n'est pas un programme autonome. "
         "Place les programmes multilignes dans les réponses proposées, pas dans les "
         "critères du barème qui restent en prose avec éventuellement du code court. "
         f"Mise en page demandée : {'agrandie' if large_print else 'normale'}, "
@@ -383,6 +388,32 @@ def _audit_python_tokens(code: str) -> None:
         raise ValueError("Fragment Python : audit lexical incomplet") from error
 
 
+def _display_python_tree(code: str) -> ast.Module:
+    """Parse display-only conditional clauses with audit context, never execute them."""
+    try:
+        return ast.parse(code)
+    except SyntaxError:
+        contextual = dedent(code.replace("\r\n", "\n")).lstrip("\n")
+        first_statement = next(
+            (
+                line
+                for line in contextual.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ),
+            "",
+        )
+        if re.match(r"(?:elif|else)\b", first_statement) is None:
+            raise
+        # Only supply the grammatical predecessor of a conditional continuation.
+        # The audit copy is not a reconstructed answer or executable proof.
+        tree = ast.parse("if False:\n    pass\n" + contextual)
+        if len(tree.body) != 1 or not isinstance(tree.body[0], ast.If):
+            raise SyntaxError(
+                "Conditional fragment contains unrelated statements"
+            ) from None
+        return tree
+
+
 def _safe_python(text: str) -> bool:
     parts = fenced_parts(text, require_closed=False)
     malformed = any(not part.closed for part in parts)
@@ -391,7 +422,7 @@ def _safe_python(text: str) -> bool:
             continue
         code = part.text
         try:
-            tree = ast.parse(code)
+            tree = _display_python_tree(code)
         except SyntaxError:
             _audit_python_tokens(code)
             malformed = True
@@ -1323,6 +1354,13 @@ def _review(
             "le programme Terminale, les données autonomes et les crédits exacts. Un désaccord "
             "de fond ou un problème exige false et issues. Des algorithmes, parcours ou requêtes "
             "différents mais corrects et équivalents ne constituent pas un désaccord de fond. "
+            "Compare chaque critère aux contraintes explicites de la question et à son domaine de validité; "
+            "n'ajoute pas de méthode unique ou d'exigence absente de l'énoncé. Toute solution correcte "
+            "autorisée par ces contraintes doit recevoir le crédit. Si seul le barème ajoute une exigence "
+            "ou exclut une autre solution autorisée, évalue correct et answer_complete selon la réponse "
+            "elle-même, mets rubric_consistent à false et décris l'incohérence dans issues. "
+            "Un remplacement elif/else peut être un fragment contextuel, pas un programme autonome; "
+            "vérifie que le code environnant et son emplacement sont fournis dans le contexte de la question. "
             "S'il existe des réserves dans blind_solution.issues, examine chacune sans la "
             "supprimer : indique son indice exact, blocking et une justification non vide. "
             "Toute erreur de réponse, ambiguïté empêchant de résoudre, donnée nécessaire "
