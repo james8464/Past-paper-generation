@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793547975.9218984,
-    "ast_hash": "c0f13cf63569c48f76738d86c021fc26",
+    "mtime": 1793548228.8529634,
+    "ast_hash": "1b217b2498f88a7d4f2084e5d895ebe2",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -5215,8 +5215,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_fence_boundaries.py": {
-    "mtime": 1793547884.4905512,
-    "ast_hash": "39048b542316e38e4ca95f61d97502ab",
+    "mtime": 1793548173.2498312,
+    "ast_hash": "8d092bf65fc8d400ce440752b6ee6c5f",
     "semantic_hash": ""
   },
   "docs/quality/french-format-and-data-review-2026-10-30.md": {
@@ -5280,8 +5280,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_contextual_python.py": {
-    "mtime": 1793547958.0870562,
-    "ast_hash": "1f8b9127e25c7208382fd93d4888fec9",
+    "mtime": 1793548183.3511906,
+    "ast_hash": "c07b427b3e3e6a02ec8fcb59b1b7f8bc",
     "semantic_hash": ""
   }
 }

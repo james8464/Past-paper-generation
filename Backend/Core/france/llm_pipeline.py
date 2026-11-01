@@ -393,8 +393,16 @@ def _display_python_tree(code: str) -> ast.Module:
     try:
         return ast.parse(code)
     except SyntaxError:
-        contextual = dedent(code).lstrip("\r\n")
-        if re.match(r"(?:elif|else)\b", contextual) is None:
+        contextual = dedent(code.replace("\r\n", "\n")).lstrip("\n")
+        first_statement = next(
+            (
+                line
+                for line in contextual.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ),
+            "",
+        )
+        if re.match(r"(?:elif|else)\b", first_statement) is None:
             raise
         # Only supply the grammatical predecessor of a conditional continuation.
         # The audit copy is not a reconstructed answer or executable proof.

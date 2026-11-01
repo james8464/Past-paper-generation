@@ -47,6 +47,40 @@ def test_contextual_clause_is_accepted_without_regeneration_or_source_changes(
     assert list(code_blocks(exercise.questions[0].answer)) == [printed.rstrip("\n")]
 
 
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+@pytest.mark.parametrize("indent", ["", "    "])
+def test_leading_blank_and_comment_lines_preserve_contextual_clause(newline, indent):
+    code = "\n# replacement\n# conditional continuation\nelif valeur:\n    return 1\n"
+    printed = "".join(
+        indent + line if line.strip() else line
+        for line in code.splitlines(keepends=True)
+    ).replace("\n", newline)
+    raw = draft(answer(printed))
+    original = deepcopy(raw)
+    exercise = subject.validate_authored_exercise(raw, "1")
+    assert exercise.questions[0].answer == answer(printed)
+    assert raw == original
+
+
+@pytest.mark.parametrize("prefix", ["# replacement\n", "    # replacement\r\n"])
+def test_comment_prefix_cannot_hide_unsafe_conditional_branch(prefix):
+    indent = "    " if prefix.startswith(" ") else ""
+    code = prefix + indent + "elif valeur:\n" + indent + "    return open('secret')\n"
+    client = Client(draft(answer(code)))
+    with pytest.raises(ValueError, match="non autorisé") as caught:
+        subject._author(client, subject.exercise_request("1", 42, []), "1")
+    assert not isinstance(caught.value, subject.PythonCodeFormatError)
+    assert len(client.requests) == 1
+
+
+@pytest.mark.parametrize(
+    "prefix", ["valeur = 1\n# replacement\n", "# replacement\nvaleur = 1\n"]
+)
+def test_comment_detection_does_not_admit_executable_prefix(prefix):
+    with pytest.raises(subject.PythonCodeFormatError):
+        subject.validate_authored_exercise(draft(answer(prefix + CLAUSES[0])), "1")
+
+
 @pytest.mark.parametrize(
     "unsafe", ["import os", "open('secret')", "eval('1')", "objet.__class__"]
 )
