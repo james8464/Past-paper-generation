@@ -6,6 +6,43 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testHostedPreviewNeedsNoConsentWhileLiveGenerationStillRequiresIt() throws {
+        for provider in [AIProvider.openAI, .anthropic] {
+            for preview in [false, true] {
+                let defaults = isolatedDefaults()
+                defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
+                let backend = ControlledRunBackend()
+                let history = try temporaryHistoryURL()
+                let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+                application.outputFolder = history.deletingLastPathComponent().appendingPathComponent("exports")
+                try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
+                application.setDryRun(preview)
+                XCTAssertFalse(application.hasHostedAIConsent)
+                if !preview {
+                    let blocker = try XCTUnwrap(application.generationBlockerResource)
+                    XCTAssertEqual(InterfaceText.resolve(blocker, language: "en"), "Review and accept the hosted AI disclosure in Settings.")
+                }
+
+                application.generate()
+
+                XCTAssertEqual(backend.requests.count, preview ? 1 : 0)
+                XCTAssertFalse(application.hasHostedAIConsent)
+                if preview {
+                    XCTAssertFalse(application.showHostedAIConsent)
+                    if let request = backend.requests.first {
+                        XCTAssertTrue(request.arguments.contains("--dry-run"))
+                        XCTAssertEqual(request.environment["KELDIN_API_KEY"] ?? "", "")
+                    }
+                } else {
+                    XCTAssertNil(application.generationCoordinator.activeJob)
+                    XCTAssertFalse(application.isRunning)
+                }
+                application.cancelGeneration()
+            }
+        }
+    }
+
+    @MainActor
     func testUnusableExportFolderRefusesUKAndFrenchBeforeBackendOrJobCreation() throws {
         for french in [false, true] {
             let defaults = isolatedDefaults()

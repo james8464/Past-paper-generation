@@ -947,7 +947,7 @@ final class ApplicationCoordinator: ObservableObject {
             setError("This exam board is coming soon.")
             return
         }
-        if selectedBoard.usesAI && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
+        if selectedBoard.usesAI && !dryRun && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
             pendingHostedProvider = aiProvider
             showHostedAIConsent = true
             return
