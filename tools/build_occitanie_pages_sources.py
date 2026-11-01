@@ -120,7 +120,7 @@ TECHNICAL = Report(
                 ),
                 (
                     "Checking the work",
-                    "The model solves each exercise without seeing its proposed answer, then reviews each question. Supported executable checks examine SQL, Python traces and shortest paths. A validated semantic refusal permits at most two whole-exercise rounds; other failures stop. Agreement between model calls cannot prove correctness: both can make the same mistake.",
+                    "The model solves each exercise without seeing its proposed answer, then reviews each question. Supported executable checks examine SQL, Python traces and shortest paths. The authoring step can regenerate a malformed draft once. A validated semantic refusal permits at most two whole-exercise rounds; unrecovered failures stop. Agreement between model calls cannot prove correctness: both can make the same mistake.",
                 ),
                 (
                     "",
