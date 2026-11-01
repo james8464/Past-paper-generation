@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793557653.7358868,
+    "mtime": 1793565349.6385903,
     "ast_hash": "86cb30281412afffac724b9399345203",
     "semantic_hash": ""
   },
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793559042.4911249,
+    "mtime": 1793565332.7374556,
     "ast_hash": "5366e63340016c538c6f7963b23535c0",
     "semantic_hash": ""
   },
@@ -4530,8 +4530,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
-    "mtime": 1793565103.7923214,
-    "ast_hash": "5ab566655d63a4c3e4e450ffc4c99c06",
+    "mtime": 1793565394.2555685,
+    "ast_hash": "9174ab3c032db1f0574cd802acb34898",
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {

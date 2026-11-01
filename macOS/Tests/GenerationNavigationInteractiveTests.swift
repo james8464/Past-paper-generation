@@ -19,6 +19,11 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         let backend = ControlledRunBackend()
         let application = ApplicationCoordinator(defaults: defaults, secrets: NavigationCheckSecrets(),
             historyDirectory: folder.appendingPathComponent("history"), backend: backend)
+        defer {
+            application.cancelGeneration()
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: folder)
+        }
         application.outputFolder = folder.appendingPathComponent("output")
         try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
         let olderURL = folder.appendingPathComponent("older-controlled.pdf")
@@ -56,12 +61,7 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         window.contentView = NSHostingView(rootView: content)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        defer {
-            application.cancelGeneration()
-            window.close()
-            defaults.removePersistentDomain(forName: suite)
-            try? FileManager.default.removeItem(at: folder)
-        }
+        defer { window.close() }
         print("KELDIN_INTERACTIVE_NAVIGATION_READY")
         print("RECENTS_CHECK: current-controlled.pdf must refuse removal; remove only older-controlled.pdf before finishing.")
         await fulfillment(of: [finished], timeout: 180)
