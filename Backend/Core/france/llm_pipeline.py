@@ -135,7 +135,7 @@ def _phase_output_budget(client: JSONGenerationClient, phase: str) -> int:
     if getattr(client, "provider", None) == "apple_intelligence":
         return {"author": 4096, "blind": 2048, "review": 2048}[phase]
     if getattr(client, "provider", None) == "deepseek":
-        return 32768 if phase == "author" else 16384
+        return {"author": 32768, "blind": 16384, "review": 32768}[phase]
     return default
 
 

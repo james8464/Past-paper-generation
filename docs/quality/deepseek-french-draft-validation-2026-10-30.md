@@ -4,7 +4,17 @@
 
 DeepSeek is a candidate provider for model-authored French NSI drafts, not a qualified paper generator. It is unavailable for UK papers. Flash and V4 Pro use a fixed HTTPS endpoint, separate credentials and separate consent. The app sends the French references, prompts, drafts, proposed corrections and review material needed for generation. This does not imply that the provider keeps no logs.
 
-The implementation uses typed JSON requests and validates the returned model, completion state, schema and finite values. It refuses redirects, malformed output and unbounded requests. French phases use low reasoning effort. DeepSeek authoring allows 32,768 output tokens; blind solving and review allow 16,384 each. Reasoning and final text share those ceilings. Other providers and operations keep their existing budgets. These settings follow DeepSeek's [Responses API](https://api-docs.deepseek.com/api/create-response/) and [thinking-mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/), checked on 30 October 2026.
+The implementation uses typed JSON requests and validates the returned model, completion state, schema and finite values. It refuses redirects, malformed output and unbounded requests. French phases use low reasoning effort. As of the 1 November capacity correction, DeepSeek authoring and final review allow 32,768 output tokens each; blind solving retains 16,384. Reasoning and final text share those ceilings. Other providers and operations keep their existing budgets. The transport settings follow DeepSeek's [Responses API](https://api-docs.deepseek.com/api/create-response/) and [thinking-mode documentation](https://api-docs.deepseek.com/guides/thinking_mode/), checked on 30 October 2026; the larger review allowance has fixture-only regression coverage, not a fresh live qualification result.
+
+Frozen Pro run 23 stopped on its sixth call: the second exercise's final review
+reported `incomplete_details.reason=max_output_tokens` at 16,384 tokens, including
+15,763 reasoning tokens. The larger review allowance addresses that bounded
+capacity limit for both supported DeepSeek models. It does not fix the draft's
+substantive errors or qualify a complete paper. Incomplete final reviews still
+stop without review-only retry, answer repair or publication. Admission retains
+24 requests and 30 minutes, with the mathematically complete worst-case output
+reservation raised to 688,128 tokens; this is neither actual usage nor a price
+guarantee. No model calls were made for this correction.
 
 ## Live diagnostic evidence
 

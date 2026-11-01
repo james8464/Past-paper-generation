@@ -9,7 +9,8 @@ from Backend.Core.generation_requests import GenerationRequest, request_json
 from Backend.Core.json_client import JSONGenerationClient
 
 MAX_REQUESTS = 24
-MAX_RESERVED_OUTPUT_TOKENS = 589824
+# Three exercises, two rounds each: two author attempts, blind solve and review.
+MAX_RESERVED_OUTPUT_TOKENS = 6 * (2 * 32768 + 16384 + 32768)
 MAX_ELAPSED_SECONDS = 30 * 60
 
 

@@ -45,7 +45,7 @@ only its owned previous file. If cleanup fails, both remain and a progress
 notice explains the failure. Operational notices are separate from the
 source-bound paper-quality warnings.
 
-Request admission is limited to 24 typed generation dispatches and 589,824
+Request admission is limited to 24 typed generation dispatches and 688,128
 reserved output tokens per paper. The token figure is an allowance, not observed
 usage or a price guarantee. Failed requests consume their reservation. The
 30-minute elapsed check runs before each dispatch, after capturing each returned
@@ -53,6 +53,12 @@ object and before publication. It rejects late results and further requests;
 it is not a hard in-flight timeout. Socket timeouts do not guarantee that a
 remote server stops work or billing. Hosted generation displays a charge notice
 before its first request. Manifest and failure diagnostics record the counters.
+The 1 November capacity correction allows 32,768 tokens for both DeepSeek
+authoring and final review, retaining 16,384 for blind solving. The reservation
+ceiling covers three exercises, two rounds each, with up to two author attempts
+per round: `6 * (2 * 32768 + 16384 + 32768) = 688128`. This does not add calls,
+review-only retries or acceptance of incomplete responses; no live model test
+was performed for that correction.
 
 Release work remains: final native user-interface acceptance, a green
 frozen-source full regression run, protected checks and a fresh

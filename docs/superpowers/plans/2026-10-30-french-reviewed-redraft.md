@@ -37,7 +37,8 @@ Test the bound for every supported production provider. Do not add hidden retrie
 
 A call count is not a time or spending limit: 24 nominal 600-second calls can
 approach four hours, and the current DeepSeek output budgets can reserve up to
-589,824 output tokens. The private experiment needs explicit elapsed-time and
+589,824 output tokens at the original review allowance (688,128 after the
+1 November final-review capacity correction). The private experiment needs explicit elapsed-time and
 spending ceilings before model testing. Cancellation stops local work but cannot
 promise that a remote provider stops inference or billing. Preserve the existing
 total US$5 diagnostic cap; no model calls are authorised by these unit tests.

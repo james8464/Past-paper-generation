@@ -45,6 +45,21 @@ def test_token_reservation_refuses_before_dispatch():
     assert client.calls == 1
 
 
+def test_all_six_rounds_fit_two_authors_blind_and_review_at_deepseek_limits():
+    client = Client()
+    budget = subject.FrenchGenerationBudget(client)
+    for _ in range(6):
+        for tokens in (32768, 32768, 16384, 32768):
+            budget.generate_request(request(tokens))
+    snapshot = budget.snapshot()
+    assert snapshot["reserved_output_tokens"] == 688128
+    assert snapshot["max_reserved_output_tokens"] == 688128
+    assert snapshot["started_requests"] == snapshot["completed_requests"] == 24
+    with pytest.raises(subject.GenerationLimitError):
+        budget.generate_request(request(1))
+    assert client.calls == 24
+
+
 def test_elapsed_limit_prevents_next_request(monkeypatch):
     now = [0.0]
     monkeypatch.setattr(subject.time, "monotonic", lambda: now[0])
