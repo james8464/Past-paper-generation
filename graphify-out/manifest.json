@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793389180.1900642,
-    "ast_hash": "c47fafda0e9b5fccae505cb4c17e5c73",
+    "mtime": 1793405622.6711779,
+    "ast_hash": "4e230ce1b06f403eaf997ab6eabdbd0d",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793389180.105792,
-    "ast_hash": "a3ac7cb06ae6b6ffa0887da903ca8953",
+    "mtime": 1793406499.9115527,
+    "ast_hash": "d91780646be8e89fbdf6b4cfbed3a270",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4055,8 +4055,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/UKArtifactPublisherTests.swift": {
-    "mtime": 1793375704.6060698,
-    "ast_hash": "30ccfa95c46ebd73d5100ebb43eada33",
+    "mtime": 1793405859.0493782,
+    "ast_hash": "6b94224fee13ee81bb02b95db1fec78b",
     "semantic_hash": ""
   },
   "tests/test_audit_coverage.py": {
@@ -4755,13 +4755,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793388656.5400174,
-    "ast_hash": "880fb14adf2f82b9d2825b75d129f46e",
+    "mtime": 1793405612.590602,
+    "ast_hash": "9d855343d7f408ad308671c390b08d26",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1793388656.540153,
-    "ast_hash": "b08f0258eda06db6180e105800684be2",
+    "mtime": 1793405559.3650818,
+    "ast_hash": "436367cb06d3d11d1b34784c2866eb5c",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4770,8 +4770,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift": {
-    "mtime": 1793388656.5409112,
-    "ast_hash": "93a22d5602a9a7f96729a62d839947a6",
+    "mtime": 1793403981.3861372,
+    "ast_hash": "b35f1fa5f4da40500f6622fb1a196082",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
@@ -4790,8 +4790,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchLLMAssessmentTests.swift": {
-    "mtime": 1793388656.5410502,
-    "ast_hash": "b872255759054a2a3ae6b7e3ca7a182d",
+    "mtime": 1793403981.3863757,
+    "ast_hash": "980ff3fb04c641a546dd9922138a5e83",
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
@@ -4805,13 +4805,13 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_pipeline.py": {
-    "mtime": 1793376926.0922694,
-    "ast_hash": "2203f709f42712221c895c5bdae9bfaa",
+    "mtime": 1793403839.8990076,
+    "ast_hash": "0261fb676bcd70f905beb62764e25af1",
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
-    "mtime": 1793369545.2958124,
-    "ast_hash": "0e6154cef03036549bb67ca9802792f4",
+    "mtime": 1793405612.7348914,
+    "ast_hash": "286fe1b44b36acb1692b7d3fc62f61a4",
     "semantic_hash": ""
   },
   "tests/test_french_model_capability.py": {
@@ -4865,8 +4865,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_v36_profile_warnings.py": {
-    "mtime": 1793375682.9049304,
-    "ast_hash": "2dd159fede71d3a3dc69f777d7e24c73",
+    "mtime": 1793403839.907273,
+    "ast_hash": "6b366d18ee5b21f77a9b37da79cd2163",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/HostedModelCandidate.swift": {
@@ -4890,8 +4890,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_v36_rejection_evidence.py": {
-    "mtime": 1793367737.4953792,
-    "ast_hash": "736d9f4a5292427931296606fc154da0",
+    "mtime": 1793406481.5303495,
+    "ast_hash": "8b05ad528f66d075793724c070f7b59f",
     "semantic_hash": ""
   },
   "docs/quality/concurrency-publication-implementation-review-2026-10-30.md": {
@@ -4930,8 +4930,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/DeepSeekProviderTests.swift": {
-    "mtime": 1793375704.6053047,
-    "ast_hash": "74b2b09b364797dceea17101328c48ea",
+    "mtime": 1793405859.0490031,
+    "ast_hash": "2819a044e2511e9f26a1c2a445325118",
     "semantic_hash": ""
   },
   "tests/test_deepseek_provider.py": {
@@ -4995,8 +4995,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_question_advisories.py": {
-    "mtime": 1793367737.4948685,
-    "ast_hash": "3648952098cc7437c5872709c73475be",
+    "mtime": 1793403839.9052606,
+    "ast_hash": "859c957533c94ca26cb292a2fccfb7f6",
     "semantic_hash": ""
   },
   "docs/quality/french-question-advisory-review-2026-10-30.md": {
@@ -5010,8 +5010,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_code_layout.py": {
-    "mtime": 1793369545.295576,
-    "ast_hash": "92afd36e47122cf90cb1de61a8993149",
+    "mtime": 1793403839.8928585,
+    "ast_hash": "a44062b71676cf871f0d648598ec861f",
     "semantic_hash": ""
   },
   "docs/quality/french-v36-print-layout-admission-2026-10-30.md": {
@@ -5227,6 +5227,56 @@
   "docs/quality/model-guidance-validation-2026-10-30.md": {
     "mtime": 1793390705.5426524,
     "ast_hash": "aa8c3f5b6d242a323bba3245cea5452a",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/recovery_evidence.py": {
+    "mtime": 1793405229.7416742,
+    "ast_hash": "4678a4f2cf1d1651efe7a115b1b4339f",
+    "semantic_hash": ""
+  },
+  "tests/test_french_recovery_store.py": {
+    "mtime": 1793405229.7419147,
+    "ast_hash": "b7f4765d9cbae3830e6107406c74e10f",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-recovery-storage-review-2026-10-30.md": {
+    "mtime": 1793403496.8129432,
+    "ast_hash": "185485e4f36d401eb9580b02a6849356",
+    "semantic_hash": ""
+  },
+  "tests/test_french_reviewed_redraft.py": {
+    "mtime": 1793403839.9058955,
+    "ast_hash": "a1afa22829bf70e0354471dede25f853",
+    "semantic_hash": ""
+  },
+  "tests/test_french_semantic_refusal.py": {
+    "mtime": 1793403839.9061415,
+    "ast_hash": "042d8cf760d78191deb95d82b26b5d86",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-10-30-french-reviewed-redraft.md": {
+    "mtime": 1793403839.8648753,
+    "ast_hash": "2585545d9a8fcc778f3ded06cdfad7d2",
+    "semantic_hash": ""
+  },
+  "tests/test_french_recovery_recording.py": {
+    "mtime": 1793405365.3593442,
+    "ast_hash": "f51c487dc3664a52abac1dc04f64c691",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-recovery-integration-2026-10-30.md": {
+    "mtime": 1793405559.3655052,
+    "ast_hash": "494e3f636ed6ec2cc3955260c4f2960f",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/generation_budget.py": {
+    "mtime": 1793405637.8178174,
+    "ast_hash": "b1952f79cd8037cea39ea5fd286a11b9",
+    "semantic_hash": ""
+  },
+  "tests/test_french_generation_budget.py": {
+    "mtime": 1793405540.7026238,
+    "ast_hash": "3fe62cb2a199f7636a887c33ee53e474",
     "semantic_hash": ""
   }
 }

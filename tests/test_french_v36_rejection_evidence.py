@@ -146,20 +146,56 @@ def test_rejected_review_publishes_no_pdf_package_or_success(
     publication, monkeypatch, mode
 ):
     runtime, args, events = publication
-    args.api_key = "private-token"
-    monkeypatch.setattr(
-        runtime, "HostedLLMClient", lambda **kwargs: RejectingClient(mode)
-    )
+    args.api_key = "configured-key-not-in-model-output"
+    client = RejectingClient(mode)
+    monkeypatch.setattr(runtime, "HostedLLMClient", lambda **kwargs: client)
     assert runtime.handle_generate_llm_assessment(args) == 1
     assert not any(event["type"] in {"file", "done"} for event in events)
-    assert "private-token" not in json.dumps(events)
+    assert args.api_key not in json.dumps(events)
     assert not list(args.output.rglob("*.pdf"))
     reports = list(args.output.rglob("failure-*.json"))
     assert len(reports) == 1
-    assert "private-token" not in reports[0].read_text()
+    assert args.api_key not in reports[0].read_text()
     assert json.loads(reports[0].read_text())["details"]["exercise_id"] == "1"
+    recovery = list((args.output / ".keldin-recovery").glob("*.json"))
+    assert len(recovery) == 1
+    snapshot = json.loads(recovery[0].read_text())["snapshot"]
+    assert snapshot["state"] == "refused"
+    assert snapshot["exercise_attempts"][0]["accepted_round"] is None
+    assert [item["outcome"] for item in snapshot["exercise_attempts"][0]["rounds"]] == [
+        "rejected",
+        "rejected",
+    ]
+    subject.validate_rejected_rounds(snapshot)
+    assert len(client.requests) == 6
+    assert stat.S_IMODE(recovery[0].stat().st_mode) == 0o600
+    assert args.api_key not in recovery[0].read_text()
     assert not [
         path
         for path in args.output.rglob("*.json")
         if ".keldin-diagnostics" not in path.parts
+        and ".keldin-recovery" not in path.parts
     ]
+
+
+@pytest.mark.parametrize("mode", ["blind", "issues"])
+def test_echoed_credential_stops_before_recovery_storage_or_redraft(
+    publication, monkeypatch, mode
+):
+    runtime, args, events = publication
+    args.api_key = "private-token"
+    client = RejectingClient(mode)
+    monkeypatch.setattr(runtime, "HostedLLMClient", lambda **kwargs: client)
+    assert runtime.handle_generate_llm_assessment(args) == 1
+    assert len(client.requests) == 3
+    assert not any(event["type"] in {"file", "done"} for event in events)
+    assert args.api_key not in json.dumps(events)
+    assert not list(args.output.rglob("*.pdf"))
+    assert not list((args.output / ".keldin-recovery").glob("*.json"))
+    reports = list(args.output.rglob("failure-*.json"))
+    assert len(reports) == 1
+    details = json.loads(reports[0].read_text())["details"]
+    assert details == {"stage": "recovery_storage", "snapshot_saved": False}
+    for path in args.output.rglob("*.json"):
+        assert ".keldin-diagnostics" in path.parts
+        assert args.api_key not in path.read_text()

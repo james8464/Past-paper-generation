@@ -126,6 +126,7 @@ final class UKArtifactPublisherTests: XCTestCase {
                 "identity": ["provider": application.aiProvider.backendID, "model": application.activeModelName,
                     "prompt_version": FrenchLLMAssessmentRequest.promptVersion, "print_policy": FrenchLLMAssessmentRequest.printPolicy,
                     "sql_source_policy": FrenchLLMAssessmentRequest.sqlSourcePolicy,
+                    "review_recovery_policy": FrenchLLMAssessmentRequest.reviewRecoveryPolicy,
                     "source_policy": FrenchLLMAssessmentRequest.sourcePolicy, "seed": seed],
             ]
             var bytes = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])

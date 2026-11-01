@@ -31,7 +31,8 @@ final class FrenchLLMAssessmentTests: XCTestCase {
                          "prompt_version": FrenchLLMAssessmentRequest.promptVersion,
                          "print_policy": FrenchLLMAssessmentRequest.printPolicy,
                          "sql_source_policy": FrenchLLMAssessmentRequest.sqlSourcePolicy,
-                         "source_policy": FrenchLLMAssessmentRequest.sourcePolicy],
+                         "source_policy": FrenchLLMAssessmentRequest.sourcePolicy,
+                         "review_recovery_policy": FrenchLLMAssessmentRequest.reviewRecoveryPolicy],
         ]
         let file = FileManager.default.temporaryDirectory.appendingPathComponent("FrenchLLM-\(UUID().uuidString).json")
         defer { try? FileManager.default.removeItem(at: file) }
@@ -102,7 +103,9 @@ final class FrenchLLMAssessmentTests: XCTestCase {
                              ("prompt_version", "fr-nsi-written-2027-v35"), ("print_policy", "old"),
                              ("print_policy", "fr-nsi-v36-model-review-v2"), ("print_policy", true),
                              ("sql_source_policy", "old"), ("sql_source_policy", true), ("sql_source_policy", 1),
-                             ("source_policy", "old"), ("source_policy", true), ("source_policy", 1)] {
+                             ("source_policy", "old"), ("source_policy", true), ("source_policy", 1),
+                             ("review_recovery_policy", "old"), ("review_recovery_policy", true),
+                             ("review_recovery_policy", 1), ("review_recovery_policy", "fr-nsi-v36-whole-exercise-redraft-v0")] {
             var changed = publication
             var identity = try XCTUnwrap(changed["identity"] as? [String: Any])
             identity[key] = value
@@ -119,6 +122,11 @@ final class FrenchLLMAssessmentTests: XCTestCase {
         incompleteIdentity.removeValue(forKey: "source_policy")
         missingSourcePolicy["identity"] = incompleteIdentity
         XCTAssertThrowsError(try validate(missingSourcePolicy))
+        var missingRecoveryPolicy = publication
+        var recoveryIdentity = try XCTUnwrap(publication["identity"] as? [String: Any])
+        recoveryIdentity.removeValue(forKey: "review_recovery_policy")
+        missingRecoveryPolicy["identity"] = recoveryIdentity
+        XCTAssertThrowsError(try validate(missingRecoveryPolicy))
         publication["model_used"] = false
         XCTAssertThrowsError(try validate(publication))
     }
