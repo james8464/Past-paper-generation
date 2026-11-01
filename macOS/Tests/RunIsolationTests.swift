@@ -82,7 +82,7 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
-    func testExportAdmissionCreatesMissingDirectoriesAndPreservesExistingFolderAccess() throws {
+    func testExportAdmissionAllowsMissingDirectoriesWithoutCreatingThemAndPreservesExistingFolderAccess() throws {
         for existing in [false, true] {
             let backend = ControlledRunBackend()
             let defaults = isolatedDefaults()
@@ -105,8 +105,8 @@ final class RunIsolationTests: XCTestCase {
             XCTAssertEqual(backend.requests.count, 1)
             XCTAssertTrue(application.isRunning)
             var isDirectory = ObjCBool(false)
-            XCTAssertTrue(FileManager.default.fileExists(atPath: output.path, isDirectory: &isDirectory))
-            XCTAssertTrue(isDirectory.boolValue)
+            XCTAssertEqual(FileManager.default.fileExists(atPath: output.path, isDirectory: &isDirectory), existing)
+            XCTAssertEqual(isDirectory.boolValue, existing)
             XCTAssertEqual(application.outputFolder, output)
             XCTAssertEqual(defaults.data(forKey: AppStorageKey.outputFolderBookmark), bookmark)
             if existing { XCTAssertEqual(try Data(contentsOf: retained), bytes) }

@@ -1503,7 +1503,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     private func prepareOutputFolderForGeneration() -> Bool {
         do {
-            try UKArtifactPublisher.prepareOutputFolder(outputFolder)
+            try UKArtifactPublisher.validateOutputFolder(outputFolder)
             return true
         } catch {
             setError(InterfaceText.resolve("Keldin couldn't use the selected output folder. Choose another folder, then try again.", language: presentationLanguage))

@@ -196,6 +196,43 @@ final class UKArtifactPublisherTests: XCTestCase {
         if let directory { try manager.removeItem(at: directory) }
     }
 
+    func testOutputAdmissionIsNonMutatingAndRequiresAUsableExistingAncestor() throws {
+        let future = directory.appendingPathComponent("future/nested")
+        try UKArtifactPublisher.validateOutputFolder(future)
+        XCTAssertFalse(manager.fileExists(atPath: directory.appendingPathComponent("future").path))
+
+        let sentinel = directory.appendingPathComponent("sentinel")
+        let bytes = Data("retained user file".utf8)
+        try bytes.write(to: sentinel)
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(sentinel))
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(sentinel.appendingPathComponent("child")))
+        XCTAssertEqual(try Data(contentsOf: sentinel), bytes)
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(XCTUnwrap(URL(string: "https://example.invalid/output"))))
+
+        let linked = directory.appendingPathComponent("linked")
+        try manager.createSymbolicLink(atPath: linked.path, withDestinationPath: ".")
+        try UKArtifactPublisher.validateOutputFolder(linked)
+        try UKArtifactPublisher.validateOutputFolder(linked.appendingPathComponent("future/nested"))
+        XCTAssertEqual(try manager.destinationOfSymbolicLink(atPath: linked.path), ".")
+        XCTAssertFalse(manager.fileExists(atPath: future.path))
+
+        let dangling = directory.appendingPathComponent("dangling")
+        try manager.createSymbolicLink(atPath: dangling.path, withDestinationPath: "missing-target")
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(dangling))
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(dangling.appendingPathComponent("child")))
+        XCTAssertEqual(try manager.destinationOfSymbolicLink(atPath: dangling.path), "missing-target")
+        XCTAssertFalse(manager.fileExists(atPath: directory.appendingPathComponent("missing-target").path))
+
+        let blocked = directory.appendingPathComponent("blocked")
+        try manager.createDirectory(at: blocked, withIntermediateDirectories: false)
+        defer { try? manager.setAttributes([.posixPermissions: 0o700], ofItemAtPath: blocked.path) }
+        try manager.setAttributes([.posixPermissions: 0o500], ofItemAtPath: blocked.path)
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(blocked))
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(blocked.appendingPathComponent("child")))
+        try manager.setAttributes([.posixPermissions: 0o000], ofItemAtPath: blocked.path)
+        XCTAssertThrowsError(try UKArtifactPublisher.validateOutputFolder(blocked.appendingPathComponent("child")))
+    }
+
     func testSecondCopyFailurePreservesEveryExistingDestinationAndSource() throws {
         let files = try fixtureFiles()
         let output = try outputWithExistingFiles(files)
