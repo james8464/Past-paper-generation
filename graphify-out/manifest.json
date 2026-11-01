@@ -2075,8 +2075,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1793543563.349905,
-    "ast_hash": "324251aec67078427235d3678b01fed4",
+    "mtime": 1793543938.1435425,
+    "ast_hash": "39c22f910c494645ee8c5e95d42e26b5",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
@@ -2090,8 +2090,8 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/submission-email.md": {
-    "mtime": 1793543563.350844,
-    "ast_hash": "80eda7e443dcd0ecb404c726e4d651ab",
+    "mtime": 1793543938.1438584,
+    "ast_hash": "5b79b7ddb0d73da6ec12c1ddb5a3bc09",
     "semantic_hash": ""
   },
   "docs/french-baccalaureat.md": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793543563.3436284,
+    "mtime": 1793543945.8100064,
     "ast_hash": "d91780646be8e89fbdf6b4cfbed3a270",
     "semantic_hash": ""
   },
@@ -4715,13 +4715,13 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
-    "mtime": 1793543563.4783366,
-    "ast_hash": "68e8fc676b170e0c4684c7ade7a732f2",
+    "mtime": 1793543938.1441252,
+    "ast_hash": "737477ce652811168bad395e685c270b",
     "semantic_hash": ""
   },
   "tools/build_occitanie_pages_sources.py": {
-    "mtime": 1793543563.483879,
-    "ast_hash": "86281e7a1d69825c63369d1ff96684b2",
+    "mtime": 1793543938.144475,
+    "ast_hash": "a328dc9bb72846866ee4dbbd61ae3596",
     "semantic_hash": ""
   },
   "docs/quality/accounting-equal-priority-correction-2026-10-29.md": {
