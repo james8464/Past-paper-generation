@@ -571,11 +571,8 @@
     {
       "path": "Backend/Core/france/code_fences.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "324032100a397474dee35419759e997d1385acd0aff69bab1f6397a36ca78d52",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/code_layout.py",

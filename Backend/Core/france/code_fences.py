@@ -15,7 +15,7 @@ class FencedPart:
     closed: bool = True
 
 
-_DELIMITER = re.compile(r"[ \t]*```(?P<language>python|sql)?[ \t]*(?:\r?\n)?", re.I)
+_DELIMITER = re.compile(r"[ \t]*```(?P<info>[^`\r\n]*)(?:\r?\n)?")
 
 
 def fenced_parts(text: str, *, require_closed: bool = True) -> list[FencedPart]:
@@ -27,8 +27,15 @@ def fenced_parts(text: str, *, require_closed: bool = True) -> list[FencedPart]:
         if opening is None:
             if match:
                 parts.append(FencedPart(text[prose_start:offset]))
-                opening = (offset + len(line), (match["language"] or "").lower())
-        elif match and match["language"] is None:
+                info = match["info"].strip()
+                language = info.split(maxsplit=1)[0].lower() if info else ""
+                # Pair every fence, but keep unsupported contents as prose so
+                # they remain visible to the ordinary printed-text safety checks.
+                opening = (
+                    offset + len(line),
+                    language if language in {"", "python", "sql"} else None,
+                )
+        elif match and not match["info"].strip():
             start, language = opening
             parts.append(FencedPart(text[start:offset], language))
             prose_start = offset + len(line)
