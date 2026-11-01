@@ -6,6 +6,57 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testHistoryOpenBeyondRecentLimitRemainsFirstAndUnhiddenAfterRelaunch() throws {
+        let defaults = isolatedDefaults()
+        let history = try temporaryHistoryURL()
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, historyDirectory: history)
+        var record = pendingJob(seed: 49)
+        record.artifacts = (0 ..< 65).map { index in
+            GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/relaunch-\(index).pdf"), createdAt: Date(timeIntervalSince1970: 1000))
+        }
+        try application.recentDocumentStore.save(record)
+        let chosen = try XCTUnwrap(record.artifacts.last)
+        let hidden = try XCTUnwrap(record.artifacts.first)
+        application.removeGeneratedFile(hidden)
+        application.removeGeneratedFile(chosen)
+        application.openHistoryPDF(from: [record.id], fileID: chosen.id)
+        XCTAssertEqual(application.generatedFiles.first, chosen)
+
+        let restored = self.application(backend: ControlledRunBackend(), defaults: defaults, historyDirectory: history)
+
+        XCTAssertEqual(restored.generatedFiles.first, chosen)
+        XCTAssertEqual(restored.generatedFiles.count, 60)
+        XCTAssertFalse(restored.generatedFiles.contains { $0.id == hidden.id })
+        XCTAssertEqual(defaults.stringArray(forKey: AppStorageKey.hiddenRecentDocumentPaths), [hidden.url.standardizedFileURL.path])
+    }
+
+    @MainActor
+    func testSavedRecentPathsOnlyOrderAuthoritativeHistoryAndKeepIndependentActivities() throws {
+        let defaults = isolatedDefaults()
+        let history = try temporaryHistoryURL()
+        let application = application(backend: ControlledRunBackend(), defaults: defaults, historyDirectory: history)
+        let sharedURL = URL(fileURLWithPath: "/fixture/replaced.pdf")
+        let stale = GeneratedFile(role: "mark_scheme", url: sharedURL, subject: "Stale metadata")
+        let latest = GeneratedFile(role: "question_paper", url: sharedURL, createdAt: Date(timeIntervalSince1970: 1000), subject: "Latest metadata")
+        let other = GeneratedFile(role: "mark_scheme", url: URL(fileURLWithPath: "/fixture/other.pdf"), createdAt: Date(timeIntervalSince1970: 1000))
+        let unmatched = GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/unmatched.pdf"))
+        let independent = GeneratedFile(role: "question_paper", url: URL(fileURLWithPath: "/fixture/activity.pdf"), createdAt: Date(timeIntervalSince1970: 1000), subject: "Étude de cas Occitanie", paper: "Activité indépendante, sans note d’examen")
+        let collision = GeneratedFile(role: "mark_scheme", url: sharedURL, subject: independent.subject, paper: independent.paper)
+        var older = pendingJob(seed: 50, createdAt: Date(timeIntervalSince1970: 1))
+        older.artifacts = [stale]
+        var newer = pendingJob(seed: 51, createdAt: Date(timeIntervalSince1970: 2))
+        newer.artifacts = [other, latest]
+        try application.recentDocumentStore.save(older)
+        try application.recentDocumentStore.save(newer)
+        defaults.set(try JSONEncoder().encode([unmatched, collision, stale, independent, other]), forKey: AppStorageKey.recentDocuments)
+
+        let restored = self.application(backend: ControlledRunBackend(), defaults: defaults, historyDirectory: history)
+
+        XCTAssertEqual(restored.generatedFiles, [latest, independent, other])
+        XCTAssertFalse(restored.generatedFiles.contains { $0.id == stale.id || $0.id == unmatched.id || $0.id == collision.id })
+    }
+
+    @MainActor
     func testHistoryBrowsingBeyondRecentLimitPreservesStreamedRunArtifacts() throws {
         let backend = ControlledRunBackend()
         let application = application(backend: backend)
@@ -1634,7 +1685,7 @@ final class RunIsolationTests: XCTestCase {
         return root.appendingPathComponent("history")
     }
 
-    private func pendingJob(seed: Int) -> GenerationJobRecord {
+    private func pendingJob(seed: Int, createdAt: Date = Date()) -> GenerationJobRecord {
         GenerationJobRecord(
             configuration: GenerationConfiguration(
                 boardID: "economics-aqa", paperID: "1", provider: "ollama",
@@ -1644,7 +1695,8 @@ final class RunIsolationTests: XCTestCase {
             state: .pending, artifacts: [],
             qualification: QualificationSnapshot(
                 engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false
-            )
+            ),
+            createdAt: createdAt
         )
     }
 }
