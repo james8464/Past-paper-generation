@@ -218,7 +218,8 @@ event rather than raw package-manager or traceback output.
 
 Every PDF role is rendered inside `render_pdf_atomically`. Before promotion,
 the transaction embeds a page-level PDF structure tree, marks each page's
-content with an MCID, declares `en-GB`, and preserves the renderer's
+content with an MCID, declares the document language (`en-GB` by default;
+`fr-FR` for French papers), and preserves the renderer's
 content-stream order for assistive technology. Supporting Computer Science
 documents use the same transaction, so preliminary material and electronic
 answer documents cannot bypass accessibility or atomic-publication checks.
@@ -230,9 +231,10 @@ The evidence records `reading_order_basis: content_block_geometry_v1` and
 `semantic_order: not_assessed`; these and the extractor schema version also
 appear in fresh fidelity-report print summaries. `tagged` remains a separate
 document-level structure-presence marker. Even a score of 1 (including a
-single-block page) does not certify semantic order, heading/table navigation, accessibility, or
-PDF/UA compliance. Columns and tables can require manual review; roles are not
-inferred from fonts. The existing print-profile thresholds are unchanged.
+single-block page) does not certify semantic order, heading/table navigation,
+accessibility, or PDF/UA compliance. Columns and tables can require manual
+review; roles are not inferred from fonts. The existing print-profile
+thresholds are unchanged.
 
 Schema 1 could substitute a perfect score merely because page-level tags were
 present. Retained reports are historical evidence, not silently rewritten or
