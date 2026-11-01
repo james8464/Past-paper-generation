@@ -227,6 +227,11 @@ def validate_paper(paper: GeneratedPaper, rule: PaperRule, syllabus: Syllabus) -
                 financials = FinancialPosition.from_chart_values(option.chart_values)
                 if "current_ratio" in financial_tasks:
                     _ = financials.current_ratio
+                if (
+                    "roce_calculation" in financial_tasks
+                    and financials.capital_employed == 0
+                ):
+                    raise ValueError("ROCE requires nonzero capital employed")
 
 
 def _values(rng: random.Random) -> list[float]:

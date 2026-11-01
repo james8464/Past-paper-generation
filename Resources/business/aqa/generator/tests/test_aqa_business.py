@@ -252,6 +252,28 @@ def test_business_invalid_financial_data_is_refused_before_publication(
     assert not output.exists()
 
 
+def test_business_roce_validation_rejects_zero_capital_but_allows_negative_capital() -> (
+    None
+):
+    from aqabizgen.cli import ADAPTER
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    option = paper.sections[1].options[0]
+    option.chart_values = [66, 0, 0, 100, 0]
+    financials = FinancialPosition.from_chart_values(option.chart_values)
+    assert financials.current_ratio == 1
+    assert financials.capital_employed == 0
+    assert ADAPTER.validate is not None
+    with pytest.raises(ValueError, match="ROCE requires nonzero capital employed"):
+        ADAPTER.validate(paper, RULES["paper_1"], SYLLABUS)
+
+    option.chart_values = [10, 0, 0, 100, 0]
+    financials = FinancialPosition.from_chart_values(option.chart_values)
+    assert financials.total_equity == financials.capital_employed == -56
+    assert financials.operating_profit_at_twelve_percent == pytest.approx(-6.72)
+    ADAPTER.validate(paper, RULES["paper_1"], SYLLABUS)
+
+
 def test_business_financial_domain_preserves_generated_values_and_calculation_routes() -> (
     None
 ):
