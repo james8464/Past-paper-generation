@@ -6,6 +6,115 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testHostedPreviewNeedsNoConsentWhileLiveGenerationStillRequiresIt() throws {
+        for provider in [AIProvider.openAI, .anthropic] {
+            for preview in [false, true] {
+                let defaults = isolatedDefaults()
+                defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
+                let backend = ControlledRunBackend()
+                let history = try temporaryHistoryURL()
+                let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+                application.outputFolder = history.deletingLastPathComponent().appendingPathComponent("exports")
+                try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
+                application.setDryRun(preview)
+                XCTAssertFalse(application.hasHostedAIConsent)
+                if !preview {
+                    let blocker = try XCTUnwrap(application.generationBlockerResource)
+                    XCTAssertEqual(InterfaceText.resolve(blocker, language: "en"), "Review and accept the hosted AI disclosure in Settings.")
+                }
+
+                application.generate()
+
+                XCTAssertEqual(backend.requests.count, preview ? 1 : 0)
+                XCTAssertFalse(application.hasHostedAIConsent)
+                if preview {
+                    XCTAssertFalse(application.showHostedAIConsent)
+                    if let request = backend.requests.first {
+                        XCTAssertTrue(request.arguments.contains("--dry-run"))
+                        XCTAssertEqual(request.environment["KELDIN_API_KEY"] ?? "", "")
+                    }
+                } else {
+                    XCTAssertNil(application.generationCoordinator.activeJob)
+                    XCTAssertFalse(application.isRunning)
+                }
+                application.cancelGeneration()
+            }
+        }
+    }
+
+    @MainActor
+    func testUnusableExportFolderRefusesUKAndFrenchBeforeBackendOrJobCreation() throws {
+        for french in [false, true] {
+            let defaults = isolatedDefaults()
+            defaults.set(french ? "fr" : "en", forKey: "interfaceLanguage")
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, defaults: defaults, historyDirectory: history)
+            let sentinel = history.deletingLastPathComponent().appendingPathComponent("not-a-folder")
+            let bytes = Data("preserve existing user file".utf8)
+            try bytes.write(to: sentinel)
+            application.outputFolder = sentinel
+            application.setDryRun(true)
+            let previous = pendingJob(seed: 73)
+            try application.recentDocumentStore.save(previous)
+            let records = application.recentDocumentStore.records
+            let recordURL = history.appendingPathComponent("\(previous.id.uuidString).json")
+            let recordBytes = try Data(contentsOf: recordURL)
+            let seed = application.pendingGenerationSeed
+
+            if french { application.generateFrenchFixture(largePrint: false) }
+            else { application.generate() }
+
+            XCTAssertTrue(backend.requests.isEmpty)
+            XCTAssertFalse(application.isRunning)
+            XCTAssertNil(application.generationCoordinator.activeJob)
+            XCTAssertNil(application.generationEstimate)
+            XCTAssertEqual(application.pendingGenerationSeed, seed)
+            XCTAssertEqual(application.recentDocumentStore.records, records)
+            XCTAssertEqual(try Data(contentsOf: recordURL), recordBytes)
+            XCTAssertEqual(try Data(contentsOf: sentinel), bytes)
+            XCTAssertTrue(application.showError)
+            XCTAssertEqual(application.errorMessage, french
+                ? "Keldin n’a pas pu utiliser le dossier de sortie sélectionné. Choisissez un autre dossier, puis réessayez."
+                : "Keldin couldn't use the selected output folder. Choose another folder, then try again.")
+            application.cancelGeneration()
+        }
+    }
+
+    @MainActor
+    func testExportAdmissionAllowsMissingDirectoriesWithoutCreatingThemAndPreservesExistingFolderAccess() throws {
+        for existing in [false, true] {
+            let backend = ControlledRunBackend()
+            let defaults = isolatedDefaults()
+            let history = try temporaryHistoryURL()
+            let bookmark = Data("controlled bookmark".utf8)
+            let application = application(backend: backend, defaults: defaults, historyDirectory: history,
+                outputFolderBookmark: { _ in bookmark })
+            let output = history.deletingLastPathComponent().appendingPathComponent("exports/nested")
+            let retained = output.appendingPathComponent("older.pdf")
+            let bytes = Data("preserve older user PDF".utf8)
+            if existing {
+                try FileManager.default.createDirectory(at: output, withIntermediateDirectories: true)
+                try bytes.write(to: retained)
+            }
+            application.setOutputFolder(output)
+            application.setDryRun(true)
+
+            application.generate()
+
+            XCTAssertEqual(backend.requests.count, 1)
+            XCTAssertTrue(application.isRunning)
+            var isDirectory = ObjCBool(false)
+            XCTAssertEqual(FileManager.default.fileExists(atPath: output.path, isDirectory: &isDirectory), existing)
+            XCTAssertEqual(isDirectory.boolValue, existing)
+            XCTAssertEqual(application.outputFolder, output)
+            XCTAssertEqual(defaults.data(forKey: AppStorageKey.outputFolderBookmark), bookmark)
+            if existing { XCTAssertEqual(try Data(contentsOf: retained), bytes) }
+            application.cancelGeneration()
+        }
+    }
+
+    @MainActor
     func testCancellationHistoryWriteFailureStillStopsRunAndWarnsWithoutInventingSavedState() throws {
         for (language, warning) in [
             ("en", "The cancellation could not be saved in history. The job may still appear as running."),

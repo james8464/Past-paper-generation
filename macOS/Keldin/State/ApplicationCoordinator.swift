@@ -475,6 +475,10 @@ final class ApplicationCoordinator: ObservableObject {
             setError(InterfaceText.resolve("Apple Intelligence does not support French on this Mac.", language: presentationLanguage))
             return
         }
+        guard prepareOutputFolderForGeneration() else {
+            pendingFrenchLargePrint = nil
+            return
+        }
         if MLXSetupPolicy.requiresSetup(provider: aiProvider, model: activeModelName,
                                        preparedModels: preparedMLXModels, usesAI: true, dryRun: false) {
             requestMLXDownloadInfo()
@@ -943,11 +947,12 @@ final class ApplicationCoordinator: ObservableObject {
             setError("This exam board is coming soon.")
             return
         }
-        if selectedBoard.usesAI && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
+        if selectedBoard.usesAI && !dryRun && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
             pendingHostedProvider = aiProvider
             showHostedAIConsent = true
             return
         }
+        guard prepareOutputFolderForGeneration() else { return }
         if MLXSetupPolicy.requiresSetup(
             provider: aiProvider,
             model: activeModelName,
@@ -1495,6 +1500,17 @@ final class ApplicationCoordinator: ObservableObject {
         formatter.dateFormat = "yyyy-MM-dd"
         return formatter
     }()
+
+    private func prepareOutputFolderForGeneration() -> Bool {
+        do {
+            try UKArtifactPublisher.validateOutputFolder(outputFolder)
+            return true
+        } catch {
+            setError(InterfaceText.resolve("Keldin couldn't use the selected output folder. Choose another folder, then try again.", language: presentationLanguage))
+            progressEntries.append(ProgressEntry(stage: "output", message: error.localizedDescription))
+            return false
+        }
+    }
 
     func setOutputFolder(_ url: URL, presentation: SettingsActionPresentation? = nil) {
         securityScopedOutputFolder?.stopAccessingSecurityScopedResource()

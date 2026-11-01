@@ -1,7 +1,36 @@
 import CryptoKit
+import Darwin
 import Foundation
 
 struct UKArtifactPublisher {
+    static func validateOutputFolder(_ output: URL) throws {
+        guard output.isFileURL else { throw CocoaError(.fileWriteInvalidFileName) }
+        var candidate = output.standardizedFileURL
+        while true {
+            var metadata = stat()
+            if lstat(candidate.path, &metadata) != 0 {
+                let failure = NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+                guard failure.code == ENOENT else { throw failure }
+                let parent = candidate.deletingLastPathComponent()
+                guard parent != candidate else { throw failure }
+                candidate = parent
+                continue
+            }
+            // Existing symlinks must resolve to a real directory. A dangling link
+            // is not a missing directory that admission may create later.
+            if metadata.st_mode & S_IFMT == S_IFLNK, stat(candidate.path, &metadata) != 0 {
+                throw NSError(domain: NSPOSIXErrorDomain, code: Int(errno))
+            }
+            guard metadata.st_mode & S_IFMT == S_IFDIR else {
+                throw CocoaError(.fileWriteInvalidFileName)
+            }
+            guard access(candidate.path, W_OK | X_OK) == 0 else {
+                throw CocoaError(.fileWriteNoPermission)
+            }
+            return
+        }
+    }
+
     private let copyFile: (URL, URL) throws -> Void
     private let commitDirectory: (URL, URL) throws -> Void
 
@@ -43,6 +72,7 @@ struct UKArtifactPublisher {
             }
         }
 
+        try Self.validateOutputFolder(output)
         try manager.createDirectory(at: output, withIntermediateDirectories: true)
         let transaction = UUID().uuidString
         let staging = output.appendingPathComponent(".keldin-export-\(transaction)", isDirectory: true)

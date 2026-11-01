@@ -65,6 +65,7 @@ struct GeneratorWorkspace: View {
                         }
                     }
             }
+            .environment(\.locale, locale)
         }
     }
 

@@ -17,6 +17,41 @@ def translated(key):
     return unit["value"]
 
 
+def test_quality_review_sheet_carries_the_selected_locale_across_presentation():
+    source = (APP / "Features/Generation/GeneratorWorkspaceView.swift").read_text()
+    sheet = source.split(".sheet(isPresented: $showsQualityReview)", 1)[1].split(
+        "private var workspace", 1
+    )[0]
+    assert r".environment(\.locale, locale)" in sheet
+    assert "QualityReviewView()" in sheet
+    assert '.navigationTitle("Quality review")' in sheet
+    assert 'Button("Close")' in sheet
+
+
+def test_quality_review_sheet_chrome_and_evidence_copy_have_french_translations():
+    for key in (
+        "Quality",
+        "Quality review",
+        "Close",
+        "Engineering",
+        "At creation",
+        "Reference layout",
+        "Reference reviewed",
+        "The reference layout has been reviewed. This does not verify the generated PDF.",
+    ):
+        translated(key)
+
+
+def test_french_quality_qualification_means_checks_not_an_awarded_degree():
+    assert translated("Qualification") == "État des vérifications"
+
+
+def test_french_quality_counts_use_labels_without_incorrect_singular_agreement():
+    assert translated("%lld issues · %lld warnings · %lld not checked") == (
+        "Problèmes : %1$lld · Avertissements : %2$lld · Contrôles non effectués : %3$lld"
+    )
+
+
 def test_custom_commands_resolve_the_selected_language():
     source = (APP / "Application/AppCommands.swift").read_text()
     assert '@AppStorage("interfaceLanguage")' in source

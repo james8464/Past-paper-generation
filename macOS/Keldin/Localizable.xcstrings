@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Keldin couldn't use the selected output folder. Choose another folder, then try again.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Keldin n’a pas pu utiliser le dossier de sortie sélectionné. Choisissez un autre dossier, puis réessayez."}}}},
     "The cancellation could not be saved in history. The job may still appear as running.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’annulation n’a pas pu être enregistrée dans l’historique. La tâche peut encore apparaître comme en cours."}}}},
     "Open PDF": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF"}}}},
     "Open the selected history PDF in Documents.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF sélectionné dans Documents."}}}},
@@ -79,7 +80,7 @@
     "Check memory fit and paper quality": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Vérifier la mémoire et la qualité des sujets"}}}},
     "Model suggestions concern this Mac's memory. Paper-quality evidence is shown separately.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les suggestions de modèles concernent la mémoire de ce Mac. L’évaluation de la qualité des sujets est présentée séparément."}}}},
     "Last result checks": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Contrôles du dernier résultat"}}}},
-    "%lld issues · %lld warnings · %lld not checked": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"%1$lld problèmes · %2$lld avertissements · %3$lld non vérifiés"}}}},
+    "%lld issues · %lld warnings · %lld not checked": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Problèmes : %1$lld · Avertissements : %2$lld · Contrôles non effectués : %3$lld"}}}},
     "Show check details": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Afficher le détail des contrôles"}}}},
     "Reported issues": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Problèmes signalés"}}}},
     "Warnings": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Avertissements"}}}},
@@ -4036,12 +4037,12 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Diplôme"
+            "value": "État des vérifications"
           }
         }
       }
     },
-    "Quality": {},
+    "Quality": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Qualité"}}}},
     "Quality of French": {
       "extractionState": "stale",
       "localizations": {
