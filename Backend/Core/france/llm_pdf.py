@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pymupdf
 
-from Backend.Core.france.code_fences import printed_text
 from Backend.Core.france.code_layout import code_blocks
 from Backend.Core.france.graph_layout import graph_layout
 from Backend.Core.france.graph_pdf import validate_graph
+from Backend.Core.france.inline_prose import inline_text, printed_prose
 from Backend.Core.france.llm_pipeline import CHECKABLE, PRINT_POLICY
 from Backend.Core.france.nsi import (
     NSIExercise,
@@ -34,14 +34,18 @@ from Backend.Core.france.whole_case_pdf import (
 def _expected_exercise(
     exercise: NSIExercise, correction: bool, *, print_policy=PRINT_POLICY
 ) -> str:
-    prose = printed_text if print_policy == V36_PRINT_POLICY else _prose
+    prose = printed_prose if print_policy == V36_PRINT_POLICY else _prose
     title = exercise.title.strip().rstrip(".")
     scope = (
         f"{title}."
         if title.lower().startswith("cet exercice")
         else f"Thème de l'exercice : « {title} »."
     )
-    parts = [_heading(exercise), scope, prose(exercise.context)]
+    parts = [
+        _heading(exercise),
+        inline_text(scope) if print_policy == V36_PRINT_POLICY else scope,
+        prose(exercise.context),
+    ]
     # Generic exercises print every material before the first question. Unlike
     # the historical whole-case layout, first-use IDs do not stage these figures.
     for material in exercise.materials:
@@ -81,7 +85,12 @@ def _expected_exercise(
             for credit in question.marking:
                 suffix = "point" if Decimal(credit.points) <= 1 else "points"
                 parts.extend(
-                    [f"{credit.points.replace('.', ',')} {suffix}", credit.criterion]
+                    [
+                        f"{credit.points.replace('.', ',')} {suffix}",
+                        inline_text(credit.criterion)
+                        if print_policy == V36_PRINT_POLICY
+                        else credit.criterion,
+                    ]
                 )
     return _compact("\n".join(parts))
 
