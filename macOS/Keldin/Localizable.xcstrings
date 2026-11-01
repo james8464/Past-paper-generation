@@ -3,6 +3,13 @@
   "strings": {
     "Open PDF": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF"}}}},
     "Open the selected history PDF in Documents.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF sélectionné dans Documents."}}}},
+    "Reference layout": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Présentation de référence"}}}},
+    "Reference reviewed": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Référence examinée"}}}},
+    "Not reviewed": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Non examinée"}}}},
+    "The reference layout has been reviewed. This does not verify the generated PDF.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La mise en page de référence a été examinée. Cela ne vérifie pas le PDF généré."}}}},
+    "The reference layout has not been reviewed.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La mise en page de référence n'a pas été examinée."}}}},
+    "Choose Apple Intelligence on a compatible Mac, an installed Ollama model, or a hosted provider in Settings. Read the model's quality warnings before generating.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Dans Réglages, choisissez Apple Intelligence sur un Mac compatible, un modèle Ollama installé ou un fournisseur hébergé. Lisez les avertissements sur la qualité du modèle avant de créer un sujet."}}}},
+    "PDFs and any supporting files go to your chosen folder after validation. Technical validation records stay in Keldin's private storage.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les PDF et les fichiers d'accompagnement sont enregistrés dans le dossier choisi après validation. Les rapports techniques de validation restent dans l'espace privé de Keldin."}}}},
     "Complete French NSI papers require another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les sujets complets de NSI française nécessitent un autre moteur."}}}},
     "Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Apple Intelligence prend en charge des tâches courtes, mais pas les sujets complets de NSI française dans Keldin. Choisissez un autre moteur."}}}},
     "Local models (MLX)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Modèles locaux (MLX)"}}}},
