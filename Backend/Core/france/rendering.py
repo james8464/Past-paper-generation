@@ -372,6 +372,33 @@ def code_listing(source: str, style: ParagraphStyle, available_width: float):
     return Preformatted(source, style, dedent=0)
 
 
+class _QuestionGroup(KeepTogether):
+    """Keep a worked question together only when it fits a fresh frame."""
+
+    def __init__(self, flowables):
+        def flattened(items):
+            for item in items:
+                if isinstance(item, KeepTogether):
+                    yield from flattened(item._content)
+                else:
+                    yield item
+
+        # Nested KeepTogether.wrap reports a sentinel height, not its real
+        # contents. A single flat group measures the actual question instead.
+        super().__init__(list(flattened(flowables)))
+
+    def split(self, available_width, available_height):
+        if getattr(self, "_wrapInfo", None) != (available_width, available_height):
+            self.wrap(available_width, available_height)
+        frame = getattr(self, "_frame", None)
+        if frame is not None and frame._aH < self._H:
+            # KeepTogether's bounded mode releases oversized contents into
+            # ordinary paragraph/table/code splitting without first forcing a
+            # fresh page. It retains its own safe handling of the first item.
+            self._maxHeight = frame._aH
+        return super().split(available_width, available_height)
+
+
 def _content_parts(text: str, print_policy: str | None):
     if print_policy == V36_PRINT_POLICY:
         # Preformatted splits on LF; retain logical CRLF source lines without
@@ -1073,7 +1100,9 @@ def render_assessment(
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
-                if whole_case_question:
+                if print_policy == V36_PRINT_POLICY:
+                    story[question_start:] = [_QuestionGroup(story[question_start:])]
+                elif whole_case_question:
                     # A single flat group keeps a prompt, its answer and credits
                     # together when they fit. Nested KeepTogether groups can
                     # falsely consume a full page and strand the prompt.
@@ -1129,9 +1158,11 @@ def render_assessment(
                     )
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
-                if (
-                    exercise_index < len(exercises) - 1 and not compact_correction
-                ) or question_index < len(exercise.questions) - 1:
+                if question_index < len(exercise.questions) - 1 or (
+                    print_policy != V36_PRINT_POLICY
+                    and exercise_index < len(exercises) - 1
+                    and not compact_correction
+                ):
                     # V34 starts the next exercise with PageBreak. A trailing
                     # spacer can spill onto a fresh page and leave it empty.
                     story.append(Spacer(1, 2 if graph_depth_correction else 5))

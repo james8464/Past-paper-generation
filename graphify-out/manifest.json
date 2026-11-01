@@ -195,8 +195,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1793552011.5598717,
-    "ast_hash": "2d817650949716433683505b1ab48fe3",
+    "mtime": 1793553736.5830436,
+    "ast_hash": "750a45df0fadef0cd26285fecd7757ee",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793552675.096813,
-    "ast_hash": "3363dc6ae587ff7921206e2b7fb892ad",
+    "mtime": 1793553785.581862,
+    "ast_hash": "86cb30281412afffac724b9399345203",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793552674.9996321,
-    "ast_hash": "00aecc9abee275184f481cfe0859a06d",
+    "mtime": 1793553785.7144778,
+    "ast_hash": "adb6f3c172f14fdccd61031f24ab5f79",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5297,6 +5297,11 @@
   "tests/test_ollama_endpoint.py": {
     "mtime": 1793552556.6107357,
     "ast_hash": "b03167b3c5f2a60d3dbbbd72f196f3b1",
+    "semantic_hash": ""
+  },
+  "tests/test_french_correction_flow.py": {
+    "mtime": 1793553714.1168585,
+    "ast_hash": "263baa9ba396d58a68fd146daff7cfb6",
     "semantic_hash": ""
   }
 }
