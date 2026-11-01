@@ -209,8 +209,24 @@ def build_paper(
         sections=sections,
     )
     paper = enrich_paper(paper, syllabus.topics, subject="business")
-    validate_generated_paper(paper, rule, syllabus.topic_ids)
+    validate_paper(paper, rule, syllabus)
     return paper
+
+
+def validate_paper(paper: GeneratedPaper, rule: PaperRule, syllabus: Syllabus) -> None:
+    validate_generated_paper(paper, rule, syllabus.topic_ids)
+    if rule.id != "paper_1":
+        return
+    for section in paper.sections:
+        for option in section.options:
+            financial_tasks = {question.rule_id for question in option.questions} & {
+                "current_ratio",
+                "roce_calculation",
+            }
+            if financial_tasks:
+                financials = FinancialPosition.from_chart_values(option.chart_values)
+                if "current_ratio" in financial_tasks:
+                    _ = financials.current_ratio
 
 
 def _values(rng: random.Random) -> list[float]:
