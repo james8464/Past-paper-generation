@@ -831,6 +831,34 @@ final class ApplicationCoordinator: ObservableObject {
         catalogStore.show(.documents)
     }
 
+    func historyPDFs(for recordID: GenerationJobRecord.ID) -> [GeneratedFile] {
+        guard let record = recentDocumentStore.records.first(where: { $0.id == recordID }) else { return [] }
+        let files = record.artifacts.filter { $0.url.isFileURL && $0.url.pathExtension.lowercased() == "pdf" }
+        let preferredRoles = ["question_paper", "mark_scheme"]
+        let ordered = preferredRoles.flatMap { role in files.filter { $0.role == role } }
+            + files.filter { !preferredRoles.contains($0.role) }
+        var seen = Set<URL>()
+        return ordered.filter { seen.insert($0.url.standardizedFileURL).inserted }
+    }
+
+    func openHistoryPDF(from selection: Set<GenerationJobRecord.ID>, fileID: GeneratedFile.ID? = nil) {
+        guard selection.count == 1, let recordID = selection.first else { return }
+        let files = historyPDFs(for: recordID)
+        let chosen = if let fileID { files.first { $0.id == fileID } } else { files.first }
+        guard let file = chosen else { return }
+        // Opening is a document action, not a new generation or configuration.
+        // Restore only the explicitly chosen artifact; keep other hidden paths.
+        var hidden = hiddenRecentPaths
+        hidden.remove(file.url.standardizedFileURL.path)
+        defaults.set(hidden.sorted(), forKey: AppStorageKey.hiddenRecentDocumentPaths)
+        generatedFiles.removeAll { $0.url.standardizedFileURL == file.url.standardizedFileURL }
+        generatedFiles.insert(file, at: 0)
+        generatedFiles = Array(generatedFiles.prefix(60))
+        persistRecentDocuments()
+        // Even missing files reach the existing unavailable / access-recovery UI.
+        previewGeneratedFile(file)
+    }
+
     func previewGeneratedFile(role: String) {
         guard let file = generatedFile(role: role) else { return }
         previewGeneratedFile(file)

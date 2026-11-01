@@ -1,6 +1,8 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Open PDF": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF"}}}},
+    "Open the selected history PDF in Documents.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF sélectionné dans Documents."}}}},
     "Complete French NSI papers require another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les sujets complets de NSI française nécessitent un autre moteur."}}}},
     "Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Apple Intelligence prend en charge des tâches courtes, mais pas les sujets complets de NSI française dans Keldin. Choisissez un autre moteur."}}}},
     "Local models (MLX)": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Modèles locaux (MLX)"}}}},

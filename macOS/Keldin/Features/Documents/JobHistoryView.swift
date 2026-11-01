@@ -50,6 +50,8 @@ struct JobHistoryView: View {
                 }
                 .contextMenu(forSelectionType: GenerationJobRecord.ID.self) { selected in
                     if let record = selectedRecord(from: selected) {
+                        openPDFAction(for: record)
+                        Divider()
                         Button("Duplicate Configuration") {
                             application.duplicateConfiguration(record)
                         }
@@ -61,6 +63,8 @@ struct JobHistoryView: View {
                             application.removeHistory(record)
                         }
                     }
+                } primaryAction: { selected in
+                    application.openHistoryPDF(from: selected)
                 }
             }
         }
@@ -74,6 +78,8 @@ struct JobHistoryView: View {
         }
         .toolbar {
             ToolbarItemGroup {
+                openPDFAction(for: selectedRecord)
+
                 Button("Duplicate Configuration", systemImage: "doc.on.doc") {
                     if let record = selectedRecord {
                         application.duplicateConfiguration(record)
@@ -95,10 +101,29 @@ struct JobHistoryView: View {
         store.records.first { $0.id == selection }
     }
 
+    private func openPDFAction(for record: GenerationJobRecord?) -> some View {
+        let files = record.map { application.historyPDFs(for: $0.id) } ?? []
+        return Menu {
+            ForEach(files) { file in
+                Button {
+                    if let record { application.openHistoryPDF(from: [record.id], fileID: file.id) }
+                } label: {
+                    Text(verbatim: String(localized: InterfaceText.localizedResource(file.titleResource, locale: locale)) + " · " + file.url.lastPathComponent)
+                }
+            }
+        } label: {
+            Label("Open PDF", systemImage: "doc.richtext")
+        } primaryAction: {
+            if let record { application.openHistoryPDF(from: [record.id]) }
+        }
+        .disabled(files.isEmpty)
+        .help("Open the selected history PDF in Documents.")
+    }
+
     private func selectedRecord(
         from selection: Set<GenerationJobRecord.ID>
     ) -> GenerationJobRecord? {
-        guard let id = selection.first else { return nil }
+        guard selection.count == 1, let id = selection.first else { return nil }
         return store.records.first { $0.id == id }
     }
 
