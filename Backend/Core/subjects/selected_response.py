@@ -315,24 +315,39 @@ def _solve_opportunity_cost_change(
             "opportunity-cost product labels must match product X and product Y "
             "in the public stem and source-owned choices"
         )
-    _require_contract_shape(
-        contract,
-        {"primary_before", "secondary_before", "primary_after", "secondary_after"},
-    )
-    values = {key: _decimal(value) for key, value in contract.inputs.items()}
-    primary_gain = values["primary_after"] - values["primary_before"]
+    values = _opportunity_cost_source_values(contract)
     secondary_loss = values["secondary_before"] - values["secondary_after"]
-    if (
-        any(value < 0 for value in values.values())
-        or primary_gain <= 0
-        or secondary_loss <= 0
-    ):
-        raise ValueError("opportunity-cost source has invalid public values")
     _validate_opportunity_cost_stem(prompt, values)
     expected_text = _quantity_choice(choices, secondary_loss, contract.decimal_places)
     steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
     numeric_results = {"opportunity_cost": float(secondary_loss)}
     return _SelectedResult(expected_text, steps, numeric_results)
+
+
+def _opportunity_cost_source_values(
+    contract: SelectedResponseContract,
+) -> dict[str, Decimal]:
+    """Validate public shape, format and domain before solving or disclosure."""
+    if (
+        contract.operation != "opportunity_cost_change"
+        or (contract.unit, contract.decimal_places)
+        != _OPERATION_FORMAT_POLICY["opportunity_cost_change"]
+    ):
+        raise ValueError(
+            "opportunity-cost source violates selected response format policy"
+        )
+    _require_contract_shape(
+        contract,
+        {"primary_before", "secondary_before", "primary_after", "secondary_after"},
+    )
+    values = {key: _decimal(value) for key, value in contract.inputs.items()}
+    if (
+        any(value < 0 for value in values.values())
+        or values["primary_after"] <= values["primary_before"]
+        or values["secondary_after"] >= values["secondary_before"]
+    ):
+        raise ValueError("opportunity-cost source has invalid public values")
+    return values
 
 
 _OPPORTUNITY_COST_NUMBER = r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)"
@@ -386,16 +401,14 @@ def public_selected_response_stem_constraints(
     if not isinstance(raw, dict) or raw.get("operation") != "opportunity_cost_change":
         return None
     contract = SelectedResponseContract.model_validate(raw)
+    values = _opportunity_cost_source_values(contract)
     facts = []
     for label, role, verb in (
         ("X", "primary", "increases"),
         ("Y", "secondary", "decreases"),
     ):
         before, after = (f"{role}_before", f"{role}_after")
-        start, end = (
-            _decimal(contract.inputs[before]),
-            _decimal(contract.inputs[after]),
-        )
+        start, end = values[before], values[after]
         start_text, end_text = (
             format(start.normalize(), "f"),
             format(end.normalize(), "f"),
@@ -414,9 +427,7 @@ def public_selected_response_stem_constraints(
                 "clause_example": f"product {label} {verb} from {start_text} to {end_text} units",
             }
         )
-    gain = _decimal(contract.inputs["primary_after"]) - _decimal(
-        contract.inputs["primary_before"]
-    )
+    gain = values["primary_after"] - values["primary_before"]
     gain_text = format(gain.normalize(), "f")
     return {
         "operation": contract.operation,

@@ -851,6 +851,56 @@ def test_opportunity_cost_writer_receives_the_validators_public_stem_grammar():
     assert "public_stem_constraints" not in unrelated.split("BLUEPRINT_DATA=", 1)[0]
 
 
+@pytest.mark.parametrize("entrypoint", ["public", "solver"])
+@pytest.mark.parametrize(
+    "change",
+    [
+        "missing",
+        "extra",
+        "unit",
+        "precision",
+        "primary_reverse",
+        "secondary_reverse",
+        "negative",
+        "nonfinite",
+        "rows",
+    ],
+)
+def test_opportunity_cost_disclosure_and_solver_reject_invalid_source_contracts(
+    change, entrypoint
+):
+    from Backend.Core.subjects.selected_response import (
+        public_selected_response_stem_constraints,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
+    contract = item["authoring_context"]["selected_response_contract"]
+    if change == "missing":
+        del contract["inputs"]["secondary_after"]
+    elif change == "extra":
+        contract["inputs"]["private_answer"] = "must not reach the writer"
+    elif change == "unit":
+        contract["unit"] = "percent"
+    elif change == "precision":
+        contract["decimal_places"] = 1
+    elif change == "primary_reverse":
+        contract["inputs"]["primary_after"] = "10"
+    elif change == "secondary_reverse":
+        contract["inputs"]["secondary_after"] = "90"
+    elif change == "negative":
+        contract["inputs"]["primary_before"] = "-1"
+    elif change == "nonfinite":
+        contract["inputs"]["primary_before"] = "NaN"
+    else:
+        contract["rows"] = [{"label": "unexpected source row"}]
+    with pytest.raises(ValueError):
+        if entrypoint == "public":
+            public_selected_response_stem_constraints(item["authoring_context"])
+        else:
+            solve_selected_response(item)
+
+
 @pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
 @pytest.mark.parametrize(
     "variant", ["valid", "reordered", "swapped", "reversed", "tail", "unit"]
