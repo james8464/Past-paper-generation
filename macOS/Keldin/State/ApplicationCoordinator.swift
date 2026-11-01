@@ -1178,7 +1178,11 @@ final class ApplicationCoordinator: ObservableObject {
         ollamaRefreshRevision = UUID()
         run.phase = .cancelling
         let operation = run.intent.operation
-        if let jobID = run.ownedJobID { try? generationCoordinator.cancel(expectedJobID: jobID) }
+        var historyFailureDetail: String?
+        if let jobID = run.ownedJobID {
+            do { try generationCoordinator.cancel(expectedJobID: jobID) }
+            catch { historyFailureDetail = error.localizedDescription }
+        }
         mlxRecoveryState.cancel()
         // MLX setup keeps ownership until its helper exits. Other operations can
         // release the UI immediately, but their queued callbacks no longer own it.
@@ -1212,6 +1216,10 @@ final class ApplicationCoordinator: ObservableObject {
             message = InterfaceText.resolve("Cancelled", language: presentationLanguage)
         }
         progressEntries.append(ProgressEntry(stage: "cancel", message: message))
+        if let historyFailureDetail {
+            setError(InterfaceText.resolve("The cancellation could not be saved in history. The job may still appear as running.", language: presentationLanguage), presentation: run.errorPresentation)
+            progressEntries.append(ProgressEntry(stage: "history", message: historyFailureDetail))
+        }
     }
 
     func pullSelectedModel() -> ModelDownloadRequest? {
