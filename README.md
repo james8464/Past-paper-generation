@@ -16,9 +16,14 @@ An isolated French Terminale NSI written-practice workflow is under development.
 See [architecture and usage](docs/french-baccalaureat.md),
 [current engineering audit and paper comparison](docs/quality/keldin-engineering-and-french-audit-2026-10-26.md)
 and the [Occitanie pilot](docs/occitanie-project.md).
-The public V32 route offers three app-authored case families without an AI model.
-The originality check refuses repeated families. It is not educationally qualified;
-independent teacher review and learner timing/mark calibration remain unfinished. The
+The public V36 route creates model-authored drafts with the provider and model
+selected in Settings: Ollama, local MLX, OpenAI, Anthropic or DeepSeek. Hosted
+providers require consent and your own API credits. Apple Intelligence's
+on-device model is unavailable for complete French NSI papers; choose another
+provider. Historical finite-family generation and replay paths are separate from
+this public workflow. Model reviews and automated checks do not certify
+printed answers, originality, difficulty or completion time. Independent teacher
+review and learner timing/mark calibration remain unfinished. The
 [corpus audit](docs/quality/french-nsi-corpus-rights-audit-2026-10-11.md)
 reconciles the registered sources but does not establish permission to redistribute them.
 The model recommendations and live qualification matrix below concern UK routes,
