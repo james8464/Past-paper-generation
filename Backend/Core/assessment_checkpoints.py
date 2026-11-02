@@ -60,6 +60,17 @@ class DeferredCheckpoints:
                 self.source.save_payload(key, payload)
         self.changes.clear()
 
+    def commit_item(self, key: str) -> None:
+        if key not in self.changes:
+            return
+        payload = self.changes[key]
+        if payload is None:
+            self.source.discard_item(key)
+        else:
+            self.source.save_payload(key, payload)
+        # A failed write must leave this entry available for retry.
+        del self.changes[key]
+
 
 class CheckpointMismatch(ValueError):
     pass

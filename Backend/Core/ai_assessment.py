@@ -155,18 +155,68 @@ def generate_unique_paper(
     hosted_parallel = local_workers == 1 and getattr(
         client, "supports_parallel_generation", False
     )
-    if (local_workers > 1 or hosted_parallel) and len(batches) > 1:
-        jobs = [
-            (
-                batch,
-                DeferredCheckpoints(checkpoint_store)
-                if checkpoint_store is not None
-                else None,
+    parallel_batches = (local_workers > 1 or hosted_parallel) and len(batches) > 1
+    jobs = [
+        (
+            batch,
+            DeferredCheckpoints(checkpoint_store)
+            if checkpoint_store is not None
+            else None,
+        )
+        for batch in batches
+    ]
+    tasks_by_key = {task.key: task for task in tasks}
+    completed_items = 0
+    completed_batches = 0
+
+    def admit_items(result, deferred, *, item_id=None):
+        nonlocal completed_items
+        combined = generated | result
+        try:
+            assert_distinct_items(
+                (
+                    {"id": tasks_by_key[key].id, "prompt": question.prompt}
+                    for key, question in combined.items()
+                ),
+                threshold=policy.paper_similarity_limit,
+                context="accepted AI items",
             )
-            for batch in batches
-        ]
-        completed_items = 0
-        completed_batches = 0
+        except ValueError:
+            if checkpoint_store is not None:
+                # Older releases may already have cached both sides of a
+                # cross-batch conflict. Keep admitted work, evict only this refusal.
+                for key in result.keys() - generated.keys():
+                    refused_id = tasks_by_key[key].id
+                    checkpoint_store.discard_item(refused_id)
+                    if deferred is not None:
+                        deferred.changes.pop(refused_id, None)
+            raise
+        if deferred is not None:
+            if item_id is None:
+                deferred.commit()
+            else:
+                deferred.commit_item(item_id)
+        previous_count = completed_items
+        generated.update(result)
+        completed_items = len(generated)
+        if completed_items > previous_count:
+            emit(
+                GenerationUpdate(
+                    stage="checkpoint",
+                    message=f"Accepted {completed_items} of {len(tasks)} AI items",
+                    completed_units=completed_items,
+                    total_units=len(tasks),
+                )
+            )
+
+    def accept_batch(index, result):
+        nonlocal completed_batches
+        admit_items(result, jobs[index][1])
+        completed_batches += 1
+        if hosted_parallel and parallel_batches:
+            emit(f"Validated AI item batch {completed_batches} of {len(batches)}")
+
+    if parallel_batches:
 
         def run_local(job):
             batch, deferred = job
@@ -181,52 +231,43 @@ def generate_unique_paper(
                 demand_profile=demand_profile,
             )
 
-        def accept_local(index, result):
-            nonlocal completed_items, completed_batches
-            deferred = jobs[index][1]
-            if deferred is not None:
-                deferred.commit()
-            generated.update(result)
-            completed_items += len(result)
-            completed_batches += 1
-            emit(
-                GenerationUpdate(
-                    stage="checkpoint",
-                    message=f"Accepted {completed_items} of {len(tasks)} AI items",
-                    completed_units=completed_items,
-                    total_units=len(tasks),
-                )
-            )
-            if hosted_parallel:
-                emit(f"Validated AI item batch {completed_batches} of {len(batches)}")
-
         mapper = map_hosted_jobs if hosted_parallel else map_reviews
         mapper(
             jobs,
             run_local,
             workers=min(4 if hosted_parallel else local_workers, policy.max_workers),
-            on_result=accept_local,
+            on_result=accept_batch,
         )
     else:
-        completed_items = 0
-        for index, batch in enumerate(batches, start=1):
-            emit(f"Drafting and reviewing AI item batch {index} of {len(batches)}")
-            generated.update(
-                _generate_batch(
-                    batch,
-                    client=client,
-                    subject=subject,
-                    seed=paper.seed,
-                    policy=policy,
-                    progress=emit,
-                    checkpoint_store=checkpoint_store,
-                    demand_profile=demand_profile,
-                    total_items=len(tasks),
-                    completed_before=completed_items,
-                )
+        for index, (batch, deferred) in enumerate(jobs):
+            emit(f"Drafting and reviewing AI item batch {index + 1} of {len(batches)}")
+
+            def admit_serial_progress(update):
+                if (
+                    isinstance(update, GenerationUpdate)
+                    and update.stage == "checkpoint"
+                ):
+                    return
+                emit(update)
+
+            def accept_serial_item(task, candidate, *, deferred=deferred):
+                admit_items({task.key: candidate}, deferred, item_id=task.id)
+
+            result = _generate_batch(
+                batch,
+                client=client,
+                subject=subject,
+                seed=paper.seed,
+                policy=policy,
+                progress=admit_serial_progress,
+                checkpoint_store=deferred,
+                demand_profile=demand_profile,
+                total_items=len(tasks),
+                completed_before=completed_items,
+                accept_item=accept_serial_item,
             )
-            completed_items += len(batch)
-            emit(f"Validated AI item batch {index} of {len(batches)}")
+            accept_batch(index, result)
+            emit(f"Validated AI item batch {index + 1} of {len(batches)}")
 
     sections: list[GeneratedSection] = []
     for section_index, section in enumerate(paper.sections):
@@ -288,6 +329,7 @@ def _generate_batch(
     total_items: int | None = None,
     completed_before: int = 0,
     demand_profile: ReferenceDemandProfile | None = None,
+    accept_item: Callable[[_Task, GeneratedQuestion], None] | None = None,
 ) -> dict[tuple[int, int, int], GeneratedQuestion]:
     verified = [
         task
@@ -345,8 +387,10 @@ def _generate_batch(
         {"id": task.id, "prompt": result[task.key].prompt}
         for task in [*trusted_verified, *resumed]
     ]
-    if progress is not None:
-        for index, task in enumerate([*trusted_verified, *resumed], start=1):
+    for index, task in enumerate([*trusted_verified, *resumed], start=1):
+        if accept_item is not None:
+            accept_item(task, result[task.key])
+        if progress is not None:
             progress(
                 GenerationUpdate(
                     stage="checkpoint",
@@ -371,6 +415,8 @@ def _generate_batch(
             checkpoint_store.save_item(task.id, candidate)
         result[task.key] = candidate
         accepted.append({"id": task.id, "prompt": candidate.prompt})
+        if accept_item is not None:
+            accept_item(task, candidate)
         if progress is not None:
             progress(
                 GenerationUpdate(
@@ -397,6 +443,8 @@ def _generate_batch(
             checkpoint_store.save_item(task.id, candidate)
         result[task.key] = candidate
         accepted.append({"id": task.id, "prompt": candidate.prompt})
+        if accept_item is not None:
+            accept_item(task, candidate)
         if progress is not None:
             progress(
                 GenerationUpdate(

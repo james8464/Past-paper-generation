@@ -25,7 +25,7 @@ def generate(*args, **kwargs):
     barrier.wait(timeout=2)
     time.sleep(30)
     return {}
-subject._tasks = lambda *args: [1, 2]
+subject._tasks = lambda *args: [SimpleNamespace(key=(0, 0, i), id=f'0/0/{i}') for i in range(2)]
 subject._batches_for_client = lambda *args, **kwargs: [[1], [2]]
 subject._generate_batch = generate
 def cancelled(*args): raise KeyboardInterrupt
@@ -133,7 +133,13 @@ def test_hosted_failure_never_commits_a_late_worker_checkpoint(tmp_path, monkeyp
         finished.set()
         return {}
 
-    monkeypatch.setattr(subject, "_tasks", lambda *args: [0, 1])
+    monkeypatch.setattr(
+        subject,
+        "_tasks",
+        lambda *args: [
+            SimpleNamespace(key=(0, 0, index), id=f"0/0/{index}") for index in range(2)
+        ],
+    )
     monkeypatch.setattr(
         subject, "_batches_for_client", lambda *args, **kwargs: [[0], [1]]
     )
