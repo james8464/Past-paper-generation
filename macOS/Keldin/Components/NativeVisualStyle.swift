@@ -32,6 +32,30 @@ enum WorkspaceLayoutPolicy {
     }
 }
 
+enum WorkspaceSidebarPolicy {
+    static func columnVisibility(
+        for layoutMode: WorkspaceLayoutMode, preference: Binding<String>
+    ) -> Binding<NavigationSplitViewVisibility> {
+        Binding(
+            get: {
+                switch preference.wrappedValue {
+                case "detail": return .detailOnly
+                case "double": return .doubleColumn
+                case "all": return .all
+                default: return layoutMode.showsSidebar ? .all : .detailOnly
+                }
+            },
+            set: { value in
+                switch value {
+                case .detailOnly: preference.wrappedValue = "detail"
+                case .doubleColumn: preference.wrappedValue = "double"
+                default: preference.wrappedValue = "all"
+                }
+            }
+        )
+    }
+}
+
 extension View {
     func nativePrimaryActionStyle() -> some View {
         buttonStyle(.borderedProminent)

@@ -6,6 +6,60 @@ import XCTest
 
 final class GenerationNavigationInteractiveTests: XCTestCase {
     @MainActor
+    func testCompactSidebarCanBeRevealedDuringControlledGeneration() async throws {
+        guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_COMPACT_SIDEBAR_CHECK"] == "1" else {
+            throw XCTSkip("Opt-in native compact-window check.")
+        }
+        let suite = "Keldin.CompactSidebarCheck.\(UUID().uuidString)"
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        defaults.set("en", forKey: "interfaceLanguage")
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(suite)
+        let backend = ControlledRunBackend()
+        let application = ApplicationCoordinator(defaults: defaults, secrets: NavigationCheckSecrets(),
+            historyDirectory: folder.appendingPathComponent("history"), backend: backend)
+        application.outputFolder = folder.appendingPathComponent("output")
+        try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
+        application.setDryRun(true)
+        application.generate()
+        let original = try XCTUnwrap(application.generationCoordinator.activeJob)
+        defer {
+            application.cancelGeneration()
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: folder)
+        }
+        let finished = expectation(description: "Compact sidebar revealed and French workspace selected")
+        let content = VStack(spacing: 0) {
+            ContentView()
+                .environmentObject(application)
+                .environment(application.catalogStore)
+                .environment(application.benchmarkCoordinator)
+                .environment(application.generationCoordinator)
+                .defaultAppStorage(defaults)
+            Button("Finish compact sidebar check") { finished.fulfill() }
+                .padding(10)
+        }
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 760, height: 760),
+            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.title = "Keldin compact sidebar check"
+        window.contentView = NSHostingView(rootView: content)
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        defer { window.close() }
+        print("KELDIN_INTERACTIVE_COMPACT_SIDEBAR_READY")
+        print("Reveal the sidebar without widening the window, select Baccalauréat · NSI, then finish.")
+        await fulfillment(of: [finished], timeout: 180)
+        XCTAssertLessThan(window.contentLayoutRect.width, 840)
+        XCTAssertEqual(application.sidebarSelection, .frenchBaccalaureat)
+        XCTAssertTrue(["all", "double"].contains(defaults.string(forKey: AppStorageKey.navigationColumnVisibility) ?? ""))
+        XCTAssertTrue(application.isRunning)
+        XCTAssertEqual(application.generationCoordinator.activeJob, original)
+        XCTAssertEqual(backend.requests.count, 1)
+    }
+
+    @MainActor
     func testNavigationDuringControlledGeneration() async throws {
         guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_NAVIGATION_CHECK"] == "1" else {
             throw XCTSkip("Opt-in computer-control check; ordinary CI runs the deterministic navigation tests.")

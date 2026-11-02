@@ -1,10 +1,44 @@
 import AppKit
 import PDFKit
+import SwiftUI
 import TipKit
 import XCTest
 @testable import Keldin
 
 final class KeldinTests: XCTestCase {
+    @MainActor
+    func testCompactSidebarBindingAcceptsExplicitRevealAndPreservesUserChoice() {
+        for width: CGFloat in [720, 760, 839] {
+            var saved = "automatic"
+            let preference = Binding(get: { saved }, set: { saved = $0 })
+            let visibility = WorkspaceSidebarPolicy.columnVisibility(for: WorkspaceLayoutPolicy.mode(for: width), preference: preference)
+            XCTAssertEqual(visibility.wrappedValue, .detailOnly)
+            visibility.wrappedValue = .all
+            XCTAssertEqual(saved, "all")
+            XCTAssertEqual(visibility.wrappedValue, .all)
+            let wide = WorkspaceSidebarPolicy.columnVisibility(for: .expanded, preference: preference)
+            XCTAssertEqual(wide.wrappedValue, .all)
+            wide.wrappedValue = .detailOnly
+            XCTAssertEqual(saved, "detail")
+            XCTAssertEqual(visibility.wrappedValue, .detailOnly)
+            visibility.wrappedValue = .doubleColumn
+            XCTAssertEqual(saved, "double")
+            XCTAssertEqual(visibility.wrappedValue, .doubleColumn)
+        }
+    }
+
+    @MainActor
+    func testSidebarDefaultAndExistingPreferencesRemainAdaptive() {
+        for (saved, compact, wide): (String, NavigationSplitViewVisibility, NavigationSplitViewVisibility) in [
+            ("automatic", .detailOnly, .all), ("all", .all, .all),
+            ("double", .doubleColumn, .doubleColumn), ("detail", .detailOnly, .detailOnly),
+        ] {
+            for (mode, expected) in [(WorkspaceLayoutMode.compact, compact), (.standard, wide), (.expanded, wide)] {
+                XCTAssertEqual(WorkspaceSidebarPolicy.columnVisibility(for: mode, preference: .constant(saved)).wrappedValue, expected)
+            }
+        }
+    }
+
     func testMLXDownloadMetadataEventRequiresTypedNonnegativeSizeAndCacheState() throws {
         let event = try BackendEvent(jsonLine: #"{"type":"mlx_download_info","model":"owner/model","download_bytes":2048,"cached":false,"revision":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}"#)
         XCTAssertEqual(event, .mlxDownloadInfo(MLXDownloadInfo(model: "owner/model", downloadBytes: 2048, cached: false, revision: String(repeating: "a", count: 40))))

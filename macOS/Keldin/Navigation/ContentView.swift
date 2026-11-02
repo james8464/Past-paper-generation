@@ -6,7 +6,7 @@ struct ContentView: View {
     @EnvironmentObject private var application: ApplicationCoordinator
     @Environment(CatalogStore.self) private var catalog
     @AppStorage(AppStorageKey.navigationColumnVisibility)
-    private var navigationColumnVisibility = "all"
+    private var navigationColumnVisibility = "automatic"
     @AppStorage("interfaceLanguage") private var interfaceLanguage = "system"
 
     private var interfaceLocale: Locale {
@@ -99,24 +99,7 @@ struct ContentView: View {
     private func columnVisibility(
         for layoutMode: WorkspaceLayoutMode
     ) -> Binding<NavigationSplitViewVisibility> {
-        Binding(
-            get: { () -> NavigationSplitViewVisibility in
-                guard layoutMode.showsSidebar else { return .detailOnly }
-                switch navigationColumnVisibility {
-                case "detail": return .detailOnly
-                case "double": return .doubleColumn
-                default: return .all
-                }
-            },
-            set: { value in
-                guard layoutMode.showsSidebar else { return }
-                switch value {
-                case .detailOnly: navigationColumnVisibility = "detail"
-                case .doubleColumn: navigationColumnVisibility = "double"
-                default: navigationColumnVisibility = "all"
-                }
-            }
-        )
+        WorkspaceSidebarPolicy.columnVisibility(for: layoutMode, preference: $navigationColumnVisibility)
     }
 
     private func ensureSidebarSelection() {
