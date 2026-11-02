@@ -32,6 +32,7 @@ from Backend.Core.generation_date import (
     generation_date,
 )
 from Backend.Core.open_credit import printed_credit_points
+from Backend.Core.preview_presentation import preview_copy
 from Backend.Core.subjects.sql_contracts import render_sql_schema
 from cspapergen.models import PaperBlueprint, Question, QuestionPart, Stimulus
 
@@ -856,7 +857,7 @@ def _cover_page(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setFont(FONT_BOLD, 27)
     pdf.drawString(40, 768, PDF_WORDMARK)
     pdf.setFont(FONT_BOLD, 10)
-    pdf.drawString(40, 752, PDF_WORDMARK_DETAIL)
+    pdf.drawString(40, 752, preview_copy(PDF_WORDMARK_DETAIL))
     pdf.setFont(FONT, 11)
     if not on_screen:
         pdf.rect(40, 564, 504, 166, stroke=1, fill=0)

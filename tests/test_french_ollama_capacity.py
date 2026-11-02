@@ -1,12 +1,39 @@
 import io
 import json
-from urllib.error import HTTPError
+from urllib.error import HTTPError, URLError
+from urllib.request import ProxyHandler
 
 import pytest
 
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest
 from Backend.Core.providers import HostedLLMClient, urllib_request
+
+
+def closed_opener(monkeypatch, send):
+    from Backend.Core.france import network
+
+    captured = []
+
+    def build(*handlers):
+        captured.extend(handlers)
+        assert len(handlers) == 2
+        assert isinstance(handlers[0], ProxyHandler)
+        assert handlers[0].proxies == {}
+        assert isinstance(handlers[1], network.NoRedirects)
+
+        class Opener:
+            def open(self, outgoing, *, timeout):
+                return send(outgoing, timeout=timeout, redirect=handlers[1])
+
+        return Opener()
+
+    monkeypatch.setattr(network, "build_opener", build)
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        lambda *args, **kwargs: pytest.fail("French inference used the default opener"),
+    )
+    return captured
 
 
 def request():
@@ -27,6 +54,114 @@ def reply(**updates):
         "message": {"content": '{"answer":"ready"}'},
         **updates,
     }
+
+
+def test_public_french_inference_uses_proxy_free_opener_and_identical_payload(
+    monkeypatch, capsys
+):
+    outgoing = []
+
+    def send(item, *, timeout, redirect):
+        outgoing.append((item, timeout))
+        return io.BytesIO(json.dumps(reply()).encode())
+
+    handlers = closed_opener(monkeypatch, send)
+    client = HostedLLMClient(
+        provider="ollama", model="fixture", api_key="unused-secret"
+    )
+    owned = request()
+    assert client.generate_request(owned) == {"answer": "ready"}
+    assert len(handlers) == 2
+    assert len(outgoing) == 1
+    item, timeout = outgoing[0]
+    assert item.full_url == "http://localhost:11434/api/chat"
+    assert item.get_method() == "POST"
+    assert timeout == 600
+    assert dict(item.header_items()) == {"Content-type": "application/json"}
+
+    injected = []
+
+    def capture(url, data, headers, **settings):
+        injected.append((url, data, headers, settings))
+        return io.BytesIO(json.dumps(reply()).encode())
+
+    assert client._ollama(
+        owned.prompt,
+        schema=owned.schema,
+        output_budget=owned.output_budget,
+        seed=owned.seed,
+        temperature=owned.temperature,
+        request_function=capture,
+        french_nsi=True,
+    ) == {"answer": "ready"}
+    assert injected == [
+        (
+            item.full_url,
+            item.data,
+            {"Content-Type": "application/json"},
+            {"attempts": 1, "timeout_seconds": 600},
+        )
+    ]
+    assert "unused-secret" not in capsys.readouterr().out
+    assert b"unused-secret" not in item.data
+
+
+def test_public_french_inference_refuses_redirect_without_retry_or_success(
+    monkeypatch, capsys
+):
+    calls = []
+
+    def send(item, *, timeout, redirect):
+        calls.append(item.full_url)
+        return redirect.redirect_request(
+            item, None, 302, "Found", {}, "https://other.invalid/"
+        )
+
+    closed_opener(monkeypatch, send)
+    client = HostedLLMClient(
+        provider="ollama", model="fixture", api_key="unused-secret"
+    )
+    with pytest.raises(ValueError, match="redirection") as failure:
+        client.generate_request(request())
+    assert calls == ["http://localhost:11434/api/chat"]
+    assert capsys.readouterr().out == ""
+    assert "unused-secret" not in str(failure.value)
+
+
+@pytest.mark.parametrize("failure", ["busy", "connection", "timeout"])
+def test_public_french_transport_failures_never_add_a_physical_retry(
+    monkeypatch, failure
+):
+    calls = []
+
+    def send(item, *, timeout, redirect):
+        calls.append(timeout)
+        if failure == "busy":
+            raise HTTPError(item.full_url, 503, "Busy", {}, io.BytesIO(b"busy"))
+        if failure == "connection":
+            raise URLError("unavailable")
+        raise TimeoutError("fixture timeout")
+
+    closed_opener(monkeypatch, send)
+    client = HostedLLMClient(provider="ollama", model="fixture", api_key="")
+    with pytest.raises(RuntimeError):
+        client.generate_request(request())
+    assert calls == [600]
+
+
+def test_direct_ollama_policy_cannot_replace_a_fixed_host_policy(monkeypatch):
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        lambda *args, **kwargs: pytest.fail("Unexpected network request"),
+    )
+    with pytest.raises(ValueError, match="transport policies"):
+        urllib_request(
+            "https://api.openai.com/v1/responses",
+            b"{}",
+            {},
+            fixed_host="api.openai.com",
+            direct_ollama=True,
+        )
 
 
 def test_neutral_repetition_penalty_is_exclusive_to_french_nsi(monkeypatch):
@@ -66,7 +201,7 @@ def test_neutral_repetition_penalty_is_exclusive_to_french_nsi(monkeypatch):
     assert french["truncate"] is False and french["shift"] is False
     assert "truncate" not in legacy and "shift" not in legacy
     assert [options for _, options in calls] == [
-        {"attempts": 1, "timeout_seconds": 600},
+        {"attempts": 1, "timeout_seconds": 600, "direct_ollama": True},
         {"attempts": 2},
     ]
 
@@ -88,7 +223,7 @@ def test_french_uses_no_truncation_no_shift_one_http_attempt_and_scoped_timeout(
     assert payload["truncate"] is False and payload["shift"] is False
     assert payload["options"]["num_ctx"] == 16384
     assert payload["options"]["num_predict"] == 8192
-    assert options == {"attempts": 1, "timeout_seconds": 600}
+    assert options == {"attempts": 1, "timeout_seconds": 600, "direct_ollama": True}
     event = json.loads(capsys.readouterr().out)
     assert event["stage"] == "provider_context"
     assert "5000" in event["message"] and "1200" in event["message"]
@@ -181,7 +316,10 @@ def test_native_context_http_refusal_is_distinct_from_question_failure(
             io.BytesIO(json.dumps({"error": message}).encode()),
         )
 
-    monkeypatch.setattr("urllib.request.urlopen", send)
+    closed_opener(
+        monkeypatch,
+        lambda outgoing, *, timeout, redirect: send(outgoing, timeout=timeout),
+    )
     client = HostedLLMClient(provider="ollama", model="fixture", api_key="")
     with pytest.raises(expected) as failure:
         client.generate_request(request())

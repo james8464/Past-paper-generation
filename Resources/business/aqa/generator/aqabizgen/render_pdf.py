@@ -49,6 +49,7 @@ from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.mark_scheme_front_matter import aqa_front_matter_pages
+from Backend.Core.preview_presentation import preview_paragraph
 from Backend.Core.reportlab_theme import AQAAnswerLines as AnswerLines
 from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.subjects.selected_response import SelectedResponseContract
@@ -93,7 +94,7 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
     option = paper.sections[0].options[0]
     story: list[Flowable] = [
         Spacer(1, 12 * mm),
-        Paragraph("A-level Business", STYLES["kicker"]),
+        Paragraph(preview_paragraph("A-level Business"), STYLES["kicker"]),
         Paragraph("Independent practice source booklet", STYLES["title"]),
         Paragraph(f"{paper.paper_code} · {paper.title}", STYLES["subtitle"]),
         Paragraph(formatted_generation_date(), STYLES["subtitle"]),

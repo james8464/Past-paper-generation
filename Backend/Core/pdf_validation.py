@@ -464,6 +464,21 @@ def _contrast_against_white(rgb_value: int) -> float:
     return _contrast_ratio(channels, (255, 255, 255))
 
 
+def text_trace_is_occluded(
+    trace: dict[str, Any], drawings: list[dict[str, Any]]
+) -> bool:
+    """Reuse draw-order evidence for text covered by a later opaque fill."""
+    bounds = fitz.Rect(trace.get("bbox", (0, 0, 0, 0)))
+    sequence = int(trace.get("seqno", -1))
+    return any(
+        int(drawing.get("seqno", -1)) > sequence
+        and float(drawing.get("fill_opacity") or 0) >= 0.99
+        and drawing.get("fill") is not None
+        and fitz.Rect(drawing.get("rect", (0, 0, 0, 0))).contains(bounds)
+        for drawing in drawings
+    )
+
+
 def _page_text_contrasts(
     page: fitz.Page,
     drawings: list[dict[str, Any]],
@@ -477,13 +492,7 @@ def _page_text_contrasts(
         if not text.strip() or _is_margin_furniture(text, bounds, page.rect):
             continue
         sequence = int(trace.get("seqno", -1))
-        if any(
-            int(drawing.get("seqno", -1)) > sequence
-            and float(drawing.get("fill_opacity") or 0) >= 0.99
-            and drawing.get("fill") is not None
-            and fitz.Rect(drawing.get("rect", (0, 0, 0, 0))).contains(bounds)
-            for drawing in drawings
-        ):
+        if text_trace_is_occluded(trace, drawings):
             continue
         centre = fitz.Point(
             (bounds.x0 + bounds.x1) / 2,

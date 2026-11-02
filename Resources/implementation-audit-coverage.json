@@ -172,8 +172,11 @@
     {
       "path": "Backend/Core/apple_intelligence.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal provider-boundary review with exact-byte evidence; live model quality and broader release acceptance remain separate.",
+      "source_sha256": "91862246849e3a08acef4cfd7c907d30f8432dce27d0776be57e5828fc9d40ef",
+      "review_evidence": "docs/quality/provider-boundary-file-review-2026-11-02.md",
+      "review_evidence_sha256": "0e9bfbaca8f7a004eb704f74819070e996fc3e12b8793d813a4f49ff979a82e9"
     },
     {
       "path": "Backend/Core/assessment_checkpoints.py",
@@ -1397,10 +1400,19 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
-      "path": "Backend/Core/providers.py",
+      "path": "Backend/Core/preview_presentation.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/providers.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete-file internal provider-boundary review and scoped follow-up review of the transport repair; live model quality and broader release acceptance remain separate.",
+      "source_sha256": "30802cade04b0f4d4c9bf83ef0ac8337ea15f4f5896a0a60f0b1ac64aa81c6c0",
+      "review_evidence": "docs/quality/provider-boundary-file-review-2026-11-02.md",
+      "review_evidence_sha256": "0e9bfbaca8f7a004eb704f74819070e996fc3e12b8793d813a4f49ff979a82e9"
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -1665,6 +1677,12 @@
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/accounting/aqa/generator/aqaaccountgen/scheme_policy.py",
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -3551,6 +3569,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/output-integrity-and-paper-two-flow-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3570,6 +3594,12 @@
     },
     {
       "path": "docs/quality/prompt-projection-ownership-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/provider-boundary-file-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5082,6 +5112,12 @@
     },
     {
       "path": "tests/test_accounting_objectives.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_accounting_paper_two_flow.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6750,6 +6786,12 @@
     },
     {
       "path": "tests/test_trusted_generation_requests.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_uk_preview_presentation.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

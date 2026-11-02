@@ -22,6 +22,10 @@ from Backend.Core.document_dsl.model import (
 from Backend.Core.document_dsl.paginator import Paginator
 from Backend.Core.document_dsl.reportlab_backend import ReportLabBackend
 from Backend.Core.exam_blueprints import GeneratedPaper
+from Backend.Core.preview_presentation import (
+    PREVIEW_NOTICE,
+    is_layout_preview,
+)
 from configuredgen.models import ConfiguredSyllabus, PaperSpecification
 
 
@@ -41,7 +45,7 @@ def render_question_paper(
                     title=paper.title,
                     subtitle=_duration(paper.duration_minutes),
                     code=paper.paper_code,
-                    board_label="KELDIN • CAMBRIDGE-STYLE PRACTICE",
+                    board_label=_cover_branding("KELDIN • CAMBRIDGE-STYLE PRACTICE"),
                 ),
                 InstructionBlock(
                     heading="Instructions",
@@ -118,7 +122,7 @@ def render_mark_scheme(
             title=f"{paper.title} mark scheme",
             subtitle="Original practice material",
             code=paper.paper_code,
-            board_label="KELDIN",
+            board_label=_cover_branding("KELDIN"),
         )
     ]
     for section in paper.sections:
@@ -153,6 +157,10 @@ def render_mark_scheme(
         ),
         destination,
     )
+
+
+def _cover_branding(original: str) -> str:
+    return f"KELDIN · {PREVIEW_NOTICE}" if is_layout_preview() else original
 
 
 def _render(specification: DocumentSpec, destination: Path) -> None:

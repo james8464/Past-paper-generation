@@ -42,6 +42,12 @@ from aqaaccountgen.marking_policy import (
     printed_mcq_rows,
     reason_level_rows,
 )
+from aqaaccountgen.scheme_policy import (
+    GENERAL_GUIDANCE,
+    paper_two_policy,
+    question_heading,
+    question_rows,
+)
 from Backend.Core.assessment_objectives import objective_policy_for
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
@@ -112,6 +118,40 @@ def render_mark_scheme(
         FONT,
         FONT_BOLD,
     )
+    if paper_two_policy(paper):
+        story.extend(
+            [PageBreak(), Paragraph("General marking guidance", STYLES["kicker"])]
+        )
+        for title, text in GENERAL_GUIDANCE:
+            story.extend(
+                [
+                    Spacer(1, 4 * mm),
+                    Paragraph(title, STYLES["heading"]),
+                    Paragraph(text, STYLES["body"]),
+                ]
+            )
+        for section in paper.sections:
+            story.extend(
+                [PageBreak(), _banner(f"Section {section.id}"), Spacer(1, 4 * mm)]
+            )
+            for question in section.options[0].questions:
+                rows, levels = question_rows(question)
+                for heading, content, award_label in (
+                    (question_heading(question), rows, str(question.marks)),
+                    (f"Question {question.number}: levels grid", levels, "Band"),
+                ):
+                    if not content:
+                        continue
+                    table = _scheme_grid(
+                        [escape(heading), escape(award_label)],
+                        [[escape(cell) for cell in row] for row in content],
+                        [151 * mm, 16 * mm],
+                        paragraph_style=STYLES["body"],
+                    )
+                    table.spaceAfter = 4 * mm
+                    story.append(table)
+        doc.build(story)
+        return
     if paper.paper_id == "paper_1":
         pages = _paper_one_mark_scheme_pages(paper)
         assert len(pages) == 23
@@ -1184,16 +1224,15 @@ def _scheme_grid(
     headings: list[str],
     rows: list[list[object]],
     widths: list[float],
+    *,
+    paragraph_style: ParagraphStyle | None = None,
 ) -> Table:
-    data = [
-        [Paragraph(f"<b>{heading}</b>", STYLES["scheme_small"]) for heading in headings]
-    ]
+    style = paragraph_style or STYLES["scheme_small"]
+    data = [[Paragraph(f"<b>{heading}</b>", style) for heading in headings]]
     for row in rows:
         data.append(
             [
-                cell
-                if isinstance(cell, Flowable)
-                else Paragraph(str(cell), STYLES["scheme_small"])
+                cell if isinstance(cell, Flowable) else Paragraph(str(cell), style)
                 for cell in row
             ]
         )

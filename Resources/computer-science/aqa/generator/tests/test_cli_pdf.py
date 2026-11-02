@@ -75,7 +75,8 @@ def test_question_cover_includes_the_independent_wordmark(tmp_path):
         page = document[0]
         cover = page.get_text()
         assert "KELDIN" in cover
-        assert "PRACTICE" in cover
+        assert "LAYOUT PREVIEW" in cover
+        assert "Unreviewed sample content" in cover
         assert abs(page.search_for("A-level")[0].x0 - 40) < 1
         candidate_frames = [
             item[1]

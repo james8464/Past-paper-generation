@@ -50,6 +50,7 @@ from Backend.Core.exam_cover import (
 from Backend.Core.exam_pages import ExamPage, ExamPageProfile
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.preview_presentation import preview_paragraph
 from Backend.Core.reportlab_theme import AQACompactAnswerLines as AnswerLines
 from Backend.Core.reportlab_theme import themed_table_class
 from Backend.Core.subjects.selected_response import SelectedResponseContract
@@ -171,7 +172,7 @@ def render_source_booklet(paper: GeneratedPaper, path: Path) -> None:
     option = paper.sections[1].options[0]
     story: list[Flowable] = [
         Spacer(1, 12 * mm),
-        Paragraph("A-level Economics", STYLES["cover_kicker"]),
+        Paragraph(preview_paragraph("A-level Economics"), STYLES["cover_kicker"]),
         Paragraph("Paper 3 source insert", STYLES["cover_title"]),
         Spacer(1, 5 * mm),
         Paragraph(option.title, STYLES["cover_subtitle"]),

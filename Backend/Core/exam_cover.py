@@ -17,6 +17,7 @@ from Backend.Core.generation_date import (
     formatted_generation_date,
     formatted_generation_series,
 )
+from Backend.Core.preview_presentation import preview_copy
 
 
 @dataclass(frozen=True)
@@ -171,7 +172,7 @@ class QuestionPaperCover(Flowable):
         pdf.setFont(self.bold_font, 26)
         pdf.drawString(left, top - 80, PDF_WORDMARK)
         pdf.setFont(self.font, 8)
-        pdf.drawString(left, top - 95, "Independent unofficial practice")
+        pdf.drawString(left, top - 95, preview_copy("Independent unofficial practice"))
         pdf.setFont(self.bold_font, 20)
         pdf.drawString(left, top - 124.26, formatted_generation_date())
         pdf.setFont(self.bold_font, 16)
@@ -251,7 +252,7 @@ class QuestionPaperCover(Flowable):
         pdf.setFont(self.bold_font, 27)
         pdf.drawString(x, y, first)
         pdf.setFont(self.bold_font, 16)
-        pdf.drawString(x, y - 5 * mm, second)
+        pdf.drawString(x, y - 5 * mm, preview_copy(second))
 
     def _candidate_box(self, y: float) -> float:
         pdf = self.canv
@@ -439,7 +440,7 @@ def _draw_aqa_mark_scheme_cover(
     pdf.setFont(bold_font, 28)
     pdf.drawString(left, height - 109.1, PDF_WORDMARK)
     pdf.setFont(bold_font, 11)
-    pdf.drawString(left, height - 131.5, PDF_WORDMARK_DETAIL)
+    pdf.drawString(left, height - 131.5, preview_copy(PDF_WORDMARK_DETAIL))
     pdf.setLineWidth(0.5)
     pdf.line(41.9, height - 147.6, 552.9, height - 147.6)
 
@@ -498,7 +499,7 @@ def _draw_ocr_mark_scheme_cover(
     pdf.setFont(bold_font, 28)
     pdf.drawString(left, height - 58.1, PDF_WORDMARK)
     pdf.setFont(bold_font, 11)
-    pdf.drawString(left, height - 79.2, PDF_WORDMARK_DETAIL)
+    pdf.drawString(left, height - 79.2, preview_copy(PDF_WORDMARK_DETAIL))
     pdf.setFillColor(colors.HexColor("#141414"))
 
     rows = (

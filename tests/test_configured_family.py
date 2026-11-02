@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 import pymupdf
+import pytest
 
 from Backend.Core.assessment_package import validate_assessment_package
 from Backend.Core.paths import REPO_ROOT
@@ -16,6 +17,64 @@ if str(GENERATOR_ROOT) not in sys.path:
 from configuredgen.cli import generate_package  # noqa: E402
 from configuredgen.generator import build_paper  # noqa: E402
 from configuredgen.models import load_syllabus  # noqa: E402
+from configuredgen.render_pdf import (  # noqa: E402
+    render_mark_scheme,
+    render_question_paper,
+)
+
+
+@pytest.mark.parametrize(
+    ("subject", "board", "paper"),
+    [
+        ("economics", "cambridge-international", "1"),
+        ("computer-science", "cambridge-international", "4"),
+        ("mathematics", "aqa", "3"),
+    ],
+)
+def test_configured_preview_notice_preserves_default_body(
+    subject: str, board: str, paper: str, tmp_path: Path
+) -> None:
+    from Backend.Core.preview_presentation import (
+        preview_presentation,
+        validate_preview_pdf,
+    )
+
+    syllabus = load_syllabus(_family_syllabus(subject, board))
+    generated = build_paper(syllabus.rule(paper), syllabus, seed=8464)
+    renderers = {
+        "question": lambda path: render_question_paper(
+            generated, path, syllabus=syllabus, specification=syllabus.paper(paper)
+        ),
+        "scheme": lambda path: render_mark_scheme(generated, path, syllabus=syllabus),
+    }
+    for role, render in renderers.items():
+        plain_path, preview_path = (
+            tmp_path / f"{role}.pdf",
+            tmp_path / f"{role}-preview.pdf",
+        )
+        with preview_presentation(False):
+            render(plain_path)
+        with preview_presentation(True):
+            render(preview_path)
+        assert validate_preview_pdf(preview_path)["first_page_notice"] is True
+        with pymupdf.open(plain_path) as plain, pymupdf.open(preview_path) as preview:
+            assert len(plain) == len(preview)
+            assert "LAYOUT PREVIEW" not in plain[0].get_text()
+            # The fitted branding line is the sole intentional cover change.
+            branding_bottom = max(
+                page.search_for("KELDIN")[0].y1 for page in (plain[0], preview[0])
+            )
+            assert [
+                w for w in plain[0].get_text("words") if w[1] > branding_bottom
+            ] == [w for w in preview[0].get_text("words") if w[1] > branding_bottom]
+            for index in range(1, len(plain)):
+                assert plain[index].get_text("words") == preview[index].get_text(
+                    "words"
+                )
+                assert (
+                    plain[index].get_pixmap().samples
+                    == preview[index].get_pixmap().samples
+                )
 
 
 def _syllabus(subject: str) -> Path:
