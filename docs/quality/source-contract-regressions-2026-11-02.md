@@ -68,6 +68,20 @@ The result now says the hardware check passed and explains that model speed and
 paper quality were not measured. Scores and thresholds are unchanged. English
 and French resources retain historical result labels for compatibility.
 
+## Follow-up: learned preview timing
+
+Two native offline previews exposed an estimate that ignored rendering history
+when the selected provider changed. Even a matching measured three-second run
+was clamped to at least twenty seconds.
+
+Completed preview timings now share a cohort for the same board and component,
+regardless of the unused provider, model or generation-worker selection. A valid
+observed preview median is no longer raised to the live-generation minimum.
+Live matching, cold-start heuristics, invalid-history filtering and smoothing
+are unchanged. Red regressions preceded nine passing estimator tests; independent
+review found no scoped P1/P2 issue. This changes estimates, not rendering speed
+or timing guarantees.
+
 ## Saved PDF access
 
 Store-mode testing found that a generated PDF needed permission again after the
