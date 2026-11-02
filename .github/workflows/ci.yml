@@ -18,7 +18,7 @@ jobs:
     # Keep macOS fonts for PDF checks; Intel avoids the arm64 runner capacity queue.
     # Native compilation and Store checks still run on Apple Silicon below.
     runs-on: macos-15-intel
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

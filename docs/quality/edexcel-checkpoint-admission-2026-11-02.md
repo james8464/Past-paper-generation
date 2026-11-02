@@ -51,7 +51,7 @@ The late-worker case records actual disk writes on the caller thread only.
 Recovery authors/reviews only the missing question and passes the unchanged
 complete-blueprint validator.
 
-The final focused run passed **154 tests**, including the new file, existing
+The final focused run passed 154 tests, including the new file, existing
 Edexcel authoring, blueprint and assessment-contract tests, and hosted-generation
 cancellation tests. Ruff check, Ruff format check and diff checks passed.
 An intermediate failure was confined to the new late-worker test's fake response
@@ -66,3 +66,15 @@ and `/tmp/keldin-edexcel-admission-focused-final.log` (SHA-256
 The primary project virtual environment ran pytest; no model, paid API, network,
 UI, installed-data or user-cache operation was performed. Full integrated gates
 and any live/manual paper qualification remain separate.
+
+## Source identities and review
+
+The author subsequently read both final source files completely through EOF.
+The independent reviewer inspected the entire change and relevant surrounding
+paths, plus all 310 new test lines. Neither review ran a model or qualified a paper.
+
+| File | Completed review scope | SHA-256 |
+| --- | --- | --- |
+| `Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py` | Full 1,195-line EOF | `4a6ceecf3e2ec5d266152410e233fabda9066467fadf21bb9005c0afc39243e3` |
+| `Resources/economics/edexcel-a/generator/pastpapergen/validation.py` | Full 140-line EOF | `3b63378429d233b7ef1e32432288affb72cd6dbc9fa50806eb11ff5f0fb43596` |
+| `tests/test_edexcel_checkpoint_admission.py` | Full authored and reread 310-line EOF | `c4918e8e674fcd9a50109731e2e63889238997a706828736eb7b1e37ac41bbaf` |

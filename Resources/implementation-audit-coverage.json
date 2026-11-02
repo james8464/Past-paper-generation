@@ -119,10 +119,10 @@
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",
-      "reason": "Complete workflow and signing-test baseline plus full runner-policy regression review; standard macOS Backend pool changes, native Apple Silicon and required checks retained.",
-      "source_sha256": "1d20b304ce32ba1525870176943f9d9cf8e57c84e182cf0dac62dc28ec213240",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "71c1904866032c85045edadffabe9df5c375495448b5ac42675f9c107e098985",
       "review_evidence": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
-      "review_evidence_sha256": "36218da6dad788349393bf8d75814abd49a4b4c93b47c550e87e627788c5918e"
+      "review_evidence_sha256": "234ce7506ecd1286d4a54e91ed3e2e655c13a931e7dd3fc21ee35a49af98dc1e"
     },
     {
       "path": ".gitignore",
@@ -1927,8 +1927,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/ollama_client.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "3059a9d0300aafe44d80413c865b5643846037b6f10796d7d1702b6b70db5466",
+      "review_evidence": "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "bdf39c0bbe51920026a1499ccb06fcdc1c0e336596c8147b254e6d082080939a"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py",
@@ -2455,8 +2458,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "4a6ceecf3e2ec5d266152410e233fabda9066467fadf21bb9005c0afc39243e3",
+      "review_evidence": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
+      "review_evidence_sha256": "664ff5c0ff55e0963c0d4b70dce69d6dd66dce2eddb01b5cb6ec23ff116d00e4"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py",
@@ -2503,8 +2509,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/validation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "3b63378429d233b7ef1e32432288affb72cd6dbc9fa50806eb11ff5f0fb43596",
+      "review_evidence": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
+      "review_evidence_sha256": "664ff5c0ff55e0963c0d4b70dce69d6dd66dce2eddb01b5cb6ec23ff116d00e4"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pyproject.toml",
@@ -2975,6 +2984,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3066,6 +3081,12 @@
     },
     {
       "path": "docs/quality/edexcel-branding-facade-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5468,6 +5489,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_aqa_cs_checkpoint_admission.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "07ef680f865deb8cea345d63cd67205d921aefd1473b86d9449e4a4cf7af0613",
+      "review_evidence": "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "bdf39c0bbe51920026a1499ccb06fcdc1c0e336596c8147b254e6d082080939a"
+    },
+    {
       "path": "tests/test_assessment_checkpoint_admission.py",
       "classification": "test",
       "status": "reviewed",
@@ -5603,10 +5633,10 @@
       "path": "tests/test_ci_signing.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete workflow and signing-test baseline plus full runner-policy regression review; standard macOS Backend pool changes, native Apple Silicon and required checks retained.",
-      "source_sha256": "f399b9467384d9e8a636248eb69f8d90cc9507aa6ebf75711e2fbf0a91a1c045",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "395354d13221322775c196392f958ea8fdfd26eb836189096778baf7a0307f57",
       "review_evidence": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
-      "review_evidence_sha256": "36218da6dad788349393bf8d75814abd49a4b4c93b47c550e87e627788c5918e"
+      "review_evidence_sha256": "234ce7506ecd1286d4a54e91ed3e2e655c13a931e7dd3fc21ee35a49af98dc1e"
     },
     {
       "path": "tests/test_closed_response_integrity.py",
@@ -5715,6 +5745,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_edexcel_checkpoint_admission.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Explicit completed EOF or documented full baseline plus entire delta review; source ownership, retry or required-check preservation and reviewer attribution are bounded in the evidence.",
+      "source_sha256": "c4918e8e674fcd9a50109731e2e63889238997a706828736eb7b1e37ac41bbaf",
+      "review_evidence": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
+      "review_evidence_sha256": "664ff5c0ff55e0963c0d4b70dce69d6dd66dce2eddb01b5cb6ec23ff116d00e4"
     },
     {
       "path": "tests/test_edexcel_console_runtime.py",

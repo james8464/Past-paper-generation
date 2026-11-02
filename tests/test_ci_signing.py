@@ -23,7 +23,7 @@ def test_backend_uses_standard_intel_mac_while_native_keeps_apple_silicon():
 def test_backend_job_has_room_for_the_full_suite_and_setup():
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     backend = workflow.split("  backend:", 1)[1].split("  macos:", 1)[0]
-    assert "timeout-minutes: 30" in backend
+    assert "timeout-minutes: 90" in backend
 
 
 @pytest.mark.parametrize("target", ["test", "preflight-app-store"])

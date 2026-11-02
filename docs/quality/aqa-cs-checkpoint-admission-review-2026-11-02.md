@@ -20,11 +20,11 @@ The actual regression run reproduced six failures with eight passing preservatio
 
 The new cases use the actual q4/q5 seed-270100 blueprint and assert that the imported specialist module belongs to the current worktree. They cover serial, two-worker local and hosted routes, case/space-only equality, accepted-count refusal, preservation of unrelated keys, legacy conflict eviction and same-identity recovery, earlier-question durability on failure/cancellation, and a late hosted question whose staging cannot change the real store. A caller-thread assertion covers the durable write. A near-but-unequal prompt pair remains accepted by this admission rule, confirming that no stricter similarity rule was introduced. A separate test calls the unchanged complete-blueprint validator to confirm its exact case/space duplicate predicate.
 
-Final logs in the documentation worktree: `tmp/nov2-aqa-checkpoint-admission-red-final.log` and `tmp/nov2-aqa-checkpoint-admission-focused.log`. The earlier two-specialist diagnostic remains at `tmp/nov2-specialist-checkpoint-pattern-probe.log`; this repair changes only AQA Computer Science. Edexcel is a separate follow-up.
+Final logs in the documentation worktree: `tmp/nov2-aqa-checkpoint-admission-red-final.log` and `tmp/nov2-aqa-checkpoint-admission-focused.log`. The earlier two-specialist diagnostic remains at `tmp/nov2-specialist-checkpoint-pattern-probe.log`. This repair changes only AQA Computer Science; the separately reviewed Edexcel repair is integrated alongside it.
 
 | File | Review scope | SHA-256 |
 | --- | --- | --- |
-| `Resources/computer-science/aqa/generator/cspapergen/ollama_client.py` | Complete bounded admission diff; current 867 lines, not a full-file EOF attestation | `3059a9d0300aafe44d80413c865b5643846037b6f10796d7d1702b6b70db5466` |
+| `Resources/computer-science/aqa/generator/cspapergen/ollama_client.py` | Author subsequently reread all 867 lines through EOF at this unchanged hash; independent reviewer read the complete admission diff and relevant surroundings | `3059a9d0300aafe44d80413c865b5643846037b6f10796d7d1702b6b70db5466` |
 | `tests/test_aqa_cs_checkpoint_admission.py` | Full authored and reread 324-line EOF | `07ef680f865deb8cea345d63cd67205d921aefd1473b86d9449e4a4cf7af0613` |
 
 This is internal implementation and controlled cache-ownership evidence. It establishes neither live paper quality nor measured difficulty, teacher review, learner calibration or whole-project audit completion. No UI, accessibility testing, native build, full release suite, shared Core edit or Edexcel source edit was performed. Aggregate release checks remain the integrating pull request's responsibility.
