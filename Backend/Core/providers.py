@@ -283,6 +283,11 @@ class HostedLLMClient:
                     if french_nsi
                     else {"attempts": 2}
                 ),
+                **(
+                    {"direct_ollama": True}
+                    if french_nsi and request_function is None
+                    else {}
+                ),
             )
             with request as response:
                 raw = _read_json_response(response)
@@ -978,13 +983,21 @@ def urllib_request(
     timeout_seconds: int = 180,
     fixed_host: str | None = None,
     secrets: tuple[str, ...] = (),
+    direct_ollama: bool = False,
 ) -> Any:
     import urllib.error
     import urllib.request
 
     if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 600:
         raise ValueError("Provider timeout must be an integer from 1 to 600 seconds.")
+    if direct_ollama and fixed_host is not None:
+        raise ValueError("Provider transport policies cannot be combined.")
     open_request = urllib.request.urlopen
+    if direct_ollama:
+        # Use the same proxy-free, redirect-refusing path as French model lookup.
+        from Backend.Core.france.network import open_ollama_request
+
+        open_request = open_ollama_request
     if fixed_host is not None:
         target = urlparse(url)
         if (
