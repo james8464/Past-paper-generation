@@ -36,6 +36,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var isRefreshingOllama = false
     @Published private(set) var isImportingPreviousData = false
+    private(set) var startupImportTask: Task<Void, Never>?
     @Published var appleIntelligenceAvailability = AppleIntelligenceAvailability.unchecked
     @Published var isRefreshingAppleIntelligence = false
     var ollamaState: OllamaState {
@@ -329,7 +330,9 @@ final class ApplicationCoordinator: ObservableObject {
         pdfDocumentAccess: PDFDocumentAccess? = nil,
         historyRecordRemover: @escaping (URL) throws -> Void = { url in
             try FileManager.default.removeItem(at: url)
-        }
+        },
+        startupImportPlan: KeldinMigration.StartupPlan? = nil,
+        startupCopyFiles: (@Sendable ([URL], URL) async -> KeldinMigration.StartupCopyResult)? = nil
     ) {
         self.defaults = defaults
         self.backend = backend
@@ -391,7 +394,33 @@ final class ApplicationCoordinator: ObservableObject {
         benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)
         if !showError, let message = settings.secretFailureMessage(language: presentationLanguage) { setError(message) }
         modelCoordinator.onDiscoveryChange = { [weak self] in self?.objectWillChange.send() }
-        if aiProvider == .appleIntelligence { refreshAppleIntelligenceAvailability() }
+        if let plan = startupImportPlan {
+            startupImportTask = performPreviousDataImport(refreshAppleAfterImport: true) { [self] in
+                let result: KeldinMigration.StartupCopyResult
+                if let startupCopyFiles {
+                    result = await startupCopyFiles(plan.sources, plan.destination)
+                } else {
+                    result = await PreviousAppDataFileImporter.shared.copyExisting(from: plan.sources, to: plan.destination)
+                }
+                for source in result.successfulSources {
+                    KeldinMigration.registerArtifactRoot(source, destination: plan.destination, defaults: defaults)
+                }
+                let historyRestored = restoreRecentDocuments()
+                let failures = KeldinMigration.finishStartupImport(
+                    defaults: defaults,
+                    failures: result.failures + (historyRestored ? [] : ["Imported history could not be loaded."])
+                )
+                if !failures.isEmpty {
+                    if historyRestored {
+                        setError(InterfaceText.resolve("Some previous app data could not be imported. Use Import previous app data in Output Settings to retry.", language: presentationLanguage))
+                    }
+                } else {
+                    status = InterfaceText.resolve("Ready", language: presentationLanguage)
+                }
+            }
+        } else if aiProvider == .appleIntelligence {
+            refreshAppleIntelligenceAvailability()
+        }
     }
 
     func refreshOllama(presentation: SettingsActionPresentation? = nil) {
@@ -440,22 +469,35 @@ final class ApplicationCoordinator: ObservableObject {
         guard canImportPreviousData else { return nil }
         let destination = destination ?? KeldinMigration.importDestination()
         let scoped = startAccess(source)
+        return performPreviousDataImport(presentation: presentation) { [self] in
+            defer {
+                if scoped { stopAccess(source) }
+            }
+            if let copyFiles {
+                try await copyFiles(source, destination)
+            } else {
+                try await PreviousAppDataFileImporter.shared.copy(from: source, to: destination)
+            }
+            KeldinMigration.completeImport(from: source, destination: destination, defaults: defaults, distributionMode: distributionMode)
+            guard restoreRecentDocuments(presentation: presentation) else { return }
+            status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
+        }
+    }
+
+    private func performPreviousDataImport(
+        presentation: SettingsActionPresentation? = nil,
+        refreshAppleAfterImport: Bool = false,
+        _ operation: @escaping @MainActor () async throws -> Void
+    ) -> Task<Void, Never> {
         isImportingPreviousData = true
         return Task {
             status = InterfaceText.resolve("Importing previous app data", language: presentationLanguage)
             defer {
-                if scoped { stopAccess(source) }
                 isImportingPreviousData = false
+                if refreshAppleAfterImport, aiProvider == .appleIntelligence { refreshAppleIntelligenceAvailability() }
             }
             do {
-                if let copyFiles {
-                    try await copyFiles(source, destination)
-                } else {
-                    try await PreviousAppDataFileImporter.shared.copy(from: source, to: destination)
-                }
-                KeldinMigration.completeImport(from: source, destination: destination, defaults: defaults, distributionMode: distributionMode)
-                guard restoreRecentDocuments(presentation: presentation) else { return }
-                status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
+                try await operation()
             } catch let error as KeldinImportError {
                 setError(error.message(language: presentationLanguage), presentation: presentation)
             } catch {

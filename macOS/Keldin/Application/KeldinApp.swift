@@ -11,16 +11,8 @@ enum AppLaunchPolicy {
     @MainActor
     static func makeApplication(environment: [String: String] = ProcessInfo.processInfo.environment) -> ApplicationCoordinator {
         if presentsMainWindow(environment: environment) {
-            let failures = KeldinMigration.prepare()
-            let application = ApplicationCoordinator()
-            if !failures.isEmpty {
-                application.errorMessage = InterfaceText.resolve(
-                    "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry.",
-                    language: UserDefaults.standard.string(forKey: "interfaceLanguage") ?? "system"
-                )
-                application.showError = true
-            }
-            return application
+            let plan = KeldinMigration.startupPlan(defaults: .standard, distributionMode: .current)
+            return ApplicationCoordinator(startupImportPlan: plan)
         }
         // XCTest launches the app before individual test fixtures are created.
         let suite = "Keldin.TestHost.\(UUID().uuidString)"
