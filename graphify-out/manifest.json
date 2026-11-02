@@ -465,8 +465,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/selected_response.py": {
-    "mtime": 1793576234.47272,
-    "ast_hash": "29aeaf901c9533a733e810abc9112588",
+    "mtime": 1793578111.2704701,
+    "ast_hash": "b59e46246f74c5a19d16a3876d8344e8",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/sql_contracts.py": {
@@ -915,8 +915,8 @@
     "semantic_hash": "4283c18b88cd6e5be55e0442b277d915"
   },
   "Resources/economics/aqa/generator/tests/test_aqa_economics.py": {
-    "mtime": 1793576234.4729939,
-    "ast_hash": "3466d6b7ab2326de6800f9a4291a36f1",
+    "mtime": 1793578111.2707262,
+    "ast_hash": "a791181fbcfb74fd9bb1ce803009311c",
     "semantic_hash": ""
   },
   "Resources/economics/cambridge-international/generator/data/syllabus.json": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793576445.805651,
+    "mtime": 1793578525.356973,
     "ast_hash": "344170c5c72436a6f83e665b1e4e1348",
     "semantic_hash": ""
   },
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793572369.9301317,
-    "ast_hash": "5ce5ab9d6b07d7714ab477981195c422",
+    "mtime": 1793578429.2995598,
+    "ast_hash": "28fb185e39817e4913fc5f51d97dd9c4",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -4020,13 +4020,13 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793576445.7028415,
+    "mtime": 1793578525.273995,
     "ast_hash": "32c56ac98aee6b02266435c8f8fce2fb",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
-    "mtime": 1793543563.4447312,
-    "ast_hash": "f81cbb2725b81f48dc31d9a95143fd11",
+    "mtime": 1793578429.2991872,
+    "ast_hash": "839b29eb244d86e1d630318b68e4267e",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/UKArtifactPublisher.swift": {
@@ -4040,8 +4040,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/PDFDocumentAccessTests.swift": {
-    "mtime": 1793543563.4506898,
-    "ast_hash": "b4d876c56d5628e264fbd79580172afd",
+    "mtime": 1793578429.299734,
+    "ast_hash": "ed872f047b36cfe1ad32f3dfc8696540",
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
@@ -4110,8 +4110,8 @@
     "semantic_hash": ""
   },
   "tests/test_selected_response_dispatch.py": {
-    "mtime": 1793543563.481809,
-    "ast_hash": "7af25caf40052db04b4828f5577ba130",
+    "mtime": 1793578111.270928,
+    "ast_hash": "f00be9ec10b0140065e5a2077a8d4352",
     "semantic_hash": ""
   },
   "docs/quality/implementation-audit-file-review-2026-10-28.md": {
@@ -5310,8 +5310,8 @@
     "semantic_hash": ""
   },
   "docs/quality/source-contract-regressions-2026-11-02.md": {
-    "mtime": 1793576271.4367843,
-    "ast_hash": "aec37c4b4da4bf27314542f12660dce5",
+    "mtime": 1793578524.8171167,
+    "ast_hash": "1bf157a82b77c7fb842c6825d37f30a3",
     "semantic_hash": ""
   }
 }

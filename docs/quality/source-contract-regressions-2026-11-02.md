@@ -41,6 +41,9 @@ This is a bounded grammar, not a general natural-language interpreter.
 Unsupported valid phrasing may be refused. Tests cover current generated stems,
 supported paraphrases, existing compatibility fixtures, malformed source data,
 role reversals and contradictory tails at parser, solver and checkpoint boundaries.
+The existing independent-solver question with a preposed verb is unchanged.
+A dispatch-only generic placeholder now supplies its case's public facts; its
+expected solutions and mutation checks are unchanged.
 
 ## Business financial data
 
@@ -64,6 +67,28 @@ model even though the benchmark receives no model or provider identity.
 The result now says the hardware check passed and explains that model speed and
 paper quality were not measured. Scores and thresholds are unchanged. English
 and French resources retain historical result labels for compatibility.
+
+## Saved PDF access
+
+Store-mode testing found that a generated PDF needed permission again after the
+output folder changed and the app relaunched. The file still existed. Choosing
+the exact file through the recovery control worked, including after another
+relaunch. The missing step was remembering access when files were first saved
+or opened successfully.
+
+The app now records read-only bookmarks for every published PDF while the chosen
+folder grant is active. Successful first loads also remember access. Recording
+another document does not acquire or release the active reader's lease. Invalid
+or unreadable PDFs are not recorded. A bookmark failure leaves saved files intact
+and adds a nonfatal activity message. It does not turn a successful publication
+into a failed job.
+
+This uses the existing sandbox and already selected files. No entitlement or
+library-validation setting changes. The approach follows Apple's guidance on
+[persisting file access with read-only security-scoped bookmarks](https://developer.apple.com/documentation/security/accessing-files-from-the-macos-app-sandbox).
+Tests cover both published PDFs, private JSON exclusion, folder changes, a fresh
+access controller, balanced leases and failure preservation. Runtime acceptance
+of the final Store build is recorded separately in the pull request.
 
 ## Release boundary
 
