@@ -27,6 +27,6 @@ Final logs: `tmp/nov2-ai-assessment-admission-red.log` and `tmp/nov2-ai-assessme
 | `Backend/Core/ai_assessment.py` | Full original 1,659-line EOF plus complete final repair; current 1,707 lines | `858d06800fed56bdde334f990c5bb746dac099099e41135362985ffb12bb556b` |
 | `Backend/Core/assessment_checkpoints.py` | Fresh full 322-line EOF, including unchanged identity, atomic write and lock boundaries | `dbf6e24d4beee4f1e5d314b82fbcfb8d6212a7403055b5c6e858837e4242729b` |
 | `tests/test_assessment_checkpoint_admission.py` | Full authored and reread 567-line EOF | `eaa127b410239ae1da203dd78bf118ff6d5b24dc50b44d8b1c32f774dd42deab` |
-| `tests/test_hosted_generation_cancellation.py` | Bounded fixture delta review; current 163 lines, not a new complete-file review | `32fd80aca6bb4b8a91b3f476bdbd90bdcfdbd3b7d57e01024da7c1f23e8f83f7` |
+| `tests/test_hosted_generation_cancellation.py` | Root freshly read all 163 lines through EOF after the author's bounded fixture delta review | `32fd80aca6bb4b8a91b3f476bdbd90bdcfdbd3b7d57e01024da7c1f23e8f83f7` |
 
 Dependencies were traced selectively. This is internal implementation evidence, not teacher review, learner calibration, live model qualification or whole-project audit completion. No UI, accessibility testing, native build or new model request was performed. French paper qualification and distribution-signing limits remain separate and unchanged.

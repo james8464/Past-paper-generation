@@ -160,8 +160,11 @@
     {
       "path": "Backend/Core/ai_assessment.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Explicit full-file or full baseline plus complete delta review of caller-owned checkpoint admission, persistence, retry and cancellation; attribution and limits recorded in the evidence.",
+      "source_sha256": "858d06800fed56bdde334f990c5bb746dac099099e41135362985ffb12bb556b",
+      "review_evidence": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "e85ea2628513021810543d013e846302c5a3384e86b20cc36d400c8cae2b9ca5"
     },
     {
       "path": "Backend/Core/answer_projection.py",
@@ -185,10 +188,10 @@
       "path": "Backend/Core/assessment_checkpoints.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
-      "source_sha256": "a7df228605c6e70184189378739612bd53405638579a6930412d1ade02f54a5b",
-      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
-      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
+      "reason": "Explicit full-file or full baseline plus complete delta review of caller-owned checkpoint admission, persistence, retry and cancellation; attribution and limits recorded in the evidence.",
+      "source_sha256": "dbf6e24d4beee4f1e5d314b82fbcfb8d6212a7403055b5c6e858837e4242729b",
+      "review_evidence": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "e85ea2628513021810543d013e846302c5a3384e86b20cc36d400c8cae2b9ca5"
     },
     {
       "path": "Backend/Core/assessment_contracts.py",
@@ -2972,6 +2975,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/assessment-objective-reference.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5453,6 +5462,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_assessment_checkpoint_admission.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Explicit full-file or full baseline plus complete delta review of caller-owned checkpoint admission, persistence, retry and cancellation; attribution and limits recorded in the evidence.",
+      "source_sha256": "eaa127b410239ae1da203dd78bf118ff6d5b24dc50b44d8b1c32f774dd42deab",
+      "review_evidence": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "e85ea2628513021810543d013e846302c5a3384e86b20cc36d400c8cae2b9ca5"
+    },
+    {
       "path": "tests/test_assessment_checkpoints.py",
       "classification": "test",
       "status": "pending",
@@ -6559,8 +6577,11 @@
     {
       "path": "tests/test_hosted_generation_cancellation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Explicit full-file or full baseline plus complete delta review of caller-owned checkpoint admission, persistence, retry and cancellation; attribution and limits recorded in the evidence.",
+      "source_sha256": "32fd80aca6bb4b8a91b3f476bdbd90bdcfdbd3b7d57e01024da7c1f23e8f83f7",
+      "review_evidence": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
+      "review_evidence_sha256": "e85ea2628513021810543d013e846302c5a3384e86b20cc36d400c8cae2b9ca5"
     },
     {
       "path": "tests/test_hosted_model_defaults.py",
