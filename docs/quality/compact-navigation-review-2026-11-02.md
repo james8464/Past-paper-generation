@@ -16,7 +16,11 @@ Further native inspection confirmed that the window content minimum remains 720 
 
 Final native acceptance passed in 52.639 seconds at `737d4abb7e795bb191860929b431b85645c94bd7`, whose source and test tree matches root candidate `74e68cf9cfd499d749d60097e0b81c33a70d599f`. The journey began at 760 points with a settled 720-point minimum, revealed the sidebar at 904 points, selected French, hid the sidebar, and used the normal macOS Window > Move & Resize > Left action to return to 757 points before finishing. The final gate retained width below 840, the unchanged 720-point minimum, French selected and persisted detail-only visibility. The original controlled generation job and its single backend request were preserved. No unchanged-width condition applies while macOS displays the sidebar.
 
-Protected checks, aggregate tests and installation are separate release gates and are not recorded as passed here. This repair does not prove every native interaction or full HIG compliance.
+The final local native suite executed 418 tests with three opt-in checks skipped and no failures. The separate controlled compact journey above was enabled and passed. Targeted Python interface regressions passed 79 tests; the final audit, hygiene and interface set passed 59 tests. The direct Release build and personal-development-signed Store preflight passed, including strict bundle verification. Their logs are `tmp/nov2-compact-{native-suite,python-targeted,final-hygiene,direct-release,store-preflight}.log` in the capacity worktree.
+
+The AST-only graph update completed without model calls. It reported 49 resource files with no extracted nodes; graph coverage does not certify those resources. The implementation ledger records 147 reviewed files and 680 pending files, not a completed whole-project audit.
+
+Protected checks and installation remain separate release gates and are not recorded as passed here. This repair does not prove every native interaction or full HIG compliance. It changes no paper source, marks, model response, qualification result or signing requirement.
 
 ## Retained evidence
 
