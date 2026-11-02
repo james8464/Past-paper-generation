@@ -60,6 +60,15 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         recordCompactGeometry(window, phase: "after hosting, before user actions")
+        let layoutReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard Thread.isMainThread else { return false }
+            return MainActor.assumeIsolated { abs(window.contentMinSize.width - 720) < 0.01 }
+        }, object: nil)
+        await fulfillment(of: [layoutReady], timeout: 10)
+        guard abs(window.contentMinSize.width - 720) < 0.01 else {
+            return XCTFail("Initial compact layout did not settle; do not start the manual journey.")
+        }
+        recordCompactGeometry(window, phase: "settled initial layout, before user actions")
         let initialContentMinWidth = window.contentMinSize.width
         XCTAssertGreaterThanOrEqual(window.contentLayoutRect.width, 720)
         XCTAssertLessThan(window.contentLayoutRect.width, 840)
