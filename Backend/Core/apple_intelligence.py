@@ -196,7 +196,7 @@ def solver_schema_mode(operation: str, schema: dict[str, Any]) -> str:
 
     return (
         "guided_with_postvalidation"
-        if operation == "solver" and supported(schema)
+        if operation in {"solver", "aqa_cs"} and supported(schema)
         else "structured_text"
     )
 
