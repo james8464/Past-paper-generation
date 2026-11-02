@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -9,6 +10,7 @@ from tools.paper_fidelity_audit import (
     ROLE_WEIGHTS,
     PageEvidence,
     PageRoleMatcher,
+    PrintProfile,
     _compact_profile,
     _document_page_roles,
     _document_result,
@@ -17,12 +19,14 @@ from tools.paper_fidelity_audit import (
     _geometry_scores,
     _grid_dimensions,
     _metric_callout,
+    _print_policy_failures,
     _reference_peers,
     _registered_page_comparison,
     _render_page_pixmap,
     _role_matches,
     _role_scores,
     classify_page_role,
+    main,
     profile,
     validate_thresholds,
     write_contact_sheets,
@@ -56,6 +60,90 @@ def test_fidelity_summary_retains_order_evidence_provenance(tmp_path: Path) -> N
     assert summary["reading_order_basis"] == "content_block_geometry_v1"
     assert summary["semantic_order"] == "not_assessed"
     assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize(
+    ("require_tags", "status", "passed", "failures"),
+    [
+        (None, "not_assessed", False, []),
+        (False, "passed", True, []),
+        (True, "failed", False, ["document has no PDF structure tree"]),
+    ],
+)
+def test_print_policy_status_distinguishes_missing_passed_and_failed(
+    tmp_path: Path,
+    require_tags: bool | None,
+    status: str,
+    passed: bool,
+    failures: list[str],
+) -> None:
+    path = tmp_path / "paper.pdf"
+    with fitz.open() as document:
+        page = document.new_page()
+        page.insert_text((72, 72), "Question paper")
+        document.save(path)
+    original = path.read_bytes()
+    measured = profile(path)
+    policy = (
+        None
+        if require_tags is None
+        else PrintProfile(36, 100, 4.2, False, 0.35, 4.5, 0, False, require_tags)
+    )
+    baseline = _document_result(
+        path, path, {"generated": measured, "reference": measured}, perceptual_dpi=0
+    )
+    with patch(
+        "tools.paper_fidelity_audit._print_policy_failures",
+        wraps=_print_policy_failures,
+    ) as check:
+        result = _document_result(
+            path,
+            path,
+            {"generated": measured, "reference": measured},
+            perceptual_dpi=0,
+            print_profile=policy,
+        )
+    assert check.call_count == (0 if policy is None else 1)
+    summary = result["print_evidence"]
+    assert summary["passed"] is passed
+    assert summary["status"] == status
+    assert summary["failures"] == failures
+    assert summary["semantic_order"] == "not_assessed"
+    # Policy assessment must not change extracted measurements or comparisons.
+    for evidence in (baseline["print_evidence"], summary):
+        for key in ("status", "passed", "failures"):
+            evidence.pop(key, None)
+    assert result == baseline
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize(
+    ("use_policy", "failures", "expected_exit"),
+    [(False, [], 0), (True, [], 0), (True, ["unsafe print boundary"], 1)],
+)
+def test_print_policy_cli_preserves_explicit_qualification_gate(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    use_policy: bool,
+    failures: list[str],
+    expected_exit: int,
+) -> None:
+    arguments = ["paper_fidelity_audit", "--generated-root", str(tmp_path)]
+    if use_policy:
+        arguments.extend(["--print-profile", "ci"])
+    report = {"schema_version": 3, "print_failures": failures}
+    with (
+        patch("sys.argv", arguments),
+        patch("tools.paper_fidelity_audit.audit", return_value=report) as run_audit,
+    ):
+        assert main() == expected_exit
+    assert (run_audit.call_args.kwargs["print_profile"] is not None) is use_policy
+    output = capsys.readouterr()
+    rendered = json.loads(output.out)
+    assert rendered["schema_version"] == 3
+    assert rendered["print_failures"] == failures
+    assert ("print_profile" in rendered) is use_policy
+    assert ("print qualification failed" in output.err) is bool(failures)
 
 
 def _threshold_report(

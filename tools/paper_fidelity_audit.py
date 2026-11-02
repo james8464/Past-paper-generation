@@ -1636,7 +1636,15 @@ def _document_result(
             "extractor_schema_version": generated_print["schema_version"],
             "reading_order_basis": generated_print["reading_order_basis"],
             "semantic_order": generated_print["semantic_order"],
-            "passed": not print_failures,
+            "status": (
+                "not_assessed"
+                if print_profile is None
+                else "failed"
+                if print_failures
+                else "passed"
+            ),
+            # Keep the Boolean contract, but never certify an omitted policy.
+            "passed": print_profile is not None and not print_failures,
             "failures": print_failures,
             "tagged": generated_print["tagged"],
             "all_fonts_embedded": all(
