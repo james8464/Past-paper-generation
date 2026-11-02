@@ -90,6 +90,18 @@ def test_native_app_copy_uses_plain_punctuation():
             assert not re.search("[\u2013\u2014]", value), (key, language)
 
 
+def test_model_availability_buttons_show_the_existing_import_guard():
+    source = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    for label, refresh_flag in (
+        ("Check Again", "isRefreshingOllama"),
+        ("Check availability", "isRefreshingAppleIntelligence"),
+    ):
+        button = source.split(f'Button("{label}")', 1)[1]
+        disabled = button.split(".disabled(", 1)[1].split(")", 1)[0]
+        assert f"application.{refresh_flag}" in disabled
+        assert "application.isImportingPreviousData" in disabled
+
+
 def test_panel_actions_signal_that_more_input_is_needed():
     for source, label in (
         (

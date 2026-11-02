@@ -292,7 +292,7 @@ private struct AISettingsTab: View {
                     Button("Check Again") {
                         application.refreshOllama(presentation: application.settingsPresentation)
                     }
-                        .disabled(application.isRefreshingOllama)
+                        .disabled(application.isRefreshingOllama || application.isImportingPreviousData)
                     Spacer()
                     Text(InterfaceText.localizedResource(application.ollamaState.messageResource, locale: locale))
                         .foregroundStyle(.secondary)
@@ -379,7 +379,7 @@ private struct AISettingsTab: View {
             Section("Apple Intelligence") {
                 Text("Uses Apple's on-device system model. No external model download or API key is needed.")
                 Button("Check availability") { application.refreshAppleIntelligenceAvailability() }
-                    .disabled(application.isRefreshingAppleIntelligence)
+                    .disabled(application.isRefreshingAppleIntelligence || application.isImportingPreviousData)
                 if application.isRefreshingAppleIntelligence { ProgressView().controlSize(.small) }
                 else if application.appleIntelligenceAvailability.checked {
                     Label {

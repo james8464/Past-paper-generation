@@ -43,6 +43,7 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
             defaults: defaults, secrets: ImportWindowSecrets(),
             historyDirectory: destination.appendingPathComponent("JobHistory"),
             backend: backend, distributionMode: .appStore,
+            appleIntelligenceChecker: { _ in .unchecked },
             startupImportPlan: startupMode
                 ? KeldinMigration.StartupPlan(sources: [source], destination: destination) : nil,
             startupCopyFiles: { sources, target in
