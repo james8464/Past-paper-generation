@@ -7,28 +7,50 @@ import XCTest
 final class PreviousDataImportInteractiveTests: XCTestCase {
     @MainActor
     func testNavigationAndSettingsDuringControlledImport() async throws {
-        guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_IMPORT_CHECK"] == "1" else {
+        let startupMode = ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_STARTUP_CHECK"] == "1"
+        guard startupMode || ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_IMPORT_CHECK"] == "1" else {
             throw XCTSkip("Opt-in controlled import window check; no installed user data is used.")
         }
+        let standardPane = UserDefaults.standard.string(forKey: AppStorageKey.settingsPane)
+        let standardLanguage = UserDefaults.standard.string(forKey: "interfaceLanguage")
+        let standardMigration = UserDefaults.standard.integer(forKey: KeldinMigration.completionKey)
         let suite = "Keldin.ImportWindowCheck.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
         defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
         defaults.set("en", forKey: "interfaceLanguage")
         defaults.set("output", forKey: AppStorageKey.settingsPane)
-        defaults.set(2, forKey: KeldinMigration.completionKey)
+        if !startupMode { defaults.set(2, forKey: KeldinMigration.completionKey) }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(suite)
         let source = folder.appendingPathComponent("previous")
         let destination = folder.appendingPathComponent("imported")
+        addTeardownBlock { @MainActor in
+            defaults.removePersistentDomain(forName: suite)
+            try? FileManager.default.removeItem(at: folder)
+        }
+        // Startup copying begins in the coordinator initializer, so its owned
+        // input must already exist before constructing that coordinator.
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        let sourcePDF = source.appendingPathComponent("owned-sample.pdf")
+        let sample = PDFDocument()
+        sample.insert(PDFPage(), at: 0)
+        XCTAssertTrue(sample.write(to: sourcePDF))
+        let originalBytes = try Data(contentsOf: sourcePDF)
+        let successGate = ImportWindowGate()
+        let failureGate = ImportWindowGate()
         let backend = ControlledRunBackend()
         let application = ApplicationCoordinator(
             defaults: defaults, secrets: ImportWindowSecrets(),
             historyDirectory: destination.appendingPathComponent("JobHistory"),
-            backend: backend, distributionMode: .appStore
+            backend: backend, distributionMode: .appStore,
+            startupImportPlan: startupMode
+                ? KeldinMigration.StartupPlan(sources: [source], destination: destination) : nil,
+            startupCopyFiles: { sources, target in
+                await successGate.pause()
+                return await PreviousAppDataFileImporter.shared.copyExisting(from: sources, to: target)
+            }
         )
         let state = ImportWindowCleanup()
-        let successGate = ImportWindowGate()
-        let failureGate = ImportWindowGate()
         addTeardownBlock { @MainActor in
             // Release-before-pause is remembered. Never remove files while a copy
             // task can still reach them, including on timeout or assertion failure.
@@ -37,18 +59,12 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
             for task in state.tasks { await task.value }
             application.cancelGeneration()
             state.windows.forEach { $0.close() }
-            defaults.removePersistentDomain(forName: suite)
-            try? FileManager.default.removeItem(at: folder)
+            // XCTest runs teardown blocks in reverse registration order: the
+            // earlier block removes defaults/files only after this async join.
         }
         application.showWelcome = false
         application.showDocuments()
         application.outputFolder = folder.appendingPathComponent("exports")
-        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
-        let sourcePDF = source.appendingPathComponent("owned-sample.pdf")
-        let sample = PDFDocument()
-        sample.insert(PDFPage(), at: 0)
-        XCTAssertTrue(sample.write(to: sourcePDF))
-        let originalBytes = try Data(contentsOf: sourcePDF)
         let historyVisited = expectation(description: "History visited during held import")
         let documentsVisited = expectation(description: "Documents visited during held import")
         let successReleased = expectation(description: "Successful import released visually")
@@ -56,15 +72,22 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
         let finished = expectation(description: "Import error and cleanup inspected")
         let controls = ImportWindowControls()
         var accessEvents: [String] = []
-        let successfulImport = try XCTUnwrap(application.beginPreviousAppDataImport(
-            from: source, destination: destination, presentation: application.settingsPresentation,
-            copyFiles: { from, to in
-                await successGate.pause()
-                try await PreviousAppDataFileImporter.shared.copy(from: from, to: to)
-            },
-            startAccess: { _ in accessEvents.append("start"); return true },
-            stopAccess: { _ in accessEvents.append("stop") }
-        ))
+        let successfulImport: Task<Void, Never>
+        if startupMode {
+            successfulImport = try XCTUnwrap(application.startupImportTask)
+            XCTAssertTrue(application.isImportingPreviousData)
+            XCTAssertTrue(KeldinMigration.needsImport(defaults: defaults))
+        } else {
+            successfulImport = try XCTUnwrap(application.beginPreviousAppDataImport(
+                from: source, destination: destination, presentation: application.settingsPresentation,
+                copyFiles: { from, to in
+                    await successGate.pause()
+                    try await PreviousAppDataFileImporter.shared.copy(from: from, to: to)
+                },
+                startAccess: { _ in accessEvents.append("start"); return true },
+                stopAccess: { _ in accessEvents.append("stop") }
+            ))
+        }
         state.tasks.append(successfulImport)
         await successGate.waitForStart()
 
@@ -100,12 +123,15 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
         NSApp.activate(ignoringOtherApps: true)
         XCTAssertTrue(application.isImportingPreviousData)
         XCTAssertFalse(application.canImportPreviousData)
-        print("KELDIN_INTERACTIVE_IMPORT_READY: inspect Output progress and disabled Import; visit History and Documents, record each, then release success.")
+        print("\(startupMode ? "KELDIN_INTERACTIVE_STARTUP_READY" : "KELDIN_INTERACTIVE_IMPORT_READY"): inspect Output progress and disabled Import; visit History and Documents, record each, then release success.")
         await fulfillment(of: [historyVisited, documentsVisited, successReleased], timeout: 180)
         await successfulImport.value
         XCTAssertFalse(application.isImportingPreviousData)
         XCTAssertTrue(application.canImportPreviousData)
-        XCTAssertEqual(accessEvents, ["start", "stop"])
+        XCTAssertEqual(accessEvents, startupMode ? [] : ["start", "stop"])
+        XCTAssertFalse(KeldinMigration.needsImport(defaults: defaults))
+        XCTAssertEqual(defaults.dictionary(forKey: KeldinMigration.artifactMappingsKey) as? [String: String],
+                       [source.path: destination.path])
         XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent("owned-sample.pdf")), originalBytes)
         XCTAssertFalse(application.showError)
         XCTAssertTrue(backend.requests.isEmpty)
@@ -128,7 +154,7 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
         await failedImport.value
         XCTAssertFalse(application.isImportingPreviousData)
         XCTAssertTrue(application.canImportPreviousData)
-        XCTAssertEqual(accessEvents, ["start", "stop", "start", "stop"])
+        XCTAssertEqual(accessEvents, startupMode ? ["start", "stop"] : ["start", "stop", "start", "stop"])
         XCTAssertEqual(application.status, "Error")
         guard case .error = application.settingsPresentation.request?.kind else {
             return XCTFail("Import failure must be presented in Settings.")
@@ -138,7 +164,10 @@ final class PreviousDataImportInteractiveTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: sourcePDF), originalBytes)
         XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent("owned-sample.pdf")), originalBytes)
         XCTAssertTrue(backend.requests.isEmpty)
-        print("KELDIN_INTERACTIVE_IMPORT_COMPLETE")
+        XCTAssertEqual(UserDefaults.standard.string(forKey: AppStorageKey.settingsPane), standardPane)
+        XCTAssertEqual(UserDefaults.standard.string(forKey: "interfaceLanguage"), standardLanguage)
+        XCTAssertEqual(UserDefaults.standard.integer(forKey: KeldinMigration.completionKey), standardMigration)
+        print(startupMode ? "KELDIN_INTERACTIVE_STARTUP_COMPLETE" : "KELDIN_INTERACTIVE_IMPORT_COMPLETE")
     }
 
     @MainActor
