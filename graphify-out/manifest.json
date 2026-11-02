@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793543563.4551117,
-    "ast_hash": "5726988222eb94eaa62ce2ab58ae426e",
+    "mtime": 1793617859.755165,
+    "ast_hash": "70e6a2af0e89d451053561bce096c965",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3620,8 +3620,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/MigrationTests.swift": {
-    "mtime": 1793617124.6642113,
-    "ast_hash": "69a1e8590e07e2ece838f0778b731eb8",
+    "mtime": 1793617940.2049465,
+    "ast_hash": "864e974b8fb186a45b9834e70c034c82",
     "semantic_hash": ""
   },
   "tests/test_keldin_migration.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793617597.1862168,
-    "ast_hash": "99c944ce61455d3548d2278ca9732915",
+    "mtime": 1793617948.0306401,
+    "ast_hash": "8eecd82ab4ef51f7351ae5719f4dd7c1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5405,8 +5405,8 @@
     "semantic_hash": ""
   },
   "docs/quality/native-startup-import-review-2026-11-02.md": {
-    "mtime": 1793617555.0275452,
-    "ast_hash": "704ace9cfd2d1da725c1de148185ca0b",
+    "mtime": 1793617940.2518604,
+    "ast_hash": "1734c453a86751c30861e126a42cef2d",
     "semantic_hash": ""
   }
 }

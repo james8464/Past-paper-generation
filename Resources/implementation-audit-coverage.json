@@ -4340,7 +4340,7 @@
       "reason": "Fresh full 67-line EOF review of scene ownership, startup factory ordering and isolated XCTest launch. Whole-app interaction coverage remains separate.",
       "source_sha256": "598630bc372237cae43ffb797c5aa154685632bf3d28568d6a060e21c3611ede",
       "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
+      "review_evidence_sha256": "b45b61927991735e9c06c19feb6b2299a840a030339270dbb09e1688cfe8476c"
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
@@ -4349,7 +4349,7 @@
       "reason": "Fresh full 312-line EOF review of startup plans, partial-copy retry/versioning, file worker, containment and manual-import compatibility. Synchronous history and hash loading remain a limitation.",
       "source_sha256": "b42ff81ccd134316b21b2b504eab29106cc47a994133060d258fdc9795e2b7bf",
       "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
+      "review_evidence_sha256": "b45b61927991735e9c06c19feb6b2299a840a030339270dbb09e1688cfe8476c"
     },
     {
       "path": "macOS/Keldin/Application/MainWindowRouting.swift",
@@ -4799,7 +4799,7 @@
       "reason": "Prior 2294-line EOF plus complete manual-import and startup deltas reviewed; current 2340 lines, not a new full-file reread. Corrected pre-copy history mutation, busy lifecycle, deferred availability and failure handling traced.",
       "source_sha256": "f2e3a527772f828a6a6d5f2f0620d815620ef2e6b2ab4d2852797d083c3e19e6",
       "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
+      "review_evidence_sha256": "b45b61927991735e9c06c19feb6b2299a840a030339270dbb09e1688cfe8476c"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5054,7 +5054,7 @@
       "reason": "Prior complete 213-line EOF plus complete startup-mode delta reviewed; current 242 lines. Controlled gates, isolated defaults, async teardown ordering, byte/mapping assertions and opt-in-only coverage limits checked.",
       "source_sha256": "f24fbb990bad59cc7505852d9e8cc1897baf1cbb8fb08b2551010fe46d424b5a",
       "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
+      "review_evidence_sha256": "b45b61927991735e9c06c19feb6b2299a840a030339270dbb09e1688cfe8476c"
     },
     {
       "path": "macOS/Tests/RunIsolationTests.swift",
