@@ -31,6 +31,79 @@ CONTEXTS = [
     "a multiplayer strategy game",
 ]
 NAMES = ["Ari", "Bao", "Cleo", "Dev", "Esi", "Farah", "Gus", "Hana"]
+SHORT_ANSWER_ASPECTS = (
+    "advantage",
+    "limitation",
+    "requirement",
+    "test condition",
+    "implementation risk",
+    "precondition",
+    "validation check",
+    "performance concern",
+    "correctness condition",
+)
+type _ShortAnswerTask = tuple[GeneratedQuestion, QuestionRule, Topic, int, str]
+
+
+def _short_answer_content(
+    rule: QuestionRule,
+    index: int,
+    point: str,
+    evidence: str,
+) -> tuple[str, list[str]]:
+    if rule.marks == 1:
+        aspect = SHORT_ANSWER_ASPECTS[(index - 1) % len(SHORT_ANSWER_ASPECTS)]
+        prompt = (
+            f"State one {aspect} associated with {point} when it is used in {evidence}."
+        )
+    else:
+        prompt = (
+            f"{rule.command_word} {rule.marks} distinct features of {point} "
+            "that should be "
+            f"considered when developing {evidence}, with particular reference to {_technical_focus(point)}."
+        )
+    return prompt, [
+        f"One mark for each accurate, distinct point about {point}.",
+        f"Accept a technically equivalent answer applied to {evidence}.",
+    ]
+
+
+def _distinct_short_answer_points(tasks: list[_ShortAnswerTask]) -> None:
+    groups: dict[tuple[str, str, int, str, int], list[_ShortAnswerTask]] = {}
+    for task in tasks:
+        _, rule, topic, index, evidence = task
+        key = (
+            topic.id,
+            "state" if rule.marks == 1 else rule.command_word.casefold(),
+            rule.marks,
+            evidence,
+            (index - 1) % len(SHORT_ANSWER_ASPECTS) if rule.marks == 1 else -1,
+        )
+        groups.setdefault(key, []).append(task)
+    for group in groups.values():
+        # Reserve future original tasks before choosing a replacement, so repairing
+        # an early collision cannot steal a later, previously noncolliding concept.
+        reserved = {
+            topic.points[(index - 1) % len(topic.points)]
+            for _, _, topic, index, _ in group
+        }
+        seen: set[str] = set()
+        for question, rule, topic, index, evidence in group:
+            point = topic.points[(index - 1) % len(topic.points)]
+            if point in seen:
+                unused = [
+                    candidate for candidate in topic.points if candidate not in reserved
+                ]
+                if not unused:
+                    raise ValueError(
+                        f"No distinct short-answer syllabus point remains for {topic.id}."
+                    )
+                point = unused[0]
+                reserved.add(point)
+                question.prompt, question.mark_scheme = _short_answer_content(
+                    rule, index, point, evidence
+                )
+            seen.add(point)
 
 
 def _technical_focus(point: str) -> str:
@@ -182,6 +255,7 @@ def build_paper(
     rng = random.Random(run_seed)
     topics = {topic.id: topic for topic in syllabus.topics}
     sections: list[GeneratedSection] = []
+    short_tasks: list[_ShortAnswerTask] = []
     for section_index, section_rule in enumerate(rule.sections):
         topic = topics[SECTION_TOPICS[rule.id][section_index]]
         context = rng.choice(CONTEXTS)
@@ -221,6 +295,18 @@ def build_paper(
                 )
             ],
         )
+        if rule.id == "paper_2":
+            for index, (question, question_rule) in enumerate(
+                zip(option.questions, section_rule.questions, strict=True), start=1
+            ):
+                if (
+                    question_rule.kind == "short_answer"
+                    and calibrated_task(topic.id, section_rule.id, index) is None
+                ):
+                    evidence = f"the {context.removeprefix('a ').removeprefix('an ')}"
+                    short_tasks.append(
+                        (question, question_rule, topic, index, evidence)
+                    )
         sections.append(
             GeneratedSection(
                 id=section_rule.id,
@@ -231,6 +317,7 @@ def build_paper(
                 options=[option],
             )
         )
+    _distinct_short_answer_points(short_tasks)
     paper = GeneratedPaper(
         paper_id=rule.id,
         paper_code=rule.code,
@@ -304,29 +391,7 @@ def _question(
             }
         )
     if rule.kind == "short_answer":
-        if rule.marks == 1:
-            aspect = (
-                "advantage",
-                "limitation",
-                "requirement",
-                "test condition",
-                "implementation risk",
-                "precondition",
-                "validation check",
-                "performance concern",
-                "correctness condition",
-            )[(index - 1) % 9]
-            prompt = f"State one {aspect} associated with {point} when it is used in {evidence}."
-        else:
-            prompt = (
-                f"{rule.command_word} {rule.marks} distinct features of {point} "
-                "that should be "
-                f"considered when developing {evidence}, with particular reference to {focus}."
-            )
-        scheme = [
-            f"One mark for each accurate, distinct point about {point}.",
-            f"Accept a technically equivalent answer applied to {evidence}.",
-        ]
+        prompt, scheme = _short_answer_content(rule, index, point, evidence)
     elif rule.kind == "analysis":
         prompt = _analysis_prompt(point, evidence, index)
         scheme = [
