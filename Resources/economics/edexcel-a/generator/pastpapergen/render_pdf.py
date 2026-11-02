@@ -50,6 +50,7 @@ from Backend.Core.overlay.graphs import (
     trade_cycle_diagram,
 )
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
+from Backend.Core.preview_presentation import preview_copy, preview_font_size
 from Backend.Core.subjects.economics_contracts import EconomicsSource
 from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.models import GraphParams, PaperBlueprint, QuestionBlueprint, Syllabus
@@ -271,8 +272,8 @@ def _draw_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     _draw_boxes(pdf, panel_x + 140, box_y, 4, size=22)
 
     y = box_y - 22
-    pdf.setFont(FONT_BOLD, 20)
-    pdf.drawString(panel_x + 14, y, "Level 3 GCE · Independent practice")
+    pdf.setFont(FONT_BOLD, preview_font_size(20))
+    pdf.drawString(panel_x + 14, y, preview_copy("Level 3 GCE · Independent practice"))
     y -= 50
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
@@ -2822,8 +2823,8 @@ def _draw_source_cover(pdf: canvas.Canvas, blueprint: PaperBlueprint) -> None:
     pdf.setLineWidth(1.8)
     pdf.roundRect(panel_x, panel_y, panel_w, panel_h, 9, stroke=1, fill=0)
     y = panel_y + panel_h - 34
-    pdf.setFont(FONT_BOLD, 17)
-    pdf.drawString(panel_x + 14, y, "Unofficial Level 3 GCE Practice")
+    pdf.setFont(FONT_BOLD, preview_font_size(17))
+    pdf.drawString(panel_x + 14, y, preview_copy("Unofficial Level 3 GCE Practice"))
     y -= 51
     pdf.roundRect(panel_x + 14, y, panel_w - 28, 28, 7, stroke=1, fill=0)
     pdf.setFont(FONT_BOLD, 18)
@@ -2931,14 +2932,16 @@ def render_mark_scheme(
         height - cover_layout["date_offset"],
         formatted_generation_date(),
     )
-    pdf.setFont(MS_FONT, 22)
+    pdf.setFont(MS_FONT, preview_font_size(22))
     pdf.setFillColor(accent)
     information_offsets = cover_layout["information_offsets"]
     pdf.drawString(
         cover_margin,
         height - information_offsets[0],
-        "Unofficial GCE A Level Practice",
+        preview_copy("Unofficial GCE A Level Practice"),
     )
+    if preview_font_size(22) != 22:
+        pdf.setFont(MS_FONT, 22)
     pdf.drawString(
         cover_margin,
         height - information_offsets[1],

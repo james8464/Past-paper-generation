@@ -21,6 +21,7 @@ from Backend.Core.family_contracts import ProgressCallback as ProgressCallback
 from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
+from Backend.Core.preview_presentation import preview_presentation, validate_preview_pdf
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.reference_demand import profile_for
 from Backend.Core.render_transaction import render_pdf_atomically
@@ -129,28 +130,39 @@ def run_family_adapter[Syllabus, Rule, Assessment, Context](
 
     output_dir.mkdir(parents=True, exist_ok=True)
     paths: dict[str, Path] = {}
-    # Validate each temporary PDF before replacing a file at its destination.
-    for artifact in adapter.artifacts(assessment, context, syllabus, paper):
-        destination = output_dir / artifact.filename
-        emit(artifact.progress_message)
-        render_pdf_atomically(
-            destination,
-            artifact.renderer,
-            role=artifact.role.replace("_", " "),
-        )
-        paths[artifact.role] = destination
+    # Scope includes supporting PDFs; disabled scopes also override outer previews.
+    with preview_presentation(dry_run):
+        for artifact in adapter.artifacts(assessment, context, syllabus, paper):
+            destination = output_dir / artifact.filename
+            emit(artifact.progress_message)
 
-    if adapter.supporting_artifacts is not None:
-        paths.update(
-            adapter.supporting_artifacts(
-                assessment,
-                context,
-                syllabus,
-                paper,
-                output_dir,
-                emit,
+            def render(path: Path, artifact: ArtifactSpec = artifact) -> None:
+                artifact.renderer(path)
+                if dry_run:
+                    validate_preview_pdf(path)
+
+            render_pdf_atomically(
+                destination,
+                render,
+                role=artifact.role.replace("_", " "),
             )
-        )
+            paths[artifact.role] = destination
+
+        if adapter.supporting_artifacts is not None:
+            paths.update(
+                adapter.supporting_artifacts(
+                    assessment,
+                    context,
+                    syllabus,
+                    paper,
+                    output_dir,
+                    emit,
+                )
+            )
+        if dry_run:
+            for path in paths.values():
+                if path.suffix.casefold() == ".pdf":
+                    validate_preview_pdf(path)
 
     if adapter.output_order:
         paths = {

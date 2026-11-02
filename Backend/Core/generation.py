@@ -43,6 +43,7 @@ from Backend.Core.legacy_migration import environment_value, output_directory
 from Backend.Core.mlx_setup import MLXModelSetupRequired
 from Backend.Core.paths import REPO_ROOT, absolute_user_path
 from Backend.Core.pdf_validation import validate_pdf_for_release
+from Backend.Core.preview_presentation import validate_preview_pdf
 from Backend.Core.providers import hosted_client
 
 
@@ -339,6 +340,15 @@ def finalize_generated_documents(
     pagination_validation = (
         conform_generated_documents(args.subject, args.paper, paths) or {}
     )
+    presentation = (
+        {
+            role: validate_preview_pdf(path)
+            for role, path in paths.items()
+            if path.suffix.casefold() == ".pdf"
+        }
+        if args.dry_run
+        else {}
+    )
     pdf_validation = {
         role: validate_pdf_for_release(
             path,
@@ -351,6 +361,8 @@ def finalize_generated_documents(
     }
     for role, pagination in pagination_validation.items():
         pdf_validation[role]["pagination_policy"] = pagination
+    for role, evidence in presentation.items():
+        pdf_validation[role]["presentation"] = evidence
     manifest_path = _write_package_manifest(
         args=args,
         capability=capability,

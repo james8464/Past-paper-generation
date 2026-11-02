@@ -9,6 +9,11 @@ from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts
 from Backend.Core.generation_date import formatted_generation_date
+from Backend.Core.preview_presentation import (
+    is_layout_preview,
+    preview_copy,
+    validate_preview_pdf,
+)
 from Backend.Core.render_transaction import render_pdf_atomically
 from cspapergen.models import Paper1Context, PaperBlueprint
 
@@ -140,6 +145,8 @@ def render_preliminary_material(
     )
     _page_footer(pdf, 2, blueprint.paper_code)
     pdf.save()
+    if is_layout_preview():
+        validate_preview_pdf(output_path)
 
 
 def render_electronic_answer_document(
@@ -205,6 +212,8 @@ def render_electronic_answer_document(
             _page_footer(pdf, page, blueprint.paper_code)
             pdf.showPage()
     pdf.save()
+    if is_layout_preview():
+        validate_preview_pdf(output_path)
 
 
 def _set_metadata(
@@ -221,6 +230,9 @@ def _set_metadata(
 def _practice_header(pdf: canvas.Canvas, document: str, code: str) -> None:
     pdf.setFont(FONT_BOLD, 8)
     pdf.drawCentredString(297, 820, f"UNOFFICIAL PRACTICE {document}")
+    notice = preview_copy("")
+    if notice and pdf.getPageNumber() == 1:
+        pdf.drawString(55, 800, notice)
     pdf.setFont(FONT, 8)
     pdf.drawRightString(540, 800, code)
 
