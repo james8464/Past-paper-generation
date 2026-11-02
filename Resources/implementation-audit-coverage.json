@@ -151,8 +151,11 @@
     {
       "path": "Backend/Core/accounting_scheme_content.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal policy, credit and page-ownership review; exact-byte scope does not qualify live papers or the wider project.",
+      "source_sha256": "84152c930dca54e1d887b57a2750d269361be50f6e21032f98d009fa0e11a8ac",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "Backend/Core/ai_assessment.py",
@@ -1234,8 +1237,11 @@
     {
       "path": "Backend/Core/layout_conformance.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete baseline file and entire duplicate-page repair reviewed; copied-artifact tests do not establish generated-paper semantic quality.",
+      "source_sha256": "287f96a5f07f79f886569924fdc9a148269ecd196067dcfee481a19179f666c2",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "Backend/Core/layout_master.py",
@@ -1528,8 +1534,11 @@
     {
       "path": "Backend/Core/subjects/accounting.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal financial-contract and output-role review; arbitrary-input and live-model qualification remain separate.",
+      "source_sha256": "8e5284e29760deff8b84e3d18c64af6e8e7eb12f0265bb07a68d077a46c83a46",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "Backend/Core/subjects/accounting_selected_response.py",
@@ -2044,8 +2053,11 @@
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal task, credit and finite-selection review; this does not establish curriculum breadth or live-paper quality.",
+      "source_sha256": "d0d1ad4d464546c32f83f94637b91cea185d067d9ce3a3b0fa9f532e1b180d5c",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py",
@@ -3599,6 +3611,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4738,8 +4756,11 @@
     {
       "path": "macOS/Keldin/Services/UKArtifactPublisher.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal publication, staging and hash-verification review; native interaction and general security assurance remain separate.",
+      "source_sha256": "3bae77bab523657c214c2d734c3ded751b89f793d42973bc2ba4cd1c07336303",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
@@ -4783,8 +4804,11 @@
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal discovery ownership and observation review; live provider and model quality remain separate.",
+      "source_sha256": "c50c69a304a7bcbe52b267377adc5ae1c2b6a5ae39751116de2e911650fca462",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "macOS/Keldin/State/ModelDownloadPresentation.swift",
@@ -4816,8 +4840,11 @@
     {
       "path": "macOS/Keldin/State/SettingsStore.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal credential-failure and preference-save review; native permission and full interaction acceptance remain separate.",
+      "source_sha256": "009442ceb4a488eee3995963b139c8ca85c56616a348f42e306a36f87e88c9bf",
+      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
+      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
     },
     {
       "path": "macOS/Makefile",
