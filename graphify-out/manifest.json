@@ -220,8 +220,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
-    "mtime": 1793593868.6528986,
-    "ast_hash": "79c7f038c6d3e3b6f356b6d3e55d786e",
+    "mtime": 1793637719.6665857,
+    "ast_hash": "6280b1c72215c5861a35aa5f471cf170",
     "semantic_hash": ""
   },
   "Backend/Core/generation_date.py": {
@@ -675,8 +675,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py": {
-    "mtime": 1793593868.653537,
-    "ast_hash": "50de14ac696c7a0378cc2b2bd25b818b",
+    "mtime": 1793638596.7522438,
+    "ast_hash": "b0ee667642da35d21f58d698fa62cbb3",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/question_bank.py": {
@@ -685,8 +685,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1793593868.6539464,
-    "ast_hash": "0f84a14c40d4cd628ca2939de0776aa2",
+    "mtime": 1793637719.65525,
+    "ast_hash": "9af1aedc4824a18a1b67cfd01b93d561",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -740,8 +740,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_mark_scheme.py": {
-    "mtime": 1793543563.3193684,
-    "ast_hash": "c270c6b0929e39eb44fcd82badbbe0e3",
+    "mtime": 1793637719.655497,
+    "ast_hash": "28c3b60f13b118c41a9e41d57fdfe515",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_notes.py": {
@@ -750,9 +750,9 @@
     "semantic_hash": "1518856efbb5563e45c146cb64f20cd8"
   },
   "Resources/computer-science/aqa/generator/tests/test_paper1.py": {
-    "mtime": 1793543563.3195243,
-    "ast_hash": "76193b676d87516eab5f48bf082d04f5",
-    "semantic_hash": "76193b676d87516eab5f48bf082d04f5"
+    "mtime": 1793638596.752487,
+    "ast_hash": "1a5a398e4693e0c293fe2c184199938e",
+    "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_render_content.py": {
     "mtime": 1793543563.3196056,
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793631783.9786127,
-    "ast_hash": "c561c70bd0fd87fee14b2cae9703969a",
+    "mtime": 1793633352.495539,
+    "ast_hash": "3161c71b2b609a8f419ccf74ab43b094",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3530,8 +3530,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Documents/DocumentPreviewView.swift": {
-    "mtime": 1793543563.4412162,
-    "ast_hash": "2afce21a9e656850e55011517db97727",
+    "mtime": 1793639220.6528249,
+    "ast_hash": "8ecef01780f49aa1a976042ecfafc985",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Documents/JobHistoryView.swift": {
@@ -4040,8 +4040,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/PDFDocumentAccessTests.swift": {
-    "mtime": 1793578429.299734,
-    "ast_hash": "ed872f047b36cfe1ad32f3dfc8696540",
+    "mtime": 1793639220.6541817,
+    "ast_hash": "bab26fe3ed0d960b3d0e8265a7e6d079",
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
@@ -4735,8 +4735,8 @@
     "semantic_hash": ""
   },
   "tests/test_hosted_generation_cancellation.py": {
-    "mtime": 1793626847.5308354,
-    "ast_hash": "cb4415bbc2caac785e5f8b68aa61a67b",
+    "mtime": 1793637844.824125,
+    "ast_hash": "0e5720516dc0f0793d4a1c25edfa882d",
     "semantic_hash": ""
   },
   "docs/quality/hosted-generation-cancellation-2026-10-29.md": {
@@ -5467,6 +5467,31 @@
   "docs/quality/model-download-and-packaging-input-review-2026-11-02.md": {
     "mtime": 1793633316.249517,
     "ast_hash": "1245d099cedd2f54972c53d2b3b61aa0",
+    "semantic_hash": ""
+  },
+  "tests/test_cli_publication_recovery.py": {
+    "mtime": 1793637719.6668553,
+    "ast_hash": "ff5eb400b5a6cd25cbe466b395efe9ab",
+    "semantic_hash": ""
+  },
+  "tests/test_cs_matrix_scheme.py": {
+    "mtime": 1793637719.655625,
+    "ast_hash": "e9a3e5933e0a0279dbd40837d58629d5",
+    "semantic_hash": ""
+  },
+  "tests/test_cs_scheme_session.py": {
+    "mtime": 1793637719.6455934,
+    "ast_hash": "ea39220fe8ec838769d7d981bd5f1d9b",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-v36-pro26-internal-content-review-2026-11-02.md": {
+    "mtime": 1793637719.6613185,
+    "ast_hash": "f18244c9a999015e5af4a6f3c0b1dd75",
+    "semantic_hash": ""
+  },
+  "docs/quality/hosted-cancellation-readiness-review-2026-11-02.md": {
+    "mtime": 1793637844.823659,
+    "ast_hash": "6373db456b2023832b0ad32ec56988f5",
     "semantic_hash": ""
   }
 }

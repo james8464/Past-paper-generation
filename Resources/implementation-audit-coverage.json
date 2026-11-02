@@ -3449,6 +3449,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-v36-pro26-internal-content-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-navigation-and-performance-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3468,6 +3474,12 @@
     },
     {
       "path": "docs/quality/hosted-and-french-full-file-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/hosted-cancellation-readiness-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3677,6 +3689,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/numeric-label-validation-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3780,6 +3798,12 @@
     },
     {
       "path": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/readonly-pdf-preview-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4805,10 +4829,10 @@
       "path": "macOS/Keldin/Features/Documents/DocumentPreviewView.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Fresh full 327-line EOF review of selection, focused commands, access checks/recovery, export, print and provenance. Dependencies inspected selectively; no new runtime or full-HIG certification.",
-      "source_sha256": "b8487c162f2f1af6626cfdfbaaab7bc510bca31ba7d023596b7c4c51fcef4dc8",
-      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3be606ce9a37c34aae59be0dbe2cac0a1b6aad389ea3ade09cd64323500681fb"
+      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
+      "source_sha256": "c1c2e9b2706bcd82660d8bb328fab30d89bd84513ed2a4c51da88d9b56ed4d09",
+      "review_evidence": "docs/quality/readonly-pdf-preview-review-2026-11-02.md",
+      "review_evidence_sha256": "6dd94e94c0a28b9f47111882e37f827078150d13937f2e66c5e145e235ac685b"
     },
     {
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
@@ -5711,6 +5735,15 @@
       "review_evidence_sha256": "234ce7506ecd1286d4a54e91ed3e2e655c13a931e7dd3fc21ee35a49af98dc1e"
     },
     {
+      "path": "tests/test_cli_publication_recovery.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
+      "source_sha256": "76fac91fa810cecf6ae98ed6d5a8327f9424a1fd46d63ef36cd7e14897c244f2",
+      "review_evidence": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
+      "review_evidence_sha256": "97e8cd949c71fe95684e0f9c960e0eae3ad23a191ad227e7c820505244702e46"
+    },
+    {
       "path": "tests/test_closed_response_integrity.py",
       "classification": "test",
       "status": "pending",
@@ -5762,10 +5795,28 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_cs_matrix_scheme.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
+      "source_sha256": "bc733353a39439ae63434098a55b7b11636abba9a1d1a352997a841ce26595ba",
+      "review_evidence": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
+      "review_evidence_sha256": "97e8cd949c71fe95684e0f9c960e0eae3ad23a191ad227e7c820505244702e46"
+    },
+    {
       "path": "tests/test_cs_reference_solutions.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_cs_scheme_session.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
+      "source_sha256": "5cc1bd092c57f7afaec32c007e3ab191431cced78640243068b39b3d183b7e56",
+      "review_evidence": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
+      "review_evidence_sha256": "97e8cd949c71fe95684e0f9c960e0eae3ad23a191ad227e7c820505244702e46"
     },
     {
       "path": "tests/test_cspapergen_console_runtime.py",
@@ -6698,10 +6749,10 @@
       "path": "tests/test_hosted_generation_cancellation.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Explicit full-file or full baseline plus complete delta review of caller-owned checkpoint admission, persistence, retry and cancellation; attribution and limits recorded in the evidence.",
-      "source_sha256": "32fd80aca6bb4b8a91b3f476bdbd90bdcfdbd3b7d57e01024da7c1f23e8f83f7",
-      "review_evidence": "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md",
-      "review_evidence_sha256": "e85ea2628513021810543d013e846302c5a3384e86b20cc36d400c8cae2b9ca5"
+      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
+      "source_sha256": "dd8510101faa108c913deefd5054cdb5d0c455e3ed50c206a186bdf85197d282",
+      "review_evidence": "docs/quality/hosted-cancellation-readiness-review-2026-11-02.md",
+      "review_evidence_sha256": "71ff2e34d5c8997e3828785ba4649a35242365bac54de410031850c06cf763d7"
     },
     {
       "path": "tests/test_hosted_model_defaults.py",

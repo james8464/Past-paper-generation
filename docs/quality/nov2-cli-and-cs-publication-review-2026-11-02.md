@@ -6,7 +6,7 @@ used controlled local fixtures without model calls or provider spend.
 
 ## CLI document-set recovery
 
-Author commit `68346ebd`, integrated here as `3696c64c`, changes the shared CLI
+Author commit `68346ebd`, integrated here as `8bdc6ce5`, changes the shared CLI
 finalizer to preserve every existing destination before replacing any file.
 Assessment, novelty, PDF and preview checks still run before publication, followed
 by manifest construction. Distinct output filenames are required; symlink and
