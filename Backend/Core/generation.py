@@ -372,15 +372,9 @@ def finalize_generated_documents(
         assessment_validation=assessment_validation,
         novelty_validation=novelty_validation,
     )
-    published = {
-        role: _atomic_publish(path, output_dir / path.name)
-        for role, path in paths.items()
-    }
-    published["package_manifest"] = _atomic_publish(
-        manifest_path,
-        output_dir / manifest_path.name,
+    return _publish_document_set(
+        paths | {"package_manifest": manifest_path}, output_dir
     )
-    return published
 
 
 def _write_package_manifest(
@@ -490,6 +484,56 @@ def _write_package_manifest(
 def _atomic_publish(source: Path, destination: Path) -> Path:
     os.replace(source, destination)
     return destination
+
+
+def _publish_document_set(paths: dict[str, Path], output_dir: Path) -> dict[str, Path]:
+    destinations = {role: output_dir / source.name for role, source in paths.items()}
+    if len(set(destinations.values())) != len(destinations):
+        raise OSError("Generated document filenames must be distinct")
+    for destination in destinations.values():
+        if destination.is_symlink() or (
+            destination.exists() and not destination.is_file()
+        ):
+            raise OSError(f"Cannot replace a non-file output: {destination}")
+
+    # Keep old inodes outside render staging so a failed rollback remains recoverable.
+    recovery = Path(tempfile.mkdtemp(prefix=".keldin-publish-", dir=output_dir))
+    backups: dict[Path, Path] = {}
+    attempted: list[Path] = []
+    retain_recovery = False
+    try:
+        for destination in destinations.values():
+            if destination.exists():
+                backup = recovery / destination.name
+                os.link(destination, backup)
+                backups[destination] = backup
+        published = {}
+        try:
+            for role, source in paths.items():
+                destination = destinations[role]
+                attempted.append(destination)
+                published[role] = _atomic_publish(source, destination)
+        except BaseException as error:
+            rollback_errors = []
+            for destination in reversed(attempted):
+                try:
+                    if destination in backups:
+                        os.replace(backups[destination], destination)
+                    else:
+                        destination.unlink(missing_ok=True)
+                except BaseException as rollback_error:
+                    rollback_errors.append(rollback_error)
+            if rollback_errors:
+                retain_recovery = True
+                raise RuntimeError(
+                    f"Publication failed and some previous files could not be restored. "
+                    f"Recovery copies remain in {recovery}. Original error: {error}"
+                ) from error
+            raise
+        return published
+    finally:
+        if not retain_recovery:
+            shutil.rmtree(recovery, ignore_errors=True)
 
 
 def _sha256(path: Path) -> str:
