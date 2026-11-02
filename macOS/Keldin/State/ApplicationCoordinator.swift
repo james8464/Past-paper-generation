@@ -388,7 +388,9 @@ final class ApplicationCoordinator: ObservableObject {
         } else {
             defaults.set(outputFolder.path, forKey: AppStorageKey.outputFolderPath)
         }
-        restoreRecentDocuments()
+        // Pending startup copies may restore artifacts referenced by current history.
+        // Loading first would persist missing-artifact states before those copies finish.
+        if startupImportPlan == nil { restoreRecentDocuments() }
         // Invalid saved usage stays untouched; the creation action reports it.
         _ = try? savedFrenchFamilies()
         benchmarkCoordinator.outputFolder = generationRecordsFolder.appendingPathComponent("Benchmarks", isDirectory: true)

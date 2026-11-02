@@ -6,6 +6,55 @@ import XCTest
 
 final class MigrationTests: XCTestCase {
     @MainActor
+    func testStartupHistoryChecksRestoredArtifactsOnlyAfterCopyAndKeepsMissingOnFailure() async throws {
+        for copySucceeds in [true, false] {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinStartupArtifact-\(UUID().uuidString)")
+            defer { try? FileManager.default.removeItem(at: root) }
+            let source = root.appendingPathComponent("old")
+            let destination = root.appendingPathComponent("current")
+            let history = destination.appendingPathComponent("JobHistory")
+            try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+            let bytes = Data("restored artifact".utf8)
+            try bytes.write(to: source.appendingPathComponent("sample.pdf"))
+            let defaults = isolatedDefaults()
+            defaults.set("en", forKey: "interfaceLanguage")
+            let timestamp = Date(timeIntervalSince1970: 1_700_000_000)
+            let record = GenerationJobRecord(
+                configuration: GenerationConfiguration(boardID: "economics-aqa", paperID: "1", provider: "ollama", model: "fixture", seed: 42, dryRun: true),
+                provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+                state: .completed,
+                artifacts: [GeneratedFile(role: "question_paper", url: destination.appendingPathComponent("sample.pdf"))],
+                qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false),
+                createdAt: timestamp, updatedAt: timestamp
+            )
+            try RecentDocumentStore(directory: history, retentionLimit: 10, defaults: defaults).save(record)
+            let application = ApplicationCoordinator(
+                defaults: defaults, secrets: ImportHistoryTestSecrets(), historyDirectory: history,
+                backend: ControlledRunBackend(), distributionMode: .appStore,
+                startupImportPlan: KeldinMigration.StartupPlan(sources: [source], destination: destination),
+                startupCopyFiles: { sources, target in
+                    if copySucceeds {
+                        return await PreviousAppDataFileImporter.shared.copyExisting(from: sources, to: target)
+                    }
+                    return KeldinMigration.StartupCopyResult(successfulSources: [], failures: ["fixture failure"])
+                }
+            )
+            let task = try XCTUnwrap(application.startupImportTask)
+            await task.value
+            let restored = try XCTUnwrap(application.recentDocumentStore.records.first)
+            XCTAssertEqual(restored.state, copySucceeds ? .completed : .missingArtifacts)
+            if copySucceeds {
+                XCTAssertEqual(restored.updatedAt, timestamp)
+                XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent("sample.pdf")), bytes)
+            } else {
+                XCTAssertTrue(application.showError)
+                XCTAssertTrue(KeldinMigration.needsImport(defaults: defaults))
+            }
+            XCTAssertEqual(try Data(contentsOf: source.appendingPathComponent("sample.pdf")), bytes)
+        }
+    }
+
+    @MainActor
     func testStartupImportReturnsWhileCopyWaitsAndFinishesAllRootsBeforeVersioning() async throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinStartupImport-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: root) }
@@ -138,6 +187,7 @@ final class MigrationTests: XCTestCase {
         await gate.waitForStart()
         // A valid record at a noncanonical name must remain an error, not be discarded.
         let history = destination.appendingPathComponent("JobHistory")
+        try FileManager.default.createDirectory(at: history, withIntermediateDirectories: true)
         let record = GenerationJobRecord(
             configuration: GenerationConfiguration(boardID: "economics-aqa", paperID: "1", provider: "ollama", model: "fixture", seed: 42, dryRun: true),
             provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
