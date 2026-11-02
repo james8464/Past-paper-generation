@@ -6,7 +6,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from aqabizgen.configs import load_rule
-from aqabizgen.generator import build_paper
+from aqabizgen.generator import build_paper, validate_paper
 from aqabizgen.render_pdf import (
     render_mark_scheme,
     render_question_paper,
@@ -58,6 +58,7 @@ ADAPTER = FamilyAdapter(
     load_syllabus=load_syllabus,
     load_rule=load_rule,
     build=lambda rule, syllabus, seed: build_paper(rule, syllabus, seed),
+    validate=validate_paper,
     artifacts=_artifacts,
     stem=lambda _rule, paper: f"aqa-business-paper-{paper}",
 )

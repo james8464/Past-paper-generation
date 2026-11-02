@@ -1307,6 +1307,15 @@ def _candidate_verification_rows(question: GeneratedQuestion) -> list[list[str]]
         "candidate_source",
     ):
         if key in context:
+            if (
+                key == "candidate_source"
+                and isinstance(context[key], dict)
+                and context[key].get("source_type")
+                == "accounting_printed_section_extract_v1"
+            ):
+                # This repeats the printed extract for model source scoping.
+                # Keep it in the package, not the verification appendix.
+                continue
             visit(key, context[key])
     if not rows:
         rows = [

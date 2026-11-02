@@ -257,10 +257,17 @@ CASES = [
 
 def task(case):
     operation, inputs, rows, choices, _, _ = case
+    prompt = "Compare product X and product Y using the public information."
+    if operation == "opportunity_cost_change":
+        prompt = (
+            f"Product X changes from {inputs['primary_before']} to {inputs['primary_after']} units "
+            f"while product Y changes from {inputs['secondary_before']} to {inputs['secondary_after']} units. "
+            "What is the opportunity cost?"
+        )
     return {
         "kind": "multiple_choice",
         "marks": 1,
-        "prompt": "Compare product X and product Y using the public information.",
+        "prompt": prompt,
         "choices": deepcopy(choices),
         "authoring_context": {
             "selected_response_contract": solver.selected_response_contract(
@@ -290,6 +297,14 @@ def test_all_operations_preserve_the_complete_public_solution(case):
     before = deepcopy(item)
     assert solver.solve_selected_response(item) == expected(case)
     assert item == before
+
+
+def test_opportunity_cost_requires_public_facts_not_a_generic_dispatch_placeholder():
+    case = next(case for case in CASES if case[0] == "opportunity_cost_change")
+    item = task(case)
+    item["prompt"] = "Compare product X and product Y using the public information."
+    with pytest.raises(ValueError, match="opportunity-cost"):
+        solver.solve_selected_response(item)
 
 
 @pytest.mark.parametrize("case", CASES, ids=lambda case: case[0])

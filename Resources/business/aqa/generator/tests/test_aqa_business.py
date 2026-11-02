@@ -9,7 +9,7 @@ import pytest
 from aqabizgen.cli import generate_package
 from aqabizgen.configs import RULES
 from aqabizgen.financials import FinancialPosition, format_number
-from aqabizgen.generator import build_paper
+from aqabizgen.generator import build_paper, validate_paper
 from aqabizgen.render_pdf import _cover_profile
 from aqabizgen.syllabus import load_syllabus
 from pypdf import PdfReader
@@ -130,6 +130,172 @@ def test_financial_position_rejects_an_unbalanced_direct_value() -> None:
             non_current_liabilities=229,
             total_equity=1,
         )
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "inventories",
+        "receivables",
+        "cash",
+        "payables",
+        "non_current_assets",
+        "non_current_liabilities",
+    ],
+)
+def test_financial_position_rejects_balanced_negative_assets_or_liabilities(
+    field: str,
+) -> None:
+    amounts = dict(
+        inventories=100,
+        receivables=42,
+        cash=35,
+        payables=66,
+        non_current_assets=335,
+        non_current_liabilities=229,
+    )
+    amounts[field] = -1
+    equity = (
+        amounts["inventories"]
+        + amounts["receivables"]
+        + amounts["cash"]
+        + amounts["non_current_assets"]
+        - amounts["payables"]
+        - amounts["non_current_liabilities"]
+    )
+    with pytest.raises(ValueError, match="non-negative"):
+        FinancialPosition(**amounts, total_equity=equity)
+
+
+def test_financial_position_allows_negative_equity_but_refuses_undefined_ratio() -> (
+    None
+):
+    insolvent = FinancialPosition(
+        inventories=10,
+        receivables=0,
+        cash=0,
+        payables=20,
+        non_current_assets=0,
+        non_current_liabilities=0,
+        total_equity=-10,
+    )
+    assert insolvent.current_ratio == 0.5
+    assert insolvent.total_equity == -10
+    debt_free = FinancialPosition.from_chart_values([100, 100, 100, 0, 100])
+    assert debt_free.payables == 0
+    with pytest.raises(
+        ValueError, match="current ratio requires positive current liabilities"
+    ):
+        _ = debt_free.current_ratio
+
+
+@pytest.mark.parametrize("value", [float("inf"), float("-inf"), float("nan")])
+def test_financial_position_rejects_non_finite_chart_values(value: float) -> None:
+    with pytest.raises(ValueError, match="finite"):
+        FinancialPosition.from_chart_values([100, 100, value, 100, 100])
+
+
+def test_financial_position_rejects_infinite_balanced_direct_amounts() -> None:
+    with pytest.raises(ValueError, match="finite"):
+        FinancialPosition(
+            inventories=float("inf"),
+            receivables=0,
+            cash=0,
+            payables=0,
+            non_current_assets=0,
+            non_current_liabilities=0,
+            total_equity=float("inf"),
+        )
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        [100, 100, 100, 0, 100],
+        [-0.1, 100, 100, 100, 100],
+        [100, 100, float("inf"), 100, 100],
+        [100, 100, float("nan"), 100, 100],
+    ],
+)
+def test_business_public_validation_refuses_invalid_financial_chart(
+    values: list[float],
+) -> None:
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    paper.sections[1].options[0].chart_values = values
+    from aqabizgen.cli import ADAPTER
+
+    assert ADAPTER.validate is not None
+    with pytest.raises(
+        ValueError, match=r"positive current liabilities|non-negative|finite"
+    ):
+        ADAPTER.validate(paper, RULES["paper_1"], SYLLABUS)
+
+
+def test_business_invalid_financial_data_is_refused_before_publication(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from aqabizgen import cli
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    paper.sections[1].options[0].chart_values = [100, 100, 100, 0, 100]
+    monkeypatch.setattr(cli, "build_paper", lambda *_args: paper)
+    output = tmp_path / "not-created"
+    with pytest.raises(ValueError, match="positive current liabilities"):
+        generate_package(
+            paper="1",
+            syllabus_path=ROOT / "data" / "syllabus.json",
+            output_dir=output,
+            seed=26092845,
+            dry_run=True,
+        )
+    assert not output.exists()
+
+
+def test_business_roce_validation_rejects_zero_capital_but_allows_negative_capital() -> (
+    None
+):
+    from aqabizgen.cli import ADAPTER
+
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 26092845)
+    option = paper.sections[1].options[0]
+    option.chart_values = [66, 0, 0, 100, 0]
+    financials = FinancialPosition.from_chart_values(option.chart_values)
+    assert financials.current_ratio == 1
+    assert financials.capital_employed == 0
+    assert ADAPTER.validate is not None
+    with pytest.raises(ValueError, match="ROCE requires nonzero capital employed"):
+        ADAPTER.validate(paper, RULES["paper_1"], SYLLABUS)
+
+    option.chart_values = [10, 0, 0, 100, 0]
+    financials = FinancialPosition.from_chart_values(option.chart_values)
+    assert financials.total_equity == financials.capital_employed == -56
+    assert financials.operating_profit_at_twelve_percent == pytest.approx(-6.72)
+    ADAPTER.validate(paper, RULES["paper_1"], SYLLABUS)
+
+
+def test_business_financial_domain_preserves_generated_values_and_calculation_routes() -> (
+    None
+):
+    for seed in [26092845, *range(20)]:
+        for rule in RULES.values():
+            paper = build_paper(rule, SYLLABUS, seed)
+            validate_paper(paper, rule, SYLLABUS)
+            if rule.id != "paper_1":
+                continue
+            financials = FinancialPosition.from_chart_values(
+                paper.sections[1].options[0].chart_values
+            )
+            assert (
+                financials.capital_employed
+                == financials.non_current_assets + financials.net_current_assets
+            )
+            assert financials.current_ratio > 0
+            if seed == 26092845:
+                assert financials.capital_employed == 496
+                assert financials.operating_profit_at_twelve_percent == pytest.approx(
+                    59.52
+                )
 
 
 def test_paper_one_cover_uses_candidate_section_totals() -> None:

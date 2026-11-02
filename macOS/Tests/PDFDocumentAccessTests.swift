@@ -15,6 +15,163 @@ final class PDFDocumentAccessTests: XCTestCase {
     override func tearDownWithError() throws { try FileManager.default.removeItem(at: root) }
 
     @MainActor
+    func testFirstSuccessfulReadsRememberBothPDFsAfterFolderChangeAndNewController() throws {
+        let files = [
+            GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 2)),
+            GeneratedFile(role: "mark_scheme", url: try makePDF(name: "correction.pdf", pages: 3)),
+        ]
+        let settings = defaults()
+        var folderGrant = true
+        var granted: Set<URL> = []
+        var starts = 0
+        var stops = 0
+        func service() -> PDFDocumentAccess {
+            PDFDocumentAccess(defaults: settings, readData: { url in
+                guard folderGrant || granted.contains(url) else { throw CocoaError(.fileReadNoPermission) }
+                return try Data(contentsOf: url)
+            }, startAccess: { url in starts += 1; granted.insert(url); return true }, stopAccess: { url in
+                stops += 1; granted.remove(url)
+            }, makeBookmark: { Data($0.path.utf8) }, resolveBookmark: { data in
+                (URL(fileURLWithPath: String(decoding: data, as: UTF8.self)), false)
+            })
+        }
+        let initial = service()
+        for file in files { XCTAssertNotNil(try? initial.load(file.url).get()) }
+        initial.release()
+        XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey)?.count, 2)
+        XCTAssertEqual(starts, 0)
+        XCTAssertEqual(stops, 0)
+
+        folderGrant = false
+        settings.set(Data("different-folder".utf8), forKey: AppStorageKey.outputFolderBookmark)
+        let restarted = DocumentActionController(access: service())
+        for (index, file) in files.enumerated() {
+            restarted.update(file: file, provenance: nil)
+            XCTAssertEqual(restarted.loadedPDF?.document.pageCount, index + 2)
+            XCTAssertTrue(restarted.canAccessDocument)
+        }
+        restarted.clear()
+        XCTAssertEqual(starts, 2)
+        XCTAssertEqual(stops, 2)
+        XCTAssertTrue(granted.isEmpty)
+        XCTAssertEqual(settings.data(forKey: AppStorageKey.outputFolderBookmark), Data("different-folder".utf8))
+    }
+
+    @MainActor
+    func testFirstReadBookmarkFailurePreservesReadablePDFAndPriorBookmarks() throws {
+        let url = try makePDF()
+        let bytes = try Data(contentsOf: url)
+        let settings = defaults()
+        let prior = ["/older.pdf": Data("retained".utf8)]
+        settings.set(prior, forKey: PDFDocumentAccess.bookmarkKey)
+        let access = PDFDocumentAccess(defaults: settings, makeBookmark: { _ in throw CocoaError(.fileWriteNoPermission) })
+        XCTAssertEqual(try access.load(url).get().bytes, bytes)
+        XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], prior)
+        XCTAssertEqual(try Data(contentsOf: url), bytes)
+    }
+
+    @MainActor
+    func testRememberingOtherValidPDFsDoesNotStealTheReadersLeaseOrPersistInvalidInputs() throws {
+        let selected = try makePDF(name: "selected.pdf")
+        let another = try makePDF(name: "another.pdf")
+        let invalid = root.appendingPathComponent("invalid.pdf")
+        try Data("invalid".utf8).write(to: invalid)
+        let settings = defaults()
+        settings.set([selected.standardizedFileURL.path: Data(selected.path.utf8)], forKey: PDFDocumentAccess.bookmarkKey)
+        var starts = 0
+        var stops = 0
+        let access = PDFDocumentAccess(defaults: settings, startAccess: { _ in starts += 1; return true },
+            stopAccess: { _ in stops += 1 }, makeBookmark: { Data($0.path.utf8) },
+            resolveBookmark: { _ in (selected, false) })
+        XCTAssertNotNil(try? access.load(selected).get())
+        XCTAssertNoThrow(try access.rememberReadablePDF(another).get())
+        if case .success = access.rememberReadablePDF(invalid) { XCTFail("Invalid PDF must not be remembered") }
+        if case .success = access.rememberReadablePDF(root.appendingPathComponent("missing.pdf")) { XCTFail("Missing PDF must not be remembered") }
+        XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey)?.count, 2)
+        XCTAssertNotNil(try? access.load(selected).get())
+        XCTAssertEqual(starts, 1)
+        XCTAssertEqual(stops, 0)
+        access.release()
+        XCTAssertEqual(stops, 1)
+        let deniedSettings = defaults()
+        let denied = PDFDocumentAccess(defaults: deniedSettings, readData: { _ in throw CocoaError(.fileReadNoPermission) },
+            makeBookmark: { _ in XCTFail("Unreadable PDF must not be bookmarked"); return Data() })
+        if case .success = denied.rememberReadablePDF(another) { XCTFail("Denied PDF must not be remembered") }
+        XCTAssertNil(deniedSettings.dictionary(forKey: PDFDocumentAccess.bookmarkKey))
+    }
+
+    @MainActor
+    func testPublicationRemembersEveryPDFBeforeFolderAccessEndsAndFailureIsNonfatal() throws {
+        let subject = try makePDF(name: "subject.pdf", pages: 2)
+        let correction = try makePDF(name: "correction.pdf", pages: 3)
+        let privateJSON = root.appendingPathComponent("assessment.json")
+        try Data("private diagnostic".utf8).write(to: privateJSON)
+        let bytes = try [Data(contentsOf: subject), Data(contentsOf: correction)]
+        for failBookmark in [false, true] {
+            let settings = defaults()
+            settings.set("en", forKey: "interfaceLanguage")
+            let prior = ["/older.pdf": Data("prior".utf8)]
+            settings.set(prior, forKey: PDFDocumentAccess.bookmarkKey)
+            var folderGrant = true
+            var fileGrants: Set<URL> = []
+            var starts = 0
+            var stops = 0
+            var remembered: [URL] = []
+            func service() -> PDFDocumentAccess {
+                PDFDocumentAccess(defaults: settings, readData: { url in
+                    guard folderGrant || fileGrants.contains(url) else { throw CocoaError(.fileReadNoPermission) }
+                    return try Data(contentsOf: url)
+                }, startAccess: { url in starts += 1; fileGrants.insert(url); return true }, stopAccess: { url in
+                    stops += 1; fileGrants.remove(url)
+                }, makeBookmark: { url in
+                    XCTAssertTrue(folderGrant)
+                    remembered.append(url)
+                    if failBookmark { throw CocoaError(.fileWriteNoPermission) }
+                    return Data(url.path.utf8)
+                }, resolveBookmark: { data in
+                    (URL(fileURLWithPath: String(decoding: data, as: UTF8.self)), false)
+                })
+            }
+            let application = ApplicationCoordinator(defaults: settings, secrets: PDFBookmarkTestSecrets(),
+                historyDirectory: root.appendingPathComponent(UUID().uuidString), backend: ControlledRunBackend(),
+                pdfDocumentAccess: service())
+            application.beginDocumentCollection()
+            for (role, url) in [("question_paper", subject), ("mark_scheme", correction), ("teacher_review", privateJSON)] {
+                application.apply(.file(role: role, path: url.path))
+            }
+            try application.publishUKGeneratedFiles(from: root, to: root.appendingPathComponent(UUID().uuidString))
+            let published = application.currentGenerationFiles.filter { $0.url.pathExtension == "pdf" }
+            XCTAssertEqual(Set(remembered), Set(published.map(\.url)))
+            XCTAssertEqual(published.count, 2)
+            XCTAssertEqual(starts, 0)
+            XCTAssertEqual(stops, 0)
+            XCTAssertFalse(application.showError)
+            for (index, role) in ["question_paper", "mark_scheme"].enumerated() {
+                let file = try XCTUnwrap(published.first { $0.role == role })
+                XCTAssertEqual(try Data(contentsOf: file.url), bytes[index])
+            }
+            XCTAssertEqual(try Data(contentsOf: privateJSON), Data("private diagnostic".utf8))
+            XCTAssertEqual(application.currentGenerationFiles.first { $0.role == "teacher_review" }?.url, privateJSON)
+            folderGrant = false
+            application.outputFolder = root.appendingPathComponent("another-folder")
+            if failBookmark {
+                XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], prior)
+                XCTAssertEqual(application.progressEntries.last?.stage, "document_access")
+                XCTAssertEqual(application.progressEntries.last?.message, "The PDFs were saved, but access couldn't be remembered for some files. If a PDF becomes unavailable, choose it again in Documents.")
+            } else {
+                let restarted = DocumentActionController(access: service())
+                for file in published {
+                    restarted.update(file: file, provenance: nil)
+                    XCTAssertTrue(restarted.canAccessDocument)
+                }
+                restarted.clear()
+                XCTAssertEqual(starts, 2)
+                XCTAssertEqual(stops, 2)
+            }
+        }
+    }
+
+    @MainActor
     func testPickerSelectionUpdatesTheActionDocumentBeforeDeferredViewChanges() throws {
         let scheme = GeneratedFile(role: "mark_scheme", url: try makePDF(name: "scheme.pdf", pages: 24))
         let subject = GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 36))
@@ -260,6 +417,9 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     func testFailureNoticesHaveFrenchTranslations() {
+        XCTAssertEqual(InterfaceText.resolve(
+            "The PDFs were saved, but access couldn't be remembered for some files. If a PDF becomes unavailable, choose it again in Documents.", language: "fr"
+        ), "Les PDF ont été enregistrés, mais l’accès à certains fichiers n’a pas pu être mémorisé. Si un PDF devient indisponible, sélectionnez-le à nouveau dans Documents.")
         let cases: [(PDFLoadFailure, String)] = [
             (.missing, "Ce PDF ne se trouve plus à l’emplacement enregistré."),
             (.permissionDenied, "Keldin ne peut pas lire ce PDF. Choisissez le même fichier pour autoriser l’accès."),
@@ -291,4 +451,9 @@ final class PDFDocumentAccessTests: XCTestCase {
         case .failure(let actual): XCTAssertEqual(actual, expected, file: file, line: line)
         }
     }
+}
+
+private final class PDFBookmarkTestSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) {}
 }

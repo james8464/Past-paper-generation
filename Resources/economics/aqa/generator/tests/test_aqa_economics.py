@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import random
 import re
 from copy import deepcopy
@@ -686,6 +687,429 @@ def test_checkpoint_replay_rejects_product_rename():
     )
     with pytest.raises(ValueError, match="product labels"):
         _validate_checkpoint_item(task, candidate)
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "A factory reallocates resources: product Y increases from 20 to 30 units; product X decreases from 80 to 68 units. Select the quantity sacrificed to expand product Y by 10 units.",
+        "A factory reallocates resources: product X increases from 30 to 20 units; product Y decreases from 68 to 80 units. Select the quantity sacrificed to expand product X by 10 units.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. Select the opportunity cost per unit of the extra 10 units of product X.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. Select the opportunity cost of the extra 10 units of product Y.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X? Y output actually rises.",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X when output is reducing?",
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X? Assume there is no sacrifice.",
+        "The stated changes are false: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "Product X increases from 20 to 30 units; however these changes are false; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "Product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X in units of product Y, although no output is forgone?",
+    ],
+)
+def test_opportunity_cost_rejects_changed_public_fact_roles_at_every_boundary(
+    prompt, entrypoint
+):
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _tasks,
+        _validate_checkpoint_item,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    candidate = task.question.model_copy(update={"prompt": prompt})
+    with pytest.raises(ValueError, match="opportunity-cost"):
+        if entrypoint == "solver":
+            solve_selected_response(candidate.model_dump(mode="json"))
+        elif entrypoint == "checkpoint":
+            _validate_checkpoint_item(task, candidate)
+        else:
+            _candidate_question(
+                task,
+                {"prompt": prompt},
+                client=SimpleNamespace(provider="fixture", model="fixture"),
+                policy=GenerationPolicy(),
+            )
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "checkpoint"])
+@pytest.mark.parametrize(
+    "prompt",
+    [
+        "A factory reallocates resources: product X increases from 20 to 30 units; product Y decreases from 80 to 68 units. Select the quantity sacrificed to expand product X by 10 units.",
+        "Product Y output declines from 80 units to 68 units. Product X output grows from 20 to 30 units. Calculate the opportunity cost of the additional 10 units of product X, in units of product Y.",
+        "Production of PRODUCT  X changes from 20 to 30 units while production of Product\nY moves from 80 to 68 units. What is the opportunity cost?",
+        "Product Y falls from 80 to 68 units while product X rises from 20 to 30 units. Identify the opportunity cost of increasing product X.",
+        "Product X's output rises from 20 to 30 units; product Y’s production falls from 80 to 68 units. What is the opportunity cost of the extra 10 units of product X?",
+        "The output of product X increases from 20 to 30 units whereas the production of product Y declines from 80 to 68 units. Which option gives the opportunity cost in units of product Y?",
+    ],
+)
+def test_opportunity_cost_fact_binding_allows_source_preserving_wording(
+    prompt, entrypoint
+):
+    from Backend.Core.ai_assessment import _tasks, _validate_checkpoint_item
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    candidate = task.question.model_copy(update={"prompt": prompt})
+    assert (
+        solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+        == "12 units of product Y"
+    )
+    if entrypoint == "checkpoint":
+        _validate_checkpoint_item(task, candidate)
+
+
+def test_opportunity_cost_parser_accepts_source_preserving_reordered_clauses():
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import GenerationPolicy, _candidate_question, _tasks
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    candidate = _candidate_question(
+        task,
+        {
+            "prompt": "A factory reallocates resources: product Y decreases from 80 to 68 units; product X increases from 20 to 30 units. Select the quantity sacrificed to expand product X by 10 units."
+        },
+        client=SimpleNamespace(provider="fixture", model="fixture"),
+        policy=GenerationPolicy(),
+    )
+    assert (
+        solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+        == "12 units of product Y"
+    )
+
+
+def test_opportunity_cost_writer_receives_the_validators_public_stem_grammar():
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _generation_prompt,
+        _tasks,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    tasks = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})
+    arguments = dict(subject="Economics", seed=26092844, attempt=1, previous_failure="")
+    prompt = _generation_prompt([tasks[0]], **arguments)
+    data = json.loads(prompt.split("BLUEPRINT_DATA=", 1)[1])[0]
+    shape = data["public_stem_constraints"]
+    assert shape["operation"] == "opportunity_cost_change"
+    assert set(shape["grammar_patterns"]) == {
+        "prefix",
+        "fact",
+        "preposed_fact",
+        "shared_facts",
+        "connector",
+        "task",
+    }
+    assert shape["facts"][0]["before_field"] == "primary_before"
+    assert shape["facts"][1]["after_field"] == "secondary_after"
+    assert shape["facts"][0]["direction"] == "increase"
+    assert re.fullmatch(shape["facts"][0]["verb_pattern"], "increases")
+    assert not re.fullmatch(shape["facts"][0]["verb_pattern"], "falls")
+    assert "12 units of product Y" not in json.dumps(shape)
+    assert not {"mark_scheme", "correct_choice", "solution"} & shape.keys()
+    assert "public_stem_constraints" in prompt.split("BLUEPRINT_DATA=", 1)[0]
+    grammar = shape["grammar_patterns"]
+    for prefix in shape["prefix_examples"]:
+        assert re.fullmatch(grammar["prefix"], prefix.casefold())
+    for connector in shape["connector_examples"]:
+        assert re.fullmatch(grammar["connector"], connector)
+    for fact in shape["facts"]:
+        assert re.fullmatch(grammar["fact"], fact["clause_example"].casefold())
+    for request in shape["task_examples"]:
+        assert re.fullmatch(grammar["task"], request.casefold())
+
+    # Compose from disclosed public clauses, not a hidden draft or solved key.
+    supported = (
+        shape["prefix_examples"][1]
+        + shape["facts"][1]["clause_example"]
+        + shape["connector_examples"][0]
+        + shape["facts"][0]["clause_example"]
+        + ". "
+        + shape["task_examples"][0]
+    )
+    candidate = _candidate_question(
+        tasks[0],
+        {"prompt": supported},
+        client=SimpleNamespace(provider="fixture", model="fixture"),
+        policy=GenerationPolicy(),
+    )
+    assert (
+        solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+        == "12 units of product Y"
+    )
+
+    unrelated = _generation_prompt([tasks[1]], **arguments)
+    unrelated_data = json.loads(unrelated.split("BLUEPRINT_DATA=", 1)[1])[0]
+    assert "public_stem_constraints" not in unrelated_data
+    assert "public_stem_constraints" not in unrelated.split("BLUEPRINT_DATA=", 1)[0]
+
+
+@pytest.mark.parametrize("entrypoint", ["public", "solver"])
+@pytest.mark.parametrize(
+    "change",
+    [
+        "missing",
+        "extra",
+        "unit",
+        "precision",
+        "primary_reverse",
+        "secondary_reverse",
+        "negative",
+        "nonfinite",
+        "rows",
+    ],
+)
+def test_opportunity_cost_disclosure_and_solver_reject_invalid_source_contracts(
+    change, entrypoint
+):
+    from Backend.Core.subjects.selected_response import (
+        public_selected_response_stem_constraints,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
+    contract = item["authoring_context"]["selected_response_contract"]
+    if change == "missing":
+        del contract["inputs"]["secondary_after"]
+    elif change == "extra":
+        contract["inputs"]["private_answer"] = "must not reach the writer"
+    elif change == "unit":
+        contract["unit"] = "percent"
+    elif change == "precision":
+        contract["decimal_places"] = 1
+    elif change == "primary_reverse":
+        contract["inputs"]["primary_after"] = "10"
+    elif change == "secondary_reverse":
+        contract["inputs"]["secondary_after"] = "90"
+    elif change == "negative":
+        contract["inputs"]["primary_before"] = "-1"
+    elif change == "nonfinite":
+        contract["inputs"]["primary_before"] = "NaN"
+    else:
+        contract["rows"] = [{"label": "unexpected source row"}]
+    with pytest.raises(ValueError):
+        if entrypoint == "public":
+            public_selected_response_stem_constraints(item["authoring_context"])
+        else:
+            solve_selected_response(item)
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
+@pytest.mark.parametrize(
+    "variant", ["valid", "reordered", "swapped", "reversed", "tail", "unit"]
+)
+def test_legacy_shared_verb_opportunity_cost_keeps_bound_roles(entrypoint, variant):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _tasks,
+        _validate_checkpoint_item,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    task = replace(
+        task,
+        question=task.question.model_copy(
+            update={
+                "prompt": (
+                    "A producer raises output of product X from 20 to 30 units, while output of product Y "
+                    "falls from 80 to 68 units. What is the opportunity cost?"
+                )
+            }
+        ),
+    )
+    prompt = (
+        "A producer moves output of product X from 20 to 30 units and product Y from 80 to 68 units. "
+        "Select the quantity of product Y forgone."
+    )
+    if variant == "reordered":
+        prompt = "A producer changes output of product Y from 80 to 68 units and output of product X from 20 to 30 units. Calculate the opportunity cost."
+    elif variant == "swapped":
+        prompt = (
+            prompt.replace("product X", "product Z", 1)
+            .replace("product Y", "product X", 1)
+            .replace("product Z", "product Y", 1)
+        )
+    elif variant == "reversed":
+        prompt = prompt.replace("20 to 30", "30 to 20").replace("80 to 68", "68 to 80")
+    elif variant == "tail":
+        prompt += " Y output actually rises."
+    elif variant == "unit":
+        prompt = prompt.replace("quantity of product Y", "quantity of product X")
+    candidate = task.question.model_copy(update={"prompt": prompt})
+
+    def check():
+        if entrypoint == "parser":
+            _candidate_question(
+                task,
+                {"prompt": prompt},
+                client=SimpleNamespace(provider="fixture", model="fixture"),
+                policy=GenerationPolicy(),
+            )
+        elif entrypoint == "checkpoint":
+            _validate_checkpoint_item(task, candidate)
+        else:
+            assert (
+                solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+                == "12 units of product Y"
+            )
+
+    if variant in {"valid", "reordered"}:
+        check()
+    else:
+        with pytest.raises(ValueError, match="opportunity-cost"):
+            check()
+
+
+@pytest.mark.parametrize("entrypoint", ["solver", "parser", "checkpoint"])
+@pytest.mark.parametrize(
+    "variant", ["valid", "reordered", "swapped", "reversed", "tail"]
+)
+def test_legacy_preposed_verb_opportunity_cost_keeps_bound_roles(entrypoint, variant):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from Backend.Core.ai_assessment import (
+        GenerationPolicy,
+        _candidate_question,
+        _tasks,
+        _validate_checkpoint_item,
+    )
+
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    task = _tasks(paper, {topic.id: topic for topic in SYLLABUS.topics})[0]
+    task = replace(
+        task,
+        question=task.question.model_copy(
+            update={
+                "prompt": (
+                    "Output of product Y declines from 80 units to 68 units. The production of product X "
+                    "grows from 20 to 30 units. Calculate the opportunity cost."
+                )
+            }
+        ),
+    )
+    prompt = (
+        "A producer raises output of product X from 20 to 30 units, while output of product Y "
+        "falls from 80 to 68 units. What is the opportunity cost?"
+    )
+    if variant == "reordered":
+        prompt = "A producer decreases output of product Y from 80 to 68 units, while output of product X increases from 20 to 30 units. Determine the opportunity cost."
+    elif variant == "swapped":
+        prompt = (
+            prompt.replace("product X", "product Z")
+            .replace("product Y", "product X")
+            .replace("product Z", "product Y")
+        )
+    elif variant == "reversed":
+        prompt = prompt.replace("20 to 30", "30 to 20").replace("80 to 68", "68 to 80")
+    elif variant == "tail":
+        prompt += " Y output actually rises."
+    candidate = task.question.model_copy(update={"prompt": prompt})
+
+    def check():
+        if entrypoint == "parser":
+            _candidate_question(
+                task,
+                {"prompt": prompt},
+                client=SimpleNamespace(provider="fixture", model="fixture"),
+                policy=GenerationPolicy(),
+            )
+        elif entrypoint == "checkpoint":
+            _validate_checkpoint_item(task, candidate)
+        else:
+            assert (
+                solve_selected_response(candidate.model_dump(mode="json"))["answer"]
+                == "12 units of product Y"
+            )
+
+    if variant in {"valid", "reordered"}:
+        check()
+    else:
+        with pytest.raises(ValueError, match="opportunity-cost"):
+            check()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda text: text.replace("rises from 20 to 30", "falls from 20 to 30"),
+        lambda text: text.replace("20 to 30 units", "20 to 30 hours"),
+        lambda text: text.replace("extra 10 units", "extra 20 units"),
+        lambda text: text.replace("extra 10 units", "extra 10 percent"),
+        lambda text: text.replace("extra 10 units", "extra one unit"),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost of increasing product X by one unit?"
+        ),
+        lambda text: text.replace("opportunity cost", "average opportunity cost"),
+        lambda text: text + " Product X rises from 20 to 30 units.",
+        lambda text: text + " Product Y instead increases.",
+        lambda text: text.replace(
+            "What is the opportunity cost", "What is not the opportunity cost"
+        ),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost of reducing product X?"
+        ),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost of reducing output?"
+        ),
+        lambda text: (
+            text.split("What is")[0]
+            + "What is the opportunity cost? Assume there is no sacrifice."
+        ),
+    ],
+)
+def test_opportunity_cost_ambiguous_or_conflicting_facts_fail_closed(change):
+    paper = build_paper(RULES["paper_3"], SYLLABUS, seed=26092844)
+    item = paper.sections[0].options[0].questions[0].model_dump(mode="json")
+    item["prompt"] = change(item["prompt"])
+    with pytest.raises(ValueError, match="opportunity-cost"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize("seed", [0, 1, 26092844, 2**31 - 1])
+def test_current_opportunity_cost_source_projections_keep_valid_roles(seed):
+    question = (
+        build_paper(RULES["paper_3"], SYLLABUS, seed=seed)
+        .sections[0]
+        .options[0]
+        .questions[0]
+    )
+    assert (
+        solve_selected_response(question.model_dump(mode="json"))["answer"]
+        == question.choices[question.correct_choice]
+    )
+    source = aqa_generator.APPLIED_SOURCE_BY_NUMBER[1]
+    for before, after in [(20, 30), (12, 17), (2, 8)]:
+        changed = source.model_copy(
+            update={"primary_before": Decimal(before), "primary_after": Decimal(after)}
+        )
+        projection = aqa_generator.project_applied_mcq(changed)
+        item = question.model_dump(mode="json")
+        item.update(
+            prompt=projection.prompt,
+            choices=projection.choices,
+            authoring_context=projection.authoring_context,
+        )
+        assert (
+            solve_selected_response(item)["answer"]
+            == projection.choices[projection.correct_choice]
+        )
 
 
 def test_missing_typed_applied_source_prevents_candidate_artifact(monkeypatch) -> None:

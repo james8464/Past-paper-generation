@@ -315,23 +315,213 @@ def _solve_opportunity_cost_change(
             "opportunity-cost product labels must match product X and product Y "
             "in the public stem and source-owned choices"
         )
+    values = _opportunity_cost_source_values(contract)
+    secondary_loss = values["secondary_before"] - values["secondary_after"]
+    _validate_opportunity_cost_stem(prompt, values)
+    expected_text = _quantity_choice(choices, secondary_loss, contract.decimal_places)
+    steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
+    numeric_results = {"opportunity_cost": float(secondary_loss)}
+    return _SelectedResult(expected_text, steps, numeric_results)
+
+
+def _opportunity_cost_source_values(
+    contract: SelectedResponseContract,
+) -> dict[str, Decimal]:
+    """Validate public shape, format and domain before solving or disclosure."""
+    if (
+        contract.operation != "opportunity_cost_change"
+        or (contract.unit, contract.decimal_places)
+        != _OPERATION_FORMAT_POLICY["opportunity_cost_change"]
+    ):
+        raise ValueError(
+            "opportunity-cost source violates selected response format policy"
+        )
     _require_contract_shape(
         contract,
         {"primary_before", "secondary_before", "primary_after", "secondary_after"},
     )
     values = {key: _decimal(value) for key, value in contract.inputs.items()}
-    primary_gain = values["primary_after"] - values["primary_before"]
-    secondary_loss = values["secondary_before"] - values["secondary_after"]
     if (
         any(value < 0 for value in values.values())
-        or primary_gain <= 0
-        or secondary_loss <= 0
+        or values["primary_after"] <= values["primary_before"]
+        or values["secondary_after"] >= values["secondary_before"]
     ):
         raise ValueError("opportunity-cost source has invalid public values")
-    expected_text = _quantity_choice(choices, secondary_loss, contract.decimal_places)
-    steps = ["Read the candidate-visible fall in product Y as the opportunity cost."]
-    numeric_results = {"opportunity_cost": float(secondary_loss)}
-    return _SelectedResult(expected_text, steps, numeric_results)
+    return values
+
+
+_OPPORTUNITY_COST_NUMBER = r"[+-]?(?:\d+(?:\.\d+)?|\.\d+)"
+_OPPORTUNITY_COST_VERBS = {
+    "increase": r"rises?|raises?|increases?|grows?|expands?",
+    "decrease": r"falls?|decreases?|declines?|drops?",
+    "neutral": r"changes?|moves?|goes",
+}
+
+
+def _opportunity_cost_stem_grammar() -> dict[str, str]:
+    """One serializable grammar shared by the public writer and the validator."""
+    number = _OPPORTUNITY_COST_NUMBER
+    verbs = "|".join(_OPPORTUNITY_COST_VERBS.values())
+    fact = (
+        rf"\b(?:(?:the\s+)?(?:production|output)\s+of\s+)?"
+        rf"product (?P<label>x|y)\b(?:['’]s)?\s*"
+        rf"(?:(?:output|production)\s+)?"
+        rf"(?P<verb>{verbs})\s+from\s+(?P<before>{number})"
+        rf"(?:\s+units)?\s+to\s+(?P<after>{number})\s+units\b"
+    )
+    extra = rf"(?:the\s+)?(?:extra|additional)\s+{number}\s+units(?:\s+of\s+product x)?"
+    product = r"(?:the\s+)?(?:(?:output|production)\s+of\s+)?product x"
+    increase = (
+        rf"(?:increasing|expanding|raising)\s+{product}(?:\s+by\s+{number}\s+units)?"
+    )
+    expansion = rf"(?:expand|increase|raise)\s+{product}\s+by\s+{number}\s+units"
+    cost = rf"opportunity cost(?:\s+of\s+(?:{extra}|{increase}))?"
+    sacrifice = rf"(?:quantity|output|units)\s+(?:sacrificed|forgone|given up)\s+(?:for\s+{extra}|to\s+{expansion})"
+    sacrifice += r"|(?:quantity|output) of product y (?:forgone|sacrificed|given up)"
+    request = r"(?:what is|which option (?:gives|shows)|select|calculate|identify|determine|find)\s+(?:the\s+)?"
+    return {
+        "prefix": r"(?:a factory reallocates resources:\s*|a producer\s+)?",
+        "fact": fact,
+        "preposed_fact": (
+            rf"\b(?P<verb>{verbs})\s+(?:the\s+)?(?:output|production) of product "
+            rf"(?P<label>x|y) from (?P<before>{number})(?: units)? to (?P<after>{number}) units\b"
+        ),
+        "shared_facts": (
+            rf"a producer (?P<verb>moves|changes) output of product (?P<first_label>x|y) "
+            rf"from (?P<first_before>{number}) to (?P<first_after>{number}) units "
+            rf"and (?:output of )?product (?P<second_label>x|y) "
+            rf"from (?P<second_before>{number}) to (?P<second_after>{number}) units\b"
+        ),
+        "connector": r"\s*(?:,?\s*(?:while|whereas|and)|;|\.)\s*",
+        "task": rf"[.;]?\s*{request}(?:{cost}|{sacrifice})(?:,?\s+in units of product y)?[?.]?",
+    }
+
+
+def public_selected_response_stem_constraints(
+    context: dict[str, Any],
+) -> dict[str, Any] | None:
+    """Disclose supported public composition, never the solved choice or credit."""
+    raw = context.get("selected_response_contract")
+    if not isinstance(raw, dict) or raw.get("operation") != "opportunity_cost_change":
+        return None
+    contract = SelectedResponseContract.model_validate(raw)
+    values = _opportunity_cost_source_values(contract)
+    facts = []
+    for label, role, verb in (
+        ("X", "primary", "increases"),
+        ("Y", "secondary", "decreases"),
+    ):
+        before, after = (f"{role}_before", f"{role}_after")
+        start, end = values[before], values[after]
+        start_text, end_text = (
+            format(start.normalize(), "f"),
+            format(end.normalize(), "f"),
+        )
+        direction = "increase" if role == "primary" else "decrease"
+        facts.append(
+            {
+                "product": label,
+                "before_field": before,
+                "after_field": after,
+                "unit": "units",
+                "direction": direction,
+                "verb_pattern": _OPPORTUNITY_COST_VERBS[direction]
+                + "|"
+                + _OPPORTUNITY_COST_VERBS["neutral"],
+                "clause_example": f"product {label} {verb} from {start_text} to {end_text} units",
+            }
+        )
+    gain = values["primary_after"] - values["primary_before"]
+    gain_text = format(gain.normalize(), "f")
+    return {
+        "operation": contract.operation,
+        "composition": (
+            "Compose prefix + two fact clauses in either order with one connector, or use shared_facts, then one task. "
+            "The regex patterns consume all text after case/whitespace normalization. Keep source roles, "
+            "directions, quantities and answer unit; add no narrative or assumptions. Unsupported wording is refused."
+        ),
+        "grammar_patterns": _opportunity_cost_stem_grammar(),
+        "facts": facts,
+        "prefix_examples": ["", "A factory reallocates resources: ", "A producer "],
+        "connector_examples": ["; ", " while ", " whereas ", " and ", ". "],
+        "task_examples": [
+            f"Select the quantity sacrificed to expand product X by {gain_text} units.",
+            f"What is the opportunity cost of the extra {gain_text} units of product X?",
+        ],
+        "requested_quantity": gain_text,
+        "answer_unit": "units of product Y",
+    }
+
+
+def _validate_opportunity_cost_stem(prompt: str, values: dict[str, Decimal]) -> None:
+    """Consume the disclosed grammar; unsupported valid paraphrases fail closed.
+
+    This is not a general natural-language interpreter. Never discard residual
+    text that could change meaning. Public examples do not relax role checks.
+    """
+    text = " ".join(prompt.casefold().split())
+    grammar = _opportunity_cost_stem_grammar()
+    if shared := re.match(grammar["shared_facts"], text):
+        facts = [
+            {key: shared[f"{position}_{key}"] for key in ("label", "before", "after")}
+            | {"verb": shared["verb"]}
+            for position in ("first", "second")
+        ]
+        task_start = shared.end()
+    else:
+        spans = sorted(
+            [
+                *re.finditer(grammar["fact"], text),
+                *re.finditer(grammar["preposed_fact"], text),
+            ],
+            key=lambda match: match.start(),
+        )
+        if len(spans) != 2:
+            raise ValueError(
+                "opportunity-cost public fact clauses are missing or ambiguous"
+            )
+        if not re.fullmatch(
+            grammar["prefix"], text[: spans[0].start()]
+        ) or not re.fullmatch(
+            grammar["connector"], text[spans[0].end() : spans[1].start()]
+        ):
+            raise ValueError(
+                "opportunity-cost fact connectors contain unsupported text"
+            )
+        facts = [span.groupdict() for span in spans]
+        task_start = spans[1].end()
+    if {fact["label"] for fact in facts} != {"x", "y"}:
+        raise ValueError(
+            "opportunity-cost public product roles are missing or ambiguous"
+        )
+    for fact in facts:
+        role = "primary" if fact["label"] == "x" else "secondary"
+        before, after = Decimal(fact["before"]), Decimal(fact["after"])
+        up = re.fullmatch(_OPPORTUNITY_COST_VERBS["increase"], fact["verb"]) is not None
+        down = (
+            re.fullmatch(_OPPORTUNITY_COST_VERBS["decrease"], fact["verb"]) is not None
+        )
+        if (
+            (before, after) != (values[f"{role}_before"], values[f"{role}_after"])
+            or (up and after <= before)
+            or (down and after >= before)
+        ):
+            raise ValueError("opportunity-cost public product/value roles changed")
+
+    # Full consumption matters: a recognized question followed by an assumption
+    # or contradiction is not the same task. Only Y may be the answer unit.
+    task = text[task_start:].strip()
+    if not re.fullmatch(grammar["task"], task):
+        raise ValueError(
+            "opportunity-cost task or answer unit contains unsupported text"
+        )
+    quantities = re.findall(_OPPORTUNITY_COST_NUMBER, task)
+    if quantities:
+        gain = values["primary_after"] - values["primary_before"]
+        if len(quantities) != 1 or Decimal(quantities[0]) != gain:
+            raise ValueError(
+                "opportunity-cost requested increase or quantity unit changed"
+            )
 
 
 def _solve_elastic_revenue_change(

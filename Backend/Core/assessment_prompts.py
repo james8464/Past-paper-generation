@@ -22,6 +22,9 @@ from Backend.Core.shared_source_scope import (
     shared_source_requires_context,
     uses_shared_option_source,
 )
+from Backend.Core.subjects.selected_response import (
+    public_selected_response_stem_constraints,
+)
 
 
 @dataclass(frozen=True)
@@ -119,6 +122,16 @@ def generation_prompt(
                 "max_prompt_words"
             ),
             "semantic_task_contract": semantic_task_contract(task),
+            **(
+                {"public_stem_constraints": public_shape}
+                if (
+                    public_shape := public_selected_response_stem_constraints(
+                        task.question.authoring_context
+                    )
+                )
+                is not None
+                else {}
+            ),
             "topic": {
                 "id": str(task.topic.id),
                 "title": str(task.topic.title),
@@ -155,6 +168,13 @@ def generation_prompt(
         if previous_failure
         else ""
     )
+    stem_instructions = (
+        "When `public_stem_constraints` is present, compose from its disclosed grammar and public source fields. "
+        "Its examples are unsolved clauses, not permission to copy a draft; preserve novelty and numeric roles. "
+        "Do not add an unsupported prefix or trailing assumption. "
+        if any("public_stem_constraints" in item for item in data)
+        else ""
+    )
     return (
         "You are the senior assessment writer for an unofficial UK A-level "
         f"{subject} paper. Generate genuinely new, independent questions; never "
@@ -166,7 +186,7 @@ def generation_prompt(
         "`semantic_task_contract` is authoritative for required technical concepts, "
         "named entities, artefact, subject matter, and scope. Compose fresh prose "
         "around those elements; do not turn the term list into a fragment or copy a "
-        "planning sentence. Before returning each prompt, "
+        f"planning sentence. {stem_instructions}Before returning each prompt, "
         "count words using ordinary exam prose; when a blueprint declares "
         "`maximum_prompt_words`, the complete grammatical stem must not exceed "
         "`maximum_prompt_words`. "

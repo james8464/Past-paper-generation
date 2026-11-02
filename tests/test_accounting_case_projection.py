@@ -7,7 +7,7 @@ import pymupdf
 import pytest
 from aqaaccountgen.configs import RULES
 from aqaaccountgen.generator import build_paper
-from aqaaccountgen.render_pdf import render_question_paper
+from aqaaccountgen.render_pdf import _candidate_verification_rows, render_question_paper
 from aqaaccountgen.syllabus import load_syllabus
 
 from Backend.Core.ai_assessment import (
@@ -153,6 +153,112 @@ def test_changed_candidate_case_is_rejected_before_independent_solving():
     class Client:
         def generate_json(self, _prompt):
             raise AssertionError("altered public case reached the independent solver")
+
+    with pytest.raises(ValueError, match="immutable numeric source contract"):
+        _independently_validate_candidate(task, candidate, client=Client())
+
+
+@pytest.mark.parametrize("number", ["11", "12.2", "15.2"])
+def test_paper_two_model_stages_use_only_the_printed_section_source(number, tmp_path):
+    syllabus = load_syllabus(SYLLABUS)
+    paper = build_paper(RULES["paper_2"], syllabus, 270100)
+    task = next(
+        task
+        for task in _tasks(paper, {topic.id: topic for topic in syllabus.topics})
+        if task.question.number == number
+    )
+    visible_extract, hidden_extract = task.option.stimulus
+    source = _task_source(task)
+    assert (
+        source["question_context"]["candidate_source"]["printed_extract"]
+        == visible_extract
+    )
+    assert "stimulus" not in source
+    assert "chart_title" not in source
+    assert _candidate_verification_rows(task.question) == [
+        ["topic", task.question.topic_id],
+        ["printed mark total", str(task.question.marks)],
+    ]
+    assert {record["id"] for record in source.get("evidence", [])} <= set(
+        task.question.source_references
+    )
+
+    writer = _generation_prompt(
+        [task], subject="accounting", seed=270100, attempt=1, previous_failure=""
+    )
+    reviewer = _review_prompt([task], [task.question], subject="accounting")
+    demand = json.dumps(
+        _difficulty_candidate(task, task.question).review_content, ensure_ascii=False
+    )
+
+    class Client:
+        prompt = ""
+
+        def generate_json(self, prompt):
+            self.prompt = prompt
+            return complete_solver_response(
+                {
+                    "answer": "A contextual explanation.",
+                    "mark_points": ["Apply the stated facts."],
+                }
+            )
+
+    client = Client()
+    IndependentSolver(client).solve(task.question.model_dump(), [])
+    for context in (writer, reviewer, demand, client.prompt):
+        assert visible_extract in context
+        assert hidden_extract not in context
+        assert task.option.chart_title not in context
+        assert "customer survey response rate" not in context
+
+    target = tmp_path / "paper-two.pdf"
+    render_question_paper(paper, target)
+    with pymupdf.open(target) as document:
+        printed = " ".join(" ".join(page.get_text().split()) for page in document)
+    assert " ".join(visible_extract.split()) in printed
+    assert " ".join(hidden_extract.split()) not in printed
+    assert task.option.chart_title not in printed
+
+
+@pytest.mark.parametrize("number", ["16", "17"])
+def test_paper_two_decisions_keep_their_own_public_cases(number):
+    syllabus = load_syllabus(SYLLABUS)
+    paper = build_paper(RULES["paper_2"], syllabus, 270100)
+    task = next(
+        task
+        for task in _tasks(paper, {topic.id: topic for topic in syllabus.topics})
+        if task.question.number == number
+    )
+    context = task.question.authoring_context
+    assert context["candidate_source"] == context["source_data"]
+    assert "printed_extract" not in context["candidate_source"]
+    assert (
+        _task_source(task)["question_context"]["candidate_source"]
+        == context["candidate_source"]
+    )
+    assert "stimulus" not in _task_source(task)
+    assert any(
+        value == context["candidate_source"]["business"]
+        for _label, value in _candidate_verification_rows(task.question)
+    )
+
+
+def test_paper_two_printed_source_is_immutable_before_solver_calls():
+    syllabus = load_syllabus(SYLLABUS)
+    paper = build_paper(RULES["paper_2"], syllabus, 270100)
+    task = next(
+        task
+        for task in _tasks(paper, {topic.id: topic for topic in syllabus.topics})
+        if task.question.number == "11"
+    )
+    candidate = task.question.model_copy(deep=True)
+    candidate.authoring_context["candidate_source"]["printed_extract"] = (
+        "Unprinted replacement"
+    )
+
+    class Client:
+        def generate_json(self, _prompt):
+            raise AssertionError("altered public source reached the independent solver")
 
     with pytest.raises(ValueError, match="immutable numeric source contract"):
         _independently_validate_candidate(task, candidate, client=Client())

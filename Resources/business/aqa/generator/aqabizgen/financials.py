@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import isfinite
 
 
 # Shared Paper 1 financial-statement figures.
@@ -15,6 +16,31 @@ class FinancialPosition:
     total_equity: int
 
     def __post_init__(self) -> None:
+        if any(
+            not isinstance(value, int) and not isfinite(value)
+            for value in (
+                self.inventories,
+                self.receivables,
+                self.cash,
+                self.payables,
+                self.non_current_assets,
+                self.non_current_liabilities,
+                self.total_equity,
+            )
+        ):
+            raise ValueError("financial-position amounts must be finite")
+        if any(
+            value < 0
+            for value in (
+                self.inventories,
+                self.receivables,
+                self.cash,
+                self.payables,
+                self.non_current_assets,
+                self.non_current_liabilities,
+            )
+        ):
+            raise ValueError("asset and liability amounts must be non-negative")
         if self.total_assets != self.total_liabilities_and_equity:
             raise ValueError("statement of financial position must balance")
 
@@ -22,6 +48,10 @@ class FinancialPosition:
     def from_chart_values(cls, chart_values: list[float]) -> FinancialPosition:
         if len(chart_values) < 5:
             raise ValueError("financial-position data requires five chart values")
+        if any(not isfinite(value) for value in chart_values):
+            raise ValueError("financial-position source values must be finite")
+        if any(value < 0 for value in chart_values):
+            raise ValueError("financial-position source values must be non-negative")
         values = [round(value) for value in chart_values]
         inventories = values[0]
         receivables = int(values[1] * 0.42)
@@ -65,6 +95,8 @@ class FinancialPosition:
 
     @property
     def current_ratio(self) -> float:
+        if self.payables == 0:
+            raise ValueError("current ratio requires positive current liabilities")
         return self.current_assets / self.payables
 
     @property

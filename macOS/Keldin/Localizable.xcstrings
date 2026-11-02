@@ -2370,6 +2370,16 @@
         }
       }
     },
+    "Hardware check passed": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vérification du matériel réussie"
+          }
+        }
+      }
+    },
     "Hashing workload used as a local model proxy.": {
       "localizations": {
         "fr": {
@@ -5173,6 +5183,16 @@
         }
       }
     },
+    "The PDFs were saved, but access couldn't be remembered for some files. If a PDF becomes unavailable, choose it again in Documents.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les PDF ont été enregistrés, mais l’accès à certains fichiers n’a pas pu être mémorisé. Si un PDF devient indisponible, sélectionnez-le à nouveau dans Documents."
+          }
+        }
+      }
+    },
     "The paper was created, but its history could not be saved or verified.": {
       "localizations": {
         "fr": {
@@ -5271,6 +5291,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ces suggestions tiennent compte de la mémoire disponible. Les sujets produits par ces modèles n’ont pas encore passé un contrôle de qualité complet. Les résultats peuvent varier avec un autre modèle ou une autre quantification."
+          }
+        }
+      }
+    },
+    "This checks the Mac's hardware, not the selected model's speed or paper quality.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce test vérifie le matériel du Mac, pas la vitesse du modèle sélectionné ni la qualité des sujets."
           }
         }
       }

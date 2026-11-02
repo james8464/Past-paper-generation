@@ -57,21 +57,26 @@ final class PDFDocumentAccess {
 
     func load(_ url: URL) -> Result<LoadedPDF, PDFLoadFailure> {
         if scopedURL?.standardizedFileURL != url.standardizedFileURL { release() }
-        var stale = false
+        var shouldRemember = false
+        if scopedURL == nil { shouldRemember = true }
         if scopedURL == nil, let data = bookmarks[url.standardizedFileURL.path],
            let (restored, isStale) = try? resolveBookmark(data),
-           restored.standardizedFileURL == url.standardizedFileURL,
-           startAccess(restored) {
-            scopedURL = restored
-            stale = isStale
+           restored.standardizedFileURL == url.standardizedFileURL {
+            if startAccess(restored) { scopedURL = restored }
+            shouldRemember = isStale
         }
         let result = read(url)
-        if case .success = result, stale,
-           let renewed = try? makeBookmark(url) {
-            saveBookmark(renewed, for: url)
-        }
+        if case .success = result, shouldRemember { _ = rememberValidatedPDF(url) }
         if case .failure = result { release() }
         return result
+    }
+
+    // The caller already holds access, such as the selected output-folder grant.
+    // Recording another PDF must not acquire or release the reader's active lease.
+    func rememberReadablePDF(_ url: URL) -> Result<Void, PDFLoadFailure> {
+        guard url.isFileURL else { return .failure(.invalid) }
+        if case .failure(let failure) = read(url) { return .failure(failure) }
+        return rememberValidatedPDF(url)
     }
 
     func recover(expected: URL, selected: URL?) throws -> Bool {
@@ -113,6 +118,16 @@ final class PDFDocumentAccess {
         var saved = bookmarks
         saved[url.standardizedFileURL.path] = data
         defaults.set(saved, forKey: Self.bookmarkKey)
+    }
+
+    private func rememberValidatedPDF(_ url: URL) -> Result<Void, PDFLoadFailure> {
+        guard url.isFileURL else { return .failure(.invalid) }
+        do {
+            saveBookmark(try makeBookmark(url), for: url)
+            return .success(())
+        } catch {
+            return .failure(.bookmark)
+        }
     }
 
     private func read(_ url: URL) -> Result<LoadedPDF, PDFLoadFailure> {
