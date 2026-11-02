@@ -128,14 +128,19 @@ def test_existing_personal_documents_are_not_overwritten(tmp_path):
 
 
 def test_november_sources_keep_regional_proposal_and_recovery_limits():
-    assert sources.DATE == "1 November 2026"
-    assert sources.DEFAULT_OUTPUT.name == "pages-20261101-english"
+    assert sources.DATE == "2 November 2026"
+    assert sources.DEFAULT_OUTPUT.name == "pages-20261102-english-sources"
     application = " ".join(
         text for page in sources.APPLICATION.pages for _, text in page.sections
     )
     assert "computing practice with Occitanie's open data" in application
     assert "500-euro" in application
     assert "already funded through other channels" in application
+    assert (
+        "French teacher review and learner timing evidence are unavailable. "
+        "The app has not been published on the App Store."
+    ) in application
+    assert "App Store publication is pending" not in application
     technical = " ".join(
         text for page in sources.TECHNICAL.pages for _, text in page.sections
     )
@@ -144,13 +149,40 @@ def test_november_sources_keep_regional_proposal_and_recovery_limits():
     assert "unrecovered failures stop" in technical
     assert "other failures stop" not in technical
     assert "private recovery record" in technical
-    assert "synthetic transport tests" in technical
-    assert "no live-model quality result" in technical
+    assert (
+        "The installed 2 November build passed software regression tests, protected "
+        "checks and direct and sandboxed Store-build checks. These results do not "
+        "qualify generated papers or cover every interaction. The app has not "
+        "been published on the App Store. Membership, distribution signing and "
+        "submission requirements remain unresolved. Official exam PDFs are not "
+        "bundled; rights for individual reference documents remain unresolved."
+    ) in technical
     reliability = " ".join(
         text for page in sources.RELIABILITY.pages for _, text in page.sections
     )
     assert "software regression tests" in reliability
     assert "common defect probability" in reliability
+
+
+def test_submission_readme_distinguishes_reviewed_pages_from_builder_sources():
+    readme = (sources.ROOT / "docs/competition/occitanie-2026/README.md").read_text()
+    assert "Updated 2 November 2026." in readme
+    assert "pages-20261102-english-sources" in readme
+    assert "pages-20261102-english/" in readme
+    assert "visually reviewed on 2 November" in readme
+    assert "RTF and SVG inputs, not native Pages documents" in readme
+    assert "PR #152" in readme and "a009e1fc" in readme
+    assert "PR #137 is merged and its developer-signed build installed" not in readme
+
+
+def test_current_claims_register_points_to_the_reviewed_november_pack():
+    register = (
+        sources.ROOT / "docs/competition/occitanie-2026/claims-register.md"
+    ).read_text()
+    assert "Updated 2 November 2026." in register
+    assert "pages-20261102-english/" in register
+    assert "were reviewed on 2 November" in register
+    assert "pages-english-final/" not in register
 
 
 def test_active_email_matches_experimental_model_route():

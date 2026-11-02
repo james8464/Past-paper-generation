@@ -1,6 +1,6 @@
 # Competition claims register
 
-Updated 30 October 2026. The current French route is V36 and uses the selected model. No complete V36 French paper has passed qualification. Internal review is engineering evidence, not external approval.
+Updated 2 November 2026. The current French route is V36 and uses the selected model. No complete V36 French paper has passed qualification. Internal review is engineering evidence, not external approval.
 
 | Claim | Status | Evidence or next gate |
 |---|---|---|
@@ -19,7 +19,7 @@ Updated 30 October 2026. The current French route is V36 and uses the selected m
 | A Toulouse/Montpellier teacher pilot exists | NOT CLAIMED | No school or teacher partnership exists. Internal review does not substitute an invented pilot. |
 | Regional open data is already used in an educational activity | IMPLEMENTED SEPARATE ACTIVITY | An offline, unmarked Python/SQL activity uses twelve explicitly selected public-school records from four communes, for school year 2025 to 2026. The source date, Licence Ouverte 2.0, attribution and sample limits are printed. It is separate from exam generation; no orientation service, observed regional adoption or endorsement is claimed. See `docs/quality/occitanie-case-study-review-2026-10-29.md`. |
 | PDF recipients need a Mac or AI account | FALSE | A person preparing practice uses the Mac app. Recipients can read or print its ordinary PDFs without the app or an AI account. |
-| The current English submission documents have been reviewed | REVIEWED WITH SUBMISSION LIMITS | The native Pages documents and PDF exports in `output/occitanie-2026/pages-english-final/` were reviewed on 30 October: three application pages, four technical-report pages and three reliability-note pages. Personal facts and eligibility still need the applicant's confirmation; the accepted submission language has not been confirmed. |
+| The current English submission documents have been reviewed | REVIEWED WITH SUBMISSION LIMITS | The native Pages documents and PDF exports in `output/occitanie-2026/pages-20261102-english/` were reviewed on 2 November: three application pages, four technical-report pages and three reliability-note pages. Personal facts and eligibility still need the applicant's confirmation; the accepted submission language has not been confirmed. |
 | The project is endorsed by a public authority | NOT CLAIMED | No endorsement exists. |
 | The app is suitable for every Mac | NOT CLAIMED | Hardware support depends on measured model quality, memory and latency. |
 | The project is GDPR compliant | NOT CLAIMED | Local-first design reduces data transfer, but each school needs its own governance review. |

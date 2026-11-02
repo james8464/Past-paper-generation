@@ -1,6 +1,6 @@
 # Prix Occitanie 2026 submission pack
 
-Updated 1 November 2026.
+Updated 2 November 2026.
 
 ## Formal requirement
 
@@ -17,9 +17,10 @@ inventing costs: the reduced EUR 500 plan also needs the applicant's decision.
 
 ## Prepared files
 
-The current Pages-source builder is dated 1 November and centres the regional
-activity and proposed twelve-month work. Generate into a fresh folder with
-`python tools/build_occitanie_pages_sources.py --output output/occitanie-2026/pages-20261101-english`.
+The current source builder is dated 2 November and centres the regional activity
+and proposed twelve-month work. It produces RTF and SVG inputs, not native Pages documents.
+Generate into a separate fresh folder with
+`python tools/build_occitanie_pages_sources.py --output output/occitanie-2026/pages-20261102-english-sources`.
 Its explicit page structure remains three application pages, four technical-report
 pages and three reliability-note pages. RTF page breaks and word-count tests do
 not certify Pages pagination: native editing, PDF export and inspection of every
@@ -27,7 +28,7 @@ new page are still required. Preserve the current orange Keldin icon and report
 cover whitespace when editing in Pages. The active English email draft no longer
 describes the historical fixed-paper route as current.
 
-The current English working dossier is in `output/occitanie-2026/pages-20261101-english/`: three native Pages documents, their matching PDFs and `Read before sending.txt`. All ten exported A4 pages were visually reviewed on 1 November: three application pages, four technical/user-report pages and three reliability-note pages. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. The working application is not submit-ready until James completes the facts below, removes drafting notices and placeholders, re-exports it and checks that it remains at most three A4 pages. The organiser has not confirmed English acceptance or accepted a submission.
+The current English working dossier is in `output/occitanie-2026/pages-20261102-english/`: three native Pages documents, their matching PDFs and `Read before sending.txt`. All ten exported A4 pages were visually reviewed on 2 November: three application pages, four technical/user-report pages and three reliability-note pages. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. The working application is not submit-ready until James completes the facts below, removes drafting notices and placeholders, re-exports it and checks that it remains at most three A4 pages. The organiser has not confirmed English acceptance or accepted a submission.
 
 Earlier Word exports are superseded. Their generated copies were removed from the working output folders on 30 October. The legacy builder still recreates historical V35 content and must not be used as the current submission without a separate update and review. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate that older set. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
@@ -73,8 +74,8 @@ Before sending, James must also confirm that he remains eligible under the exact
 
 ## Evidence boundaries
 
-PR #137 is merged and its developer-signed build installed after strict signature
-and backend-byte checks on 1 November. Recovery permits at most two whole-exercise
+PR #152 is merged at `a009e1fc` and its developer-signed build installed after strict
+signature and backend-byte checks on 2 November. Recovery permits at most two whole-exercise
 rounds after a validated semantic refusal and retains private returned-object
 evidence. Synthetic HTTP transport checks and software regression tests establish
 bounded software behaviour, not complete-paper or educational quality. Replay

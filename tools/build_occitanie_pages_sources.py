@@ -8,8 +8,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUTPUT = ROOT / "output/occitanie-2026/pages-20261101-english"
-DATE = "1 November 2026"
+DEFAULT_OUTPUT = ROOT / "output/occitanie-2026/pages-20261102-english-sources"
+DATE = "2 November 2026"
 
 
 @dataclass(frozen=True)
@@ -65,7 +65,7 @@ APPLICATION = Report(
                 ),
                 (
                     "What stage of development has your project reached?",
-                    "The regional activity produces a three-page worksheet and a three-page correction. The app has standard and enlarged print, visible progress and cancellation. Earlier fixed papers underwent internal curriculum and page review, but that work cannot establish the quality of a new AI draft.\nComplete French drafts from local models have contained mistakes. The immediate work is to evaluate stronger models and inspect their papers against the programme and official subjects. Difficulty and completion time have not been calibrated. French teacher review and learner timing evidence are unavailable; App Store publication is pending.",
+                    "The regional activity produces a three-page worksheet and a three-page correction. The app has standard and enlarged print, visible progress and cancellation. Earlier fixed papers underwent internal curriculum and page review, but that work cannot establish the quality of a new AI draft.\nComplete French drafts from local models have contained mistakes. The immediate work is to evaluate stronger models and inspect their papers against the programme and official subjects. Difficulty and completion time have not been calibrated. French teacher review and learner timing evidence are unavailable. The app has not been published on the App Store.",
                 ),
             ),
         ),
@@ -145,7 +145,7 @@ TECHNICAL = Report(
                 ),
                 (
                     "Distribution",
-                    "The current developer-signed build passed software checks and synthetic transport tests before installation. These provide no live-model quality result. Testing does not cover every interaction or establish full compliance with Apple's interface guidance. App Store publication is pending. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
+                    "The installed 2 November build passed software regression tests, protected checks and direct and sandboxed Store-build checks. These results do not qualify generated papers or cover every interaction. The app has not been published on the App Store. Membership, distribution signing and submission requirements remain unresolved. Official exam PDFs are not bundled; rights for individual reference documents remain unresolved.",
                 ),
                 (
                     "Sources",
