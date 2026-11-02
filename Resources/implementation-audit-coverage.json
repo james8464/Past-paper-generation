@@ -1264,8 +1264,11 @@
     {
       "path": "Backend/Core/generator_registry.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Release-gap reviewer read all 267 lines through EOF, including qualification projection and unchanged legacy migration; selectively checked coverage policy/schema consumers. Fixed-source full Python 6616 passed/2 skipped. Scope and later test-format provenance are recorded in evidence; no whole-project or model-quality claim.",
+      "source_sha256": "f5e9c3391ede6fed92b1ebded461d7a72a852a6cbbca73fadcc3c5ec96fa2d16",
+      "review_evidence": "docs/quality/qualification-state-projection-review-2026-11-02.md",
+      "review_evidence_sha256": "6f6d2e573e858ca483b348389eb04bee784ee14a204ce10ea7c65e966a3b1214"
     },
     {
       "path": "Backend/Core/independent_solver.py",
@@ -3798,6 +3801,12 @@
     },
     {
       "path": "docs/quality/qualification-boundary-audit-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/qualification-state-projection-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6736,8 +6745,11 @@
     {
       "path": "tests/test_generator_registry.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Release-gap reviewer read all 203 final lines through EOF, including exhaustive 64-state projection assertions, evidence retention and existing registry/resource/migration contracts; final changes after the full suite are formatting-only and explicitly documented. Selective callers only; no runtime/model qualification.",
+      "source_sha256": "999322c8043c5172c648a2fd15f0e7d4ee6cc34b3d3bbb1c2efaac73c07fd60d",
+      "review_evidence": "docs/quality/qualification-state-projection-review-2026-11-02.md",
+      "review_evidence_sha256": "6f6d2e573e858ca483b348389eb04bee784ee14a204ce10ea7c65e966a3b1214"
     },
     {
       "path": "tests/test_generator_render_transactions.py",

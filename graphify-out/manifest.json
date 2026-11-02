@@ -235,8 +235,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/generator_registry.py": {
-    "mtime": 1793543563.2896676,
-    "ast_hash": "ee82ea856ff7277783686ee7b72231a9",
+    "mtime": 1793645592.035159,
+    "ast_hash": "ac5e3c9c176360e1303b836bc917e352",
     "semantic_hash": ""
   },
   "Backend/Core/independent_solver.py": {
@@ -1525,8 +1525,8 @@
     "semantic_hash": "b97261947c71219f6a29b0d220df62c5"
   },
   "tests/test_generator_registry.py": {
-    "mtime": 1793543563.4750392,
-    "ast_hash": "33645c21181e5cfdf7cfc300f53a62cd",
+    "mtime": 1793649107.637865,
+    "ast_hash": "ed08d78bfe12de8505b935d0b4dceaf2",
     "semantic_hash": ""
   },
   "tests/test_generator_render_transactions.py": {
