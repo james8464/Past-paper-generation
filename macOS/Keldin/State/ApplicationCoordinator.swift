@@ -140,6 +140,10 @@ final class ApplicationCoordinator: ObservableObject {
         generatedFiles.filter { currentGenerationFileIDs.contains($0.id) }
     }
 
+    var recentPDFDocuments: [GeneratedFile] {
+        generatedFiles.filter { canPreviewGeneratedFile($0) }
+    }
+
     func beginDocumentCollection() {
         guard activeRun == nil else { return }
         completedDocuments = RunDocuments(
@@ -838,7 +842,12 @@ final class ApplicationCoordinator: ObservableObject {
         catalogStore.show(.history)
     }
 
+    func canPreviewGeneratedFile(_ file: GeneratedFile) -> Bool {
+        file.url.isFileURL && file.url.pathExtension.lowercased() == "pdf"
+    }
+
     func previewGeneratedFile(_ file: GeneratedFile) {
+        guard canPreviewGeneratedFile(file) else { return }
         previewedFileID = file.id
         catalogStore.show(.documents)
     }
