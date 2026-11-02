@@ -44,6 +44,7 @@ struct GeneratedFilesTable: View {
                         }
                         .labelStyle(.iconOnly)
                         .help("Preview")
+                        .disabled(!application.canPreviewGeneratedFile(file))
 
                         Button {
                             application.revealGeneratedFile(file)

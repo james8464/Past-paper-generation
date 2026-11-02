@@ -930,6 +930,82 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testNonPDFPreviewCannotChangeSelectionOrOpenAnotherDocument() throws {
+        let model = isolatedApplication()
+        let selected = GeneratedFile(role: "question_paper", url: temporaryDirectory.appendingPathComponent("selected.pdf"))
+        model.previewGeneratedFile(selected)
+        model.sidebarSelection = .history
+        let payloads = [("assessment_package", "assessment.json"), ("package_manifest", "manifest.json"),
+                        ("data_file", "data.csv"), ("skeleton_program", "program.py")]
+        for (role, name) in payloads {
+            let url = temporaryDirectory.appendingPathComponent(name)
+            let bytes = Data("retained \(name)".utf8)
+            try bytes.write(to: url)
+            let file = GeneratedFile(role: role, url: url)
+            model.generatedFiles.append(file)
+
+            model.previewGeneratedFile(file)
+
+            XCTAssertEqual(model.previewedFileID, selected.id)
+            XCTAssertEqual(model.sidebarSelection, .history)
+            XCTAssertTrue(model.generatedFiles.contains(file))
+            XCTAssertEqual(try Data(contentsOf: url), bytes)
+        }
+    }
+
+    @MainActor
+    func testPDFPreviewStillRoutesUnregisteredAndMissingPDFsToRecovery() {
+        let model = isolatedApplication()
+        for name in ["missing.pdf", "missing.PDF"] {
+            let file = GeneratedFile(role: "question_paper", url: temporaryDirectory.appendingPathComponent(name))
+            XCTAssertFalse(file.exists)
+            XCTAssertTrue(model.canPreviewGeneratedFile(file))
+            model.previewGeneratedFile(file)
+            XCTAssertEqual(model.previewedFileID, file.id)
+            XCTAssertEqual(model.sidebarSelection, .documents)
+        }
+    }
+
+    @MainActor
+    func testRecentPDFProjectionKeepsFourPrivateAndPublicArtifactsAcrossRelaunch() throws {
+        let defaults = isolatedDefaults()
+        let history = temporaryDirectory.appendingPathComponent("projection-history")
+        let model = ApplicationCoordinator(defaults: defaults, secrets: MemorySecrets(), historyDirectory: history, backend: ControlledRunBackend())
+        let record = GenerationJobRecord.fixture(state: .pending)
+        try model.generationCoordinator.begin(record)
+        model.beginDocumentCollection()
+        let artifacts = [("question_paper", "paper.pdf"), ("mark_scheme", "scheme.PDF"),
+                         ("assessment_package", "assessment.json"), ("package_manifest", "manifest.json")]
+        for (role, name) in artifacts {
+            let url = temporaryDirectory.appendingPathComponent(name)
+            try Data("retained \(name)".utf8).write(to: url)
+            model.apply(.file(role: role, path: url.path))
+        }
+        let files = model.currentGenerationFiles
+        let bookmark = ["/prior.pdf": Data("existing grant".utf8)]
+        defaults.set(bookmark, forKey: PDFDocumentAccess.bookmarkKey)
+        XCTAssertEqual(files.count, 4)
+        XCTAssertEqual(model.recentPDFDocuments.map(\.id), files.filter { $0.url.pathExtension.lowercased() == "pdf" }.map(\.id))
+        XCTAssertEqual(model.recentPDFDocuments.count, 2)
+        XCTAssertEqual(model.currentGenerationFiles, files)
+        try model.generationCoordinator.complete(expectedJobID: record.id, artifacts: files)
+        defaults.set(try JSONEncoder().encode(model.generatedFiles), forKey: AppStorageKey.recentDocuments)
+
+        let restarted = ApplicationCoordinator(defaults: defaults, secrets: MemorySecrets(), historyDirectory: history, backend: ControlledRunBackend())
+
+        XCTAssertEqual(restarted.generatedFiles.count, 4)
+        XCTAssertEqual(restarted.recentDocumentStore.records.first?.artifacts.map(\.id), files.map(\.id))
+        XCTAssertEqual(restarted.recentDocumentStore.records.first?.artifacts.map(\.url), files.map(\.url))
+        XCTAssertEqual(restarted.recentDocumentStore.records.first?.artifacts.map(\.role), files.map(\.role))
+        XCTAssertEqual(restarted.recentPDFDocuments.map(\.id), model.recentPDFDocuments.map(\.id))
+        XCTAssertEqual(restarted.recentPDFDocuments.count, 2)
+        XCTAssertEqual(defaults.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], bookmark)
+        for (_, name) in artifacts {
+            XCTAssertEqual(try Data(contentsOf: temporaryDirectory.appendingPathComponent(name)), Data("retained \(name)".utf8))
+        }
+    }
+
+    @MainActor
     func testRestoredDocumentLibraryDeduplicatesReplacedPaths() throws {
         let defaults = isolatedDefaults()
         let url = temporaryDirectory.appendingPathComponent("paper.pdf")

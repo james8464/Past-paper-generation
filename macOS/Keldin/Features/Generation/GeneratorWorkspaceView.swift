@@ -257,17 +257,18 @@ private struct RecentDocuments: View {
     @State private var isExpanded = false
 
     var body: some View {
+        let files = application.recentPDFDocuments
         DisclosureGroup(isExpanded: $isExpanded) {
-            GeneratedFilesTable(files: application.generatedFiles)
+            GeneratedFilesTable(files: files)
                 .frame(height: 160)
         } label: {
             HStack {
                 Text("Recent Documents")
                     .font(.headline)
-                if !application.generatedFiles.isEmpty {
-                    Text(application.generatedFiles.count, format: .number)
+                if !files.isEmpty {
+                    Text(files.count, format: .number)
                         .foregroundStyle(.secondary)
-                        .accessibilityLabel("\(application.generatedFiles.count) documents")
+                        .accessibilityLabel("\(files.count) documents")
                 }
                 Spacer()
                 Button("Open Output Folder", action: application.openOutputFolder)
