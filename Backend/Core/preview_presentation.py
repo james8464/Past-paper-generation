@@ -8,6 +8,8 @@ from xml.sax.saxutils import escape
 
 import pymupdf as fitz
 
+from Backend.Core.pdf_validation import text_trace_is_occluded
+
 PREVIEW_PRESENTATION = "uk-layout-preview-v1"
 PREVIEW_NOTICE = "LAYOUT PREVIEW · Unreviewed sample content · Unofficial"
 _preview: ContextVar[bool] = ContextVar("uk_layout_preview", default=False)
@@ -70,11 +72,18 @@ def validate_preview_pdf(path: Path) -> dict[str, object]:
             for span in page.get_texttrace()
             if PREVIEW_NOTICE in "".join(chr(char[0]) for char in span["chars"])
         ]
+        drawings = page.get_drawings()
         if not spans or any(
             span["type"] == 3
             or span["opacity"] < 0.8
             or span["size"] < 8
             or all(value > 0.95 for value in span["color"])
+            # A source-cover subject can share the trace: measure the required
+            # notice phrases, not unrelated text extending beyond an opaque box.
+            or any(
+                text_trace_is_occluded({**span, "bbox": bounds}, drawings)
+                for bounds in notice_boxes
+            )
             for span in spans
         ):
             raise ValueError(

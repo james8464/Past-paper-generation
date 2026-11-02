@@ -196,6 +196,46 @@ def test_invalid_notices_fail_closed(tmp_path: Path, kind: str) -> None:
     assert path.read_bytes() == before
 
 
+@pytest.mark.parametrize(
+    "background", ["earlier_opaque", "later_transparent", "later_opaque"]
+)
+@pytest.mark.parametrize("prefix", ["", "A-level Economics · "])
+def test_notice_visibility_respects_artwork_draw_order(
+    tmp_path: Path,
+    background: str,
+    prefix: str,
+) -> None:
+    from Backend.Core.preview_presentation import PREVIEW_NOTICE, validate_preview_pdf
+
+    path = tmp_path / f"{background}.pdf"
+    with fitz.open() as document:
+        page = document.new_page()
+        if background == "earlier_opaque":
+            page.draw_rect(fitz.Rect(35, 60, 450, 90), fill=(1, 1, 1), color=None)
+        page.insert_text((40, 80), prefix + PREVIEW_NOTICE, fontsize=10)
+        bounds = page.search_for(PREVIEW_NOTICE)[0]
+        if background.startswith("later_"):
+            page.draw_rect(
+                bounds + fitz.Rect(-2, -2, 2, 2),
+                fill=(1, 1, 1),
+                color=None,
+                fill_opacity=1 if background == "later_opaque" else 0.2,
+                overlay=True,
+            )
+        document.save(path)
+    before = path.read_bytes()
+    with fitz.open(path) as document:
+        crop = document[0].get_pixmap(clip=bounds, colorspace=fitz.csRGB).samples
+    if background == "later_opaque":
+        assert all(value == 255 for value in crop)
+        with pytest.raises(ValueError, match="layout-preview notice"):
+            validate_preview_pdf(path)
+    else:
+        assert any(value < 255 for value in crop)
+        assert validate_preview_pdf(path)["first_page_notice"] is True
+    assert path.read_bytes() == before
+
+
 def test_missing_notice_preserves_existing_pdf_and_resets_context(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
