@@ -670,8 +670,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/ollama_client.py": {
-    "mtime": 1793543563.3168814,
-    "ast_hash": "a4f84c23472cb477ad5a9b83350175ac",
+    "mtime": 1793631250.4932022,
+    "ast_hash": "8e487e0dc336ec78d50e7c72f66e39df",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py": {
@@ -980,8 +980,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py": {
-    "mtime": 1793543563.3326802,
-    "ast_hash": "3a215fc2a51bc7521078df8e13c93e1c",
+    "mtime": 1793631250.502582,
+    "ast_hash": "d6315fcbf5c9307c51e9d3a090b34d94",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py": {
@@ -1020,8 +1020,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pastpapergen/validation.py": {
-    "mtime": 1793543563.3342333,
-    "ast_hash": "a7d0bf865ba5fb553c4f76e838e56baf",
+    "mtime": 1793631250.5028155,
+    "ast_hash": "ec267777eec33c60c7150ae31ba707e2",
     "semantic_hash": ""
   },
   "Resources/economics/edexcel-a/generator/pyproject.toml": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793626955.7543507,
-    "ast_hash": "797e2d006f48a9f5741caa4cd095a8f1",
+    "mtime": 1793629075.9377272,
+    "ast_hash": "048bf720fbe9ef80caaebfa4861312a4",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1915,8 +1915,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1793628760.02942,
-    "ast_hash": "3484427c63f0d327b4e48a665e3cf141",
+    "mtime": 1793631324.8693933,
+    "ast_hash": "1599891ea981dadf48a255bafb29dd7a",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793628929.9414508,
-    "ast_hash": "dc093b65312903aab9c20eabcfd4d6ea",
+    "mtime": 1793631621.6936836,
+    "ast_hash": "b90c1486ae9055692908ad9fb22d3d78",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4460,8 +4460,8 @@
     "semantic_hash": ""
   },
   "tests/test_ci_signing.py": {
-    "mtime": 1793628759.7125916,
-    "ast_hash": "cb4e2b942aa5dbf8da56167b5fc1b803",
+    "mtime": 1793631324.5266485,
+    "ast_hash": "8f3c2284bdaae25a478daf9c81126401",
     "semantic_hash": ""
   },
   "tests/test_french_repeat_practice.py": {
@@ -5440,8 +5440,28 @@
     "semantic_hash": ""
   },
   "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md": {
-    "mtime": 1793628929.433589,
-    "ast_hash": "f63dc914c5fb8ea580f76f65d88e968e",
+    "mtime": 1793631536.1608095,
+    "ast_hash": "9f204264401719138c60d0c04a712d80",
+    "semantic_hash": ""
+  },
+  "tests/test_aqa_cs_checkpoint_admission.py": {
+    "mtime": 1793631250.4934983,
+    "ast_hash": "23f68bcde7bd66a9ac29a75f20da3fcb",
+    "semantic_hash": ""
+  },
+  "tests/test_edexcel_checkpoint_admission.py": {
+    "mtime": 1793631250.5029662,
+    "ast_hash": "2057377af307f9feced6e415dc0de15d",
+    "semantic_hash": ""
+  },
+  "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md": {
+    "mtime": 1793631536.1601386,
+    "ast_hash": "3ba10cdd08eafd382ffb24a35a76e788",
+    "semantic_hash": ""
+  },
+  "docs/quality/edexcel-checkpoint-admission-2026-11-02.md": {
+    "mtime": 1793631536.160549,
+    "ast_hash": "e7deb94b872096ecfbba0f6995e68a61",
     "semantic_hash": ""
   }
 }
