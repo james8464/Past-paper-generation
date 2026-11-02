@@ -189,7 +189,9 @@ def render_electronic_answer_document(
                 y -= 13
             y -= 8
             pdf.setFont(FONT_BOLD, 9)
-            pdf.drawRightString(535, y, f"[{part.marks} marks]")
+            pdf.drawRightString(
+                535, y, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]"
+            )
             y -= 20
             height = max(280, y - 100)
             pdf.acroForm.textfield(
