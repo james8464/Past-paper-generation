@@ -6,6 +6,95 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testUKSuccessWithoutCurrentQuestionPaperCannotCompleteHistory() throws {
+        for output in ["empty", "done-only", "private-json", "source-only"] {
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, historyDirectory: history)
+            application.outputFolder = history.deletingLastPathComponent().appendingPathComponent("exports")
+            let older = history.deletingLastPathComponent().appendingPathComponent("older.pdf")
+            let olderBytes = Data("preserved historical document".utf8)
+            try olderBytes.write(to: older)
+            application.apply(.file(role: "question_paper", path: older.path))
+            application.setDryRun(true)
+            application.generate()
+            let request = try XCTUnwrap(backend.requests.first)
+            let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+            let index = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
+            let working = URL(fileURLWithPath: request.arguments[index + 1])
+            if ["private-json", "source-only"].contains(output) {
+                try FileManager.default.createDirectory(at: working, withIntermediateDirectories: true)
+                if output == "private-json" {
+                    let file = working.appendingPathComponent("assessment.json")
+                    try Data("{}".utf8).write(to: file)
+                    request.onEvent(.file(role: "assessment_package", path: file.path))
+                } else {
+                    let file = working.appendingPathComponent("source.pdf")
+                    let pdf = PDFDocument()
+                    pdf.insert(PDFPage(), at: 0)
+                    XCTAssertTrue(pdf.write(to: file))
+                    request.onEvent(.file(role: "source_booklet", path: file.path))
+                }
+            }
+            if output != "empty" { request.onEvent(.done(message: "Done")) }
+            request.onFinish(.success(0))
+
+            XCTAssertFalse(application.isRunning, output)
+            XCTAssertTrue(application.showError, output)
+            XCTAssertNil(application.generationProgress, output)
+            XCTAssertNil(application.generationCoordinator.activeJob, output)
+            let failed = try XCTUnwrap(application.recentDocumentStore.records.first { $0.id == job.id })
+            XCTAssertEqual(failed.state, .failed, output)
+            XCTAssertFalse(application.recentDocumentStore.records.contains { $0.state == .completed }, output)
+            XCTAssertFalse(FileManager.default.fileExists(atPath: application.outputFolder.path), output)
+            XCTAssertNotEqual(application.sidebarSelection, .documents, output)
+            XCTAssertEqual(try Data(contentsOf: older), olderBytes, output)
+            XCTAssertTrue(application.generatedFiles.contains { $0.url == older }, output)
+        }
+    }
+
+    @MainActor
+    func testCurrentQuestionPaperStillCompletesFullBankAndSourceRoutes() throws {
+        let cases = [
+            ("accounting_aqa", "2", ["question_paper"]),
+            ("accounting_aqa", "2", ["question_paper", "mark_scheme"]),
+            ("computer_science", "bank-4.2", ["question_paper", "mark_scheme"]),
+            ("economics_aqa", "3", ["question_paper", "mark_scheme", "source_booklet"]),
+        ]
+        for (subject, paper, roles) in cases {
+            let backend = ControlledRunBackend()
+            let history = try temporaryHistoryURL()
+            let application = application(backend: backend, historyDirectory: history)
+            application.outputFolder = history.deletingLastPathComponent().appendingPathComponent("exports")
+            application.selectBoard(try XCTUnwrap(ExamCatalog.readyBoards.first { $0.backendSubject == subject }))
+            application.selectPaperID(paper)
+            application.setDryRun(true)
+            application.generate()
+            let request = try XCTUnwrap(backend.requests.first)
+            let job = try XCTUnwrap(application.generationCoordinator.activeJob)
+            let index = try XCTUnwrap(request.arguments.firstIndex(of: "--output"))
+            let working = URL(fileURLWithPath: request.arguments[index + 1])
+            try FileManager.default.createDirectory(at: working, withIntermediateDirectories: true)
+            for role in roles {
+                let file = working.appendingPathComponent(role + ".pdf")
+                let pdf = PDFDocument()
+                pdf.insert(PDFPage(), at: 0)
+                XCTAssertTrue(pdf.write(to: file))
+                request.onEvent(.file(role: role, path: file.path))
+            }
+            request.onEvent(.done(message: "Done"))
+            request.onFinish(.success(0))
+            XCTAssertFalse(application.isRunning)
+            XCTAssertFalse(application.showError, application.errorMessage)
+            let completed = try XCTUnwrap(application.recentDocumentStore.records.first { $0.id == job.id })
+            XCTAssertEqual(completed.state, .completed)
+            XCTAssertEqual(Set(completed.artifacts.map(\.role)), Set(roles))
+            XCTAssertEqual(application.sidebarSelection, .documents)
+            XCTAssertEqual(application.generationProgress, 1)
+        }
+    }
+
+    @MainActor
     func testHostedPreviewNeedsNoConsentWhileLiveGenerationStillRequiresIt() throws {
         for provider in [AIProvider.openAI, .anthropic] {
             for preview in [false, true] {
