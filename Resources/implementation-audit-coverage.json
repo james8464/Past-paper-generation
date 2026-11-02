@@ -220,8 +220,11 @@
     {
       "path": "Backend/Core/assessment_prompts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "french_run23_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "d9a8b444b7387b4b20d1c72a809ef119354fbedbb5c31f1906eb022d648c10cc",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/assessment_quality.py",
@@ -235,20 +238,29 @@
     {
       "path": "Backend/Core/benchmark.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "root: prior 723-line EOF plus complete 11-line fix delta, not a fresh final EOF reread. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "ff719ab1a3ee185aaa75523910f3835fa6e1a362d84cf8c4d69fd675e7d4bb54",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/board_profiles.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "d6847e666e25ed022769c764c541d10d1fd75d3bba34b36d9b25733ebda84305",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/branding.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "3b1f74e025c63e623e06740af1de3278a30941b72fa65eacae5ae6fc1c6f3f35",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/calibration_store.py",
@@ -271,14 +283,20 @@
     {
       "path": "Backend/Core/candidate_paths.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "1ac18771b8b25e1c60aa7593ceb20899d77153649a899ec9686379a2ac7b19d0",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "root: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "104d7192da5493f66190ae05ce4b27066f49775fffb9980839246362f025c650",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/computer_science_audit.py",
@@ -415,8 +433,11 @@
     {
       "path": "Backend/Core/exam_blueprints.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "french_run23_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "d72643a90414b365c63698822d3e426ab9000ae790ae7de93bd4fbd6831b76a9",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "Backend/Core/exam_cover.py",
@@ -3719,6 +3740,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/selected-response-dispatch-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4345,8 +4372,11 @@
     {
       "path": "macOS/Keldin/Application/AppConfiguration.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "quality_status_review: EOF; root: EOF and final comment-only correction. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "5bc4d204ce39f310a44396340f96966a08e6fdd8217eaa900328fa9bdf40420e",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
@@ -4531,8 +4561,11 @@
     {
       "path": "macOS/Keldin/Components/SharedViews.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "quality_status_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "828e4ec018f2911aa840515f26c89bb0aac98f1f2ada4bee668a17973302fdfa",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/Domain/AppModels.swift",
@@ -4546,8 +4579,11 @@
     {
       "path": "macOS/Keldin/Domain/AssessmentBundleExporter.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "french_run23_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "02ebc95c6b5a67b42ce3a0a9fa542b8eace0777be4a172798e8a9d42498c5b2e",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchAssessmentRequest.swift",
@@ -4759,8 +4795,11 @@
     {
       "path": "macOS/Keldin/Features/Settings/HostedModelCandidatesView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "quality_status_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "1cbbdad53c0b505c64714b4be0f9aabd0fbe2b658eb323a91428279dbcb3463c",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/Features/Settings/SettingsPane.swift",
@@ -4828,8 +4867,11 @@
     {
       "path": "macOS/Keldin/Services/AppleIntelligenceAvailability.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "french_run23_review: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "e0cb71870cc61ecf7defd162c5a1f92580a0cd20149776c7bbc9306a8f9914e1",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/Services/BackendClient.swift",
@@ -4888,14 +4930,20 @@
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "5eddcc18bbea3fd16c9e53ec82f24b36ef969a57550a717d33487dae532b2b77",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/State/CatalogStore.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "77d439e55983ec3eba78e58940b44398500927d6dffed46f4a18730b9996f010",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "macOS/Keldin/State/CoordinatorDependencies.swift",
@@ -5463,6 +5511,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_benchmark_duration.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "root: EOF; release_gap_audit: complete fix/test diff review. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
+      "source_sha256": "427675c7ab092c04eb23101b2762b01d2cb56ed87682681f108764616a568464",
+      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
       "path": "tests/test_benchmark_verdict_copy.py",
