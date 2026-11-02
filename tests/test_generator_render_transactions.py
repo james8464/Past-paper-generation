@@ -65,7 +65,20 @@ def test_shared_family_adapter_owns_atomic_pdf_transaction() -> None:
 
     assert len(calls) == 1
     call = calls[0]
+    # The transaction receives a deferred wrapper so notice validation happens
+    # against the temporary file, before atomic replacement.
+    assert isinstance(call.args[1], ast.Name)
+    wrappers = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == call.args[1].id
+    ]
+    assert len(wrappers) == 1
+    wrapper_calls = [
+        node for node in ast.walk(wrappers[0]) if isinstance(node, ast.Call)
+    ]
     assert any(
-        isinstance(argument, ast.Attribute) and argument.attr == "renderer"
-        for argument in call.args
+        isinstance(node.func, ast.Attribute) and node.func.attr == "renderer"
+        for node in wrapper_calls
     )
+    assert any(_call_name(node) == "validate_preview_pdf" for node in wrapper_calls)

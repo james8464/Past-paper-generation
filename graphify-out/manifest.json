@@ -720,8 +720,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_cli_pdf.py": {
-    "mtime": 1793543563.318973,
-    "ast_hash": "7995567a884e25e11aca91c823757e45",
+    "mtime": 1793595757.0371876,
+    "ast_hash": "495b910780df0ba93ddbb985e70c130e",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_closed_response_integrity.py": {
@@ -845,8 +845,8 @@
     "semantic_hash": ""
   },
   "Resources/configured-generators/generator/configuredgen/render_pdf.py": {
-    "mtime": 1793543563.321914,
-    "ast_hash": "dbaac1a3e3eae7bbd86a69f702582e0d",
+    "mtime": 1793595757.0363996,
+    "ast_hash": "ea1c2054f2809588519f84d9abde903d",
     "semantic_hash": ""
   },
   "Resources/configured-generators/generator/pyproject.toml": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793590568.8331494,
-    "ast_hash": "8ff5aa5e3c18654dee12cbc12b7246b2",
+    "mtime": 1793594948.9091024,
+    "ast_hash": "836582f52b238e1b1ab4413b5ebe05be",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1415,9 +1415,9 @@
     "semantic_hash": ""
   },
   "tests/test_configured_family.py": {
-    "mtime": 1793543563.4586241,
-    "ast_hash": "7918c66ac49260b16f3ad855c55d4f36",
-    "semantic_hash": "7918c66ac49260b16f3ad855c55d4f36"
+    "mtime": 1793595806.8289316,
+    "ast_hash": "5e8b66db0570801c4803cd340135dcc4",
+    "semantic_hash": ""
   },
   "tests/test_cover_fonts.py": {
     "mtime": 1793543563.4587803,
@@ -1530,8 +1530,8 @@
     "semantic_hash": ""
   },
   "tests/test_generator_render_transactions.py": {
-    "mtime": 1793543563.4751017,
-    "ast_hash": "e3f0c0157592eecab363e4ab70939741",
+    "mtime": 1793595806.828585,
+    "ast_hash": "31060783f98e230aedde1a89645aa879",
     "semantic_hash": ""
   },
   "tests/test_humanities_overlay.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793594804.3110137,
-    "ast_hash": "d0447b726837e6bc9317061a44d353bb",
+    "mtime": 1793594948.8298483,
+    "ast_hash": "e0fc8eaf05bc86e3545fcfded9a349bb",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5342,6 +5342,11 @@
   "docs/quality/provider-boundary-file-review-2026-11-02.md": {
     "mtime": 1793594789.1046243,
     "ast_hash": "773b36f5b47cd609f3bf67af2be2b45b",
+    "semantic_hash": ""
+  },
+  "docs/quality/output-integrity-and-paper-two-flow-2026-11-02.md": {
+    "mtime": 1793595884.3381174,
+    "ast_hash": "182dd24caf00630b51ff65c789a94aea",
     "semantic_hash": ""
   }
 }
