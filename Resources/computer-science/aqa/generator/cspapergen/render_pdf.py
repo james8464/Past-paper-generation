@@ -5,7 +5,6 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import replace
-from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -29,7 +28,7 @@ from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import (
     formatted_generation_date,
-    generation_date,
+    formatted_generation_series,
 )
 from Backend.Core.open_credit import printed_credit_points
 from Backend.Core.preview_presentation import preview_copy
@@ -730,7 +729,7 @@ def _render_paper1_mark_scheme_pages(
 
 def _mark_scheme_artifact_height(question: Question, part: QuestionPart) -> float:
     if question.style_id == "recursive_graph_traversal" and part.label == "3":
-        return 425
+        return 153 if _full_cell_matrix(part) is not None else 425
     if question.style_id == "recursive_graph_traversal" and part.label == "5":
         return 192
     if question.style_id == "finite_state_machine" and part.label == "1":
@@ -1919,7 +1918,9 @@ def _draw_mark_scheme_answer_artifact(
     y: float,
 ) -> float:
     if question.style_id == "recursive_graph_traversal" and part.label == "3":
-        return _draw_adjacency_matrix_answers(pdf, y - 5)
+        return _draw_adjacency_matrix_answers(
+            pdf, y - 5, matrix=_full_cell_matrix(part)
+        )
     if question.style_id == "recursive_graph_traversal" and part.label == "5":
         return _draw_recursive_trace_answer(pdf, y - 5)
     if question.style_id == "finite_state_machine" and part.label == "1":
@@ -1929,7 +1930,26 @@ def _draw_mark_scheme_answer_artifact(
     return y
 
 
-def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
+def _full_cell_matrix(part: QuestionPart) -> list[list[str]] | None:
+    slots = {f"r{row}c{column}" for row in range(1, 7) for column in range(1, 7)}
+    if set(part.response_slots) != slots:
+        return None
+    answers = part.marking.closed_answers
+    if (
+        len(part.response_slots) != len(slots)
+        or set(answers) != slots
+        or any(values not in (["0"], ["1"]) for values in answers.values())
+    ):
+        raise ValueError("Full-cell matrix answers must bind every binary cell")
+    return [
+        [answers[f"r{row}c{column}"][0] for column in range(1, 7)]
+        for row in range(1, 7)
+    ]
+
+
+def _draw_adjacency_matrix_answers(
+    pdf: canvas.Canvas, y: float, *, matrix: list[list[str]] | None = None
+) -> float:
     edges = {(1, 2), (1, 4), (2, 3), (2, 5), (3, 6), (4, 5), (5, 6)}
     cell = 16
     size = cell * 7
@@ -1938,6 +1958,8 @@ def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
         ("Alternative valid matrix", False),
         ("Alternative lower-triangle representation", True),
     ]
+    if matrix is not None:
+        matrices = matrices[:1]
     x = 245
     cursor = y
     for matrix_index, (title, lower_triangle_only) in enumerate(matrices):
@@ -1962,7 +1984,9 @@ def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
                     value = str(row)
                 elif row > 0 and column > 0:
                     edge = (min(row, column), max(row, column))
-                    if not lower_triangle_only or row >= column:
+                    if matrix is not None:
+                        value = matrix[row - 1][column - 1]
+                    elif not lower_triangle_only or row >= column:
                         is_edge = edge in edges
                         if matrix_index == 1:
                             is_edge = (
@@ -1976,8 +2000,10 @@ def _draw_adjacency_matrix_answers(pdf: canvas.Canvas, y: float) -> float:
     pdf.setFont(FONT, 8)
     pdf.drawString(
         145,
-        cursor + 8,
-        "Award 1 mark for symmetry and 1 mark for every edge represented once.",
+        cursor + (4 if matrix is not None else 8),
+        "Award 1 mark for symmetry and 1 mark for all and only the listed edges."
+        if matrix is not None
+        else "Award 1 mark for symmetry and 1 mark for every edge represented once.",
     )
     return cursor - 4
 
@@ -2103,17 +2129,13 @@ def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None
         556,
         794,
         "MARK SCHEME \u2013 A-LEVEL COMPUTER SCIENCE \u2013 "
-        f"{blueprint.paper_code} \u2013 JUNE {_exam_date(blueprint).year}",
+        f"{blueprint.paper_code} \u2013 {formatted_generation_series().upper()}",
     )
     pdf.setLineWidth(0.6)
     pdf.line(0, 774, 553, 774)
     pdf.line(0, 51, 553, 51)
     pdf.setFont(FONT, 8)
     pdf.drawString(43, 35, str(page))
-
-
-def _exam_date(blueprint: PaperBlueprint) -> date:
-    return generation_date()
 
 
 def _formatted_exam_date(blueprint: PaperBlueprint) -> str:

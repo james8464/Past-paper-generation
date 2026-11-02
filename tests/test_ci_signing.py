@@ -10,10 +10,20 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def test_backend_uses_standard_intel_mac_while_native_keeps_apple_silicon():
+    workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    backend = workflow.split("  backend:", 1)[1].split("  macos:", 1)[0]
+    native = workflow.split("  macos:", 1)[1]
+    assert "    runs-on: macos-15-intel\n" in backend
+    assert "    runs-on: macos-15\n" in native
+    assert "run: python -m pytest -q" in backend
+    assert "continue-on-error" not in backend
+
+
 def test_backend_job_has_room_for_the_full_suite_and_setup():
     workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
     backend = workflow.split("  backend:", 1)[1].split("  macos:", 1)[0]
-    assert "timeout-minutes: 30" in backend
+    assert "timeout-minutes: 90" in backend
 
 
 @pytest.mark.parametrize("target", ["test", "preflight-app-store"])

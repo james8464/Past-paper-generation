@@ -15,10 +15,10 @@ permissions:
 jobs:
   backend:
     name: Backend tests
-    # PDF typography checks use the same system fonts as the supported Mac app.
-    # Running them on Linux substitutes fonts and tests a different layout.
-    runs-on: macos-15
-    timeout-minutes: 30
+    # Keep macOS fonts for PDF checks; Intel avoids the arm64 runner capacity queue.
+    # Native compilation and Store checks still run on Apple Silicon below.
+    runs-on: macos-15-intel
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

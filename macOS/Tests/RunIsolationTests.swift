@@ -973,6 +973,23 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
+    func testDownloadUsesCapturedEndpointEvenIfSettingsChangeBeforeApproval() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        application.ollamaURL = "http://127.0.0.1:11435"
+        application.modelToPull = "fixture/captured"
+        let request = try XCTUnwrap(application.requestPullModel())
+        XCTAssertEqual(request.endpoint, "http://127.0.0.1:11435")
+        application.ollamaURL = "http://127.0.0.1:11436"
+
+        application.confirmPullModel(request)
+
+        let run = try XCTUnwrap(backend.requests.first)
+        XCTAssertEqual(run.arguments, ["pull-model", "--model", "fixture/captured", "--ollama-url", "http://127.0.0.1:11435"])
+        application.cancelGeneration()
+    }
+
+    @MainActor
     func testRecommendedDownloadRequestAndCancelPreserveTheSelectedModel() {
         let defaults = isolatedDefaults()
         defaults.set("fixture/previous-model", forKey: AppStorageKey.ollamaModel)

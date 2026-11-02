@@ -1,3 +1,4 @@
+import pytest
 from cspapergen.generator import build_paper1_blueprint, build_paper2_blueprint
 from cspapergen.render_pdf import render_mark_scheme
 from cspapergen.syllabus import load_syllabus
@@ -154,10 +155,17 @@ def test_paper_1_mark_scheme_has_content_driven_rows_without_repeated_padding(tm
         document.close()
 
 
-def test_paper_1_mark_scheme_renders_question_specific_answer_artifacts(tmp_path):
+@pytest.mark.parametrize("legacy_matrix", [False, True])
+def test_paper_1_mark_scheme_renders_question_specific_answer_artifacts(
+    tmp_path, legacy_matrix
+):
     import pymupdf as fitz
 
     blueprint, _context = build_paper1_blueprint(load_syllabus(), seed=42)
+    if legacy_matrix:
+        part = blueprint.questions[2].parts[2]
+        part.response_slots = []
+        part.marking.closed_answers = {}
     output = tmp_path / "ms.pdf"
 
     render_mark_scheme(blueprint, output)
@@ -165,7 +173,9 @@ def test_paper_1_mark_scheme_renders_question_specific_answer_artifacts(tmp_path
     document = fitz.open(output)
     try:
         text = "\n".join(page.get_text() for page in document)
-        assert "Alternative valid matrix" in text
+        assert ("Alternative valid matrix" in text) is legacy_matrix
+        assert ("Alternative lower-triangle representation" in text) is legacy_matrix
+        assert "Completed adjacency matrix" in text
         assert "Call" in text
         assert "Mark range" in text
         assert "Expected: requirement satisfied" not in text

@@ -3,6 +3,7 @@
 import argparse
 import io
 import json
+import os
 from urllib.error import URLError
 
 import pytest
@@ -176,3 +177,77 @@ def test_discovery_uses_existing_no_proxy_no_redirect_transport(monkeypatch):
     )
     assert ollama.api_models("http://127.0.0.1:11435") == []
     assert seen == [("http://127.0.0.1:11435/api/tags", 5)]
+
+
+@pytest.mark.parametrize(
+    "endpoint",
+    ["http://localhost:11434", "http://127.0.0.1:11435", "http://[::1]:11436/"],
+)
+def test_pull_routes_owned_child_to_selected_local_endpoint(monkeypatch, endpoint):
+    from Backend.Core import events
+    from tests.test_events_subprocess import FakeChild
+
+    monkeypatch.setenv("OLLAMA_HOST", "https://unselected.example")
+    monkeypatch.setenv("KELDIN_FIXTURE_KEEP", "preserved")
+    monkeypatch.setattr(ollama, "ollama_command", lambda: "/fixture/ollama")
+    child = FakeChild()
+    child.wait = lambda timeout=None: 0
+    calls = []
+
+    def spawn(command, **kwargs):
+        calls.append((command, kwargs))
+        return child
+
+    monkeypatch.setattr(events.subprocess, "Popen", spawn)
+    args = build_parser().parse_args(
+        ["pull-model", "--model", "fixture:latest", "--ollama-url", endpoint]
+    )
+    assert ollama.handle_pull_model(args) == 0
+    assert len(calls) == 1
+    command, kwargs = calls[0]
+    assert command == ["/fixture/ollama", "pull", "fixture:latest"]
+    assert kwargs["env"]["OLLAMA_HOST"] == endpoint.rstrip("/")
+    assert kwargs["env"]["KELDIN_FIXTURE_KEEP"] == "preserved"
+    assert os.environ["OLLAMA_HOST"] == "https://unselected.example"
+    assert child.stdout.closed
+
+
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "https://remote.example",
+        "http://remote.example",
+        "http://user:secret@localhost:11434",
+        "http://localhost:0",
+    ],
+)
+def test_pull_refuses_remote_or_invalid_endpoint_before_child_lookup(
+    monkeypatch, endpoint
+):
+    monkeypatch.setattr(ollama, "ollama_command", lambda: pytest.fail("child lookup"))
+    with pytest.raises(ValueError):
+        ollama.handle_pull_model(
+            argparse.Namespace(model="fixture", ollama_url=endpoint)
+        )
+
+
+@pytest.mark.parametrize(
+    "handler", [ollama.handle_ollama_status, ollama.handle_list_models]
+)
+def test_default_cli_discovery_fallback_overrides_inherited_alternate_host(
+    monkeypatch, handler
+):
+    from types import SimpleNamespace
+
+    transport(monkeypatch, failure=True)
+    monkeypatch.setenv("OLLAMA_HOST", "https://unselected.example")
+    monkeypatch.setattr(ollama, "ollama_command", lambda: "/fixture/ollama")
+    seen = []
+
+    def run(command, **kwargs):
+        seen.append(kwargs["env"]["OLLAMA_HOST"])
+        return SimpleNamespace(stdout="NAME ID\nfixture:latest id\n")
+
+    monkeypatch.setattr(ollama.subprocess, "run", run)
+    assert handler(argparse.Namespace(ollama_url="http://127.0.0.1:11434/")) == 0
+    assert seen == ["http://127.0.0.1:11434"]

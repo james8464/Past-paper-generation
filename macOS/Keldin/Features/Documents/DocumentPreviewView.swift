@@ -34,6 +34,14 @@ struct DocumentPreviewView: View {
                     .padding()
                     .frame(minWidth: 0, maxWidth: .infinity)
 
+                    if documentActions.hasFormFields {
+                        Text("This preview is read-only. Export the PDF to fill it in another app.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding([.horizontal, .bottom])
+                    }
+
                     Divider()
 
                     if let file = selectedFile, let pdf = documentActions.loadedPDF {
@@ -121,6 +129,7 @@ final class DocumentActionController: ObservableObject {
     @Published private(set) var provenance: GenerationJobRecord?
     @Published var exportError: String?
     @Published private(set) var loadedPDF: LoadedPDF?
+    @Published private(set) var hasFormFields = false
     @Published private(set) var loadFailure: PDFLoadFailure?
     private let access: PDFDocumentAccess
     private let quickLook = QuickLookCoordinator()
@@ -157,6 +166,7 @@ final class DocumentActionController: ObservableObject {
         selectedFile = nil
         provenance = nil
         loadedPDF = nil
+        hasFormFields = false
         loadFailure = nil
     }
 
@@ -164,14 +174,19 @@ final class DocumentActionController: ObservableObject {
         loadFailure = nil
         guard let selectedFile else {
             loadedPDF = nil
+            hasFormFields = false
             return
         }
         switch access.load(selectedFile.url) {
         case .success(let pdf):
             // Keep PDFView's page and zoom when validation reads the same bytes.
-            if loadedPDF?.bytes != pdf.bytes { loadedPDF = pdf }
+            if loadedPDF?.bytes != pdf.bytes {
+                hasFormFields = PDFDocumentActions.prepareReadOnlyPreview(pdf.document)
+                loadedPDF = pdf
+            }
         case .failure(let failure):
             loadedPDF = nil
+            hasFormFields = false
             loadFailure = failure
         }
     }
@@ -253,6 +268,18 @@ final class DocumentActionController: ObservableObject {
 }
 
 enum PDFDocumentActions {
+    @MainActor
+    static func prepareReadOnlyPreview(_ document: PDFDocument) -> Bool {
+        var hasFormFields = false
+        for index in 0 ..< document.pageCount {
+            for annotation in document.page(at: index)?.annotations ?? [] where annotation.type == "Widget" {
+                annotation.isReadOnly = true
+                hasFormFields = true
+            }
+        }
+        return hasFormFields
+    }
+
     static func provenanceRecord(for file: GeneratedFile, records: [GenerationJobRecord]) -> GenerationJobRecord? {
         let matches = records.filter { record in
             record.artifacts.contains { $0.id == file.id }

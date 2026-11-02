@@ -158,6 +158,28 @@ def test_paper1_finite_state_question_includes_diagram_and_table(tmp_path) -> No
         document.close()
 
 
+def test_electronic_answer_document_uses_singular_and_plural_mark_labels(
+    tmp_path,
+) -> None:
+    from cspapergen.paper1_assets import render_electronic_answer_document
+
+    blueprint, _context = build_paper1_blueprint(load_syllabus(), seed=270100)
+    original = blueprint.model_dump(mode="json")
+    path = tmp_path / "answer-document.pdf"
+    render_electronic_answer_document(blueprint, path)
+    parts = [part for question in blueprint.questions for part in question.parts]
+    assert any(part.marks == 1 for part in parts)
+    assert any(part.marks > 1 for part in parts)
+    reader = PdfReader(path)
+    assert len(reader.pages) == len(parts) + 1
+    for page, part in zip(reader.pages[1:], parts, strict=True):
+        text = page.extract_text()
+        label = f"[{part.marks} mark{'s' if part.marks != 1 else ''}]"
+        assert text.count(label) == 1
+        assert "[1 marks]" not in text
+    assert blueprint.model_dump(mode="json") == original
+
+
 def test_electronic_answer_document_has_one_fillable_field_per_part(tmp_path) -> None:
     paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
     reader = PdfReader(paths["electronic_answer_document"])

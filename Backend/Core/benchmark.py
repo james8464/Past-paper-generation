@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import contextlib
 import hashlib
+import math
 import os
 import platform
 import re
@@ -62,7 +63,15 @@ Sample = dict[str, float | None]
 
 
 def handle_benchmark(args: argparse.Namespace) -> int:
-    duration = max(1.0, float(args.duration))
+    duration = float(args.duration)
+    if not math.isfinite(duration):
+        emit(
+            "error",
+            code="invalid_benchmark_duration",
+            message="Benchmark duration must be finite.",
+        )
+        return 1
+    duration = max(1.0, duration)
     output_dir = absolute_user_path(args.output)
     output_dir.mkdir(parents=True, exist_ok=True)
 

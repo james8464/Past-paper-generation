@@ -94,6 +94,7 @@
     "Saved-paper similarity checks did not pass.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les contrôles de ressemblance avec les sujets enregistrés n’ont pas réussi."}}}},
     "This is a layout preview, not a finished paper.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Il s’agit d’un aperçu de mise en page, pas d’un sujet terminé."}}}},
     "This preview does not evaluate AI question or marking quality.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Cet aperçu n’évalue pas la qualité de rédaction des questions ou du barème par l’IA."}}}},
+    "This preview is read-only. Export the PDF to fill it in another app.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Cet aperçu est en lecture seule. Exportez le PDF pour le remplir dans une autre app."}}}},
     "The record does not identify whether this was a preview or live generation.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le bilan ne précise pas s’il s’agit d’un aperçu ou d’une génération avec un modèle."}}}},
     "The record lists gaps in reference coverage.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le bilan mentionne des lacunes dans la couverture des références."}}}},
     "Reference evidence is insufficient to establish paper qualification.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les références disponibles ne suffisent pas à établir la qualification du sujet."}}}},

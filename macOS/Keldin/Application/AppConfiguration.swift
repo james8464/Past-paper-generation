@@ -32,7 +32,7 @@ enum AppDefaults {
         return fileManager.homeDirectoryForCurrentUser
     }
 
-    // Startup migration imports accessible files before this new working folder is used.
+    // Startup import restores accessible legacy files to this working folder.
     static func appStoreWorkingFolder() -> URL {
         let fileManager = FileManager.default
         let home = fileManager.homeDirectoryForCurrentUser

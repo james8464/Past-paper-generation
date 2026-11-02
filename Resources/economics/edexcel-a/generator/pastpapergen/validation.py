@@ -5,7 +5,15 @@ from __future__ import annotations
 import re
 
 from pastpapergen.assessment_contracts import validate_assessment_contract
-from pastpapergen.models import PaperBlueprint, PaperConfig, Syllabus
+from pastpapergen.models import PaperBlueprint, PaperConfig, QuestionBlueprint, Syllabus
+
+
+def admit_parent_prompt(question: QuestionBlueprint, seen_prompts: set[str]) -> None:
+    """The existing whole-paper parent-stem rule, also used before caching."""
+    prompt_key = " ".join(question.prompt.casefold().split())
+    if not prompt_key or prompt_key in seen_prompts:
+        raise ValueError(f"Question {question.number} is empty or duplicated")
+    seen_prompts.add(prompt_key)
 
 
 def validate_blueprint(
@@ -31,10 +39,7 @@ def validate_blueprint(
         if question.marks <= 0:
             raise ValueError(f"Question {question.number} has invalid marks")
         _reject_mark_text(question.number, question.prompt)
-        prompt_key = " ".join(question.prompt.casefold().split())
-        if not prompt_key or prompt_key in seen_prompts:
-            raise ValueError(f"Question {question.number} is empty or duplicated")
-        seen_prompts.add(prompt_key)
+        admit_parent_prompt(question, seen_prompts)
         try:
             topic = syllabus.get_topic(question.topic_id)
         except KeyError as error:

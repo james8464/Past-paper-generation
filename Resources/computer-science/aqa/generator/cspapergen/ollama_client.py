@@ -222,31 +222,54 @@ def improve_questions_with_ollama(
             ),
         )
 
-    if local_workers > 1 or max_workers > 1:
-        completed_messages: dict[int, str] = {}
-        next_message = 0
-        jobs = [
-            (
-                index,
-                question,
-                DeferredCheckpoints(checkpoint_store)
-                if checkpoint_store is not None
-                else None,
-            )
-            for index, question in enumerate(blueprint.questions)
-        ]
+    completed_messages: dict[int, str] = {}
+    next_message = 0
+    admitted: dict[int, Question] = {}
+    jobs = [
+        (
+            index,
+            question,
+            DeferredCheckpoints(checkpoint_store)
+            if checkpoint_store is not None
+            else None,
+        )
+        for index, question in enumerate(blueprint.questions)
+    ]
 
-        def accept(index, result):
-            nonlocal next_message
-            deferred = jobs[index][2]
-            if deferred is not None:
-                deferred.commit()
-            improved[index] = result[0]
-            if local_workers == 1:
-                completed_messages[index] = result[1]
-                while next_message in completed_messages:
-                    emit(completed_messages.pop(next_message))
-                    next_message += 1
+    def accept(index, result):
+        nonlocal next_message
+        deferred = jobs[index][2]
+        candidate = result[0]
+        seen_prompts: set[str] = set()
+        try:
+            # Match validation.validate_blueprint's exact part-prompt rule,
+            # without adding a similarity threshold or changing source scope.
+            for question in (admitted | {index: candidate}).values():
+                for part in question.parts:
+                    prompt_key = " ".join(part.prompt.casefold().split())
+                    if prompt_key in seen_prompts:
+                        raise ValueError(
+                            f"Question {question.number}.{part.label} duplicates another prompt"
+                        )
+                    seen_prompts.add(prompt_key)
+        except ValueError:
+            if checkpoint_store is not None and index not in admitted:
+                key = f"question-{blueprint.questions[index].number}"
+                checkpoint_store.discard_item(key)
+                if deferred is not None:
+                    deferred.changes.pop(key, None)
+            raise
+        if deferred is not None:
+            deferred.commit()
+        admitted[index] = candidate
+        improved[index] = candidate
+        if local_workers == 1:
+            completed_messages[index] = result[1]
+            while next_message in completed_messages:
+                emit(completed_messages.pop(next_message))
+                next_message += 1
+
+    if local_workers > 1 or max_workers > 1:
 
         def report(_index, completed):
             if local_workers == 1:
@@ -270,9 +293,8 @@ def improve_questions_with_ollama(
         )
         return blueprint.model_copy(update={"questions": improved})
     if max_workers == 1:
-        for index, question in enumerate(blueprint.questions):
-            improved[index], message = _improve(index, question)
-            emit(message)
+        for index, question, deferred in jobs:
+            accept(index, _improve(index, question, deferred))
         return blueprint.model_copy(update={"questions": improved})
 
 

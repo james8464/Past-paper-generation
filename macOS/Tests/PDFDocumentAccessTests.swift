@@ -362,6 +362,62 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
+    func testPreviewWidgetsAreReadOnlyWithoutChangingValuesLinksOrExportBytes() throws {
+        let url = root.appendingPathComponent("fillable.pdf")
+        let document = PDFDocument()
+        let page = PDFPage()
+        let widget = PDFAnnotation(bounds: CGRect(x: 20, y: 20, width: 160, height: 40), forType: .widget, withProperties: nil)
+        widget.widgetFieldType = .text
+        widget.fieldName = "answer"
+        widget.widgetStringValue = "An existing answer"
+        page.addAnnotation(widget)
+        let link = PDFAnnotation(bounds: CGRect(x: 20, y: 100, width: 160, height: 30), forType: .link, withProperties: nil)
+        link.url = URL(string: "https://example.invalid/owned-fixture")
+        page.addAnnotation(link)
+        document.insert(page, at: 0)
+        XCTAssertTrue(document.write(to: url))
+        let originalBytes = try Data(contentsOf: url)
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
+        controller.update(file: GeneratedFile(role: "electronic_answer_document", url: url), provenance: nil)
+
+        let loaded = try XCTUnwrap(controller.loadedPDF)
+        let annotations = try XCTUnwrap(loaded.document.page(at: 0)).annotations
+        let previewWidget = try XCTUnwrap(annotations.first { $0.type == "Widget" })
+        let previewLink = try XCTUnwrap(annotations.first { $0.type == "Link" })
+        XCTAssertTrue(controller.hasFormFields)
+        XCTAssertTrue(previewWidget.isReadOnly)
+        XCTAssertEqual(previewWidget.widgetStringValue, "An existing answer")
+        XCTAssertEqual(previewLink.url, link.url)
+        XCTAssertFalse(previewLink.isReadOnly)
+        XCTAssertEqual(loaded.bytes, originalBytes)
+        controller.refresh()
+        XCTAssertTrue(controller.loadedPDF?.document === loaded.document)
+        XCTAssertTrue(controller.hasFormFields)
+        let exported = root.appendingPathComponent("exported.pdf")
+        try loaded.bytes.write(to: exported, options: .atomic)
+        XCTAssertEqual(try Data(contentsOf: exported), originalBytes)
+        let exportedWidget = try XCTUnwrap(PDFDocument(url: exported)?.page(at: 0)?.annotations.first { $0.type == "Widget" })
+        XCTAssertFalse(exportedWidget.isReadOnly)
+        XCTAssertEqual(exportedWidget.widgetStringValue, "An existing answer")
+        XCTAssertEqual(try Data(contentsOf: url), originalBytes)
+
+        controller.clear()
+        XCTAssertFalse(controller.hasFormFields)
+        XCTAssertNil(controller.loadedPDF)
+        controller.update(file: GeneratedFile(role: "question_paper", url: try makePDF(name: "plain.pdf")), provenance: nil)
+        XCTAssertFalse(controller.hasFormFields)
+        controller.update(file: GeneratedFile(role: "question_paper", url: root.appendingPathComponent("missing.pdf")), provenance: nil)
+        XCTAssertFalse(controller.hasFormFields)
+    }
+
+    @MainActor
+    func testReadOnlyPreviewHintIsAvailableInEnglishAndFrench() {
+        let key: LocalizedStringResource = "This preview is read-only. Export the PDF to fill it in another app."
+        XCTAssertEqual(InterfaceText.resolve(key, language: "en"), "This preview is read-only. Export the PDF to fill it in another app.")
+        XCTAssertEqual(InterfaceText.resolve(key, language: "fr"), "Cet aperçu est en lecture seule. Exportez le PDF pour le remplir dans une autre app.")
+    }
+
+    @MainActor
     func testUnchangedRefreshPreservesTheReaderDocumentButNewBytesReplaceIt() throws {
         let url = try makePDF()
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
