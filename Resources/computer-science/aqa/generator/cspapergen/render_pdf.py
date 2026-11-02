@@ -5,7 +5,6 @@ from __future__ import annotations
 import math
 import re
 from dataclasses import replace
-from datetime import date
 from pathlib import Path
 
 from reportlab.lib import colors
@@ -30,7 +29,6 @@ from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import (
     formatted_generation_date,
     formatted_generation_series,
-    generation_date,
 )
 from Backend.Core.open_credit import printed_credit_points
 from Backend.Core.preview_presentation import preview_copy
@@ -2138,10 +2136,6 @@ def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None
     pdf.line(0, 51, 553, 51)
     pdf.setFont(FONT, 8)
     pdf.drawString(43, 35, str(page))
-
-
-def _exam_date(blueprint: PaperBlueprint) -> date:
-    return generation_date()
 
 
 def _formatted_exam_date(blueprint: PaperBlueprint) -> str:

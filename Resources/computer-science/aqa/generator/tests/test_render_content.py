@@ -1,12 +1,15 @@
+import pytest
 from cspapergen.cli import generate_package
 from cspapergen.generator import build_paper2_blueprint
 from cspapergen.render_pdf import (
+    FONT,
     _logic_gate_names,
     render_mark_scheme,
     render_question_paper,
 )
 from cspapergen.syllabus import load_syllabus
 
+from Backend.Core.generation_date import GENERATION_DATE_ENV
 from Backend.Core.pdf_text import extract_pdf_text
 
 
@@ -34,19 +37,35 @@ def test_mark_scheme_contains_aqa_style_table_headings(tmp_path):
     assert "marks" in data
 
 
-def test_mark_scheme_uses_reference_header_and_table_insets(tmp_path):
+@pytest.mark.parametrize(
+    "month,series", [("06", "June"), ("11", "November"), ("09", "September")]
+)
+def test_mark_scheme_uses_reference_header_and_table_insets(
+    tmp_path, monkeypatch, month, series
+):
     import pymupdf as fitz
+    from reportlab.pdfbase import pdfmetrics
 
+    monkeypatch.setenv(GENERATION_DATE_ENV, f"2026-{month}-02")
     blueprint = build_paper2_blueprint(load_syllabus(), seed=42)
     output = tmp_path / "scheme.pdf"
     render_mark_scheme(blueprint, output)
 
     with fitz.open(output) as document:
         page = document[5]
-        header = page.search_for("MARK SCHEME")[0]
+        full_header = f"MARK SCHEME – A-LEVEL COMPUTER SCIENCE – {blueprint.paper_code} – {series.upper()} 2026"
+        matches = page.search_for(full_header)
+        assert len(matches) == 1
+        header = matches[0]
         guidance = page.search_for("Marking guidance")[0]
         question = page.search_for("01")[0]
-        assert 175 <= header.x0 <= 185
+        assert header.x0 == pytest.approx(
+            556 - pdfmetrics.stringWidth(full_header, FONT, 11), abs=0.3
+        )
+        assert header.x1 == pytest.approx(556, abs=0.3)
+        assert 43 <= header.x0 < header.x1 <= page.rect.width - 36
+        if month == "06":
+            assert 175 <= header.x0 <= 185
         assert 37 <= header.y0 <= 42
         assert 85 <= guidance.y0 <= 102
         assert 43 <= question.x0 <= 53
