@@ -1,7 +1,11 @@
 """Cancellation must not wait for a hosted provider's unfinished socket work."""
 
+import os
+import selectors
+import signal
 import subprocess
 import sys
+import time
 from threading import Barrier, Event, Lock
 
 import pytest
@@ -14,15 +18,82 @@ from Backend.Core.review_workers import map_hosted_jobs, map_reviews
 from tests.test_assessment_checkpoints import identity
 
 
-def test_shared_hosted_generation_cancellation_does_not_join_provider_workers():
+def _cancel_after_workers_are_ready(script, *arguments, cold_start_seconds=0):
+    script = f"import time; time.sleep({cold_start_seconds!r})\n" + script
+    process = subprocess.Popen(
+        [sys.executable, "-c", script, *arguments],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+    )
+    output = b""
+    try:
+        assert process.stdout is not None
+        with selectors.DefaultSelector() as selector:
+            selector.register(process.stdout, selectors.EVENT_READ)
+            startup_deadline = time.monotonic() + 20
+            while b"WORKERS_READY\n" not in output:
+                remaining = startup_deadline - time.monotonic()
+                assert remaining > 0 and selector.select(remaining), (
+                    "Provider workers did not become ready: "
+                    + output.decode(errors="replace")
+                )
+                chunk = os.read(process.stdout.fileno(), 4096)
+                assert chunk, "Child exited before worker readiness: " + output.decode(
+                    errors="replace"
+                )
+                output += chunk
+        # Import/build time is not cancellation time. Keep the original deadline.
+        process.send_signal(signal.SIGTERM)
+        tail, _ = process.communicate(timeout=3)
+        assert process.returncode == 0, (output + tail).decode(errors="replace")
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.communicate(timeout=3)
+
+
+def test_readiness_harness_still_rejects_post_signal_worker_join(monkeypatch):
     script = """
-import os, signal, time
-from threading import Barrier, Timer
+import signal, time
+from threading import Barrier, Event, Thread
+barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
+def blocked():
+    barrier.wait(timeout=20)
+    time.sleep(30)
+def cancelled(*args): raise KeyboardInterrupt
+signal.signal(signal.SIGTERM, cancelled)
+for _ in range(2): Thread(target=blocked, daemon=False).start()
+try: Event().wait()
+except KeyboardInterrupt: pass
+"""
+    children = []
+    spawn = subprocess.Popen
+
+    def track_child(*args, **kwargs):
+        process = spawn(*args, **kwargs)
+        children.append(process)
+        return process
+
+    monkeypatch.setattr(subprocess, "Popen", track_child)
+    with pytest.raises(subprocess.TimeoutExpired) as caught:
+        _cancel_after_workers_are_ready(script)
+    assert caught.value.timeout == 3
+    assert len(children) == 1 and children[0].poll() is not None
+    assert children[0].stdout.closed
+
+
+@pytest.mark.parametrize("cold_start_seconds", [0, 3.2])
+def test_shared_hosted_generation_cancellation_does_not_join_provider_workers(
+    cold_start_seconds,
+):
+    script = """
+import signal, time
+from threading import Barrier
 from types import SimpleNamespace
 from Backend.Core import ai_assessment as subject
-barrier = Barrier(2)
+barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
 def generate(*args, **kwargs):
-    barrier.wait(timeout=2)
+    barrier.wait(timeout=20)
     time.sleep(30)
     return {}
 subject._tasks = lambda *args: [SimpleNamespace(key=(0, 0, i), id=f'0/0/{i}') for i in range(2)]
@@ -30,9 +101,6 @@ subject._batches_for_client = lambda *args, **kwargs: [[1], [2]]
 subject._generate_batch = generate
 def cancelled(*args): raise KeyboardInterrupt
 signal.signal(signal.SIGTERM, cancelled)
-timer = Timer(0.2, lambda: os.kill(os.getpid(), signal.SIGTERM))
-timer.daemon = True
-timer.start()
 try:
     subject.generate_unique_paper(
         SimpleNamespace(seed=1), rule=None, syllabus_topics=[],
@@ -43,45 +111,51 @@ try:
 except KeyboardInterrupt:
     pass
 """
-    subprocess.run([sys.executable, "-c", script], check=True, timeout=3)
+    _cancel_after_workers_are_ready(script, cold_start_seconds=cold_start_seconds)
 
 
 @pytest.mark.parametrize("family", ["aqa_cs", "edexcel"])
-def test_specialist_hosted_cancellation_does_not_join_provider_workers(family):
+@pytest.mark.parametrize("cold_start_seconds", [0, 3.2])
+def test_specialist_hosted_cancellation_does_not_join_provider_workers(
+    family, cold_start_seconds
+):
     script = r"""
-import os, signal, time, sys
+import signal, time, sys
 from pathlib import Path
-from threading import Barrier, Timer
+from threading import Barrier
 from types import SimpleNamespace
 family = sys.argv[1]
-barrier = Barrier(2)
+barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
 def blocked(*args, **kwargs):
-    barrier.wait(timeout=2)
+    barrier.wait(timeout=20)
     time.sleep(30)
     return {}
 client = SimpleNamespace(provider="openai", supports_parallel_generation=True, generate_json=blocked)
 if family == "aqa_cs":
+    sys.path.insert(0, str(Path.cwd() / "Resources/computer-science/aqa/generator"))
     from cspapergen.generator import build_paper2_blueprint
     from cspapergen.ollama_client import improve_questions_with_ollama as run
     from cspapergen.syllabus import load_syllabus
     syllabus = load_syllabus()
     paper = build_paper2_blueprint(syllabus, seed=7)
 else:
+    sys.path.insert(0, str(Path.cwd() / "Resources/economics/edexcel-a/generator"))
     from pastpapergen.generator import build_paper_blueprint
     from pastpapergen.ollama_client import generate_questions_with_ollama as run
     from pastpapergen.paper_configs import load_builtin_paper_config
     from pastpapergen.syllabus import load_syllabus
     syllabus = load_syllabus(Path("Resources/economics/edexcel-a/generator/data/syllabus_seed.json"))
     paper = build_paper_blueprint(load_builtin_paper_config("paper_1"), syllabus, seed=7)
+import inspect
+assert Path(inspect.getfile(run)).resolve().is_relative_to(Path.cwd().resolve())
 def cancelled(*args): raise KeyboardInterrupt
 signal.signal(signal.SIGTERM, cancelled)
-timer = Timer(0.2, lambda: os.kill(os.getpid(), signal.SIGTERM))
-timer.daemon = True
-timer.start()
 try: run(client, paper, syllabus)
 except KeyboardInterrupt: pass
 """
-    subprocess.run([sys.executable, "-c", script, family], check=True, timeout=3)
+    _cancel_after_workers_are_ready(
+        script, family, cold_start_seconds=cold_start_seconds
+    )
 
 
 def test_hosted_has_a_separate_four_worker_cap_and_preserves_result_order():
