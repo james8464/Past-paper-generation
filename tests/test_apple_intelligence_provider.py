@@ -568,6 +568,180 @@ def test_compatible_solver_selects_guidance_before_inference_with_full_schema(
     assert client.usage_records[0]["generation_mode"] == "guided_with_postvalidation"
 
 
+def test_actual_uk_review_contract_selects_guidance_with_unchanged_640_token_budget(
+    monkeypatch,
+):
+    request = make_request(
+        "Review this synthetic owned task.", OutputContract("review")
+    )
+    candidate = {
+        "approved": True,
+        "factual_issues": [],
+        "marking_issues": [],
+        "source_issues": [],
+        "difficulty_issues": [],
+        "ambiguity_issues": [],
+    }
+    calls = []
+
+    def guided(payload):
+        calls.append(payload)
+        assert payload["schema_mode"] == "guided_with_postvalidation"
+        return {
+            **reply(payload),
+            "generation_mode": payload["schema_mode"],
+            "output": candidate,
+        }
+
+    monkeypatch.setattr(service, "roundtrip", guided)
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    assert client.generate_request(request) == candidate
+    assert len(calls) == 1
+    assert calls[0]["max_output_tokens"] == request.output_budget == 640
+    assert calls[0]["schema"] == request.schema
+    assert calls[0]["prompt"] == service.complete_prompt(request.prompt, request.schema)
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        "solver",
+        "authoring",
+        "batch_review",
+        "review",
+        "difficulty",
+        "edexcel",
+        "aqa_cs",
+        "open_credit",
+    ],
+)
+def test_known_uk_operations_use_existing_guided_schema_gate(operation):
+    schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["result"],
+        "properties": {"result": {"type": "string", "maxLength": 40}},
+    }
+    assert service.solver_schema_mode(operation, schema) == "guided_with_postvalidation"
+    schema["properties"]["result"]["pattern"] = "^ok$"
+    assert service.solver_schema_mode(operation, schema) == "structured_text"
+
+
+@pytest.mark.parametrize(
+    "contract,expected",
+    [
+        (OutputContract("review"), "guided_with_postvalidation"),
+        (
+            OutputContract("batch_review", identifiers=("1/1/1", "2/1/1")),
+            "guided_with_postvalidation",
+        ),
+        (
+            OutputContract("edexcel", immutable_marking=True, part_count=2),
+            "structured_text",
+        ),
+        (OutputContract("edexcel"), "structured_text"),
+        (
+            OutputContract("aqa_cs", immutable_marking=True, part_count=2),
+            "guided_with_postvalidation",
+        ),
+        (OutputContract("aqa_cs", scenario_only=True), "guided_with_postvalidation"),
+        (
+            OutputContract(
+                "solver", choices=("A", "B", "C", "D"), kind="multiple_choice", marks=1
+            ),
+            "guided_with_postvalidation",
+        ),
+        (OutputContract("solver"), "structured_text"),
+        (OutputContract("authoring", identifiers=("1/1/1",)), "structured_text"),
+        (
+            OutputContract(
+                "authoring", identifiers=("1/1/1",), mark_schemes_locked=True
+            ),
+            "structured_text",
+        ),
+        (OutputContract("difficulty"), "structured_text"),
+        (
+            OutputContract(
+                "open_credit",
+                credit_allocations=(("criterion-a", 0, 1), ("criterion-b", 1, 1)),
+            ),
+            "structured_text",
+        ),
+    ],
+)
+def test_actual_known_uk_contracts_keep_unsupported_constraints_in_text(
+    contract, expected
+):
+    request = make_request("Synthetic owned contract.", contract)
+    assert service.solver_schema_mode(request.operation, request.schema) == expected
+
+
+def test_guided_review_refusal_never_switches_modes_or_retries(monkeypatch):
+    request = make_request("Synthetic review.", OutputContract("review"))
+    calls = []
+    refusal = GenerationEvidenceError(
+        service.ERRORS["generation_failed"], details={"provider": service.PROVIDER}
+    )
+
+    def refuse(payload):
+        calls.append(payload)
+        assert payload["schema_mode"] == "guided_with_postvalidation"
+        raise refusal
+
+    monkeypatch.setattr(service, "roundtrip", refuse)
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    with pytest.raises(GenerationEvidenceError) as caught:
+        client.generate_request(request)
+    assert caught.value is refusal
+    assert len(calls) == 1
+    assert client.usage_records == []
+
+
+@pytest.mark.parametrize(
+    "violation,path",
+    [
+        ("missing_approval", ["required"]),
+        ("extra_field", ["additionalProperties"]),
+        ("non_boolean_approval", ["properties", "approved", "type"]),
+    ],
+)
+def test_guided_review_keeps_original_complete_contract(monkeypatch, violation, path):
+    request = make_request("Synthetic review.", OutputContract("review"))
+    candidate = {
+        "approved": True,
+        "factual_issues": [],
+        "marking_issues": [],
+        "source_issues": [],
+        "difficulty_issues": [],
+        "ambiguity_issues": [],
+    }
+    if violation == "missing_approval":
+        candidate.pop("approved")
+    elif violation == "extra_field":
+        candidate["unowned_field"] = "refuse"
+    else:
+        candidate["approved"] = "true"
+    calls = []
+
+    def malformed(payload):
+        calls.append(payload)
+        assert payload["schema_mode"] == "guided_with_postvalidation"
+        return {
+            **reply(payload),
+            "generation_mode": payload["schema_mode"],
+            "output": candidate,
+        }
+
+    monkeypatch.setattr(service, "roundtrip", malformed)
+    client = HostedLLMClient(provider=service.PROVIDER, model=service.MODEL, api_key="")
+    with pytest.raises(GenerationEvidenceError) as caught:
+        client.generate_request(request)
+    assert caught.value.details["failure"] == "schema_mismatch"
+    assert caught.value.details["schema_path"] == path
+    assert calls[0]["schema"] == request.schema
+    assert len(calls) == 1
+
+
 def test_aqa_cs_two_part_authoring_selects_guidance_before_inference(monkeypatch):
     request = make_request(
         "Write two short owned task parts without changing the marking.",
@@ -699,11 +873,6 @@ def test_aqa_cs_unprojected_array_constraint_stays_text():
 @pytest.mark.parametrize(
     "operation",
     [
-        "review",
-        "batch_review",
-        "authoring",
-        "edexcel",
-        "open_credit",
         "french_nsi_authoring",
         "unknown",
         "AQA_CS",
