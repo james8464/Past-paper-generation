@@ -29,6 +29,7 @@ from Backend.Core.exam_pages import ExamPageProfile, draw_exam_page
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import (
     formatted_generation_date,
+    formatted_generation_series,
     generation_date,
 )
 from Backend.Core.open_credit import printed_credit_points
@@ -2103,7 +2104,7 @@ def _ms_header(pdf: canvas.Canvas, page: int, blueprint: PaperBlueprint) -> None
         556,
         794,
         "MARK SCHEME \u2013 A-LEVEL COMPUTER SCIENCE \u2013 "
-        f"{blueprint.paper_code} \u2013 JUNE {_exam_date(blueprint).year}",
+        f"{blueprint.paper_code} \u2013 {formatted_generation_series().upper()}",
     )
     pdf.setLineWidth(0.6)
     pdf.line(0, 774, 553, 774)
