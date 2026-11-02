@@ -202,10 +202,8 @@ enum KeldinMigration {
         }
         let resolvedSource = source.resolvingSymlinksInPath().standardizedFileURL.path
         let resolvedDestination = destination.resolvingSymlinksInPath().standardizedFileURL.path
-        guard resolvedDestination != resolvedSource,
-              !resolvedDestination.hasPrefix(resolvedSource + "/") else {
-            throw CocoaError(.fileWriteInvalidFileName)
-        }
+        guard resolvedDestination != resolvedSource else { throw KeldinImportError.currentDataFolder }
+        guard !resolvedDestination.hasPrefix(resolvedSource + "/") else { throw KeldinImportError.containsCurrentDataFolder }
         if let values = try? destination.resourceValues(forKeys: [.isSymbolicLinkKey]), values.isSymbolicLink == true {
             throw CocoaError(.fileWriteInvalidFileName)
         }
@@ -240,6 +238,24 @@ enum KeldinMigration {
         }
     }
 
+}
+
+enum KeldinImportError: LocalizedError, Equatable {
+    case currentDataFolder
+    case containsCurrentDataFolder
+
+    private var resource: LocalizedStringResource {
+        switch self {
+        case .currentDataFolder:
+            "This is Keldin’s current data folder. Choose the previous app’s folder."
+        case .containsCurrentDataFolder:
+            "Choose the previous app’s own folder. It cannot contain Keldin’s current data folder."
+        }
+    }
+
+    var errorDescription: String? { String(localized: resource) }
+
+    func message(language: String) -> String { InterfaceText.resolve(resource, language: language) }
 }
 
 // Only immutable URLs cross into this worker. Preference merges stay with the caller.

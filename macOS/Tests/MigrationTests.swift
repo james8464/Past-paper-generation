@@ -5,6 +5,44 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    @MainActor
+    func testManualImportExplainsInvalidFolderChoices() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinImportChoice-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        let marker = source.appendingPathComponent("preserved")
+        let bytes = Data("unchanged".utf8)
+        try bytes.write(to: marker)
+        XCTAssertThrowsError(try KeldinMigration.copyMissingTree(from: source, to: source)) {
+            XCTAssertEqual($0 as? KeldinImportError, .currentDataFolder)
+        }
+        XCTAssertThrowsError(try KeldinMigration.copyMissingTree(from: source, to: source.appendingPathComponent("nested"))) {
+            XCTAssertEqual($0 as? KeldinImportError, .containsCurrentDataFolder)
+        }
+        for (destination, english, french) in [
+            (source, "This is Keldin’s current data folder. Choose the previous app’s folder.", "Ce dossier contient les données actuelles de Keldin. Choisissez le dossier de l’ancienne application."),
+            (source.appendingPathComponent("nested"), "Choose the previous app’s own folder. It cannot contain Keldin’s current data folder.", "Choisissez le dossier propre à l’ancienne application. Il ne doit pas contenir le dossier des données actuelles de Keldin."),
+        ] {
+            for (language, expected) in [("en", english), ("fr", french)] {
+                let defaults = isolatedDefaults()
+                defaults.set(2, forKey: KeldinMigration.completionKey)
+                defaults.set(language, forKey: "interfaceLanguage")
+                let application = isolatedApplication(defaults: defaults, distributionMode: .appStore)
+                let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+                    from: source, destination: destination,
+                    startAccess: { _ in false }, stopAccess: { _ in XCTFail("No scope was granted") }
+                ))
+                await task.value
+                XCTAssertEqual(application.errorMessage, expected)
+                XCTAssertTrue(application.showError)
+                XCTAssertFalse(application.isImportingPreviousData)
+                XCTAssertEqual(try Data(contentsOf: marker), bytes)
+            }
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: source.appendingPathComponent("nested").path))
+    }
+
     func testImportPickerExplainsPDFPreservationAndHistoryRetention() {
         let message: LocalizedStringResource = "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies."
         XCTAssertEqual(InterfaceText.resolve(message, language: "en"), "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.")

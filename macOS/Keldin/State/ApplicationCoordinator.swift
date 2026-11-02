@@ -456,6 +456,8 @@ final class ApplicationCoordinator: ObservableObject {
                 KeldinMigration.completeImport(from: source, destination: destination, defaults: defaults, distributionMode: distributionMode)
                 guard restoreRecentDocuments(presentation: presentation) else { return }
                 status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
+            } catch let error as KeldinImportError {
+                setError(error.message(language: presentationLanguage), presentation: presentation)
             } catch {
                 setError(error.localizedDescription, presentation: presentation)
             }
