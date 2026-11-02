@@ -423,7 +423,7 @@ final class ApplicationCoordinator: ObservableObject {
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-        panel.message = String(localized: "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.")
+        panel.message = String(localized: "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.")
         guard panel.runModal() == .OK, let source = panel.url else { return }
         beginPreviousAppDataImport(from: source, presentation: presentation)
     }
@@ -454,7 +454,7 @@ final class ApplicationCoordinator: ObservableObject {
                     try await PreviousAppDataFileImporter.shared.copy(from: source, to: destination)
                 }
                 KeldinMigration.completeImport(from: source, destination: destination, defaults: defaults, distributionMode: distributionMode)
-                restoreRecentDocuments(presentation: presentation)
+                guard restoreRecentDocuments(presentation: presentation) else { return }
                 status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
             } catch {
                 setError(error.localizedDescription, presentation: presentation)
@@ -2026,12 +2026,13 @@ final class ApplicationCoordinator: ObservableObject {
         }
     }
 
-    private func restoreRecentDocuments(presentation: SettingsActionPresentation? = nil) {
+    @discardableResult
+    private func restoreRecentDocuments(presentation: SettingsActionPresentation? = nil) -> Bool {
         do {
             try recentDocumentStore.load()
         } catch {
             setError(InterfaceText.resolve("Couldn't load generation history. \(error.localizedDescription)", language: presentationLanguage), presentation: presentation)
-            return
+            return false
         }
         let jobArtifacts = recentDocumentStore.records.flatMap(\.artifacts)
         guard let data = defaults.data(forKey: AppStorageKey.recentDocuments),
@@ -2040,7 +2041,7 @@ final class ApplicationCoordinator: ObservableObject {
                 from: data
               ) else {
             generatedFiles = latestDocumentVersions(jobArtifacts)
-            return
+            return true
         }
         // Independent activities have no exam job identity. Keep their document
         // records alongside the authoritative artifacts from full-paper jobs.
@@ -2048,7 +2049,7 @@ final class ApplicationCoordinator: ObservableObject {
         let independent = relocated.filter { $0.subject == "Étude de cas Occitanie" && $0.paper == "Activité indépendante, sans note d’examen" }
         guard !jobArtifacts.isEmpty else {
             generatedFiles = latestDocumentVersions(relocated)
-            return
+            return true
         }
         // Saved recents supply ordering hints, never stale history payloads.
         // Resolve each path to its newest authoritative artifact before trimming.
@@ -2061,6 +2062,7 @@ final class ApplicationCoordinator: ObservableObject {
             byPath.removeValue(forKey: $0.url.standardizedFileURL)
         }
         generatedFiles = latestDocumentVersions(ordered)
+        return true
     }
 
     private func latestDocumentVersions(_ documents: [GeneratedFile]) -> [GeneratedFile] {

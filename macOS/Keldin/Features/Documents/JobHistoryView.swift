@@ -58,6 +58,7 @@ struct JobHistoryView: View {
                         Button("Create Again with New Questions") {
                             application.createAgainWithNewSeed(record)
                         }
+                        .disabled(application.isImportingPreviousData)
                         Divider()
                         Button("Remove from History", role: .destructive) {
                             application.removeHistory(record)
@@ -93,7 +94,7 @@ struct JobHistoryView: View {
                         application.createAgainWithNewSeed(record)
                     }
                 }
-                .disabled(selectedRecord == nil)
+                .disabled(selectedRecord == nil || application.isImportingPreviousData)
             }
         }
     }

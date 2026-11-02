@@ -5,6 +5,56 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    func testImportPickerExplainsPDFPreservationAndHistoryRetention() {
+        let message: LocalizedStringResource = "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies."
+        XCTAssertEqual(InterfaceText.resolve(message, language: "en"), "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.")
+        XCTAssertEqual(InterfaceText.resolve(message, language: "fr"), "Choisissez le dossier Application Support de l’ancienne application. Les PDF existants ne seront pas remplacés. La limite de l’historique reste applicable.")
+    }
+
+    @MainActor
+    func testManualImportReportsHistoryReloadFailureWithoutSuccessStatus() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinImportHistoryError-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old")
+        let destination = root.appendingPathComponent("Keldin")
+        let defaults = isolatedDefaults()
+        defaults.set(2, forKey: KeldinMigration.completionKey)
+        defaults.set("en", forKey: "interfaceLanguage")
+        let application = ApplicationCoordinator(
+            defaults: defaults, secrets: ImportHistoryTestSecrets(),
+            historyDirectory: destination.appendingPathComponent("JobHistory"),
+            backend: ControlledRunBackend(), distributionMode: .appStore
+        )
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(boardID: "economics-aqa", paperID: "1", provider: "ollama", model: "fixture", seed: 42, dryRun: true),
+            provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+            state: .completed, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        let relativePath = "JobHistory/not-a-job-id.json"
+        let sourceRecord = source.appendingPathComponent(relativePath)
+        try FileManager.default.createDirectory(at: sourceRecord.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let bytes = try encoder.encode(record)
+        try bytes.write(to: sourceRecord)
+        var accessEvents: [String] = []
+        let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+            from: source, destination: destination,
+            startAccess: { _ in accessEvents.append("start"); return true },
+            stopAccess: { _ in accessEvents.append("stop") }
+        ))
+        await task.value
+        XCTAssertTrue(application.showError)
+        XCTAssertTrue(application.errorMessage.contains("Couldn't load generation history."))
+        XCTAssertEqual(application.status, "Error")
+        XCTAssertFalse(application.isImportingPreviousData)
+        XCTAssertTrue(application.canImportPreviousData)
+        XCTAssertEqual(accessEvents, ["start", "stop"])
+        XCTAssertEqual(try Data(contentsOf: sourceRecord), bytes)
+        XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent(relativePath)), bytes)
+    }
+
     @MainActor
     func testManualImportKeepsNavigationResponsiveAndBlocksConflictingWork() async throws {
         let defaults = isolatedDefaults()
@@ -439,6 +489,11 @@ final class MigrationTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: destination), bytes)
     }
 
+}
+
+private struct ImportHistoryTestSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) { }
 }
 
 private actor ManualImportGate {

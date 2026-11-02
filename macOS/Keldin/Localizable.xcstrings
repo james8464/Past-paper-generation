@@ -1150,12 +1150,12 @@
         }
       }
     },
-    "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.": {
+    "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez le dossier de l’ancienne application dans Library/Application Support. Les fichiers Keldin existants seront conservés."
+            "value": "Choisissez le dossier Application Support de l’ancienne application. Les PDF existants ne seront pas remplacés. La limite de l’historique reste applicable."
           }
         }
       }
