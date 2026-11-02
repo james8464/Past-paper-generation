@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793578525.356973,
-    "ast_hash": "344170c5c72436a6f83e665b1e4e1348",
+    "mtime": 1793583638.1178846,
+    "ast_hash": "8ff5aa5e3c18654dee12cbc12b7246b2",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3505,8 +3505,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationEstimator.swift": {
-    "mtime": 1793543563.4398904,
-    "ast_hash": "7d9abd0c07b21701d49ebed5530bd3c9",
+    "mtime": 1793583590.2627614,
+    "ast_hash": "b417f37fd59be6a8f0dcd4c51c8cd5f1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793578525.273995,
-    "ast_hash": "32c56ac98aee6b02266435c8f8fce2fb",
+    "mtime": 1793583638.0271072,
+    "ast_hash": "ddeb64421587b00c610250f682ca9d58",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4525,8 +4525,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationEstimatorTests.swift": {
-    "mtime": 1793543563.4489675,
-    "ast_hash": "4a9296dda958ce826f262ec38e6c8cdd",
+    "mtime": 1793583590.2629652,
+    "ast_hash": "79b99a6761b00c5b39d86ce26dfac698",
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
@@ -5105,8 +5105,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/apple_intelligence.py": {
-    "mtime": 1793543563.2477365,
-    "ast_hash": "283077c7a671f68d309d3da1eac43ea2",
+    "mtime": 1793583590.2408302,
+    "ast_hash": "0c4f75a4454c39a69557f6cbbf66cd16",
     "semantic_hash": ""
   },
   "macOS/AppleIntelligenceHelper/CapabilityProbe.swift": {
@@ -5160,8 +5160,8 @@
     "semantic_hash": ""
   },
   "tests/test_apple_intelligence_provider.py": {
-    "mtime": 1793543563.4553325,
-    "ast_hash": "0c92d06d03a7a9ed3c65d55d8a8fe816",
+    "mtime": 1793583590.2410758,
+    "ast_hash": "5cedf0913e793c4790e693f3bdb7a9e6",
     "semantic_hash": ""
   },
   "tests/test_solver_reasoning_budget.py": {
@@ -5310,8 +5310,13 @@
     "semantic_hash": ""
   },
   "docs/quality/source-contract-regressions-2026-11-02.md": {
-    "mtime": 1793580094.8081558,
-    "ast_hash": "fb6d9b1887a98a3731920c93ba17b070",
+    "mtime": 1793583637.8221345,
+    "ast_hash": "153b7dac1af0a0ca2987887c65bcac77",
+    "semantic_hash": ""
+  },
+  "docs/quality/apple-guided-aqa-authoring-2026-11-02.md": {
+    "mtime": 1793583632.1315331,
+    "ast_hash": "4e7ee60842a13e681f45c7231c7289a3",
     "semantic_hash": ""
   }
 }

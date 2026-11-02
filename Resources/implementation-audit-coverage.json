@@ -172,11 +172,8 @@
     {
       "path": "Backend/Core/apple_intelligence.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
-      "source_sha256": "f72fbe40505c53ac8b8951377938a529c4ea763af7fda4d928375349fafc165d",
-      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
-      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/assessment_checkpoints.py",
@@ -2895,6 +2892,12 @@
     },
     {
       "path": "docs/quality/accounting-v11-public-credit-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/apple-guided-aqa-authoring-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
