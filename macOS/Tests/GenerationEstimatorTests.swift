@@ -3,6 +3,73 @@ import XCTest
 @testable import Keldin
 
 final class GenerationEstimatorTests: XCTestCase {
+    func testPreviewLearnsCompletedTimingAcrossProviderModelAndWorkerSelections() throws {
+        let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
+        let paper = try XCTUnwrap(board.papers.first)
+        let record = timingRecord(board: board.id, paper: paper.id, seconds: 3,
+            provider: "openai", model: "previous-model", workers: 1)
+        let estimate = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .anthropic, model: "different-model", dryRun: true, benchmark: nil,
+            recentRuns: [record], localGenerationWorkers: 2)
+        XCTAssertEqual(estimate.totalSeconds, 3)
+        XCTAssertEqual(estimate.remainingSeconds, 3)
+        XCTAssertTrue(estimate.factors.contains { $0.title == "Runtime history" })
+    }
+
+    func testObservedPreviewMedianIsNotClampedToLiveMinimum() throws {
+        let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
+        let paper = try XCTUnwrap(board.papers.first)
+        let records = [2.0, 3.0, 4.0].map {
+            timingRecord(board: board.id, paper: paper.id, seconds: $0)
+        }
+        let estimate = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: true, benchmark: nil, recentRuns: records)
+        XCTAssertEqual(estimate.totalSeconds, 3)
+        XCTAssertEqual(estimate.remainingSeconds, 3)
+        let live = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: false, benchmark: nil,
+            recentRuns: [timingRecord(board: board.id, paper: paper.id, seconds: 3, preview: false)])
+        XCTAssertEqual(live.totalSeconds, 20)
+        XCTAssertEqual(live.remainingSeconds, 20)
+    }
+
+    func testIneligiblePreviewHistoryPreservesColdStartHeuristic() throws {
+        let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
+        let paper = try XCTUnwrap(board.papers.first)
+        var records = [GenerationJobState.failed, .cancelled, .interrupted, .pending, .running, .missingArtifacts].map {
+            timingRecord(board: board.id, paper: paper.id, seconds: 3, state: $0)
+        }
+        records += [0, -1, 0.5, 90_000, Double.infinity, Double.nan].map {
+            timingRecord(board: board.id, paper: paper.id, seconds: $0)
+        }
+        records += [
+            timingRecord(board: "different-board", paper: paper.id, seconds: 3),
+            timingRecord(board: board.id, paper: "different-paper", seconds: 3),
+            timingRecord(board: board.id, paper: paper.id, seconds: 3, preview: false),
+        ]
+        let cold = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: true, benchmark: nil)
+        let estimate = GenerationEstimator.initialEstimate(board: board, paper: paper,
+            provider: .ollama, model: "fixture", dryRun: true, benchmark: nil, recentRuns: records)
+        XCTAssertEqual(estimate.totalSeconds, cold.totalSeconds)
+        XCTAssertEqual(estimate.remainingSeconds, cold.remainingSeconds)
+        XCTAssertGreaterThanOrEqual(cold.totalSeconds, 20)
+        XCTAssertFalse(estimate.factors.contains { $0.title == "Runtime history" })
+    }
+
+    private func timingRecord(board: String, paper: String, seconds: Double,
+        provider: String = "ollama", model: String = "fixture", workers: Int = 1,
+        preview: Bool = true, state: GenerationJobState = .completed) -> GenerationJobRecord {
+        let start = Date(timeIntervalSince1970: 1_000)
+        return GenerationJobRecord(
+            configuration: GenerationConfiguration(boardID: board, paperID: paper,
+                provider: provider, model: model, seed: 1, dryRun: preview),
+            provenance: GenerationProvenance(appVersion: "test", provider: provider, model: model,
+                localGenerationWorkers: workers), state: state, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false),
+            createdAt: start, updatedAt: start.addingTimeInterval(seconds))
+    }
+
     func testRuntimeHistorySeparatesSerialAndParallelModesWithLegacyFallback() throws {
         let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
         let paper = try XCTUnwrap(board.papers.first)
@@ -54,12 +121,12 @@ final class GenerationEstimatorTests: XCTestCase {
     func testMatchingCompletedRunsProvideARobustInitialDuration() throws {
         let board = try XCTUnwrap(ExamCatalog.board(id: "economics-edexcel-a"))
         let paper = try XCTUnwrap(board.papers.first)
-        func record(_ seconds: Double, model: String = "fixture", state: GenerationJobState = .completed, preview: Bool = false) -> GenerationJobRecord {
+        func record(_ seconds: Double, model: String = "fixture", provider: String = "ollama", state: GenerationJobState = .completed, preview: Bool = false) -> GenerationJobRecord {
             let start = Date(timeIntervalSince1970: 1_000)
             return GenerationJobRecord(
                 configuration: GenerationConfiguration(boardID: board.id, paperID: paper.id,
-                    provider: "ollama", model: model, seed: 1, dryRun: preview),
-                provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: model),
+                    provider: provider, model: model, seed: 1, dryRun: preview),
+                provenance: GenerationProvenance(appVersion: "test", provider: provider, model: model),
                 state: state, artifacts: [],
                 qualification: QualificationSnapshot(engineeringValidated: true, visuallyCalibrated: false, empiricallyCalibrated: false),
                 createdAt: start, updatedAt: start.addingTimeInterval(seconds))
@@ -67,7 +134,7 @@ final class GenerationEstimatorTests: XCTestCase {
         let estimate = GenerationEstimator.initialEstimate(board: board, paper: paper,
             provider: .ollama, model: "fixture", dryRun: false, benchmark: nil,
             recentRuns: [record(600), record(660), record(720), record(100, model: "other"),
-                         record(100, state: .failed), record(100, preview: true), record(-10), record(90_000)])
+                         record(100, state: .failed), record(100, preview: true), record(1, provider: "openai"), record(-10), record(90_000)])
         XCTAssertEqual(estimate.totalSeconds, 660)
         XCTAssertEqual(estimate.remainingSeconds, 660)
     }

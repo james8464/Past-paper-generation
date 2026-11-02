@@ -93,9 +93,12 @@ enum GenerationEstimator {
             .filter {
                 $0.state == .completed && $0.configuration.boardID == board.id
                     && $0.configuration.paperID == paper.id
-                    && $0.configuration.provider == provider.backendID
-                    && $0.configuration.model == model && $0.configuration.dryRun == dryRun
-                    && $0.provenance.effectiveLocalGenerationWorkers == localGenerationWorkers
+                    && $0.configuration.dryRun == dryRun
+                    && (dryRun || (
+                        $0.configuration.provider == provider.backendID
+                            && $0.configuration.model == model
+                            && $0.provenance.effectiveLocalGenerationWorkers == localGenerationWorkers
+                    ))
             }
             .sorted { $0.createdAt > $1.createdAt }
             .compactMap { run -> TimeInterval? in
@@ -113,10 +116,12 @@ enum GenerationEstimator {
             factors.append(EstimateFactor(title: "Runtime history",
                 detail: "Median of \(durations.count) matching completed runs.", impact: duration / max(total, 1)))
         }
+        let initialDuration = dryRun && !durations.isEmpty
+            ? duration : max(EstimateTuning.minimumSeconds, duration)
         return GenerationEstimate(
             startedAt: Date(),
-            totalSeconds: max(EstimateTuning.minimumSeconds, duration),
-            remainingSeconds: max(EstimateTuning.minimumSeconds, duration),
+            totalSeconds: initialDuration,
+            remainingSeconds: initialDuration,
             confidence: benchmark == nil ? EstimateTuning.noBenchmarkConfidence : EstimateTuning.benchmarkConfidence,
             factors: factors
         )
