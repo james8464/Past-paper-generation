@@ -4,6 +4,12 @@ import Foundation
 struct ModelDownloadRequest: Equatable, Identifiable, Sendable {
     let id = UUID()
     let model: String
+    let endpoint: String
+
+    init(model: String, endpoint: String = AppDefaults.ollamaURL) {
+        self.model = model
+        self.endpoint = endpoint
+    }
 }
 
 @MainActor

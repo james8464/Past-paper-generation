@@ -1333,7 +1333,10 @@ final class ApplicationCoordinator: ObservableObject {
     func requestPullModel() -> ModelDownloadRequest? {
         guard canRequestModelDownload,
               !modelToPull.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
-        return ModelDownloadRequest(model: modelToPull.trimmingCharacters(in: .whitespacesAndNewlines))
+        return ModelDownloadRequest(
+            model: modelToPull.trimmingCharacters(in: .whitespacesAndNewlines),
+            endpoint: ollamaURL.trimmingCharacters(in: .whitespacesAndNewlines)
+        )
     }
 
     func confirmPullModel(_ request: ModelDownloadRequest, presentation: SettingsActionPresentation? = nil) {
@@ -1354,7 +1357,7 @@ final class ApplicationCoordinator: ObservableObject {
 
         let session = beginRunSession(intent: .modelPull, model: model, errorPresentation: presentation)
         do {
-            let process = try backend.run(arguments: ["pull-model", "--model", model], environment: [:]) { [weak self] event in
+            let process = try backend.run(arguments: ["pull-model", "--model", model, "--ollama-url", request.endpoint], environment: [:]) { [weak self] event in
                 self?.apply(event, from: session)
             } onFinish: { [weak self] result in
                 self?.finishRun(result, from: session)

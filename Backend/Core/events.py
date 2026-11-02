@@ -61,7 +61,9 @@ def emit_progress(
     emit("progress", **payload)
 
 
-def run_subprocess_json(command: list[str], *, stage: str) -> int:
+def run_subprocess_json(
+    command: list[str], *, stage: str, environment: dict[str, str] | None = None
+) -> int:
     """Stream a CLI child and release it before the native shutdown deadline."""
     process: subprocess.Popen[str] | None = None
     cancelled = False
@@ -78,7 +80,11 @@ def run_subprocess_json(command: list[str], *, stage: str) -> int:
     try:
         try:
             process = subprocess.Popen(
-                command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                env=environment,
             )
         except OSError as error:
             emit("error", message=f"Could not start the model setup process: {error}")

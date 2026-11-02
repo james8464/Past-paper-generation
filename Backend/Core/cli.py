@@ -53,6 +53,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     pull = subparsers.add_parser("pull-model")
     pull.add_argument("--model", required=True)
+    pull.add_argument("--ollama-url", default=OLLAMA_API)
     pull.set_defaults(handler=handle_pull_model)
 
     mlx_setup = subparsers.add_parser("setup-mlx")

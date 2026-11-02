@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import urllib.error
@@ -70,6 +71,11 @@ def _default_endpoint(url: str) -> bool:
     )
 
 
+def _local_cli_environment(endpoint: str) -> dict[str, str]:
+    validate_endpoint(endpoint, allow_remote=False)
+    return os.environ | {"OLLAMA_HOST": endpoint.rstrip("/")}
+
+
 def handle_ollama_status(args: argparse.Namespace) -> int:
     endpoint = getattr(args, "ollama_url", OLLAMA_API)
     models = api_models(endpoint, allow_remote=getattr(args, "allow_remote", False))
@@ -108,6 +114,7 @@ def handle_ollama_status(args: argparse.Namespace) -> int:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             timeout=5,
+            env=_local_cli_environment(endpoint),
         )
         running = True
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired):
@@ -154,7 +161,12 @@ def handle_list_models(args: argparse.Namespace) -> int:
 
     try:
         result = subprocess.run(
-            [command, "list"], check=True, capture_output=True, text=True, timeout=10
+            [command, "list"],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env=_local_cli_environment(endpoint),
         )
     except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired) as error:
         emit("error", message=f"Could not list Ollama models: {error}")
@@ -168,12 +180,15 @@ def handle_list_models(args: argparse.Namespace) -> int:
 
 
 def handle_pull_model(args: argparse.Namespace) -> int:
+    environment = _local_cli_environment(getattr(args, "ollama_url", OLLAMA_API))
     command = ollama_command()
     if not command:
         emit("error", message="Ollama is not installed. Install Ollama first.")
         return 1
     emit_progress(f"Pulling {args.model}", stage="pull-model", progress=0.05)
-    code = run_subprocess_json([command, "pull", args.model], stage="pull-model")
+    code = run_subprocess_json(
+        [command, "pull", args.model], stage="pull-model", environment=environment
+    )
     if code == 0:
         emit_progress(f"Model {args.model} is ready", stage="pull-model", progress=1.0)
         emit("done", message=f"Model {args.model} is ready.")
