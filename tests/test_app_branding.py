@@ -46,19 +46,24 @@ def test_native_test_host_and_bundle_share_the_personal_signing_team():
 
 
 def test_startup_migration_failure_uses_selected_language_and_preserves_copy():
-    source = (APP / "Application/KeldinApp.swift").read_text()
-    branch = source.split("if !failures.isEmpty {", 1)[1].split(
-        "application.showError = true", 1
+    source = (APP / "State/ApplicationCoordinator.swift").read_text()
+    startup = source.split("if let plan = startupImportPlan {", 1)[1].split(
+        "} else if aiProvider", 1
     )[0]
-    assert re.search(
-        r"application\.errorMessage\s*=\s*InterfaceText\.resolve\(", branch
+    assert "PreviousAppDataFileImporter.shared.copyExisting(" in startup
+    assert startup.index("restoreRecentDocuments()") < startup.index(
+        "KeldinMigration.finishStartupImport("
     )
+    assert "result.failures +" in startup
+    branch = startup.split("if !failures.isEmpty {", 1)[1]
+    assert "if historyRestored {" in branch
+    english = "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."
     assert re.search(
-        r'language:\s*UserDefaults\.standard\.string\(forKey: "interfaceLanguage"\)\s*\?\?\s*"system"',
+        r"setError\(InterfaceText\.resolve\(\s*"
+        + re.escape(json.dumps(english))
+        + r",\s*language:\s*presentationLanguage\)\)",
         branch,
     )
-    english = "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."
-    assert english in branch
     catalog = json.loads((APP / "Localizable.xcstrings").read_text())
     entry = catalog["strings"][english]
     expected = {
@@ -83,6 +88,18 @@ def test_native_app_copy_uses_plain_punctuation():
         for language, localization in entry.get("localizations", {}).items():
             value = localization.get("stringUnit", {}).get("value", "")
             assert not re.search("[\u2013\u2014]", value), (key, language)
+
+
+def test_model_availability_buttons_show_the_existing_import_guard():
+    source = (APP / "Features/Settings/SettingsPane.swift").read_text()
+    for label, refresh_flag in (
+        ("Check Again", "isRefreshingOllama"),
+        ("Check availability", "isRefreshingAppleIntelligence"),
+    ):
+        button = source.split(f'Button("{label}")', 1)[1]
+        disabled = button.split(".disabled(", 1)[1].split(")", 1)[0]
+        assert f"application.{refresh_flag}" in disabled
+        assert "application.isImportingPreviousData" in disabled
 
 
 def test_panel_actions_signal_that_more_input_is_needed():
@@ -148,7 +165,12 @@ def test_rebrand_uses_keldin_storage_and_imports_legacy_credentials():
         not in secrets
     )
     launch = (APP / "Application/KeldinApp.swift").read_text()
-    assert "KeldinMigration.prepare()" in launch
+    assert "KeldinMigration.prepare()" not in launch
+    assert (
+        "KeldinMigration.startupPlan(defaults: .standard, distributionMode: .current)"
+        in launch
+    )
+    assert "ApplicationCoordinator(startupImportPlan: plan)" in launch
 
 
 def test_current_uk_renderers_do_not_publish_the_previous_name():

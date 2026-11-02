@@ -14,6 +14,16 @@ enum KeldinMigration {
     private static let verifiedArtifactCopiesKey = "keldinVerifiedImportedArtifactCopies"
     private static let migrationVersion = 2
 
+    struct StartupPlan: Sendable {
+        let sources: [URL]
+        let destination: URL
+    }
+
+    struct StartupCopyResult: Sendable {
+        let successfulSources: [URL]
+        let failures: [String]
+    }
+
     static func needsImport(defaults: UserDefaults) -> Bool {
         defaults.integer(forKey: completionKey) < migrationVersion
     }
@@ -27,7 +37,26 @@ enum KeldinMigration {
         distributionMode: DistributionMode = .current,
         legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
     ) -> [String] {
-        guard needsImport(defaults: defaults) else { return [] }
+        guard let plan = startupPlan(defaults: defaults, fileManager: fileManager,
+                                     distributionMode: distributionMode, legacyDomainReader: legacyDomainReader) else { return [] }
+        var failures: [String] = []
+        for source in plan.sources where fileManager.fileExists(atPath: source.path) {
+            do {
+                try copyMissingTree(from: source, to: plan.destination, fileManager: fileManager)
+                registerArtifactRoot(source, destination: plan.destination, defaults: defaults)
+            } catch {
+                failures.append(error.localizedDescription)
+            }
+        }
+        return finishStartupImport(defaults: defaults, failures: failures)
+    }
+
+    static func startupPlan(
+        defaults: UserDefaults, fileManager: FileManager = .default,
+        distributionMode: DistributionMode,
+        legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
+    ) -> StartupPlan? {
+        guard needsImport(defaults: defaults) else { return nil }
         if distributionMode == .direct {
             importPreferences(legacyDomainReader(defaults, legacyBundleID) ?? [:], into: defaults)
         }
@@ -41,21 +70,15 @@ enum KeldinMigration {
             accountHome.appendingPathComponent("Library/Application Support", isDirectory: true),
             accountHome.appendingPathComponent("Library/Containers/\(legacyBundleID)/Data/Library/Application Support", isDirectory: true),
         ]
-        var failures: [String] = []
+        return StartupPlan(sources: supportRoots.flatMap { root in
+            legacyAppFolders.map { root.appendingPathComponent($0, isDirectory: true) }
+        }, destination: destination)
+    }
+
+    static func finishStartupImport(defaults: UserDefaults, failures: [String]) -> [String] {
+        var failures = failures
         if defaults.bool(forKey: frenchFamilyImportFailedKey) {
             failures.append("Previous French practice history could not be imported. French generation remains blocked until the saved history is repaired.")
-        }
-        for root in supportRoots {
-            for name in legacyAppFolders {
-                let source = root.appendingPathComponent(name, isDirectory: true)
-                guard fileManager.fileExists(atPath: source.path) else { continue }
-                do {
-                    try copyMissingTree(from: source, to: destination, fileManager: fileManager)
-                    registerArtifactRoot(source, destination: destination, defaults: defaults)
-                } catch {
-                    failures.append(error.localizedDescription)
-                }
-            }
         }
         // An unreadable sandbox container can be selected explicitly in Output Settings.
         if failures.isEmpty { defaults.set(migrationVersion, forKey: completionKey) }
@@ -120,7 +143,7 @@ enum KeldinMigration {
         }
     }
 
-    private static func registerArtifactRoot(_ source: URL, destination: URL, defaults: UserDefaults) {
+    static func registerArtifactRoot(_ source: URL, destination: URL, defaults: UserDefaults) {
         var mappings = defaults.dictionary(forKey: artifactMappingsKey) as? [String: String] ?? [:]
         mappings[source.standardizedFileURL.path] = destination.standardizedFileURL.path
         defaults.set(mappings, forKey: artifactMappingsKey)
@@ -271,5 +294,19 @@ actor PreviousAppDataFileImporter {
 
     func copy(from source: URL, to destination: URL) throws {
         try copyTree(source, destination)
+    }
+
+    func copyExisting(from sources: [URL], to destination: URL) -> KeldinMigration.StartupCopyResult {
+        var successfulSources: [URL] = []
+        var failures: [String] = []
+        for source in sources where FileManager.default.fileExists(atPath: source.path) {
+            do {
+                try copyTree(source, destination)
+                successfulSources.append(source)
+            } catch {
+                failures.append(error.localizedDescription)
+            }
+        }
+        return KeldinMigration.StartupCopyResult(successfulSources: successfulSources, failures: failures)
     }
 }
