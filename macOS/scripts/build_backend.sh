@@ -34,14 +34,16 @@ if ! "$PYTHON" -c 'import mlx_lm, outlines, llguidance' 2>/dev/null; then
 fi
 
 build_fingerprint() {
+  # Command substitutions do not reliably inherit errexit. Every input stage
+  # must propagate failure explicitly rather than hash an incomplete stream.
   {
     printf '%s\n' \
       "distribution=${DISTRIBUTION_MODE:-direct}" \
       "identity=${EXPANDED_CODE_SIGN_IDENTITY:--}" \
       "architectures=${ARCHS:-arm64}" \
-      "deployment=${MACOSX_DEPLOYMENT_TARGET:-unknown}"
-    "$PYTHON" --version
-    "$PYTHON" -c 'import PyInstaller; print(PyInstaller.__version__)'
+      "deployment=${MACOSX_DEPLOYMENT_TARGET:-unknown}" || return
+    "$PYTHON" --version || return
+    "$PYTHON" -c 'import PyInstaller; print(PyInstaller.__version__)' || return
     # Requirement ranges can resolve to newer installed versions without any
     # source change. Include their metadata so the cached helper cannot stay stale.
     "$PYTHON" -c '
@@ -69,26 +71,32 @@ print(json.dumps(distributions, ensure_ascii=True, separators=(",", ":")))
       "$ROOT_DIR/Resources/generator-registry.json" \
       "$ROOT_DIR/Resources/layout-master-runtime.json" \
       "$ROOT_DIR/Resources/layout-profiles.json" \
-      "$ROOT_DIR/Resources/ollama-model-recommendations.json"
+      "$ROOT_DIR/Resources/ollama-model-recommendations.json" || return
     find "$ROOT_DIR/Resources/board-profiles" -type f -name '*.json' -print0 \
       | sort -z \
-      | xargs -0 shasum
+      | xargs -0 shasum || return
     find "$ROOT_DIR/Resources/france" -type f -name '*.json' -print0 \
       | sort -z \
-      | xargs -0 shasum
+      | xargs -0 shasum || return
     find "$ROOT_DIR/Backend" -type f -name '*.py' -print0 \
       | sort -z \
-      | xargs -0 shasum
+      | xargs -0 shasum || return
+    # PyInstaller includes the entire font directory, not only Python sources.
+    find "$ROOT_DIR/Backend/Core/fonts" -type f -print0 \
+      | sort -z \
+      | xargs -0 shasum || return
     find "$ROOT_DIR/Resources" -path '*/generator/*' -type f \
       \( -name '*.py' -o -name 'pyproject.toml' \) -print0 \
       | sort -z \
-      | xargs -0 shasum
-    while IFS= read -r syllabus_path; do
-      shasum "$ROOT_DIR/Resources/$syllabus_path"
-    done < <(
+      | xargs -0 shasum || return
+    local syllabus_paths
+    syllabus_paths="$(
       "$PYTHON" -c \
         'from Backend.Core.generator_registry import generator_capabilities; print(*sorted({item.syllabus_path for item in generator_capabilities().values()}), sep="\n")'
-    )
+    )" || return
+    while IFS= read -r syllabus_path; do
+      shasum "$ROOT_DIR/Resources/$syllabus_path" || return
+    done <<< "$syllabus_paths"
   } | shasum | awk '{print $1}'
 }
 

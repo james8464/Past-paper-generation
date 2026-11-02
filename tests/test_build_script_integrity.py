@@ -41,13 +41,14 @@ def fingerprint_environment(tmp_path: Path) -> dict[str, str]:
         "Resources/france/fixture.json",
         "Resources/fixture/generator/module.py",
         "Resources/fixture-syllabus.json",
+        "Backend/Core/fonts/fixture.ttf",
     )
     for relative in inputs:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("fixture\n", encoding="utf-8")
     registry = root / "Backend/Core/generator_registry.py"
-    registry.parent.mkdir(parents=True)
+    registry.parent.mkdir(parents=True, exist_ok=True)
     registry.write_text(
         "from types import SimpleNamespace\n"
         "def generator_capabilities():\n"
@@ -149,6 +150,72 @@ def test_backend_fingerprint_cannot_succeed_without_distribution_metadata(
     result = _fingerprint({**fingerprint_environment, "DISTRIBUTIONS_ERROR": "1"})
     assert result.returncode != 0
     assert "distribution metadata unavailable" in result.stderr
+
+
+def test_backend_fingerprint_tracks_packaged_font_bytes(fingerprint_environment):
+    root = Path(fingerprint_environment["ROOT_DIR"])
+    font = root / "Backend/Core/fonts/fixture.ttf"
+    real_font = next((ROOT / "Backend/Core/fonts").rglob("*.ttf"))
+    font.write_bytes(real_font.read_bytes())
+    before = _fingerprint(fingerprint_environment)
+    repeated = _fingerprint(fingerprint_environment)
+    font.write_bytes(font.read_bytes() + b"changed-owned-fixture")
+    changed = _fingerprint(fingerprint_environment)
+    assert before.returncode == repeated.returncode == changed.returncode == 0
+    assert before.stdout == repeated.stdout
+    assert before.stdout != changed.stdout
+
+
+def test_backend_fingerprint_sorts_packaged_font_files(fingerprint_environment):
+    folder = Path(fingerprint_environment["ROOT_DIR"]) / "Backend/Core/fonts"
+    first, second = folder / "a.ttf", folder / "z.ttf"
+    first.write_bytes(b"first owned font")
+    second.write_bytes(b"second owned font")
+    before = _fingerprint(fingerprint_environment)
+    first.unlink()
+    second.unlink()
+    second.write_bytes(b"second owned font")
+    first.write_bytes(b"first owned font")
+    after = _fingerprint(fingerprint_environment)
+    assert before.returncode == after.returncode == 0
+    assert before.stdout == after.stdout
+
+
+@pytest.mark.parametrize(
+    "relative",
+    ["Resources/backend-protocol.schema.json", "Resources/fixture-syllabus.json"],
+)
+def test_backend_fingerprint_refuses_missing_required_input(
+    fingerprint_environment, relative
+):
+    (Path(fingerprint_environment["ROOT_DIR"]) / relative).unlink()
+    result = _fingerprint(fingerprint_environment)
+    assert result.returncode != 0, result.stdout + result.stderr
+    assert result.stdout == ""
+
+
+def test_backend_fingerprint_refuses_syllabus_enumeration_failure(
+    fingerprint_environment,
+):
+    registry = (
+        Path(fingerprint_environment["ROOT_DIR"]) / "Backend/Core/generator_registry.py"
+    )
+    registry.write_text("raise RuntimeError('syllabus enumeration failed')\n")
+    result = _fingerprint(fingerprint_environment)
+    assert result.returncode != 0, result.stdout + result.stderr
+    assert "syllabus enumeration failed" in result.stderr
+
+
+@pytest.mark.parametrize("relative", ["Resources/board-profiles", "Backend/Core/fonts"])
+def test_backend_fingerprint_refuses_file_enumeration_failure(
+    fingerprint_environment, relative
+):
+    folder = Path(fingerprint_environment["ROOT_DIR"]) / relative
+    for path in folder.iterdir():
+        path.unlink()
+    folder.rmdir()
+    result = _fingerprint(fingerprint_environment)
+    assert result.returncode != 0, result.stdout + result.stderr
 
 
 @pytest.mark.parametrize(
