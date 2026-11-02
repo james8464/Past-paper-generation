@@ -548,7 +548,8 @@ def profile(
                             )
                         ] += len(span_text)
             if has_text:
-                text_boxes.append(tuple(float(value) for value in block["bbox"]))
+                x0, y0, x1, y1 = block["bbox"]
+                text_boxes.append((float(x0), float(y0), float(x1), float(y1)))
         if text_boxes:
             left.append(min(block[0] for block in text_boxes))
             top.append(min(block[1] for block in text_boxes))
@@ -1636,7 +1637,15 @@ def _document_result(
             "extractor_schema_version": generated_print["schema_version"],
             "reading_order_basis": generated_print["reading_order_basis"],
             "semantic_order": generated_print["semantic_order"],
-            "passed": not print_failures,
+            "status": (
+                "not_assessed"
+                if print_profile is None
+                else "failed"
+                if print_failures
+                else "passed"
+            ),
+            # Keep the Boolean contract, but never certify an omitted policy.
+            "passed": print_profile is not None and not print_failures,
             "failures": print_failures,
             "tagged": generated_print["tagged"],
             "all_fonts_embedded": all(

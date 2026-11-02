@@ -132,6 +132,29 @@ group passed 158 tests, and an independent read-only review found no scoped
 issue. Full native, signed-build and protected-check results are recorded on the
 associated pull request. No generation, marking or provider policy changed.
 
+## Follow-up: unassessed print policy
+
+The fidelity report extracted print measurements even when no assessment policy
+was supplied. An empty list of policy failures then produced `passed: true`.
+This could present an omitted assessment as a successful one.
+
+Reports now distinguish `not_assessed`, `passed` and `failed`. The existing
+Boolean `passed` remains false when no policy was assessed. Explicit-policy
+checks and their command-line failure result are unchanged, as are extracted
+measurements, comparison scores and PDF bytes. Historical reports are retained
+without rewriting their status. Schema version 3 keeps its existing fields and
+adds the assessment status.
+
+The same tool also had a pre-existing type-check failure: a bounding-box
+comprehension inferred an arbitrary-length tuple where four coordinates were
+required. Explicitly unpacking those coordinates preserves the measurements and
+lets the complete tool pass its standalone type check without an ignore or cast.
+
+Three failing regressions preceded the repair. The focused fidelity, print-profile
+and PDF-validation group passed 67 tests. The complete release gates and review
+result belong to the associated pull request. This repair does not qualify the
+content of a generated paper.
+
 ## Release boundary
 
 Focused regressions preceded each fix. Independent review found the residual

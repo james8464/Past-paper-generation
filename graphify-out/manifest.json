@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793583638.1178846,
+    "mtime": 1793588056.9745908,
     "ast_hash": "8ff5aa5e3c18654dee12cbc12b7246b2",
     "semantic_hash": ""
   },
@@ -1640,8 +1640,8 @@
     "semantic_hash": ""
   },
   "tests/test_paper_fidelity_audit.py": {
-    "mtime": 1793556638.156867,
-    "ast_hash": "ac984adf276a6647586688731358c16c",
+    "mtime": 1793590433.7250855,
+    "ast_hash": "065c48fdbaf0fe0fe3f6d035b4a869c1",
     "semantic_hash": ""
   },
   "tests/test_pdf_validation.py": {
@@ -1820,8 +1820,8 @@
     "semantic_hash": ""
   },
   "tools/paper_fidelity_audit.py": {
-    "mtime": 1793556638.155572,
-    "ast_hash": "ab72902301b1665db86d56b383cba9d7",
+    "mtime": 1793590535.3771482,
+    "ast_hash": "66ac5a74e09e016ce2e5ee289ad46349",
     "semantic_hash": ""
   },
   "tools/reference_corpus.py": {
@@ -4020,7 +4020,7 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793583638.0271072,
+    "mtime": 1793588044.9867632,
     "ast_hash": "ddeb64421587b00c610250f682ca9d58",
     "semantic_hash": ""
   },
@@ -5310,8 +5310,8 @@
     "semantic_hash": ""
   },
   "docs/quality/source-contract-regressions-2026-11-02.md": {
-    "mtime": 1793583637.8221345,
-    "ast_hash": "153b7dac1af0a0ca2987887c65bcac77",
+    "mtime": 1793590550.700556,
+    "ast_hash": "a8acae8c6dc1b6c5862134cd89bb7645",
     "semantic_hash": ""
   },
   "docs/quality/apple-guided-aqa-authoring-2026-11-02.md": {
