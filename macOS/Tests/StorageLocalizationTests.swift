@@ -4,6 +4,22 @@ import XCTest
 @testable import Keldin
 
 final class StorageLocalizationTests: XCTestCase {
+    func testPrivacyStatusResourcesFollowTheSelectedLanguage() {
+        let cases: [(LocalizedStringResource, String, String)] = [
+            (DistributionMode.direct.titleResource, "Direct Download", "Téléchargement direct"),
+            (DistributionMode.appStore.titleResource, "App Store", "App Store"),
+            (PrivacySettingsText.accounts, "Not required", "Non requis"),
+            (PrivacySettingsText.hostedConsent(accepted: true), "Accepted", "Accepté"),
+            (PrivacySettingsText.hostedConsent(accepted: false), "Not accepted", "Non accepté"),
+        ]
+        for (resource, english, french) in cases {
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "en"), english)
+            XCTAssertEqual(InterfaceText.resolve(resource, language: "fr"), french)
+        }
+        XCTAssertEqual(DistributionMode.direct.title, "Direct Download")
+        XCTAssertEqual(DistributionMode.appStore.title, "App Store")
+    }
+
     func testOllamaTroubleshootingNamesTheSettingsRouteInBothLanguages() {
         let instruction: LocalizedStringResource = "Open Ollama, wait for it to start, then choose Settings > AI > Check Again."
         XCTAssertEqual(InterfaceText.resolve(instruction, language: "en"), "Open Ollama, wait for it to start, then choose Settings > AI > Check Again.")

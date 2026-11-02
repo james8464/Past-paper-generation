@@ -1093,8 +1093,11 @@
     {
       "path": "Backend/Core/france/provider.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Internal reviewer read all 383 lines through EOF and selectively traced schema validation, transport and historical runtime selection. Static review only; no live-model or V36 qualification claim.",
+      "source_sha256": "6e5dc1dce636cdba831b976510174a47fd0ff9e517b7a0862e75db3c35a1a8b6",
+      "review_evidence": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
+      "review_evidence_sha256": "3f4db0363f8b3f455ea18a1c941ff4470a3c7489145656ea8523abe7f855b0ec"
     },
     {
       "path": "Backend/Core/france/question_review.py",
@@ -1249,8 +1252,11 @@
     {
       "path": "Backend/Core/generation_diagnostics.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Internal reviewer read all 181 lines through EOF and selectively traced diagnostic callers, failure handling and existing tests. Static review only, not runtime privacy or failure-recovery certification.",
+      "source_sha256": "3cd4130cbe563fa9716ba6abfd35786d90de51feec1d4257f029020953b37baa",
+      "review_evidence": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
+      "review_evidence_sha256": "3f4db0363f8b3f455ea18a1c941ff4470a3c7489145656ea8523abe7f855b0ec"
     },
     {
       "path": "Backend/Core/generation_requests.py",
@@ -3110,6 +3116,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/difficulty-calibration-v2-report.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3776,6 +3788,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/privacy-status-localisation-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/private-generation-records-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3807,6 +3825,12 @@
     },
     {
       "path": "docs/quality/qualification-state-projection-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/readonly-pdf-native-acceptance-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4684,11 +4708,8 @@
     {
       "path": "macOS/Keldin/Domain/AppModels.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "bd58dc448a681d747979fc2cc36078243294c3ef539e7a91e7f40668db7c1e33",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Domain/AssessmentBundleExporter.swift",
@@ -4919,10 +4940,10 @@
       "path": "macOS/Keldin/Features/Settings/SettingsPane.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Fresh full 526-line EOF review including final two import-disabled predicates, state ownership, action routing and persistence. Privacy raw-English values remain a minor localization limitation; no complete UI/HIG certification.",
-      "source_sha256": "2def2e837ca8d37d8f51c36854dfaf72f4f7d796b0460bf31434b91cce6c5372",
-      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3be606ce9a37c34aae59be0dbe2cac0a1b6aad389ea3ade09cd64323500681fb"
+      "reason": "Author reread final 541-line SettingsPane through EOF after the typed Privacy-value fix; root and a separate internal reviewer reviewed the complete change. No full UI or HIG certification.",
+      "source_sha256": "e27310df336ec0068a781f18eba8a49ab508fc0dd9025311b55b410fc0bbe9ae",
+      "review_evidence": "docs/quality/privacy-status-localisation-review-2026-11-02.md",
+      "review_evidence_sha256": "09ac1129c8911c4c55b463110a9bb08403e176f106913737c13b41570616ddb8"
     },
     {
       "path": "macOS/Keldin/Info.plist",
@@ -5317,8 +5338,11 @@
     {
       "path": "macOS/Tests/StorageLocalizationTests.swift",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Author reread all 108 final test lines through EOF. Six focused tests and the complete native suite ran successfully; root and another internal reviewer reviewed the added case and catalogue changes.",
+      "source_sha256": "009a4ee86baaea1a5c4917db447c19de8944a91d22fc676b213cb65356d76fe7",
+      "review_evidence": "docs/quality/privacy-status-localisation-review-2026-11-02.md",
+      "review_evidence_sha256": "09ac1129c8911c4c55b463110a9bb08403e176f106913737c13b41570616ddb8"
     },
     {
       "path": "macOS/Tests/UKArtifactPublisherTests.swift",
@@ -7363,8 +7387,11 @@
     {
       "path": "tools/french_model_capability.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Internal reviewer read all 420 lines through EOF and selectively traced provider selection and existing capability tests. Static review only; no model calls, speed measurements or educational qualification.",
+      "source_sha256": "74e545148c46d1e8fc0d878a3652b7e4a57dc0a78a6bbdd1103a98060bfa7cbd",
+      "review_evidence": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
+      "review_evidence_sha256": "3f4db0363f8b3f455ea18a1c941ff4470a3c7489145656ea8523abe7f855b0ec"
     },
     {
       "path": "tools/french_nsi_benchmark.py",

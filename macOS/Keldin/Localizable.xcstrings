@@ -1,6 +1,10 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Direct Download": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Téléchargement direct"}}}},
+    "Not required": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Non requis"}}}},
+    "Accepted": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Accepté"}}}},
+    "Not accepted": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Non accepté"}}}},
     "Keldin couldn't use the selected output folder. Choose another folder, then try again.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Keldin n’a pas pu utiliser le dossier de sortie sélectionné. Choisissez un autre dossier, puis réessayez."}}}},
     "The cancellation could not be saved in history. The job may still appear as running.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"L’annulation n’a pas pu être enregistrée dans l’historique. La tâche peut encore apparaître comme en cours."}}}},
     "Open PDF": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Ouvrir le PDF"}}}},
