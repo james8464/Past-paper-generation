@@ -4,6 +4,12 @@ import XCTest
 @testable import Keldin
 
 final class StorageLocalizationTests: XCTestCase {
+    func testOllamaTroubleshootingNamesTheSettingsRouteInBothLanguages() {
+        let instruction: LocalizedStringResource = "Open Ollama, wait for it to start, then choose Settings > AI > Check Again."
+        XCTAssertEqual(InterfaceText.resolve(instruction, language: "en"), "Open Ollama, wait for it to start, then choose Settings > AI > Check Again.")
+        XCTAssertEqual(InterfaceText.resolve(instruction, language: "fr"), "Ouvrez Ollama, attendez son démarrage, puis choisissez Réglages > IA > Vérifier à nouveau.")
+    }
+
     func testTypedCredentialMessagesFollowTheSelectedLanguage() {
         let cases: [(SecretStoreError, String, String)] = [
             (.status(operation: .read, status: errSecAuthFailed), "The API key couldn't be read from Keychain. Check Keychain access and try again.", "Impossible de lire la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez."),

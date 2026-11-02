@@ -3500,12 +3500,12 @@
         }
       }
     },
-    "Open Ollama, wait for it to start, then choose AI > Check Ollama Status.": {
+    "Open Ollama, wait for it to start, then choose Settings > AI > Check Again.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ouvrez Ollama, attendez son démarrage, puis choisissez IA > Vérifier l’état d’Ollama."
+            "value": "Ouvrez Ollama, attendez son démarrage, puis choisissez Réglages > IA > Vérifier à nouveau."
           }
         }
       }
