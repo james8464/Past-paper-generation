@@ -2993,6 +2993,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/compact-navigation-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/concurrency-publication-implementation-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3510,6 +3516,12 @@
     },
     {
       "path": "docs/quality/native-interface-audit-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/native-interface-file-reviews-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4324,8 +4336,11 @@
     {
       "path": "macOS/Keldin/Application/AppCommands.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "a7bf9ebe5d050f543f034442959ff65fbcc7e49d2ab3cdb2428d0d254755811c",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Application/AppConfiguration.swift",
@@ -4507,8 +4522,11 @@
     {
       "path": "macOS/Keldin/Components/NativeVisualStyle.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "7cbf8c18594203138d027bd182d26e2768ac73e963ac07cbf25d8e341e3c97e8",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Components/SharedViews.swift",
@@ -4519,8 +4537,11 @@
     {
       "path": "macOS/Keldin/Domain/AppModels.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "bd58dc448a681d747979fc2cc36078243294c3ef539e7a91e7f40668db7c1e33",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/AssessmentBundleExporter.swift",
@@ -4531,26 +4552,38 @@
     {
       "path": "macOS/Keldin/Domain/FrenchAssessmentRequest.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "cd5902a70a25b07f4fece593a08478b28e8bdb55ab2344972a9b1e031d0248f1",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchDraftQualityReport.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "f404927bdbe7a7db173b1cb649ff23b1ddd675c5c1ae9a9dc1eab2e1a5275ca6",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "7168f87ab1743f9adc5bfaf25c48bba7ba22c9da42ee16c8d879ad6b83e1a6ba",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchReviewRequest.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "532e1768bee999223254533fcba64c6b3354739a54ac1d9b678b9ee0478e6b65",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/GenerationEstimator.swift",
@@ -4564,20 +4597,29 @@
     {
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "9d0769b07ae5adc28486fc14befd8b33ec89836db4c2b91395ba81eb80e3ac54",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "3e8699c052ea0ae0a81648bc4df4300bb622bf76c3e7179c807bfde11a7b4225",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/InterfaceText.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "532a9b7d1b8a4c4a21a0378b3d33f061ad7ae6caba7fabffe8538ddc333fbed5",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/KeldinCreationContext.swift",
@@ -4591,8 +4633,11 @@
     {
       "path": "macOS/Keldin/Domain/NativeInterfaceCopy.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "5655bc4347b162c48b198092a20e46382e1d32c69847466e0241c738de1c96e0",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/OllamaModelGuide.swift",
@@ -4606,8 +4651,11 @@
     {
       "path": "macOS/Keldin/Domain/PaperQualityGuidance.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "91da407db4f54b368c7768bd72ca0474617f45b587688c349e32535f1385a753",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Domain/WorkNotification.swift",
@@ -4621,8 +4669,11 @@
     {
       "path": "macOS/Keldin/Features/Benchmark/BenchmarkView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by release_gap_audit within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "f3f2f37868faad7862ee1328d2ade7dc8453e74eefe0fdc569d1406f2325b4f8",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Documents/DocumentPickerView.swift",
@@ -4654,38 +4705,56 @@
     {
       "path": "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by release_gap_audit within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "e28f1a94f13b7e72d00ce75f549439c0892310e918c7438e1fc3cfb32d5f29cd",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Generation/GenerationGuidanceViews.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by release_gap_audit within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "83be520e644939789b5a272684237497c05387625593d089e4f237fc33b0ed7b",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Generation/GenerationProgress.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by release_gap_audit within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "3aba1f70520fed5aa30e7b05168121859cb578651315028e012d5194e584f709",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by release_gap_audit within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "c4a8e348c749868f87d44b597785bb669bc1505ab672bf3c7edd682a441df9c4",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Onboarding/KeldinCreationTips.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "51af5767b42d0ad36f31ffcdf4ba42cb59e69d95a0fc51efe65fc370d3c2db4b",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "d198144fec061313f6eac38ef63f0b747ee62c3c19ddff962780c4dce79228c0",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Features/Settings/HostedModelCandidatesView.swift",
@@ -4735,14 +4804,20 @@
     {
       "path": "macOS/Keldin/Navigation/ContentView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "0f7d97133dd4448cd95ba78a7c3ded99e8d26312024a2a71e2a1a0841733bf3b",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/Navigation/SidebarView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
+      "source_sha256": "e6ae4d82f0fc39c6490f27f891930a287a4700feac4d4950ddec1a4cd47b36a8",
+      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
+      "review_evidence_sha256": "7a35f2188c7786fdc95a8b7ab0727502254b36c99ab35290162c7221d9d8563e"
     },
     {
       "path": "macOS/Keldin/PrivacyInfo.xcprivacy",
