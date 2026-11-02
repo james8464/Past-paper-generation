@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793578429.2995598,
-    "ast_hash": "28fb185e39817e4913fc5f51d97dd9c4",
+    "mtime": 1793580088.1696644,
+    "ast_hash": "9e6c25169d3647ec6cae5b9c8110adcf",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -4045,8 +4045,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
-    "mtime": 1793543563.4511158,
-    "ast_hash": "0776cc02390fbcfbdbdb1a5b26e320ee",
+    "mtime": 1793580088.169842,
+    "ast_hash": "5dc4280273be578b2765ceed01891e8e",
     "semantic_hash": ""
   },
   "macOS/Tests/StorageLocalizationTests.swift": {
@@ -5310,8 +5310,8 @@
     "semantic_hash": ""
   },
   "docs/quality/source-contract-regressions-2026-11-02.md": {
-    "mtime": 1793578524.8171167,
-    "ast_hash": "1bf157a82b77c7fb842c6825d37f30a3",
+    "mtime": 1793580094.8081558,
+    "ast_hash": "fb6d9b1887a98a3731920c93ba17b070",
     "semantic_hash": ""
   }
 }

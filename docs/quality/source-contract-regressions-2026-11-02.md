@@ -90,6 +90,18 @@ Tests cover both published PDFs, private JSON exclusion, folder changes, a fresh
 access controller, balanced leases and failure preservation. Runtime acceptance
 of the final Store build is recorded separately in the pull request.
 
+## Offline preview and consent
+
+Native testing found that selecting a hosted provider in offline layout preview
+opened a disclosure even though preview sends no prompts. Provider selection now
+keeps preview offline and avoids credential persistence. Leaving preview offers
+the existing disclosure; cancellation does not prevent a later offer.
+
+Changing configuration clears pending French generation. Accepting a disclosure
+from configuration cannot start a stale job. Explicit French generation still
+requires consent even when the separate UK preview preference is enabled.
+Independent review and focused tests cover both window and Settings routes.
+
 ## Release boundary
 
 Focused regressions preceded each fix. Independent review found the residual
