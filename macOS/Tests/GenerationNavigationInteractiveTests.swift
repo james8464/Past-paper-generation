@@ -19,17 +19,25 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         let backend = ControlledRunBackend()
         let application = ApplicationCoordinator(defaults: defaults, secrets: NavigationCheckSecrets(),
             historyDirectory: folder.appendingPathComponent("history"), backend: backend)
-        application.outputFolder = folder.appendingPathComponent("output")
-        try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
-        application.setDryRun(true)
-        application.generate()
-        let original = try XCTUnwrap(application.generationCoordinator.activeJob)
         defer {
             application.cancelGeneration()
             defaults.removePersistentDomain(forName: suite)
             try? FileManager.default.removeItem(at: folder)
         }
-        let finished = expectation(description: "Compact sidebar revealed and French workspace selected")
+        application.outputFolder = folder.appendingPathComponent("output")
+        try FileManager.default.createDirectory(at: application.outputFolder, withIntermediateDirectories: true)
+        application.setDryRun(true)
+        application.generate()
+        let original = try XCTUnwrap(application.generationCoordinator.activeJob)
+        let finished = expectation(description: "Sidebar revealed, French selected, sidebar hidden and window returned compact")
+        // Capture the actual window before hosting; no geometry changes are made
+        // after construction. The operator alone reveals/navigates/resizes it.
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 760, height: 760),
+            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.title = "Keldin compact navigation acceptance check"
+        defer { window.close() }
+        recordCompactGeometry(window, phase: "before hosting")
         let content = VStack(spacing: 0) {
             ContentView()
                 .environmentObject(application)
@@ -37,26 +45,53 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
                 .environment(application.benchmarkCoordinator)
                 .environment(application.generationCoordinator)
                 .defaultAppStorage(defaults)
-            Button("Finish compact sidebar check") { finished.fulfill() }
-                .padding(10)
-        }
-        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 760, height: 760),
-            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
-        window.isReleasedWhenClosed = false
-        window.title = "Keldin compact sidebar check"
+            HStack {
+                Button("Record compact geometry") {
+                    self.recordCompactGeometry(window, phase: "operator record")
+                    print("COMPACT_SELECTION: \(String(describing: application.sidebarSelection)); visibility=\(defaults.string(forKey: AppStorageKey.navigationColumnVisibility) ?? "unset")")
+                }
+                Button("Finish compact sidebar check") {
+                    self.recordCompactGeometry(window, phase: "after user actions")
+                    finished.fulfill()
+                }
+            }.padding(10)
+        }.defaultAppStorage(defaults)
         window.contentView = NSHostingView(rootView: content)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-        defer { window.close() }
+        recordCompactGeometry(window, phase: "after hosting, before user actions")
+        let initialContentMinWidth = window.contentMinSize.width
+        XCTAssertGreaterThanOrEqual(window.contentLayoutRect.width, 720)
+        XCTAssertLessThan(window.contentLayoutRect.width, 840)
+        XCTAssertEqual(initialContentMinWidth, 720, accuracy: 0.01)
         print("KELDIN_INTERACTIVE_COMPACT_SIDEBAR_READY")
-        print("Reveal the sidebar without widening the window, select Baccalauréat · NSI, then finish.")
+        print("Start compact; record geometry, show the sidebar and select Baccalauréat · NSI. Native sidebar presentation may grow the window to about 904 points. Hide the sidebar, use standard Window > Move & Resize > Left to return compact, record geometry, then finish. No unchanged-width requirement applies while the sidebar is shown.")
         await fulfillment(of: [finished], timeout: 180)
         XCTAssertLessThan(window.contentLayoutRect.width, 840)
+        XCTAssertEqual(window.contentMinSize.width, initialContentMinWidth, accuracy: 0.01)
         XCTAssertEqual(application.sidebarSelection, .frenchBaccalaureat)
-        XCTAssertTrue(["all", "double"].contains(defaults.string(forKey: AppStorageKey.navigationColumnVisibility) ?? ""))
+        XCTAssertEqual(defaults.string(forKey: AppStorageKey.navigationColumnVisibility), "detail")
         XCTAssertTrue(application.isRunning)
         XCTAssertEqual(application.generationCoordinator.activeJob, original)
         XCTAssertEqual(backend.requests.count, 1)
+    }
+
+    @MainActor
+    private func recordCompactGeometry(_ window: NSWindow, phase: String) {
+        print("COMPACT_GEOMETRY [\(phase)]: frame=\(window.frame); contentLayoutRect=\(window.contentLayoutRect); contentMinSize=\(window.contentMinSize); minSize=\(window.minSize)")
+        func visit(_ view: NSView, path: String) {
+            if let split = view as? NSSplitView {
+                print("COMPACT_SPLIT [\(phase)] \(path) \(type(of: split)): frame=\(split.frame); bounds=\(split.bounds); vertical=\(split.isVertical); divider=\(split.dividerThickness)")
+                for (index, column) in split.arrangedSubviews.enumerated() {
+                    let role = index == 0 ? "sidebar/first" : "detail/column\(index)"
+                    print("COMPACT_COLUMN [\(phase)] \(path) \(role) \(type(of: column)): frame=\(column.frame); bounds=\(column.bounds); hidden=\(column.isHidden); collapsed=\(split.isSubviewCollapsed(column))")
+                }
+            }
+            for (index, child) in view.subviews.enumerated() {
+                visit(child, path: "\(path)/\(index)")
+            }
+        }
+        if let content = window.contentView { visit(content, path: "content") }
     }
 
     @MainActor
