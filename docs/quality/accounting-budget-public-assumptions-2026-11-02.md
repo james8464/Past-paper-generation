@@ -63,3 +63,26 @@ retained in the identifiers worktree at
 This ran the repository's source CLI, not a newly built PyInstaller executable
 or installed application binary. No live model calls, native build, full suite,
 learner timing or examiner/teacher qualification is claimed by this evidence.
+
+## Historical baseline follow-up
+
+The first integrated full suite found one obsolete comparison: its 102-seed
+content digest predates the new printed premise. That run returned 6,427 passes,
+one failure and two skips; it was not accepted as a release pass.
+
+The historical projection now removes only one exact, declared budget-premise
+addition, after asserting its public declaration and printed occurrence. The
+original expected hash is unchanged. Mutation canaries for budget and nonbudget
+questions prove that other prompt changes still alter that hash. Dedicated
+premise tests continue to require the current printed and public forms. A shared
+digest helper lets the canaries check that property without calling another test.
+All 63 focused historical, premise, projection and private-credit checks passed.
+A separate read-only review found no scoped issue in this test-only follow-up.
+
+Application, backend, runtime resources and build tools remain byte-identical to
+the integrated `ac99602e` acceptance source. Its 401 native tests (one skipped,
+no failures), direct/Store-mode release checks, complete 21-component source and
+packaged preview trials, and two successful native preview operations apply to
+those unchanged production files. Original manifests retain their actual source
+identities. The revised test head still needs a fresh full Python pass and both
+latest protected checks before merge.
