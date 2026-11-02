@@ -30,6 +30,9 @@ describes the historical fixed-paper route as current.
 
 The current English working dossier is in `output/occitanie-2026/pages-20261102-english/`: three native Pages documents, their matching PDFs and `Read before sending.txt`. All ten exported A4 pages were visually reviewed on 2 November: three application pages, four technical/user-report pages and three reliability-note pages. The formal application is named `Prix-Occitanie-2026-Application-English-James-Durup`; the other two reports are supporting documents. The working application is not submit-ready until James completes the facts below, removes drafting notices and placeholders, re-exports it and checks that it remains at most three A4 pages. The organiser has not confirmed English acceptance or accepted a submission.
 
+The [November 2 review](../../quality/occitanie-submission-pack-review-2026-11-02.md)
+records the native export process, visual inspection and exact PDF hashes.
+
 Earlier Word exports are superseded. Their generated copies were removed from the working output folders on 30 October. The legacy builder still recreates historical V35 content and must not be used as the current submission without a separate update and review. Run `tools/build_occitanie_submission.py` with the bundled document runtime to recreate that older set. Use `--output` with a fresh directory to avoid replacing completed personal forms:
 
 - `Prix-Occitanie-2026-Candidature-James-Durup.docx`: formal application (two pages before personal details; three-page maximum);

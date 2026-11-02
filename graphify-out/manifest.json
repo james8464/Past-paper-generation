@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793599392.9221468,
-    "ast_hash": "6045d37cc176af23feddbad0be4364a6",
+    "mtime": 1793609871.4442108,
+    "ast_hash": "a5128d980feac69803983c8cd0ef9992",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -2075,13 +2075,13 @@
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/README.md": {
-    "mtime": 1793553959.0599957,
-    "ast_hash": "60cc4e9cfafe53cd42241021e97c685e",
+    "mtime": 1793609833.5632586,
+    "ast_hash": "ef2d6d74c23c5ccffa9667b91b188b43",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/claims-register.md": {
-    "mtime": 1793543563.3506222,
-    "ast_hash": "9b7a83e1c87226b515bbd2731fb85fef",
+    "mtime": 1793609775.9566073,
+    "ast_hash": "1ff3327e7cdcdd427d2f2a4230ee2c1f",
     "semantic_hash": ""
   },
   "docs/competition/occitanie-2026/demo-script.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793608100.921431,
-    "ast_hash": "825e8aec993829c89bf71dbc4b7fcd0a",
+    "mtime": 1793609824.3035693,
+    "ast_hash": "7af148a3d98e91fd7ffc6b6b82b5ebbf",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4715,13 +4715,13 @@
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
-    "mtime": 1793559009.1995347,
-    "ast_hash": "ac43ae3443c797ee3d73feeb5c6eab0a",
+    "mtime": 1793609775.9573693,
+    "ast_hash": "998b59044f14ba8588fdf9d2638afc6e",
     "semantic_hash": ""
   },
   "tools/build_occitanie_pages_sources.py": {
-    "mtime": 1793559009.1993225,
-    "ast_hash": "0bd0c8202cfd9004e4a954429e6ca9fc",
+    "mtime": 1793609775.9577773,
+    "ast_hash": "74495d1541cfac10cefb319b2931fdb1",
     "semantic_hash": ""
   },
   "docs/quality/accounting-equal-priority-correction-2026-10-29.md": {
@@ -5382,6 +5382,11 @@
   "docs/quality/paper-conformance-file-review-2026-11-02.md": {
     "mtime": 1793601270.2152631,
     "ast_hash": "350c17f8dfc58dd20ff7f711eef0f515",
+    "semantic_hash": ""
+  },
+  "docs/quality/occitanie-submission-pack-review-2026-11-02.md": {
+    "mtime": 1793609822.795679,
+    "ast_hash": "4d1126e090d0af8ec81e8b4431e76512",
     "semantic_hash": ""
   }
 }
