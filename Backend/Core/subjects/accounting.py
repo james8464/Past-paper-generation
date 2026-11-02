@@ -7,6 +7,13 @@ from typing import Any
 
 from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput, numeric_result
 
+BUDGET_PUBLIC_ASSUMPTIONS = (
+    "Assume sales receipts equal revenue earned in this budget period, and "
+    "variable- and fixed-cost payments equal expenses incurred in it. "
+    "There are no inventory changes, accruals, prepayments or non-cash charges. "
+    "The capital payment purchases a non-current asset; there are no other transactions."
+)
+
 
 # Recompute known closed accounting contracts from candidate-visible data.
 #
@@ -15,6 +22,18 @@ from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput, numeric
 # pass. Unrecognised closed calculations fail on the shared solver boundary.
 def solve_accounting_calculation(item: dict[str, Any]) -> dict[str, Any] | None:
     context = item.get("authoring_context")
+    # Old budget records did not declare these givens. Preserve their numeric
+    # replay; new declarations must agree with what the candidate actually sees.
+    if (
+        item.get("rule_id") == "budget"
+        and isinstance(context, dict)
+        and "independent_solver_instructions" in context
+        and (
+            context["independent_solver_instructions"] != [BUDGET_PUBLIC_ASSUMPTIONS]
+            or BUDGET_PUBLIC_ASSUMPTIONS not in str(item.get("prompt", ""))
+        )
+    ):
+        raise ValueError("budget public assumptions are missing or inconsistent")
     if not isinstance(context, dict) or not (
         context.get("preserve_prompt") is True
         and context.get("preserve_mark_scheme") is True
