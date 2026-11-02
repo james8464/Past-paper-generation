@@ -110,28 +110,34 @@ final class MigrationTests: XCTestCase {
 
     @MainActor
     func testStartupImportFailureKeepsRetryPendingAndStoreNeverReadsLegacyPreferences() async throws {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinStartupFailure-\(UUID().uuidString)")
-        defer { try? FileManager.default.removeItem(at: root) }
-        let defaults = isolatedDefaults()
-        defaults.set("en", forKey: "interfaceLanguage")
-        let plan = try XCTUnwrap(KeldinMigration.startupPlan(defaults: defaults, fileManager: MigrationTestFileManager(root: root), distributionMode: .appStore, legacyDomainReader: { _, _ in
-            XCTFail("Store startup must not read another preference domain")
-            return nil
-        }))
-        let application = ApplicationCoordinator(
-            defaults: defaults, secrets: ImportHistoryTestSecrets(),
-            historyDirectory: plan.destination.appendingPathComponent("JobHistory"),
-            backend: ControlledRunBackend(), distributionMode: .appStore,
-            startupImportPlan: plan,
-            startupCopyFiles: { _, _ in
-                KeldinMigration.StartupCopyResult(successfulSources: [], failures: ["fixture failure"])
-            }
-        )
-        let task = try XCTUnwrap(application.startupImportTask)
-        await task.value
-        XCTAssertTrue(application.showError)
-        XCTAssertTrue(KeldinMigration.needsImport(defaults: defaults))
-        XCTAssertFalse(application.isImportingPreviousData)
+        for (language, expectedMessage) in [
+            ("en", "Some previous app data could not be imported. Use Import previous app data in Output Settings to retry."),
+            ("fr", "Certaines données de l’ancienne app n’ont pas pu être importées. Réessayez avec l’option d’import des données de l’ancienne app dans les réglages Sortie."),
+        ] {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinStartupFailure-\(UUID().uuidString)")
+            defer { try? FileManager.default.removeItem(at: root) }
+            let defaults = isolatedDefaults()
+            defaults.set(language, forKey: "interfaceLanguage")
+            let plan = try XCTUnwrap(KeldinMigration.startupPlan(defaults: defaults, fileManager: MigrationTestFileManager(root: root), distributionMode: .appStore, legacyDomainReader: { _, _ in
+                XCTFail("Store startup must not read another preference domain")
+                return nil
+            }))
+            let application = ApplicationCoordinator(
+                defaults: defaults, secrets: ImportHistoryTestSecrets(),
+                historyDirectory: plan.destination.appendingPathComponent("JobHistory"),
+                backend: ControlledRunBackend(), distributionMode: .appStore,
+                startupImportPlan: plan,
+                startupCopyFiles: { _, _ in
+                    KeldinMigration.StartupCopyResult(successfulSources: [], failures: ["fixture failure"])
+                }
+            )
+            let task = try XCTUnwrap(application.startupImportTask)
+            await task.value
+            XCTAssertEqual(application.errorMessage, expectedMessage)
+            XCTAssertTrue(application.showError)
+            XCTAssertTrue(KeldinMigration.needsImport(defaults: defaults))
+            XCTAssertFalse(application.isImportingPreviousData)
+        }
     }
 
     @MainActor
