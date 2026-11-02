@@ -200,10 +200,12 @@ def test_invalid_notices_fail_closed(tmp_path: Path, kind: str) -> None:
     "background", ["earlier_opaque", "later_transparent", "later_opaque"]
 )
 @pytest.mark.parametrize("prefix", ["", "A-level Economics · "])
+@pytest.mark.parametrize("covered", ["full", "PREVIEW", "sample content", "Y"])
 def test_notice_visibility_respects_artwork_draw_order(
     tmp_path: Path,
     background: str,
     prefix: str,
+    covered: str,
 ) -> None:
     from Backend.Core.preview_presentation import PREVIEW_NOTICE, validate_preview_pdf
 
@@ -213,7 +215,7 @@ def test_notice_visibility_respects_artwork_draw_order(
         if background == "earlier_opaque":
             page.draw_rect(fitz.Rect(35, 60, 450, 90), fill=(1, 1, 1), color=None)
         page.insert_text((40, 80), prefix + PREVIEW_NOTICE, fontsize=10)
-        bounds = page.search_for(PREVIEW_NOTICE)[0]
+        bounds = page.search_for(PREVIEW_NOTICE if covered == "full" else covered)[0]
         if background.startswith("later_"):
             page.draw_rect(
                 bounds + fitz.Rect(-2, -2, 2, 2),

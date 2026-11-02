@@ -4,6 +4,7 @@ from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from pathlib import Path
+from typing import Any
 from xml.sax.saxutils import escape
 
 import pymupdf as fitz
@@ -45,6 +46,16 @@ def preview_paragraph(original: str) -> str:
     return f'<font size="10">{escape(original)} · {PREVIEW_NOTICE}</font>'
 
 
+def _notice_is_occluded(span: dict[str, Any], drawings: list[dict[str, Any]]) -> bool:
+    text = "".join(chr(char[0]) for char in span["chars"])
+    start = text.index(PREVIEW_NOTICE)
+    return any(
+        not chr(char[0]).isspace()
+        and text_trace_is_occluded({**span, "bbox": char[3]}, drawings)
+        for char in span["chars"][start : start + len(PREVIEW_NOTICE)]
+    )
+
+
 def validate_preview_pdf(path: Path) -> dict[str, object]:
     """Require an actually printed, legible first-page notice before publication."""
     with fitz.open(path) as document:
@@ -78,12 +89,8 @@ def validate_preview_pdf(path: Path) -> dict[str, object]:
             or span["opacity"] < 0.8
             or span["size"] < 8
             or all(value > 0.95 for value in span["color"])
-            # A source-cover subject can share the trace: measure the required
-            # notice phrases, not unrelated text extending beyond an opaque box.
-            or any(
-                text_trace_is_occluded({**span, "bbox": bounds}, drawings)
-                for bounds in notice_boxes
-            )
+            # A single hidden word/character invalidates the printed notice.
+            or _notice_is_occluded(span, drawings)
             for span in spans
         ):
             raise ValueError(
