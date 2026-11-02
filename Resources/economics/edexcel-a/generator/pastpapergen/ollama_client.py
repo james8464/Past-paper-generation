@@ -46,6 +46,7 @@ from pastpapergen.models import (
 )
 from pastpapergen.notes import note_context_for_topic
 from pastpapergen.render_pdf import candidate_stimulus_data
+from pastpapergen.validation import admit_parent_prompt
 
 
 def build_question_prompt(
@@ -333,26 +334,43 @@ def generate_questions_with_ollama(
             f"{question.number} ({topic.title})",
         )
 
+    jobs = [
+        (
+            index,
+            question,
+            DeferredCheckpoints(checkpoint_store)
+            if checkpoint_store is not None
+            else None,
+        )
+        for index, question in enumerate(blueprint.questions)
+    ]
+
+    def admit(index, result, deferred):
+        candidate = result[0]
+        checkpoint_key = f"question-{candidate.number}"
+        seen_prompts: set[str] = set()
+        try:
+            for question in [*results.values(), candidate]:
+                admit_parent_prompt(question, seen_prompts)
+        except ValueError:
+            # Older releases may have cached both conflicting questions. Keep
+            # admitted work and unrelated keys; evict only this refused item.
+            if checkpoint_store is not None:
+                checkpoint_store.discard_item(checkpoint_key)
+                if deferred is not None:
+                    deferred.changes.pop(checkpoint_key, None)
+            raise
+        if deferred is not None:
+            deferred.commit_item(checkpoint_key)
+        results[index] = candidate
+
     if local_workers > 1 or max_workers > 1:
         completed_messages: dict[int, str] = {}
         next_message = 0
-        jobs = [
-            (
-                index,
-                question,
-                DeferredCheckpoints(checkpoint_store)
-                if checkpoint_store is not None
-                else None,
-            )
-            for index, question in enumerate(blueprint.questions)
-        ]
 
         def accept(index, result):
             nonlocal next_message
-            deferred = jobs[index][2]
-            if deferred is not None:
-                deferred.commit()
-            results[index] = result[0]
+            admit(index, result, jobs[index][2])
             if local_workers == 1:
                 completed_messages[index] = result[1]
                 while next_message in completed_messages:
@@ -380,9 +398,10 @@ def generate_questions_with_ollama(
             progress=report,
         )
     elif max_workers == 1:
-        for index, question in enumerate(blueprint.questions):
-            results[index], message = _build_task(index, question)
-            emit(message)
+        for job in jobs:
+            result = _build_task(*job)
+            admit(job[0], result, job[2])
+            emit(result[1])
     questions = [results[i] for i in range(total)]
     return blueprint.model_copy(update={"questions": questions})
 
