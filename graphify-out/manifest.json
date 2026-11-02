@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793623994.4834344,
-    "ast_hash": "1af43059e4474b49b46aaaaf9c3c0033",
+    "mtime": 1793626955.7543507,
+    "ast_hash": "797e2d006f48a9f5741caa4cd095a8f1",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1915,8 +1915,8 @@
     "semantic_hash": ""
   },
   ".github/workflows/ci.yml": {
-    "mtime": 1793543563.2457843,
-    "ast_hash": "f563106724999437dcef1aacf4aa3f26",
+    "mtime": 1793628760.02942,
+    "ast_hash": "3484427c63f0d327b4e48a665e3cf141",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793626920.7502832,
-    "ast_hash": "18c91c7bac551f9e0deaf07267693677",
+    "mtime": 1793628929.9414508,
+    "ast_hash": "dc093b65312903aab9c20eabcfd4d6ea",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4460,8 +4460,8 @@
     "semantic_hash": ""
   },
   "tests/test_ci_signing.py": {
-    "mtime": 1793543563.4580762,
-    "ast_hash": "463da71d5931dd3f6991d5309e74972c",
+    "mtime": 1793628759.7125916,
+    "ast_hash": "cb4e2b942aa5dbf8da56167b5fc1b803",
     "semantic_hash": ""
   },
   "tests/test_french_repeat_practice.py": {
@@ -5437,6 +5437,11 @@
   "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md": {
     "mtime": 1793626532.134722,
     "ast_hash": "9b27456dfbfa1e849b225f326b07ecc9",
+    "semantic_hash": ""
+  },
+  "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md": {
+    "mtime": 1793628929.433589,
+    "ast_hash": "f63dc914c5fb8ea580f76f65d88e968e",
     "semantic_hash": ""
   }
 }

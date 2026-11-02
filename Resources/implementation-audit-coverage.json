@@ -119,10 +119,10 @@
       "path": ".github/workflows/ci.yml",
       "classification": "configuration-or-runtime-data",
       "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "68cb5c3a91bb8f85b9034680aea270a89f24a2c9d8bcd3ca219e8f2a67c669ba",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "reason": "Complete workflow and signing-test baseline plus full runner-policy regression review; standard macOS Backend pool changes, native Apple Silicon and required checks retained.",
+      "source_sha256": "1d20b304ce32ba1525870176943f9d9cf8e57c84e182cf0dac62dc28ec213240",
+      "review_evidence": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
+      "review_evidence_sha256": "36218da6dad788349393bf8d75814abd49a4b4c93b47c550e87e627788c5918e"
     },
     {
       "path": ".gitignore",
@@ -3479,6 +3479,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/merged-native-integrity-acceptance-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5596,8 +5602,11 @@
     {
       "path": "tests/test_ci_signing.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete workflow and signing-test baseline plus full runner-policy regression review; standard macOS Backend pool changes, native Apple Silicon and required checks retained.",
+      "source_sha256": "f399b9467384d9e8a636248eb69f8d90cc9507aa6ebf75711e2fbf0a91a1c045",
+      "review_evidence": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
+      "review_evidence_sha256": "36218da6dad788349393bf8d75814abd49a4b4c93b47c550e87e627788c5918e"
     },
     {
       "path": "tests/test_closed_response_integrity.py",
