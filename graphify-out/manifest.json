@@ -5,13 +5,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/ai_assessment.py": {
-    "mtime": 1793543563.2473593,
-    "ast_hash": "a3d0ed0d938150617c8562e7662c96ff",
+    "mtime": 1793626847.5295837,
+    "ast_hash": "5ca47b78e5ab097a5ce89f18400d266c",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_checkpoints.py": {
-    "mtime": 1793543563.247872,
-    "ast_hash": "5f45c436db8682f8c063c1e4afec9b20",
+    "mtime": 1793626847.5300074,
+    "ast_hash": "db6ad9530a35f811ac180198ca7cedeb",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_contracts.py": {
@@ -35,8 +35,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/benchmark.py": {
-    "mtime": 1793576444.6323092,
-    "ast_hash": "ed3bc33f512b80d8ec89808e12a72666",
+    "mtime": 1793625923.2556612,
+    "ast_hash": "d02ff2f1434cacc2fff1dd627e98470f",
     "semantic_hash": ""
   },
   "Backend/Core/board_profiles.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793618974.4289317,
-    "ast_hash": "757a1564da4fa32af40cd2f36d6df0e3",
+    "mtime": 1793623994.4834344,
+    "ast_hash": "1af43059e4474b49b46aaaaf9c3c0033",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3435,8 +3435,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/AppConfiguration.swift": {
-    "mtime": 1793543563.4261847,
-    "ast_hash": "741a99cf48b50bf2f90b13347ae0233f",
+    "mtime": 1793626051.1940544,
+    "ast_hash": "9cd1194a896f5074985841ae6b92d598",
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/KeldinApp.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793618974.3338068,
-    "ast_hash": "fa4911ae9dad7ed5ecf3a4c5706c664d",
+    "mtime": 1793626920.7502832,
+    "ast_hash": "18c91c7bac551f9e0deaf07267693677",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4735,8 +4735,8 @@
     "semantic_hash": ""
   },
   "tests/test_hosted_generation_cancellation.py": {
-    "mtime": 1793543563.4751863,
-    "ast_hash": "548383f26de55e8589ccb01d893547ac",
+    "mtime": 1793626847.5308354,
+    "ast_hash": "cb4415bbc2caac785e5f8b68aa61a67b",
     "semantic_hash": ""
   },
   "docs/quality/hosted-generation-cancellation-2026-10-29.md": {
@@ -5407,6 +5407,36 @@
   "docs/quality/native-startup-import-review-2026-11-02.md": {
     "mtime": 1793618931.5657673,
     "ast_hash": "03b3fa81253d4672fa30023ad7098727",
+    "semantic_hash": ""
+  },
+  "tests/test_assessment_checkpoint_admission.py": {
+    "mtime": 1793626847.5304308,
+    "ast_hash": "5da1f291d4f89bb3deb4a555f4231c70",
+    "semantic_hash": ""
+  },
+  "tests/test_benchmark_duration.py": {
+    "mtime": 1793625923.2558103,
+    "ast_hash": "db8843ae44d5acde0f411e2117cc0d45",
+    "semantic_hash": ""
+  },
+  "docs/quality/assessment-checkpoint-admission-review-2026-11-02.md": {
+    "mtime": 1793626920.3005996,
+    "ast_hash": "020193241393e567f7c573dc8a7e3bd0",
+    "semantic_hash": ""
+  },
+  "docs/quality/compact-navigation-review-2026-11-02.md": {
+    "mtime": 1793624026.5044796,
+    "ast_hash": "c08dc8bb60942edc07cd144b834769b0",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-interface-file-reviews-2026-11-02.md": {
+    "mtime": 1793623994.1570203,
+    "ast_hash": "cbe1e88190f3289accf10b96cfd3bd17",
+    "semantic_hash": ""
+  },
+  "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md": {
+    "mtime": 1793626532.134722,
+    "ast_hash": "9b27456dfbfa1e849b225f326b07ecc9",
     "semantic_hash": ""
   }
 }
