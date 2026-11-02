@@ -1354,8 +1354,11 @@
     {
       "path": "Backend/Core/mlx_download_info.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Author read the final 193-line file through EOF, traced cache/setup consumers and verified the bounded empty-required-file repair, retaining valid empty BPE merge tables. No real model setup, UI or paper-quality certification.",
+      "source_sha256": "dbf5ed828d4fbd51c1351e0fd4997810e64ba53128d6c3cc15a3991c90dd8a4c",
+      "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
+      "review_evidence_sha256": "97c25d633910785280407a8068f668cbac9ddbb97d00672e87fabc5e0b0b5047"
     },
     {
       "path": "Backend/Core/mlx_setup.py",
@@ -3573,6 +3576,12 @@
     },
     {
       "path": "docs/quality/mlx-batching-design-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6904,8 +6913,11 @@
     {
       "path": "tests/test_mlx_download_info.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Author read all 196 lines through EOF, checked five invalid empty-file regressions and seven valid tokenizer-alternative controls, and ran the focused suite. Dependencies and real model compatibility remain outside this attestation.",
+      "source_sha256": "22a9eb900a223f1cf754481f836ee411fa6d0ae441ffd000552700eafa28356f",
+      "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
+      "review_evidence_sha256": "97c25d633910785280407a8068f668cbac9ddbb97d00672e87fabc5e0b0b5047"
     },
     {
       "path": "tests/test_mlx_matrix_identity.py",

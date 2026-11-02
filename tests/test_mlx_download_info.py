@@ -136,3 +136,61 @@ def test_handler_emits_typed_info_without_inference(monkeypatch, capsys):
     assert handle_mlx_download_info(Namespace(model="mlx-community/example")) == 0
     event = json.loads(capsys.readouterr().out)
     assert event["type"] == "mlx_download_info" and event["download_bytes"] == 450
+
+
+@pytest.mark.parametrize(
+    ("empty_name", "tokenizer_files"),
+    [
+        ("config.json", {"tokenizer.json": b"{}"}),
+        ("tokenizer.json", {"tokenizer.json": b"{}"}),
+        ("tokenizer.model", {"tokenizer.model": b"tokenizer"}),
+        ("tiktoken.model", {"tiktoken.model": b"tokenizer"}),
+        ("vocab.json", {"vocab.json": b"{}", "merges.txt": b"#version: 0.2"}),
+    ],
+)
+def test_empty_required_cache_files_are_not_offline_ready(
+    tmp_path, empty_name, tokenizer_files
+):
+    (tmp_path / "config.json").write_bytes(b"{}")
+    (tmp_path / "model.safetensors").write_bytes(b"123")
+    for name, contents in tokenizer_files.items():
+        (tmp_path / name).write_bytes(contents)
+    (tmp_path / empty_name).write_bytes(b"")
+    with pytest.raises(MLXSetupError, match="incomplete"):
+        model_download_info(str(tmp_path))
+    calls = []
+    result = model_download_info(
+        "mlx-community/example",
+        local_resolver=lambda _: str(tmp_path),
+        metadata_loader=lambda model: calls.append(model) or metadata(),
+    )
+    assert calls == ["mlx-community/example"]
+    assert result["cached"] is False and result["download_bytes"] == 450
+
+
+@pytest.mark.parametrize(
+    "tokenizer_files",
+    [
+        {"tokenizer.json": b"{}"},
+        {"tokenizer.model": b"tokenizer"},
+        {"tiktoken.model": b"tokenizer"},
+        {"vocab.json": b"{}", "merges.txt": b"#version: 0.2"},
+        {"vocab.json": b"{}", "merges.txt": b""},
+        {"tokenizer.json": b"", "tokenizer.model": b"tokenizer"},
+        {"tokenizer.json": b"{}", "vocab.json": b"{}", "merges.txt": b""},
+    ],
+)
+def test_complete_tokenizer_alternatives_remain_offline(tmp_path, tokenizer_files):
+    (tmp_path / "config.json").write_bytes(b"{}")
+    (tmp_path / "model.safetensors").write_bytes(b"123")
+    for name, contents in tokenizer_files.items():
+        (tmp_path / name).write_bytes(contents)
+    result = model_download_info(
+        "mlx-community/example",
+        local_resolver=lambda _: str(tmp_path),
+        metadata_loader=lambda _: pytest.fail("complete cache must remain offline"),
+    )
+    assert result["cached"] is True and result["download_bytes"] == 0
+    assert result["model_data_bytes"] == sum(
+        file.stat().st_size for file in tmp_path.iterdir()
+    )

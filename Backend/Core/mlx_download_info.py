@@ -42,12 +42,18 @@ def _complete_cache(path: Path) -> tuple[bool, int]:
         if file.is_file() and _data_file(str(file.relative_to(path)))
     ]
     names = {str(file.relative_to(path)) for file in files}
+    nonempty_names = {
+        str(file.relative_to(path)) for file in files if file.stat().st_size > 0
+    }
     has_tokenizer = bool(
-        names & {"tokenizer.json", "tokenizer.model", "tiktoken.model"}
+        nonempty_names & {"tokenizer.json", "tokenizer.model", "tiktoken.model"}
     )
-    has_tokenizer = has_tokenizer or {"vocab.json", "merges.txt"} <= names
+    # A valid BPE tokenizer can have an empty merge table.
+    has_tokenizer = has_tokenizer or (
+        "vocab.json" in nonempty_names and "merges.txt" in names
+    )
     complete = (
-        "config.json" in names
+        "config.json" in nonempty_names
         and has_tokenizer
         and any(
             fnmatchcase(str(file.relative_to(path)), "model*.safetensors")
