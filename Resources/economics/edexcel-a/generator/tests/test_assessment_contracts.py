@@ -1,4 +1,5 @@
 import ast
+import re
 from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
@@ -425,10 +426,30 @@ def test_generated_scheme_pagination_checks_content_not_official_page_count(
         len(q.parts) or 1 for q in blueprint.questions
     )
     assert policy["complete_printed_credit"] is True
+    from pastpapergen.render_pdf import MS_CONTENT_BOTTOM, MS_CONTENT_TOP
+
+    # Ownership labels are below the grid's top edge, not printer furniture.
+    with pymupdf.open(scheme) as document:
+        for page in list(document)[3:]:
+            body = pymupdf.Rect(
+                0, MS_CONTENT_TOP, page.rect.width, page.rect.height - MS_CONTENT_BOTTOM
+            )
+            for line in page.get_text().splitlines():
+                if re.fullmatch(r"\d+(?:\([a-z]\))?(?: cont\.)?", line):
+                    assert all(body.contains(rect) for rect in page.search_for(line))
 
 
 @pytest.mark.parametrize(
-    "mutation", ["omit_part", "omit_credit", "truncate_credit", "blank_padding"]
+    "mutation",
+    [
+        "omit_part",
+        "omit_credit",
+        "truncate_credit",
+        "blank_padding",
+        "duplicate_page",
+        "duplicate_continuation",
+        "duplicate_renumbered_footer",
+    ],
 )
 def test_content_driven_scheme_policy_rejects_missing_printed_assessment(
     tmp_path, mutation
@@ -473,12 +494,89 @@ def test_content_driven_scheme_policy_rejects_missing_printed_assessment(
         with pymupdf.open(scheme) as document:
             document.new_page(pno=4)
             document.saveIncr()
+    elif mutation.startswith("duplicate_"):
+        with pymupdf.open(scheme) as document:
+            original = (
+                next(page.number for page in document if " cont." in page.get_text())
+                if mutation == "duplicate_continuation"
+                else 3
+            )
+            insertion = len(document) - 1
+            document.fullcopy_page(original, to=insertion)
+            if mutation == "duplicate_renumbered_footer":
+                page = document[insertion]
+                page.insert_text((50, page.rect.height - 25), "Page 999")
+            document.saveIncr()
     with pytest.raises(
-        LayoutConformanceError, match=r"blank padding|omits or truncates"
+        LayoutConformanceError,
+        match=r"blank padding|omits or truncates|repeated assessed page",
     ):
         conform_generated_documents(
             "economics", "2", {"mark_scheme": scheme, "assessment_package": assessment}
         )
+
+
+@pytest.mark.parametrize("figure", ["vector", "image"])
+def test_same_words_with_a_different_assessed_figure_are_not_duplicate_pages(
+    tmp_path, figure
+):
+    import json
+
+    from pastpapergen.render_pdf import render_mark_scheme
+
+    from Backend.Core.assessment_package import _extract_items
+    from Backend.Core.layout_conformance import conform_generated_documents
+
+    blueprint = paper(2, 26083122)
+    raw = blueprint.model_dump(mode="json")
+    scheme, assessment = tmp_path / "scheme.pdf", tmp_path / "assessment.json"
+    assessment.write_text(
+        json.dumps(
+            {
+                "subject": "economics",
+                "paper": "2",
+                "blueprint": raw,
+                "items": _extract_items(raw, subject="economics", paper_number="2"),
+            }
+        )
+    )
+    render_mark_scheme(
+        blueprint,
+        load_syllabus(Path(__file__).parents[1] / "data/syllabus_seed.json"),
+        scheme,
+    )
+    with pymupdf.open(scheme) as document:
+        insertion = len(document) - 1
+        original_text = document[3].get_text()
+        document.fullcopy_page(3, to=insertion)
+        page = document[insertion]
+        rect = pymupdf.Rect(15, 150, 45, 180)
+        if figure == "vector":
+            page.draw_rect(rect, color=(0, 0, 0), fill=(0.2, 0.4, 0.8))
+        else:
+            image = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 10, 10), False)
+            image.clear_with(90)
+            page.insert_image(rect, pixmap=image)
+        assert page.get_text() == original_text
+        document.saveIncr()
+    report = conform_generated_documents(
+        "economics", "2", {"mark_scheme": scheme, "assessment_package": assessment}
+    )
+    assert report["mark_scheme"]["complete_printed_credit"] is True
+
+
+def test_assessed_page_fingerprint_retains_the_question_owner():
+    from Backend.Core.layout_conformance import _edexcel_assessed_page_fingerprint
+
+    with pymupdf.open() as document:
+        for owner in ("1(a)", "1(b)"):
+            page = document.new_page(width=595.44, height=841.68)
+            page.insert_text((86, 140), owner)
+            page.insert_text((160, 140), "The same credit text")
+            page.draw_rect(pymupdf.Rect(160, 170, 200, 210))
+        assert _edexcel_assessed_page_fingerprint(
+            document[0]
+        ) != _edexcel_assessed_page_fingerprint(document[1])
 
 
 def test_content_driven_policy_is_reproducible_and_does_not_reclassify_other_documents():

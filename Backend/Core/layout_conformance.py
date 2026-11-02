@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -290,6 +291,22 @@ def _aqa_cs_printed_credit(
     }
 
 
+def _edexcel_assessed_page_fingerprint(page: fitz.Page) -> tuple[int, int, bytes]:
+    """Compare the known marking-grid body, including its ownership headings."""
+    from pastpapergen.render_pdf import MS_CONTENT_BOTTOM, MS_CONTENT_TOP
+
+    # These are row-box limits, not text baselines. The renderer keeps every
+    # assessed row between them; page furniture lies outside this region.
+    body = fitz.Rect(
+        page.rect.x0,
+        page.rect.y0 + MS_CONTENT_TOP,
+        page.rect.x1,
+        page.rect.y1 - MS_CONTENT_BOTTOM,
+    )
+    raster = page.get_pixmap(clip=body, dpi=72, alpha=False)
+    return raster.width, raster.height, hashlib.sha256(raster.samples).digest()
+
+
 def _edexcel_printed_credit(
     pdf_path: Path, assessment_path: Path | None, paper: str, reference_count: int
 ) -> dict:
@@ -345,7 +362,12 @@ def _edexcel_printed_credit(
     with fitz.open(pdf_path) as document:
         page_texts = [page.get_text(sort=False) for page in document]
         actual_count = document.page_count
+        body_fingerprints = {
+            index + 1: _edexcel_assessed_page_fingerprint(document[index])
+            for index in range(3, actual_count)
+        }
     current = None
+    seen_bodies: set[tuple[int, int, bytes]] = set()
     for page_number, text in enumerate(page_texts, 1):
         if not re.search(r"[A-Za-z]{3}", text):
             raise LayoutConformanceError(
@@ -357,6 +379,13 @@ def _edexcel_printed_credit(
             # Retained packages keep their original publisher label.
             f"{LEGACY_PUBLISHER}. Independent practice material. Not produced, endorsed or approved by any examination board.",
         }
+        if page_number > 3 and not (colophon and page_number == actual_count):
+            fingerprint = body_fingerprints[page_number]
+            if fingerprint in seen_bodies:
+                raise LayoutConformanceError(
+                    f"Content-driven scheme has a repeated assessed page {page_number}"
+                )
+            seen_bodies.add(fingerprint)
         if (
             page_number > 3
             and not (colophon and page_number == actual_count)
