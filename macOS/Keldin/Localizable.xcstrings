@@ -2487,6 +2487,16 @@
         }
       }
     },
+    "Importing previous app data": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importation des données de l’ancienne application"
+          }
+        }
+      }
+    },
     "Independent item reviews": {},
     "Independent student and marker calibration is complete.": {
       "localizations": {
@@ -3904,6 +3914,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Données de l’ancienne application"
+          }
+        }
+      }
+    },
+    "Previous app data is being imported.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les données de l’ancienne application sont en cours d’importation."
           }
         }
       }

@@ -35,6 +35,7 @@ final class ApplicationCoordinator: ObservableObject {
     @Published var progressEntries: [ProgressEntry] = []
     @Published var generatedFiles: [GeneratedFile] = []
     @Published var isRefreshingOllama = false
+    @Published private(set) var isImportingPreviousData = false
     @Published var appleIntelligenceAvailability = AppleIntelligenceAvailability.unchecked
     @Published var isRefreshingAppleIntelligence = false
     var ollamaState: OllamaState {
@@ -108,6 +109,10 @@ final class ApplicationCoordinator: ObservableObject {
     private var completedDocuments = RunDocuments()
 
     var isRunning: Bool { activeRun != nil }
+
+    var canImportPreviousData: Bool {
+        !isImportingPreviousData && !isRunning && !benchmarkCoordinator.isRunning
+    }
 
     var hasCommandBlockingPresentation: Bool {
         showWelcome || showHelp || showError || showHostedAIConsent
@@ -184,6 +189,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var generationBlockerResource: LocalizedStringResource? {
+        if isImportingPreviousData { return "Previous app data is being imported." }
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
@@ -198,6 +204,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var frenchGenerationBlockerResource: LocalizedStringResource? {
+        if isImportingPreviousData { return "Previous app data is being imported." }
         if isRunning { return "Generation is already running." }
         if benchmarkCoordinator.isRunning { return "Benchmark is running." }
         if showWelcome { return "Finish the welcome guide before creating a paper." }
@@ -388,7 +395,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func refreshOllama(presentation: SettingsActionPresentation? = nil) {
-        guard !isRunning, !benchmarkCoordinator.isRunning, !isRefreshingOllama else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isRefreshingOllama, !isImportingPreviousData else { return }
         isRefreshingOllama = true
         status = "Checking Ollama"
         let revision = ollamaRefreshRevision
@@ -411,21 +418,47 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func importPreviousAppData(presentation: SettingsActionPresentation? = nil) {
-        guard !isRunning else { return }
+        guard canImportPreviousData else { return }
         let panel = NSOpenPanel()
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
         panel.message = String(localized: "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.")
         guard panel.runModal() == .OK, let source = panel.url else { return }
-        let scoped = source.startAccessingSecurityScopedResource()
-        defer { if scoped { source.stopAccessingSecurityScopedResource() } }
-        do {
-            try KeldinMigration.importData(from: source, defaults: defaults, distributionMode: distributionMode)
-            restoreRecentDocuments(presentation: presentation)
-            status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
-        } catch {
-            setError(error.localizedDescription, presentation: presentation)
+        beginPreviousAppDataImport(from: source, presentation: presentation)
+    }
+
+    @discardableResult
+    func beginPreviousAppDataImport(
+        from source: URL, destination: URL? = nil,
+        presentation: SettingsActionPresentation? = nil,
+        copyFiles: (@Sendable (URL, URL) async throws -> Void)? = nil,
+        startAccess: @escaping @MainActor (URL) -> Bool = { $0.startAccessingSecurityScopedResource() },
+        stopAccess: @escaping @MainActor (URL) -> Void = { $0.stopAccessingSecurityScopedResource() }
+    ) -> Task<Void, Never>? {
+        // Recheck after the folder panel: another operation may have started.
+        guard canImportPreviousData else { return nil }
+        let destination = destination ?? KeldinMigration.importDestination()
+        let scoped = startAccess(source)
+        isImportingPreviousData = true
+        return Task {
+            status = InterfaceText.resolve("Importing previous app data", language: presentationLanguage)
+            defer {
+                if scoped { stopAccess(source) }
+                isImportingPreviousData = false
+            }
+            do {
+                if let copyFiles {
+                    try await copyFiles(source, destination)
+                } else {
+                    try await PreviousAppDataFileImporter.shared.copy(from: source, to: destination)
+                }
+                KeldinMigration.completeImport(from: source, destination: destination, defaults: defaults, distributionMode: distributionMode)
+                restoreRecentDocuments(presentation: presentation)
+                status = String(localized: "Previous app data imported. Restart Keldin to load imported settings.")
+            } catch {
+                setError(error.localizedDescription, presentation: presentation)
+            }
         }
     }
 
@@ -448,7 +481,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func deleteFrenchReferences() {
-        guard !isRunning else { return }
+        guard !isRunning, !isImportingPreviousData else { return }
         do {
             if FileManager.default.fileExists(atPath: frenchReferencesFolder.path) {
                 try FileManager.default.removeItem(at: frenchReferencesFolder)
@@ -460,7 +493,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func generateFrenchPaper(largePrint: Bool) {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         if aiProvider == .appleIntelligence {
             pendingFrenchLargePrint = nil
             setError(InterfaceText.resolve("Apple Intelligence supports shorter tasks, but not complete French NSI papers in Keldin. Choose another provider.", language: presentationLanguage))
@@ -556,7 +589,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func generateOccitanieActivity() {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
         lastFrenchDraftQualityReport = nil
@@ -632,7 +665,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func submitFrenchReview(_ request: FrenchReviewRequest) -> FrenchReviewSubmissionOutcome {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return .cancelled }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return .cancelled }
         guard request.manifest.lastPathComponent == "manifest.json" else {
             setError(String(localized: "Choose the bundle's manifest.json file."))
             return .rejected
@@ -657,7 +690,7 @@ final class ApplicationCoordinator: ObservableObject {
         intent: BackendRunIntent = .referencePreparation,
         statusMessage: String = String(localized: "Preparing French assessment")
     ) {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         progressEntries.removeAll()
         lastQualityReport = nil
         lastFrenchDraftQualityReport = nil
@@ -782,6 +815,7 @@ final class ApplicationCoordinator: ObservableObject {
 
     @discardableResult
     func refreshAppleIntelligenceAvailability() -> Task<Void, Never>? {
+        guard !isImportingPreviousData else { return nil }
         guard !isRefreshingAppleIntelligence else { return appleIntelligenceCheckTask }
         isRefreshingAppleIntelligence = true
         let helper = AppleIntelligenceAvailability.helperURL(distributionMode: distributionMode)
@@ -1104,7 +1138,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func requestMLXDownloadInfo() {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
         if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
             setError(InterfaceText.resolve(issue, language: presentationLanguage))
@@ -1137,7 +1171,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmMLXSetup() {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         let model = appleModel.trimmingCharacters(in: .whitespacesAndNewlines)
         if let issue = MLXModelAccessPolicy.issue(model: model, distributionMode: distributionMode) {
             showMLXSetupConfirmation = false
@@ -1257,7 +1291,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func confirmPullModel(_ request: ModelDownloadRequest, presentation: SettingsActionPresentation? = nil) {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         guard distributionMode.canManageOllama else {
             setError("The App Store build can detect Ollama, but cannot install or pull models.", presentation: presentation)
             return
@@ -1363,6 +1397,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func removeHistory(_ record: GenerationJobRecord) {
+        guard !isImportingPreviousData else { return }
         do {
             try recentDocumentStore.remove(record)
         } catch {
@@ -1371,6 +1406,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func setHistoryRetentionLimit(_ value: Int, presentation: SettingsActionPresentation? = nil) {
+        guard !isImportingPreviousData else { return }
         settingsStore.historyRetentionLimit = max(1, value)
         _ = saveSettingsAndReportSecretFailure(presentation: presentation)
         recentDocumentStore.updateRetentionLimit(value)
@@ -1401,7 +1437,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     var canRequestModelDownload: Bool {
-        distributionMode.canManageOllama && !isRunning && !benchmarkCoordinator.isRunning
+        distributionMode.canManageOllama && !isRunning && !benchmarkCoordinator.isRunning && !isImportingPreviousData
     }
 
     func requestRecommendedOllamaModel() -> ModelDownloadRequest? {
@@ -1466,7 +1502,7 @@ final class ApplicationCoordinator: ObservableObject {
     }
 
     func startBenchmark() {
-        guard !isRunning, !benchmarkCoordinator.isRunning else { return }
+        guard !isRunning, !benchmarkCoordinator.isRunning, !isImportingPreviousData else { return }
         ollamaRefreshRevision = UUID()
         benchmarkCoordinator.start(generationIsRunning: isRunning)
         status = "Benchmarking"

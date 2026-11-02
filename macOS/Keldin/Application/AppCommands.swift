@@ -187,7 +187,7 @@ struct AppCommands: Commands {
                 guard canNavigate else { return }
                 navigate(.runBenchmark)
             }
-                .disabled(!canNavigate || application.hasCommandBlockingPresentation || application.isRunning || application.benchmarkCoordinator.isRunning)
+                .disabled(!canNavigate || application.hasCommandBlockingPresentation || application.isRunning || application.benchmarkCoordinator.isRunning || application.isImportingPreviousData)
 
             Button(localized("Cancel Benchmark"), action: application.cancelBenchmark)
                 .disabled(!application.benchmarkCoordinator.isRunning)

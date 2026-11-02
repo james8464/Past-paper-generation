@@ -62,6 +62,7 @@ struct JobHistoryView: View {
                         Button("Remove from History", role: .destructive) {
                             application.removeHistory(record)
                         }
+                        .disabled(application.isImportingPreviousData)
                     }
                 } primaryAction: { selected in
                     application.openHistoryPDF(from: selected)

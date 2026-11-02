@@ -68,7 +68,7 @@ struct BenchmarkWorkspace: View {
                         )
                     }
                     .nativePrimaryActionStyle()
-                    .disabled(application.isRunning)
+                    .disabled(application.isRunning || application.isImportingPreviousData)
                 }
             }
         }
@@ -102,7 +102,7 @@ private struct BenchmarkOverviewPanel: View {
                     Text("Try again, or copy diagnostics from Tools if the problem continues.")
                     Text(NativeInterfaceCopy.benchmarkText(error, locale: locale)).font(.caption).foregroundStyle(.secondary)
                     Button("Try Again", action: application.startBenchmark)
-                        .disabled(application.isRunning)
+                        .disabled(application.isRunning || application.isImportingPreviousData)
                 }
             } else if let verdict = benchmark.verdict {
                 BenchmarkVerdictSummary(verdict: verdict)
