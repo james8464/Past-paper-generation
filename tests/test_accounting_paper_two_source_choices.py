@@ -15,11 +15,16 @@ from Backend.Core.ai_assessment import (
     _validate_checkpoint_item,
 )
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from Backend.Core.subjects.accounting import BUDGET_PUBLIC_ASSUMPTIONS
 from Backend.Core.subjects.accounting_selected_response import (
     accounting_selected_response_contract,
 )
 from Backend.Core.subjects.selected_response import solve_selected_response
 from tests.test_shared_numeric_integrity import accounting_tasks
+
+PRE_BINDING_BASELINE_SHA256 = (
+    "f42616ec0240caf5c7d72c92d4f545e21acca9ab0f8fe771dd257e5695f1aadb"
+)
 
 
 def selected_task(number, seed=270101):
@@ -57,7 +62,7 @@ def test_numeric_choices_are_bound_to_public_facts_not_private_keys(number, oper
     assert reconcile_solution(result, question.model_dump(mode="json")).passed
 
 
-def test_all_question_content_and_rng_match_pre_binding_baseline():
+def _pre_binding_content_digest():
     def original_projection(question):
         projection = {
             key: value
@@ -77,6 +82,17 @@ def test_all_question_content_and_rng_match_pre_binding_baseline():
         ]
         for point in projection["structured_mark_scheme"]:
             point["text"] = point["text"].replace(corrected, old)
+        # The budget repair adds public givens without changing the seeded data.
+        # Remove only that declared addition for this historical content check;
+        # dedicated premise tests require its current printed and public forms.
+        if question.rule_id == "budget":
+            assert question.authoring_context["independent_solver_instructions"] == [
+                BUDGET_PUBLIC_ASSUMPTIONS
+            ]
+            assert projection["prompt"].count(BUDGET_PUBLIC_ASSUMPTIONS) == 1
+            projection["prompt"] = projection["prompt"].replace(
+                " " + BUDGET_PUBLIC_ASSUMPTIONS, "", 1
+            )
         return projection
 
     rows = []
@@ -90,12 +106,34 @@ def test_all_question_content_and_rng_match_pre_binding_baseline():
                 ],
             ]
         )
-    digest = hashlib.sha256(
+    return hashlib.sha256(
         json.dumps(
             rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ).encode()
     ).hexdigest()
-    assert digest == "f42616ec0240caf5c7d72c92d4f545e21acca9ab0f8fe771dd257e5695f1aadb"
+
+
+def test_all_question_content_and_rng_match_pre_binding_baseline():
+    assert _pre_binding_content_digest() == PRE_BINDING_BASELINE_SHA256
+
+
+@pytest.mark.parametrize("number", ["12.1", "13"])
+def test_baseline_projection_still_detects_unrelated_content_changes(
+    monkeypatch, number
+):
+    original_tasks = accounting_tasks
+
+    def changed_tasks(paper, seed):
+        tasks = original_tasks(paper, seed)
+        if seed == 270100:
+            question = next(
+                task.question for task in tasks if task.question.number == number
+            )
+            question.prompt += " An unrelated content change."
+        return tasks
+
+    monkeypatch.setattr(__name__ + ".accounting_tasks", changed_tasks)
+    assert _pre_binding_content_digest() != PRE_BINDING_BASELINE_SHA256
 
 
 @pytest.mark.parametrize("number", ["04", "05"])

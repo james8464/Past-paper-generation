@@ -2879,6 +2879,12 @@
       "reason": "Prose/reference material is outside implementation review; content and publication claims are not certified."
     },
     {
+      "path": "docs/quality/accounting-budget-public-assumptions-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/accounting-equal-priority-correction-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3467,7 +3473,19 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-compatible-brand-identifiers-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/native-generation-file-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3546,6 +3564,12 @@
     },
     {
       "path": "docs/quality/occitanie-v35-report-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/ocr-computer-science-preview-uniqueness-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4678,20 +4702,29 @@
     {
       "path": "macOS/Keldin/Services/BackendClient.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal review of helper ownership, callback and launch boundaries; exact-byte evidence does not certify all runtime behavior.",
+      "source_sha256": "c0a431dc54dbc03bcbfb6290bd0f66e237c9f6a61b3682b66a889b5c6c099256",
+      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
+      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
     },
     {
       "path": "macOS/Keldin/Services/BackendProcessLifecycle.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal review of process ownership and termination boundaries; exact-byte evidence does not certify all runtime behavior.",
+      "source_sha256": "3ce85f423a656f03b8dc651ae15e2e21df5620e26fd64bc6d5e7e44a916db776",
+      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
+      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
     },
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal review of read-only document access and recovery; exact-byte evidence is separate from native permission acceptance.",
+      "source_sha256": "046381db27116bb145129a79ba6a6f5b0e8c4ad6a481b4a8d9658754a129970b",
+      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
+      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
     },
     {
       "path": "macOS/Keldin/Services/SecretStore.swift",
@@ -4711,8 +4744,11 @@
     {
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal generation and persistence review plus the full empty-completion repair diff; live models and broader release acceptance remain separate.",
+      "source_sha256": "6ea92948482ce034ed97c3ecb6b54039310394f0be5a6ac3f693f32852fddf92",
+      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
+      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -4738,8 +4774,11 @@
     {
       "path": "macOS/Keldin/State/GenerationCoordinator.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal review of captured generation and history transitions; live provider and full interaction acceptance remain separate.",
+      "source_sha256": "492806bf6cbe338101c9239d0cc197481f58458200a242e69130a989bbf50e58",
+      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
+      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
     },
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
@@ -4759,8 +4798,11 @@
     {
       "path": "macOS/Keldin/State/RecentDocumentStore.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file internal persistence, migration and retention review; exact-byte evidence does not establish all observed user scenarios.",
+      "source_sha256": "d6ccf6dda4c103447d8afddccbde4e2f94355052198a9b38e4f38616e808f08e",
+      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
+      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
     },
     {
       "path": "macOS/Keldin/State/SettingsActionPresentation.swift",
@@ -5088,6 +5130,12 @@
     },
     {
       "path": "tests/support/solver_responses.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_accounting_budget_assumptions.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
@@ -6516,6 +6564,12 @@
     },
     {
       "path": "tests/test_ocr_economics_printed_credit.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ocr_preview_uniqueness.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

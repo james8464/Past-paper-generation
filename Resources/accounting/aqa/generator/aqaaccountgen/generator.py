@@ -33,7 +33,10 @@ from Backend.Core.shared_source_scope import (
     owns_shared_source,
     uses_shared_option_source,
 )
-from Backend.Core.subjects.accounting import management_input_contract
+from Backend.Core.subjects.accounting import (
+    BUDGET_PUBLIC_ASSUMPTIONS,
+    management_input_contract,
+)
 from Backend.Core.subjects.accounting_selected_response import (
     accounting_selected_response_contract,
 )
@@ -945,7 +948,7 @@ def _management_calculation(
             f"Sales receipts are {_gbp(sales)}, variable-cost payments "
             f"{_gbp(variable_cost)}, fixed-cost payments {_gbp(fixed_cost)}, opening "
             f"cash {_gbp(opening_cash)} and a capital payment of "
-            f"{_gbp(capital_payment)}. Show all workings."
+            f"{_gbp(capital_payment)}. {BUDGET_PUBLIC_ASSUMPTIONS} Show all workings."
         )
         scheme = [
             "Method: contribution = sales receipts − variable-cost payments.",
@@ -1150,6 +1153,11 @@ def _management_calculation(
             "verified_answers": answers,
             "prompt_values": prompt_values,
             "task_scope": CALCULATION_TASKS[rule_id],
+            **(
+                {"independent_solver_instructions": [BUDGET_PUBLIC_ASSUMPTIONS]}
+                if rule_id == "budget"
+                else {}
+            ),
         },
     )
 

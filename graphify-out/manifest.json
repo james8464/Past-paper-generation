@@ -420,8 +420,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/accounting.py": {
-    "mtime": 1793543563.3017921,
-    "ast_hash": "1beede95c06029c855772cec69dbbfc4",
+    "mtime": 1793597779.9706373,
+    "ast_hash": "c2a4d3e3f941fa69e40e0d4f071471e3",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/biology.py": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1793593868.6262834,
-    "ast_hash": "c1a87556db8deffaf89196fb691c6b40",
+    "mtime": 1793597779.9708743,
+    "ast_hash": "60e61a95d94596ab3f392c849dd96fbb",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
@@ -795,8 +795,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/generator.py": {
-    "mtime": 1793543563.3206997,
-    "ast_hash": "60a0965e3b71c90435c0e8bf986db4bd",
+    "mtime": 1793597268.8670316,
+    "ast_hash": "d7bcdb74a56d71e4323c88073be8919f",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793594948.9091024,
-    "ast_hash": "836582f52b238e1b1ab4413b5ebe05be",
+    "mtime": 1793598089.400431,
+    "ast_hash": "6045d37cc176af23feddbad0be4364a6",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793587993.8675864,
-    "ast_hash": "06198bfbe7e22b76eb0ce6ca20876df7",
+    "mtime": 1793597268.8449094,
+    "ast_hash": "bb348ed2643b6ebc980ccf0e368214ae",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793572369.9305809,
-    "ast_hash": "5716f913e70323090f9c1ace93638945",
+    "mtime": 1793597268.8457239,
+    "ast_hash": "edf8e63c5590478dbd363f75a708c347",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793594948.8298483,
-    "ast_hash": "e0fc8eaf05bc86e3545fcfded9a349bb",
+    "mtime": 1793598089.3209145,
+    "ast_hash": "654c36fd8b01418635b290eab51f7f97",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4665,8 +4665,8 @@
     "semantic_hash": ""
   },
   "tests/test_accounting_paper_two_source_choices.py": {
-    "mtime": 1793543563.4542108,
-    "ast_hash": "00d26d569946994441f21cb3f1dec8b4",
+    "mtime": 1793599261.0296855,
+    "ast_hash": "18fd99599d7ce23936ff041ac5821d54",
     "semantic_hash": ""
   },
   "tests/test_mlx_download_info.py": {
@@ -5345,8 +5345,38 @@
     "semantic_hash": ""
   },
   "docs/quality/output-integrity-and-paper-two-flow-2026-11-02.md": {
-    "mtime": 1793595884.3381174,
-    "ast_hash": "182dd24caf00630b51ff65c789a94aea",
+    "mtime": 1793595950.8004887,
+    "ast_hash": "20bbc90da0aa5b4383798232626e803a",
+    "semantic_hash": ""
+  },
+  "tests/test_accounting_budget_assumptions.py": {
+    "mtime": 1793597779.9709945,
+    "ast_hash": "cb6fe3c4148b52e77eb44195bf406024",
+    "semantic_hash": ""
+  },
+  "tests/test_ocr_preview_uniqueness.py": {
+    "mtime": 1793597268.8671508,
+    "ast_hash": "62fb182ada57d5baeb5c6183c33fae37",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-backend-and-document-access-review-2026-11-02.md": {
+    "mtime": 1793597268.8600035,
+    "ast_hash": "3542e33faacfb12560813b6f869a69a1",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-generation-file-review-2026-11-02.md": {
+    "mtime": 1793597268.8532267,
+    "ast_hash": "368da6126bb5ec35aa93abfc5d95555e",
+    "semantic_hash": ""
+  },
+  "docs/quality/ocr-computer-science-preview-uniqueness-2026-11-02.md": {
+    "mtime": 1793597268.875123,
+    "ast_hash": "f12c2a20e831024b7be81b54e28597fc",
+    "semantic_hash": ""
+  },
+  "docs/quality/accounting-budget-public-assumptions-2026-11-02.md": {
+    "mtime": 1793599374.3203254,
+    "ast_hash": "ddcc3f56813ddec7e98e18e1ace3517d",
     "semantic_hash": ""
   }
 }

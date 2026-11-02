@@ -1803,6 +1803,14 @@ final class ApplicationCoordinator: ObservableObject {
                     return
                 }
                 do {
+                    if generationCoordinator.activeJob?.configuration.assessmentID != FrenchAssessmentRequest.assessmentID {
+                        // Every UK component, including banks, declares this
+                        // primary PDF. Private records or support files alone
+                        // must not turn a zero exit into a completed paper.
+                        guard currentGenerationFiles.contains(where: {
+                            $0.role == "question_paper" && canPreviewGeneratedFile($0)
+                        }) else { throw CocoaError(.fileReadNoSuchFile) }
+                    }
                     if let configuration = generationCoordinator.activeJob?.configuration,
                        configuration.authoringVersion == "v36" {
                         try FrenchLLMAssessmentRequest.validatePublication(artifacts: currentGenerationFiles, configuration: configuration)
