@@ -69,6 +69,7 @@ struct FrenchAssessmentWorkspace: View {
             titleVisibility: .visible
         ) {
             Button("Delete References", role: .destructive, action: application.deleteFrenchReferences)
+                .disabled(application.isImportingPreviousData)
             Button("Cancel", role: .cancel) { }
         } message: {
             Text("The local reference PDFs and search index will be removed. Generated papers are not affected.")
@@ -104,7 +105,7 @@ struct FrenchAssessmentWorkspace: View {
                 if presentation.showsPrepareReferences {
                     Label("Prepare French references first.", systemImage: "exclamationmark.circle")
                     Button("Prepare French references") { showDownloadConsent = true }
-                        .disabled(application.isRunning)
+                        .disabled(application.isRunning || application.isImportingPreviousData)
                 } else {
                     Label("Reference files available", systemImage: "checkmark.circle")
                     Text("The reference corpus is incomplete; its presence does not prove topic coverage.")
@@ -140,19 +141,19 @@ struct FrenchAssessmentWorkspace: View {
                 Text("A separate French activity using 12 public school records from Occitanie. Includes an activity PDF and proposed answers, without an exam mark or official endorsement.")
                     .foregroundStyle(.secondary)
                 Button("Create the Occitanie case study", action: application.generateOccitanieActivity)
-                    .disabled(application.isRunning || application.benchmarkCoordinator.isRunning)
+                    .disabled(application.isRunning || application.benchmarkCoordinator.isRunning || application.isImportingPreviousData)
             }
             Section("Review and guidance") {
                 Text("Read both PDFs and the validation record. Check the difficulty and timing before use. Automated checks do not establish classroom suitability.")
                 Button("Record a teacher review…") { showTeacherReview = true }
-                    .disabled(application.isRunning)
+                    .disabled(application.isRunning || application.isImportingPreviousData)
                 DisclosureGroup("References and privacy", isExpanded: $showReferenceGuidance) {
                     Text("Official sources are downloaded with your permission. The chosen provider creates the draft; no official approval or calibrated difficulty is implied.")
                     if application.hasFrenchReferences {
                         Button("Delete downloaded French references", role: .destructive) {
                             showDeleteReferences = true
                         }
-                        .disabled(application.isRunning)
+                        .disabled(application.isRunning || application.isImportingPreviousData)
                     }
                     Link("Official NSI examination rules", destination: URL(string: "https://www.education.gouv.fr/bo/2026/Special4/MENE2622643N")!)
                         .foregroundStyle(Color("ForegroundAccent"))

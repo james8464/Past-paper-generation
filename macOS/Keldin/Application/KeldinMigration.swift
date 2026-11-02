@@ -95,10 +95,23 @@ enum KeldinMigration {
         distributionMode: DistributionMode = .current,
         legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
     ) throws {
+        let destination = importDestination(fileManager: fileManager)
+        try copyMissingTree(from: source, to: destination, fileManager: fileManager)
+        completeImport(from: source, destination: destination, defaults: defaults,
+                       distributionMode: distributionMode, legacyDomainReader: legacyDomainReader)
+    }
+
+    static func importDestination(fileManager: FileManager = .default) -> URL {
         let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support")
-        let destination = support.appendingPathComponent("Keldin")
-        try copyMissingTree(from: source, to: destination, fileManager: fileManager)
+        return support.appendingPathComponent("Keldin")
+    }
+
+    static func completeImport(
+        from source: URL, destination: URL, defaults: UserDefaults,
+        distributionMode: DistributionMode,
+        legacyDomainReader: (UserDefaults, String) -> [String: Any]? = { $0.persistentDomain(forName: $1) }
+    ) {
         registerArtifactRoot(source, destination: destination, defaults: defaults)
         // A selected folder grants file access, not access to another preference
         // domain. Store builds import only the selected files.
@@ -189,10 +202,8 @@ enum KeldinMigration {
         }
         let resolvedSource = source.resolvingSymlinksInPath().standardizedFileURL.path
         let resolvedDestination = destination.resolvingSymlinksInPath().standardizedFileURL.path
-        guard resolvedDestination != resolvedSource,
-              !resolvedDestination.hasPrefix(resolvedSource + "/") else {
-            throw CocoaError(.fileWriteInvalidFileName)
-        }
+        guard resolvedDestination != resolvedSource else { throw KeldinImportError.currentDataFolder }
+        guard !resolvedDestination.hasPrefix(resolvedSource + "/") else { throw KeldinImportError.containsCurrentDataFolder }
         if let values = try? destination.resourceValues(forKeys: [.isSymbolicLinkKey]), values.isSymbolicLink == true {
             throw CocoaError(.fileWriteInvalidFileName)
         }
@@ -227,4 +238,38 @@ enum KeldinMigration {
         }
     }
 
+}
+
+enum KeldinImportError: LocalizedError, Equatable {
+    case currentDataFolder
+    case containsCurrentDataFolder
+
+    private var resource: LocalizedStringResource {
+        switch self {
+        case .currentDataFolder:
+            "This is Keldin’s current data folder. Choose the previous app’s folder."
+        case .containsCurrentDataFolder:
+            "Choose the previous app’s own folder. It cannot contain Keldin’s current data folder."
+        }
+    }
+
+    var errorDescription: String? { String(localized: resource) }
+
+    func message(language: String) -> String { InterfaceText.resolve(resource, language: language) }
+}
+
+// Only immutable URLs cross into this worker. Preference merges stay with the caller.
+actor PreviousAppDataFileImporter {
+    static let shared = PreviousAppDataFileImporter()
+    private let copyTree: @Sendable (URL, URL) throws -> Void
+
+    init(copyTree: @escaping @Sendable (URL, URL) throws -> Void = {
+        try KeldinMigration.copyMissingTree(from: $0, to: $1)
+    }) {
+        self.copyTree = copyTree
+    }
+
+    func copy(from source: URL, to destination: URL) throws {
+        try copyTree(source, destination)
+    }
 }

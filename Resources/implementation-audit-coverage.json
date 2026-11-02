@@ -3503,6 +3503,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-interface-audit-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4151,6 +4157,12 @@
       "reason": "Derived inventory or graph output; review its maintained producer instead."
     },
     {
+      "path": "graphify-out/memory/query_20261102_093751_remaining_previous_data_import_user_flow.md",
+      "classification": "generated-metadata",
+      "status": "excluded",
+      "reason": "Derived inventory or graph output; review its maintained producer instead."
+    },
+    {
       "path": "graphify-out/reflections/LESSONS.md",
       "classification": "generated-metadata",
       "status": "excluded",
@@ -4325,10 +4337,10 @@
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Read every line and traced storage migration containment, idempotence, failure reporting and the Store restriction on importing the former data domain. No new defect found.",
-      "source_sha256": "cff4f9084457b9233cc156a9515978cfc2a283f505f4775439d087b4fc0bd7a0",
-      "review_evidence": "docs/quality/native-startup-and-report-audit-2026-10-29.md",
-      "review_evidence_sha256": "4face6325ec770161186435b564f59e3f144d348608c62dd9a338f3805641ed4"
+      "reason": "Fresh full-file import review, including containment, copy worker, typed errors and unchanged synchronous startup limitation. No further concrete defect found in scope.",
+      "source_sha256": "01a368ed913e491aaf07390b520e45224d3c15b6176bfa2d5b6479e5e03ba056",
+      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
+      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
     },
     {
       "path": "macOS/Keldin/Application/MainWindowRouting.swift",
@@ -4618,8 +4630,11 @@
     {
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full baseline EOF and complete final guard delta reviewed; history removal and repeat generation respect the import lease. Broader interaction coverage remains separate.",
+      "source_sha256": "ba591d115099a43d5ec68d9a9561f67774287696d2a5459f5e2d2b64710fd189",
+      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
+      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
     },
     {
       "path": "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift",
@@ -4772,10 +4787,10 @@
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal generation and persistence review plus the full empty-completion repair diff; live models and broader release acceptance remain separate.",
-      "source_sha256": "6ea92948482ce034ed97c3ecb6b54039310394f0be5a6ac3f693f32852fddf92",
-      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
-      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
+      "reason": "Full 2294-line import candidate EOF plus complete two-line final typed-error catch delta reviewed; lease cleanup, busy guards and false-success repair traced. Startup and live model acceptance remain separate.",
+      "source_sha256": "ea045d0f09a0afc5cb6b1a81fb5e46295f805e0b9ba4f6db509001cdd825f53f",
+      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
+      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5019,6 +5034,12 @@
     },
     {
       "path": "macOS/Tests/PDFDocumentAccessTests.swift",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "macOS/Tests/PreviousDataImportInteractiveTests.swift",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

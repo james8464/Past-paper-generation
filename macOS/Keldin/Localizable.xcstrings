@@ -1150,12 +1150,22 @@
         }
       }
     },
-    "Choose the previous app's folder inside Library/Application Support. Existing Keldin files will be kept.": {
+    "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.": {
       "localizations": {
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisissez le dossier de l’ancienne application dans Library/Application Support. Les fichiers Keldin existants seront conservés."
+            "value": "Choisissez le dossier Application Support de l’ancienne application. Les PDF existants ne seront pas remplacés. La limite de l’historique reste applicable."
+          }
+        }
+      }
+    },
+    "Choose the previous app’s own folder. It cannot contain Keldin’s current data folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisissez le dossier propre à l’ancienne application. Il ne doit pas contenir le dossier des données actuelles de Keldin."
           }
         }
       }
@@ -2483,6 +2493,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Importer les données de l’ancienne application…"
+          }
+        }
+      }
+    },
+    "Importing previous app data": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importation des données de l’ancienne application"
           }
         }
       }
@@ -3904,6 +3924,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Données de l’ancienne application"
+          }
+        }
+      }
+    },
+    "Previous app data is being imported.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les données de l’ancienne application sont en cours d’importation."
           }
         }
       }
@@ -5381,6 +5411,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ce fichier n’a pas pu être ouvert en tant que PDF."
+          }
+        }
+      }
+    },
+    "This is Keldin’s current data folder. Choose the previous app’s folder.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce dossier contient les données actuelles de Keldin. Choisissez le dossier de l’ancienne application."
           }
         }
       }

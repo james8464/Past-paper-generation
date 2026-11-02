@@ -441,7 +441,11 @@ private struct OutputSettingsTab: View {
                 Button("Import previous app data…") {
                     application.importPreviousAppData(presentation: application.settingsPresentation)
                 }
-                    .disabled(application.isRunning)
+                    .disabled(!application.canImportPreviousData)
+                if application.isImportingPreviousData {
+                    ProgressView("Importing previous app data")
+                        .controlSize(.small)
+                }
                 Text("Use this if your earlier papers or history were not imported automatically. Choose the former app's Application Support folder. You may need to choose your output folder again or re-enter API keys.")
                     .foregroundStyle(.secondary)
             }
@@ -483,6 +487,7 @@ private struct OutputSettingsTab: View {
                     in: 10 ... 500,
                     step: 10
                 )
+                .disabled(application.isImportingPreviousData)
                 Text("History stores configuration and provenance. Generated PDFs remain in the folder you chose.")
                     .foregroundStyle(.secondary)
                 if !application.recentDocumentStore.retentionFailureIDs.isEmpty {

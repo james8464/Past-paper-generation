@@ -5,6 +5,234 @@ import XCTest
 @testable import Keldin
 
 final class MigrationTests: XCTestCase {
+    @MainActor
+    func testManualImportExplainsInvalidFolderChoices() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinImportChoice-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        let marker = source.appendingPathComponent("preserved")
+        let bytes = Data("unchanged".utf8)
+        try bytes.write(to: marker)
+        XCTAssertThrowsError(try KeldinMigration.copyMissingTree(from: source, to: source)) {
+            XCTAssertEqual($0 as? KeldinImportError, .currentDataFolder)
+        }
+        XCTAssertThrowsError(try KeldinMigration.copyMissingTree(from: source, to: source.appendingPathComponent("nested"))) {
+            XCTAssertEqual($0 as? KeldinImportError, .containsCurrentDataFolder)
+        }
+        for (destination, english, french) in [
+            (source, "This is Keldin’s current data folder. Choose the previous app’s folder.", "Ce dossier contient les données actuelles de Keldin. Choisissez le dossier de l’ancienne application."),
+            (source.appendingPathComponent("nested"), "Choose the previous app’s own folder. It cannot contain Keldin’s current data folder.", "Choisissez le dossier propre à l’ancienne application. Il ne doit pas contenir le dossier des données actuelles de Keldin."),
+        ] {
+            for (language, expected) in [("en", english), ("fr", french)] {
+                let defaults = isolatedDefaults()
+                defaults.set(2, forKey: KeldinMigration.completionKey)
+                defaults.set(language, forKey: "interfaceLanguage")
+                let application = isolatedApplication(defaults: defaults, distributionMode: .appStore)
+                let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+                    from: source, destination: destination,
+                    startAccess: { _ in false }, stopAccess: { _ in XCTFail("No scope was granted") }
+                ))
+                await task.value
+                XCTAssertEqual(application.errorMessage, expected)
+                XCTAssertTrue(application.showError)
+                XCTAssertFalse(application.isImportingPreviousData)
+                XCTAssertEqual(try Data(contentsOf: marker), bytes)
+            }
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: source.appendingPathComponent("nested").path))
+    }
+
+    func testImportPickerExplainsPDFPreservationAndHistoryRetention() {
+        let message: LocalizedStringResource = "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies."
+        XCTAssertEqual(InterfaceText.resolve(message, language: "en"), "Choose the previous app's Application Support folder. Existing PDFs will not be replaced. The history limit still applies.")
+        XCTAssertEqual(InterfaceText.resolve(message, language: "fr"), "Choisissez le dossier Application Support de l’ancienne application. Les PDF existants ne seront pas remplacés. La limite de l’historique reste applicable.")
+    }
+
+    @MainActor
+    func testManualImportReportsHistoryReloadFailureWithoutSuccessStatus() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinImportHistoryError-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old")
+        let destination = root.appendingPathComponent("Keldin")
+        let defaults = isolatedDefaults()
+        defaults.set(2, forKey: KeldinMigration.completionKey)
+        defaults.set("en", forKey: "interfaceLanguage")
+        let application = ApplicationCoordinator(
+            defaults: defaults, secrets: ImportHistoryTestSecrets(),
+            historyDirectory: destination.appendingPathComponent("JobHistory"),
+            backend: ControlledRunBackend(), distributionMode: .appStore
+        )
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(boardID: "economics-aqa", paperID: "1", provider: "ollama", model: "fixture", seed: 42, dryRun: true),
+            provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+            state: .completed, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        let relativePath = "JobHistory/not-a-job-id.json"
+        let sourceRecord = source.appendingPathComponent(relativePath)
+        try FileManager.default.createDirectory(at: sourceRecord.deletingLastPathComponent(), withIntermediateDirectories: true)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let bytes = try encoder.encode(record)
+        try bytes.write(to: sourceRecord)
+        var accessEvents: [String] = []
+        let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+            from: source, destination: destination,
+            startAccess: { _ in accessEvents.append("start"); return true },
+            stopAccess: { _ in accessEvents.append("stop") }
+        ))
+        await task.value
+        XCTAssertTrue(application.showError)
+        XCTAssertTrue(application.errorMessage.contains("Couldn't load generation history."))
+        XCTAssertEqual(application.status, "Error")
+        XCTAssertFalse(application.isImportingPreviousData)
+        XCTAssertTrue(application.canImportPreviousData)
+        XCTAssertEqual(accessEvents, ["start", "stop"])
+        XCTAssertEqual(try Data(contentsOf: sourceRecord), bytes)
+        XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent(relativePath)), bytes)
+    }
+
+    @MainActor
+    func testManualImportKeepsNavigationResponsiveAndBlocksConflictingWork() async throws {
+        let defaults = isolatedDefaults()
+        defaults.set(2, forKey: KeldinMigration.completionKey)
+        defaults.set("en", forKey: "interfaceLanguage")
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend, distributionMode: .appStore)
+        application.showWelcome = false
+        application.setDryRun(true)
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinManualImport-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old")
+        let destination = root.appendingPathComponent("new")
+        application.outputFolder = root.appendingPathComponent("exports")
+        let record = GenerationJobRecord(
+            configuration: GenerationConfiguration(boardID: "economics-aqa", paperID: "1", provider: "ollama", model: "fixture", seed: 42, dryRun: true),
+            provenance: GenerationProvenance(appVersion: "test", provider: "ollama", model: "fixture"),
+            state: .completed, artifacts: [],
+            qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false)
+        )
+        try application.recentDocumentStore.save(record)
+        let gate = ManualImportGate()
+        var accessEvents: [String] = []
+        let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+            from: source, destination: destination,
+            copyFiles: { actualSource, actualDestination in
+                XCTAssertEqual(actualSource, source)
+                XCTAssertEqual(actualDestination, destination)
+                await gate.pause()
+            },
+            startAccess: { _ in accessEvents.append("start"); return true },
+            stopAccess: { _ in accessEvents.append("stop") }
+        ))
+        await gate.waitForStart()
+        XCTAssertTrue(application.isImportingPreviousData)
+        XCTAssertFalse(application.isRunning)
+        XCTAssertFalse(application.canImportPreviousData)
+        XCTAssertFalse(application.canGenerate)
+        XCTAssertEqual(application.generationBlocker, "Previous app data is being imported.")
+        XCTAssertEqual(accessEvents, ["start"])
+        application.outputFolder = root.appendingPathComponent("different-export")
+        XCTAssertNil(application.beginPreviousAppDataImport(from: source, destination: destination))
+        application.showHistory()
+        XCTAssertEqual(application.sidebarSelection, .history)
+        let heartbeat = Task { @MainActor in application.showDocuments() }
+        await heartbeat.value
+        XCTAssertEqual(application.sidebarSelection, .documents)
+        let retention = application.settingsStore.historyRetentionLimit
+        application.setHistoryRetentionLimit(retention + 10)
+        XCTAssertEqual(application.settingsStore.historyRetentionLimit, retention)
+        application.removeHistory(record)
+        XCTAssertTrue(application.recentDocumentStore.records.contains { $0.id == record.id })
+        application.generate()
+        application.generateFrenchFixture(largePrint: false)
+        application.generateOccitanieActivity()
+        application.prepareFrenchReferences()
+        application.requestMLXDownloadInfo()
+        application.confirmMLXSetup()
+        application.confirmPullModel(ModelDownloadRequest(model: "fixture"))
+        application.refreshOllama()
+        XCTAssertNil(application.refreshAppleIntelligenceAvailability())
+        application.startBenchmark()
+        XCTAssertFalse(application.benchmarkCoordinator.isRunning)
+        XCTAssertTrue(backend.requests.isEmpty)
+        await gate.release()
+        await task.value
+        XCTAssertFalse(application.isImportingPreviousData)
+        XCTAssertTrue(application.canImportPreviousData)
+        XCTAssertEqual(accessEvents, ["start", "stop"])
+        XCTAssertEqual(defaults.dictionary(forKey: KeldinMigration.artifactMappingsKey) as? [String: String], [source.path: destination.path])
+        XCTAssertFalse(application.showError)
+    }
+
+    @MainActor
+    func testManualImportFailureReleasesScopeAndAllowsAnotherAttempt() async throws {
+        for granted in [false, true] {
+            let defaults = isolatedDefaults()
+            defaults.set(2, forKey: KeldinMigration.completionKey)
+            let application = isolatedApplication(defaults: defaults, distributionMode: .appStore)
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinManualImportError-\(UUID().uuidString)")
+            var stops = 0
+            let task = try XCTUnwrap(application.beginPreviousAppDataImport(
+                from: root.appendingPathComponent("old"), destination: root.appendingPathComponent("new"),
+                copyFiles: { _, _ in throw CocoaError(.fileReadNoPermission) },
+                startAccess: { _ in granted }, stopAccess: { _ in stops += 1 }
+            ))
+            await task.value
+            XCTAssertFalse(application.isImportingPreviousData)
+            XCTAssertEqual(stops, granted ? 1 : 0)
+            XCTAssertTrue(application.showError)
+            XCTAssertNil(defaults.dictionary(forKey: KeldinMigration.artifactMappingsKey))
+            XCTAssertTrue(application.canImportPreviousData)
+        }
+    }
+
+    @MainActor
+    func testManualImportRefusesAnActiveRunOrBenchmarkBeforeAcquiringScope() {
+        let defaults = isolatedDefaults()
+        defaults.set(2, forKey: KeldinMigration.completionKey)
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend)
+        application.showWelcome = false
+        application.setDryRun(true)
+        application.outputFolder = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRefusedImportExports-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: application.outputFolder) }
+        application.generate()
+        XCTAssertTrue(application.isRunning)
+        var accessStarts = 0
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinRefusedImport-\(UUID().uuidString)")
+        XCTAssertNil(application.beginPreviousAppDataImport(
+            from: root, destination: root.appendingPathComponent("new"), startAccess: { _ in accessStarts += 1; return true }
+        ))
+        application.cancelGeneration()
+        application.benchmarkCoordinator.begin()
+        XCTAssertNil(application.beginPreviousAppDataImport(
+            from: root, destination: root.appendingPathComponent("new"), startAccess: { _ in accessStarts += 1; return true }
+        ))
+        XCTAssertEqual(accessStarts, 0)
+        application.benchmarkCoordinator.cancel()
+    }
+
+    @MainActor
+    func testManualFileWorkerCopiesOffMainActorWithoutOverwritingFiles() async throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinImportWorker-\(UUID().uuidString)")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let source = root.appendingPathComponent("old"), destination = root.appendingPathComponent("new")
+        try FileManager.default.createDirectory(at: source, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: destination, withIntermediateDirectories: true)
+        try Data("old".utf8).write(to: source.appendingPathComponent("existing.txt"))
+        try Data("current".utf8).write(to: destination.appendingPathComponent("existing.txt"))
+        try Data("copied".utf8).write(to: source.appendingPathComponent("new.txt"))
+        let worker = PreviousAppDataFileImporter(copyTree: { source, destination in
+            XCTAssertFalse(Thread.isMainThread)
+            try KeldinMigration.copyMissingTree(from: source, to: destination)
+        })
+        try await worker.copy(from: source, to: destination)
+        XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent("existing.txt")), Data("current".utf8))
+        XCTAssertEqual(try Data(contentsOf: destination.appendingPathComponent("new.txt")), Data("copied".utf8))
+    }
+
     func testStoreMigrationNeverReadsLegacyPreferenceDomainAndStillImportsSelectedFiles() throws {
         for mode in [DistributionMode.appStore, .direct] {
             for manualImport in [false, true] {
@@ -299,6 +527,34 @@ final class MigrationTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: destination), bytes)
     }
 
+}
+
+private struct ImportHistoryTestSecrets: SecretStoring {
+    func read(_ account: String) -> String { "" }
+    func save(_ value: String, account: String) { }
+}
+
+private actor ManualImportGate {
+    private var started = false
+    private var startWaiter: CheckedContinuation<Void, Never>?
+    private var resumeCopy: CheckedContinuation<Void, Never>?
+
+    func pause() async {
+        started = true
+        startWaiter?.resume()
+        startWaiter = nil
+        await withCheckedContinuation { resumeCopy = $0 }
+    }
+
+    func waitForStart() async {
+        if started { return }
+        await withCheckedContinuation { startWaiter = $0 }
+    }
+
+    func release() {
+        resumeCopy?.resume()
+        resumeCopy = nil
+    }
 }
 
 private final class MigrationTestFileManager: FileManager, @unchecked Sendable {
