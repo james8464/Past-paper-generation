@@ -548,7 +548,8 @@ def profile(
                             )
                         ] += len(span_text)
             if has_text:
-                text_boxes.append(tuple(float(value) for value in block["bbox"]))
+                x0, y0, x1, y1 = block["bbox"]
+                text_boxes.append((float(x0), float(y0), float(x1), float(y1)))
         if text_boxes:
             left.append(min(block[0] for block in text_boxes))
             top.append(min(block[1] for block in text_boxes))
