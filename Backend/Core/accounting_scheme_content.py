@@ -658,6 +658,19 @@ def verify_accounting_paper_two_scheme(
             ] == [_compact(cell) for cell in headings]:
                 actual.extend(tables[cursor][1:])
                 cursor += 1
+            if headings[1] != "Band":
+                # Derive the visible award total from PDF cells, independently
+                # of question_rows: a shared rendering filter must not prove
+                # its own accidental omission of positive credit.
+                awards = [_compact(row[-1] or "") for row in actual]
+                if any(
+                    value != "—" and not value.isdecimal() for value in awards
+                ) or sum(int(value) for value in awards if value.isdecimal()) != int(
+                    headings[1]
+                ):
+                    raise LayoutConformanceError(
+                        f"Accounting Paper 2 printed award total differs for {headings[0]}"
+                    )
             if [[_compact(cell or "") for cell in row] for row in actual] != [
                 [_compact(cell) for cell in row] for row in rows
             ]:

@@ -83,6 +83,8 @@ def question_rows(
     rows: list[list[str]] = []
     levels: list[list[str]] = []
     for point in question.structured_mark_scheme:
+        if point.marks and point.text == "Levels-based marking":
+            raise ValueError("A reserved levels heading cannot carry an award")
         match = re.fullmatch(r"Level (\d+) \(([^)]+)\):\s*(.+)", point.text, re.DOTALL)
         if match:
             if point.marks:

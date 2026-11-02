@@ -123,6 +123,41 @@ def test_forged_mode_cannot_remove_the_applicable_decision_grid(paths):
         conform_generated_documents("accounting_aqa", "2", paths)
 
 
+def test_positive_reserved_heading_cannot_disappear_from_a_complete_package(paths):
+    package = _package(paths)
+    question = next(q for q in _questions(package) if q["number"] == "14.1")
+    point = next(p for p in question["structured_mark_scheme"] if p["marks"] == 1)
+    point["text"] = "Levels-based marking"
+    # Same tariff, source inputs and assessment items: this used to render only
+    # three of the four awarded marks, then pass the shared-row verifier.
+    with pytest.raises((ValueError, LayoutConformanceError), match=r"award|reserved"):
+        _save(paths, package, render=True)
+        conform_generated_documents("accounting_aqa", "2", paths)
+
+
+def test_actual_printed_award_total_is_independent_of_shared_row_filters(
+    paths, monkeypatch
+):
+    from aqaaccountgen import render_pdf, scheme_policy
+
+    original = scheme_policy.question_rows
+
+    def lose_one_award(question):
+        rows, levels = original(question)
+        if question.number == "14.1":
+            index = next(i for i, row in enumerate(rows) if row[1] == "1")
+            rows = rows[:index] + rows[index + 1 :]
+        return rows, levels
+
+    # Simulate any future shared-helper filtering bug in BOTH render and proof.
+    monkeypatch.setattr(scheme_policy, "question_rows", lose_one_award)
+    monkeypatch.setattr(render_pdf, "question_rows", lose_one_award)
+    package = _package(paths)
+    _save(paths, package, render=True)
+    with pytest.raises(LayoutConformanceError, match=r"printed.*award.*total"):
+        conform_generated_documents("accounting_aqa", "2", paths)
+
+
 @pytest.mark.parametrize(
     "mutation",
     [
