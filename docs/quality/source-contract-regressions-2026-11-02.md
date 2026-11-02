@@ -116,6 +116,22 @@ from configuration cannot start a stale job. Explicit French generation still
 requires consent even when the separate UK preview preference is enabled.
 Independent review and focused tests cover both window and Settings routes.
 
+## Recent document routing follow-up
+
+Native preview testing exposed two PDFs and two private JSON records appearing
+as four Recent Documents. Previewing a JSON record could route to Documents and
+display its first PDF instead. This was a selection bug, not duplicate output.
+
+The table and count now use the same local-PDF projection. Both the button and
+coordinator reject non-PDF preview requests before changing selection or
+navigation. Missing PDFs still reach the recovery flow. Stored artifacts, IDs,
+bookmarks, history and public CSV/Python support files are retained unchanged.
+
+Red tests reproduced eight wrong-target assertions. The author's focused native
+group passed 158 tests, and an independent read-only review found no scoped
+issue. Full native, signed-build and protected-check results are recorded on the
+associated pull request. No generation, marking or provider policy changed.
+
 ## Release boundary
 
 Focused regressions preceded each fix. Independent review found the residual

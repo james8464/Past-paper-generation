@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793543563.4478827,
-    "ast_hash": "447d56f591f09b708a3408bb4da939af",
+    "mtime": 1793587993.8680437,
+    "ast_hash": "a9297d4375810577c0f860909e2f393e",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3480,8 +3480,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/SharedViews.swift": {
-    "mtime": 1793565312.3315115,
-    "ast_hash": "f434cdb0ec6a79a1306a2ce4d1eaf5cb",
+    "mtime": 1793587993.8667626,
+    "ast_hash": "6df7a38a18867d91dc72be43e5eb3ff5",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/AppModels.swift": {
@@ -3545,8 +3545,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GeneratorWorkspaceView.swift": {
-    "mtime": 1793569425.019883,
-    "ast_hash": "3bd7722059618603e9ef0edd526e21a3",
+    "mtime": 1793587993.8673162,
+    "ast_hash": "1d4cc262fef1888839f7196204eb631f",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793580088.1696644,
-    "ast_hash": "9e6c25169d3647ec6cae5b9c8110adcf",
+    "mtime": 1793587993.8675864,
+    "ast_hash": "06198bfbe7e22b76eb0ce6ca20876df7",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
