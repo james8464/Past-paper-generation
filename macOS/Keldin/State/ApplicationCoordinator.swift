@@ -89,6 +89,7 @@ final class ApplicationCoordinator: ObservableObject {
     private let backend: any BackendRunning
     private let defaults: UserDefaults
     private let outputFolderBookmark: (URL) throws -> Data
+    private let pdfDocumentAccess: PDFDocumentAccess
     private let generationRecordsFolder: URL
     private let appleIntelligenceChecker: @Sendable (URL) async -> AppleIntelligenceAvailability
     private var appleIntelligenceCheckTask: Task<Void, Never>?
@@ -314,6 +315,7 @@ final class ApplicationCoordinator: ObservableObject {
         outputFolderBookmark: @escaping (URL) throws -> Data = { url in
             try url.bookmarkData(options: .withSecurityScope, includingResourceValuesForKeys: nil, relativeTo: nil)
         },
+        pdfDocumentAccess: PDFDocumentAccess? = nil,
         historyRecordRemover: @escaping (URL) throws -> Void = { url in
             try FileManager.default.removeItem(at: url)
         }
@@ -323,6 +325,7 @@ final class ApplicationCoordinator: ObservableObject {
         self.distributionMode = distributionMode
         self.appleIntelligenceChecker = appleIntelligenceChecker
         self.outputFolderBookmark = outputFolderBookmark
+        self.pdfDocumentAccess = pdfDocumentAccess ?? PDFDocumentAccess(defaults: defaults)
         generationRecordsFolder = (historyDirectory ?? AppDefaults.jobHistoryFolder())
             .appendingPathComponent("Generation records", isDirectory: true)
         let settings = SettingsStore(defaults: defaults, secrets: secrets, distributionMode: distributionMode)
@@ -1946,6 +1949,18 @@ final class ApplicationCoordinator: ObservableObject {
         let byID = Dictionary(uniqueKeysWithValues: published.map { ($0.id, $0) })
         generatedFiles = generatedFiles.map { file in
             byID[file.id] ?? file
+        }
+        var couldNotRememberAccess = false
+        for file in published where file.url.pathExtension.lowercased() == "pdf" {
+            if case .failure = pdfDocumentAccess.rememberReadablePDF(file.url) {
+                couldNotRememberAccess = true
+            }
+        }
+        if couldNotRememberAccess {
+            progressEntries.append(ProgressEntry(stage: "document_access", message: InterfaceText.resolve(
+                "The PDFs were saved, but access couldn't be remembered for some files. If a PDF becomes unavailable, choose it again in Documents.",
+                language: presentationLanguage
+            )))
         }
     }
 

@@ -5183,6 +5183,16 @@
         }
       }
     },
+    "The PDFs were saved, but access couldn't be remembered for some files. If a PDF becomes unavailable, choose it again in Documents.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les PDF ont été enregistrés, mais l’accès à certains fichiers n’a pas pu être mémorisé. Si un PDF devient indisponible, sélectionnez-le à nouveau dans Documents."
+          }
+        }
+      }
+    },
     "The paper was created, but its history could not be saved or verified.": {
       "localizations": {
         "fr": {
