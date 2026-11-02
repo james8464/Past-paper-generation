@@ -3551,6 +3551,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-startup-import-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-storage-build-integrity-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4330,17 +4336,20 @@
     {
       "path": "macOS/Keldin/Application/KeldinApp.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Fresh full 67-line EOF review of scene ownership, startup factory ordering and isolated XCTest launch. Whole-app interaction coverage remains separate.",
+      "source_sha256": "598630bc372237cae43ffb797c5aa154685632bf3d28568d6a060e21c3611ede",
+      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
+      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
     },
     {
       "path": "macOS/Keldin/Application/KeldinMigration.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Fresh full-file import review, including containment, copy worker, typed errors and unchanged synchronous startup limitation. No further concrete defect found in scope.",
-      "source_sha256": "01a368ed913e491aaf07390b520e45224d3c15b6176bfa2d5b6479e5e03ba056",
-      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
-      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
+      "reason": "Fresh full 312-line EOF review of startup plans, partial-copy retry/versioning, file worker, containment and manual-import compatibility. Synchronous history and hash loading remain a limitation.",
+      "source_sha256": "b42ff81ccd134316b21b2b504eab29106cc47a994133060d258fdc9795e2b7bf",
+      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
+      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
     },
     {
       "path": "macOS/Keldin/Application/MainWindowRouting.swift",
@@ -4787,10 +4796,10 @@
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Full 2294-line import candidate EOF plus complete two-line final typed-error catch delta reviewed; lease cleanup, busy guards and false-success repair traced. Startup and live model acceptance remain separate.",
-      "source_sha256": "ea045d0f09a0afc5cb6b1a81fb5e46295f805e0b9ba4f6db509001cdd825f53f",
-      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
-      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
+      "reason": "Prior 2294-line EOF plus complete manual-import and startup deltas reviewed; current 2340 lines, not a new full-file reread. Corrected pre-copy history mutation, busy lifecycle, deferred availability and failure handling traced.",
+      "source_sha256": "f2e3a527772f828a6a6d5f2f0620d815620ef2e6b2ab4d2852797d083c3e19e6",
+      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
+      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5041,8 +5050,11 @@
     {
       "path": "macOS/Tests/PreviousDataImportInteractiveTests.swift",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Prior complete 213-line EOF plus complete startup-mode delta reviewed; current 242 lines. Controlled gates, isolated defaults, async teardown ordering, byte/mapping assertions and opt-in-only coverage limits checked.",
+      "source_sha256": "f24fbb990bad59cc7505852d9e8cc1897baf1cbb8fb08b2551010fe46d424b5a",
+      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
+      "review_evidence_sha256": "3fe0dda34c89a74490a597c67c2ba1b6df17444233394b0aaea2049c1c094218"
     },
     {
       "path": "macOS/Tests/RunIsolationTests.swift",

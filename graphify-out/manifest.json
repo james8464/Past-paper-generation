@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793615503.4608757,
-    "ast_hash": "f038754a61d4f47393d7c5d884157820",
+    "mtime": 1793617597.272111,
+    "ast_hash": "757a1564da4fa32af40cd2f36d6df0e3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3440,13 +3440,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/KeldinApp.swift": {
-    "mtime": 1793543563.426281,
-    "ast_hash": "2b0d2e92158f50242e63119cc8d85991",
+    "mtime": 1793617124.6517603,
+    "ast_hash": "63459f1c4d7194f48bb4481211fbb78a",
     "semantic_hash": ""
   },
   "macOS/Keldin/Application/KeldinMigration.swift": {
-    "mtime": 1793615059.7560596,
-    "ast_hash": "2f34e38d27167499e7efa3fa14045efb",
+    "mtime": 1793617124.6520126,
+    "ast_hash": "f63992b32b95605cb48c0e839d7c4d39",
     "semantic_hash": ""
   },
   "macOS/Keldin/Assets.xcassets/AppIcon.appiconset/Contents.json": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793615059.756798,
-    "ast_hash": "ffa656a229eb50b23ec0827ef2fd61dc",
+    "mtime": 1793617124.6638887,
+    "ast_hash": "a57494d71891deabef5a9dee8cc2f7ab",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3620,8 +3620,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/MigrationTests.swift": {
-    "mtime": 1793615059.7570167,
-    "ast_hash": "7fd9c23b969c960a87103b8c66261d78",
+    "mtime": 1793617124.6642113,
+    "ast_hash": "69a1e8590e07e2ece838f0778b731eb8",
     "semantic_hash": ""
   },
   "tests/test_keldin_migration.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793615503.3635392,
-    "ast_hash": "ccd8c78312657b8a8ed8b798c77cd961",
+    "mtime": 1793617597.1862168,
+    "ast_hash": "99c944ce61455d3548d2278ca9732915",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5390,8 +5390,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/PreviousDataImportInteractiveTests.swift": {
-    "mtime": 1793614037.8518624,
-    "ast_hash": "2859cd7d055002e6cdd74a6da67b0eb8",
+    "mtime": 1793617298.2874203,
+    "ast_hash": "d7cf08eea946b4f1a3e691d6a85cd52a",
     "semantic_hash": ""
   },
   "docs/quality/native-import-responsiveness-review-2026-11-02.md": {
@@ -5402,6 +5402,11 @@
   "graphify-out/memory/query_20261102_093751_remaining_previous_data_import_user_flow.md": {
     "mtime": 1793612306.0720196,
     "ast_hash": "a985aeb27dfe219d7e239969a392953e",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-startup-import-review-2026-11-02.md": {
+    "mtime": 1793617555.0275452,
+    "ast_hash": "704ace9cfd2d1da725c1de148185ca0b",
     "semantic_hash": ""
   }
 }
