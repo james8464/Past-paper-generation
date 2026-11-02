@@ -1,0 +1,33 @@
+# Compact navigation review, 2 November 2026
+
+## Defect and repair
+
+The previous ContentView forced the sidebar hidden below 840 points and ignored visibility writes. The main window permits widths down to 720 points, so the normal Show Sidebar action could not reveal the only subject, board and French-workspace selector in that range. Native baseline testing at 760 points confirmed that Show Sidebar did nothing; the diagnostic ended with two failed assertions for French selection and persisted visibility.
+
+The candidate routes the real ContentView binding through a small WorkspaceSidebarPolicy. An unset automatic choice initially collapses compact windows and shows the sidebar in wider windows. Explicit all, double-column and detail-only choices persist and apply at every width. The minimum window width remains 720 points. Generation ownership, progress, cancellation and navigation routes are unchanged.
+
+Two focused native binding tests first reproduced 14 failed assertions with the original predicates. The repaired author suite passed 142 tests; two opt-in interaction checks were skipped. A separate English/French Help-route regression first failed for the missing French resource, then its focused suite passed 72 tests. These tests are not full interaction coverage.
+
+## Native geometry evidence and acceptance
+
+The first candidate interaction successfully revealed the sidebar and selected French while preserving the controlled active job. macOS grew the window from 760 to about 904 points when revealing the sidebar. The original test required the final width to remain below 840 even with the sidebar shown, so that run failed its width assertion and is retained. It is not recorded as a pass.
+
+Further native inspection confirmed that the window content minimum remains 720 points. A later fixture failed before the journey began because it read a zero minimum before AppKit had completed layout. That run is retained. The corrected fixture waits up to 10 seconds for the expected layout before reporting ready; it does not resize the window or remove the initial minimum assertion.
+
+Final native acceptance passed in 52.639 seconds at `737d4abb7e795bb191860929b431b85645c94bd7`, whose source and test tree matches root candidate `74e68cf9cfd499d749d60097e0b81c33a70d599f`. The journey began at 760 points with a settled 720-point minimum, revealed the sidebar at 904 points, selected French, hid the sidebar, and used the normal macOS Window > Move & Resize > Left action to return to 757 points before finishing. The final gate retained width below 840, the unchanged 720-point minimum, French selected and persisted detail-only visibility. The original controlled generation job and its single backend request were preserved. No unchanged-width condition applies while macOS displays the sidebar.
+
+The final local native suite executed 418 tests with three opt-in checks skipped and no failures. The separate controlled compact journey above was enabled and passed. Targeted Python interface regressions passed 79 tests; the final audit, hygiene and interface set passed 59 tests. The direct Release build and personal-development-signed Store preflight passed, including strict bundle verification. Their logs are `tmp/nov2-compact-{native-suite,python-targeted,final-hygiene,direct-release,store-preflight}.log` in the capacity worktree.
+
+The AST-only graph update completed without model calls. It reported 49 resource files with no extracted nodes; graph coverage does not certify those resources. The implementation ledger records 147 reviewed files and 680 pending files, not a completed whole-project audit.
+
+Protected checks and installation remain separate release gates and are not recorded as passed here. This repair does not prove every native interaction or full HIG compliance. It changes no paper source, marks, model response, qualification result or signing requirement.
+
+## Retained evidence
+
+- Original native baseline: identifiers worktree `macOS/tmp/nov2-compact-baseline-ui.log`, diagnostic `f1f6e8dc28115be3785b90bf599cf4f1be53d329` based on the old production source.
+- First candidate and failed width assertion: capacity worktree `tmp/nov2-compact-sidebar-ui.log` and `macOS/build/logs/nov1-cancel-history-native/compact-sidebar-ui.xcresult`.
+- Author binding and Help red/green logs: documentation worktree `tmp/nov2-manual-import/compact-sidebar-{red,green}.log` and `help-route-{red,green}.log`.
+- Pre-readiness failed fixture: identifiers worktree `tmp/nov2-compact-final-acceptance-ui.log`; it stopped on the initial zero-minimum race before the journey.
+- Final passing acceptance: identifiers worktree `tmp/nov2-compact-layout-ready-acceptance-ui.log`, opt-in `KELDIN_INTERACTIVE_COMPACT_SIDEBAR_CHECK=1`.
+
+All checks use controlled local data and a fake backend. They make no live model request or paper-quality claim. No accessibility testing was performed. The original failed runs remain evidence rather than being overwritten or relabelled.

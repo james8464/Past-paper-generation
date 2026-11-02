@@ -370,7 +370,7 @@ private struct HelpTopicPage: View {
             HelpSection(
                 title: "Ollama is unavailable",
                 rows: [
-                    "Open Ollama, wait for it to start, then choose AI > Check Ollama Status.",
+                    "Open Ollama, wait for it to start, then choose Settings > AI > Check Again.",
                     "If a model is missing, download the exact recommended tag shown in AI Settings and check again.",
                     "If generation repeatedly fails, keep enough free memory, stop other model workloads, and copy diagnostics before reporting the issue.",
                 ]

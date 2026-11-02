@@ -1270,8 +1270,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793543563.4469624,
-    "ast_hash": "37b41ee9c6ba2245c833069b96a647ea",
+    "mtime": 1793621016.623366,
+    "ast_hash": "c896b46474c5526bb502701bee37daa3",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3475,8 +3475,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/NativeVisualStyle.swift": {
-    "mtime": 1793543563.438605,
-    "ast_hash": "e9751d0fba5be8ab85da80997c2554da",
+    "mtime": 1793621016.6227622,
+    "ast_hash": "2eb1250cffb5261c3e8f6d776f9300b8",
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/SharedViews.swift": {
@@ -3550,8 +3550,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Onboarding/WelcomeHelpViews.swift": {
-    "mtime": 1793557591.4530368,
-    "ast_hash": "8298ebf404cda14e7bec5e54e9cd6dfa",
+    "mtime": 1793621016.6291347,
+    "ast_hash": "1949af677757c0046b81dce69e59bd0e",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
@@ -3560,8 +3560,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
-    "mtime": 1793543563.443987,
-    "ast_hash": "6c544ec3ab51dedd50b7c4dbd7152310",
+    "mtime": 1793621016.6230302,
+    "ast_hash": "83ba4a661178fc64048ad496922379d1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/SidebarView.swift": {
@@ -4050,8 +4050,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/StorageLocalizationTests.swift": {
-    "mtime": 1793543563.451288,
-    "ast_hash": "2bce53c86487e058550a79cb832f2951",
+    "mtime": 1793621016.6300483,
+    "ast_hash": "16906b7d7b0ea83fdf52647d6d128986",
     "semantic_hash": ""
   },
   "macOS/Tests/UKArtifactPublisherTests.swift": {
@@ -4530,8 +4530,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
-    "mtime": 1793565394.2555685,
-    "ast_hash": "9174ab3c032db1f0574cd802acb34898",
+    "mtime": 1793623822.9797077,
+    "ast_hash": "2c8ff0836588748cbbb8c2fa06a19f3b",
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
