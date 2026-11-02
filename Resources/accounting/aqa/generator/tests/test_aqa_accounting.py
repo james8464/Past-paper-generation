@@ -841,7 +841,6 @@ def test_partnership_calculations_have_complete_shared_source_contracts() -> Non
 
 
 def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
-    mark_scheme_pages = {"1": 24, "2": 28}
     for paper in ("1", "2"):
         paths = generate_package(
             paper=paper,
@@ -855,7 +854,16 @@ def test_both_packages_render_36_page_question_papers(tmp_path: Path) -> None:
             "assessment_package",
         }
         assert page_count(paths["question_paper"]) == 36
-        assert page_count(paths["mark_scheme"]) == mark_scheme_pages[paper]
+        if paper == "1":
+            assert page_count(paths["mark_scheme"]) == 24
+        else:
+            from Backend.Core.layout_conformance import conform_generated_documents
+
+            report = conform_generated_documents("accounting_aqa", "2", paths)[
+                "mark_scheme"
+            ]
+            assert report["checked_parts"] == 24
+            assert report["actual_page_count"] == page_count(paths["mark_scheme"])
         assert all(path.stat().st_size > 2000 for path in paths.values())
 
 
@@ -898,7 +906,7 @@ def test_paper_one_prints_general_and_indicative_guidance_once(tmp_path):
         assert text.count(" ".join(point.split())) == 1, point
 
 
-def test_paper_two_uses_distinct_source_verification_pages_not_repeated_guidance(
+def test_paper_two_human_scheme_omits_internal_verification_records(
     tmp_path: Path,
 ) -> None:
     paths = generate_package(
@@ -910,11 +918,9 @@ def test_paper_two_uses_distinct_source_verification_pages_not_repeated_guidance
     pages = [
         page.extract_text() or "" for page in PdfReader(paths["mark_scheme"]).pages
     ]
-    verification_pages = [text for text in pages if "verification record" in text]
-
-    assert len(verification_pages) == 12
-    assert len(set(verification_pages)) == 12
-    assert all("Source and expected values" in text for text in verification_pages)
+    assert not any("verification record" in text for text in pages)
+    assert sum("General marking guidance" in text for text in pages) == 1
+    assert not any("verified_answers." in text for text in pages)
 
 
 def test_paper_two_calculations_do_not_print_unrelated_index_tables(

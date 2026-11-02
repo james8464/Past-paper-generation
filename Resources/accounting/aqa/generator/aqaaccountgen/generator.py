@@ -409,6 +409,17 @@ def build_paper(
             ):
                 question.structured_mark_scheme = _level_credit(question)
     validate_generated_paper(paper, rule, syllabus.topic_ids)
+    if paper.paper_id == "paper_2":
+        from aqaaccountgen.scheme_policy import POLICY_KEY
+        from Backend.Core.accounting_scheme_content import (
+            ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION,
+        )
+
+        for section in paper.sections:
+            for question in section.options[0].questions:
+                question.authoring_context[POLICY_KEY] = (
+                    ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION
+                )
     return paper
 
 

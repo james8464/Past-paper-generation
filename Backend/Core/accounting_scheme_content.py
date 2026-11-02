@@ -1,4 +1,4 @@
-"""Versioned printed-content checks for the compact Accounting Paper 1 scheme."""
+"""Versioned printed-content checks for Accounting marking schemes."""
 
 from __future__ import annotations
 
@@ -15,6 +15,9 @@ from Backend.Core.layout_master import LayoutConformanceError
 from Backend.Core.subjects.accounting import solve_accounting_calculation
 
 ACCOUNTING_SCHEME_PAGINATION = "generated-aqa-accounting-paper1-credit-v1"
+ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION = (
+    "generated-aqa-accounting-paper2-human-scheme-v1"
+)
 ACCOUNTING_SCHEME_PAGES = 24
 
 # One source-owned case per range; front matter occupies pages 1-8.
@@ -37,11 +40,11 @@ def _compact(text: str) -> str:
     return re.sub(r"\s+", "", html.unescape(text)).replace("−", "-")
 
 
-def _require_paper_shape(paper: GeneratedPaper) -> None:
+def _require_paper_shape(paper: GeneratedPaper, paper_id: str = "paper_1") -> None:
     from aqaaccountgen.configs import RULES
     from aqaaccountgen.generator import _number
 
-    rule = RULES["paper_1"]
+    rule = RULES[paper_id]
     if (
         paper.paper_id != rule.id
         or paper.paper_code != rule.code
@@ -377,6 +380,12 @@ def verify_accounting_scheme(
         for option in section.options
         for q in option.questions
     ]
+    if any(
+        q.authoring_context.get("accounting_marking_policy")
+        == ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION
+        for q in questions
+    ):
+        raise LayoutConformanceError("Paper 2 scheme policy cannot apply to Paper 1")
     declared = [
         q for q in questions if "accounting_marking_policy" in q.authoring_context
     ]
@@ -538,5 +547,133 @@ def verify_accounting_scheme(
         "actual_page_count": ACCOUNTING_SCHEME_PAGES,
         "checked_parts": len(questions),
         "checked_credit_statements": checked_statements,
+        "qualification": "printed-content consistency, not learner calibration",
+    }
+
+
+def verify_accounting_paper_two_scheme(
+    pdf_path: Path, assessment_path: Path | None, reference_count: int
+) -> dict | None:
+    """Opt in explicitly; unmarked retained papers keep the legacy exact count."""
+    if assessment_path is None:
+        return None
+    from aqaaccountgen.scheme_policy import (
+        GENERAL_GUIDANCE,
+        paper_two_policy,
+        question_heading,
+        question_rows,
+    )
+
+    from Backend.Core.assessment_package import _extract_items
+
+    package = json.loads(assessment_path.read_text(encoding="utf-8"))
+    paper = GeneratedPaper.model_validate(package.get("blueprint") or {})
+    if not paper_two_policy(paper):
+        return None
+    if (
+        package.get("subject") not in {"accounting_aqa", "accounting", "aqa/accounting"}
+        or str(package.get("paper")) != "2"
+    ):
+        raise LayoutConformanceError(
+            "Accounting Paper 2 scheme policy cannot apply to this package"
+        )
+    _require_paper_shape(paper, "paper_2")
+    from aqaaccountgen.configs import RULES
+
+    for section, rule in zip(paper.sections, RULES["paper_2"].sections, strict=True):
+        if (
+            section.candidate_marks != rule.candidate_marks
+            or section.answer_options != rule.answer_options
+        ):
+            raise LayoutConformanceError(
+                "Accounting Paper 2 section mark budget differs"
+            )
+    if package.get("items") != _extract_items(
+        package["blueprint"], subject=package["subject"], paper_number="2"
+    ):
+        raise LayoutConformanceError(
+            "Accounting Paper 2 scheme requires complete matching assessed items"
+        )
+    expected: list[tuple[list[str], list[list[str]]]] = []
+    questions = [q for s in paper.sections for q in s.options[0].questions]
+    for question in questions:
+        rows, levels = question_rows(question)
+        expected.append(([question_heading(question), str(question.marks)], rows))
+        if levels:
+            expected.append(
+                ([f"Question {question.number}: levels grid", "Band"], levels)
+            )
+    quiet = getattr(pymupdf, "no_recommend_layout", None)
+    if not callable(quiet) or not callable(getattr(pymupdf.Page, "find_tables", None)):
+        raise LayoutConformanceError(
+            "Accounting credit-table validation requires the pinned PyMuPDF build (1.28.2)"
+        )
+    quiet()
+    with pymupdf.open(pdf_path) as document:
+        if len(document) < 2 or any(
+            label not in document[0].get_text()
+            for label in ("KELDIN", "ACCOUNTING", "7127/2", "Mark scheme")
+        ):
+            raise LayoutConformanceError("Accounting Paper 2 scheme omits its cover")
+        text = "\n".join(page.get_text() for page in document)
+        guide = _compact(document[1].get_text())
+        if (
+            text.count("General marking guidance") != 1
+            or any(
+                _compact(title + paragraph) not in guide
+                for title, paragraph in GENERAL_GUIDANCE
+            )
+            or any(
+                label in text
+                for label in (
+                    "verification record",
+                    "source_data.",
+                    "verified_answers.",
+                )
+            )
+        ):
+            raise LayoutConformanceError(
+                "Accounting Paper 2 scheme has missing guidance or technical padding"
+            )
+        tables: list[list[list[str | None]]] = []
+        for index, page in enumerate(document):
+            body = re.sub(
+                r"7127/2\s*·\s*Mark scheme|Page\s+\d+", "", page.get_text()
+            ).strip()
+            if not body:
+                raise LayoutConformanceError(
+                    "Accounting Paper 2 scheme contains a body-empty page"
+                )
+            page_tables = [table.extract() for table in page.find_tables().tables]
+            if index >= 2 and not page_tables:
+                raise LayoutConformanceError(
+                    "Accounting Paper 2 scheme contains an unowned page"
+                )
+            tables.extend(page_tables)
+        cursor = 0
+        for headings, rows in expected:
+            actual = []
+            while cursor < len(tables) and [
+                _compact(cell or "") for cell in tables[cursor][0]
+            ] == [_compact(cell) for cell in headings]:
+                actual.extend(tables[cursor][1:])
+                cursor += 1
+            if [[_compact(cell or "") for cell in row] for row in actual] != [
+                [_compact(cell) for cell in row] for row in rows
+            ]:
+                raise LayoutConformanceError(
+                    f"Accounting Paper 2 printed credit or band differs for {headings[0]}"
+                )
+        if cursor != len(tables):
+            raise LayoutConformanceError(
+                "Accounting Paper 2 scheme contains unowned or repeated credit tables"
+            )
+        page_count = len(document)
+    return {
+        "policy": ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION,
+        "reference_page_count": reference_count,
+        "actual_page_count": page_count,
+        "checked_parts": len(questions),
+        "checked_credit_statements": sum(len(rows) for _, rows in expected),
         "qualification": "printed-content consistency, not learner calibration",
     }

@@ -9,8 +9,10 @@ from pathlib import Path
 import pymupdf as fitz
 
 from Backend.Core.accounting_scheme_content import (
+    ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION,
     ACCOUNTING_SCHEME_PAGES,
     ACCOUNTING_SCHEME_PAGINATION,
+    verify_accounting_paper_two_scheme,
     verify_accounting_scheme,
 )
 from Backend.Core.computer_science_reference_solutions import paper1_reference_code
@@ -38,6 +40,8 @@ def runtime_page_count_policy(
 ) -> dict:
     if family == "aqa-accounting" and role == "mark-scheme" and paper == "1":
         return {"kind": ACCOUNTING_SCHEME_PAGINATION}
+    if family == "aqa-accounting" and role == "mark-scheme" and paper == "2":
+        return {"kind": ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION}
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
     if family == "ocr-economics" and role == "mark-scheme":
@@ -415,6 +419,32 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if (
+            policy_payload
+            and policy_payload.get("kind") == ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION
+        ):
+            if (
+                subject != "accounting_aqa"
+                or paper != "2"
+                or generated_role != "mark_scheme"
+            ):
+                raise LayoutConformanceError(
+                    "Accounting Paper 2 policy cannot apply to this document"
+                )
+            content_report = verify_accounting_paper_two_scheme(
+                generated_path,
+                paths.get("assessment_package"),
+                int(master["page_count"]),
+            )
+            conform_pdf_to_box_template(
+                generated_path,
+                master.get("page_boxes") or master["boxes"],
+                expected_page_count=master["page_count"],
+                strict_page_count=content_report is None,
+            )
+            if content_report:
+                results[generated_role] = content_report
+            continue
         if (
             policy_payload
             and policy_payload.get("kind") == ACCOUNTING_SCHEME_PAGINATION
