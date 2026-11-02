@@ -296,16 +296,19 @@
       "path": "Backend/Core/cli.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "root: EOF. Exact source identity verified at e4649b83; selective dependencies and broader runtime/qualification limits are documented separately.",
-      "source_sha256": "104d7192da5493f66190ae05ce4b27066f49775fffb9980839246362f025c650",
-      "review_evidence": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
-      "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
+      "reason": "Root read complete current source through EOF; bounded dependencies and qualification limits are documented.",
+      "source_sha256": "7507301145633c28ded0f84619d0236a91204dd66143c302e7679479567eda60",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/computer_science_audit.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "202ae299fbc2ec1afbaa3476db996d157b5dff5e092ab18fc8552bdc45589d71",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/computer_science_authoring.py",
@@ -316,8 +319,11 @@
     {
       "path": "Backend/Core/computer_science_reference_solutions.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "bbad51a13cfb258502560ee849d7b342b16a8dbe6af64c87243bbe01ff103496",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/credit_policy.py",
@@ -428,10 +434,10 @@
       "path": "Backend/Core/events.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review of local provider and checkpoint boundaries; model quality and remaining release gates are separate.",
-      "source_sha256": "5af17abdf2ccc45275dfd99b427848599b5b1e98a6302a36d2b441a210998c72",
-      "review_evidence": "docs/quality/local-provider-boundary-review-2026-10-30.md",
-      "review_evidence_sha256": "469336ea3c6f8a3f8e559ffb14a90b4484e3701843c69bc5db9089d77ffb5a28"
+      "reason": "Root read complete current source through EOF; bounded dependencies and qualification limits are documented.",
+      "source_sha256": "b0397269b8fd17aed06db7d3e6623b673a2d7d316d788882f98cbfe18c3f1c27",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/exam_blueprints.py",
@@ -463,8 +469,11 @@
     {
       "path": "Backend/Core/family_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "f0cc255809c1976b1f4e00ddc4d2c57286fa60efe4b0ea522f69a68a57ea7f88",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/fonts/README.md",
@@ -598,8 +607,11 @@
     {
       "path": "Backend/Core/france/code_fences.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "a0eb534a3dd7c9412eb1b26cca1968a162e1e9def1aafb4f30cc78c2d4748f3f",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/france/code_layout.py",
@@ -901,20 +913,29 @@
     {
       "path": "Backend/Core/france/llm_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "963e53ae87a8fd1ac2ec0932eab83ee8dabfeff31cb80f75fe0c534963c7055b",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "085ef973e8b8463ce9b7d1f9d2ffc54822138c5dd86c3897f03264497d418a00",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "93b23741a9b738eecb797140b2e118a48ab962f37a19a8f9cf8fcdb901528057",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1084,8 +1105,11 @@
     {
       "path": "Backend/Core/france/recovery_evidence.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "0bf41c732fe3096a173a10dc39840e53cb610be664fc6a7a955e2fc56d3c448c",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/france/rendering.py",
@@ -1333,14 +1357,20 @@
     {
       "path": "Backend/Core/model_recommendations.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "d8a4f670a8c7d671b5151f8c0c6b7dd11456d2701a7da71a06938162a4fc5911",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/model_review.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "64670322941b83c4bbe253b086d1628c0d739a56afb65e55ce62929de49ca888",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/numeric_integrity.py",
@@ -1357,8 +1387,11 @@
     {
       "path": "Backend/Core/ollama.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Author read original 182-line EOF, then complete routing repair; independent review covered changed paths. No new full-file reread or live model claim.",
+      "source_sha256": "a5016f3410e3168e8bd45b9c4950fa99c3ed7f633f57c93bcda8d42992eb6fa2",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "Backend/Core/open_credit.py",
@@ -3536,6 +3569,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/model-guidance-copy-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4267,8 +4306,11 @@
     {
       "path": "macOS/AppleIntelligenceHelper/CapabilityProbe.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root read complete current source through EOF; bounded dependencies and qualification limits are documented.",
+      "source_sha256": "d87f8973649039199eb1bf916bad7f8942bf7d7093942ba4a5f72ccf8c7b562c",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/AppleIntelligenceHelper/Package.swift",
@@ -4300,8 +4342,11 @@
     {
       "path": "macOS/AppleIntelligenceHelper/Sources/KeldinAppleIntelligence/Schema.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root read complete current source through EOF; bounded dependencies and qualification limits are documented.",
+      "source_sha256": "b498b82ad45da3d76a9fa4ff764f95b710d89f6dcc7d1008a457bf2a1642fefc",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/AppleIntelligenceHelper/Tests/KeldinAppleIntelligenceTests/ProtocolTests.swift",
@@ -4958,10 +5003,10 @@
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior 2294-line EOF plus complete manual-import and startup deltas reviewed; current 2340 lines, not a new full-file reread. Corrected pre-copy history mutation, busy lifecycle, deferred availability and failure handling traced.",
-      "source_sha256": "f2e3a527772f828a6a6d5f2f0620d815620ef2e6b2ab4d2852797d083c3e19e6",
-      "review_evidence": "docs/quality/native-startup-import-review-2026-11-02.md",
-      "review_evidence_sha256": "3be606ce9a37c34aae59be0dbe2cac0a1b6aad389ea3ade09cd64323500681fb"
+      "reason": "Prior full-file and manual-import/startup reviews over hash-matching baseline, plus complete seven-line endpoint capture/pass-through repair and related confirmation flow; not a new full-file reread.",
+      "source_sha256": "e407a8619aa69b1d6a4afc8df79a0b3609567a965e0d2881e733f071c0df2c8a",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5012,10 +5057,10 @@
       "path": "macOS/Keldin/State/ModelDownloadPresentation.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Reviewed immutable request IDs and model snapshots, visible/dismissing phases, matching consumption and replacement safety. An invisible dismissed request cannot disable commands; explicit cancellation and host disappearance consume the matching request.",
-      "source_sha256": "ccdac77c383c580843424b253781ec3ad28a0ebc6b247a8b14215e12fc50b0dc",
-      "review_evidence": "docs/quality/native-scene-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "ef1b926242f6836f860fa3c35d3eecf0c25d8fc2009955bd75dfe3088e8caaf9"
+      "reason": "Root read complete current source through EOF; bounded dependencies and qualification limits are documented.",
+      "source_sha256": "bbf497df5ea0af154d4e10bb63e326d91061cf1ed79944bdaddd09317aa7fc9f",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/Keldin/State/RecentDocumentStore.swift",
@@ -5257,20 +5302,29 @@
     {
       "path": "macOS/scripts/bootstrap_backend.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "820536924577dcedc980bd55800f17e91f9f85b22ea824db456512631a11122a",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/scripts/build_apple_intelligence.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "16e3d9ee8f7557cfc99254dbca8d972adf42194b83d7d3e2aefa255cca8aa899",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/scripts/build_backend.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root read original 230-line EOF and every repair; independent review checked explicit failure propagation and font payload identity. Actual signed build remains a separate release gate.",
+      "source_sha256": "bbe9d298c278b156ade7e31884d3ea9132ff1ccdd5780e579043be8be4e86d83",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/scripts/clean.sh",
@@ -5284,8 +5338,11 @@
     {
       "path": "macOS/scripts/diagnose.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "10175519d5ed3d5221ff6b10574aa6e232d131ebb81d89dbd2b58352bdcf5c56",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/scripts/export_app_icon.py",
@@ -5314,14 +5371,20 @@
     {
       "path": "macOS/scripts/run_app_macos.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "14d25a670c4dcd624f2874c7c40549400964a7023cef1267440be8bc08c95dd8",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "macOS/scripts/xcbuild.sh",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "272f323683e85e6d1836f8d06250fcac41920418bffcd28e314fe709ed0642e5",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "pytest.ini",
@@ -5359,14 +5422,20 @@
     {
       "path": "tests/support/edexcel.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "82bb06dae501728946a13ec042c03ffc6ed58cec2e3b37ee4a0da4950cd54e86",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "tests/support/solver_responses.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "c48c111207fcf0fef104cc0977a2cbcab6baf68bba3d448d5503218c76416ec6",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "tests/test_accounting_budget_assumptions.py",
@@ -5593,8 +5662,11 @@
     {
       "path": "tests/test_build_script_integrity.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root read original 205-line EOF and all test additions; independent full final test review. Isolated production Bash fingerprint and build/log/filter status controls, not model qualification.",
+      "source_sha256": "eac3696555bb0cbbbc2f54232cecbc235920354bfcb4251b335f30c68737a6a0",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "tests/test_calibration_helpers.py",
@@ -7186,8 +7258,11 @@
     {
       "path": "tools/build_supported_layout_masters.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "6d441146e4cc3a42f765f350021f9cdf65b42e8ae6333b17d4b967309e11764e",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
       "path": "tools/calibrate_student_responses.py",
@@ -7363,8 +7438,11 @@
     {
       "path": "tools/validate_generator_migration.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
+      "source_sha256": "e9668ddefa377a0c749e3b61642722723ae559b4a46e670740a240daabe9a697",
+      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
+      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     }
   ]
 }

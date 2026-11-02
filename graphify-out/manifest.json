@@ -60,8 +60,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/cli.py": {
-    "mtime": 1793553958.7904224,
-    "ast_hash": "8c9c6dd7ea15c8768092fd55211ab825",
+    "mtime": 1793633161.7185495,
+    "ast_hash": "058d8c0cbc52ce449c3d76f52d3f8821",
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_audit.py": {
@@ -135,8 +135,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/events.py": {
-    "mtime": 1793543563.2547338,
-    "ast_hash": "c0cdb4e04bb6a125519250b4acc45caf",
+    "mtime": 1793633161.7188456,
+    "ast_hash": "76563ebe4950e8b5078da297f9592588",
     "semantic_hash": ""
   },
   "Backend/Core/exam_blueprints.py": {
@@ -300,8 +300,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/ollama.py": {
-    "mtime": 1793553958.791946,
-    "ast_hash": "c9c8ac53cb46826fcdc0c1db3b8c73fb",
+    "mtime": 1793633161.7195482,
+    "ast_hash": "aababf478068171405f915ff9fd10e85",
     "semantic_hash": ""
   },
   "Backend/Core/open_credit.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793629075.9377272,
-    "ast_hash": "048bf720fbe9ef80caaebfa4861312a4",
+    "mtime": 1793631783.9786127,
+    "ast_hash": "c561c70bd0fd87fee14b2cae9703969a",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1285,8 +1285,8 @@
     "semantic_hash": ""
   },
   "macOS/scripts/build_backend.sh": {
-    "mtime": 1793543563.452283,
-    "ast_hash": "0044ffc4653a409a2f3241febaae26c8",
+    "mtime": 1793633161.7115123,
+    "ast_hash": "1919fb69dfa4e397b3c6c873e8209148",
     "semantic_hash": ""
   },
   "macOS/scripts/clean.sh": {
@@ -3580,8 +3580,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793617124.6638887,
-    "ast_hash": "a57494d71891deabef5a9dee8cc2f7ab",
+    "mtime": 1793633161.7202082,
+    "ast_hash": "b4afd6cdf0c2709018aad67e2be11fb7",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793597268.8457239,
-    "ast_hash": "edf8e63c5590478dbd363f75a708c347",
+    "mtime": 1793633161.7208333,
+    "ast_hash": "faa3b3ba8f58aeebf08b492be92d2abf",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -3890,8 +3890,8 @@
     "semantic_hash": ""
   },
   "tests/test_build_script_integrity.py": {
-    "mtime": 1793543563.4567788,
-    "ast_hash": "1c52bf415a693896c009c6cecd91de90",
+    "mtime": 1793633161.7118042,
+    "ast_hash": "7e61897eab49f1b9c429f0b7332a5fcd",
     "semantic_hash": ""
   },
   "docs/quality/native-storage-build-integrity-review-2026-10-28.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793631621.6936836,
-    "ast_hash": "b90c1486ae9055692908ad9fb22d3d78",
+    "mtime": 1793633316.3832428,
+    "ast_hash": "b624d29c44ea60ad74f1747c48872efc",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4330,8 +4330,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ModelDownloadPresentation.swift": {
-    "mtime": 1793543563.4459379,
-    "ast_hash": "bff7cfd5190354e46b66082d8efa30f6",
+    "mtime": 1793633161.7203615,
+    "ast_hash": "24caafbf56ca6b37e20a9e273316d65f",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/SettingsActionPresentation.swift": {
@@ -5295,8 +5295,8 @@
     "semantic_hash": ""
   },
   "tests/test_ollama_endpoint.py": {
-    "mtime": 1793553958.820218,
-    "ast_hash": "b03167b3c5f2a60d3dbbbd72f196f3b1",
+    "mtime": 1793633161.7210307,
+    "ast_hash": "41c3b9a4733bdfb63fefb3fba2e9d104",
     "semantic_hash": ""
   },
   "tests/test_french_correction_flow.py": {
@@ -5462,6 +5462,11 @@
   "docs/quality/edexcel-checkpoint-admission-2026-11-02.md": {
     "mtime": 1793631536.160549,
     "ast_hash": "e7deb94b872096ecfbba0f6995e68a61",
+    "semantic_hash": ""
+  },
+  "docs/quality/model-download-and-packaging-input-review-2026-11-02.md": {
+    "mtime": 1793633316.249517,
+    "ast_hash": "1245d099cedd2f54972c53d2b3b61aa0",
     "semantic_hash": ""
   }
 }
