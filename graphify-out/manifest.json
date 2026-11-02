@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793617597.272111,
+    "mtime": 1793618974.4289317,
     "ast_hash": "757a1564da4fa32af40cd2f36d6df0e3",
     "semantic_hash": ""
   },
@@ -3120,8 +3120,8 @@
     "semantic_hash": ""
   },
   "tests/test_app_branding.py": {
-    "mtime": 1793617859.755165,
-    "ast_hash": "70e6a2af0e89d451053561bce096c965",
+    "mtime": 1793618297.0372095,
+    "ast_hash": "eb34db58f2e05e6cda7f43910e6a1cf6",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v30-live-comparison-2026-10-24.md": {
@@ -3555,8 +3555,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Settings/SettingsPane.swift": {
-    "mtime": 1793612909.5507288,
-    "ast_hash": "a8f910c976f6f56c11ae36e5be0d20a7",
+    "mtime": 1793618317.8374522,
+    "ast_hash": "d34b3fc91b21b90b80faa99483bb4c55",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793617948.0306401,
-    "ast_hash": "8eecd82ab4ef51f7351ae5719f4dd7c1",
+    "mtime": 1793618974.3338068,
+    "ast_hash": "fa4911ae9dad7ed5ecf3a4c5706c664d",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5390,8 +5390,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/PreviousDataImportInteractiveTests.swift": {
-    "mtime": 1793617298.2874203,
-    "ast_hash": "d7cf08eea946b4f1a3e691d6a85cd52a",
+    "mtime": 1793618375.4714417,
+    "ast_hash": "1e861211f765cb31ecd78e30ccafc1f0",
     "semantic_hash": ""
   },
   "docs/quality/native-import-responsiveness-review-2026-11-02.md": {
@@ -5405,8 +5405,8 @@
     "semantic_hash": ""
   },
   "docs/quality/native-startup-import-review-2026-11-02.md": {
-    "mtime": 1793617940.2518604,
-    "ast_hash": "1734c453a86751c30861e126a42cef2d",
+    "mtime": 1793618931.5657673,
+    "ast_hash": "03b3fa81253d4672fa30023ad7098727",
     "semantic_hash": ""
   }
 }
