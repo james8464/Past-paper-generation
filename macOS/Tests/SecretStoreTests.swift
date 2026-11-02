@@ -4,6 +4,116 @@ import XCTest
 @testable import Keldin
 
 final class SecretStoreTests: XCTestCase {
+    @MainActor
+    func testHostedPreviewProviderSelectionDoesNotRequestConsentOrTouchCredentials() throws {
+        for provider in [AIProvider.openAI, .anthropic] {
+            for inSettings in [false, true] {
+                let defaults = isolatedDefaults()
+                let secrets = FakeCredentialStore()
+                let backend = ControlledRunBackend()
+                let history = FileManager.default.temporaryDirectory.appendingPathComponent("PreviewConsent-\(UUID().uuidString)")
+                addTeardownBlock { try? FileManager.default.removeItem(at: history) }
+                let app = ApplicationCoordinator(defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend)
+                let presentation = SettingsActionPresentation()
+                presentation.activate()
+                secrets.readAttempts.removeAll()
+                app.openAIAPIKey = "unsaved-openai-fixture"
+                app.anthropicAPIKey = "unsaved-anthropic-fixture"
+                app.settingsStore.openAIAPIKey = app.openAIAPIKey
+                app.settingsStore.anthropicAPIKey = app.anthropicAPIKey
+
+                app.setDryRun(true, presentation: inSettings ? presentation : nil)
+                app.selectAIProvider(provider, presentation: inSettings ? presentation : nil)
+
+                XCTAssertEqual(app.aiProvider, provider)
+                XCTAssertEqual(defaults.string(forKey: AppStorageKey.aiProvider), provider.rawValue)
+                XCTAssertTrue(defaults.bool(forKey: AppStorageKey.dryRun))
+                XCTAssertNil(presentation.request)
+                XCTAssertFalse(app.showHostedAIConsent)
+                XCTAssertFalse(app.hasHostedAIConsent)
+                XCTAssertTrue(secrets.readAttempts.isEmpty)
+                XCTAssertTrue(secrets.saveAttempts.isEmpty)
+                XCTAssertTrue(backend.requests.isEmpty)
+            }
+        }
+    }
+
+    @MainActor
+    func testTurningHostedPreviewOffRoutesDisclosureAndConfigurationAcceptNeverGenerates() throws {
+        for provider in [AIProvider.openAI, .anthropic] {
+            for inSettings in [false, true] {
+                let defaults = isolatedDefaults()
+                defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
+                defaults.set(true, forKey: AppStorageKey.dryRun)
+                let secrets = FakeCredentialStore()
+                let backend = ControlledRunBackend()
+                let history = FileManager.default.temporaryDirectory.appendingPathComponent("LiveConsent-\(UUID().uuidString)")
+                addTeardownBlock { try? FileManager.default.removeItem(at: history) }
+                let app = ApplicationCoordinator(defaults: defaults, secrets: secrets, historyDirectory: history, backend: backend)
+                let presentation = SettingsActionPresentation()
+                presentation.activate()
+                secrets.readAttempts.removeAll()
+
+                app.setDryRun(false, presentation: inSettings ? presentation : nil)
+                XCTAssertFalse(app.dryRun)
+                XCTAssertFalse(defaults.bool(forKey: AppStorageKey.dryRun))
+                if inSettings {
+                    XCTAssertEqual(presentation.request?.kind, .hostedConsent(provider))
+                    XCTAssertFalse(app.showHostedAIConsent)
+                    if let request = presentation.request { presentation.dismiss(id: request.id) }
+                } else {
+                    XCTAssertTrue(app.showHostedAIConsent)
+                    XCTAssertTrue(InterfaceText.resolve(app.pendingHostedDisclosureResource, language: "en").contains(provider.title))
+                    app.cancelHostedAIConsent()
+                }
+                XCTAssertFalse(app.hasHostedAIConsent)
+                XCTAssertTrue(secrets.readAttempts.isEmpty)
+                XCTAssertTrue(secrets.saveAttempts.isEmpty)
+                XCTAssertTrue(backend.requests.isEmpty)
+
+                app.setDryRun(true, presentation: inSettings ? presentation : nil)
+                app.setDryRun(false, presentation: inSettings ? presentation : nil)
+                if inSettings {
+                    XCTAssertEqual(presentation.request?.kind, .hostedConsent(provider))
+                    if let request = presentation.request { presentation.dismiss(id: request.id) }
+                    app.acceptHostedAIConsent(for: provider, presentation: presentation)
+                } else {
+                    XCTAssertTrue(app.showHostedAIConsent)
+                    app.acceptHostedAIConsent()
+                }
+                XCTAssertTrue(app.hasHostedAIConsent)
+                XCTAssertEqual(app.aiProvider, provider)
+                XCTAssertFalse(app.isRunning)
+                XCTAssertNil(app.generationCoordinator.activeJob)
+                XCTAssertTrue(backend.requests.isEmpty)
+            }
+        }
+    }
+
+    @MainActor
+    func testFrenchLiveGenerationStillRequiresConsentWhileUKPreviewIsEnabled() {
+        for provider in [AIProvider.openAI, .anthropic, .deepSeek] {
+            let defaults = isolatedDefaults()
+            defaults.set(provider.rawValue, forKey: AppStorageKey.aiProvider)
+            defaults.set(true, forKey: AppStorageKey.dryRun)
+            let backend = ControlledRunBackend()
+            let app = isolatedApplication(defaults: defaults, backend: backend)
+            app.generateFrenchPaper(largePrint: false)
+            XCTAssertTrue(app.showHostedAIConsent)
+            XCTAssertFalse(app.hasHostedAIConsent)
+            XCTAssertTrue(app.dryRun)
+            XCTAssertTrue(backend.requests.isEmpty)
+            app.cancelHostedAIConsent()
+            XCTAssertTrue(backend.requests.isEmpty)
+            app.setDryRun(false)
+            XCTAssertTrue(app.showHostedAIConsent)
+            app.acceptHostedAIConsent()
+            XCTAssertTrue(app.hasHostedAIConsent)
+            XCTAssertFalse(app.isRunning)
+            XCTAssertTrue(backend.requests.isEmpty)
+        }
+    }
+
     private let account = "fixture-account"
 
     @MainActor
@@ -435,9 +545,11 @@ private final class FakeCredentialStore: SecretStoring {
     var writeFailures: Set<String> = []
     var writes: [(String, String)] = []
     var saveAttempts: [String] = []
+    var readAttempts: [String] = []
     var untypedReadFailure = false
 
     func read(_ account: String) throws -> String {
+        readAttempts.append(account)
         if untypedReadFailure { throw PrivateCredentialError.fixture }
         if readFailures.contains(account) { throw SecretStoreError.status(operation: .read, status: errSecAuthFailed) }
         return values[account] ?? ""

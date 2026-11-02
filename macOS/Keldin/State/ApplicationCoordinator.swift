@@ -756,19 +756,24 @@ final class ApplicationCoordinator: ObservableObject {
     func selectAIProvider(_ provider: AIProvider, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
         guard provider != aiProvider else { return }
-        if provider.sendsPromptsOffDevice && !hasHostedAIConsent(for: provider) {
-            if let presentation {
-                presentation.requestConsent(for: provider)
-                return
-            }
-            pendingHostedProvider = provider
-            showHostedAIConsent = true
+        pendingFrenchLargePrint = nil
+        if !dryRun && provider.sendsPromptsOffDevice && !hasHostedAIConsent(for: provider) {
+            requestHostedAIConsent(for: provider, presentation: presentation)
             return
         }
         aiProvider = provider
         modelCoordinator.provider = provider
         if provider == .appleIntelligence { refreshAppleIntelligenceAvailability() }
-        persistSettings(presentation: presentation)
+        persistSettings(includeCredentials: !dryRun, presentation: presentation)
+    }
+
+    private func requestHostedAIConsent(for provider: AIProvider, presentation: SettingsActionPresentation?) {
+        if let presentation {
+            presentation.requestConsent(for: provider)
+        } else {
+            pendingHostedProvider = provider
+            showHostedAIConsent = true
+        }
     }
 
     @discardableResult
@@ -1442,9 +1447,13 @@ final class ApplicationCoordinator: ObservableObject {
 
     func setDryRun(_ enabled: Bool, presentation: SettingsActionPresentation? = nil) {
         guard !isRunning else { return }
+        pendingFrenchLargePrint = nil
         dryRun = enabled
         settingsStore.dryRun = enabled
-        saveSettingsAndReportSecretFailure(presentation: presentation)
+        saveSettingsAndReportSecretFailure(includeCredentials: false, presentation: presentation)
+        if !enabled && aiProvider.sendsPromptsOffDevice && !hasHostedAIConsent {
+            requestHostedAIConsent(for: aiProvider, presentation: presentation)
+        }
     }
 
     func startBenchmark() {
