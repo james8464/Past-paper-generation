@@ -524,6 +524,13 @@ enum DistributionMode: String {
         }
     }
 
+    var titleResource: LocalizedStringResource {
+        switch self {
+        case .direct: "Direct Download"
+        case .appStore: "App Store"
+        }
+    }
+
     var canManageOllama: Bool { self == .direct }
 }
 

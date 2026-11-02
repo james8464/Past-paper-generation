@@ -500,16 +500,31 @@ private struct OutputSettingsTab: View {
     }
 }
 
+enum PrivacySettingsText {
+    static let accounts: LocalizedStringResource = "Not required"
+
+    static func hostedConsent(accepted: Bool) -> LocalizedStringResource {
+        accepted ? "Accepted" : "Not accepted"
+    }
+}
+
 private struct PrivacySettingsTab: View {
     @EnvironmentObject private var application: ApplicationCoordinator
+    @Environment(\.locale) private var locale
 
     var body: some View {
         Form {
             Section("Privacy") {
-                LabeledContent("Distribution", value: application.distributionMode.title)
-                LabeledContent("Accounts", value: "Not required")
+                LabeledContent("Distribution") {
+                    Text(InterfaceText.localizedResource(application.distributionMode.titleResource, locale: locale))
+                }
+                LabeledContent("Accounts") {
+                    Text(InterfaceText.localizedResource(PrivacySettingsText.accounts, locale: locale))
+                }
                 LabeledContent("API keys", value: "Keychain")
-                LabeledContent("Hosted AI consent", value: application.hasHostedAIConsent ? "Accepted" : "Not accepted")
+                LabeledContent("Hosted AI consent") {
+                    Text(InterfaceText.localizedResource(PrivacySettingsText.hostedConsent(accepted: application.hasHostedAIConsent), locale: locale))
+                }
                 Link("Privacy Policy", destination: AppLinks.privacyPolicy)
                     .foregroundStyle(Color("ForegroundAccent"))
                 Text("Ollama generation is local. Hosted providers send prompts to the provider you select.")
