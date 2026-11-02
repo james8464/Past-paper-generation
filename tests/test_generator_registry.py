@@ -4,6 +4,8 @@ import importlib
 import json
 import sys
 
+import pytest
+
 from Backend.Core.generator_registry import (
     REGISTRY_PATH,
     _capability,
@@ -41,6 +43,38 @@ def test_registry_migrates_legacy_gates_without_false_empirical_readiness() -> N
     assert readiness.engineering_validated is True
     assert readiness.visually_calibrated is True
     assert readiness.empirically_calibrated is False
+
+
+@pytest.mark.parametrize(
+    "engineering", ["passed", "failed", "not_run", "not_applicable"]
+)
+@pytest.mark.parametrize("visual", ["passed", "failed", "not_run", "not_applicable"])
+@pytest.mark.parametrize("empirical", ["passed", "failed", "not_run", "not_applicable"])
+def test_registry_distinguishes_completed_review_from_inapplicable_prerequisites(
+    engineering: str, visual: str, empirical: str
+) -> None:
+    states = {"engineering": engineering, "visual": visual, "empirical": empirical}
+    readiness = _paper_qualification(
+        {
+            "qualification": {
+                name: {"state": state, "evidence": [f"evidence/{name}.md"]}
+                for name, state in states.items()
+            }
+        }
+    )
+
+    engineering_satisfied = engineering in {"passed", "not_applicable"}
+    visual_satisfied = visual in {"passed", "not_applicable"}
+    assert readiness.engineering_validated is (engineering == "passed")
+    assert readiness.visually_calibrated is (
+        visual == "passed" and engineering_satisfied
+    )
+    assert readiness.empirically_calibrated is (
+        empirical == "passed" and engineering_satisfied and visual_satisfied
+    )
+    assert readiness.evidence_by_level == {
+        name: (f"evidence/{name}.md",) for name in states
+    }
 
 
 def test_schema_v3_family_metadata_migrates_deterministically() -> None:

@@ -223,7 +223,7 @@ def _paper_qualification(raw: dict[str, Any]) -> PaperQualification:
             "paper qualification levels must be engineering, visual, empirical"
         )
 
-    def level(name: str) -> tuple[bool, tuple[str, ...]]:
+    def level(name: str) -> tuple[str, tuple[str, ...]]:
         value = payload[name]
         if not isinstance(value, dict):
             raise TypeError(f"paper qualification {name} must be an object")
@@ -235,15 +235,22 @@ def _paper_qualification(raw: dict[str, Any]) -> PaperQualification:
             isinstance(path, str) and path for path in evidence
         ):
             raise ValueError(f"paper qualification {name} evidence must be paths")
-        return state in {"passed", "not_applicable"}, tuple(evidence)
+        return state, tuple(evidence)
 
     engineering, engineering_evidence = level("engineering")
     visual, visual_evidence = level("visual")
     empirical, empirical_evidence = level("empirical")
+    # An inapplicable prerequisite can permit a later review, but does not mean
+    # that validation or calibration was performed at that level.
+    satisfied_states = {"passed", "not_applicable"}
+    engineering_satisfied = engineering in satisfied_states
+    visual_satisfied = visual in satisfied_states
     return PaperQualification(
-        engineering_validated=engineering,
-        visually_calibrated=visual,
-        empirically_calibrated=empirical,
+        engineering_validated=engineering == "passed",
+        visually_calibrated=visual == "passed" and engineering_satisfied,
+        empirically_calibrated=(
+            empirical == "passed" and engineering_satisfied and visual_satisfied
+        ),
         evidence_by_level={
             "engineering": engineering_evidence,
             "visual": visual_evidence,
