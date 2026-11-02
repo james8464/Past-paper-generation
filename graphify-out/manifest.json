@@ -685,8 +685,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1793637719.65525,
-    "ast_hash": "9af1aedc4824a18a1b67cfd01b93d561",
+    "mtime": 1793640164.4481459,
+    "ast_hash": "ef6a44a354c662dba23182c681809491",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -755,9 +755,9 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_render_content.py": {
-    "mtime": 1793543563.3196056,
-    "ast_hash": "d7ff3e643c7c715f076ccd011fde16b5",
-    "semantic_hash": "d7ff3e643c7c715f076ccd011fde16b5"
+    "mtime": 1793640164.4483445,
+    "ast_hash": "323f3520b62527f992f35b534f164d42",
+    "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_sql_answer_verification.py": {
     "mtime": 1793543563.3197207,
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793633352.495539,
-    "ast_hash": "3161c71b2b609a8f419ccf74ab43b094",
+    "mtime": 1793639333.312758,
+    "ast_hash": "8484594abd3cdc37563f057cf075086b",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793633316.3832428,
-    "ast_hash": "b624d29c44ea60ad74f1747c48872efc",
+    "mtime": 1793639342.5050526,
+    "ast_hash": "a3b59f89cb3fefd6f5d7458db09cd082",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5492,6 +5492,16 @@
   "docs/quality/hosted-cancellation-readiness-review-2026-11-02.md": {
     "mtime": 1793637844.823659,
     "ast_hash": "6373db456b2023832b0ad32ec56988f5",
+    "semantic_hash": ""
+  },
+  "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md": {
+    "mtime": 1793639342.3711286,
+    "ast_hash": "eb233d178d2325360ee41ed6864d37cf",
+    "semantic_hash": ""
+  },
+  "docs/quality/readonly-pdf-preview-review-2026-11-02.md": {
+    "mtime": 1793639322.9826648,
+    "ast_hash": "471a9b6ed309bac3f993d0bd65a1ca36",
     "semantic_hash": ""
   }
 }
