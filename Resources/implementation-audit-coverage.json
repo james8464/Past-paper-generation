@@ -940,11 +940,8 @@
     {
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
-      "source_sha256": "085ef973e8b8463ce9b7d1f9d2ffc54822138c5dd86c3897f03264497d418a00",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1243,11 +1240,8 @@
     {
       "path": "Backend/Core/france/verification.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file review and final delta checks recorded; remaining graph corner case is explicit in the evidence.",
-      "source_sha256": "1d7cb5e3c9e4a8ebd049bb810c5eaf566f5628b6e1520eeee1fd489f5546b50c",
-      "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
-      "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/whole_case_pdf.py",
@@ -3249,6 +3243,12 @@
     },
     {
       "path": "docs/quality/french-framework-migration-ledger.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6498,6 +6498,12 @@
     },
     {
       "path": "tests/test_french_interface_copy.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_isolated_graph_vertex.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."

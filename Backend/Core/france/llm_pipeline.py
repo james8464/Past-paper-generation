@@ -38,6 +38,7 @@ from Backend.Core.france.nsi import (
     TOPICS,
     NSIExercise,
     NSITableMaterial,
+    NSIWeightedGraphMaterial,
     authoring_schema,
     cognitive_profile_findings,
     require_authoring_fields,
@@ -501,6 +502,23 @@ def _verify_question(exercise, question, *, sql_source_binding: bool) -> dict:
         return verify_contract(
             contract, sql_materials=bound_materials(exercise, question)
         )
+    if contract["kind"] == "shortest_path":
+        material = next(
+            (
+                item
+                for item in exercise.materials
+                if item.id == contract.get("material_id")
+            ),
+            None,
+        )
+        if (
+            not isinstance(material, NSIWeightedGraphMaterial)
+            or material.id not in question.material_ids
+            or contract.get("edges") != [list(edge) for edge in material.edges]
+            or contract.get("directed") is not material.directed
+        ):
+            raise ValueError("La vérification et la figure graphe divergent")
+        return verify_contract(contract, graph_nodes=material.nodes)
     return verify_contract(contract)
 
 
