@@ -37,18 +37,20 @@ def _trace(code: str, variable: str):
         if budget < 0:
             raise ValueError("Limite d'étapes dépassée")
 
-    def bounded(value):
+    def bounded(value, *, allow_range=True):
         if type(value) is int and abs(value) <= 10**9:
             return value
         if type(value) is bool or value is None:
             return value
         if isinstance(value, str) and len(value) <= 4096:
             return value
+        if allow_range and isinstance(value, range) and len(value) <= 256:
+            return value
         if isinstance(value, list) and len(value) <= 256:
             for item in value:
                 if isinstance(item, list):
                     raise ValueError("Listes imbriquées non prises en charge")
-                bounded(item)
+                bounded(item, allow_range=allow_range)
             return value
         raise ValueError("Valeur hors limites")
 
@@ -81,7 +83,7 @@ def _trace(code: str, variable: str):
             )
         if isinstance(node, ast.Subscript):
             value, index = expression(node.value), expression(node.slice)
-            if isinstance(value, (list, str)) and type(index) is int:
+            if isinstance(value, (list, str, range)) and type(index) is int:
                 return value[index]
         if (
             isinstance(node, ast.Call)
@@ -98,11 +100,13 @@ def _trace(code: str, variable: str):
             ):
                 result = range(*args)
                 if len(result) <= 256:
-                    return list(result)
+                    # Iteration alone does not make a range a list: Python
+                    # comparisons and aliases must retain the original type.
+                    return result
             if (
                 node.func.id == "len"
                 and len(args) == 1
-                and isinstance(args[0], (list, str))
+                and isinstance(args[0], (list, str, range))
             ):
                 return len(args[0])
         raise ValueError("Construction Python non prise en charge")
@@ -122,7 +126,7 @@ def _trace(code: str, variable: str):
                 and not node.orelse
             ):
                 values = expression(node.iter)
-                if not isinstance(values, list):
+                if not isinstance(values, (list, range)):
                     raise ValueError("Itération non prise en charge")
                 for value in values:
                     environment[node.target.id] = value
@@ -133,7 +137,9 @@ def _trace(code: str, variable: str):
                 raise ValueError("Instruction Python non prise en charge")
 
     statements(tree.body)
-    return environment[variable]
+    # JSON evidence cannot represent a range value. Refuse it rather than
+    # publishing a list conversion as though it were the program's result.
+    return bounded(environment[variable], allow_range=False)
 
 
 def _sql(contract, *, sql_materials=None):

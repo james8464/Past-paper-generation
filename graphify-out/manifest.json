@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1793719419.0865204,
-    "ast_hash": "33cee69d601fc9461f1fd8dd08dc87a9",
+    "mtime": 1793746576.619476,
+    "ast_hash": "6b4ae4739996bf2b3e7b306c9c818006",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -5662,6 +5662,11 @@
   "docs/quality/numeric-and-source-padding-integration-review.md": {
     "mtime": 1793731364.6281207,
     "ast_hash": "6fb40c5caee6e91abfe73cf3b98c99aa",
+    "semantic_hash": ""
+  },
+  "tests/test_french_trace_ranges.py": {
+    "mtime": 1793746576.6189785,
+    "ast_hash": "47fd3b8ae6f680a73a06e3aa17fa54ad",
     "semantic_hash": ""
   }
 }
