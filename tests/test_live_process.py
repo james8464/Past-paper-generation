@@ -82,11 +82,45 @@ def test_backend_progress_is_written_before_process_finishes(tmp_path):
     assert result[0].peak_backend_rss_bytes > 0
 
 
-def test_backend_timeout_keeps_partial_output_and_reaps_process(tmp_path):
+def _wait_for_started(process, output_path, *, startup_timeout=5):
+    try:
+        deadline = time.monotonic() + startup_timeout
+        while time.monotonic() < deadline:
+            if output_path.read_text() == "started\n":
+                return process
+            if process.poll() is not None:
+                raise AssertionError("backend exited before its ready banner")
+            time.sleep(0.01)
+        raise AssertionError("backend did not emit its ready banner")
+    except BaseException:
+        with suppress(ProcessLookupError):
+            os.killpg(process.pid, signal.SIGKILL)
+        process.wait()
+        raise
+
+
+@pytest.mark.parametrize("startup_delay", [0, 0.5])
+def test_backend_timeout_keeps_partial_output_and_reaps_process(
+    tmp_path, monkeypatch, startup_delay
+):
     from tools.live_process import run_backend
 
+    spawn = subprocess.Popen
+    children = []
+
+    def spawn_when_ready(*args, **kwargs):
+        process = spawn(*args, **kwargs)
+        children.append(process)
+        return _wait_for_started(process, tmp_path / "events.jsonl")
+
+    monkeypatch.setattr("tools.live_process.subprocess.Popen", spawn_when_ready)
     result = run_backend(
-        [sys.executable, "-u", "-c", "import time; print('started'); time.sleep(60)"],
+        [
+            sys.executable,
+            "-u",
+            "-c",
+            f"import time; time.sleep({startup_delay}); print('started'); time.sleep(60)",
+        ],
         cwd=tmp_path,
         run_dir=tmp_path,
         timeout_seconds=0.3,
@@ -95,6 +129,28 @@ def test_backend_timeout_keeps_partial_output_and_reaps_process(tmp_path):
     assert result.return_code == 124
     assert result.stdout == "started\n"
     assert result.peak_backend_rss_bytes > 0
+    assert len(children) == 1
+    with pytest.raises(ChildProcessError):
+        os.waitpid(children[0].pid, os.WNOHANG)
+
+
+def test_timeout_fixture_reaps_child_when_readiness_fails(tmp_path):
+    output_path = tmp_path / "events.jsonl"
+    with output_path.open("w") as output:
+        process = subprocess.Popen(
+            [sys.executable, "-c", "import time; time.sleep(60)"],
+            stdout=output,
+            start_new_session=True,
+        )
+        try:
+            with pytest.raises(AssertionError, match="ready banner"):
+                _wait_for_started(process, output_path, startup_timeout=0.05)
+            with pytest.raises(ChildProcessError):
+                os.waitpid(process.pid, os.WNOHANG)
+        finally:
+            if process.poll() is None:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
 
 
 def test_backend_launch_failure_is_recorded(tmp_path):

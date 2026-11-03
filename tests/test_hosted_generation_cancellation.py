@@ -54,9 +54,9 @@ def _cancel_after_workers_are_ready(script, *arguments, cold_start_seconds=0):
 
 def test_readiness_harness_still_rejects_post_signal_worker_join(monkeypatch):
     script = """
-import signal, time
+import os, signal, time
 from threading import Barrier, Event, Thread
-barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
+barrier = Barrier(2, action=lambda: os.write(1, b"WORKERS_READY\\n"))
 def blocked():
     barrier.wait(timeout=20)
     time.sleep(30)
@@ -87,11 +87,11 @@ def test_shared_hosted_generation_cancellation_does_not_join_provider_workers(
     cold_start_seconds,
 ):
     script = """
-import signal, time
+import os, signal, time
 from threading import Barrier
 from types import SimpleNamespace
 from Backend.Core import ai_assessment as subject
-barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
+barrier = Barrier(2, action=lambda: os.write(1, b"WORKERS_READY\\n"))
 def generate(*args, **kwargs):
     barrier.wait(timeout=20)
     time.sleep(30)
@@ -120,12 +120,12 @@ def test_specialist_hosted_cancellation_does_not_join_provider_workers(
     family, cold_start_seconds
 ):
     script = r"""
-import signal, time, sys
+import os, signal, time, sys
 from pathlib import Path
 from threading import Barrier
 from types import SimpleNamespace
 family = sys.argv[1]
-barrier = Barrier(2, action=lambda: print("WORKERS_READY", flush=True))
+barrier = Barrier(2, action=lambda: os.write(1, b"WORKERS_READY\n"))
 def blocked(*args, **kwargs):
     barrier.wait(timeout=20)
     time.sleep(30)
