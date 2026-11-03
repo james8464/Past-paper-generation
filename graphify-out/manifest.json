@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793680529.7974384,
-    "ast_hash": "2c3d4a0edf0bf224959175304971c675",
+    "mtime": 1793687411.8026805,
+    "ast_hash": "4b4ab13b404d7456c411e9234c0f870d",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1270,8 +1270,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793621016.623366,
-    "ast_hash": "c896b46474c5526bb502701bee37daa3",
+    "mtime": 1793704493.750867,
+    "ast_hash": "117f28a82f480f3fb4efefadb6aea6f3",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3475,8 +3475,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/NativeVisualStyle.swift": {
-    "mtime": 1793621016.6227622,
-    "ast_hash": "2eb1250cffb5261c3e8f6d776f9300b8",
+    "mtime": 1793704493.750022,
+    "ast_hash": "a94511efed70cbe20bfd58b183b2ba64",
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/SharedViews.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793687355.972798,
-    "ast_hash": "4ac049c1c6d40c68a41d32dc9754327c",
+    "mtime": 1793687411.358959,
+    "ast_hash": "92acaaac758d3f0ee86c85c85119d9fe",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5570,8 +5570,8 @@
     "semantic_hash": ""
   },
   "docs/quality/economics-stimulus-figures-review-2026-11-03.md": {
-    "mtime": 1793687324.9053721,
-    "ast_hash": "f488666fbfb583b8ff285fc831742a51",
+    "mtime": 1793687401.5729513,
+    "ast_hash": "4e0c0021fe78bfc36585531f3e7be189",
     "semantic_hash": ""
   }
 }

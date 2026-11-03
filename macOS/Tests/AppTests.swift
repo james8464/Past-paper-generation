@@ -7,6 +7,47 @@ import XCTest
 
 final class KeldinTests: XCTestCase {
     @MainActor
+    func testUnchangedSidebarVisibilityDoesNotReplaceAutomaticPreference() {
+        for mode in [WorkspaceLayoutMode.compact, .standard, .expanded] {
+            var saved = "automatic"
+            var writes = 0
+            let preference = Binding(get: { saved }, set: { saved = $0; writes += 1 })
+            let visibility = WorkspaceSidebarPolicy.columnVisibility(for: mode, preference: preference)
+            for _ in 0..<20 {
+                visibility.wrappedValue = visibility.wrappedValue
+            }
+            XCTAssertEqual(saved, "automatic")
+            XCTAssertEqual(writes, 0)
+            let compact = WorkspaceSidebarPolicy.columnVisibility(for: .compact, preference: preference)
+            XCTAssertEqual(compact.wrappedValue, .detailOnly)
+            let wide = WorkspaceSidebarPolicy.columnVisibility(for: .expanded, preference: preference)
+            XCTAssertEqual(wide.wrappedValue, .all)
+        }
+    }
+
+    @MainActor
+    func testUnchangedSidebarVisibilityDoesNotRewriteExplicitPreferences() {
+        for initial in ["all", "detail", "double"] {
+            for mode in [WorkspaceLayoutMode.compact, .standard, .expanded] {
+                var saved = initial
+                var writes = 0
+                let preference = Binding(get: { saved }, set: { saved = $0; writes += 1 })
+                let visibility = WorkspaceSidebarPolicy.columnVisibility(for: mode, preference: preference)
+                for _ in 0..<20 {
+                    visibility.wrappedValue = visibility.wrappedValue
+                }
+                XCTAssertEqual(saved, initial)
+                XCTAssertEqual(writes, 0)
+                let changed: NavigationSplitViewVisibility = initial == "detail" ? .all : .detailOnly
+                visibility.wrappedValue = changed
+                XCTAssertEqual(saved, initial == "detail" ? "all" : "detail")
+                XCTAssertEqual(writes, 1)
+                XCTAssertEqual(visibility.wrappedValue, changed)
+            }
+        }
+    }
+
+    @MainActor
     func testCompactSidebarBindingAcceptsExplicitRevealAndPreservesUserChoice() {
         for width: CGFloat in [720, 760, 839] {
             var saved = "automatic"

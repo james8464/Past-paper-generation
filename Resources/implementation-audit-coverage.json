@@ -3956,6 +3956,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/sidebar-preference-stability-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/solver-choice-validity-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4763,10 +4769,10 @@
       "path": "macOS/Keldin/Components/NativeVisualStyle.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "7cbf8c18594203138d027bd182d26e2768ac73e963ac07cbf25d8e341e3c97e8",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "reason": "Root complete-file EOF review of the final source, followed by independent source/test delta review. Native tests passed; hang causality and final native acceptance are not claimed.",
+      "source_sha256": "1db48b8dfbdfd36d2b958568c766cf0741b929fd139e0d75e4d4f86d64cc71ab",
+      "review_evidence": "docs/quality/sidebar-preference-stability-2026-11-03.md",
+      "review_evidence_sha256": "badf114cc4ac22e82ba74e584e9a539ba8935591abc677fabb45144c65afd8c5"
     },
     {
       "path": "macOS/Keldin/Components/SharedViews.swift",
