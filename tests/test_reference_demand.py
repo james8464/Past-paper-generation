@@ -23,6 +23,7 @@ from Backend.Core.exam_blueprints import (
     GeneratedSection,
 )
 from Backend.Core.generator_registry import REGISTRY_PATH
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 
 
 def module():
@@ -763,7 +764,7 @@ def test_live_form_audit_rechecks_saved_review_against_target(changed) -> None:
         target_profile_fingerprint=profile.source_fingerprint,
         target_objective_policy_fingerprint=target.objective_policy_fingerprint,
         independent_solution_steps=2,
-        solution_integrity_version="closed-numeric-v2",
+        solution_integrity_version=NUMERIC_INTEGRITY_VERSION,
         public_task_operation_evidence=PublicTaskOperationEvidence(
             candidate_task_sha256=hashlib.sha256(
                 projection.encode("utf-8")

@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 import re
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter
@@ -103,6 +103,57 @@ CS_INPUTS = TypeAdapter(
 )
 
 
+def _floating_encoding(source: FloatingEncode) -> str:
+    try:
+        # Invalid spelling must not leave a signal flag in the caller's context.
+        with localcontext():
+            value = Decimal(source.value)
+    except InvalidOperation as error:
+        raise ValueError(
+            "floating template requires a finite positive value"
+        ) from error
+    if not value.is_finite() or value <= 0:
+        raise ValueError("floating template requires a finite positive value")
+    limit = 2 ** (source.exponent_bits - 1)
+    digits = value.as_tuple().digits
+    end = len(digits)
+    while end > 1 and digits[end - 1] == 0:
+        end -= 1
+    # A supported value is M * 2**(e - (mantissa_bits - 1)). Its canonical
+    # decimal coefficient needs fewer than 2*mantissa_bits + limit digits.
+    # Check that bound and decimal magnitude before allocating powers/ratios.
+    if (
+        end > 2 * source.mantissa_bits + limit
+        or not -limit - source.mantissa_bits <= value.adjusted() <= limit
+    ):
+        raise ValueError("floating source is not exactly representable")
+    coefficient = 0
+    for digit in digits[:end]:
+        coefficient = coefficient * 10 + digit
+    decimal_exponent = int(value.as_tuple().exponent) + len(digits) - end
+    numerator = coefficient * 10 ** max(decimal_exponent, 0)
+    denominator = 10 ** max(-decimal_exponent, 0)
+    order = numerator.bit_length() - denominator.bit_length()
+    below_power = (
+        numerator < denominator << order
+        if order >= 0
+        else numerator << -order < denominator
+    )
+    exponent = order if below_power else order + 1
+    if not -limit <= exponent < limit:
+        raise ValueError("floating source is not exactly representable")
+    shift = source.mantissa_bits - 1 - exponent
+    scaled, remainder = divmod(
+        numerator << max(shift, 0), denominator << max(-shift, 0)
+    )
+    if remainder:
+        raise ValueError("floating source is not exactly representable")
+    return (
+        f"{scaled:0{source.mantissa_bits}b}"
+        f"{exponent % (2**source.exponent_bits):0{source.exponent_bits}b}"
+    )
+
+
 def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | None:
     raw = (item.get("authoring_context") or {}).get("cs_input_contract")
     if raw is None:
@@ -184,27 +235,7 @@ def solve_computer_science_contract(item: dict[str, Any]) -> dict[str, Any] | No
             "Retain the low eight bits and check for a carry beyond the unsigned range.",
         ]
     elif isinstance(source, FloatingEncode):
-        value = Decimal(source.value)
-        if not value.is_finite() or value <= 0:
-            raise ValueError("floating template requires a finite positive value")
-        exponent = 0
-        mantissa = value
-        while mantissa >= 1:
-            mantissa /= 2
-            exponent += 1
-        while mantissa < Decimal("0.5"):
-            mantissa *= 2
-            exponent -= 1
-        scaled = mantissa * (2 ** (source.mantissa_bits - 1))
-        if scaled != scaled.to_integral_value() or not -(
-            2 ** (source.exponent_bits - 1)
-        ) <= exponent < 2 ** (source.exponent_bits - 1):
-            raise ValueError("floating source is not exactly representable")
-        bits = (
-            f"{int(scaled):0{source.mantissa_bits}b}"
-            + f"{exponent % (2**source.exponent_bits):0{source.exponent_bits}b}"
-        )
-        text("representation", "Floating representation", bits)
+        text("representation", "Floating representation", _floating_encoding(source))
         steps = [
             "Normalise the positive binary fraction to a leading 01 mantissa.",
             "Encode the exact signed mantissa and two's-complement exponent in the declared widths.",
