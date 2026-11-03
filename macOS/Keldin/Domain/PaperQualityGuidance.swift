@@ -1,7 +1,12 @@
 import Foundation
 
 enum ModelQualityAdvice: Equatable {
-    case answerChecksFailed, systemCalculationFailed, nsiProbeFailed, retiredModel, reviewIncomplete, unverified
+    case answerChecksFailed
+    case systemCalculationFailed
+    case accountingFalseAcceptance
+    case nsiProbeFailed
+    case retiredModel
+    case unverified
 
     static func forModel(provider: AIProvider, model: String) -> Self {
         let model = model.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -11,7 +16,7 @@ enum ModelQualityAdvice: Equatable {
         if provider == .apple, model == "mlx-community/llama-3.2-3b-instruct-4bit" {
             return .answerChecksFailed
         }
-        if provider == .ollama, model == "gemma4:12b" { return .reviewIncomplete }
+        if provider == .ollama, model == "gemma4:12b" { return .accountingFalseAcceptance }
         if provider == .ollama, model == "qwen3.5:9b" { return .nsiProbeFailed }
         if provider == .anthropic, model == "claude-sonnet-4-20250514" { return .retiredModel }
         return .unverified
@@ -20,9 +25,9 @@ enum ModelQualityAdvice: Equatable {
     var title: LocalizedStringResource {
         switch self {
         case .answerChecksFailed, .systemCalculationFailed: "Known answer-check failure"
+        case .accountingFalseAcceptance: "Known issue in an Accounting test"
         case .nsiProbeFailed: "Wrong answers in an NSI probe"
         case .retiredModel: "This model has been retired"
-        case .reviewIncomplete: "Paper-quality review incomplete"
         case .unverified: "Paper quality unverified"
         }
     }
@@ -33,12 +38,12 @@ enum ModelQualityAdvice: Equatable {
             "This Apple MLX model failed answer checks in an Accounting test. Memory fit does not establish paper quality."
         case .systemCalculationFailed:
             "This Apple on-device model failed an unaided accounting calculation test. Check generated answers and marks; some drafts may be refused."
+        case .accountingFalseAcceptance:
+            "One tested revision produced an ambiguous Accounting question with an unsupported answer key. Automated checks accepted it."
         case .nsiProbeFailed:
             "A tested revision returned wrong answers in a small NSI reasoning probe with reasoning off. Full-paper quality remains unverified."
         case .retiredModel:
             "Anthropic retired claude-sonnet-4-20250514. Choose an active model in Settings. Your saved choice has not been changed."
-        case .reviewIncomplete:
-            "Paper-quality evidence for this model is incomplete. A memory-fit suggestion does not mean its papers passed."
         case .unverified:
             "Paper quality is unverified for this provider and model. Smaller models may fail multi-step questions; model size alone does not establish accuracy."
         }

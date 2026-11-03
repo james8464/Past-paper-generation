@@ -69,7 +69,7 @@ def test_model_quality_guidance_is_separate_from_memory_suggestions():
     for evidence in [
         "answerChecksFailed",
         "nsiProbeFailed",
-        "reviewIncomplete",
+        "accountingFalseAcceptance",
         "unverified",
     ]:
         assert evidence in policy
@@ -99,6 +99,45 @@ def test_qwen_warning_is_scoped_to_tested_nsi_probe_not_full_paper_qualification
     assert 'provider == .ollama, model == "qwen3.5:9b"' in source
     assert message in source
     assert catalog[message]["localizations"]["fr"]["stringUnit"]["value"]
+
+
+def test_gemma_accounting_false_acceptance_warning_has_exact_provider_model_scope():
+    source = (APP / "Domain/PaperQualityGuidance.swift").read_text()
+    assert (
+        'provider == .ollama, model == "gemma4:12b" { return .accountingFalseAcceptance }'
+        in source
+    )
+    assert "Known issue in an Accounting test" in source
+    assert (
+        "One tested revision produced an ambiguous Accounting question with an "
+        "unsupported answer key. Automated checks accepted it."
+    ) in source
+    assert 'model.contains("gemma' not in source
+    assert "reviewIncomplete" not in source
+    assert "case passed" not in source
+
+
+def test_gemma_accounting_warning_uses_bounded_french_copy_and_keeps_old_keys():
+    catalog = json.loads((APP / "Localizable.xcstrings").read_text())["strings"]
+    for key, expected in (
+        (
+            "Known issue in an Accounting test",
+            "Problème constaté lors d’un test de comptabilité",
+        ),
+        (
+            "One tested revision produced an ambiguous Accounting question with an unsupported answer key. Automated checks accepted it.",
+            "Une version testée a produit une question de comptabilité ambiguë, avec une réponse attendue non justifiée par l’énoncé. Les contrôles automatiques l’ont acceptée.",
+        ),
+    ):
+        assert catalog[key]["localizations"]["fr"]["stringUnit"] == {
+            "state": "translated",
+            "value": expected,
+        }
+    assert "Paper-quality review incomplete" in catalog
+    assert (
+        "Paper-quality evidence for this model is incomplete. A memory-fit suggestion does not mean its papers passed."
+        in catalog
+    )
 
 
 def test_last_result_summary_uses_reported_evidence_without_an_all_clear():

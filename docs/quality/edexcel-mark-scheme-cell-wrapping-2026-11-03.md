@@ -63,3 +63,57 @@ the unchanged shared wrapper SHA256 is
 `dd9b835a29746b53973668705693498782dfc9249e20bcbb053898850c1ed9e1`.
 These hashes describe the local reviewed bytes, not a completed release gate or
 a whole-project audit.
+
+## Extended offline preview check
+
+At source commit `ba21442ce2cae33d1b541db9e5053b47000e5d74`, the actual family
+adapter rendered normal offline previews for Edexcel Papers 1, 2 and 3, seed
+270100 and display date 3 November 2026. Module location was asserted. The
+comparison used the pre-fix renderer with the same seeded source objects and
+preview context; it did not replay a model package under a new identity.
+
+All original marking points and allocation counts remained present. Across the
+75 mark-scheme pages, 65 measured answer rows had no text crossing their cell or
+bottom boundary. Every one of the 65 changed pages was inspected in page grids;
+Paper 2 pages 4 and 24 and Paper 3 page 12 were also viewed at 1100 pixels. No
+overflow, clipping, footer collision or broken continuation was found. Mark
+schemes had 25, 27 and 23 pages, versus 25, 27 and 26 before the repair. All 120
+question-paper/source-booklet pages had identical words, boxes and 1100-pixel
+rasters. These checks establish retained preview content and layout only.
+
+Artifacts remain in `tmp/nov3-edexcel-ms-preview-acceptance/`. Its `report.json`
+SHA256 is `6c13dc38c344f6dcd00c07786a30d8f6b2ae8a23662cef86f27c4556e405f972`.
+
+## Bounded Gemma Accounting evidence notice
+
+A retained live Accounting Paper 2 test accepted Q06 with a favourable material
+usage key, although its stem described purchases rather than actual consumption
+and explicitly stated a price above standard. Purchases do not determine usage;
+the stated price supports an adverse price variance. Automated acceptance of
+that ambiguous question is not a qualification pass.
+
+The native advice now describes this observed false acceptance only for Ollama
+`gemma4:12b`, retaining existing name normalization. It does not assert that all
+outputs fail, change the memory-fit suggestion, modify generation or claim a
+provider-wide defect. The supplied English/French title and detail were added
+as two catalogue keys; every old entry, including the previous incomplete-review
+translations, remains unchanged. The unused, non-persisted `reviewIncomplete`
+enum case and branches were removed after checking for consumers.
+
+Two new Python checks failed before implementation; the quality-guidance and
+contrast group then passed all 11 tests. Native assertions cover both languages,
+the exact provider/model boundary and existing normalization. They were read but
+not executed locally: no native test host was launched. Protected macOS CI and
+the later rebased full run remain required, not completed claims.
+
+The following files were read completely through EOF after the change:
+
+| File | Lines | SHA256 |
+| --- | ---: | --- |
+| `macOS/Keldin/Domain/PaperQualityGuidance.swift` | 129 | `4e40ab2f800785a400b0319f32e013cf42d6e1cf802132e327b89f1932988225` |
+| `macOS/Tests/ModelQualityGuidanceTests.swift` | 90 | `5f4b90fccdf45fbf80b72a1cfb9436694415c2fb9841919f68d1db2ecf400cc0` |
+| `tests/test_native_model_quality_guidance.py` | 174 | `3d2b2cf4fdde6dfa00f988d10fe4e243838c33bd0815e8e068d9f47251d188e9` |
+
+The catalogue review was scoped to the additions and unchanged-entry comparison,
+not a full-file language audit; its ledger status remains pending. The renderer
+and its earlier PDF evidence remain bound to the unchanged hashes above.

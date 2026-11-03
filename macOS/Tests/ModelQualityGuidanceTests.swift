@@ -15,7 +15,7 @@ final class ModelQualityGuidanceTests: XCTestCase {
 
     func testModelEvidenceIsScopedToExactProviderAndModelNotMemoryOrParameterCount() {
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .apple, model: "mlx-community/Llama-3.2-3B-Instruct-4bit"), .answerChecksFailed)
-        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "gemma4:12b"), .reviewIncomplete)
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "gemma4:12b"), .accountingFalseAcceptance)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:9b"), .nsiProbeFailed)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .apple, model: "qwen3.5:9b"), .unverified)
         XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: "qwen3.5:27b"), .unverified)
@@ -27,6 +27,22 @@ final class ModelQualityGuidanceTests: XCTestCase {
         }
         XCTAssertEqual(InterfaceText.resolve(ModelQualityAdvice.unverified.title, language: "fr"), "Qualité des sujets non vérifiée")
         XCTAssertEqual(InterfaceText.resolve(ModelQualityAdvice.answerChecksFailed.title, language: "en"), "Known answer-check failure")
+    }
+
+    func testGemmaAccountingFalseAcceptanceEvidenceIsBoundedAndLocalized() {
+        let advice = ModelQualityAdvice.forModel(provider: .ollama, model: "gemma4:12b")
+        XCTAssertEqual(advice, .accountingFalseAcceptance)
+        XCTAssertEqual(InterfaceText.resolve(advice.title, language: "en"), "Known issue in an Accounting test")
+        XCTAssertEqual(InterfaceText.resolve(advice.detail, language: "en"), "One tested revision produced an ambiguous Accounting question with an unsupported answer key. Automated checks accepted it.")
+        XCTAssertEqual(InterfaceText.resolve(advice.title, language: "fr"), "Problème constaté lors d’un test de comptabilité")
+        XCTAssertEqual(InterfaceText.resolve(advice.detail, language: "fr"), "Une version testée a produit une question de comptabilité ambiguë, avec une réponse attendue non justifiée par l’énoncé. Les contrôles automatiques l’ont acceptée.")
+        XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: " Gemma4:12B \n"), advice)
+        for provider in [AIProvider.apple, .appleIntelligence, .openAI, .anthropic, .deepSeek] {
+            XCTAssertEqual(ModelQualityAdvice.forModel(provider: provider, model: "gemma4:12b"), .unverified)
+        }
+        for model in ["gemma4:27b", "gemma3:12b", "gemma4:12b-q4_K_M", "library/gemma4:12b"] {
+            XCTAssertEqual(ModelQualityAdvice.forModel(provider: .ollama, model: model), .unverified)
+        }
     }
 
     func testMissingReportDoesNotBecomeAnAllClear() {

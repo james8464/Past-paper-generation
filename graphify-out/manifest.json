@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793671292.4738348,
-    "ast_hash": "8b30981b36a8d8a1b747d460fb44c1fb",
+    "mtime": 1793671369.4267402,
+    "ast_hash": "f752155e00429829cf768e12fa689cf3",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4775,8 +4775,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
-    "mtime": 1793671292.0604522,
-    "ast_hash": "02879aae230ac0c89091d7bd7b7b4b22",
+    "mtime": 1793671369.4509475,
+    "ast_hash": "f36c903bd2ed5c9a878d133a882da1a1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/GenerationGuidanceViews.swift": {
@@ -4795,8 +4795,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
-    "mtime": 1793671292.0675097,
-    "ast_hash": "e2461fc99708195637bc4af47aa7aefb",
+    "mtime": 1793671369.4548655,
+    "ast_hash": "a9f2ae51609662da5511a236b0fbca05",
     "semantic_hash": ""
   },
   "tests/test_french_llm_pdf.py": {
@@ -4830,8 +4830,8 @@
     "semantic_hash": ""
   },
   "tests/test_native_model_quality_guidance.py": {
-    "mtime": 1793671292.0712094,
-    "ast_hash": "251c1465ca6d69c93225e445f761397a",
+    "mtime": 1793671369.457223,
+    "ast_hash": "ce67dd0799367d599fefe6d40641c804",
     "semantic_hash": ""
   },
   "tools/french_model_capability.py": {
@@ -5530,8 +5530,8 @@
     "semantic_hash": ""
   },
   "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md": {
-    "mtime": 1793671292.4754946,
-    "ast_hash": "8a66a6b0d9646ebcb16fa1fff49cd03e",
+    "mtime": 1793671369.4269962,
+    "ast_hash": "f4c0f3db80788eb1eebf8a6ff16256f2",
     "semantic_hash": ""
   }
 }
