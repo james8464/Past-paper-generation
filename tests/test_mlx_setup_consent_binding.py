@@ -121,7 +121,7 @@ def test_failed_model_load_never_records_approval(monkeypatch, tmp_path):
 def test_cli_passes_bound_setup_options_without_changing_legacy_loaders(monkeypatch):
     calls = []
     monkeypatch.setattr(
-        "Backend.Core.mlx_setup.validate_mlx_setup_environment", lambda: None
+        "Backend.Core.mlx_setup.validate_mlx_setup_environment", lambda **_: None
     )
     monkeypatch.setattr("Backend.Core.mlx_setup.mlx_runtime_available", lambda: True)
     monkeypatch.setattr(
