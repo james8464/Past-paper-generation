@@ -203,7 +203,11 @@ def test_candidate_projection_describes_only_the_printed_diagram_and_keeps_sourc
 
 @pytest.mark.parametrize(
     "old_version",
-    ["edexcel-economics-v10-solver-source", "edexcel-economics-v11-diagram-source"],
+    [
+        "edexcel-economics-v10-solver-source",
+        "edexcel-economics-v11-diagram-source",
+        "edexcel-economics-v12-macro-geometry",
+    ],
 )
 def test_old_diagram_review_cache_is_not_rebound_or_deleted(tmp_path, old_version):
     from pastpapergen.cli import ADAPTER
