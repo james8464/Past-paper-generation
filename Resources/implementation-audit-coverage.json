@@ -1477,8 +1477,11 @@
     {
       "path": "Backend/Core/pdf_validation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete baseline EOF and final delta review; uniform-raster and final intentional-blank boundary failures reproduced and repaired within documented rendering limits.",
+      "source_sha256": "b5c5a0f445b75a8a461ff5f00b9af04b9f99b4b5e847cb201683051ecb01313a",
+      "review_evidence": "docs/quality/pdf-visible-page-review-2026-11-03.md",
+      "review_evidence_sha256": "8b5ec3b73e37822f9941734681d6872c1db4af688e6e5f128818a3fc0cbe1f60"
     },
     {
       "path": "Backend/Core/preview_presentation.py",
@@ -3728,6 +3731,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3801,6 +3810,12 @@
     },
     {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/pdf-visible-page-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5272,8 +5287,11 @@
     {
       "path": "macOS/Tests/GenerationNavigationInteractiveTests.swift",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete baseline EOF and final test-isolation delta review; hosted root binding and standard-preference assertions reviewed, not a claim the manual journey was executed.",
+      "source_sha256": "5862e9af2242b1b45282bdbc792a96733f4ed479b6806b2e80e2b1bf511048c9",
+      "review_evidence": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
+      "review_evidence_sha256": "258e77bd90120f73f343d655653d39d42efe9ee0f450b8dbcec38e261bb749ed"
     },
     {
       "path": "macOS/Tests/HistoryDeletionTests.swift",
@@ -6980,6 +6998,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_native_fixture_storage_isolation.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "All 15 lines read; exact hosted-root isolation boundary failed before the fix and passed after it. This static check does not simulate SwiftUI storage propagation.",
+      "source_sha256": "b3a6d464ffcb8d01261dfeb80adcaff17a48770ebad24faf637f841e22d1ac3f",
+      "review_evidence": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
+      "review_evidence_sha256": "258e77bd90120f73f343d655653d39d42efe9ee0f450b8dbcec38e261bb749ed"
+    },
+    {
       "path": "tests/test_native_model_quality_guidance.py",
       "classification": "test",
       "status": "reviewed",
@@ -7102,8 +7129,11 @@
     {
       "path": "tests/test_pdf_validation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete baseline EOF and entire final delta reviewed; owned red and green render-integrity fixtures, intentional-blank replay and bounded pixel-budget controls.",
+      "source_sha256": "d3d57ba2f016ddbb3a2e8b697c7cbbbc59691054bcb78ef1adc3d3d7e97664a6",
+      "review_evidence": "docs/quality/pdf-visible-page-review-2026-11-03.md",
+      "review_evidence_sha256": "8b5ec3b73e37822f9941734681d6872c1db4af688e6e5f128818a3fc0cbe1f60"
     },
     {
       "path": "tests/test_print_profiles.py",
