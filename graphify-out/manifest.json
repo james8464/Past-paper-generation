@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1793543563.2889411,
-    "ast_hash": "95bf5aa2ee4409b073cace2ba8a5f605",
+    "mtime": 1793713123.4664438,
+    "ast_hash": "c0f6a20d0af09673cdcdb294d86cd708",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793709277.9744747,
-    "ast_hash": "7ffbf8c93eef5b2bf9998246fef4eccb",
+    "mtime": 1793713374.1725585,
+    "ast_hash": "8c19dd855e0cc225df1f6fea87c19bf4",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793710456.111037,
-    "ast_hash": "c6395b44fbda9bccf3cddf7805fd25a4",
+    "mtime": 1793713490.4192405,
+    "ast_hash": "7792dfdb77ea6aa353a93b374ea4b163",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5592,6 +5592,16 @@
   "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md": {
     "mtime": 1793710199.6098905,
     "ast_hash": "cb8268398e5eb87ffe91f4c7c9b6636e",
+    "semantic_hash": ""
+  },
+  "tests/test_french_trace_bindings.py": {
+    "mtime": 1793713462.2253306,
+    "ast_hash": "0add2e1b9c2bb1d042ceaf0bcfce2875",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-trace-bindings-review-2026-11-03.md": {
+    "mtime": 1793713474.7951171,
+    "ast_hash": "da32b225c8b9e1a328a81359bda17148",
     "semantic_hash": ""
   }
 }
