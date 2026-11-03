@@ -1358,7 +1358,7 @@
       "reason": "Author read the final 193-line file through EOF, traced cache/setup consumers and verified the bounded empty-required-file repair, retaining valid empty BPE merge tables. No real model setup, UI or paper-quality certification.",
       "source_sha256": "dbf5ed828d4fbd51c1351e0fd4997810e64ba53128d6c3cc15a3991c90dd8a4c",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
-      "review_evidence_sha256": "97c25d633910785280407a8068f668cbac9ddbb97d00672e87fabc5e0b0b5047"
+      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
     },
     {
       "path": "Backend/Core/mlx_setup.py",
@@ -6869,10 +6869,10 @@
       "path": "tests/test_live_process.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Read fully; retained progress, timeout, interruption, missing executable and descendant-cleanup cases. No extra finding.",
-      "source_sha256": "18850a95fdc740e4808ebe629abc7b82dcbef761ade471aa8812710e18d2eaf0",
-      "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
-      "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
+      "reason": "Author reread all 220 lines through EOF. Bounded child-readiness handling preserves the production timeout and assertions; delayed startup and failed-readiness cleanup pass focused tests. No production or full-app certification.",
+      "source_sha256": "614b9a02b22f60baefebc2acff57e4bb215107f02734f9a2fc3bc42bf35214bd",
+      "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
+      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
     },
     {
       "path": "tests/test_mark_scheme_enrichment.py",
@@ -6917,7 +6917,7 @@
       "reason": "Author read all 196 lines through EOF, checked five invalid empty-file regressions and seven valid tokenizer-alternative controls, and ran the focused suite. Dependencies and real model compatibility remain outside this attestation.",
       "source_sha256": "22a9eb900a223f1cf754481f836ee411fa6d0ae441ffd000552700eafa28356f",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
-      "review_evidence_sha256": "97c25d633910785280407a8068f668cbac9ddbb97d00672e87fabc5e0b0b5047"
+      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
     },
     {
       "path": "tests/test_mlx_matrix_identity.py",

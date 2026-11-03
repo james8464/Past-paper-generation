@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793661570.1333067,
+    "mtime": 1793666237.2002144,
     "ast_hash": "7fa76bb14812bc0b2e5a810732a79aba",
     "semantic_hash": ""
   },
@@ -1560,8 +1560,8 @@
     "semantic_hash": ""
   },
   "tests/test_live_process.py": {
-    "mtime": 1793543563.4765213,
-    "ast_hash": "96fd071a4b234f170fbff850cb68c896",
+    "mtime": 1793666065.002791,
+    "ast_hash": "1dbe6ae6fd27aaa31c2dde3bfed3181e",
     "semantic_hash": ""
   },
   "tests/test_mark_scheme_enrichment.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793661882.7030256,
-    "ast_hash": "25ed4eab1d3e916bebe6354fbcd12182",
+    "mtime": 1793666236.6741765,
+    "ast_hash": "1233b01dd10cc95d1b9750816d7ae758",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5525,8 +5525,8 @@
     "semantic_hash": ""
   },
   "docs/quality/mlx-cache-preflight-review-2026-11-03.md": {
-    "mtime": 1793661768.1570761,
-    "ast_hash": "a09eb1d695f8e139ca899b3ebfc0203c",
+    "mtime": 1793666211.4955328,
+    "ast_hash": "af524019a89b72c9213da309da409514",
     "semantic_hash": ""
   }
 }
