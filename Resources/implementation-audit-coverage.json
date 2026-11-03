@@ -1358,7 +1358,7 @@
       "reason": "Author read the final 193-line file through EOF, traced cache/setup consumers and verified the bounded empty-required-file repair, retaining valid empty BPE merge tables. No real model setup, UI or paper-quality certification.",
       "source_sha256": "dbf5ed828d4fbd51c1351e0fd4997810e64ba53128d6c3cc15a3991c90dd8a4c",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
-      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
+      "review_evidence_sha256": "8f4fa032862aac34bb72fc7878df447972c405784b689c50cbcc1cec21acb5db"
     },
     {
       "path": "Backend/Core/mlx_setup.py",
@@ -6794,10 +6794,10 @@
       "path": "tests/test_hosted_generation_cancellation.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
-      "source_sha256": "dd8510101faa108c913deefd5054cdb5d0c455e3ed50c206a186bdf85197d282",
-      "review_evidence": "docs/quality/hosted-cancellation-readiness-review-2026-11-02.md",
-      "review_evidence_sha256": "71ff2e34d5c8997e3828785ba4649a35242365bac54de410031850c06cf763d7"
+      "reason": "Author reread all 237 lines through EOF. Fake-worker readiness uses unbuffered writes to avoid interpreter-shutdown lock contention; focused cancellation and negative controls pass with original deadlines. No production or live-paper qualification.",
+      "source_sha256": "d682b771899d0e787d11211ffb23f546bb224813fd2451f2198932a83d640445",
+      "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
+      "review_evidence_sha256": "8f4fa032862aac34bb72fc7878df447972c405784b689c50cbcc1cec21acb5db"
     },
     {
       "path": "tests/test_hosted_model_defaults.py",
@@ -6872,7 +6872,7 @@
       "reason": "Author reread all 220 lines through EOF. Bounded child-readiness handling preserves the production timeout and assertions; delayed startup and failed-readiness cleanup pass focused tests. No production or full-app certification.",
       "source_sha256": "614b9a02b22f60baefebc2acff57e4bb215107f02734f9a2fc3bc42bf35214bd",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
-      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
+      "review_evidence_sha256": "8f4fa032862aac34bb72fc7878df447972c405784b689c50cbcc1cec21acb5db"
     },
     {
       "path": "tests/test_mark_scheme_enrichment.py",
@@ -6917,7 +6917,7 @@
       "reason": "Author read all 196 lines through EOF, checked five invalid empty-file regressions and seven valid tokenizer-alternative controls, and ran the focused suite. Dependencies and real model compatibility remain outside this attestation.",
       "source_sha256": "22a9eb900a223f1cf754481f836ee411fa6d0ae441ffd000552700eafa28356f",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
-      "review_evidence_sha256": "e708f4fea1a9abc74b7a821ffd4330f8829f9cf158a1f335f652b02a7f781acb"
+      "review_evidence_sha256": "8f4fa032862aac34bb72fc7878df447972c405784b689c50cbcc1cec21acb5db"
     },
     {
       "path": "tests/test_mlx_matrix_identity.py",

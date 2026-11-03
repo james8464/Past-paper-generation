@@ -4735,8 +4735,8 @@
     "semantic_hash": ""
   },
   "tests/test_hosted_generation_cancellation.py": {
-    "mtime": 1793637844.824125,
-    "ast_hash": "0e5720516dc0f0793d4a1c25edfa882d",
+    "mtime": 1793668012.6357594,
+    "ast_hash": "96c6d4577a16d6951674957e00799e23",
     "semantic_hash": ""
   },
   "docs/quality/hosted-generation-cancellation-2026-10-29.md": {
@@ -5525,8 +5525,8 @@
     "semantic_hash": ""
   },
   "docs/quality/mlx-cache-preflight-review-2026-11-03.md": {
-    "mtime": 1793666211.4955328,
-    "ast_hash": "af524019a89b72c9213da309da409514",
+    "mtime": 1793668144.5392635,
+    "ast_hash": "a6f38c4b6ecb713476979b67310300ba",
     "semantic_hash": ""
   }
 }
