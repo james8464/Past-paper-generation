@@ -3662,6 +3662,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/local-pdf-admission-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/local-provider-boundary-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5200,11 +5206,8 @@
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file internal review of read-only document access and recovery; exact-byte evidence is separate from native permission acceptance.",
-      "source_sha256": "046381db27116bb145129a79ba6a6f5b0e8c4ad6a481b4a8d9658754a129970b",
-      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
-      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Services/SecretStore.swift",

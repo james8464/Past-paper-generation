@@ -56,6 +56,10 @@ final class PDFDocumentAccess {
     }
 
     func load(_ url: URL) -> Result<LoadedPDF, PDFLoadFailure> {
+        guard url.isFileURL else {
+            release()
+            return .failure(.invalid)
+        }
         if scopedURL?.standardizedFileURL != url.standardizedFileURL { release() }
         var shouldRemember = false
         if scopedURL == nil { shouldRemember = true }
