@@ -2599,8 +2599,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_mark_scheme_layout.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 562-line test file read through EOF; scoped row-wrapping regressions and existing full-content, typography and pagination checks reviewed. This does not attest the complete renderer or whole-project release readiness.",
+      "source_sha256": "ce6abcea2ec3a3163f8e46daac5ce9c0ee932dbc21bbd2e28e4201afc8e1d2aa",
+      "review_evidence": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
+      "review_evidence_sha256": "1802aa5724a2ca0b24d29b950273519f06009f09f88fe095e4193c2a58dd9ea4"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_notes.py",
@@ -3138,6 +3141,12 @@
     },
     {
       "path": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4832,10 +4841,10 @@
       "path": "macOS/Keldin/Domain/PaperQualityGuidance.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "91da407db4f54b368c7768bd72ca0474617f45b587688c349e32535f1385a753",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "reason": "Complete 129-line file read through EOF after the bounded Accounting false-acceptance notice; provider/model identity and existing report-status semantics reviewed. Native execution and whole-project completion remain separate.",
+      "source_sha256": "4e40ab2f800785a400b0319f32e013cf42d6e1cf802132e327b89f1932988225",
+      "review_evidence": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
+      "review_evidence_sha256": "1802aa5724a2ca0b24d29b950273519f06009f09f88fe095e4193c2a58dd9ea4"
     },
     {
       "path": "macOS/Keldin/Domain/WorkNotification.swift",
@@ -5302,8 +5311,11 @@
     {
       "path": "macOS/Tests/ModelQualityGuidanceTests.swift",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 90-line native test file read through EOF; exact provider/model boundaries, localizations and isolated temporary report fixtures reviewed. Native test execution is not claimed by this review.",
+      "source_sha256": "5f4b90fccdf45fbf80b72a1cfb9436694415c2fb9841919f68d1db2ecf400cc0",
+      "review_evidence": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
+      "review_evidence_sha256": "1802aa5724a2ca0b24d29b950273519f06009f09f88fe095e4193c2a58dd9ea4"
     },
     {
       "path": "macOS/Tests/NativeInterfaceAuditTests.swift",
@@ -6958,8 +6970,11 @@
     {
       "path": "tests/test_native_model_quality_guidance.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 174-line source-contract test file read through EOF; bounded warning scope, retained catalogue entries and memory/status presentation contracts reviewed. Static checks do not establish native runtime behavior or paper quality.",
+      "source_sha256": "3d2b2cf4fdde6dfa00f988d10fe4e243838c33bd0815e8e068d9f47251d188e9",
+      "review_evidence": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
+      "review_evidence_sha256": "1802aa5724a2ca0b24d29b950273519f06009f09f88fe095e4193c2a58dd9ea4"
     },
     {
       "path": "tests/test_native_status_contrast.py",

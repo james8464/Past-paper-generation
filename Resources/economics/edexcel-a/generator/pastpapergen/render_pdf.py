@@ -30,6 +30,7 @@ from Backend.Core.document_dsl import (
     draw_glyph_answer_rules,
     renderer_contract,
 )
+from Backend.Core.document_dsl.text_layout import wrap_text as _wrap_measured_text
 from Backend.Core.fonts import register_fonts as _rf
 from Backend.Core.generation_date import formatted_generation_date
 from Backend.Core.overlay.graphs import (
@@ -91,7 +92,6 @@ MS_FONT_BOLD = "ExamMarkScheme-Bold"
 MS_FONT_ITALIC = "ExamMarkScheme-Italic"
 SERIF_FONT = "ExamSerif"
 SERIF_BOLD_ITALIC = "ExamSerif-BoldItalic"
-MS_ANSWER_WRAP_CHARS = 54
 MS_PAGE_SIZE = (595.44, 841.68)
 MS_PAGE_SIZES = {
     "paper_1": (595.44, 841.56),
@@ -4047,17 +4047,10 @@ def _draw_ms_row(
                 diagram,
             )
             continue
-        if _ms_bold_line(line):
-            font = MS_FONT_BOLD
-        elif _ms_italic_line(line):
-            font = MS_FONT_ITALIC
-        else:
-            font = MS_FONT
+        font, line_x, centered, wrapped_lines = _ms_text_layout(line)
         pdf.setFont(font, 11)
-        is_bullet = line.startswith("●")
-        line_x = answer_x + (40 if is_bullet else 22)
-        for wrapped in _wrap(line, _ms_wrap_width(line)):
-            if _ms_centered_line(wrapped):
+        for wrapped in wrapped_lines:
+            if centered:
                 pdf.drawCentredString((answer_x + mark_x) / 2, cursor, wrapped)
             else:
                 pdf.drawString(line_x, cursor, wrapped)
@@ -4093,16 +4086,32 @@ def _ms_row_height(answer_lines: list[str]) -> int:
         if line.startswith("__ECONOMIC_DIAGRAM__:"):
             content_height += 202
             continue
-        content_height += (
-            max(1, len(_wrap(line, _ms_wrap_width(line)))) * MS_BODY_LEADING
-        )
+        content_height += len(_ms_text_layout(line)[3]) * MS_BODY_LEADING
         if _ms_bold_line(line) and not _ms_centered_line(line):
             content_height += 8
     return max(112, int(MS_HEADER_H + 20 + content_height))
 
 
-def _ms_wrap_width(line: str) -> int:
-    return 48 if line.startswith("●") else MS_ANSWER_WRAP_CHARS
+def _ms_text_layout(line: str) -> tuple[str, float, bool, tuple[str, ...]]:
+    """Measure precisely the face and inset used to draw this answer-cell line."""
+    font = (
+        MS_FONT_BOLD
+        if _ms_bold_line(line)
+        else MS_FONT_ITALIC
+        if _ms_italic_line(line)
+        else MS_FONT
+    )
+    answer_x = MS_LEFT + MS_NUMBER_W + 6
+    mark_x = MS_RIGHT - MS_MARK_W
+    centered = _ms_centered_line(line)
+    line_x = answer_x + (40 if line.startswith("●") else 22)
+    width = mark_x - answer_x - 12 if centered else mark_x - line_x - 6
+    return (
+        font,
+        line_x,
+        centered,
+        _wrap_measured_text(line, font=font, size=11, width=width),
+    )
 
 
 def _ms_centered_line(line: str) -> bool:
