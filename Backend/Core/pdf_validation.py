@@ -747,6 +747,44 @@ def validate_pdf_for_release(
                 }
             )
 
+        # Visible source-booklet padding receives evidence only after every page
+        # has passed the ordinary checks above. This is never an empty-page bypass.
+        if (
+            subject == "economics"
+            and role == "source_booklet"
+            and paper_number in {"1", "2", "3"}
+        ):
+            labelled = [
+                offset + 1
+                for offset in range(document.page_count)
+                for page in [document[offset]]
+                if page.get_text().strip() == "BLANK PAGE"
+                and not page.get_image_info()
+                and any(
+                    trace["type"] == 0
+                    and trace["opacity"] >= 0.8
+                    and not all(value > 0.95 for value in trace["color"])
+                    and "".join(chr(char[0]) for char in trace["chars"]).strip()
+                    == "BLANK PAGE"
+                    and not text_trace_is_occluded(trace, page.get_drawings())
+                    for trace in page.get_texttrace()
+                )
+                and not any(
+                    drawing["rect"].x1 > 50
+                    and drawing["rect"].x0 < page.rect.width - 50
+                    and drawing["rect"].y1 > 56
+                    and drawing["rect"].y0 < page.rect.height - 56
+                    for drawing in page.get_drawings()
+                )
+            ]
+            if labelled and (
+                labelled[0] == 1
+                or labelled != list(range(labelled[0], document.page_count + 1))
+            ):
+                raise ValueError(f"{path.name} source-booklet padding must be trailing")
+            for index in labelled:
+                page_layout_metrics[index - 1]["intentional_blank"] = True
+
         allowed = CONTROLLED_FONT_PREFIXES[
             "economics" if subject == "economics" else "default"
         ]

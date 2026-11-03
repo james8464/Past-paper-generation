@@ -2749,6 +2749,9 @@ def _pad_pdf_pages(pdf: canvas.Canvas, target_pages: int) -> None:
     while pdf.getPageNumber() < target_pages:
         pdf.showPage()
         _draw_crop_marks(pdf)
+        width, height = A4
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawCentredString(width / 2, height / 2 - 6.4, "BLANK PAGE")
 
 
 def _extract_source_questions(section_questions: list) -> list:
