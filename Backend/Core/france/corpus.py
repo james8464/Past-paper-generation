@@ -362,9 +362,28 @@ def ingest(register: Path, output: Path) -> dict:
         "duplicates": [],
     }
     opener = build_opener(OfficialRedirects())
+    holdout_hashes: set[str] = set()
+    identified_holdouts: set[str] = set()
     with ReferenceIndex(output / "references.sqlite") as index:
         for entry in payload["documents"]:
             try:
+                previous = index.connection.execute(
+                    "SELECT metadata FROM sources WHERE id=?", (entry["id"],)
+                ).fetchone()
+                if entry.get("split") == "holdout":
+                    # A failed re-admission must not expose held-out bytes via an alias.
+                    known_hashes = [entry.get("sha256")]
+                    if previous:
+                        known_hashes.append(json.loads(previous[0])["sha256"])
+                    valid_hashes = {
+                        value
+                        for value in known_hashes
+                        if isinstance(value, str)
+                        and re.fullmatch(r"[a-f0-9]{64}", value)
+                    }
+                    holdout_hashes.update(valid_hashes)
+                    if valid_hashes:
+                        identified_holdouts.add(entry["id"])
                 check_url(entry["url"])
                 if not re.fullmatch(r"[a-z0-9-]+", entry["id"]):
                     raise ValueError("Unsafe document identifier")
@@ -388,6 +407,9 @@ def ingest(register: Path, output: Path) -> dict:
                         content = download_with_system_trust(entry["url"])
                 check_download(entry["url"], content)
                 digest = sha256(content).hexdigest()
+                if entry.get("split") == "holdout":
+                    holdout_hashes.add(digest)
+                    identified_holdouts.add(entry["id"])
                 if entry.get("sha256") and digest != entry["sha256"]:
                     raise ValueError("Pinned source hash mismatch")
                 with pymupdf.open(stream=content, filetype="pdf") as pdf:
@@ -406,9 +428,6 @@ def ingest(register: Path, output: Path) -> dict:
                         for number, page in enumerate(pdf)
                     ]
                 # A previously ingested source retains its acquisition date.
-                previous = index.connection.execute(
-                    "SELECT metadata FROM sources WHERE id=?", (entry["id"],)
-                ).fetchone()
                 retrieved = (
                     json.loads(previous[0])["retrieved_at"]
                     if previous
@@ -449,7 +468,24 @@ def ingest(register: Path, output: Path) -> dict:
         for group in report["duplicates"]
         for identifier in group["excluded_ids"]
     }
-    registered_ids = {entry["id"] for entry in payload["documents"]}
+    unresolved_holdouts = {
+        entry["id"] for entry in payload["documents"] if entry.get("split") == "holdout"
+    } - identified_holdouts
+    report["unresolved_holdout_ids"] = sorted(unresolved_holdouts)
+    # Unknown holdout bytes cannot be distinguished from an admitted reference.
+    quarantined = {
+        document["id"]
+        for document in report["documents"]
+        if document["split"] == "reference"
+        and (unresolved_holdouts or document["sha256"] in holdout_hashes)
+    }
+    excluded.update(quarantined)
+    report["holdout_quarantined_reference_ids"] = sorted(quarantined)
+    admitted_ids = (
+        {document["id"] for document in report["documents"]}
+        - excluded
+        - {failure["id"] for failure in report["failures"]}
+    )
     with ReferenceIndex(output / "references.sqlite") as index:
         if excluded:
             with index.connection:
@@ -462,10 +498,10 @@ def ingest(register: Path, output: Path) -> dict:
                     [(identifier,) for identifier in sorted(excluded)],
                 )
         report["stale_index_sources_removed"] = prune_unregistered_sources(
-            index, registered_ids
+            index, admitted_ids
         )
     for document in report["documents"]:
-        document["indexed"] = document["id"] not in excluded
+        document["indexed"] = document["id"] in admitted_ids
     (output / "manifest.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

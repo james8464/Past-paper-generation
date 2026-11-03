@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/corpus.py": {
-    "mtime": 1793543563.273405,
-    "ast_hash": "30c2c1020f0beb8b86d7c5b4c09538a3",
+    "mtime": 1793706437.8640795,
+    "ast_hash": "4633494ae37902911436023ff0a83b31",
     "semantic_hash": ""
   },
   "Backend/Core/france/network.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793680529.7974384,
-    "ast_hash": "2c3d4a0edf0bf224959175304971c675",
+    "mtime": 1793706285.3111525,
+    "ast_hash": "f3183fbab37fa81216a029d559b5d6a8",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1270,7 +1270,7 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793621016.623366,
+    "mtime": 1793704901.7876844,
     "ast_hash": "c896b46474c5526bb502701bee37daa3",
     "semantic_hash": ""
   },
@@ -1485,8 +1485,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_corpus.py": {
-    "mtime": 1793543563.4620879,
-    "ast_hash": "f537f4bd5378b7a1c6ed1581e186a3b5",
+    "mtime": 1793706429.1851394,
+    "ast_hash": "37e4d9b59346abc41c4a7e0f57d7c627",
     "semantic_hash": ""
   },
   "tests/test_french_framework.py": {
@@ -3475,7 +3475,7 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/NativeVisualStyle.swift": {
-    "mtime": 1793621016.6227622,
+    "mtime": 1793704901.783798,
     "ast_hash": "2eb1250cffb5261c3e8f6d776f9300b8",
     "semantic_hash": ""
   },
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793687355.972798,
-    "ast_hash": "4ac049c1c6d40c68a41d32dc9754327c",
+    "mtime": 1793706352.311125,
+    "ast_hash": "e2ca1770b23f35c5933cd7aa36fe281b",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4035,12 +4035,12 @@
     "semantic_hash": ""
   },
   "macOS/Tests/HistoryDeletionTests.swift": {
-    "mtime": 1793543563.4493258,
+    "mtime": 1793705575.2231374,
     "ast_hash": "1f71e83575e845f430eb21db95f4dc6d",
     "semantic_hash": ""
   },
   "macOS/Tests/PDFDocumentAccessTests.swift": {
-    "mtime": 1793639220.6541817,
+    "mtime": 1793705575.2273521,
     "ast_hash": "bab26fe3ed0d960b3d0e8265a7e6d079",
     "semantic_hash": ""
   },
@@ -4050,7 +4050,7 @@
     "semantic_hash": ""
   },
   "macOS/Tests/StorageLocalizationTests.swift": {
-    "mtime": 1793661375.244753,
+    "mtime": 1793705575.2284915,
     "ast_hash": "32bd6403bd8371ba7fb7bf8260207a1c",
     "semantic_hash": ""
   },
@@ -4105,7 +4105,7 @@
     "semantic_hash": ""
   },
   "macOS/Tests/NativeInterfaceAuditTests.swift": {
-    "mtime": 1793569807.7407057,
+    "mtime": 1793705575.2257977,
     "ast_hash": "4ef779d6be691e87052e96c212a6f58a",
     "semantic_hash": ""
   },
@@ -5570,8 +5570,13 @@
     "semantic_hash": ""
   },
   "docs/quality/economics-stimulus-figures-review-2026-11-03.md": {
-    "mtime": 1793687324.9053721,
-    "ast_hash": "f488666fbfb583b8ff285fc831742a51",
+    "mtime": 1793687401.5729513,
+    "ast_hash": "4e0c0021fe78bfc36585531f3e7be189",
+    "semantic_hash": ""
+  },
+  "docs/quality/reference-readmission-and-runtime-audit-2026-11-03.md": {
+    "mtime": 1793706456.3667197,
+    "ast_hash": "8896aaf927a6fa91b5af8f28b865eda5",
     "semantic_hash": ""
   }
 }

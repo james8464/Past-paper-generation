@@ -1,6 +1,210 @@
 import pytest
 
 
+@pytest.fixture
+def owned_corpus(tmp_path):
+    import json
+    from hashlib import sha256
+
+    import pymupdf
+
+    output = tmp_path / "corpus"
+    output.mkdir()
+    with pymupdf.open() as pdf:
+        page = pdf.new_page()
+        page.insert_text((72, 72), "Owned fixture: jointure SQL et graphe.")
+        content = pdf.tobytes()
+    entry = {
+        "id": "owned-source",
+        "url": "https://eduscol.education.gouv.fr/owned-fixture.pdf",
+        "sha256": sha256(content).hexdigest(),
+        "category": "official_paper",
+        "authority": "Owned test fixture, not an official paper",
+        "session": 2026,
+        "centre": "Fixture",
+        "rights": "reference-only",
+        "split": "reference",
+    }
+    register = tmp_path / "register.json"
+
+    def write(entries):
+        register.write_text(json.dumps({"schema_version": 1, "documents": entries}))
+        for document in entries:
+            (output / f"{document['id']}.pdf").write_bytes(content)
+
+    return register, output, entry, write
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {"split": "holdout"},
+        {"rights": "not-reviewed"},
+        {"sha256": "0" * 64},
+        {"url": "https://example.org/not-approved.pdf"},
+    ],
+)
+def test_failed_readmission_removes_previous_retrievable_source(owned_corpus, changed):
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.france.corpus import ingest
+    from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
+
+    register, output, entry, write = owned_corpus
+    write([entry])
+    assert not ingest(register, output)["failures"]
+    with ReferenceIndex(output / "references.sqlite") as index:
+        assert (
+            index.retrieve(
+                NSI_CONTEXT, "nsi-2019", "jointure", categories=("official_paper",)
+            )[0].source_id
+            == entry["id"]
+        )
+
+    write([{**entry, **changed}])
+    report = ingest(register, output)
+    assert [failure["id"] for failure in report["failures"]] == [entry["id"]]
+    assert report["stale_index_sources_removed"] == [entry["id"]]
+    with ReferenceIndex(output / "references.sqlite") as index:
+        assert index.connection.execute("SELECT id FROM sources").fetchall() == []
+        assert index.connection.execute("SELECT id FROM chunks").fetchall() == []
+        with pytest.raises(EvidenceGap):
+            index.retrieve(
+                NSI_CONTEXT, "nsi-2019", "jointure", categories=("official_paper",)
+            )
+    assert (output / f"{entry['id']}.pdf").exists()
+
+    write([entry])
+    assert not ingest(register, output)["failures"]
+
+
+@pytest.mark.parametrize(
+    "changed",
+    [
+        {},
+        {"rights": "not-reviewed"},
+        {"sha256": "0" * 64},
+        {"url": "https://example.org/not-approved.pdf"},
+    ],
+)
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_failed_holdout_readmission_cannot_reenter_through_duplicate_alias(
+    owned_corpus, changed, reverse_order
+):
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.france.corpus import ingest
+    from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
+
+    register, output, entry, write = owned_corpus
+    alias = {**entry, "id": "zzz-alias"}
+    documents = [entry, alias]
+    write(list(reversed(documents)) if reverse_order else documents)
+    assert not ingest(register, output)["failures"]
+    documents = [{**entry, "split": "holdout", **changed}, alias]
+    write(list(reversed(documents)) if reverse_order else documents)
+    report = ingest(register, output)
+    assert [failure["id"] for failure in report["failures"]] == [entry["id"]]
+    assert report["holdout_quarantined_reference_ids"] == [alias["id"]]
+    assert report["unresolved_holdout_ids"] == []
+    assert report["documents"][0]["indexed"] is False
+    with (
+        ReferenceIndex(output / "references.sqlite") as index,
+        pytest.raises(EvidenceGap),
+    ):
+        index.retrieve(
+            NSI_CONTEXT, "nsi-2019", "jointure", categories=("official_paper",)
+        )
+
+    write([{**entry, "split": "holdout"}, {**entry, "id": "zzz-alias"}])
+    recovered = ingest(register, output)
+    assert recovered["failures"] == []
+    assert recovered["unresolved_holdout_ids"] == []
+    assert recovered["holdout_quarantined_reference_ids"] == ["zzz-alias"]
+
+
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_unresolved_holdout_identity_blocks_reference_retrieval(
+    owned_corpus, reverse_order
+):
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.france.corpus import ingest
+    from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
+
+    register, output, entry, write = owned_corpus
+    holdout = {**entry, "split": "holdout", "url": "https://example.org/rejected.pdf"}
+    holdout.pop("sha256")
+    documents = [holdout, {**entry, "id": "zzz-alias"}]
+    write(list(reversed(documents)) if reverse_order else documents)
+    report = ingest(register, output)
+    assert report["failures"]
+    assert report["unresolved_holdout_ids"] == [entry["id"]]
+    assert report["documents"][0]["indexed"] is False
+    with (
+        ReferenceIndex(output / "references.sqlite") as index,
+        pytest.raises(EvidenceGap),
+    ):
+        index.retrieve(
+            NSI_CONTEXT, "nsi-2019", "jointure", categories=("official_paper",)
+        )
+
+    write([{**entry, "split": "holdout"}, {**entry, "id": "zzz-alias"}])
+    recovered = ingest(register, output)
+    assert recovered["failures"] == []
+    assert recovered["unresolved_holdout_ids"] == []
+    assert recovered["holdout_quarantined_reference_ids"] == ["zzz-alias"]
+
+
+def test_known_holdout_quarantine_preserves_unrelated_valid_sources(owned_corpus):
+    from hashlib import sha256
+
+    import pymupdf
+
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.france.corpus import ingest
+    from Backend.Core.scoped_references import ReferenceIndex
+
+    register, output, entry, write = owned_corpus
+    write([entry])
+    assert not ingest(register, output)["failures"]
+    with pymupdf.open() as pdf:
+        pdf.new_page().insert_text(
+            (72, 72), "Independent owned fixture about recursion."
+        )
+        unrelated = pdf.tobytes()
+    other = {**entry, "id": "unrelated-source", "sha256": sha256(unrelated).hexdigest()}
+    write([{**entry, "split": "holdout"}, other])
+    (output / "unrelated-source.pdf").write_bytes(unrelated)
+    report = ingest(register, output)
+    assert [failure["id"] for failure in report["failures"]] == [entry["id"]]
+    with ReferenceIndex(output / "references.sqlite") as index:
+        hits = index.retrieve(
+            NSI_CONTEXT, "nsi-2019", "recursion", categories=("official_paper",)
+        )
+    assert [hit.source_id for hit in hits] == [other["id"]]
+    assert report["unresolved_holdout_ids"] == []
+    assert report["documents"][0]["indexed"] is True
+
+
+def test_conflicting_duplicate_id_cannot_keep_an_earlier_success_eligible(owned_corpus):
+    from Backend.Core.education_context import NSI_CONTEXT
+    from Backend.Core.france.corpus import ingest
+    from Backend.Core.scoped_references import EvidenceGap, ReferenceIndex
+
+    register, output, entry, write = owned_corpus
+    write([entry])
+    assert not ingest(register, output)["failures"]
+    write([entry, {**entry, "rights": "not-reviewed"}])
+    report = ingest(register, output)
+    assert [failure["id"] for failure in report["failures"]] == [entry["id"]]
+    assert report["documents"][0]["indexed"] is False
+    with (
+        ReferenceIndex(output / "references.sqlite") as index,
+        pytest.raises(EvidenceGap),
+    ):
+        index.retrieve(
+            NSI_CONTEXT, "nsi-2019", "jointure", categories=("official_paper",)
+        )
+
+
 def test_macos_download_uses_verified_system_transport_without_redirects(
     monkeypatch, tmp_path
 ):
