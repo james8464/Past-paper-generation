@@ -491,7 +491,7 @@ final class PDFDocumentAccessTests: XCTestCase {
         }
     }
 
-    private func defaults() -> UserDefaults { UserDefaults(suiteName: "PDFAccessTests-\(UUID().uuidString)")! }
+    private func defaults() -> UserDefaults { isolatedDefaults() }
 
     private func makePDF(name: String = "paper.pdf", pages: Int = 1) throws -> URL {
         let url = root.appendingPathComponent(name)
