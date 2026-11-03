@@ -27,6 +27,7 @@ from Backend.Core.model_review import (
     require_difficulty_review,
     validate_saved_difficulty_evidence,
 )
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 from Backend.Core.reference_demand import build_item_demand_target, profile_for
 from tests.support.edexcel import forced_part
 from tests.support.solver_responses import complete_solver_response
@@ -375,7 +376,7 @@ def test_standalone_source_and_numeric_candidate_inputs_use_the_same_projection(
     require_solution_matches_scheme(solution, projection.item)
     assert json.loads(projection.evidence[0].text) == projection.item["stimulus"]
     assert solution.solution_source == "deterministic-candidate-inputs"
-    assert solution.integrity_version == "closed-numeric-v2"
+    assert solution.integrity_version == NUMERIC_INTEGRITY_VERSION
 
 
 def test_genuinely_source_free_item_keeps_empty_evidence_and_empty_citations(

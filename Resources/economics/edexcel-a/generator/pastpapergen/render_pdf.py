@@ -2247,14 +2247,12 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
             "x_label": source.x_label,
             "unit": source.unit,
             "givens": {name: cell.printed() for name, cell in source.givens.items()},
-            "graph_params": question.graph_params.to_dict()
-            if question.graph_params.kind
-            else {},
+            "graph_params": question.graph_params.to_dict(),
         }
         description = (
             stimulus_diagrams.diagram_description(
                 source.kind,
-                question.graph_params.to_dict() if question.graph_params.kind else None,
+                question.graph_params.to_dict() or None,
             )
             if not source.rows and not source.values
             else None
@@ -2286,9 +2284,7 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
             }
         )
     elif kind in _ECONOMICS_GRAPH_KINDS:
-        data["graph_params"] = (
-            question.graph_params.to_dict() if question.graph_params.kind else {}
-        )
+        data["graph_params"] = question.graph_params.to_dict()
         data["diagram_kind"] = kind
         description = stimulus_diagrams.diagram_description(kind, data["graph_params"])
         if description is not None:
@@ -2441,7 +2437,7 @@ def _draw_economics_graph(
         pdf.setFont("Times-Italic", 10)
         pdf.drawString(x, y - 14, f"[{kind.replace('_', ' ')}]")
         return y - 30
-    params = graph_params.to_dict() if graph_params and graph_params.kind else None
+    params = graph_params.to_dict() if graph_params else None
     img_path = fn(params=params) if params else fn()
     _GRAPH_IMG_CACHE.append(img_path)
     graph_w = 360
@@ -2753,6 +2749,9 @@ def _pad_pdf_pages(pdf: canvas.Canvas, target_pages: int) -> None:
     while pdf.getPageNumber() < target_pages:
         pdf.showPage()
         _draw_crop_marks(pdf)
+        width, height = A4
+        pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
+        pdf.drawCentredString(width / 2, height / 2 - 6.4, "BLANK PAGE")
 
 
 def _extract_source_questions(section_questions: list) -> list:

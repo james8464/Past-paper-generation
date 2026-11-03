@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-NUMERIC_INTEGRITY_VERSION = "closed-numeric-v2"
+NUMERIC_INTEGRITY_VERSION = "closed-numeric-v3-exact-floating"
 NUMBER = r"[−+\-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 MONEY = rf"(?P<value>[−+\-]?£{NUMBER})"
 

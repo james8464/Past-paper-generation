@@ -11,6 +11,7 @@ from Backend.Core.model_review import (
     independent_review,
     require_independent_review,
 )
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 
 
 class ReviewClient:
@@ -427,7 +428,7 @@ def test_require_difficulty_review_rejects_over_demanded_item() -> None:
             specification={"topic": "networks"},
             canonical_solution={
                 "answer": "A complete answer",
-                "integrity_version": "closed-numeric-v2",
+                "integrity_version": NUMERIC_INTEGRITY_VERSION,
                 "steps": ["one", "two", "three", "four", "five", "six", "seven"],
             },
         )
@@ -485,7 +486,7 @@ def test_difficulty_review_receives_independent_solution_and_operation_contract(
         canonical_solution={
             "answer": "Judgement",
             "steps": ["a", "b", "c", "d"],
-            "integrity_version": "closed-numeric-v2",
+            "integrity_version": NUMERIC_INTEGRITY_VERSION,
         },
     )
 
@@ -540,7 +541,7 @@ def test_difficulty_review_makes_low_demand_operation_tokens_unambiguous() -> No
         canonical_solution={
             "answer": "B",
             "steps": ["identify the treatment"],
-            "integrity_version": "closed-numeric-v2",
+            "integrity_version": NUMERIC_INTEGRITY_VERSION,
         },
     )
 
@@ -592,7 +593,7 @@ def test_difficulty_review_makes_single_item_timing_units_unambiguous() -> None:
         canonical_solution={
             "answer": "Account",
             "steps": ["a", "b", "c"],
-            "integrity_version": "closed-numeric-v2",
+            "integrity_version": NUMERIC_INTEGRITY_VERSION,
         },
     )
 
@@ -651,7 +652,7 @@ def test_difficulty_review_surfaces_exact_target_checklist_before_payload() -> N
         canonical_solution={
             "answer": "Explanation",
             "steps": ["a", "b", "c"],
-            "integrity_version": "closed-numeric-v2",
+            "integrity_version": NUMERIC_INTEGRITY_VERSION,
         },
     )
 
@@ -869,7 +870,7 @@ def test_public_task_evidence_covers_authored_sql_without_mutating_model_observa
         canonical_solution={
             "answer": "SELECT Activity, COUNT(*) ...",
             "steps": ["construct the statement"],
-            "integrity_version": "closed-numeric-v2",
+            "integrity_version": NUMERIC_INTEGRITY_VERSION,
         },
     )
 

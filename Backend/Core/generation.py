@@ -41,6 +41,7 @@ from Backend.Core.generator_registry import GeneratorCapability, generator_capab
 from Backend.Core.layout_conformance import conform_generated_documents
 from Backend.Core.legacy_migration import environment_value, output_directory
 from Backend.Core.mlx_setup import MLXModelSetupRequired
+from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
 from Backend.Core.paths import REPO_ROOT, absolute_user_path
 from Backend.Core.pdf_validation import validate_pdf_for_release
 from Backend.Core.preview_presentation import validate_preview_pdf
@@ -458,7 +459,7 @@ def _write_package_manifest(
             "assessment_schema": "Backend.Core.exam_blueprints:v3",
             "assessment_package_schema": 1,
             "blueprint_version": capability.blueprint_version,
-            "prompt_version": f"Backend.Core.ai_assessment:v15-closed-numeric-v2:{ASSESSMENT_REVIEW_VERSION}",
+            "prompt_version": f"Backend.Core.ai_assessment:v15-{NUMERIC_INTEGRITY_VERSION}:{ASSESSMENT_REVIEW_VERSION}",
             "validator": "Backend.Core.pdf_validation:v2",
         },
         "outputs": {
