@@ -2599,8 +2599,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_mark_scheme_layout.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 562-line test file read through EOF; scoped row-wrapping regressions and existing full-content, typography and pagination checks reviewed. This does not attest the complete renderer or whole-project release readiness.",
+      "source_sha256": "ce6abcea2ec3a3163f8e46daac5ce9c0ee932dbc21bbd2e28e4201afc8e1d2aa",
+      "review_evidence": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
+      "review_evidence_sha256": "dd8b0882eee4ed2641d7785a38c074cf6aea7d0520ce26eb5e63c0f298664b2f"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_notes.py",
@@ -3138,6 +3141,12 @@
     },
     {
       "path": "docs/quality/edexcel-checkpoint-admission-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/edexcel-mark-scheme-cell-wrapping-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."

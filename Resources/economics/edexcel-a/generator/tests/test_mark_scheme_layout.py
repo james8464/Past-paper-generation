@@ -21,6 +21,92 @@ from Backend.Core.pdf_validation import validate_pdf_for_release
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.parametrize("mark_width", [54, 200])
+@pytest.mark.parametrize(
+    "answer",
+    [
+        "The only correct answer is B: Exports may become more expensive to overseas buyers",
+        "Wide wording with WWWW repeatedly explaining why overseas buyers pay more. "
+        * 3,
+        "Reject A: WWWW repeatedly explains why the proposed economic effect is not correct. "
+        * 3,
+        "● WWWW repeatedly explains the assessed economic reasoning and application. "
+        * 3,
+        "Knowledge 1, Application 1 " + "WWWW " * 20,
+        "W" * 160,
+    ],
+)
+def test_ms_answer_text_stays_inside_its_actual_cell(
+    tmp_path, monkeypatch, answer, mark_width
+):
+    import pymupdf as fitz
+    from pastpapergen import render_pdf as renderer
+    from reportlab.pdfgen import canvas
+
+    assert Path(renderer.__file__).resolve() == ROOT / "pastpapergen" / "render_pdf.py"
+    monkeypatch.setattr(renderer, "MS_MARK_W", mark_width)
+    path = tmp_path / "answer-cell.pdf"
+    pdf = canvas.Canvas(str(path), pagesize=renderer.MS_PAGE_SIZE)
+    renderer._draw_ms_row(pdf, 750, "1(a)", [answer], "(1)")
+    pdf.save()
+
+    with fitz.open(path) as document:
+        spans = [
+            span
+            for block in document[0].get_text("dict")["blocks"]
+            for line in block.get("lines", [])
+            for span in line["spans"]
+            if span["text"]
+            not in {"Question", "Number", "Answer", "Mark", "1(a)", "(1)"}
+        ]
+        assert spans
+        assert all(
+            span["bbox"][0] >= renderer.MS_LEFT + renderer.MS_NUMBER_W + 6
+            and span["bbox"][2] <= renderer.MS_RIGHT - mark_width
+            for span in spans
+        )
+        assert "".join("".join(span["text"].split()) for span in spans) == "".join(
+            answer.split()
+        )
+
+
+def test_ms_unprintably_narrow_answer_cell_refuses_instead_of_overflowing(monkeypatch):
+    from pastpapergen import render_pdf as renderer
+
+    monkeypatch.setattr(renderer, "MS_RIGHT", 242)
+    with pytest.raises(ValueError, match="glyph cannot fit"):
+        renderer._ms_row_height(["W"])
+
+
+def test_ms_row_height_accounts_for_every_drawn_font_metric_line(tmp_path):
+    from pastpapergen import render_pdf as renderer
+    from reportlab.pdfgen import canvas
+
+    answers = [
+        "The only correct answer is B: " + "WWW overseas buyers " * 12,
+        "",
+        "Reject A: " + "WWW alternative explanation " * 12,
+        "● " + "WWW developed reasoning " * 12,
+    ]
+    pdf = canvas.Canvas(str(tmp_path / "measured.pdf"), pagesize=renderer.MS_PAGE_SIZE)
+    draws = []
+    original = pdf.drawString
+
+    def record(x, y, text, *args, **kwargs):
+        if x >= renderer.MS_LEFT + renderer.MS_NUMBER_W + 6 and text not in {
+            "Answer",
+            "Mark",
+            "(1)",
+        }:
+            draws.append(y)
+        return original(x, y, text, *args, **kwargs)
+
+    pdf.drawString = record
+    bottom = renderer._draw_ms_row(pdf, 800, "1(a)", answers, "(1)")
+    assert bottom == 800 - renderer._ms_row_height(answers)
+    assert draws and min(draws) > bottom
+
+
 def test_mark_scheme_uses_reference_style_sections(tmp_path):
     syllabus = load_syllabus(Path("data/syllabus_seed.json"))
     config = load_builtin_paper_config("paper_1")
