@@ -605,6 +605,16 @@ def _count_score(first: int, second: int) -> float:
     return round(min(first, second) / max(first, second), 4)
 
 
+def _page_has_visible_marks(page: fitz.Page) -> bool:
+    # Bound raster memory while retaining native resolution on ordinary A4 pages.
+    # Any colour variation counts; this is not a contrast or content-quality gate.
+    scale = min(1.0, 1024 / max(page.rect.width, page.rect.height))
+    pixmap = page.get_pixmap(
+        matrix=fitz.Matrix(scale, scale), colorspace=fitz.csRGB, alpha=False
+    )
+    return not pixmap.is_unicolor
+
+
 # Fail closed on malformed, substituted, annotated, or low-resolution PDFs.
 def validate_pdf_for_release(
     path: Path,
@@ -699,7 +709,10 @@ def validate_pdf_for_release(
                 if operation in {"stroke-path", "fill-path", "fill-stroke-path"}
             )
             page_has_content = page_has_text or bool(image_info) or vector_objects > 0
-            intentional_blank = page_index in intentional_blank_pages
+            intentional_blank = (
+                page_index in intentional_blank_pages
+                and page_index == document.page_count
+            )
             if not page_has_content and not intentional_blank:
                 raise ValueError(f"{path.name} page {page_index} is unexpectedly empty")
             if (
@@ -712,6 +725,8 @@ def validate_pdf_for_release(
                     f"{path.name} page {page_index} has too little content to "
                     "represent a document page"
                 )
+            if not intentional_blank and not _page_has_visible_marks(page):
+                raise ValueError(f"{path.name} page {page_index} is visually empty")
             overlapping_pairs = _overlapping_text_pairs(text_spans)
             if overlapping_pairs:
                 raise ValueError(
