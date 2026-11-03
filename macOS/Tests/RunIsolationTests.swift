@@ -1390,6 +1390,57 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
+    func testBenchmarkZeroExitWithoutResultReportsFailureAndCanRetry() throws {
+        for hasPartialMetrics in [false, true] {
+            let backend = ControlledRunBackend()
+            let benchmark = BenchmarkCoordinator(backend: backend)
+            benchmark.start(generationIsRunning: false)
+            let run = try XCTUnwrap(backend.requests.first)
+            if hasPartialMetrics {
+                run.onEvent(.benchmarkMetric(BenchmarkMetric(name: "CPU Cores", value: 8, unit: "cores", detail: nil, score: nil)))
+            }
+            run.onFinish(.success(0))
+
+            XCTAssertFalse(benchmark.isRunning)
+            XCTAssertNil(benchmark.verdict)
+            XCTAssertNil(benchmark.progress)
+            XCTAssertEqual(benchmark.errorMessage, "The benchmark finished without a result. Try again.")
+            if let message = benchmark.errorMessage {
+                XCTAssertEqual(NativeInterfaceCopy.benchmarkText(message, locale: Locale(identifier: "en")), "The benchmark finished without a result. Try again.")
+                XCTAssertEqual(NativeInterfaceCopy.benchmarkText(message, locale: Locale(identifier: "fr")), "Le test s’est terminé sans résultat. Réessayez.")
+            }
+
+            benchmark.start(generationIsRunning: false)
+            XCTAssertTrue(benchmark.isRunning)
+            XCTAssertNil(benchmark.errorMessage)
+            XCTAssertEqual(backend.requests.count, 2)
+            XCTAssertTrue(benchmark.metrics.isEmpty)
+            run.onEvent(.benchmarkDone(BenchmarkVerdict(score: 0.9, verdict: "Old", detail: "Late result")))
+            run.onFinish(.success(0))
+            XCTAssertNil(benchmark.verdict)
+            XCTAssertTrue(benchmark.isRunning)
+            backend.requests[1].onEvent(.benchmarkDone(BenchmarkVerdict(score: 0.8, verdict: "Ready", detail: "Fixture result")))
+            backend.requests[1].onFinish(.success(0))
+            XCTAssertFalse(benchmark.isRunning)
+            XCTAssertEqual(benchmark.verdict?.score, 0.8)
+            XCTAssertNil(benchmark.errorMessage)
+        }
+    }
+
+    @MainActor
+    func testBenchmarkZeroExitPreservesReportedBackendError() throws {
+        let backend = ControlledRunBackend()
+        let benchmark = BenchmarkCoordinator(backend: backend)
+        benchmark.start(generationIsRunning: false)
+        let run = try XCTUnwrap(backend.requests.first)
+        run.onEvent(.error(message: "Fixture folder access failed.", code: "benchmark_failed"))
+        run.onFinish(.success(0))
+        XCTAssertFalse(benchmark.isRunning)
+        XCTAssertNil(benchmark.verdict)
+        XCTAssertEqual(benchmark.errorMessage, "Fixture folder access failed.")
+    }
+
+    @MainActor
     func testBenchmarkFailureRetainsItsActionableDetailAndCanRetry() throws {
         let backend = ControlledRunBackend()
         let benchmark = BenchmarkCoordinator(backend: backend)

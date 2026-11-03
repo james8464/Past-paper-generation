@@ -5119,6 +5119,16 @@
         }
       }
     },
+    "The benchmark finished without a result. Try again.": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le test s’est terminé sans résultat. Réessayez."
+          }
+        }
+      }
+    },
     "The benchmark returned an invalid score.": {
       "localizations": {
         "fr": {

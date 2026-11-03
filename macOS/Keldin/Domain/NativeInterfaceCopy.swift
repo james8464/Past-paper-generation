@@ -23,6 +23,7 @@ enum NativeInterfaceCopy {
         "Hardware check passed": "Hardware check passed",
         "This checks the Mac's hardware, not the selected model's speed or paper quality.": "This checks the Mac's hardware, not the selected model's speed or paper quality.",
         "The benchmark returned an invalid score.": "The benchmark returned an invalid score.",
+        "The benchmark finished without a result. Try again.": "The benchmark finished without a result. Try again.",
         "Benchmark failed": "Benchmark failed",
         "No samples were collected.": "No samples were collected.",
         "Ready for local generation": "Ready for local generation",
