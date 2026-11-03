@@ -108,6 +108,19 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_NAVIGATION_CHECK"] == "1" else {
             throw XCTSkip("Opt-in computer-control check; ordinary CI runs the deterministic navigation tests.")
         }
+        let standardPreferenceKeys = [
+            "interfaceLanguage", AppStorageKey.navigationColumnVisibility, AppStorageKey.settingsPane,
+        ]
+        let originalStandardPreferences = standardPreferenceKeys.map {
+            UserDefaults.standard.object(forKey: $0) as? NSObject
+        }
+        func assertStandardPreferencesUnchanged() {
+            for (key, originalValue) in zip(standardPreferenceKeys, originalStandardPreferences) {
+                XCTAssertEqual(UserDefaults.standard.object(forKey: key) as? NSObject, originalValue,
+                    "The isolated navigation fixture changed the standard preference: \(key)")
+            }
+        }
+        defer { assertStandardPreferencesUnchanged() }
         let suite = "Keldin.NavigationCheck.\(UUID().uuidString)"
         let defaults = try XCTUnwrap(UserDefaults(suiteName: suite))
         defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
@@ -151,7 +164,7 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
                 .environment(application.generationCoordinator)
             Button("Finish navigation check") { finished.fulfill() }
                 .padding(10)
-        }
+        }.defaultAppStorage(defaults)
         let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 1_000, height: 760),
             styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.isReleasedWhenClosed = false
@@ -160,6 +173,7 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         defer { window.close() }
+        assertStandardPreferencesUnchanged()
         print("KELDIN_INTERACTIVE_NAVIGATION_READY")
         print("RECENTS_CHECK: current-controlled.pdf must refuse removal; remove only older-controlled.pdf before finishing.")
         await fulfillment(of: [finished], timeout: 180)

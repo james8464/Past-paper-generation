@@ -85,6 +85,7 @@ def test_image_only_page_is_not_reported_as_empty(tmp_path: Path) -> None:
     pdf = canvas.Canvas(str(path), pagesize=(200, 200))
     pdf.setTitle("Image-only release validation")
     image = Image.new("RGB", (200, 200), "white")
+    image.paste("black", (60, 60, 140, 140))
     pdf.drawInlineImage(image, 64, 64, width=72, height=72)
     pdf.save()
 
@@ -114,6 +115,135 @@ def _release_canvas(path: Path) -> canvas.Canvas:
     pdf.setAuthor("Keldin")
     pdf.setSubject("Independent practice material")
     return pdf
+
+
+@pytest.mark.parametrize(
+    "kind", ["covered", "invisible", "off_white", "colour", "image"]
+)
+def test_visually_empty_pages_fail_despite_extractable_objects(tmp_path, kind):
+    path = tmp_path / f"empty-{kind}.pdf"
+    with fitz.open() as document:
+        page = document.new_page(width=200, height=200)
+        document.set_metadata(
+            {"title": "Owned fixture", "author": "Keldin", "subject": "Practice"}
+        )
+        if kind in {"covered", "invisible"}:
+            page.insert_text(
+                (20, 80),
+                "Extractable but invisible content",
+                fontsize=10,
+                render_mode=3 if kind == "invisible" else 0,
+            )
+        if kind == "covered":
+            page.draw_rect(page.rect, color=None, fill=(1, 1, 1), overlay=True)
+        elif kind in {"off_white", "colour"}:
+            colour = (0.97, 0.96, 0.94) if kind == "off_white" else (0.1, 0.3, 0.6)
+            for _ in range(3):
+                page.draw_rect(page.rect, color=None, fill=colour)
+        elif kind == "image":
+            image = fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 600, 600), False)
+            image.clear_with(255)
+            page.insert_image(page.rect, pixmap=image)
+        document.save(path)
+    original = path.read_bytes()
+    with pytest.raises(ValueError, match="page 1 is visually empty"):
+        validate_pdf_for_release(
+            path, subject="economics", paper_number="2", role="mark_scheme"
+        )
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize("kind", ["replacement", "vector", "faint", "colour_image"])
+def test_visible_marks_remain_valid_without_a_contrast_threshold(tmp_path, kind):
+    path = tmp_path / f"visible-{kind}.pdf"
+    with fitz.open() as document:
+        page = document.new_page(width=200, height=200)
+        document.set_metadata(
+            {"title": "Owned fixture", "author": "Keldin", "subject": "Practice"}
+        )
+        if kind == "replacement":
+            page.insert_text((20, 80), "Hidden old template content", fontsize=10)
+            page.draw_rect(page.rect, color=None, fill=(1, 1, 1), overlay=True)
+            page.insert_text((20, 120), "Visible replacement content", fontsize=10)
+        elif kind in {"vector", "faint"}:
+            for y in (60, 100, 140):
+                page.draw_line(
+                    (20, y),
+                    (180, y),
+                    color=(0.97,) * 3 if kind == "faint" else (0,) * 3,
+                    width=0.25,
+                )
+        else:
+            image = fitz.Pixmap(fitz.csRGB, fitz.IRect(0, 0, 600, 600), False)
+            image.clear_with(255)
+            image.set_rect(fitz.IRect(100, 100, 500, 500), (200, 40, 80))
+            page.insert_image(page.rect, pixmap=image)
+        document.save(path)
+    original = path.read_bytes()
+    assert (
+        validate_pdf_for_release(
+            path, subject="economics", paper_number="2", role="mark_scheme"
+        )["pages"]
+        == 1
+    )
+    assert path.read_bytes() == original
+
+
+def test_explicit_intentional_blank_contract_remains_valid(tmp_path):
+    path = tmp_path / "intentional-blank.pdf"
+    with fitz.open() as document:
+        document.set_metadata(
+            {"title": "Owned fixture", "author": "Keldin", "subject": "Practice"}
+        )
+        for _ in range(35):
+            document.new_page(width=200, height=200).insert_text(
+                (20, 80), "Visible assessed content"
+            )
+        document.new_page(width=200, height=200)
+        document.save(path)
+    report = validate_pdf_for_release(
+        path, subject="economics", paper_number="2", role="mark_scheme"
+    )
+    assert report["layout_metrics"]["pages"][-1]["intentional_blank"] is True
+
+
+def test_intentional_blank_contract_does_not_exempt_an_interior_leaf(tmp_path):
+    path = tmp_path / "interior-blank.pdf"
+    with fitz.open() as document:
+        document.set_metadata(
+            {"title": "Owned fixture", "author": "Keldin", "subject": "Practice"}
+        )
+        for index in range(37):
+            page = document.new_page(width=200, height=200)
+            if index != 35:
+                page.insert_text((20, 80), "Visible assessed content")
+        document.save(path)
+    with pytest.raises(ValueError, match="page 36 is unexpectedly empty"):
+        validate_pdf_for_release(
+            path, subject="economics", paper_number="2", role="mark_scheme"
+        )
+
+
+def test_visible_mark_raster_has_a_bounded_pixel_budget(monkeypatch):
+    from Backend.Core.pdf_validation import _page_has_visible_marks
+
+    rendered = []
+    get_pixmap = fitz.Page.get_pixmap
+
+    def capture(page, **kwargs):
+        pixmap = get_pixmap(page, **kwargs)
+        rendered.append((pixmap.width, pixmap.height, pixmap.n))
+        return pixmap
+
+    monkeypatch.setattr(fitz.Page, "get_pixmap", capture)
+    with fitz.open() as document:
+        page = document.new_page(width=2000, height=4000)
+        page.insert_text((200, 500), "Visible content", fontsize=100)
+        assert _page_has_visible_marks(page)
+    width, height, channels = rendered[0]
+    assert max(width, height) <= 1025
+    assert channels == 3
+    assert width * height * channels <= 1025 * 1025 * 3
 
 
 def test_duplicate_text_at_the_same_position_is_rejected(tmp_path: Path) -> None:
