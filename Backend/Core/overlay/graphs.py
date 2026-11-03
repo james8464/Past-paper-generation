@@ -386,28 +386,47 @@ def labour_market_diagram(
     employment: float = 100,
     params: dict[str, object] | None = None,
 ) -> str:
-    wage = _gp(params, "wage", wage)
-    employment = _gp(params, "employment", employment)
-    ax = _ax()
-    q_max = 200
-    y_max = 28
-    xs = np.linspace(0, q_max, 200)
-    demand_intercept = wage + (employment * (wage / employment))
-    supply_intercept = wage - (employment * (wage * 0.5 / employment))
-    dL = demand_intercept - xs * (demand_intercept / q_max)
-    sL = supply_intercept + xs * ((y_max - supply_intercept) / q_max)
+    def positive_parameter(name, default):
+        value = params.get(name, default) if params is not None else default
+        if isinstance(value, bool):
+            raise ValueError(f"{name} must be finite and positive")
+        try:
+            number = float(value)
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"{name} must be finite and positive") from error
+        if not np.isfinite(number) or number <= 0 or not np.isfinite(number * 2.1):
+            raise ValueError(f"{name} must be finite and positive")
+        return number
+
+    wage = positive_parameter("wage", wage)
+    employment = positive_parameter("employment", employment)
+    if not np.isfinite(wage / employment) or wage / employment == 0:
+        raise ValueError("Labour parameters must yield a finite and positive slope")
+    q_max = employment * 2
+    y_max = wage * 2
+    relative = np.linspace(0, 2, 200)
+    xs = relative * employment
+    dL = (2 - relative) * wage
+    sL = (0.5 + 0.5 * relative) * wage
+    if not all(np.isfinite(values).all() for values in (xs, dL, sL)):
+        raise ValueError("Labour parameters must yield finite and positive geometry")
     dL = np.clip(dL, 0, y_max)
     sL = np.clip(sL, 0, y_max)
 
+    ax = _ax()
     ax.plot(xs, dL, "k-", label="DL")
     ax.plot(xs, sL, "k-", label="SL")
     _eq_point(ax, employment, wage, q_max, y_max)
-    _label(ax, "We", employment + 8, wage - 1, fontsize=8)
-    _label(ax, "Le", employment, -1.2, fontsize=8)
+    ax.annotate("We", (0, wage), xytext=(8, 10), textcoords="offset points", fontsize=8)
+    ax.annotate(
+        "Le", (employment, 0), xytext=(8, 10), textcoords="offset points", fontsize=8
+    )
     ax.set_xlim(0, q_max)
     ax.set_ylim(0, y_max)
     ax.set_xlabel("Quantity of labour")
     ax.set_ylabel("Wage rate (\u00a3)")
+    ax.set_xticks([0, employment, q_max], labels=["0", f"{employment:g}", f"{q_max:g}"])
+    ax.set_yticks([0, wage, y_max], labels=["0", f"{wage:g}", f"{y_max:g}"])
     _arrow_axes(ax, q_max, y_max)
     ax.legend(loc="upper right")
     return _save()
