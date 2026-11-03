@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import os
 import tempfile
 
@@ -130,6 +131,61 @@ def _gp_str(params: dict[str, object] | None, key: str, default: str) -> str:
     return value
 
 
+def _positive_scale(value: object, name: str) -> float:
+    if isinstance(value, bool):
+        raise ValueError(f"{name} must be finite and positive")
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError) as error:
+        raise ValueError(f"{name} must be finite and positive") from error
+    if not math.isfinite(number) or number <= 0:
+        raise ValueError(f"{name} must be finite and positive")
+    return number
+
+
+def _market_scales(params, price, quantity):
+    values = params or {}
+    price = _positive_scale(values.get("eq_price", price), "eq_price")
+    quantity = _positive_scale(
+        values.get("eq_quantity", values.get("eq_output", quantity)), "eq_quantity"
+    )
+    if (
+        "eq_output" in values
+        and _positive_scale(values["eq_output"], "eq_output") != quantity
+    ):
+        raise ValueError("Conflicting equilibrium output and quantity")
+    if not all(
+        math.isfinite(value) and value > 0
+        for value in (price * 8, quantity * 8, price / quantity, quantity / price)
+    ):
+        raise ValueError("Diagram scales exceed representable geometry")
+    return price, quantity
+
+
+def _macro_curves(price, output, *, keynesian, separate_keynesian=False):
+    # Include the stated equilibrium itself, not a nearby sampled grid point.
+    relative = np.unique(np.append(np.linspace(0, 1.8, 400), 1.0))
+    if keynesian:
+        first, second = (40 / 110, 100 / 110) if separate_keynesian else (0.3, 0.9)
+        initial, low, middle, steep = (
+            (0.25, 0.4, 0.06, 2.8) if separate_keynesian else (0.3, 0.5, 0.08, 2.5)
+        )
+
+        def supply(ratio):
+            return (
+                initial
+                + low * np.minimum(ratio, first)
+                + middle * np.clip(ratio - first, 0, second - first)
+                + steep * np.maximum(ratio - second, 0)
+            )
+
+        as_y = price * supply(relative) / supply(1.0)
+    else:
+        as_y = price * (0.3 + 0.7 * relative)
+    ad = price * (1.8 - 0.8 * relative)
+    return relative * output, ad, as_y
+
+
 def mr_mc_ac_diagram(
     title: str = "Cost and revenue curves",
     mc_peak: float = 150,
@@ -256,29 +312,14 @@ def ad_as_diagram(
     as_type: str = "keynesian",
     params: dict[str, object] | None = None,
 ) -> str:
-    eq_price = _gp(params, "eq_price", eq_price)
-    eq_output = _gp(params, "eq_output", eq_output)
-    as_type = _gp_str(params, "kind", as_type)
+    eq_price, eq_output = _market_scales(params, eq_price, eq_output)
+    # Public kind names select a diagram, not its supply-curve shape.
+    if params and params.get("kind") in {"keynesian", "classical"}:
+        as_type = str(params["kind"])
+    xs, ad, as_y = _macro_curves(eq_price, eq_output, keynesian=as_type == "keynesian")
     ax = _ax()
-    q_max = 180
-    y_max = 210
-    xs = np.linspace(0, q_max, 300)
-    ad = 180 - xs * 0.8
-    if as_type == "keynesian":
-        y1 = 30 + 30 * 0.5
-        y2 = y1 + 60 * 0.08
-        as_y = np.piecewise(
-            xs,
-            [xs < 30, (xs >= 30) & (xs < 90), xs >= 90],
-            [
-                lambda x: 30 + x * 0.5,
-                lambda x: y1 + (x - 30) * 0.08,
-                lambda x: y2 + (x - 90) * 2.5,
-            ],
-        )
-        as_y = np.minimum(as_y, 220)
-    else:
-        as_y = 30 + xs * 0.7
+    q_max = 1.8 * eq_output
+    y_max = 2.1 * eq_price
 
     ax.plot(xs, ad, "k-", label="AD")
     ax.plot(xs, as_y, "k-", label="AS")
@@ -288,7 +329,7 @@ def ad_as_diagram(
     ax.set_xlabel("Real GDP")
     ax.set_ylabel("Price Level")
     _arrow_axes(ax, q_max, y_max)
-    ax.legend(loc="upper right")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.08), ncol=2)
     return _save()
 
 
@@ -511,13 +552,15 @@ def externality_diagram(
 
 def ppf_diagram(
     title: str = "Production Possibility Frontier",
+    params: dict[str, object] | None = None,
 ) -> str:
     ax = _ax()
     xs = np.linspace(0, 100, 200)
     ppf = 100 * (1 - (xs / 100) ** 0.6)
     ax.plot(xs, ppf, "k-")
-    ax.plot(30, ppf[30], "ko", markersize=3.5, zorder=5)
-    _label(ax, "A", 30 - 4, ppf[30] - 3, fontsize=9)
+    point_y = 100 * (1 - (30 / 100) ** 0.6)
+    ax.plot(30, point_y, "ko", markersize=3.5, zorder=5)
+    _label(ax, "A", 30 - 4, point_y - 3, fontsize=9)
     ax.set_xlim(0, 105)
     ax.set_ylim(0, 105)
     ax.set_xlabel("Good X")
@@ -692,56 +735,48 @@ def tax_subsidy_diagram(
     tax_amount: float = 15,
     params: dict[str, object] | None = None,
 ) -> str:
-    kind = _gp_str(params, "kind", kind)
-    tax_amount = _gp(params, "tax_amount", tax_amount)
+    requested_kind = _gp_str(params, "kind", kind)
+    if requested_kind in {"tax", "subsidy"}:
+        kind = requested_kind
+    if kind not in {"tax", "subsidy"}:
+        raise ValueError("Expected a tax or subsidy")
+    p_eq, q_eq = _market_scales(params, 60, 100)
+    tax_amount = _positive_scale(
+        (params or {}).get("tax_amount", tax_amount), "tax_amount"
+    )
+    # Positive post-intervention output and producer/consumer prices are required.
+    if tax_amount >= 0.9 * p_eq:
+        raise ValueError("Intervention exceeds this illustrative market's range")
+    relative_change = tax_amount / (1.5 * p_eq)
+    q_new = q_eq * (1 - relative_change if kind == "tax" else 1 + relative_change)
+    p_new = p_eq * (1 - (q_new / q_eq - 1) * (2 / 3))
+    p_producer = p_new + (tax_amount if kind == "subsidy" else -tax_amount)
+    xs = np.unique(np.append(np.linspace(0, 1.8 * q_eq, 300), [q_eq, q_new]))
+    demand = p_eq * (1 + (1 - xs / q_eq) * (2 / 3))
+    supply = p_eq * (1 + (xs / q_eq - 1) * (5 / 6))
+    supply_shifted = supply + (tax_amount if kind == "tax" else -tax_amount)
     ax = _ax()
-    q_max = 120
-    y_max = 115
-    xs = np.linspace(0, q_max, 200)
-
-    demand = 100 - xs * 0.4
-    supply = 10 + xs * 0.5
-    eq_idx = np.argmin(np.abs(demand - supply))
-    q_eq, p_eq = xs[eq_idx], demand[eq_idx]
-
-    if kind == "tax":
-        supply_shifted = supply + tax_amount
-        new_eq_idx = np.argmin(np.abs(demand - supply_shifted))
-        q_new, p_new = xs[new_eq_idx], demand[new_eq_idx]
-        p_supply = supply[new_eq_idx]
-
-        ax.plot(xs, supply_shifted, "k-", label="S1 (after tax)")
-        ax.fill(
-            [q_new, q_new, q_eq, q_eq],
-            [p_supply, p_new, p_eq, p_eq],
-            alpha=0.08,
-            color="gray",
-            label="Tax revenue",
-        )
-        dwl_x = [q_new, q_eq, q_new]
-        dwl_y = [supply[new_eq_idx], demand[eq_idx], demand[new_eq_idx]]
-        ax.fill(dwl_x, dwl_y, alpha=0.15, color="gray", label="DWL", hatch="////")
-    else:
-        supply_shifted = supply - tax_amount
-        supply_shifted = np.clip(supply_shifted, 0, y_max)
-        new_eq_idx = np.argmin(np.abs(demand - supply_shifted))
-        q_new, p_new = xs[new_eq_idx], demand[new_eq_idx]
-        p_supply_new = supply_shifted[new_eq_idx]
-
-        ax.plot(xs, supply_shifted, "k-", label="S1 (after subsidy)")
-        ax.fill(
-            [q_new, q_new, q_eq, q_new],
-            [p_supply_new, p_new, p_eq, p_supply_new],
-            alpha=0.08,
-            color="gray",
-            label="Subsidy cost",
-        )
-        dwl_x = [q_new, q_new, q_eq]
-        dwl_y = [demand[new_eq_idx], p_supply_new, p_eq]
-        ax.fill(dwl_x, dwl_y, alpha=0.15, color="gray", label="DWL", hatch="////")
+    q_max = 1.8 * q_eq
+    y_max = 2.1 * p_eq
+    ax.plot(xs, supply_shifted, "k-", label=f"S1 (after {kind})")
+    ax.fill(
+        [0, q_new, q_new, 0],
+        [p_producer, p_producer, p_new, p_new],
+        alpha=0.08,
+        color="gray",
+        label="Tax revenue" if kind == "tax" else "Subsidy cost",
+    )
+    ax.fill(
+        [q_new, q_new, q_eq],
+        [p_new, p_producer, p_eq],
+        alpha=0.15,
+        color="gray",
+        label="DWL",
+        hatch="////",
+    )
 
     ax.plot(xs, demand, "k-", label="D")
-    ax.plot(xs[: eq_idx + 10], supply[: eq_idx + 10], "k--", label="S0", linewidth=1.2)
+    ax.plot(xs, supply, "k--", label="S0", linewidth=1.2)
 
     ax.plot(q_new, p_new, "ko", markersize=3, zorder=5)
     ax.plot(q_eq, p_eq, "ko", markersize=2.5, zorder=4, alpha=0.5)
@@ -751,7 +786,7 @@ def tax_subsidy_diagram(
     ax.set_xlabel("Quantity")
     ax.set_ylabel("Price")
     _arrow_axes(ax, q_max, y_max)
-    ax.legend(loc="upper right", fontsize=7)
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.08), ncol=3, fontsize=7)
     return _save()
 
 
@@ -828,33 +863,13 @@ def keynesian_ad_as_diagram(
     eq_output: float = 110,
     params: dict[str, object] | None = None,
 ) -> str:
-    eq_price = _gp(params, "eq_price", eq_price)
-    eq_output = _gp(params, "eq_output", eq_output)
-    ax = _ax()
-    q_max = 180
-    y_max = 215
-    xs = np.linspace(0, q_max, 400)
-
-    flat_end = 40
-    middle_end = 100
-
-    as_y = np.piecewise(
-        xs,
-        [xs < flat_end, (xs >= flat_end) & (xs < middle_end), xs >= middle_end],
-        [
-            lambda x: 25 + x * 0.4,
-            lambda x: 25 + flat_end * 0.4 + (x - flat_end) * 0.06,
-            lambda x: (
-                25
-                + flat_end * 0.4
-                + (middle_end - flat_end) * 0.06
-                + (x - middle_end) * 2.8
-            ),
-        ],
+    eq_price, eq_output = _market_scales(params, eq_price, eq_output)
+    xs, ad, as_y = _macro_curves(
+        eq_price, eq_output, keynesian=True, separate_keynesian=True
     )
-    as_y = np.minimum(as_y, y_max + 10)
-
-    ad = 190 - xs * 0.7
+    ax = _ax()
+    q_max = 1.8 * eq_output
+    y_max = 2.1 * eq_price
 
     ax.plot(xs, ad, "k-", label="AD")
     ax.plot(xs, as_y, "k-", label="AS (Keynesian)")
@@ -864,8 +879,7 @@ def keynesian_ad_as_diagram(
     ax.set_xlabel("Real GDP")
     ax.set_ylabel("Price Level")
     _arrow_axes(ax, q_max, y_max)
-    ax.legend(fontsize=7.5, loc="upper right")
-    _label(ax, "AD", q_max * 0.8, ad[int(q_max * 0.8)], fontsize=8)
+    ax.legend(fontsize=7.5, loc="lower center", bbox_to_anchor=(0.5, 1.08), ncol=2)
     return _save()
 
 

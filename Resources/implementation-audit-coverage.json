@@ -2497,11 +2497,8 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete 196-line EOF review of adapter wiring, artifact roles, seed/checkpoint identity and CLI arguments; dependency review scoped, not full-file certification.",
-      "source_sha256": "13e65d063b577fa32e108169c7d101d3a8a8b2ec4cb290085ab93637cc1164cb",
-      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
-      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py",
@@ -2710,11 +2707,8 @@
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_stimulus_diagrams.py",
       "classification": "test",
-      "status": "reviewed",
-      "reason": "Complete 468-line EOF review of actual dispatch geometry, public source projection, cache identity, finite refusal and collision controls; targeted execution recorded in evidence.",
-      "source_sha256": "b230e3cbccd105fbdae7106e72ae8f6eacb45a301f969f0c5df6f694aae62443",
-      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
-      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_syllabus.py",
@@ -3660,6 +3654,12 @@
     },
     {
       "path": "docs/quality/macos-backend-runner-capacity-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/macro-equilibrium-and-fiscal-geometry-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7044,6 +7044,12 @@
       "source_sha256": "614b9a02b22f60baefebc2acff57e4bb215107f02734f9a2fc3bc42bf35214bd",
       "review_evidence": "docs/quality/mlx-cache-preflight-review-2026-11-03.md",
       "review_evidence_sha256": "8f4fa032862aac34bb72fc7878df447972c405784b689c50cbcc1cec21acb5db"
+    },
+    {
+      "path": "tests/test_macro_graph_geometry.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_mark_scheme_enrichment.py",
