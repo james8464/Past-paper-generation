@@ -463,8 +463,11 @@
     {
       "path": "Backend/Core/family_adapter.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete EOF review of preview/live, checkpoint identity and rendering contracts; selective dependencies and release limits remain explicit.",
+      "source_sha256": "21bf28c5e4a9eb3e98fccfa9cc137184f3ce2b984157576791c6b3914dda13ed",
+      "review_evidence": "docs/quality/publication-cleanup-cancellation-review-2026-11-03.md",
+      "review_evidence_sha256": "aeb3ad1eb96869614b3f0f398f99d55952f6d59498185768d35ba513ba51e539"
     },
     {
       "path": "Backend/Core/family_contracts.py",
@@ -1237,8 +1240,11 @@
     {
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete baseline EOF and entire final delta review; owned postcommit cancellation reproduced and repaired with preserved precommit rollback controls.",
+      "source_sha256": "e674024ff3d2acbc2454f0a0cf2b284341e4057f80a50d75ef485287b15fb0a7",
+      "review_evidence": "docs/quality/publication-cleanup-cancellation-review-2026-11-03.md",
+      "review_evidence_sha256": "aeb3ad1eb96869614b3f0f398f99d55952f6d59498185768d35ba513ba51e539"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -3830,6 +3836,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/publication-cleanup-cancellation-review-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/python-formatter-boundaries-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5792,10 +5804,10 @@
       "path": "tests/test_cli_publication_recovery.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
-      "source_sha256": "76fac91fa810cecf6ae98ed6d5a8327f9424a1fd46d63ef36cd7e14897c244f2",
-      "review_evidence": "docs/quality/nov2-cli-and-cs-publication-review-2026-11-02.md",
-      "review_evidence_sha256": "97e8cd949c71fe95684e0f9c960e0eae3ad23a191ad227e7c820505244702e46"
+      "reason": "Complete baseline EOF and final regression delta review; preserves rollback, target refusal and unrelated-file controls and adds real-handler postcommit protocol proof.",
+      "source_sha256": "8c9ae27c4d3c015677d59732e8042c496c0428961fe26c422ad3ecc783513c0a",
+      "review_evidence": "docs/quality/publication-cleanup-cancellation-review-2026-11-03.md",
+      "review_evidence_sha256": "aeb3ad1eb96869614b3f0f398f99d55952f6d59498185768d35ba513ba51e539"
     },
     {
       "path": "tests/test_closed_response_integrity.py",

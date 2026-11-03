@@ -501,6 +501,7 @@ def _publish_document_set(paths: dict[str, Path], output_dir: Path) -> dict[str,
     backups: dict[Path, Path] = {}
     attempted: list[Path] = []
     retain_recovery = False
+    committed = False
     try:
         for destination in destinations.values():
             if destination.exists():
@@ -530,10 +531,19 @@ def _publish_document_set(paths: dict[str, Path], output_dir: Path) -> dict[str,
                     f"Recovery copies remain in {recovery}. Original error: {error}"
                 ) from error
             raise
+        committed = True
         return published
     finally:
         if not retain_recovery:
-            shutil.rmtree(recovery, ignore_errors=True)
+            try:
+                shutil.rmtree(recovery, ignore_errors=True)
+            except GenerationCancelled:
+                if not committed:
+                    raise
+                emit_progress(
+                    f"The paper was saved. Backup cleanup was interrupted; recovery copies may remain in {recovery}.",
+                    stage="publication_cleanup",
+                )
 
 
 def _sha256(path: Path) -> str:
