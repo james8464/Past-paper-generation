@@ -940,11 +940,8 @@
     {
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
-      "source_sha256": "085ef973e8b8463ce9b7d1f9d2ffc54822138c5dd86c3897f03264497d418a00",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1244,10 +1241,10 @@
       "path": "Backend/Core/france/verification.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review and final delta checks recorded; remaining graph corner case is explicit in the evidence.",
-      "source_sha256": "1d7cb5e3c9e4a8ebd049bb810c5eaf566f5628b6e1520eeee1fd489f5546b50c",
-      "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
-      "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
+      "reason": "Complete prior verifier EOF plus every trace-binding and printed-vertex delta reviewed by release_gap_audit and root; bounded interpreter, SQL and graph contracts. Source-bound review is not general Python or full-paper qualification.",
+      "source_sha256": "8326ae4c0b16be7d180eb4409fb5168a52bf5951209725b4b86c619b8997e1e2",
+      "review_evidence": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
+      "review_evidence_sha256": "f18da1e2b4c90f105600ba37b53c082fbe2077844f8ef66ca63ccdff014cb238"
     },
     {
       "path": "Backend/Core/france/whole_case_pdf.py",
@@ -1303,8 +1300,11 @@
     {
       "path": "Backend/Core/independent_solver.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "release_gap_audit read all 1309 lines through EOF: answer-key projection, response/citation admission, deterministic recomputation, scheme reconciliation and cancellation. Dependencies/tests selective; no complete-paper or model reliability certification.",
+      "source_sha256": "2f426a9fd6bcfecdfb9c26d8e2957be313742b6a8964d516fc7779a778b9a5b3",
+      "review_evidence": "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md",
+      "review_evidence_sha256": "c7542516acd3d96a737e3497a9b376ab68965c8c8b5d0d8183d71f74a1eaf465"
     },
     {
       "path": "Backend/Core/json_client.py",
@@ -1387,8 +1387,11 @@
     {
       "path": "Backend/Core/mlx_setup.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "quality_status_review read complete prior 471-line EOF and all subsequent deltas to current 486 lines: cached preparation, download headroom, platform, revision, local-only and frozen/runtime protections. No real low-disk model execution claimed.",
+      "source_sha256": "8f6035fd9419b89c876a2b837c5b428eb3a217d0b7075b4fb8fa1dba16eaaac4",
+      "review_evidence": "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md",
+      "review_evidence_sha256": "c7542516acd3d96a737e3497a9b376ab68965c8c8b5d0d8183d71f74a1eaf465"
     },
     {
       "path": "Backend/Core/model_recommendations.py",
@@ -3128,6 +3131,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/calibration-tooling-boundaries-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3249,6 +3258,12 @@
     },
     {
       "path": "docs/quality/french-framework-migration-ledger.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6503,6 +6518,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_isolated_graph_vertex.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "New regression file read through EOF by release_gap_audit; root checked final precise schema-exception assertion. Covers isolated/ordinary paths, foreign and disconnected vertices, source binding and historical unbound controls.",
+      "source_sha256": "75df4f5b0945caf1b98c6c1061fee9c5234562dca42ed6a478110876b9143a83",
+      "review_evidence": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
+      "review_evidence_sha256": "f18da1e2b4c90f105600ba37b53c082fbe2077844f8ef66ca63ccdff014cb238"
+    },
+    {
       "path": "tests/test_french_llm_pdf.py",
       "classification": "test",
       "status": "pending",
@@ -7056,6 +7080,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_mlx_cached_storage.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "quality_status_review read all 103 lines through EOF; root ran real validator with mocked loader/runtime/storage. Eight cases cover local cached success, download/runtime headroom, platform guards, missing cache and app branding without model/network calls.",
+      "source_sha256": "0f121a353238966377c44e8823239784de3f497f9e2f12a4c6ca52ef90f31043",
+      "review_evidence": "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md",
+      "review_evidence_sha256": "c7542516acd3d96a737e3497a9b376ab68965c8c8b5d0d8183d71f74a1eaf465"
     },
     {
       "path": "tests/test_mlx_download_info.py",

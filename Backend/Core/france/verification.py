@@ -248,11 +248,24 @@ def _sql(contract, *, sql_materials=None):
         return [list(row) for row in result]
 
 
-def _shortest_path(contract):
+def _shortest_path(contract, *, graph_nodes=None):
     edges = contract["edges"]
     if not isinstance(edges, list) or len(edges) > 256:
         raise ValueError("Graphe hors limites")
     graph = {}
+    if graph_nodes is not None:
+        if (
+            not isinstance(graph_nodes, (list, tuple))
+            or not 2 <= len(graph_nodes) <= 12
+            or any(
+                not isinstance(node, str) or not node.strip() or len(node) > 24
+                for node in graph_nodes
+            )
+            or len(set(graph_nodes)) != len(graph_nodes)
+        ):
+            raise ValueError("Sommets du graphe imprimé invalides")
+        # Source-bound vertices include isolated nodes, unlike edge endpoints.
+        graph = {node: [] for node in graph_nodes}
     for start, end, weight in edges:
         if (
             not isinstance(start, str)
@@ -261,6 +274,8 @@ def _shortest_path(contract):
             or not 0 <= weight <= 10**6
         ):
             raise ValueError("Arête invalide")
+        if graph_nodes is not None and (start not in graph or end not in graph):
+            raise ValueError("Arête hors du graphe imprimé")
         graph.setdefault(start, []).append((end, weight))
         graph.setdefault(end, [])
         if contract.get("directed") is False:
@@ -302,7 +317,7 @@ def _same_typed_value(actual, expected) -> bool:
     return actual == expected
 
 
-def verify_contract(contract: dict, *, sql_materials=None) -> dict:
+def verify_contract(contract: dict, *, sql_materials=None, graph_nodes=None) -> dict:
     kind = contract.get("kind")
     if kind not in {
         "binary",
@@ -575,7 +590,7 @@ def verify_contract(contract: dict, *, sql_materials=None) -> dict:
         elif kind == "python_trace":
             actual = _trace(contract["code"], contract["variable"])
         else:
-            actual = _shortest_path(contract)
+            actual = _shortest_path(contract, graph_nodes=graph_nodes)
         passed = _same_typed_value(actual, contract["expected"])
         return {
             "state": "passed" if passed else "failed",

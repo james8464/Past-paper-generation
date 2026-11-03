@@ -77,6 +77,7 @@ def validate_mlx_setup_environment(
     python_version: tuple[int, int] | None = None,
     machine: str | None = None,
     free_bytes: int | None = None,
+    require_download_space: bool = True,
 ) -> None:
 
     version = python_version or (sys.version_info.major, sys.version_info.minor)
@@ -88,9 +89,11 @@ def validate_mlx_setup_environment(
         )
     if not SUPPORTED_PYTHON_MIN <= version <= SUPPORTED_PYTHON_MAX:
         raise MLXSetupError(
-            "Apple MLX setup requires Python 3.10 through 3.13 in Paper "
-            "Creator’s managed environment. Reinstall or update the app, then try again."
+            "Apple MLX setup requires Python 3.10 through 3.13 in Keldin's "
+            "managed environment. Reinstall or update the app, then try again."
         )
+    if not require_download_space:
+        return
     available = free_bytes if free_bytes is not None else _available_cache_bytes()
     if available < MINIMUM_MLX_FREE_BYTES:
         available_gb = max(0, int(available / 1024**3))
@@ -431,7 +434,19 @@ def handle_setup_mlx(args: argparse.Namespace) -> int:
         revision = getattr(args, "revision", None)
         local_only = getattr(args, "local_only", False)
         _validate_setup_binding(revision, local_only)
-        validate_mlx_setup_environment()
+        runtime_available = mlx_runtime_available
+        if local_only:
+            validate_mlx_setup_environment(require_download_space=False)
+            runtime_ready = mlx_runtime_available()
+
+            def cached_runtime_available() -> bool:
+                return runtime_ready
+
+            runtime_available = cached_runtime_available
+            if not runtime_ready:
+                validate_mlx_setup_environment()
+        else:
+            validate_mlx_setup_environment()
 
         def loader(model: str) -> None:
             if revision is None and not local_only:
@@ -441,7 +456,7 @@ def handle_setup_mlx(args: argparse.Namespace) -> int:
 
         ensure_mlx_ready(
             args.model,
-            runtime_available=mlx_runtime_available,
+            runtime_available=runtime_available,
             install_runtime=install_mlx_runtime,
             load_model=loader,
             frozen=bool(getattr(sys, "frozen", False)),

@@ -215,8 +215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/verification.py": {
-    "mtime": 1793713123.4664438,
-    "ast_hash": "c0f6a20d0af09673cdcdb294d86cd708",
+    "mtime": 1793715807.607954,
+    "ast_hash": "33cee69d601fc9461f1fd8dd08dc87a9",
     "semantic_hash": ""
   },
   "Backend/Core/generation.py": {
@@ -275,8 +275,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/mlx_setup.py": {
-    "mtime": 1793543563.2924252,
-    "ast_hash": "008c9971caa919e93fa59f2c598434e4",
+    "mtime": 1793717821.1304424,
+    "ast_hash": "f73cee67b249ae93e322ac2498d5fbef",
     "semantic_hash": ""
   },
   "Backend/Core/model_recommendations.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793713374.1725585,
-    "ast_hash": "8c19dd855e0cc225df1f6fea87c19bf4",
+    "mtime": 1793718097.5834382,
+    "ast_hash": "adb3f07157406e91232538fc7b5a3be8",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793713490.4192405,
-    "ast_hash": "7792dfdb77ea6aa353a93b374ea4b163",
+    "mtime": 1793718130.417249,
+    "ast_hash": "50c0cc043f615cf81251e0b50cfd3990",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4710,8 +4710,8 @@
     "semantic_hash": ""
   },
   "tests/test_mlx_setup_consent_binding.py": {
-    "mtime": 1793543563.4775035,
-    "ast_hash": "34d1d6bd1e6a43917d3f37247017dfc0",
+    "mtime": 1793717741.4679832,
+    "ast_hash": "36866bbdfb74279d645751f4c6c4df1c",
     "semantic_hash": ""
   },
   "tests/test_occitanie_pages_sources.py": {
@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793549058.746232,
-    "ast_hash": "1b217b2498f88a7d4f2084e5d895ebe2",
+    "mtime": 1793715856.2835362,
+    "ast_hash": "e06b7010d9b18300f2cc4948c3a1a925",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -5595,13 +5595,33 @@
     "semantic_hash": ""
   },
   "tests/test_french_trace_bindings.py": {
-    "mtime": 1793713462.2253306,
+    "mtime": 1793714468.909098,
     "ast_hash": "0add2e1b9c2bb1d042ceaf0bcfce2875",
     "semantic_hash": ""
   },
   "docs/quality/french-trace-bindings-review-2026-11-03.md": {
-    "mtime": 1793713474.7951171,
+    "mtime": 1793714468.875451,
     "ast_hash": "da32b225c8b9e1a328a81359bda17148",
+    "semantic_hash": ""
+  },
+  "tests/test_french_isolated_graph_vertex.py": {
+    "mtime": 1793715884.1263995,
+    "ast_hash": "aca5635bf6900a1d084e7e4a9279fbff",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-isolated-vertex-review-2026-11-03.md": {
+    "mtime": 1793715994.4119039,
+    "ast_hash": "2fa0c5a62b74be127afed42d389a0954",
+    "semantic_hash": ""
+  },
+  "tests/test_mlx_cached_storage.py": {
+    "mtime": 1793717821.456678,
+    "ast_hash": "f42a4e370ad51da0266841d6fc5be184",
+    "semantic_hash": ""
+  },
+  "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md": {
+    "mtime": 1793718097.0567248,
+    "ast_hash": "ab9a30e73257fb3591e826c71fde569f",
     "semantic_hash": ""
   }
 }
