@@ -32,9 +32,10 @@ def prepared(tmp_path, monkeypatch):
         subject="fixture", paper="1", dry_run=False, provider="ollama", model="unused"
     )
     capability = SimpleNamespace(outputs_for=lambda _: tuple(paths))
+    finalize = generation.finalize_generated_documents
 
     def finish():
-        return generation.finalize_generated_documents(
+        return finalize(
             args=args,
             capability=capability,
             staging_dir=stage,
@@ -227,3 +228,71 @@ def test_backup_cleanup_failure_does_not_rollback_success(prepared, monkeypatch)
         assert destination.read_bytes() == expected
     for destination, data in saved.items():
         assert (cleanup_calls[0] / destination.name).read_bytes() == data
+
+
+def test_cleanup_cancellation_after_commit_still_reports_completion(
+    prepared, monkeypatch, capsys
+):
+    import json
+
+    output, paths, manifest, finish = prepared
+    existing(output, paths, manifest)
+    cleanup = generation.shutil.rmtree
+
+    def cancelled_cleanup(directory, **kwargs):
+        if directory.name.startswith(".keldin-publish-"):
+            raise generation.GenerationCancelled
+        return cleanup(directory, **kwargs)
+
+    monkeypatch.setattr(generation.shutil, "rmtree", cancelled_cleanup)
+    monkeypatch.setattr(generation, "_invoke_plugin", lambda *args, **kwargs: {})
+    monkeypatch.setattr(
+        generation, "finalize_generated_documents", lambda **kwargs: finish()
+    )
+    request = Namespace(
+        output=str(output),
+        api_key="",
+        model="fixture",
+        subject="economics",
+        paper="1",
+        provider="ollama",
+        dry_run=False,
+        seed=123,
+    )
+    assert generation.handle_generate(request) == 0
+    events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert events[-1]["type"] == "done"
+    assert not any(event.get("stage") == "cancel" for event in events)
+    notices = [event for event in events if event.get("stage") == "publication_cleanup"]
+    assert len(notices) == 1
+    assert events.index(notices[0]) < next(
+        index for index, event in enumerate(events) if event["type"] == "file"
+    )
+    for source in [*paths.values(), manifest]:
+        expected = (
+            b"new manifest"
+            if source == manifest
+            else next(
+                f"new {role}".encode() for role, path in paths.items() if path == source
+            )
+        )
+        assert (output / source.name).read_bytes() == expected
+    recovery = next(output.glob(".keldin-publish-*"))
+    assert str(recovery) in notices[0]["message"]
+    assert (recovery / manifest.name).read_bytes() == b"old manifest.json"
+
+
+def test_cancellation_during_backup_is_not_postcommit_maintenance(
+    prepared, monkeypatch
+):
+    output, paths, manifest, finish = prepared
+    saved = existing(output, paths, manifest)
+
+    def cancelled_backup(*args):
+        raise generation.GenerationCancelled
+
+    monkeypatch.setattr(generation.os, "link", cancelled_backup)
+    with pytest.raises(generation.GenerationCancelled):
+        finish()
+    assert all(path.read_bytes() == data for path, data in saved.items())
+    assert not list(output.glob(".keldin-publish-*"))
