@@ -38,14 +38,13 @@ enum WorkspaceSidebarPolicy {
     ) -> Binding<NavigationSplitViewVisibility> {
         Binding(
             get: {
-                switch preference.wrappedValue {
-                case "detail": return .detailOnly
-                case "double": return .doubleColumn
-                case "all": return .all
-                default: return layoutMode.showsSidebar ? .all : .detailOnly
-                }
+                resolvedVisibility(for: layoutMode, preference: preference.wrappedValue)
             },
             set: { value in
+                // Layout callbacks can echo the resolved value without a user change.
+                guard value != resolvedVisibility(for: layoutMode, preference: preference.wrappedValue) else {
+                    return
+                }
                 switch value {
                 case .detailOnly: preference.wrappedValue = "detail"
                 case .doubleColumn: preference.wrappedValue = "double"
@@ -53,6 +52,17 @@ enum WorkspaceSidebarPolicy {
                 }
             }
         )
+    }
+
+    private static func resolvedVisibility(
+        for layoutMode: WorkspaceLayoutMode, preference: String
+    ) -> NavigationSplitViewVisibility {
+        switch preference {
+        case "detail": return .detailOnly
+        case "double": return .doubleColumn
+        case "all": return .all
+        default: return layoutMode.showsSidebar ? .all : .detailOnly
+        }
     }
 }
 

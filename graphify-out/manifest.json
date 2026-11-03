@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793706285.3111525,
-    "ast_hash": "f3183fbab37fa81216a029d559b5d6a8",
+    "mtime": 1793709258.1470785,
+    "ast_hash": "56190d666bb93d95f7612abc4a4b1ab6",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1270,8 +1270,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793704901.7876844,
-    "ast_hash": "c896b46474c5526bb502701bee37daa3",
+    "mtime": 1793709216.349989,
+    "ast_hash": "117f28a82f480f3fb4efefadb6aea6f3",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3475,8 +3475,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/NativeVisualStyle.swift": {
-    "mtime": 1793704901.783798,
-    "ast_hash": "2eb1250cffb5261c3e8f6d776f9300b8",
+    "mtime": 1793709216.3448956,
+    "ast_hash": "a94511efed70cbe20bfd58b183b2ba64",
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/SharedViews.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793708471.247003,
-    "ast_hash": "a4dd17ab6956f6869102003b83d86d5b",
+    "mtime": 1793709216.305672,
+    "ast_hash": "d98cf449a9d534b8f28af6fc4f30c20a",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5582,6 +5582,11 @@
   "docs/quality/test-preference-cleanup-2026-11-03.md": {
     "mtime": 1793708471.2473862,
     "ast_hash": "b708d3ca2bac1433e78e5ed79def0cdb",
+    "semantic_hash": ""
+  },
+  "docs/quality/sidebar-preference-stability-2026-11-03.md": {
+    "mtime": 1793709216.306183,
+    "ast_hash": "6b791f63031e920528999fb0a3039564",
     "semantic_hash": ""
   }
 }
