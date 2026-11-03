@@ -2470,8 +2470,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 196-line EOF review of adapter wiring, artifact roles, seed/checkpoint identity and CLI arguments; dependency review scoped, not full-file certification.",
+      "source_sha256": "13e65d063b577fa32e108169c7d101d3a8a8b2ec4cb290085ab93637cc1164cb",
+      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
+      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py",
@@ -2553,6 +2556,15 @@
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/economics/edexcel-a/generator/pastpapergen/stimulus_diagrams.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete 424-line EOF review of declared illustrative models, finite geometry, public labels and source projection; scoped independent review and owned diagram QA, not academic qualification.",
+      "source_sha256": "c4a1ceaed6fc15fc27642edad6f93b8ea8b46c558d26932e26ee78ed508fd809",
+      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
+      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/syllabus.py",
@@ -2667,6 +2679,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/economics/edexcel-a/generator/tests/test_stimulus_diagrams.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 468-line EOF review of actual dispatch geometry, public source projection, cache identity, finite refusal and collision controls; targeted execution recorded in evidence.",
+      "source_sha256": "b230e3cbccd105fbdae7106e72ae8f6eacb45a301f969f0c5df6f694aae62443",
+      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
+      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_syllabus.py",
@@ -3138,6 +3159,12 @@
     },
     {
       "path": "docs/quality/difficulty-calibration-v2-report.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6882,6 +6909,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_labour_graph_geometry.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 89-line EOF review of equilibrium geometry, invalid input, extreme arithmetic and label collision controls; does not attest the entire shared graph source.",
+      "source_sha256": "64ca3210ea7ac6e367a90d2517e2721d7208d5971f18a767dbddfbd5b852a7b5",
+      "review_evidence": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
+      "review_evidence_sha256": "1bb919e9187c1667d0da9f28c391dfecb686c71786a73d80b490b68763cc83fe"
     },
     {
       "path": "tests/test_layout_master.py",

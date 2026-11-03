@@ -11,6 +11,7 @@ import os
 import re
 import sys
 from contextlib import suppress
+from functools import partial
 from itertools import pairwise
 from pathlib import Path
 
@@ -39,7 +40,6 @@ from Backend.Core.overlay.graphs import (
     demand_supply_diagram,
     externality_diagram,
     keynesian_ad_as_diagram,
-    labour_market_diagram,
     laffer_curve,
     lorenz_curve,
     monopoly_diagram,
@@ -53,6 +53,7 @@ from Backend.Core.overlay.graphs import (
 from Backend.Core.overlay.layouts import EDEXCEL_ECONOMICS as L
 from Backend.Core.preview_presentation import preview_copy, preview_font_size
 from Backend.Core.subjects.economics_contracts import EconomicsSource
+from pastpapergen import stimulus_diagrams
 from pastpapergen.exam_dates import economics_exam_schedule
 from pastpapergen.models import GraphParams, PaperBlueprint, QuestionBlueprint, Syllabus
 from pastpapergen.notes import note_points_for_topic
@@ -2179,29 +2180,31 @@ def _cleanup_graph_cache() -> None:
 _GRAPH_FUNCS: dict[str, object] = {
     "cost_revenue_graph": mr_mc_ac_diagram,
     "market_diagram": demand_supply_diagram,
-    "demand_shift_graph": demand_supply_diagram,
-    "supply_shift_graph": demand_supply_diagram,
+    "demand_shift_graph": partial(
+        stimulus_diagrams.shifted_market_diagram, demand=True
+    ),
+    "supply_shift_graph": partial(
+        stimulus_diagrams.shifted_market_diagram, demand=False
+    ),
     "ad_as_diagram": ad_as_diagram,
     "keynesian_as_diagram": keynesian_ad_as_diagram,
     "macro_chart": ad_as_diagram,
     "phillips_curve": phillips_curve,
     "lorenz_curve": lorenz_curve,
     "laffer_curve": laffer_curve,
-    "labour_market_diagram": labour_market_diagram,
-    "monopsony_diagram": labour_market_diagram,
+    "labour_market_diagram": stimulus_diagrams.competitive_labour_diagram,
+    "monopsony_diagram": stimulus_diagrams.monopsony_diagram,
     "externality_diagram": externality_diagram,
-    "minimum_price_diagram": lambda params=None: tax_subsidy_diagram(
-        kind="tax", tax_amount=10, params=params
+    "minimum_price_diagram": partial(
+        stimulus_diagrams.price_control_diagram, minimum=True
     ),
-    "maximum_price_diagram": lambda params=None: tax_subsidy_diagram(
-        kind="subsidy", tax_amount=10, params=params
+    "maximum_price_diagram": partial(
+        stimulus_diagrams.price_control_diagram, minimum=False
     ),
     "tax_subsidy_diagram": lambda params=None: tax_subsidy_diagram(
         kind="tax", tax_amount=15, params=params
     ),
-    "tariff_diagram": lambda params=None: tax_subsidy_diagram(
-        kind="tax", tax_amount=12, params=params
-    ),
+    "tariff_diagram": stimulus_diagrams.tariff_diagram,
     "consumer_surplus_diagram": consumer_producer_surplus,
     "producer_surplus_diagram": consumer_producer_surplus,
     "production_possibility_frontier": ppf_diagram,
@@ -2209,9 +2212,9 @@ _GRAPH_FUNCS: dict[str, object] = {
     "monopoly_diagram": monopoly_diagram,
     "trade_cycle": trade_cycle_diagram,
     "multiplier_context": trade_cycle_diagram,
-    "money_market_diagram": demand_supply_diagram,
-    "poverty_trap_diagram": laffer_curve,
-    "exchange_rate_diagram": demand_supply_diagram,
+    "money_market_diagram": stimulus_diagrams.money_market_diagram,
+    "poverty_trap_diagram": stimulus_diagrams.poverty_trap_diagram,
+    "exchange_rate_diagram": stimulus_diagrams.exchange_rate_diagram,
 }
 
 
@@ -2231,7 +2234,7 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
                 "point_labels": [],
                 "candidate_draws_diagram": True,
             }
-        return {
+        data = {
             "kind": source.kind,
             "source_text": source.context,
             "source_id": source.source_id,
@@ -2248,6 +2251,17 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
             if question.graph_params.kind
             else {},
         }
+        description = (
+            stimulus_diagrams.diagram_description(
+                source.kind,
+                question.graph_params.to_dict() if question.graph_params.kind else None,
+            )
+            if not source.rows and not source.values
+            else None
+        )
+        if description is not None:
+            data["diagram"] = description
+        return data
     kind = question.stimulus_kind
     data: dict[str, object] = {"kind": kind, "source_text": question.source_text}
     if kind in _TABLE_KINDS:
@@ -2276,6 +2290,9 @@ def candidate_stimulus_data(question: QuestionBlueprint) -> dict[str, object]:
             question.graph_params.to_dict() if question.graph_params.kind else {}
         )
         data["diagram_kind"] = kind
+        description = stimulus_diagrams.diagram_description(kind, data["graph_params"])
+        if description is not None:
+            data["diagram"] = description
     return data
 
 
