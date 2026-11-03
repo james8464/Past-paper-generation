@@ -88,6 +88,8 @@ def _trace(code: str, variable: str):
             and isinstance(node.func, ast.Name)
             and not node.keywords
         ):
+            if node.func.id in environment:
+                raise ValueError("Appel d'un nom réaffecté non pris en charge")
             args = [expression(arg) for arg in node.args]
             if (
                 node.func.id == "range"

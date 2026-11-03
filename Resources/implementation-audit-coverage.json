@@ -1243,8 +1243,11 @@
     {
       "path": "Backend/Core/france/verification.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file review and final delta checks recorded; remaining graph corner case is explicit in the evidence.",
+      "source_sha256": "1d7cb5e3c9e4a8ebd049bb810c5eaf566f5628b6e1520eeee1fd489f5546b50c",
+      "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
+      "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
     },
     {
       "path": "Backend/Core/france/whole_case_pdf.py",
@@ -3528,6 +3531,12 @@
     },
     {
       "path": "docs/quality/french-sql-source-binding-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-trace-bindings-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6774,6 +6783,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_trace_bindings.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file review and final delta checks recorded; remaining graph corner case is explicit in the evidence.",
+      "source_sha256": "6cfbb88f4541b0b095464b6ba9d3ee404a9028b5182db1a90784872e7047e8c4",
+      "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
+      "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
     },
     {
       "path": "tests/test_french_tree_case_authoring.py",
