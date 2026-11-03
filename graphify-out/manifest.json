@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793709258.1470785,
-    "ast_hash": "56190d666bb93d95f7612abc4a4b1ab6",
+    "mtime": 1793709277.9744747,
+    "ast_hash": "7ffbf8c93eef5b2bf9998246fef4eccb",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793709216.305672,
-    "ast_hash": "d98cf449a9d534b8f28af6fc4f30c20a",
+    "mtime": 1793710456.111037,
+    "ast_hash": "c6395b44fbda9bccf3cddf7805fd25a4",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5587,6 +5587,11 @@
   "docs/quality/sidebar-preference-stability-2026-11-03.md": {
     "mtime": 1793709216.306183,
     "ast_hash": "6b791f63031e920528999fb0a3039564",
+    "semantic_hash": ""
+  },
+  "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md": {
+    "mtime": 1793710199.6098905,
+    "ast_hash": "cb8268398e5eb87ffe91f4c7c9b6636e",
     "semantic_hash": ""
   }
 }

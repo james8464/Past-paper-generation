@@ -1876,14 +1876,20 @@
     {
       "path": "Resources/business/aqa/generator/aqabizgen/configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
+      "source_sha256": "45d7488a792744bf4c9dd224cf19f663d9b5fc7477db0b4ca2cc5b551692732e",
+      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/financials.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
+      "source_sha256": "d5acfd47bce25528c78ca9af80bb1e0fef969bee16f22ef2cac4cb57c38c0bc4",
+      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/generator.py",
@@ -3108,6 +3114,12 @@
     },
     {
       "path": "docs/quality/backend-owned-process-shutdown-review-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4819,8 +4831,11 @@
     {
       "path": "macOS/Keldin/Domain/AppModels.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
+      "source_sha256": "e861a7fe54a05f0afd2abab2197813d43d78085a4877559b730410b2c12ebdd0",
+      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
     },
     {
       "path": "macOS/Keldin/Domain/AssessmentBundleExporter.swift",
@@ -4915,8 +4930,11 @@
     {
       "path": "macOS/Keldin/Domain/NativeInterfaceCopy.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
+      "source_sha256": "f90f179dfe623afbf2d4052b5902cb85ea2eb1083c09cdd767c6c7ec7323f514",
+      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
     },
     {
       "path": "macOS/Keldin/Domain/OllamaModelGuide.swift",
@@ -5173,8 +5191,11 @@
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
+      "source_sha256": "df53a2c4ce77525e6331123230409a0c71e219fe4212de124022111de8865613",
+      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
     },
     {
       "path": "macOS/Keldin/State/CatalogStore.swift",
