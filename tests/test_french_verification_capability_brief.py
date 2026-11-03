@@ -98,6 +98,7 @@ def test_supported_trace_still_passes_and_function_definition_still_refuses():
         "expected": 6,
     }
     raw["questions"][0]["verification"] = contract
+    raw["questions"][0]["prompt"] += "\n```python\n" + contract["code"] + "\n```"
     assert verify_contract(contract)["passed"] is True
     assert subject.validate_authored_exercise(raw, "1")
     bad = deepcopy(raw)

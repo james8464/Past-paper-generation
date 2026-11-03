@@ -3566,6 +3566,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-trace-source-binding-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-v36-print-layout-admission-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -6867,6 +6873,12 @@
       "source_sha256": "e2283be33dd81abbf9f4923c2a07a5645f89b757ef431ac04cba563203ab4f51",
       "review_evidence": "docs/quality/french-python-range-review.md",
       "review_evidence_sha256": "6e4f684326fb9ffff33609a8f062ce4b2c5d7c7dcd48490c58d1a1ffed86e1d6"
+    },
+    {
+      "path": "tests/test_french_trace_source_binding.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_french_tree_case_authoring.py",

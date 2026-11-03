@@ -834,6 +834,7 @@ def test_malformed_marks_curriculum_unsafe_code_and_fixed_contracts_refuse(mutat
 
 def test_generic_execution_is_bounded_and_does_not_trust_model_expected_value():
     raw = raw_exercise()
+    raw["questions"][0]["prompt"] += "\n```python\nresultat = 2 + 3\n```"
     raw["questions"][0]["verification"] = {
         "kind": "python_trace",
         "code": "resultat = 2 + 3",

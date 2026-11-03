@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793748134.1310425,
-    "ast_hash": "347e7b308501e7e714da009f48a3e8e3",
+    "mtime": 1793749390.7119815,
+    "ast_hash": "82a382174302ccf3fdcdace24f428169",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793748134.1303244,
-    "ast_hash": "cf60cdaa3f6e2687faa976c71353b680",
+    "mtime": 1793749390.5947952,
+    "ast_hash": "2fd909cd51000364b809cfa81c44ad22",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1793719419.4193635,
-    "ast_hash": "e06b7010d9b18300f2cc4948c3a1a925",
+    "mtime": 1793749290.9801574,
+    "ast_hash": "168b1511dc402ddd35dded76717301e9",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -4805,8 +4805,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_llm_pipeline.py": {
-    "mtime": 1793545928.360316,
-    "ast_hash": "79e39e3aec33716d4dccdc8048f6ca58",
+    "mtime": 1793749290.9805,
+    "ast_hash": "eb7c4dc83530d69aee40479d948da42f",
     "semantic_hash": ""
   },
   "tests/test_french_llm_runtime.py": {
@@ -4980,8 +4980,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_verification_capability_brief.py": {
-    "mtime": 1793366629.6238236,
-    "ast_hash": "49fb29d46074c6bb5374a12f68b46586",
+    "mtime": 1793749290.9809394,
+    "ast_hash": "8867821ad5c5148b2555dd918740c301",
     "semantic_hash": ""
   },
   "tests/test_hosted_transport_security.py": {
@@ -5677,6 +5677,16 @@
   "docs/quality/local-pdf-admission-review.md": {
     "mtime": 1793748249.4060721,
     "ast_hash": "c39fb68460bc92a2838bf2ac95e16f61",
+    "semantic_hash": ""
+  },
+  "tests/test_french_trace_source_binding.py": {
+    "mtime": 1793749309.540759,
+    "ast_hash": "53671751867b0a6a9c3b17729686c585",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-trace-source-binding-review.md": {
+    "mtime": 1793749404.7358456,
+    "ast_hash": "692c234617f208fd2a6ad284a86b0c91",
     "semantic_hash": ""
   }
 }

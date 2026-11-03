@@ -498,6 +498,25 @@ def _bare_python_suite(text: str) -> bool:
 
 def _verify_question(exercise, question, *, sql_source_binding: bool) -> dict:
     contract = question.verification
+    if contract["kind"] == "python_trace":
+        code = contract.get("code")
+        printed = {
+            part.text.replace("\r\n", "\n").strip("\n")
+            for text in (exercise.context, question.prompt)
+            for part in fenced_parts(text, require_closed=False)
+            if part.closed and part.language in {"", "python"}
+        }
+        # Only line endings and fence-boundary newlines may differ. Never
+        # infer a program from answers, other questions or combined fragments.
+        if (
+            not isinstance(code, str)
+            or code.replace("\r\n", "\n").strip("\n") not in printed
+        ):
+            return {
+                "state": "failed",
+                "passed": False,
+                "reason": "Le programme vérifié ne correspond à aucun bloc Python complet du contexte ou de cette question.",
+            }
     if contract["kind"] == "sql" and sql_source_binding:
         return verify_contract(
             contract, sql_materials=bound_materials(exercise, question)
