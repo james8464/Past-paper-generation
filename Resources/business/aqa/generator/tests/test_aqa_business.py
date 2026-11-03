@@ -119,6 +119,38 @@ def test_financial_position_is_balanced_from_displayed_source_values() -> None:
     )
 
 
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [(1.125, "1.13"), (-1.125, "-1.13"), (2.675, "2.68"), (2.0, "2"), (-0.004, "0")],
+)
+def test_financial_answer_format_matches_half_up_contract(value, expected):
+    assert format_number(value) == expected
+
+
+def test_halfway_current_ratio_agrees_with_its_independent_numeric_contract():
+    import random
+
+    from aqabizgen.generator import _written_question
+
+    from Backend.Core.independent_solver import require_solution_matches_scheme
+
+    question = _written_question(
+        RULES["paper_1"].sections[1].questions[0],
+        "16",
+        SYLLABUS.topics[0],
+        "Owned Fixture Ltd",
+        1,
+        [425, 500, 500, 1091, 400],
+        random.Random(0),
+    )
+    raw = question.model_dump(mode="json")
+    raw["id"] = "owned-current-ratio"
+    solution = IndependentSolver().solve(raw, [])
+    assert solution.numeric_results["current_ratio"] == 1.125
+    require_solution_matches_scheme(solution, raw)
+    assert "Answer: 1.13:1" in "\n".join(question.mark_scheme)
+
+
 def test_financial_position_rejects_an_unbalanced_direct_value() -> None:
     with pytest.raises(ValueError, match="must balance"):
         FinancialPosition(

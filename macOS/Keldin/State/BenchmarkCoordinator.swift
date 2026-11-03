@@ -95,6 +95,8 @@ final class BenchmarkCoordinator {
         switch result {
         case let .success(code) where code != 0:
             if errorMessage == nil { errorMessage = "Benchmark exited with code \(code)." }
+        case .success where verdict == nil && errorMessage == nil:
+            errorMessage = "The benchmark finished without a result. Try again."
         case let .failure(error):
             errorMessage = error.localizedDescription
         default:

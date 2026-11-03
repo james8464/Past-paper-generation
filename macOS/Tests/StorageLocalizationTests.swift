@@ -56,7 +56,7 @@ final class StorageLocalizationTests: XCTestCase {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("KeldinStorageLocale-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
-        let defaults = UserDefaults(suiteName: "StorageLocalization-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         defaults.set("fr", forKey: "interfaceLanguage")
         let application = ApplicationCoordinator(defaults: defaults, secrets: LocalizationSecrets(), historyDirectory: directory, historyRecordRemover: { _ in
             throw NSError(domain: "StorageLocaleTest", code: 1, userInfo: [NSLocalizedDescriptionKey: "DETAIL_SENTINEL"])
@@ -78,7 +78,7 @@ final class StorageLocalizationTests: XCTestCase {
 
     @MainActor
     func testSettingsAndCoordinatorKeepCredentialErrorsInChosenLanguage() {
-        let defaults = UserDefaults(suiteName: "StorageLocalization-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         defaults.set("fr", forKey: "interfaceLanguage")
         let settings = SettingsStore(defaults: defaults, secrets: LocalizationSecrets(failReads: true))
         let expected = "Impossible de lire la clé API dans le trousseau. Vérifiez l’accès au trousseau, puis réessayez."

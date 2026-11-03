@@ -31,7 +31,7 @@ final class NativeInterfaceAuditTests: XCTestCase {
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: root) }
         let history = root.appendingPathComponent("history")
-        let defaults = UserDefaults(suiteName: "RecentVisibility-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         let pdf = root.appendingPathComponent("paper.pdf")
         let bytes = Data("preserved source artifact".utf8)
         try bytes.write(to: pdf)
@@ -143,7 +143,7 @@ final class NativeInterfaceAuditTests: XCTestCase {
 
     @MainActor
     func testWorkspaceBlockerUsesSelectedFrenchWithoutChangingItsDecision() {
-        let defaults = UserDefaults(suiteName: "WorkspaceLocale-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         defaults.set("fr", forKey: "interfaceLanguage")
         let history = FileManager.default.temporaryDirectory.appendingPathComponent("WorkspaceLocale-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: history) }

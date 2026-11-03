@@ -170,8 +170,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/corpus.py": {
-    "mtime": 1793543563.273405,
-    "ast_hash": "30c2c1020f0beb8b86d7c5b4c09538a3",
+    "mtime": 1793706437.8640795,
+    "ast_hash": "4633494ae37902911436023ff0a83b31",
     "semantic_hash": ""
   },
   "Backend/Core/france/network.py": {
@@ -585,8 +585,8 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/financials.py": {
-    "mtime": 1793575012.3461475,
-    "ast_hash": "b6e6f75ba26a31e5bf9271a208d03ccb",
+    "mtime": 1793707531.2835188,
+    "ast_hash": "32253628815b0b8549955ac70a60d42b",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/generator.py": {
@@ -620,8 +620,8 @@
     "semantic_hash": "00676eda6813fab704c97b89dc20ad62"
   },
   "Resources/business/aqa/generator/tests/test_aqa_business.py": {
-    "mtime": 1793575142.3145375,
-    "ast_hash": "3104ef23470aa5398434ab717c6e87fc",
+    "mtime": 1793707519.502502,
+    "ast_hash": "a085fa27e48033cad3d79b7bc1661839",
     "semantic_hash": ""
   },
   "Resources/catalog.json": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793687411.8026805,
-    "ast_hash": "4b4ab13b404d7456c411e9234c0f870d",
+    "mtime": 1793709277.9744747,
+    "ast_hash": "7ffbf8c93eef5b2bf9998246fef4eccb",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1270,7 +1270,7 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793704493.750867,
+    "mtime": 1793709216.349989,
     "ast_hash": "117f28a82f480f3fb4efefadb6aea6f3",
     "semantic_hash": ""
   },
@@ -1485,8 +1485,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_corpus.py": {
-    "mtime": 1793543563.4620879,
-    "ast_hash": "f537f4bd5378b7a1c6ed1581e186a3b5",
+    "mtime": 1793706429.1851394,
+    "ast_hash": "37e4d9b59346abc41c4a7e0f57d7c627",
     "semantic_hash": ""
   },
   "tests/test_french_framework.py": {
@@ -3475,7 +3475,7 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Components/NativeVisualStyle.swift": {
-    "mtime": 1793704493.750022,
+    "mtime": 1793709216.3448956,
     "ast_hash": "a94511efed70cbe20bfd58b183b2ba64",
     "semantic_hash": ""
   },
@@ -3585,8 +3585,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
-    "mtime": 1793543563.4455178,
-    "ast_hash": "b96b4271d7cabc161c2e42a0d3ff8df7",
+    "mtime": 1793707825.8948843,
+    "ast_hash": "ba0bb5a3569cb74d92a7b2e0ae91e263",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/CatalogStore.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793633161.7208333,
-    "ast_hash": "faa3b3ba8f58aeebf08b492be92d2abf",
+    "mtime": 1793707676.5670803,
+    "ast_hash": "88611521c7b73cd0e05fb90cf43e175a",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793687411.358959,
-    "ast_hash": "92acaaac758d3f0ee86c85c85119d9fe",
+    "mtime": 1793710456.111037,
+    "ast_hash": "c6395b44fbda9bccf3cddf7805fd25a4",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4035,13 +4035,13 @@
     "semantic_hash": ""
   },
   "macOS/Tests/HistoryDeletionTests.swift": {
-    "mtime": 1793543563.4493258,
-    "ast_hash": "1f71e83575e845f430eb21db95f4dc6d",
+    "mtime": 1793708471.2937486,
+    "ast_hash": "73f0f27bb61af68e307fa75d5f2e4c6b",
     "semantic_hash": ""
   },
   "macOS/Tests/PDFDocumentAccessTests.swift": {
-    "mtime": 1793639220.6541817,
-    "ast_hash": "bab26fe3ed0d960b3d0e8265a7e6d079",
+    "mtime": 1793708471.2965267,
+    "ast_hash": "3f7d99509cb7ca1c4f948eac22bd763e",
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
@@ -4050,8 +4050,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/StorageLocalizationTests.swift": {
-    "mtime": 1793661375.244753,
-    "ast_hash": "32bd6403bd8371ba7fb7bf8260207a1c",
+    "mtime": 1793708471.2993357,
+    "ast_hash": "bd5027767d25f5a6b4c03e706c1b41ac",
     "semantic_hash": ""
   },
   "macOS/Tests/UKArtifactPublisherTests.swift": {
@@ -4095,8 +4095,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/NativeInterfaceCopy.swift": {
-    "mtime": 1793575142.2995203,
-    "ast_hash": "482681c788fe88baf4c6ed5626b9af15",
+    "mtime": 1793707825.8950593,
+    "ast_hash": "4565ff1aea078c002f25c581e3cdf75e",
     "semantic_hash": ""
   },
   "macOS/Tests/BenchmarkLocalizationTests.swift": {
@@ -4105,8 +4105,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/NativeInterfaceAuditTests.swift": {
-    "mtime": 1793569807.7407057,
-    "ast_hash": "4ef779d6be691e87052e96c212a6f58a",
+    "mtime": 1793708471.2951062,
+    "ast_hash": "8d23758b6c33c1496412efb3c1d72554",
     "semantic_hash": ""
   },
   "tests/test_selected_response_dispatch.py": {
@@ -5572,6 +5572,26 @@
   "docs/quality/economics-stimulus-figures-review-2026-11-03.md": {
     "mtime": 1793687401.5729513,
     "ast_hash": "4e0c0021fe78bfc36585531f3e7be189",
+    "semantic_hash": ""
+  },
+  "docs/quality/reference-readmission-and-runtime-audit-2026-11-03.md": {
+    "mtime": 1793706456.3667197,
+    "ast_hash": "8896aaf927a6fa91b5af8f28b865eda5",
+    "semantic_hash": ""
+  },
+  "docs/quality/test-preference-cleanup-2026-11-03.md": {
+    "mtime": 1793708471.2473862,
+    "ast_hash": "b708d3ca2bac1433e78e5ed79def0cdb",
+    "semantic_hash": ""
+  },
+  "docs/quality/sidebar-preference-stability-2026-11-03.md": {
+    "mtime": 1793709216.306183,
+    "ast_hash": "6b791f63031e920528999fb0a3039564",
+    "semantic_hash": ""
+  },
+  "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md": {
+    "mtime": 1793710199.6098905,
+    "ast_hash": "cb8268398e5eb87ffe91f4c7c9b6636e",
     "semantic_hash": ""
   }
 }

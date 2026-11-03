@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 from math import isfinite
+
+from Backend.Core.numeric_integrity import rounded
 
 
 # Shared Paper 1 financial-statement figures.
@@ -110,5 +113,5 @@ class FinancialPosition:
 
 # Format an exam answer without meaningless trailing zeroes.
 def format_number(value: float) -> str:
-
-    return f"{value:.2f}".rstrip("0").rstrip(".")
+    result = rounded(Decimal(str(value)), 2)
+    return f"{result:.2f}".rstrip("0").rstrip(".") if result else "0"

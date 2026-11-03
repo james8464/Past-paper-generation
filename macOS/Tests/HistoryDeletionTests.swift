@@ -116,7 +116,7 @@ final class HistoryDeletionTests: XCTestCase {
 
     @MainActor
     func testHistoryRemovalFailureIsPresentedByApplication() throws {
-        let defaults = UserDefaults(suiteName: "HistoryDeletionTests-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         let application = ApplicationCoordinator(defaults: defaults, secrets: DeletionTestSecrets(), historyDirectory: directory, historyRecordRemover: { _ in
             throw CocoaError(.fileWriteNoPermission)
         })
@@ -132,7 +132,7 @@ final class HistoryDeletionTests: XCTestCase {
 
     @MainActor
     func testChangingPreferenceAppliesRetentionImmediately() throws {
-        let defaults = UserDefaults(suiteName: "HistoryDeletionTests-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         let application = ApplicationCoordinator(defaults: defaults, secrets: DeletionTestSecrets(), historyDirectory: directory)
         let first = job(1)
         let second = job(2)
@@ -164,7 +164,7 @@ final class HistoryDeletionTests: XCTestCase {
         let blocked = directory.appendingPathComponent("not-a-directory")
         let original = Data("leave this file alone".utf8)
         try original.write(to: blocked)
-        let defaults = UserDefaults(suiteName: "HistoryDeletionTests-\(UUID().uuidString)")!
+        let defaults = isolatedDefaults()
         let stale = GeneratedFile(role: "question_paper", url: directory.appendingPathComponent("legacy.pdf"))
         defaults.set(try JSONEncoder().encode([stale]), forKey: AppStorageKey.recentDocuments)
 
