@@ -5,7 +5,9 @@ from pathlib import Path
 
 def test_controlled_navigation_root_owns_its_app_storage():
     root = Path(__file__).resolve().parents[1]
-    source = (root / "macOS/Tests/GenerationNavigationInteractiveTests.swift").read_text()
+    source = (
+        root / "macOS/Tests/GenerationNavigationInteractiveTests.swift"
+    ).read_text()
     method = source.split(
         "func testNavigationDuringControlledGeneration() async throws {", 1
     )[1].split("\n    }", 1)[0]

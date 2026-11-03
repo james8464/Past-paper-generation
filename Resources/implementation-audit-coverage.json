@@ -5291,7 +5291,7 @@
       "reason": "Complete baseline EOF and final test-isolation delta review; hosted root binding and standard-preference assertions reviewed, not a claim the manual journey was executed.",
       "source_sha256": "5862e9af2242b1b45282bdbc792a96733f4ed479b6806b2e80e2b1bf511048c9",
       "review_evidence": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
-      "review_evidence_sha256": "258e77bd90120f73f343d655653d39d42efe9ee0f450b8dbcec38e261bb749ed"
+      "review_evidence_sha256": "9043853f65778a770fa50eb0f7384eda1e612141065eb0a9f9eb9d4d80745753"
     },
     {
       "path": "macOS/Tests/HistoryDeletionTests.swift",
@@ -7001,10 +7001,10 @@
       "path": "tests/test_native_fixture_storage_isolation.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "All 15 lines read; exact hosted-root isolation boundary failed before the fix and passed after it. This static check does not simulate SwiftUI storage propagation.",
-      "source_sha256": "b3a6d464ffcb8d01261dfeb80adcaff17a48770ebad24faf637f841e22d1ac3f",
+      "reason": "All 17 lines read including the formatter-only follow-up; exact hosted-root isolation boundary failed before the fix and passed after it. This static check does not simulate SwiftUI storage propagation.",
+      "source_sha256": "76024c4115c3855b3200cb8263e75c3bc150e88a6b252c2eaf205cbfa3e5d2b8",
       "review_evidence": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
-      "review_evidence_sha256": "258e77bd90120f73f343d655653d39d42efe9ee0f450b8dbcec38e261bb749ed"
+      "review_evidence_sha256": "9043853f65778a770fa50eb0f7384eda1e612141065eb0a9f9eb9d4d80745753"
     },
     {
       "path": "tests/test_native_model_quality_guidance.py",

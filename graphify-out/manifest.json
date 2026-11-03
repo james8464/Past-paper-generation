@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793677791.2086864,
+    "mtime": 1793678197.9033432,
     "ast_hash": "2c3d4a0edf0bf224959175304971c675",
     "semantic_hash": ""
   },
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793677790.521869,
-    "ast_hash": "1e2cd1647f3718fbf615b9207e752f80",
+    "mtime": 1793678197.6085622,
+    "ast_hash": "529ecf66cbcdb18096d50067b4644ea0",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5540,13 +5540,13 @@
     "semantic_hash": ""
   },
   "tests/test_native_fixture_storage_isolation.py": {
-    "mtime": 1793677350.4045677,
-    "ast_hash": "74d1bba81ef69e89479af2828a7952ef",
+    "mtime": 1793678174.4270916,
+    "ast_hash": "5227519598c5099ebcf12d5d392f8200",
     "semantic_hash": ""
   },
   "docs/quality/navigation-fixture-storage-review-2026-11-03.md": {
-    "mtime": 1793677759.4891396,
-    "ast_hash": "d8bbb7b17be3d355e266c31ae3bdfbef",
+    "mtime": 1793678185.9662333,
+    "ast_hash": "e52baf3ec1ac37a58497b7b7d93b947d",
     "semantic_hash": ""
   },
   "docs/quality/pdf-visible-page-review-2026-11-03.md": {
