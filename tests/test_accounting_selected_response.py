@@ -10,6 +10,7 @@ from Backend.Core.ai_assessment import (
     _independently_validate_candidate,
 )
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
+from Backend.Core.subjects import accounting_selected_response
 from Backend.Core.subjects.selected_response import solve_selected_response
 from tests.test_shared_numeric_integrity import accounting_tasks
 
@@ -145,6 +146,34 @@ def test_public_fixtures_recompute_without_an_answer_key(case):
     result = solve_selected_response(item_for(case))
     assert result["answer"] == case[-1]
     assert result["mark_points"] == [case[-1]]
+
+
+def test_accounting_distractor_rejects_exponent_without_formatting_it(monkeypatch):
+    item = item_for(PUBLIC_CASES[0])
+    item["choices"][1] = "£1e10000"
+    original = accounting_selected_response.pounds
+
+    def guarded_formatter(value):
+        assert value.adjusted() < 100, "compact exponent reached currency formatter"
+        return original(value)
+
+    monkeypatch.setattr(accounting_selected_response, "pounds", guarded_formatter)
+    with pytest.raises(ValueError, match="unsupported currency format"):
+        solve_selected_response(item)
+
+
+@pytest.mark.parametrize("choice", ["£01", "£1000", "-£0", "£1.00", "£١", "£1,00"])
+def test_accounting_distractors_require_canonical_currency(choice):
+    item = item_for(PUBLIC_CASES[0])
+    item["choices"][1] = choice
+    with pytest.raises(ValueError, match="unsupported currency format"):
+        solve_selected_response(item)
+
+
+def test_accounting_distractors_accept_zero_and_negative_grouped_pounds():
+    item = item_for(PUBLIC_CASES[0])
+    item["choices"][1:] = ["£0", "-£1,000", "£1"]
+    assert solve_selected_response(item)["answer"] == "£99,000"
 
 
 @pytest.mark.parametrize(

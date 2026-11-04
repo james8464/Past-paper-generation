@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from collections.abc import Callable
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -21,6 +21,7 @@ AccountingOperation = Literal[
 ]
 AccountingUnit = Literal["GBP", "entry_pair"]
 _DECIMAL = re.compile(r"[0-9]{1,12}(?:\.[0-9]{1,4})?\Z")
+_WHOLE_POUNDS = re.compile(r"(?:£0|-?£[1-9][0-9]{0,2}(?:,[0-9]{3})*)\Z")
 
 
 class AccountingSelectedResponseContract(BaseModel):
@@ -303,19 +304,10 @@ def solve_accounting_selected_response(item: dict[str, Any]) -> dict[str, Any]:
             raise ValueError(
                 "Accounting correction choices differ from the public journal case"
             )
-    else:
-        for choice in choices:
-            try:
-                amount = Decimal(choice.replace("£", "").replace(",", ""))
-                canonical = pounds(amount)
-            except (InvalidOperation, ValueError) as error:
-                raise ValueError(
-                    "Accounting numeric choice must use whole-pound currency"
-                ) from error
-            if choice != canonical:
-                raise ValueError(
-                    "Accounting numeric choice has an unsupported currency format"
-                )
+    # The distractors only need a format check. Parsing them as decimals could
+    # expand a short exponent into a very large string during currency formatting.
+    elif any(_WHOLE_POUNDS.fullmatch(choice) is None for choice in choices):
+        raise ValueError("Accounting numeric choice has an unsupported currency format")
     if choices.count(working.answer) != 1:
         raise ValueError("Accounting choice must contain exactly one derived answer")
     return {
