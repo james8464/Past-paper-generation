@@ -15,6 +15,88 @@ final class PDFDocumentAccessTests: XCTestCase {
     override func tearDownWithError() throws { try FileManager.default.removeItem(at: root) }
 
     @MainActor
+    func testNonFilePDFURLsRefuseBeforeReaderBookmarksOrScopeAccess() throws {
+        for url in [URL(string: "https://example.invalid/owned.pdf")!, URL(string: "data:application/pdf,owned")!] {
+            let settings = defaults()
+            let saved = [url.standardizedFileURL.path: Data("owned-fixture".utf8)]
+            settings.set(saved, forKey: PDFDocumentAccess.bookmarkKey)
+            var reads = 0
+            var resolves = 0
+            var bookmarks = 0
+            var starts = 0
+            var stops = 0
+            let access = PDFDocumentAccess(defaults: settings, readData: { _ in
+                reads += 1
+                throw CocoaError(.fileReadNoSuchFile)
+            }, startAccess: { _ in starts += 1; return true }, stopAccess: { _ in stops += 1 }, makeBookmark: { _ in
+                bookmarks += 1
+                return Data()
+            }, resolveBookmark: { _ in
+                resolves += 1
+                return (url, false)
+            })
+            assertFailure(access.load(url), .invalid)
+            access.release()
+            XCTAssertEqual(reads, 0)
+            XCTAssertEqual(resolves, 0)
+            XCTAssertEqual(bookmarks, 0)
+            XCTAssertEqual(starts, 0)
+            XCTAssertEqual(stops, 0)
+            XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], saved)
+        }
+    }
+
+    @MainActor
+    func testNonFileLoadReleasesPriorLeaseExactlyOnce() throws {
+        let url = try makePDF()
+        let settings = defaults()
+        let saved = [url.standardizedFileURL.path: Data("owned-fixture".utf8)]
+        settings.set(saved, forKey: PDFDocumentAccess.bookmarkKey)
+        var reads = 0
+        var starts = 0
+        var stopped: [URL] = []
+        let access = PDFDocumentAccess(defaults: settings, readData: { selected in
+            reads += 1
+            guard selected.isFileURL else { throw CocoaError(.fileReadNoSuchFile) }
+            return try Data(contentsOf: selected)
+        }, startAccess: { _ in starts += 1; return true }, stopAccess: { stopped.append($0) }, resolveBookmark: { _ in (url, false) })
+        XCTAssertNotNil(try? access.load(url).get())
+        XCTAssertEqual(starts, 1)
+        assertFailure(access.load(URL(string: "https://example.invalid/owned.pdf")!), .invalid)
+        access.release()
+        access.release()
+        XCTAssertEqual(reads, 1)
+        XCTAssertEqual(stopped, [url])
+        XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], saved)
+    }
+
+    @MainActor
+    func testNonFileSelectionClearsPriorPDFAndDisablesDocumentActions() throws {
+        let local = try makePDF()
+        let bytes = try Data(contentsOf: local)
+        var reads = 0
+        let access = PDFDocumentAccess(defaults: defaults(), readData: { _ in
+            reads += 1
+            return bytes
+        }, makeBookmark: { _ in Data("owned-fixture".utf8) })
+        let controller = DocumentActionController(access: access)
+        controller.update(file: GeneratedFile(role: "question_paper", url: local), provenance: nil)
+        XCTAssertNotNil(controller.loadedPDF)
+        XCTAssertTrue(controller.canAccessDocument)
+        let remote = GeneratedFile(role: "question_paper", url: URL(string: "https://example.invalid/owned.pdf")!)
+        controller.update(file: remote, provenance: nil)
+        XCTAssertEqual(controller.selectedFile, remote)
+        XCTAssertEqual(controller.loadFailure, .invalid)
+        XCTAssertNil(controller.loadedPDF)
+        XCTAssertFalse(controller.hasFormFields)
+        XCTAssertFalse(controller.canAccessDocument)
+        controller.refresh()
+        XCTAssertEqual(reads, 1)
+        XCTAssertEqual(controller.loadFailure, .invalid)
+        controller.clear()
+    }
+
+    @MainActor
     func testFirstSuccessfulReadsRememberBothPDFsAfterFolderChangeAndNewController() throws {
         let files = [
             GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 2)),

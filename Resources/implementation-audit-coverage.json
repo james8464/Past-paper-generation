@@ -1174,8 +1174,11 @@
     {
       "path": "Backend/Core/france/sql_sources.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file independent review of typed visible-table binding, DDL object inspection and bounded row comparison; selective callers and focused SQL regressions. No whole-pipeline or model-quality qualification.",
+      "source_sha256": "1e01aa318c2d9c01113c515df3381235bc07874598731234073dd160f92df055",
+      "review_evidence": "docs/quality/french-python-range-review.md",
+      "review_evidence_sha256": "6e4f684326fb9ffff33609a8f062ce4b2c5d7c7dcd48490c58d1a1ffed86e1d6"
     },
     {
       "path": "Backend/Core/france/synthesized_authoring.py",
@@ -1241,10 +1244,10 @@
       "path": "Backend/Core/france/verification.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete prior verifier EOF plus every trace-binding and printed-vertex delta reviewed by release_gap_audit and root; bounded interpreter, SQL and graph contracts. Source-bound review is not general Python or full-paper qualification.",
-      "source_sha256": "8326ae4c0b16be7d180eb4409fb5168a52bf5951209725b4b86c619b8997e1e2",
-      "review_evidence": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
-      "review_evidence_sha256": "f18da1e2b4c90f105600ba37b53c082fbe2077844f8ef66ca63ccdff014cb238"
+      "reason": "Complete prior-file review plus independent review of every range-semantics production delta, bounded interpreter and JSON evidence; selective callers and 194 focused regressions. Printed-task semantic equivalence and full paper quality remain outside this attestation.",
+      "source_sha256": "0150e723b4d7314ea588a5aec0aded5c6e1b7e32da563ec85d1e29b23505fce1",
+      "review_evidence": "docs/quality/french-python-range-review.md",
+      "review_evidence_sha256": "6e4f684326fb9ffff33609a8f062ce4b2c5d7c7dcd48490c58d1a1ffed86e1d6"
     },
     {
       "path": "Backend/Core/france/whole_case_pdf.py",
@@ -3515,6 +3518,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-python-range-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-question-advisory-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3552,6 +3561,12 @@
     },
     {
       "path": "docs/quality/french-trace-bindings-review-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-trace-source-binding-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3648,6 +3663,12 @@
     },
     {
       "path": "docs/quality/local-parallel-reviews-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/local-pdf-admission-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5191,11 +5212,8 @@
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file internal review of read-only document access and recovery; exact-byte evidence is separate from native permission acceptance.",
-      "source_sha256": "046381db27116bb145129a79ba6a6f5b0e8c4ad6a481b4a8d9658754a129970b",
-      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
-      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Services/SecretStore.swift",
@@ -6846,6 +6864,21 @@
       "source_sha256": "6cfbb88f4541b0b095464b6ba9d3ee404a9028b5182db1a90784872e7047e8c4",
       "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
       "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
+    },
+    {
+      "path": "tests/test_french_trace_ranges.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "All 78 lines independently reviewed; reproduced false acceptance, public admission, positive range operations, bounded refusals and serializable evidence covered. Initial unsupported nested-list expectation corrected without expanding production support.",
+      "source_sha256": "e2283be33dd81abbf9f4923c2a07a5645f89b757ef431ac04cba563203ab4f51",
+      "review_evidence": "docs/quality/french-python-range-review.md",
+      "review_evidence_sha256": "6e4f684326fb9ffff33609a8f062ce4b2c5d7c7dcd48490c58d1a1ffed86e1d6"
+    },
+    {
+      "path": "tests/test_french_trace_source_binding.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_french_tree_case_authoring.py",
