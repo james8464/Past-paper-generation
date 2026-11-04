@@ -57,3 +57,26 @@ separate and unchanged. The earlier 6,749-test full-suite result belongs to
 PR167 source `51b0b8f1`, not this later repair. Final full and protected gates
 remain required for the new candidate. This review does not qualify an entire
 French paper, establish model reliability or certify all interpreter semantics.
+
+## Whole-program syntax check
+
+The verifier used to accept a top-level `return`, `break`, `continue` or
+`nonlocal` declaration inside an untaken branch. Python rejects these programs
+before they run. A candidate could therefore see an invalid program with a
+verified numerical answer. Four direct tests and one public French admission
+test reproduced the false acceptance; ten controls passed.
+
+After the existing source-length and AST-size checks, the verifier now checks
+that the complete module compiles and discards the resulting code object. It
+does not execute that object. The bounded interpreter still handles evaluation,
+so a valid untaken branch containing division by zero remains safe. No prompt,
+expected answer, supported operation or execution limit changed.
+
+All 134 focused tests passed. This follow-up reviews the three-line production
+change and all 85 lines of the binding tests, in addition to the prior
+source-bound review. It is not a complete language or paper qualification.
+
+| File | SHA256 |
+| --- | --- |
+| `Backend/Core/france/verification.py` | `daa4f8abf39adf0631421071614973159c58a07891eb062c5e44c3f45f93eb5c` |
+| `tests/test_french_trace_bindings.py` | `b3c9e97c6b5cfb7907db61e80b34bd43fb7fe8010ffa95f0b533822dfe9d1763` |

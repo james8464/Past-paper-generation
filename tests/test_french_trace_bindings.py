@@ -56,3 +56,30 @@ def test_valid_builtin_use_and_uncalled_shadowed_values_remain_supported(
 ):
     result = verify_contract(contract(code, expected))
     assert result == {"state": "passed", "passed": True, "actual": expected}
+
+
+@pytest.mark.parametrize("statement", ["return", "break", "continue", "nonlocal x"])
+def test_trace_refuses_invalid_module_syntax_even_in_unreached_branch(statement):
+    code = f"x = 1\nif False:\n    {statement}"
+    with pytest.raises(SyntaxError):
+        compile(code, "<test trace>", "exec")
+    result = verify_contract(contract(code, 1))
+    assert result["state"] == "failed"
+    assert not result["passed"]
+
+
+def test_public_french_admission_refuses_uncompilable_printed_trace():
+    raw = raw_exercise()
+    code = "x = 1\nif False:\n    return"
+    raw["questions"][0].update(
+        prompt=f"On exécute ce programme Python.\n```python\n{code}\n```\nDonner x.",
+        answer="1",
+        verification=contract(code, 1),
+    )
+    with pytest.raises(ValueError, match="Vérification générique échouée"):
+        validate_authored_exercise(raw, "1")
+
+
+def test_valid_unreached_runtime_error_is_not_executed():
+    result = verify_contract(contract("x = 1\nif False:\n    x = 1 // 0", 1))
+    assert result == {"state": "passed", "passed": True, "actual": 1}
