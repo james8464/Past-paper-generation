@@ -1639,8 +1639,11 @@
     {
       "path": "Backend/Core/subjects/accounting_selected_response.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 322-line review of typed public inputs, arithmetic routes, option checks and formatter boundary; 213 focused tests passed. Retained Q06 semantic false acceptance remains open.",
+      "source_sha256": "794766f3eb77720beb2e752cec8dc388bba4d6d7d113fe4214f0be474efd1ce1",
+      "review_evidence": "docs/quality/accounting-choice-format-review.md",
+      "review_evidence_sha256": "ccd835ff55d50007eef196a126f2b8090e36e16bcb6950b0874adc18b820c402"
     },
     {
       "path": "Backend/Core/subjects/biology.py",
@@ -3021,6 +3024,12 @@
     },
     {
       "path": "docs/quality/accounting-budget-public-assumptions-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/accounting-choice-format-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5734,8 +5743,11 @@
     {
       "path": "tests/test_accounting_selected_response.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 295-line review, including bounded red reproduction before exponent expansion, preserved format controls and public-source arithmetic.",
+      "source_sha256": "26feb931e0ab0b9c9e58759ca49e90ec68f5d822f6933bf8dd3f8af363c10289",
+      "review_evidence": "docs/quality/accounting-choice-format-review.md",
+      "review_evidence_sha256": "ccd835ff55d50007eef196a126f2b8090e36e16bcb6950b0874adc18b820c402"
     },
     {
       "path": "tests/test_accounting_solver.py",
