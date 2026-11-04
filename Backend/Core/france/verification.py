@@ -13,6 +13,9 @@ def _trace(code: str, variable: str):
     tree = ast.parse(code)
     if sum(1 for _ in ast.walk(tree)) > 1000:
         raise ValueError("Programme trop complexe")
+    # Parsing alone misses scope errors, even in branches that never run.
+    # Discard the compiled result; only the bounded interpreter runs the trace.
+    compile(tree, "<trace Python>", "exec", dont_inherit=True)
     environment = {}
     budget = 5000
     binary = {

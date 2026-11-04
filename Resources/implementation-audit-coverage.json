@@ -1244,10 +1244,10 @@
       "path": "Backend/Core/france/verification.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete prior-file review plus independent review of every range-semantics production delta, bounded interpreter and JSON evidence; selective callers and 194 focused regressions. Printed-task semantic equivalence and full paper quality remain outside this attestation.",
-      "source_sha256": "0150e723b4d7314ea588a5aec0aded5c6e1b7e32da563ec85d1e29b23505fce1",
-      "review_evidence": "docs/quality/french-python-range-review.md",
-      "review_evidence_sha256": "6e4f684326fb9ffff33609a8f062ce4b2c5d7c7dcd48490c58d1a1ffed86e1d6"
+      "reason": "Prior complete verifier review retained; three-line compile-only syntax gate reviewed against direct and public admission failures and valid untaken-branch control. Full paper quality remains outside this attestation.",
+      "source_sha256": "daa4f8abf39adf0631421071614973159c58a07891eb062c5e44c3f45f93eb5c",
+      "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
+      "review_evidence_sha256": "d7aa6c1da672b3d04e76e7289d7bcb31f2e3baaa211870c92cb72d77fe2098c7"
     },
     {
       "path": "Backend/Core/france/whole_case_pdf.py",
@@ -6860,10 +6860,10 @@
       "path": "tests/test_french_trace_bindings.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete-file review and final delta checks recorded; remaining graph corner case is explicit in the evidence.",
-      "source_sha256": "6cfbb88f4541b0b095464b6ba9d3ee404a9028b5182db1a90784872e7047e8c4",
+      "reason": "All 85 lines reviewed, including four compiler-rejected statements, public admission and valid untaken-branch control. Focused suite passed 134 tests.",
+      "source_sha256": "b3c9e97c6b5cfb7907db61e80b34bd43fb7fe8010ffa95f0b533822dfe9d1763",
       "review_evidence": "docs/quality/french-trace-bindings-review-2026-11-03.md",
-      "review_evidence_sha256": "27a2891757a0540fc8cdaac9f793da99df6ebe3b2650dc4fbb2ab101942f4ded"
+      "review_evidence_sha256": "d7aa6c1da672b3d04e76e7289d7bcb31f2e3baaa211870c92cb72d77fe2098c7"
     },
     {
       "path": "tests/test_french_trace_ranges.py",
