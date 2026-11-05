@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793913045.5919168,
-    "ast_hash": "0d46652f4027b5a9d321a0c22c3d29fb",
+    "mtime": 1793915112.5534806,
+    "ast_hash": "749fe5d99c7103242669314df791cfbe",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1275,8 +1275,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
-    "mtime": 1793666909.743751,
-    "ast_hash": "a9297d4375810577c0f860909e2f393e",
+    "mtime": 1793914937.6530886,
+    "ast_hash": "ddaf30c516f63ff0266dc93108506aef",
     "semantic_hash": ""
   },
   "macOS/scripts/bootstrap_backend.sh": {
@@ -3510,8 +3510,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/GenerationPresentation.swift": {
-    "mtime": 1793560143.4849105,
-    "ast_hash": "2aea7e461f817244067827ec42273a54",
+    "mtime": 1793915035.3685591,
+    "ast_hash": "5b14c51515eb62678e68928ac9e1bad9",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/InterfaceText.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793913045.4875882,
-    "ast_hash": "d46f42b2feffc25f2125704112a8f688",
+    "mtime": 1793915112.4505212,
+    "ast_hash": "b1d9856b93d804f82ed89482662481ab",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5717,6 +5717,11 @@
   "docs/quality/ollama-structured-thinking-policy-review-2026-11-05.md": {
     "mtime": 1793909125.0509517,
     "ast_hash": "4cd7e2d4968cad585c32b9a56c33077a",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-generation-error-presentation-review.md": {
+    "mtime": 1793915106.732507,
+    "ast_hash": "869ebe85cb35a57db1f11c8803ffd524",
     "semantic_hash": ""
   }
 }
