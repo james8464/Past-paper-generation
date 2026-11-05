@@ -4,6 +4,36 @@ import XCTest
 
 final class BackendLifecycleClientTests: XCTestCase {
     @MainActor
+    func testNormalCancellationKillsStubbornOwnedHelperWithoutStoppingReplacement() async throws {
+        let lifecycle = BackendProcessLifecycle()
+        let client = try fixtureClient(
+            #"trap '' TERM; printf '%s\n' '{"type":"done","message":"Ready"}'; exec /bin/sleep 30"#,
+            lifecycle: lifecycle
+        )
+        let ready = expectation(description: "Owned helper ignores TERM")
+        let finished = expectation(description: "Normal cancellation stops owned helper")
+        let process = try client.run(arguments: [], onEvent: { event in
+            if event == .done(message: "Ready") { ready.fulfill() }
+        }, onFinish: { _ in finished.fulfill() })
+        await fulfillment(of: [ready], timeout: 3)
+        let replacement = try fixtureClient("exec /bin/sleep 30", lifecycle: lifecycle)
+            .run(arguments: [], onEvent: { _ in }, onFinish: { _ in })
+        defer {
+            process.forceTerminate()
+            replacement.forceTerminate()
+        }
+
+        client.cancel(process)
+        await fulfillment(of: [finished], timeout: 3)
+        XCTAssertFalse(process.isRunning)
+        if !process.isRunning { XCTAssertEqual(process.terminationStatus, SIGKILL) }
+        XCTAssertTrue(replacement.isRunning, "Cancellation cannot stop a replacement job")
+        XCTAssertTrue(lifecycle.prepareForShutdown())
+        let stopped = await lifecycle.waitForShutdown(gracePolls: 0)
+        XCTAssertTrue(stopped)
+    }
+
+    @MainActor
     func testOwnedHelperIgnoringGracefulTerminationIsKilledWithinBound() async throws {
         let lifecycle = BackendProcessLifecycle()
         let client = try fixtureClient(

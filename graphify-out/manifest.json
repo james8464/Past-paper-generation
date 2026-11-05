@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793749495.0415971,
-    "ast_hash": "82a382174302ccf3fdcdace24f428169",
+    "mtime": 1793903502.389213,
+    "ast_hash": "00fc77e2be22b234a08324eff3c3cd00",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3570,8 +3570,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/BackendClient.swift": {
-    "mtime": 1793543731.69205,
-    "ast_hash": "531c3e792d9a2782e00575ef720cd727",
+    "mtime": 1793903253.042445,
+    "ast_hash": "a6ee6e7ca41dddf7e5a68bec568a373d",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/SecretStore.swift": {
@@ -3580,13 +3580,13 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/State/ApplicationCoordinator.swift": {
-    "mtime": 1793632981.0674782,
-    "ast_hash": "b4afd6cdf0c2709018aad67e2be11fb7",
+    "mtime": 1793903253.0428786,
+    "ast_hash": "450904e7e5ee19e749476b3b7a103664",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/BenchmarkCoordinator.swift": {
-    "mtime": 1793719419.154027,
-    "ast_hash": "ba0bb5a3569cb74d92a7b2e0ae91e263",
+    "mtime": 1793903253.0430691,
+    "ast_hash": "a3658485b791ab5b077c0b692cb44753",
     "semantic_hash": ""
   },
   "macOS/Keldin/State/CatalogStore.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793719419.1585758,
-    "ast_hash": "88611521c7b73cd0e05fb90cf43e175a",
+    "mtime": 1793903406.906385,
+    "ast_hash": "1e4d022c56ae090fa9a6f88e6988e173",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793760664.6043115,
-    "ast_hash": "e8fd8c16129b875725734eaca49729fb",
+    "mtime": 1793903522.528624,
+    "ast_hash": "6a8365837beadaa2fdb31f65222fdf03",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4650,18 +4650,18 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/BackendProcessLifecycle.swift": {
-    "mtime": 1793543731.69211,
-    "ast_hash": "16056b814e2a0a954f226a9c6d0f14f1",
+    "mtime": 1793903253.042182,
+    "ast_hash": "e3d5b28cd04a1daf7d1cc063f9f7594e",
     "semantic_hash": ""
   },
   "macOS/Tests/BackendLifecycleClientTests.swift": {
-    "mtime": 1793543731.6937244,
-    "ast_hash": "f47ec4a3c3cbf55b5b714e829b3beed3",
+    "mtime": 1793903253.0432355,
+    "ast_hash": "7dc9d74a9471beb16facf0b2493bc0d3",
     "semantic_hash": ""
   },
   "macOS/Tests/BackendProcessLifecycleTests.swift": {
-    "mtime": 1793543731.693794,
-    "ast_hash": "60913d2ae2ea0ed44c6ad87200189e83",
+    "mtime": 1793903287.721288,
+    "ast_hash": "164f188514d2b02ee57d95010c619303",
     "semantic_hash": ""
   },
   "tests/test_accounting_paper_two_source_choices.py": {
@@ -5687,6 +5687,16 @@
   "docs/quality/french-trace-source-binding-review.md": {
     "mtime": 1793749495.0418127,
     "ast_hash": "692c234617f208fd2a6ad284a86b0c91",
+    "semantic_hash": ""
+  },
+  "docs/quality/accounting-choice-format-review.md": {
+    "mtime": 1793768048.218381,
+    "ast_hash": "6ff28ac0101209bca2f07cb37369d248",
+    "semantic_hash": ""
+  },
+  "docs/quality/owned-helper-cancellation-review.md": {
+    "mtime": 1793903501.9741375,
+    "ast_hash": "a1ed37f28951c09290cf958d7ff326a7",
     "semantic_hash": ""
   }
 }

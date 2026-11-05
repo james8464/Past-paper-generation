@@ -6,6 +6,37 @@ import XCTest
 
 final class RunIsolationTests: XCTestCase {
     @MainActor
+    func testGenerationCancellationUsesTheOwningBackend() throws {
+        let backend = ControlledRunBackend()
+        let application = application(backend: backend)
+        let board = try XCTUnwrap(ExamCatalog.readyBoards.first { $0.usesAI })
+        application.selectBoard(board)
+        application.setDryRun(true)
+        application.generate()
+        let process = try XCTUnwrap(backend.lastProcess)
+
+        application.cancelGeneration()
+        application.cancelGeneration()
+
+        XCTAssertEqual(backend.cancelledProcessIDs, [ObjectIdentifier(process)])
+        XCTAssertFalse(application.isRunning)
+    }
+
+    @MainActor
+    func testBenchmarkCancellationUsesTheOwningBackend() throws {
+        let backend = ControlledRunBackend()
+        let benchmark = BenchmarkCoordinator(backend: backend)
+        benchmark.start(generationIsRunning: false)
+        let process = try XCTUnwrap(backend.lastProcess)
+
+        benchmark.cancel()
+        benchmark.cancel()
+
+        XCTAssertEqual(backend.cancelledProcessIDs, [ObjectIdentifier(process)])
+        XCTAssertFalse(benchmark.isRunning)
+    }
+
+    @MainActor
     func testUKSuccessWithoutCurrentQuestionPaperCannotCompleteHistory() throws {
         for output in ["empty", "done-only", "private-json", "source-only"] {
             let backend = ControlledRunBackend()
@@ -2095,6 +2126,7 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
 
     private(set) var requests: [Request] = []
     private(set) var lastProcess: Process?
+    private(set) var cancelledProcessIDs: [ObjectIdentifier] = []
     var launchError: Error?
 
     func run(
@@ -2110,6 +2142,11 @@ final class ControlledRunBackend: BackendRunning, @unchecked Sendable {
     }
 
     func collect(arguments: [String]) async throws -> [BackendEvent] { [] }
+
+    func cancel(_ process: Process) {
+        cancelledProcessIDs.append(ObjectIdentifier(process))
+        process.terminate()
+    }
 }
 
 private final class ControlledProcess: Process, @unchecked Sendable {
