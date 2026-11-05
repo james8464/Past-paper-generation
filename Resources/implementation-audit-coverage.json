@@ -3803,6 +3803,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/native-progress-reserved-space-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/native-release-safety-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5177,10 +5183,10 @@
       "path": "macOS/Keldin/Navigation/ContentView.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "0f7d97133dd4448cd95ba78a7c3ded99e8d26312024a2a71e2a1a0841733bf3b",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "reason": "Complete 134-line EOF review and independent delta review of reserved progress layout; actual native RED/GREEN measured. Manual row removal, full release acceptance and whole-project completion remain separate.",
+      "source_sha256": "d33b056210dd437cbc762b6a11783f5b465f770d70cb7c565f70104772427687",
+      "review_evidence": "docs/quality/native-progress-reserved-space-review.md",
+      "review_evidence_sha256": "6d256e8e1617c26a4209f458c2c21f8089e991e3141ad8ff0a55e6180a6373b2"
     },
     {
       "path": "macOS/Keldin/Navigation/SidebarView.swift",
@@ -5438,10 +5444,10 @@
       "path": "macOS/Tests/GenerationNavigationInteractiveTests.swift",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete baseline EOF and final test-isolation delta review; hosted root binding and standard-preference assertions reviewed, not a claim the manual journey was executed.",
-      "source_sha256": "5862e9af2242b1b45282bdbc792a96733f4ed479b6806b2e80e2b1bf511048c9",
-      "review_evidence": "docs/quality/navigation-fixture-storage-review-2026-11-03.md",
-      "review_evidence_sha256": "9043853f65778a770fa50eb0f7384eda1e612141065eb0a9f9eb9d4d80745753"
+      "reason": "Complete baseline EOF review retained; every added native geometry fixture and isolation line reviewed. Ordinary RED/GREEN measured; locked-Mac operator timeout is not a manual pass.",
+      "source_sha256": "4101a1aadf96f4a85a16c3c882425585fd02df72f84e4ad447e23d9de67b1392",
+      "review_evidence": "docs/quality/native-progress-reserved-space-review.md",
+      "review_evidence_sha256": "6d256e8e1617c26a4209f458c2c21f8089e991e3141ad8ff0a55e6180a6373b2"
     },
     {
       "path": "macOS/Tests/HistoryDeletionTests.swift",
