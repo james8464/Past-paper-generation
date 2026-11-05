@@ -39,11 +39,20 @@ def open_ollama_request(request: Request, *, timeout: int):
     return build_opener(ProxyHandler({}), NoRedirects()).open(request, timeout=timeout)
 
 
-def ollama_request(url: str, data: bytes, headers: dict, *, attempts: int = 2):
+def ollama_request(
+    url: str,
+    data: bytes,
+    headers: dict,
+    *,
+    attempts: int = 2,
+    timeout_seconds: int = 900,
+):
     # Transport failures are explicit. Only structured-response repairs are
     # retried by the French client; never silently switch inference endpoints.
     # A 12B model can need more than three minutes for this route's large,
     # schema-constrained exercise payload on a memory-limited Mac.
+    if type(timeout_seconds) is not int or not 1 <= timeout_seconds <= 900:
+        raise ValueError("Ollama timeout must be an integer from 1 to 900 seconds.")
     return open_ollama_request(
-        Request(url, data=data, headers=headers, method="POST"), timeout=900
+        Request(url, data=data, headers=headers, method="POST"), timeout=timeout_seconds
     )

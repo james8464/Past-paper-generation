@@ -9,6 +9,7 @@ from types import ModuleType, SimpleNamespace
 
 import pytest
 
+from Backend.Core.ollama_thinking import structured_thinking_policy
 from Backend.Core.providers import (
     HostedLLMClient,
     _mlx_decoder_schema,
@@ -17,6 +18,15 @@ from Backend.Core.providers import (
     _ollama_temperature,
     urllib_request,
 )
+
+
+@pytest.fixture(autouse=True)
+def isolate_inference_transport(monkeypatch):
+    monkeypatch.setattr(
+        HostedLLMClient,
+        "_ollama_thinking_policy",
+        lambda self, request_function: structured_thinking_policy({}),
+    )
 
 
 @pytest.mark.parametrize("provider", ["ollama", "apple", "openai", "anthropic"])

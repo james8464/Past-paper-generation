@@ -99,6 +99,75 @@ final class CoordinatorTests: XCTestCase {
     }
 
     @MainActor
+    func testFrenchStructuredRefusalShowsLocalizedAdviceAndKeepsBackendDetails() throws {
+        let raw = """
+        L'exercice 1 reste mal structuré après deux tentatives : 1 validation error for NSIExercise
+          Value error, Une question référence une figure absente [type=value_error, input_value={'id': '1', 'title': 'Ges...n': {'kind': 'human'}}]}, input_type=dict]
+            For further information visit https://errors.pydantic.dev/2.14/v/value_error
+        """
+        try assertFrenchQualityRefusal(raw)
+    }
+
+    @MainActor
+    func testFrenchVerificationRefusalShowsLocalizedAdviceAndKeepsBackendDetails() throws {
+        try assertFrenchQualityRefusal("Vérification générique échouée : 1a : résultat différent")
+    }
+
+    @MainActor
+    private func assertFrenchQualityRefusal(_ raw: String) throws {
+        for (language, expected) in [
+            ("en", "The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools."),
+            ("fr", "Le résultat du modèle ne passe pas les contrôles de qualité du sujet. Réessayez ou choisissez un modèle plus performant dans Réglages. Les détails peuvent être copiés depuis Outils."),
+        ] {
+            XCTAssertEqual(GenerationPresentation.error(raw, code: "french_generation_failed", language: language), expected)
+            let defaults = isolatedDefaults()
+            defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+            defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+            defaults.set(language, forKey: "interfaceLanguage")
+            let backend = ControlledRunBackend()
+            let model = isolatedApplication(defaults: defaults, backend: backend)
+            model.setDryRun(true)
+            model.generate()
+            let request = try XCTUnwrap(backend.requests.first)
+            request.onEvent(.error(message: raw, code: "french_generation_failed"))
+            XCTAssertEqual(model.errorMessage, expected)
+            XCTAssertTrue(model.showError)
+            XCTAssertEqual(model.progressEntries.last?.message, raw)
+            XCTAssertTrue(model.diagnosticSummary.contains(raw))
+            request.onFinish(.success(1))
+            XCTAssertEqual(model.generationCoordinator.status, raw)
+            XCTAssertEqual(model.recentDocumentStore.records.first?.state, .failed)
+        }
+    }
+
+    func testFrenchQualityPresentationDoesNotHideOtherFailuresOrDiagnosticMentions() {
+        let qualities = [
+            "L'exercice 1 reste mal structuré après deux tentatives : invalid shape",
+            "Vérification générique échouée : 1a : résultat différent",
+        ]
+        for quality in qualities {
+            for code in [nil, "generation_failed", "output_error", "provider_error", "network_error", "cancelled"] as [String?] {
+                XCTAssertEqual(GenerationPresentation.error(quality, code: code, language: "en"), quality)
+            }
+            XCTAssertEqual(GenerationPresentation.error("Unknown failure\n" + quality,
+                code: "french_generation_failed", language: "en"), "Unknown failure\n" + quality)
+        }
+        for message in [
+            "Connection refused by the local provider",
+            "Ollama returned incomplete structured output.",
+            "Creation cancelled",
+            "Could not write to the selected folder",
+            "L'exercice 4 reste mal structuré après deux tentatives : invalid shape",
+            "Vérification générique échouée : 0a : résultat différent",
+            "Vérification générique échouée : 100a : résultat différent",
+            "Vérification générique échouée : 1aa : résultat différent",
+            "Vérification générique échouée : x1 : résultat différent",
+        ] {
+            XCTAssertEqual(GenerationPresentation.error(message, code: "french_generation_failed", language: "en"), message)
+        }
+    }
+
+    @MainActor
     func testQualityPresentationDoesNotHideOtherFailureTypes() {
         let quality = "question 01 failed independent solution reconciliation: mismatch"
         for code in ["output_error", "mlx_setup_required", "provider_error", "network_error", "cancelled"] {

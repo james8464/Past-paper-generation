@@ -1433,6 +1433,12 @@
       "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
+      "path": "Backend/Core/ollama_thinking.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/open_credit.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -1511,10 +1517,10 @@
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal provider-boundary review and scoped follow-up review of the transport repair; live model quality and broader release acceptance remain separate.",
-      "source_sha256": "30802cade04b0f4d4c9bf83ef0ac8337ea15f4f5896a0a60f0b1ac64aa81c6c0",
-      "review_evidence": "docs/quality/provider-boundary-file-review-2026-11-02.md",
-      "review_evidence_sha256": "0e9bfbaca8f7a004eb704f74819070e996fc3e12b8793d813a4f49ff979a82e9"
+      "reason": "Complete 1941-line baseline read plus both complete cancellation deltas; scoped transport/cache/budget/schema review and independently reviewed repair, not provider or paper qualification.",
+      "source_sha256": "30d54c477e3436c5a0fb0594a4a06ba545ccb91c0dfaa9f04ce781c85d914e35",
+      "review_evidence": "docs/quality/ollama-metadata-cancellation-review.md",
+      "review_evidence_sha256": "1aa704e3c1925cf579ffb04e42fcbc7195913e9df39e90858ed81124829713a5"
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -3275,6 +3281,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-generation-error-presentation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-isolated-vertex-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3911,7 +3923,19 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/ollama-metadata-cancellation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/ollama-parallel-subjects-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/ollama-structured-thinking-policy-review-2026-11-05.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4972,11 +4996,8 @@
     {
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by root within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "9d0769b07ae5adc28486fc14befd8b33ec89836db4c2b91395ba81eb80e3ac54",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -7337,6 +7358,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_ollama_thinking_policy.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_open_credit_reconciliation.py",
       "classification": "test",
       "status": "pending",
@@ -7687,11 +7714,8 @@
     {
       "path": "tools/french_model_capability.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Internal reviewer read all 420 lines through EOF and selectively traced provider selection and existing capability tests. Static review only; no model calls, speed measurements or educational qualification.",
-      "source_sha256": "74e545148c46d1e8fc0d878a3652b7e4a57dc0a78a6bbdd1103a98060bfa7cbd",
-      "review_evidence": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
-      "review_evidence_sha256": "3f4db0363f8b3f455ea18a1c941ff4470a3c7489145656ea8523abe7f855b0ec"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tools/french_nsi_benchmark.py",

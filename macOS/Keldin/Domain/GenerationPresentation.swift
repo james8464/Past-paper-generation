@@ -132,10 +132,14 @@ enum GenerationPresentation {
     }
 
     private static func isGenerationQualityFailure(_ message: String, code: String?) -> Bool {
-        guard code == "generation_failed" else { return false }
         // Only the actual failure line classifies the error, never a path or
         // diagnostic body that happens to mention an assessment check.
         let line = String(message.prefix(while: { $0 != "\n" && $0 != "\r" }))
+        if code == "french_generation_failed" {
+            return line.range(of: #"^L'exercice [123] reste mal structuré après deux tentatives : "#, options: .regularExpression) != nil
+                || line.range(of: #"^Vérification générique échouée : [1-9][0-9]?[a-z]? : "#, options: .regularExpression) != nil
+        }
+        guard code == "generation_failed" else { return false }
         let identifier = #"(?:question |question-|verified contract )?[0-9][0-9A-Za-z()./_-]{0,63}"#
         let failures = #"(?:failed independent solution reconciliation:|failed reference-demand review:|failed second-pass assessment review:|failed assessment review:|independent answer disagrees with the keyed option(?:$|:))"#
         return line.range(of: "^\(identifier) \(failures)", options: .regularExpression) != nil
