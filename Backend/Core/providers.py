@@ -253,7 +253,7 @@ class HostedLLMClient:
                     ) as response:
                         envelope = _read_json_response(response)
                 except (RuntimeError, OSError) as error:
-                    interruption = _metadata_interruption(error)
+                    interruption = _transport_interruption(error)
                     if interruption is error:
                         raise
                     if interruption is not None:
@@ -1092,6 +1092,9 @@ def urllib_request(
             )
             time.sleep(delay)
         except (urllib.error.URLError, TimeoutError) as error:
+            interruption = _transport_interruption(error)
+            if interruption is not None:
+                raise interruption from error
             last_error = error
             if attempt == attempts - 1:
                 raise RuntimeError(
@@ -1881,10 +1884,10 @@ def _ollama_seed(prompt: str) -> int:
     return 0
 
 
-def _metadata_interruption(error: BaseException) -> InterruptedError | None:
+def _transport_interruption(error: BaseException) -> InterruptedError | None:
     from urllib.error import URLError
 
-    # urlopen and the shared transport can wrap an interrupted lookup. Follow
+    # urlopen and the shared transport can wrap an interrupted request. Follow
     # only those known wrappers; a bounded walk also handles malformed cycles.
     for _ in range(8):
         if isinstance(error, InterruptedError):

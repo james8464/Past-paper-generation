@@ -1517,10 +1517,10 @@
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete 1941-line baseline read plus complete cancellation delta; scoped transport/cache/budget/schema review and independently reviewed repair, not provider or paper qualification.",
-      "source_sha256": "d3249fd60038e025155e626c92781ba119ad85ecffe23953726738b9294e1df4",
+      "reason": "Complete 1941-line baseline read plus both complete cancellation deltas; scoped transport/cache/budget/schema review and independently reviewed repair, not provider or paper qualification.",
+      "source_sha256": "30d54c477e3436c5a0fb0594a4a06ba545ccb91c0dfaa9f04ce781c85d914e35",
       "review_evidence": "docs/quality/ollama-metadata-cancellation-review.md",
-      "review_evidence_sha256": "f123fad27fa03e6cb194d9d178096412e745b8eb618db34eaa7c63082bcb436a"
+      "review_evidence_sha256": "1aa704e3c1925cf579ffb04e42fcbc7195913e9df39e90858ed81124829713a5"
     },
     {
       "path": "Backend/Core/psychometrics.py",

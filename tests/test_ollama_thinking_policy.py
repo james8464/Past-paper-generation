@@ -6,7 +6,7 @@ from urllib.error import URLError
 import pytest
 
 from Backend.Core.ollama_thinking import structured_thinking_policy
-from Backend.Core.providers import HostedLLMClient
+from Backend.Core.providers import HostedLLMClient, urllib_request
 
 
 @pytest.mark.parametrize(
@@ -217,6 +217,66 @@ def test_cyclic_metadata_failure_remains_bounded_and_unavailable():
     assert client._ollama("owned", request_function=send) == {}
     assert len(calls) == 2
     assert client._ollama_policies["owned"]["metadata"] == "unavailable"
+
+
+@pytest.mark.parametrize("direct", [False, True])
+def test_shared_transport_never_retries_wrapped_cancellation(monkeypatch, direct):
+    calls, progress, sleeps = [], [], []
+    interruption = InterruptedError("owned cancellation")
+
+    def open_request(*args, **kwargs):
+        calls.append(1)
+        raise URLError(interruption)
+
+    target = (
+        "Backend.Core.france.network.open_ollama_request"
+        if direct
+        else "urllib.request.urlopen"
+    )
+    monkeypatch.setattr(target, open_request)
+    monkeypatch.setattr(
+        "Backend.Core.providers.emit_progress", lambda *a, **k: progress.append(1)
+    )
+    monkeypatch.setattr("Backend.Core.providers.time.sleep", sleeps.append)
+    with pytest.raises(InterruptedError) as failure:
+        urllib_request(
+            "http://localhost:11434/api/chat",
+            b"{}",
+            {},
+            attempts=3,
+            direct_ollama=direct,
+        )
+    assert failure.value is interruption
+    assert calls == [1]
+    assert progress == sleeps == []
+
+
+@pytest.mark.parametrize("direct", [False, True])
+def test_shared_transport_keeps_ordinary_network_retries(monkeypatch, direct):
+    calls, progress, sleeps = [], [], []
+
+    def open_request(*args, **kwargs):
+        calls.append(1)
+        if len(calls) < 3:
+            raise URLError(OSError("offline"))
+        return io.BytesIO(b"{}")
+
+    target = (
+        "Backend.Core.france.network.open_ollama_request"
+        if direct
+        else "urllib.request.urlopen"
+    )
+    monkeypatch.setattr(target, open_request)
+    monkeypatch.setattr(
+        "Backend.Core.providers.emit_progress", lambda *a, **k: progress.append(1)
+    )
+    monkeypatch.setattr("Backend.Core.providers.time.sleep", sleeps.append)
+    with urllib_request(
+        "http://localhost:11434/api/chat", b"{}", {}, attempts=3, direct_ollama=direct
+    ) as response:
+        assert response.read() == b"{}"
+    assert len(calls) == 3 and len(progress) == 2
+    assert sleeps == [1.0, 2.0]
 
 
 @pytest.mark.parametrize("french", [False, True])
