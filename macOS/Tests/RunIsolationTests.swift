@@ -501,7 +501,7 @@ final class RunIsolationTests: XCTestCase {
     }
 
     @MainActor
-    func testHistoryOpenMissingPDFUsesExistingUnavailableFlowNotPreviousDocument() throws {
+    func testHistoryOpenMissingPDFUsesExistingUnavailableFlowNotPreviousDocument() async throws {
         let defaults = isolatedDefaults()
         let application = application(backend: ControlledRunBackend(), defaults: defaults)
         let history = try temporaryHistoryURL()
@@ -516,10 +516,12 @@ final class RunIsolationTests: XCTestCase {
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults))
         application.openHistoryPDF(from: [record.id], fileID: readable.id)
         controller.update(file: application.generatedFiles.first { $0.id == application.previewedFileID }, provenance: record)
+        await controller.waitForPendingLoad()
         XCTAssertTrue(controller.canAccessDocument)
 
         application.openHistoryPDF(from: [record.id], fileID: missing.id)
         controller.update(file: application.generatedFiles.first { $0.id == application.previewedFileID }, provenance: record)
+        await controller.waitForPendingLoad()
 
         XCTAssertEqual(application.previewedFileID, missing.id)
         XCTAssertEqual(application.catalogStore.sidebarSelection, .documents)

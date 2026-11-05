@@ -3971,6 +3971,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/pdf-loading-isolation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/pdf-visible-page-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5084,10 +5090,10 @@
       "path": "macOS/Keldin/Features/Documents/DocumentPreviewView.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
-      "source_sha256": "c1c2e9b2706bcd82660d8bb328fab30d89bd84513ed2a4c51da88d9b56ed4d09",
-      "review_evidence": "docs/quality/readonly-pdf-preview-review-2026-11-02.md",
-      "review_evidence_sha256": "6dd94e94c0a28b9f47111882e37f827078150d13937f2e66c5e145e235ac685b"
+      "reason": "Full source read through EOF with bounded actor, scoped-access, cancellation and document-action review; not whole-app or paper-quality qualification.",
+      "source_sha256": "b7f95bca291812d3f2630a0d52dd692af33b7dec3c747e1579dfb28a3e0f0d0f",
+      "review_evidence": "docs/quality/pdf-loading-isolation-review.md",
+      "review_evidence_sha256": "2edcf83f402aff0c212f586134d2cfd171e3d97354f4f38306947a9818c49414"
     },
     {
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
@@ -5254,8 +5260,11 @@
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full source read through EOF with bounded actor, scoped-access, cancellation and document-action review; not whole-app or paper-quality qualification.",
+      "source_sha256": "e7017fa9b416973d7fa93a4f063aefdb0837b15637a230c33b7b179e68aa2d90",
+      "review_evidence": "docs/quality/pdf-loading-isolation-review.md",
+      "review_evidence_sha256": "2edcf83f402aff0c212f586134d2cfd171e3d97354f4f38306947a9818c49414"
     },
     {
       "path": "macOS/Keldin/Services/SecretStore.swift",

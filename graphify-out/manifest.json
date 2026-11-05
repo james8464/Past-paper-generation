@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793916119.5933254,
+    "mtime": 1793916859.9054916,
     "ast_hash": "c8cffd2c8b269dc2375897f81c6d79ca",
     "semantic_hash": ""
   },
@@ -1270,8 +1270,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/AppTests.swift": {
-    "mtime": 1793719419.506333,
-    "ast_hash": "117f28a82f480f3fb4efefadb6aea6f3",
+    "mtime": 1793921470.8303695,
+    "ast_hash": "d35d69dc2069f7cece32c98f95d9550e",
     "semantic_hash": ""
   },
   "macOS/Tests/CoordinatorTests.swift": {
@@ -3530,8 +3530,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Documents/DocumentPreviewView.swift": {
-    "mtime": 1793666909.7168188,
-    "ast_hash": "8ecef01780f49aa1a976042ecfafc985",
+    "mtime": 1793921854.6917493,
+    "ast_hash": "22eae1b8121479f57668258849c920d8",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Documents/JobHistoryView.swift": {
@@ -3870,8 +3870,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/RunIsolationTests.swift": {
-    "mtime": 1793904424.9861736,
-    "ast_hash": "1e4d022c56ae090fa9a6f88e6988e173",
+    "mtime": 1793921470.830851,
+    "ast_hash": "d04b71b04f1c1eb204685f6de99e05c1",
     "semantic_hash": ""
   },
   "docs/quality/native-run-isolation-review-2026-10-28.md": {
@@ -4020,13 +4020,13 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793916119.4910192,
-    "ast_hash": "e28351fab3dd2ce4da8d034531787ecf",
+    "mtime": 1793916877.9932039,
+    "ast_hash": "efd798bcaa470e151eae6caed5baf0f9",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
-    "mtime": 1793748202.4227877,
-    "ast_hash": "afd25ba08596f184a1c0bb965d98df40",
+    "mtime": 1793922019.495034,
+    "ast_hash": "40005fc76c8c619879a671ab659eee8c",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/UKArtifactPublisher.swift": {
@@ -4040,8 +4040,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/PDFDocumentAccessTests.swift": {
-    "mtime": 1793748167.4799414,
-    "ast_hash": "a6fbb83cd8b8bf3a8d61968f8a7595da",
+    "mtime": 1793922123.9296095,
+    "ast_hash": "85668d9b8588e5125685e891dd91c0f9",
     "semantic_hash": ""
   },
   "macOS/Tests/SecretStoreTests.swift": {
@@ -5725,8 +5725,13 @@
     "semantic_hash": ""
   },
   "docs/quality/ollama-metadata-cancellation-review.md": {
-    "mtime": 1793916824.936513,
-    "ast_hash": "5b57363da9323c6bf454d364f6636a3b",
+    "mtime": 1793916869.23406,
+    "ast_hash": "a422028d24a9b926bf4aeb774a1f9275",
+    "semantic_hash": ""
+  },
+  "docs/quality/pdf-loading-isolation-review.md": {
+    "mtime": 1793922083.213495,
+    "ast_hash": "e7a887c0907b9c318135f4fc163aa953",
     "semantic_hash": ""
   }
 }

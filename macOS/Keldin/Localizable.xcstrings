@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Loading PDF…": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Chargement du PDF…"}}}},
     "Direct Download": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Téléchargement direct"}}}},
     "Not required": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Non requis"}}}},
     "Accepted": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Accepté"}}}},

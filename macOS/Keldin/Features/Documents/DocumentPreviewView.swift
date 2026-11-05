@@ -49,6 +49,12 @@ struct DocumentPreviewView: View {
                             .id(file.id)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                             .accessibilityLabel("Preview of \(file.title)")
+                            .overlay(alignment: .topTrailing) {
+                                if documentActions.isLoading { ProgressView("Loading PDF…").padding() }
+                            }
+                    } else if documentActions.isLoading {
+                        ProgressView("Loading PDF…")
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
                     } else {
                         ContentUnavailableView {
                             Label("PDF unavailable", systemImage: "doc.badge.ellipsis")
@@ -131,12 +137,21 @@ final class DocumentActionController: ObservableObject {
     @Published private(set) var loadedPDF: LoadedPDF?
     @Published private(set) var hasFormFields = false
     @Published private(set) var loadFailure: PDFLoadFailure?
+    @Published private(set) var isLoading = false
     private let access: PDFDocumentAccess
     private let quickLook = QuickLookCoordinator()
+    private var loadTask: Task<Void, Never>?
+    private var revision = UUID()
+    private var selectionLease: PDFReadLease?
+    enum Action: Equatable { case quickLook, reveal, print, export }
+    private let presentAction: (@MainActor (Action, GeneratedFile, LoadedPDF) -> Void)?
 
-    var canAccessDocument: Bool { loadedPDF != nil && selectedFile?.exists == true }
+    var canAccessDocument: Bool { !isLoading && loadedPDF != nil && selectedFile?.exists == true }
 
-    init(access: PDFDocumentAccess) { self.access = access }
+    init(access: PDFDocumentAccess, presentAction: (@MainActor (Action, GeneratedFile, LoadedPDF) -> Void)? = nil) {
+        self.access = access
+        self.presentAction = presentAction
+    }
 
     convenience init() { self.init(access: PDFDocumentAccess()) }
 
@@ -146,8 +161,8 @@ final class DocumentActionController: ObservableObject {
             set: { id in
                 let file = files.first(where: { $0.id == id })
                 let provenance = file.flatMap { PDFDocumentActions.provenanceRecord(for: $0, records: records) }
-                // File-menu shortcuts can run before SwiftUI's next onChange.
-                // Publish the selection only after its action target is ready.
+                // Clear the prior target before publishing the selection.
+                // Actions stay disabled until the new bytes are validated.
                 self.update(file: file, provenance: provenance)
                 selection.wrappedValue = id
             }
@@ -155,14 +170,23 @@ final class DocumentActionController: ObservableObject {
     }
 
     func update(file: GeneratedFile?, provenance: GenerationJobRecord?) {
-        if selectedFile?.url != file?.url { access.release() }
-        selectedFile = file
         self.provenance = provenance
+        guard selectedFile?.id != file?.id || selectedFile?.url != file?.url else { return }
+        invalidateLoad()
+        selectionLease?.release()
+        selectionLease = nil
+        loadedPDF = nil
+        hasFormFields = false
+        loadFailure = nil
+        selectedFile = file
         refresh()
     }
 
     func clear() {
-        access.release()
+        invalidateLoad()
+        quickLook.closeOwnedPreview()
+        selectionLease?.release()
+        selectionLease = nil
         selectedFile = nil
         provenance = nil
         loadedPDF = nil
@@ -171,51 +195,44 @@ final class DocumentActionController: ObservableObject {
     }
 
     func refresh() {
-        loadFailure = nil
-        guard let selectedFile else {
-            loadedPDF = nil
-            hasFormFields = false
-            return
-        }
-        switch access.load(selectedFile.url) {
-        case .success(let pdf):
-            // Keep PDFView's page and zoom when validation reads the same bytes.
-            if loadedPDF?.bytes != pdf.bytes {
-                hasFormFields = PDFDocumentActions.prepareReadOnlyPreview(pdf.document)
-                loadedPDF = pdf
-            }
-        case .failure(let failure):
-            loadedPDF = nil
-            hasFormFields = false
-            loadFailure = failure
-        }
+        startLoad()
     }
 
     func quickLookSelected() {
-        guard prepareAction() else { return }
-        guard canAccessDocument, let file = selectedFile else { return }
-        quickLook.present(file.url)
+        startLoad(action: .quickLook)
     }
 
     func revealSelected() {
-        guard prepareAction() else { return }
-        guard canAccessDocument, let file = selectedFile else { return }
-        NSWorkspace.shared.activateFileViewerSelecting([file.url])
+        startLoad(action: .reveal)
     }
 
     func printSelected() {
-        guard prepareAction(), let pdf = loadedPDF,
-              let operation = pdf.document.printOperation(for: NSPrintInfo.shared, scalingMode: .pageScaleToFit, autoRotate: true)
-        else { return }
-        operation.run()
+        startLoad(action: .print)
     }
 
     func exportSelected() {
-        guard prepareAction(), let file = selectedFile, let bytes = loadedPDF?.bytes else { return }
+        startLoad(action: .export)
+    }
+
+    private func perform(_ action: Action, file: GeneratedFile, pdf: LoadedPDF) {
+        if let presentAction { presentAction(action, file, pdf); return }
+        switch action {
+        case .quickLook:
+            guard let lease = selectionLease?.retained() else { return }
+            quickLook.present(file.url, lease: lease)
+        case .reveal: NSWorkspace.shared.activateFileViewerSelecting([file.url])
+        case .print:
+            pdf.document.printOperation(for: NSPrintInfo.shared, scalingMode: .pageScaleToFit, autoRotate: true)?.run()
+        case .export: export(file: file, bytes: pdf.bytes, revision: revision)
+        }
+    }
+
+    private func export(file: GeneratedFile, bytes: Data, revision expectedRevision: UUID) {
         let panel = NSSavePanel()
         panel.nameFieldStringValue = file.url.lastPathComponent
         panel.allowedContentTypes = [.pdf]
         guard panel.runModal() == .OK, let destination = panel.url else { return }
+        guard revision == expectedRevision, matches(file) else { return }
         do {
             if file.url.standardizedFileURL != destination.standardizedFileURL {
                 try bytes.write(to: destination, options: .atomic)
@@ -235,28 +252,88 @@ final class DocumentActionController: ObservableObject {
         panel.allowedContentTypes = [.pdf]
         panel.directoryURL = file.url.deletingLastPathComponent()
         panel.message = InterfaceText.resolve("Choose the same PDF shown in History. Other files won't replace it.", language: language)
-        recoverAccess(selected: panel.runModal() == .OK ? panel.url : nil)
+        let selected = panel.runModal() == .OK ? panel.url : nil
+        guard matches(file) else { return }
+        recoverAccess(selected: selected)
     }
 
     func recoverAccess(selected: URL?) {
-        guard let file = selectedFile else { return }
-        do {
-            if try access.recover(expected: file.url, selected: selected) { refresh() }
-        } catch {
-            let failure = (error as? PDFLoadFailure) ?? .unreadable
-            exportError = InterfaceText.resolve(failure.messageResource, language: language)
+        guard let selected, let file = selectedFile else { return }
+        guard selected.isFileURL, selected.standardizedFileURL == file.url.standardizedFileURL else {
+            exportError = InterfaceText.resolve(PDFLoadFailure.wrongFile.messageResource, language: language)
+            return
         }
+        startLoad(recovering: selected)
     }
 
     private var language: String { UserDefaults.standard.string(forKey: "interfaceLanguage") ?? "system" }
 
-    private func prepareAction() -> Bool {
-        refresh()
-        guard canAccessDocument else {
-            if let loadFailure { exportError = InterfaceText.resolve(loadFailure.messageResource, language: language) }
-            return false
+    func waitForPendingLoad() async { await loadTask?.value }
+
+    private func matches(_ file: GeneratedFile) -> Bool {
+        selectedFile?.id == file.id && selectedFile?.url == file.url
+    }
+
+    private func invalidateLoad() {
+        revision = UUID()
+        loadTask?.cancel()
+        loadTask = nil
+        isLoading = false
+    }
+
+    private func startLoad(action: Action? = nil, recovering: URL? = nil) {
+        if action != nil && isLoading { return }
+        invalidateLoad()
+        guard let file = selectedFile else { return }
+        let request = revision
+        isLoading = true
+        loadFailure = nil
+        let access = access
+        loadTask = Task { [weak self, access] in
+            do {
+                let loaded = try await access.loadAsync(file.url, recovering: recovering)
+                guard !Task.isCancelled, let self, self.revision == request, self.matches(file) else {
+                    loaded.lease.release()
+                    return
+                }
+                if recovering != nil {
+                    if case .failure(let failure) = access.remember(loaded) {
+                        loaded.lease.release()
+                        throw failure
+                    }
+                } else { _ = access.remember(loaded) }
+                self.selectionLease?.release()
+                self.selectionLease = loaded.lease
+                if self.loadedPDF?.bytes != loaded.pdf.bytes {
+                    self.hasFormFields = PDFDocumentActions.prepareReadOnlyPreview(loaded.pdf.document)
+                    self.loadedPDF = loaded.pdf
+                }
+                self.isLoading = false
+                self.loadTask = nil
+                if let action { self.perform(action, file: file, pdf: loaded.pdf) }
+            } catch {
+                guard !Task.isCancelled, let self, self.revision == request, self.matches(file) else { return }
+                self.isLoading = false
+                self.loadTask = nil
+                let failure = (error as? PDFLoadFailure) ?? .unreadable
+                if recovering == nil {
+                    self.selectionLease?.release()
+                    self.selectionLease = nil
+                    self.loadedPDF = nil
+                    self.hasFormFields = false
+                    self.loadFailure = failure
+                }
+                if action != nil || recovering != nil {
+                    self.exportError = InterfaceText.resolve(failure.messageResource, language: self.language)
+                }
+            }
         }
-        return true
+    }
+
+    deinit {
+        loadTask?.cancel()
+        let quickLook = quickLook
+        Task { @MainActor in quickLook.closeOwnedPreview() }
     }
 
     func copyProvenance() {
@@ -328,17 +405,62 @@ private struct PDFDocumentView: NSViewRepresentable {
 }
 
 @MainActor
+final class QuickLookLeaseOwner {
+    private var lease: PDFReadLease?
+
+    func replace(with lease: PDFReadLease?) {
+        guard self.lease !== lease else { return }
+        self.lease?.release()
+        self.lease = lease
+    }
+
+    func clear() { replace(with: nil) }
+}
+
+@MainActor
 private final class QuickLookCoordinator: NSObject, ObservableObject,
-    QLPreviewPanelDataSource
+    QLPreviewPanelDataSource, QLPreviewPanelDelegate
 {
     private var url: URL?
+    private let leaseOwner = QuickLookLeaseOwner()
+    private weak var panel: QLPreviewPanel?
 
-    func present(_ url: URL) {
+    func present(_ url: URL, lease: PDFReadLease) {
+        guard let panel = QLPreviewPanel.shared() else {
+            lease.release()
+            return
+        }
+        if let previous = panel.dataSource as? QuickLookCoordinator, previous !== self {
+            previous.finishPreview(close: false)
+        }
+        if let previous = panel.delegate as? QuickLookCoordinator, previous !== self {
+            previous.finishPreview(close: false)
+        }
+        finishPreview(close: false)
+        self.panel = panel
+        leaseOwner.replace(with: lease)
         self.url = url
-        guard let panel = QLPreviewPanel.shared() else { return }
         panel.dataSource = self
+        panel.delegate = self
         panel.reloadData()
         panel.makeKeyAndOrderFront(nil)
+    }
+
+    func closeOwnedPreview() { finishPreview(close: true) }
+
+    func windowWillClose(_ notification: Notification) { finishPreview(close: false) }
+
+    private func finishPreview(close: Bool) {
+        let panel = panel
+        self.panel = nil
+        leaseOwner.clear()
+        url = nil
+        if let panel {
+            let ownsPanel = panel.dataSource === self && panel.delegate === self
+            if panel.dataSource === self { panel.dataSource = nil }
+            if panel.delegate === self { panel.delegate = nil }
+            if close && ownsPanel { panel.close() }
+        }
     }
 
     nonisolated func numberOfPreviewItems(in panel: QLPreviewPanel!) -> Int {
