@@ -29,6 +29,7 @@ from Backend.Core.mlx_batching import (
 )
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
+from Backend.Core.ollama_thinking import structured_thinking_policy
 
 
 class HostedLLMClient:
@@ -64,6 +65,8 @@ class HostedLLMClient:
         self._apple_structured_model: Any | None = None
         self._apple_lock = threading.Lock()
         self._apple_batcher_lock = threading.Lock()
+        self._ollama_policy_lock = threading.Lock()
+        self._ollama_policies: dict[str, dict[str, Any] | ValueError] = {}
         self._apple_batcher: (
             CoalescingRunner[tuple[str, dict] | tuple[str, dict, int], str] | None
         ) = None
@@ -163,10 +166,9 @@ class HostedLLMClient:
                     return self._apple(current_prompt)
                 raise RuntimeError(f"Unsupported provider: {self.provider}")
             except ValueError as error:
-                if (
-                    isinstance(error, GenerationEvidenceError)
-                    and error.details.get("kind") == "context_capacity"
-                ):
+                if isinstance(error, GenerationEvidenceError) and error.details.get(
+                    "kind"
+                ) in {"context_capacity", "provider_capability"}:
                     raise
                 last_error = error
                 if attempt == retries - 1:
@@ -234,6 +236,42 @@ class HostedLLMClient:
         )
         return candidate
 
+    def _ollama_thinking_policy(self, request_function: Any | None) -> dict[str, Any]:
+        # Metadata lookup does not generate tokens. Cache even unavailable results
+        # so concurrent questions do not repeatedly probe an older server.
+        with self._ollama_policy_lock:
+            if self.model not in self._ollama_policies:
+                envelope = None
+                try:
+                    with (request_function or urllib_request)(
+                        f"{self.base_url}/api/show",
+                        json.dumps({"model": self.model}).encode("utf-8"),
+                        {"Content-Type": "application/json"},
+                        attempts=1,
+                        timeout_seconds=5,
+                        **({"direct_ollama": True} if request_function is None else {}),
+                    ) as response:
+                        envelope = _read_json_response(response)
+                except (RuntimeError, OSError):
+                    pass
+                try:
+                    self._ollama_policies[self.model] = structured_thinking_policy(
+                        envelope
+                    )
+                except ValueError as error:
+                    self._ollama_policies[self.model] = error
+            cached = self._ollama_policies[self.model]
+            if isinstance(cached, ValueError):
+                raise GenerationEvidenceError(
+                    str(cached),
+                    details={
+                        "kind": "provider_capability",
+                        "provider": "ollama",
+                        "thinking_policy": "malformed_metadata",
+                    },
+                ) from cached
+            return deepcopy(cached)
+
     def _ollama(
         self,
         prompt: str,
@@ -252,12 +290,13 @@ class HostedLLMClient:
         )
         if french_nsi and (type(budget) is not int or not 1 <= budget <= 16384):
             raise ValueError("French NSI output budget must be from 1 to 16384.")
+        thinking_policy = self._ollama_thinking_policy(request_function)
         payload = json.dumps(
             {
                 "model": self.model,
                 "messages": [{"role": "user", "content": prompt}],
                 "stream": False,
-                "think": None if french_nsi else False,
+                "think": thinking_policy["requested"],
                 "format": schema,
                 **({"truncate": False, "shift": False} if french_nsi else {}),
                 "options": {
@@ -328,8 +367,14 @@ class HostedLLMClient:
             "stop_reason": raw_dict.get("done_reason"),
             "done": raw_dict.get("done"),
             "output_tokens": raw_dict.get("eval_count"),
+            "thinking_policy": thinking_policy,
         }
         message = raw_dict.get("message")
+        thinking = message.get("thinking") if isinstance(message, dict) else None
+        diagnostic["thinking_present"] = isinstance(thinking, str)
+        diagnostic["thinking_characters"] = (
+            len(thinking) if isinstance(thinking, str) else 0
+        )
         response_text = message.get("content") if isinstance(message, dict) else None
         if isinstance(response_text, str):
             diagnostic["raw_response"] = response_text

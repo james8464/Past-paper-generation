@@ -7,7 +7,19 @@ import pytest
 
 from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from Backend.Core.generation_requests import GenerationRequest
+from Backend.Core.ollama_thinking import structured_thinking_policy
 from Backend.Core.providers import HostedLLMClient, urllib_request
+
+
+@pytest.fixture(autouse=True)
+def chat_transport_only(monkeypatch):
+    # These tests isolate inference transport/count bounds. Metadata transport
+    # and capability selection have their own provider integration controls.
+    monkeypatch.setattr(
+        HostedLLMClient,
+        "_ollama_thinking_policy",
+        lambda self, request_function: structured_thinking_policy({}),
+    )
 
 
 def closed_opener(monkeypatch, send):
@@ -197,7 +209,7 @@ def test_neutral_repetition_penalty_is_exclusive_to_french_nsi(monkeypatch):
     assert legacy["options"] == {**common, "repeat_penalty": 1.15}
     assert french["format"] == legacy["format"] == {"type": "object"}
     assert french["messages"] == legacy["messages"]
-    assert french["think"] is None and legacy["think"] is False
+    assert french["think"] is False and legacy["think"] is False
     assert french["truncate"] is False and french["shift"] is False
     assert "truncate" not in legacy and "shift" not in legacy
     assert [options for _, options in calls] == [
@@ -219,7 +231,7 @@ def test_french_uses_no_truncation_no_shift_one_http_attempt_and_scoped_timeout(
     client = HostedLLMClient(provider="ollama", model="fixture", api_key="")
     assert client.generate_request(request()) == {"answer": "ready"}
     payload, options = calls[0]
-    assert payload["think"] is None  # Use the selected model's reasoning default.
+    assert payload["think"] is False  # Unknown legacy metadata requests direct output.
     assert payload["truncate"] is False and payload["shift"] is False
     assert payload["options"]["num_ctx"] == 16384
     assert payload["options"]["num_predict"] == 8192

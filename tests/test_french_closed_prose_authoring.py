@@ -232,6 +232,8 @@ def test_real_french_provider_retry_is_checkpointed_after_success(
 
     def request(url, data, headers, **kwargs):
         nonlocal failures
+        if url.endswith("/api/show"):
+            return io.BytesIO(b"{}")
         prompt = json.loads(data)["messages"][0]["content"]
         request_data = json.loads(
             prompt.split("\nDONNÉES_JSON\n", 1)[1].split("\nRéparation", 1)[0]

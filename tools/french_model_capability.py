@@ -174,6 +174,16 @@ class ProbeClient(HostedLLMClient):
         # One measured attempt; do not conceal failures behind automatic repairs.
         return super().generate_request(request, retries=1)
 
+    def _ollama_thinking_policy(self, request_function):
+        # This diagnostic deliberately compares explicit modes. Do not count a
+        # capability lookup as an inference or silently replace its chosen mode.
+        return {
+            "version": "explicit-thinking-probe-v1",
+            "requested": self.thinking,
+            "status": "probe_override",
+            "metadata": "not_queried",
+        }
+
     def _ollama(self, prompt: str, **kwargs) -> dict:
         def capture(url, data, headers, **_kwargs):
             payload = json.loads(data)

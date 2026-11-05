@@ -26,6 +26,8 @@ def test_french_transport_retains_each_rejected_raw_response(monkeypatch):
     )
 
     def request(url, data, headers, **kwargs):
+        if url.endswith("/api/show"):
+            return io.BytesIO(b"{}")
         return io.BytesIO(json.dumps(next(responses)).encode())
 
     monkeypatch.setattr("Backend.Core.france.provider.ollama_request", request)
@@ -91,6 +93,8 @@ def test_french_transport_has_own_schema_seed_and_output_budget(monkeypatch):
     requests = []
 
     def request(url, data, headers, **kwargs):
+        if url.endswith("/api/show"):
+            return io.BytesIO(b"{}")
         requests.append(json.loads(data))
         return io.BytesIO(
             json.dumps(
