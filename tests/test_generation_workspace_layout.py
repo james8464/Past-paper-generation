@@ -37,7 +37,9 @@ def test_french_and_uk_use_the_same_visible_progress_component():
     assert ".safeAreaInset(edge: .bottom)" not in root
     layout = root.split("VStack(spacing: 0) {", 1)[1]
     assert layout.index("GeometryReader") < layout.index("NavigationSplitView")
-    assert layout.index("NavigationSplitView") < layout.index("if application.isRunning")
+    assert layout.index("NavigationSplitView") < layout.index(
+        "if application.isRunning"
+    )
     assert root.count("GenerationProgress()") == 1
     assert "GenerationProgress()" not in french
     assert "GenerationProgress()" not in uk
