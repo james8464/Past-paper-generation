@@ -3923,6 +3923,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/owned-helper-cancellation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/paper-conformance-file-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5204,19 +5210,19 @@
       "path": "macOS/Keldin/Services/BackendClient.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal review of helper ownership, callback and launch boundaries; exact-byte evidence does not certify all runtime behavior.",
-      "source_sha256": "c0a431dc54dbc03bcbfb6290bd0f66e237c9f6a61b3682b66a889b5c6c099256",
-      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
-      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
+      "reason": "Prior complete-file attestation plus independent complete cancellation-dispatch delta and client ownership context; runtime scope is documented separately.",
+      "source_sha256": "f034036a21539f3cab054d24ca90619c19a4db183b9228e1d3a372708dccd655",
+      "review_evidence": "docs/quality/owned-helper-cancellation-review.md",
+      "review_evidence_sha256": "52f259dd6ffadbd34a0557bd7cd7cc5af7b3234dda3117649ad6bf97089a5c34"
     },
     {
       "path": "macOS/Keldin/Services/BackendProcessLifecycle.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal review of process ownership and termination boundaries; exact-byte evidence does not certify all runtime behavior.",
-      "source_sha256": "3ce85f423a656f03b8dc651ae15e2e21df5620e26fd64bc6d5e7e44a916db776",
-      "review_evidence": "docs/quality/native-backend-and-document-access-review-2026-11-02.md",
-      "review_evidence_sha256": "ddce778b8d2f755bb8d18bdacfb708df9258046e938d1563808f4ebbcac87cc5"
+      "reason": "Complete lifecycle review, exact registered-object cancellation and asynchronous escalation; independent production review and real/fake helper controls.",
+      "source_sha256": "bd7328d56be9e49432428164dc2be4223240b216efb847d6d1675412204994e0",
+      "review_evidence": "docs/quality/owned-helper-cancellation-review.md",
+      "review_evidence_sha256": "52f259dd6ffadbd34a0557bd7cd7cc5af7b3234dda3117649ad6bf97089a5c34"
     },
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
@@ -5246,19 +5252,19 @@
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior full-file and manual-import/startup reviews over hash-matching baseline, plus complete seven-line endpoint capture/pass-through repair and related confirmation flow; not a new full-file reread.",
-      "source_sha256": "e407a8619aa69b1d6a4afc8df79a0b3609567a965e0d2881e733f071c0df2c8a",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "reason": "Prior complete-file attestations retained plus independent one-line cancellation dispatch and surrounding ownership-path review; no fresh full-file reread claimed.",
+      "source_sha256": "3f65a459a72747b9dc3eb90c4bce8332eff7d2918a5ed483bfc87b437b5de892",
+      "review_evidence": "docs/quality/owned-helper-cancellation-review.md",
+      "review_evidence_sha256": "52f259dd6ffadbd34a0557bd7cd7cc5af7b3234dda3117649ad6bf97089a5c34"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file implementation review recorded with scope and limitations in the linked evidence.",
-      "source_sha256": "df53a2c4ce77525e6331123230409a0c71e219fe4212de124022111de8865613",
-      "review_evidence": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
-      "review_evidence_sha256": "99dbd2c83dbbdb74f6c6aa07666bb33cbcb458a391f02c32c92a6d7036d596da"
+      "reason": "Complete benchmark ownership context and cancellation dispatch reviewed; native spy binds the owning-backend integration.",
+      "source_sha256": "d0c7de495d4906e7544f6a888446717fdea51703c0634fcbd4c396e4c2b64167",
+      "review_evidence": "docs/quality/owned-helper-cancellation-review.md",
+      "review_evidence_sha256": "52f259dd6ffadbd34a0557bd7cd7cc5af7b3234dda3117649ad6bf97089a5c34"
     },
     {
       "path": "macOS/Keldin/State/CatalogStore.swift",
