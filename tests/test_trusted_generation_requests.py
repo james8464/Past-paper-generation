@@ -28,6 +28,16 @@ def capture_ollama(monkeypatch, responses=None):
     replies = iter(responses or ['{"ok":true}'])
 
     def send(_url, data, _headers, **_kwargs):
+        if _url == "http://localhost:11434/api/show":
+            assert json.loads(data) == {"model": "fixture"}
+            assert _headers == {"Content-Type": "application/json"}
+            assert _kwargs == {
+                "attempts": 1,
+                "timeout_seconds": 5,
+                "direct_ollama": True,
+            }
+            return io.BytesIO(b"{}")
+        assert _url == "http://localhost:11434/api/chat"
         payloads.append(json.loads(data))
         return io.BytesIO(
             json.dumps(

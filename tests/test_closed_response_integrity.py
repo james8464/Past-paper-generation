@@ -206,8 +206,19 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
 
     answer = {"1": "applications", "2": "Utility software"}
     calls = []
+    metadata_calls = []
 
-    def request(url, data, headers, *, attempts):
+    def request(
+        url, data, headers, *, attempts, timeout_seconds=180, direct_ollama=False
+    ):
+        if url == "http://localhost:11434/api/show":
+            assert json.loads(data) == {"model": "test-model"}
+            assert headers == {"Content-Type": "application/json"}
+            assert attempts == 1 and timeout_seconds == 5 and direct_ollama is True
+            metadata_calls.append(url)
+            return BytesIO(b"{}")
+        assert url == "http://localhost:11434/api/chat"
+        assert attempts == 2 and timeout_seconds == 180 and direct_ollama is False
         calls.append((url, json.loads(data)))
         return BytesIO(
             json.dumps(
@@ -229,6 +240,7 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
     client = HostedLLMClient(provider="ollama", model="test-model", api_key="")
     solution = IndependentSolver(client).solve(closed_item(), [])
     assert reconcile_solution(solution, scheme()).passed
+    assert len(metadata_calls) == 1
     assert calls[0][0].endswith("/api/chat")
     schema = calls[0][1]["format"]
     assert schema["required"] == [
