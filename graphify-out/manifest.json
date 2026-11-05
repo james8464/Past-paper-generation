@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793908833.8426132,
-    "ast_hash": "59fe49d7c6c32d4e7fbb5d57a103cf93",
+    "mtime": 1793909133.2606225,
+    "ast_hash": "0d46652f4027b5a9d321a0c22c3d29fb",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793906655.1531754,
-    "ast_hash": "45b7d5ecfed4b1ebce8be575f50b551f",
+    "mtime": 1793909133.1610062,
+    "ast_hash": "d46f42b2feffc25f2125704112a8f688",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5710,8 +5710,13 @@
     "semantic_hash": ""
   },
   "tests/test_ollama_thinking_policy.py": {
-    "mtime": 1793908811.3968,
-    "ast_hash": "2d05c7d359d2514b53abb42b875d247f",
+    "mtime": 1793909125.0503438,
+    "ast_hash": "cf053b3f15c17eae8a3aee8645ffb2a7",
+    "semantic_hash": ""
+  },
+  "docs/quality/ollama-structured-thinking-policy-review-2026-11-05.md": {
+    "mtime": 1793909125.0509517,
+    "ast_hash": "4cd7e2d4968cad585c32b9a56c33077a",
     "semantic_hash": ""
   }
 }

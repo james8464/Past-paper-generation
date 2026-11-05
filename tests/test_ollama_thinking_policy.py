@@ -33,6 +33,7 @@ def test_absent_metadata_is_explicitly_unknown(envelope):
     policy = structured_thinking_policy(envelope)
     assert policy["requested"] is False
     assert policy["status"] == "legacy_unknown"
+    assert policy["metadata"] == ("unavailable" if envelope is None else "absent")
 
 
 @pytest.mark.parametrize(
@@ -47,6 +48,10 @@ def test_absent_metadata_is_explicitly_unknown(envelope):
         {"values": ["low"], "default": "high"},
         {"values": [""], "default": ""},
         {"values": [False, {}], "default": False},
+        {"values": [f"level{i}" for i in range(17)], "default": "level0"},
+        {"values": ["x" * 65], "default": "x" * 65},
+        {"values": [" low "], "default": " low "},
+        {"values": ["low", "low"], "default": "low"},
     ],
 )
 def test_malformed_present_metadata_is_refused(metadata):

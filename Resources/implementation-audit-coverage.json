@@ -3920,6 +3920,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/ollama-structured-thinking-policy-review-2026-11-05.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/orange-scene-accent-review-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
