@@ -1433,6 +1433,12 @@
       "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
+      "path": "Backend/Core/ollama_thinking.py",
+      "classification": "maintained-source",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "Backend/Core/open_credit.py",
       "classification": "maintained-source",
       "status": "pending",
@@ -1510,11 +1516,8 @@
     {
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file internal provider-boundary review and scoped follow-up review of the transport repair; live model quality and broader release acceptance remain separate.",
-      "source_sha256": "30802cade04b0f4d4c9bf83ef0ac8337ea15f4f5896a0a60f0b1ac64aa81c6c0",
-      "review_evidence": "docs/quality/provider-boundary-file-review-2026-11-02.md",
-      "review_evidence_sha256": "0e9bfbaca8f7a004eb704f74819070e996fc3e12b8793d813a4f49ff979a82e9"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -7337,6 +7340,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_ollama_thinking_policy.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_open_credit_reconciliation.py",
       "classification": "test",
       "status": "pending",
@@ -7687,11 +7696,8 @@
     {
       "path": "tools/french_model_capability.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Internal reviewer read all 420 lines through EOF and selectively traced provider selection and existing capability tests. Static review only; no model calls, speed measurements or educational qualification.",
-      "source_sha256": "74e545148c46d1e8fc0d878a3652b7e4a57dc0a78a6bbdd1103a98060bfa7cbd",
-      "review_evidence": "docs/quality/diagnostics-provider-capability-audit-2026-11-02.md",
-      "review_evidence_sha256": "3f4db0363f8b3f455ea18a1c941ff4470a3c7489145656ea8523abe7f855b0ec"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tools/french_nsi_benchmark.py",
