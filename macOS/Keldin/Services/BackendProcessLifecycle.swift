@@ -60,6 +60,43 @@ final class BackendProcessLifecycle: Sendable {
     }
 
     @discardableResult
+    func cancel(
+        _ process: any BackendProcessControl,
+        gracePolls: Int = 10,
+        pause: @escaping @Sendable () async -> Void = { try? await Task.sleep(for: .milliseconds(100)) }
+    ) -> Task<Void, Never>? {
+        let needsEscalation = state.withLock { state in
+            guard let owned = state.processes[ObjectIdentifier(process)],
+                  owned === process, owned.isRunning else { return false }
+            owned.terminate()
+            return owned.isRunning
+        }
+        guard needsEscalation else { return nil }
+
+        // Cleanup outlives the cancelled view/run. Retain the exact owned object,
+        // never a PID lookup or the process belonging to its replacement.
+        return Task.detached(priority: .utility) {
+            for _ in 0..<max(0, gracePolls) {
+                guard self.ownsRunningProcess(process) else { return }
+                await pause()
+            }
+            self.state.withLock { state in
+                guard let owned = state.processes[ObjectIdentifier(process)],
+                      owned === process, owned.isRunning else { return }
+                owned.forceTerminate()
+            }
+        }
+    }
+
+    private func ownsRunningProcess(_ process: any BackendProcessControl) -> Bool {
+        state.withLock { state in
+            guard let owned = state.processes[ObjectIdentifier(process)],
+                  owned === process else { return false }
+            return owned.isRunning
+        }
+    }
+
+    @discardableResult
     func prepareForShutdown() -> Bool {
         state.withLock { state in
             state.shuttingDown = true

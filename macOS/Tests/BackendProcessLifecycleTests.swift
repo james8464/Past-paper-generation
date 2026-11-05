@@ -73,6 +73,87 @@ final class BackendProcessLifecycleTests: XCTestCase {
         XCTAssertThrowsError(try lifecycle.launch(LifecycleProcess()))
     }
 
+    func testNormalCancellationLetsGracefulOwnedProcessExitWithoutForce() throws {
+        let lifecycle = BackendProcessLifecycle()
+        let process = LifecycleProcess(exitsOnTerminate: true)
+        try lifecycle.launch(process)
+
+        XCTAssertNil(lifecycle.cancel(process))
+
+        XCTAssertEqual(process.terminations, 1)
+        XCTAssertEqual(process.forcedTerminations, 0)
+        XCTAssertEqual(lifecycle.activeCount, 0)
+        let next = LifecycleProcess()
+        try lifecycle.launch(next)
+        XCTAssertEqual(next.starts, 1, "Cancelling a job must not close the app's launch gate")
+        next.finish()
+        lifecycle.finished(next)
+    }
+
+    func testNormalCancellationEscalatesOnlyItsStillRunningOwnedProcess() async throws {
+        let lifecycle = BackendProcessLifecycle()
+        let cancelled = LifecycleProcess()
+        let replacement = LifecycleProcess()
+        try lifecycle.launch(cancelled)
+        try lifecycle.launch(replacement)
+
+        let cleanup = try XCTUnwrap(lifecycle.cancel(cancelled, gracePolls: 2, pause: {}))
+        await cleanup.value
+
+        XCTAssertEqual(cancelled.terminations, 1)
+        XCTAssertEqual(cancelled.forcedTerminations, 1)
+        XCTAssertFalse(cancelled.isRunning)
+        XCTAssertTrue(replacement.isRunning)
+        XCTAssertEqual(replacement.terminations, 0)
+        XCTAssertEqual(replacement.forcedTerminations, 0)
+        lifecycle.finished(cancelled)
+        replacement.finish()
+        lifecycle.finished(replacement)
+        XCTAssertEqual(lifecycle.activeCount, 0)
+    }
+
+    func testNormalCancellationIgnoresUnregisteredAndCompletedProcesses() throws {
+        let lifecycle = BackendProcessLifecycle()
+        let unregistered = LifecycleProcess()
+        let completed = LifecycleProcess()
+        try unregistered.run()
+        try lifecycle.launch(completed)
+        completed.finish()
+        lifecycle.finished(completed)
+
+        XCTAssertNil(lifecycle.cancel(unregistered, gracePolls: 0, pause: {}))
+        XCTAssertNil(lifecycle.cancel(completed, gracePolls: 0, pause: {}))
+
+        XCTAssertEqual(unregistered.terminations, 0)
+        XCTAssertEqual(unregistered.forcedTerminations, 0)
+        XCTAssertTrue(unregistered.isRunning)
+        XCTAssertEqual(completed.terminations, 0)
+        XCTAssertEqual(completed.forcedTerminations, 0)
+        unregistered.finish()
+    }
+
+    func testCompletedCancellationCannotForceItsReplacement() async throws {
+        let lifecycle = BackendProcessLifecycle()
+        let cancelled = LifecycleProcess()
+        let replacement = LifecycleProcess()
+        try lifecycle.launch(cancelled)
+        try lifecycle.launch(replacement)
+        let cleanup = try XCTUnwrap(lifecycle.cancel(cancelled, gracePolls: 1, pause: {
+            cancelled.finish()
+            lifecycle.finished(cancelled)
+        }))
+
+        await cleanup.value
+
+        XCTAssertEqual(cancelled.forcedTerminations, 0)
+        XCTAssertTrue(replacement.isRunning)
+        XCTAssertEqual(replacement.terminations, 0)
+        XCTAssertEqual(replacement.forcedTerminations, 0)
+        replacement.finish()
+        lifecycle.finished(replacement)
+        XCTAssertEqual(lifecycle.activeCount, 0)
+    }
+
     func testQuitCannotOverlookLaunchInProgress() {
         let lifecycle = BackendProcessLifecycle()
         let process = BlockingLaunchProcess()

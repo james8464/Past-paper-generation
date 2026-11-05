@@ -1293,7 +1293,7 @@ final class ApplicationCoordinator: ObservableObject {
             completedDocuments = run.documents
             activeRun = nil
         }
-        run.process?.terminate()
+        if let process = run.process { backend.cancel(process) }
         if run.intent == .mlxSetup {
             status = "Cancelling Apple MLX setup"
             progressEntries.append(

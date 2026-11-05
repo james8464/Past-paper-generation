@@ -34,6 +34,12 @@ protocol BackendRunning: Sendable {
     ) throws -> Process
 
     func collect(arguments: [String]) async throws -> [BackendEvent]
+    func cancel(_ process: Process)
+}
+
+extension BackendRunning {
+    // Injected backends can supply their own ownership-aware cancellation.
+    func cancel(_ process: Process) { process.terminate() }
 }
 
 struct BackendEventLineBuffer {
@@ -181,6 +187,10 @@ final class BackendClient: BackendRunning, @unchecked Sendable {
             }
             return events
         }.value
+    }
+
+    func cancel(_ process: Process) {
+        lifecycle.cancel(process)
     }
 
     struct LaunchConfiguration {

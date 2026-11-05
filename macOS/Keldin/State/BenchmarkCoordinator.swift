@@ -82,7 +82,7 @@ final class BenchmarkCoordinator {
 
     func cancel() {
         activeRunSession = nil
-        process?.terminate()
+        if let process { backend.cancel(process) }
         process = nil
         isRunning = false
         progress = nil
