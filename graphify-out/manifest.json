@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793903502.389213,
-    "ast_hash": "00fc77e2be22b234a08324eff3c3cd00",
+    "mtime": 1793906698.3432734,
+    "ast_hash": "45cd8e0b1aaa0760462b2ce5c331e776",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3560,8 +3560,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/ContentView.swift": {
-    "mtime": 1793619482.5905013,
-    "ast_hash": "83ba4a661178fc64048ad496922379d1",
+    "mtime": 1793906698.1106248,
+    "ast_hash": "f4ef93dbaadd3bbbc495fcca0ea5f514",
     "semantic_hash": ""
   },
   "macOS/Keldin/Navigation/SidebarView.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793903522.528624,
-    "ast_hash": "6a8365837beadaa2fdb31f65222fdf03",
+    "mtime": 1793906698.3431065,
+    "ast_hash": "45b7d5ecfed4b1ebce8be575f50b551f",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4470,8 +4470,8 @@
     "semantic_hash": ""
   },
   "tests/test_generation_workspace_layout.py": {
-    "mtime": 1793543731.7186654,
-    "ast_hash": "bf2d41f681f808a554a56c8986281eff",
+    "mtime": 1793907064.0892386,
+    "ast_hash": "9ad9bf89e6d2c10473ec6719ee6146d4",
     "semantic_hash": ""
   },
   "tests/test_repeat_practice_policy.py": {
@@ -4530,8 +4530,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/GenerationNavigationInteractiveTests.swift": {
-    "mtime": 1793719419.1557,
-    "ast_hash": "8d99a82cccb094c91d576ef97543c90a",
+    "mtime": 1793906698.2059307,
+    "ast_hash": "e0470ddeb4a7eb67540fe6437eb009b2",
     "semantic_hash": ""
   },
   "docs/quality/generation-navigation-and-performance-2026-10-29.md": {
@@ -5697,6 +5697,11 @@
   "docs/quality/owned-helper-cancellation-review.md": {
     "mtime": 1793903501.9741375,
     "ast_hash": "a1ed37f28951c09290cf958d7ff326a7",
+    "semantic_hash": ""
+  },
+  "docs/quality/native-progress-reserved-space-review.md": {
+    "mtime": 1793906698.343371,
+    "ast_hash": "499ce6f2f838bb4348b315fcbcd35aac",
     "semantic_hash": ""
   }
 }

@@ -6,6 +6,164 @@ import XCTest
 
 final class GenerationNavigationInteractiveTests: XCTestCase {
     @MainActor
+    func testRunningProgressReservesSpaceBelowNativeSplitView() async throws {
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend)
+        defer { application.cancelGeneration() }
+        application.setDryRun(true)
+        application.generate()
+        XCTAssertTrue(application.isRunning)
+
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 1_000, height: 760),
+            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        window.title = "Keldin progress layout regression"
+        let content = ContentView()
+            .environmentObject(application)
+            .environment(application.catalogStore)
+            .environment(application.benchmarkCoordinator)
+            .environment(application.generationCoordinator)
+            .defaultAppStorage(defaults)
+        window.contentView = NSHostingView(rootView: content)
+        window.makeKeyAndOrderFront(nil)
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard Thread.isMainThread else { return false }
+            return MainActor.assumeIsolated {
+                guard let host = window.contentView else { return false }
+                return self.descendantSplitViews(in: host).contains { $0.bounds.height > 0 }
+                    && self.descendantProgressIndicators(in: host).contains {
+                        $0.style == .bar && !$0.isIndeterminate && $0.bounds.width > 0
+                    }
+            }
+        }, object: nil)
+        await fulfillment(of: [ready], timeout: 10)
+        let host = try XCTUnwrap(window.contentView)
+        host.layoutSubtreeIfNeeded()
+        let split = try XCTUnwrap(descendantSplitViews(in: host).max {
+            $0.bounds.width * $0.bounds.height < $1.bounds.width * $1.bounds.height
+        })
+        let progress = try XCTUnwrap(descendantProgressIndicators(in: host).first {
+            $0.style == .bar && !$0.isIndeterminate
+        })
+        let splitFrame = split.convert(split.bounds, to: nil)
+        let progressFrame = progress.convert(progress.bounds, to: nil)
+        print("SPLIT_PROGRESS_GEOMETRY: window=\(window.contentLayoutRect), split=\(splitFrame), progress=\(progressFrame)")
+        XCTAssertGreaterThan(splitFrame.width, 0)
+        XCTAssertGreaterThan(splitFrame.height, 0)
+        XCTAssertGreaterThanOrEqual(splitFrame.minY, progressFrame.maxY - 0.5,
+            "Native split-view content must not extend behind generation progress")
+        XCTAssertGreaterThanOrEqual(splitFrame.minY, window.contentLayoutRect.minY - 0.5)
+        XCTAssertLessThanOrEqual(splitFrame.maxY, window.contentLayoutRect.maxY + 0.5)
+        XCTAssertEqual(backend.requests.count, 1)
+    }
+
+    @MainActor
+    func testExpandedRecentRowsStayAboveRunningProgress() async throws {
+        guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_RECENT_GEOMETRY_CHECK"] == "1" else {
+            throw XCTSkip("Opt-in native Recent Documents geometry check.")
+        }
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        defaults.set("en", forKey: "interfaceLanguage")
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend)
+        let folder = FileManager.default.temporaryDirectory
+            .appendingPathComponent("Keldin.RecentRowsGeometry.\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer {
+            application.cancelGeneration()
+            try? FileManager.default.removeItem(at: folder)
+        }
+        application.selectBoard(try XCTUnwrap(ExamCatalog.board(id: "economics-aqa")))
+        application.outputFolder = folder
+        let olderURL = folder.appendingPathComponent("older-controlled.pdf")
+        let currentURL = folder.appendingPathComponent("current-controlled.pdf")
+        for url in [olderURL, currentURL] {
+            let pdf = PDFDocument()
+            pdf.insert(PDFPage(), at: 0)
+            XCTAssertTrue(pdf.write(to: url))
+        }
+        application.generatedFiles = [GeneratedFile(role: "mark_scheme", url: olderURL,
+            subject: "Older controlled paper", paper: "Saved before this run")]
+        application.setDryRun(true)
+        application.generate()
+        let request = try XCTUnwrap(backend.requests.first)
+        request.onEvent(.file(role: "question_paper", path: currentURL.path))
+        request.onEvent(.progress(stage: "review", message: "Checking reference demand", progress: 0.8))
+        XCTAssertEqual(application.recentPDFDocuments.count, 2)
+
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 1_000, height: 760),
+            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        window.title = "Keldin Recent Rows Geometry"
+        let measured = expectation(description: "Operator expanded Recent Documents and measured rows")
+        let content = VStack(spacing: 0) {
+            ContentView()
+                .environmentObject(application)
+                .environment(application.catalogStore)
+                .environment(application.benchmarkCoordinator)
+                .environment(application.generationCoordinator)
+            Button("Measure recent rows and finish") {
+                guard let host = window.contentView,
+                      let table = self.descendantTables(in: host).first(where: {
+                          $0.numberOfRows == 2 && $0.tableColumns.count == 4
+                      }),
+                      let progress = self.descendantProgressIndicators(in: host).first(where: {
+                          $0.style == .bar && !$0.isIndeterminate
+                      }) else {
+                    XCTFail("Expand Recent Documents before measuring the actual two-row table")
+                    measured.fulfill()
+                    return
+                }
+                host.layoutSubtreeIfNeeded()
+                let progressFrame = progress.convert(progress.bounds, to: nil)
+                let secondRow = table.convert(table.rect(ofRow: 1), to: nil)
+                let visible = table.visibleRect
+                print("RECENT_ROWS_GEOMETRY: window=\(window.contentLayoutRect), host=\(host.bounds), table=\(table.frame), scroll=\(String(describing: table.enclosingScrollView?.frame)), visible=\(visible), row0=\(table.rect(ofRow: 0)), row1=\(table.rect(ofRow: 1)), secondInWindow=\(secondRow), progressInWindow=\(progressFrame)")
+                XCTAssertGreaterThan(table.frame.height, 0)
+                XCTAssertGreaterThan(visible.height, 0)
+                XCTAssertGreaterThanOrEqual(secondRow.minY, progressFrame.maxY - 0.5,
+                    "The older Recent row must not be covered by generation progress")
+                XCTAssertGreaterThanOrEqual(table.rect(ofRow: 1).minY, visible.minY - 0.5)
+                XCTAssertLessThanOrEqual(table.rect(ofRow: 1).maxY, visible.maxY + 0.5)
+                measured.fulfill()
+            }
+            .padding(10)
+        }.defaultAppStorage(defaults)
+        window.contentView = NSHostingView(rootView: content)
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        print("KELDIN_INTERACTIVE_RECENT_GEOMETRY_READY")
+        print("Expand Recent Documents, then press Measure recent rows and finish. No document deletion or model request is needed.")
+        await fulfillment(of: [measured], timeout: 300)
+        XCTAssertTrue(application.isRunning)
+        XCTAssertEqual(application.recentPDFDocuments.count, 2)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: olderURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: currentURL.path))
+    }
+
+    @MainActor
+    private func descendantTables(in view: NSView) -> [NSTableView] {
+        (view as? NSTableView).map { [$0] } ?? view.subviews.flatMap { descendantTables(in: $0) }
+    }
+
+    @MainActor
+    private func descendantSplitViews(in view: NSView) -> [NSSplitView] {
+        (view as? NSSplitView).map { [$0] } ?? view.subviews.flatMap { descendantSplitViews(in: $0) }
+    }
+
+    @MainActor
+    private func descendantProgressIndicators(in view: NSView) -> [NSProgressIndicator] {
+        (view as? NSProgressIndicator).map { [$0] } ?? view.subviews.flatMap { descendantProgressIndicators(in: $0) }
+    }
+
+    @MainActor
     func testCompactSidebarCanBeRevealedDuringControlledGeneration() async throws {
         guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_COMPACT_SIDEBAR_CHECK"] == "1" else {
             throw XCTSkip("Opt-in native compact-window check.")

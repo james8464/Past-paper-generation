@@ -33,8 +33,14 @@ def test_french_and_uk_use_the_same_visible_progress_component():
     root = (ROOT / "macOS/Keldin/Navigation/ContentView.swift").read_text()
     french = (GENERATION / "FrenchAssessmentWorkspace.swift").read_text()
     uk = (GENERATION / "GeneratorWorkspaceView.swift").read_text()
-    assert ".safeAreaInset(edge: .bottom)" in root
-    assert "GenerationProgress()" in root
+    # A native split view can extend into an inset; progress needs real space.
+    assert ".safeAreaInset(edge: .bottom)" not in root
+    layout = root.split("VStack(spacing: 0) {", 1)[1]
+    assert layout.index("GeometryReader") < layout.index("NavigationSplitView")
+    assert layout.index("NavigationSplitView") < layout.index(
+        "if application.isRunning"
+    )
+    assert root.count("GenerationProgress()") == 1
     assert "GenerationProgress()" not in french
     assert "GenerationProgress()" not in uk
     progress = (GENERATION / "GenerationProgress.swift").read_text()
