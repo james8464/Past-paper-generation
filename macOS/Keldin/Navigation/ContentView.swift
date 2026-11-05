@@ -15,35 +15,36 @@ struct ContentView: View {
 
     var body: some View {
         @Bindable var catalog = catalog
-        GeometryReader { geometry in
-            let layoutMode = WorkspaceLayoutPolicy.mode(for: geometry.size.width)
+        // Native split-view tables need reserved space, not a bottom safe-area overlay.
+        VStack(spacing: 0) {
+            GeometryReader { geometry in
+                let layoutMode = WorkspaceLayoutPolicy.mode(for: geometry.size.width)
 
-            NavigationSplitView(columnVisibility: columnVisibility(for: layoutMode)) {
-                Sidebar(selection: $catalog.sidebarSelection)
-            } detail: {
-                switch catalog.sidebarSelection ?? .board(catalog.selectedBoardID) {
-                case let .board(id):
-                    if let board = ExamCatalog.board(id: id) {
-                        GeneratorWorkspace(board: board, layoutMode: layoutMode)
-                    } else {
-                        ContentUnavailableView("Exam board not found", systemImage: "questionmark.folder")
+                NavigationSplitView(columnVisibility: columnVisibility(for: layoutMode)) {
+                    Sidebar(selection: $catalog.sidebarSelection)
+                } detail: {
+                    switch catalog.sidebarSelection ?? .board(catalog.selectedBoardID) {
+                    case let .board(id):
+                        if let board = ExamCatalog.board(id: id) {
+                            GeneratorWorkspace(board: board, layoutMode: layoutMode)
+                        } else {
+                            ContentUnavailableView("Exam board not found", systemImage: "questionmark.folder")
+                        }
+                    case .benchmark:
+                        BenchmarkWorkspace()
+                    case .frenchBaccalaureat:
+                        FrenchAssessmentWorkspace()
+                    case .documents:
+                        DocumentPreviewView(
+                            files: application.generatedFiles,
+                            selectedID: application.previewedFileID
+                        )
+                    case .history:
+                        JobHistoryView(store: application.recentDocumentStore)
                     }
-                case .benchmark:
-                    BenchmarkWorkspace()
-                case .frenchBaccalaureat:
-                    FrenchAssessmentWorkspace()
-                case .documents:
-                    DocumentPreviewView(
-                        files: application.generatedFiles,
-                        selectedID: application.previewedFileID
-                    )
-                case .history:
-                    JobHistoryView(store: application.recentDocumentStore)
                 }
+                .navigationSplitViewStyle(.balanced)
             }
-            .navigationSplitViewStyle(.balanced)
-        }
-        .safeAreaInset(edge: .bottom) {
             if application.isRunning {
                 GenerationProgress()
                     .padding(.horizontal, 20)
