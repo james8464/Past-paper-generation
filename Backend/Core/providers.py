@@ -252,8 +252,12 @@ class HostedLLMClient:
                         **({"direct_ollama": True} if request_function is None else {}),
                     ) as response:
                         envelope = _read_json_response(response)
-                except (RuntimeError, OSError):
-                    pass
+                except (RuntimeError, OSError) as error:
+                    interruption = _metadata_interruption(error)
+                    if interruption is error:
+                        raise
+                    if interruption is not None:
+                        raise interruption from error
                 try:
                     self._ollama_policies[self.model] = structured_thinking_policy(
                         envelope
@@ -1875,6 +1879,25 @@ def _ollama_seed(prompt: str) -> int:
             + 104_729 * int(attempt.group(1) if attempt else "1")
         ) % 2_147_483_647
     return 0
+
+
+def _metadata_interruption(error: BaseException) -> InterruptedError | None:
+    from urllib.error import URLError
+
+    # urlopen and the shared transport can wrap an interrupted lookup. Follow
+    # only those known wrappers; a bounded walk also handles malformed cycles.
+    for _ in range(8):
+        if isinstance(error, InterruptedError):
+            return error
+        if isinstance(error, URLError) and isinstance(error.reason, BaseException):
+            error = error.reason
+        elif isinstance(error, RuntimeError) and isinstance(
+            error.__cause__, BaseException
+        ):
+            error = error.__cause__
+        else:
+            return None
+    return None
 
 
 def _read_json_response(response: Any) -> object:

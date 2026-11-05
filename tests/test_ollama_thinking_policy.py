@@ -1,6 +1,7 @@
 import io
 import json
 from concurrent.futures import ThreadPoolExecutor
+from urllib.error import URLError
 
 import pytest
 
@@ -112,13 +113,22 @@ def test_malformed_metadata_never_reaches_inference_or_repair(monkeypatch):
     assert len(calls) == 1
 
 
-def test_unavailable_metadata_cached_without_leaking_transport_error():
+@pytest.mark.parametrize(
+    "failure",
+    [
+        RuntimeError("private server detail"),
+        OSError("offline"),
+        URLError(OSError("offline")),
+        RuntimeError("InterruptedError mentioned in server text"),
+    ],
+)
+def test_unavailable_metadata_cached_without_leaking_transport_error(failure):
     calls = []
 
     def send(url, data, headers, **settings):
         calls.append(url)
         if url.endswith("/show"):
-            raise RuntimeError("private server detail")
+            raise failure
         payload = json.loads(data)
         assert payload["think"] is False
         return io.BytesIO(b'{"done":true,"message":{"content":"{}"}}')
@@ -127,6 +137,85 @@ def test_unavailable_metadata_cached_without_leaking_transport_error():
     assert client._ollama("owned", request_function=send) == {}
     assert client._ollama("owned", request_function=send) == {}
     assert len(calls) == 3
+    assert client._ollama_policies["owned"]["metadata"] == "unavailable"
+
+
+@pytest.mark.parametrize("phase", ["open", "read"])
+@pytest.mark.parametrize("wrapper", ["direct", "url", "runtime"])
+def test_cancelled_metadata_never_starts_inference_caches_or_repairs(
+    monkeypatch, phase, wrapper
+):
+    calls = []
+    interruption = InterruptedError("owned cancellation")
+
+    def cancelled():
+        if wrapper == "direct":
+            raise interruption
+        transport = URLError(interruption)
+        if wrapper == "url":
+            raise transport
+        raise RuntimeError("provider unavailable") from transport
+
+    class Response(io.BytesIO):
+        def read(self, *args):
+            cancelled()
+
+    def send(url, data, headers, **settings):
+        calls.append(url)
+        if url.endswith("/show"):
+            if phase == "open":
+                cancelled()
+            return Response()
+        return io.BytesIO(b'{"done":true,"message":{"content":"{}"}}')
+
+    monkeypatch.setattr("Backend.Core.providers.urllib_request", send)
+    client = HostedLLMClient(provider="ollama", model="owned", api_key="")
+    with pytest.raises(InterruptedError) as failure:
+        client.generate_json("owned", retries=3)
+    assert failure.value is interruption
+    assert [url.rsplit("/", 1)[-1] for url in calls] == ["show"]
+    assert client._ollama_policies == {}
+
+
+def test_real_transport_preserves_wrapped_metadata_cancellation(monkeypatch):
+    from Backend.Core.france import network
+
+    calls = []
+    interruption = InterruptedError("owned cancellation")
+
+    def open_request(request, *, timeout):
+        calls.append(request.full_url)
+        raise URLError(interruption)
+
+    monkeypatch.setattr(network, "open_ollama_request", open_request)
+    monkeypatch.setattr(
+        "urllib.request.urlopen",
+        lambda *args, **kwargs: pytest.fail(
+            "cancelled metadata reached chat transport"
+        ),
+    )
+    client = HostedLLMClient(provider="ollama", model="owned", api_key="")
+    with pytest.raises(InterruptedError) as failure:
+        client.generate_json("owned", retries=3)
+    assert failure.value is interruption
+    assert len(calls) == 1 and calls[0].endswith("/show")
+    assert client._ollama_policies == {}
+
+
+def test_cyclic_metadata_failure_remains_bounded_and_unavailable():
+    failure = RuntimeError("offline")
+    failure.__cause__ = failure
+    calls = []
+
+    def send(url, data, headers, **settings):
+        calls.append(url)
+        if url.endswith("/show"):
+            raise failure
+        return io.BytesIO(b'{"done":true,"message":{"content":"{}"}}')
+
+    client = HostedLLMClient(provider="ollama", model="owned", api_key="")
+    assert client._ollama("owned", request_function=send) == {}
+    assert len(calls) == 2
     assert client._ollama_policies["owned"]["metadata"] == "unavailable"
 
 
