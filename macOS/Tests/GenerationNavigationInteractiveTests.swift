@@ -6,6 +6,62 @@ import XCTest
 
 final class GenerationNavigationInteractiveTests: XCTestCase {
     @MainActor
+    func testRunningProgressReservesSpaceBelowNativeSplitView() async throws {
+        let defaults = isolatedDefaults()
+        defaults.set(true, forKey: AppStorageKey.hasSeenWelcome)
+        defaults.set(false, forKey: AppStorageKey.notificationsEnabled)
+        let backend = ControlledRunBackend()
+        let application = isolatedApplication(defaults: defaults, backend: backend)
+        defer { application.cancelGeneration() }
+        application.setDryRun(true)
+        application.generate()
+        XCTAssertTrue(application.isRunning)
+
+        let window = NSWindow(contentRect: NSRect(x: 100, y: 100, width: 1_000, height: 760),
+            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        defer { window.close() }
+        window.title = "Keldin progress layout regression"
+        let content = ContentView()
+            .environmentObject(application)
+            .environment(application.catalogStore)
+            .environment(application.benchmarkCoordinator)
+            .environment(application.generationCoordinator)
+            .defaultAppStorage(defaults)
+        window.contentView = NSHostingView(rootView: content)
+        window.makeKeyAndOrderFront(nil)
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard Thread.isMainThread else { return false }
+            return MainActor.assumeIsolated {
+                guard let host = window.contentView else { return false }
+                return self.descendantSplitViews(in: host).contains { $0.bounds.height > 0 }
+                    && self.descendantProgressIndicators(in: host).contains {
+                        $0.style == .bar && !$0.isIndeterminate && $0.bounds.width > 0
+                    }
+            }
+        }, object: nil)
+        await fulfillment(of: [ready], timeout: 10)
+        let host = try XCTUnwrap(window.contentView)
+        host.layoutSubtreeIfNeeded()
+        let split = try XCTUnwrap(descendantSplitViews(in: host).max {
+            $0.bounds.width * $0.bounds.height < $1.bounds.width * $1.bounds.height
+        })
+        let progress = try XCTUnwrap(descendantProgressIndicators(in: host).first {
+            $0.style == .bar && !$0.isIndeterminate
+        })
+        let splitFrame = split.convert(split.bounds, to: nil)
+        let progressFrame = progress.convert(progress.bounds, to: nil)
+        print("SPLIT_PROGRESS_GEOMETRY: window=\(window.contentLayoutRect), split=\(splitFrame), progress=\(progressFrame)")
+        XCTAssertGreaterThan(splitFrame.width, 0)
+        XCTAssertGreaterThan(splitFrame.height, 0)
+        XCTAssertGreaterThanOrEqual(splitFrame.minY, progressFrame.maxY - 0.5,
+            "Native split-view content must not extend behind generation progress")
+        XCTAssertGreaterThanOrEqual(splitFrame.minY, window.contentLayoutRect.minY - 0.5)
+        XCTAssertLessThanOrEqual(splitFrame.maxY, window.contentLayoutRect.maxY + 0.5)
+        XCTAssertEqual(backend.requests.count, 1)
+    }
+
+    @MainActor
     func testExpandedRecentRowsStayAboveRunningProgress() async throws {
         guard ProcessInfo.processInfo.environment["KELDIN_INTERACTIVE_RECENT_GEOMETRY_CHECK"] == "1" else {
             throw XCTSkip("Opt-in native Recent Documents geometry check.")
@@ -95,6 +151,11 @@ final class GenerationNavigationInteractiveTests: XCTestCase {
     @MainActor
     private func descendantTables(in view: NSView) -> [NSTableView] {
         (view as? NSTableView).map { [$0] } ?? view.subviews.flatMap { descendantTables(in: $0) }
+    }
+
+    @MainActor
+    private func descendantSplitViews(in view: NSView) -> [NSSplitView] {
+        (view as? NSSplitView).map { [$0] } ?? view.subviews.flatMap { descendantSplitViews(in: $0) }
     }
 
     @MainActor
