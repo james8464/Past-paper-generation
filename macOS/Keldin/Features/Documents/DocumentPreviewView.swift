@@ -566,10 +566,14 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
             state.cancelPending(view.claimant)
             return false
         }
+        let wasVisible = panel.isVisible
+        // Showing the panel lets AppKit acquire its responder-chain controller.
+        panel.makeKeyAndOrderFront(nil)
         panel.updateController()
         guard panel.currentController as AnyObject? === view else {
             recordRefusal("current_controller_mismatch", view: view, panel: panel)
             state.cancelPending(view.claimant)
+            if !wasVisible, panel.currentController == nil { panel.orderOut(nil) }
             return false
         }
         // An unchanged controller does not receive another begin callback.
@@ -579,7 +583,6 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
         }
         install(panel, from: view)
         panel.reloadData()
-        panel.makeKeyAndOrderFront(nil)
         let context = diagnosticContext(view: view, panel: panel)
         logger.debug("intent.presented \(context, privacy: .public)")
         return true
