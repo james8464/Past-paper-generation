@@ -630,6 +630,12 @@ def _extract_items(
             or f"item-{index}"
         )
         scheme = _scheme_text(raw)
+        if subject == "accounting_aqa":
+            from Backend.Core.accounting_levels import (
+                validate_accounting_level_contract,
+            )
+
+            validate_accounting_level_contract(raw, _assessment_contract(raw))
         item = {
             "id": f"{item_id}@{path}",
             "subject": subject,
@@ -847,6 +853,10 @@ def _level_policies() -> dict[str, Any]:
 
 def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
     contract = item.get("assessment_contract")
+    if item.get("subject") == "accounting_aqa":
+        from Backend.Core.accounting_levels import validate_accounting_level_contract
+
+        validate_accounting_level_contract(item, contract or {})
     if isinstance(contract, dict) and "grouped_level_policy" in contract:
         return _validate_grouped_reason_bands(item, contract)
     if (

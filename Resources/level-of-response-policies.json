@@ -15,6 +15,34 @@
       "misconception_cap_level": 1
     },
     {
+      "id": "aqa-accounting-6-mark",
+      "board": "aqa",
+      "maximum_mark": 6,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "Nothing worthy of credit."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 2, "minimum_coverage": 0.01, "descriptor": "Limited knowledge or application with little development."},
+        {"level": 2, "minimum_mark": 3, "maximum_mark": 4, "minimum_coverage": 0.5, "descriptor": "A reasonable response with some application and development."},
+        {"level": 3, "minimum_mark": 5, "maximum_mark": 6, "minimum_coverage": 0.85, "descriptor": "A well-developed response using relevant accounting evidence and developed reasoning."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
+      "id": "aqa-accounting-25-mark",
+      "board": "aqa",
+      "maximum_mark": 25,
+      "best_fit": true,
+      "levels": [
+        {"level": 0, "minimum_mark": 0, "maximum_mark": 0, "minimum_coverage": 0.0, "descriptor": "Nothing worthy of credit."},
+        {"level": 1, "minimum_mark": 1, "maximum_mark": 5, "minimum_coverage": 0.01, "descriptor": "Fragmented knowledge with little application or development."},
+        {"level": 2, "minimum_mark": 6, "maximum_mark": 10, "minimum_coverage": 0.2, "descriptor": "Some knowledge and limited application. Analysis is incomplete and evaluation is weak."},
+        {"level": 3, "minimum_mark": 11, "maximum_mark": 15, "minimum_coverage": 0.4, "descriptor": "Reasonable knowledge and some relevant application. Analysis supports a partially developed judgement."},
+        {"level": 4, "minimum_mark": 16, "maximum_mark": 20, "minimum_coverage": 0.6, "descriptor": "Good knowledge and effective application. Analysis is developed and the judgement is supported."},
+        {"level": 5, "minimum_mark": 21, "maximum_mark": 25, "minimum_coverage": 0.85, "descriptor": "Thorough knowledge and precise application. Sustained analysis leads to a balanced, fully supported recommendation."}
+      ],
+      "misconception_cap_level": 1
+    },
+    {
       "id": "aqa-standard-4-level",
       "board": "aqa",
       "maximum_mark": 20,

@@ -67,7 +67,7 @@ def test_all_current_policies_and_supported_scalings_keep_valid_mark_bands():
     policies = load_level_policies(
         ROOT / "Resources" / "level-of-response-policies.json"
     )
-    assert len(policies) == 9
+    assert len(policies) == 11
     for policy in policies.values():
         assert BoardLevelPolicy.model_validate(policy.model_dump()) == policy
         assert scale_level_policy(policy, policy.maximum_mark) is policy

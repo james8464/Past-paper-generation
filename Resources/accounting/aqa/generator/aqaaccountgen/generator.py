@@ -17,6 +17,7 @@ from aqaaccountgen.case_data import (
 from aqaaccountgen.marking_policy import apply_marking_policy, finalise_marking_policy
 from aqaaccountgen.selected_response import build_accounting_choice
 from aqaaccountgen.syllabus import Syllabus, Topic
+from Backend.Core.accounting_levels import accounting_level_policy
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -348,6 +349,9 @@ def build_paper(
                 }
             if len(question.assessment_objectives) > 1:
                 question.scheme_mode = "levels"
+                question.authoring_context["level_policy_id"] = accounting_level_policy(
+                    question.marks
+                ).id
                 if question.marks == 6:
                     question.mark_scheme.append(
                         "Levels-based marking: assess application and developed reasoning together; "
