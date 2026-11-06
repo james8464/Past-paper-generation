@@ -789,6 +789,8 @@ def _solve_strategic_drift(
 ) -> _SelectedResult:
     _require_contract_shape(contract, {"external_change", "strategic_change"})
     values = {key: str(value).casefold() for key, value in contract.inputs.items()}
+    if any(value not in {"high", "low"} for value in values.values()):
+        raise ValueError("unsupported strategic-change classification")
     if values == {"external_change": "high", "strategic_change": "low"}:
         expected_text = "Strategic drift"
     elif values["external_change"] == values["strategic_change"]:
