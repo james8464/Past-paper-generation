@@ -1282,8 +1282,11 @@
     {
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 536-line EOF dispatch/publication/cancellation review with scoped dependencies and existing tests inspected, not newly run. No new actionable defect; not a complete dependency audit or live generation qualification.",
+      "source_sha256": "0d4fd0998c5283783e093739f9f03cc74d4add95f28d5f939a884403bd92c3f6",
+      "review_evidence": "docs/quality/generation-dispatch-eof-review.md",
+      "review_evidence_sha256": "2834fc9ec402785f046b37442b830e3dd1e30d13cefec50b31eb1ca2246083c9"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -1600,8 +1603,11 @@
     {
       "path": "Backend/Core/reference_evidence.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 432-line EOF schema, identity, declared-evidence and policy review; 21 focused tests passed. Supplied assertions are not independently established facts; source extraction, rights, calibration and dependencies remain separate.",
+      "source_sha256": "defe8720d0045beb674feabe9747d006f9b02099bb194f8cf2e3f9b5f1d9fedd",
+      "review_evidence": "docs/quality/reference-evidence-eof-review.md",
+      "review_evidence_sha256": "4416890da66204aeb8968a576e827b8df93936a3884d5903ace3c16404873061"
     },
     {
       "path": "Backend/Core/render_transaction.py",
@@ -1756,14 +1762,20 @@
     {
       "path": "Backend/Core/subjects/selected_response.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior 974-line EOF and two-line domain-admission delta reviewed, now 976 lines. Owned unsupported-equal rate refusal repaired with 251 focused tests; not general semantic interpretation, full dependency audit or live paper qualification.",
+      "source_sha256": "cf84797e281307ec3e1d2a3dd2b7eee0b3fe18a8292075623cd943bcb141a231",
+      "review_evidence": "docs/quality/business-strategic-rate-domain-review.md",
+      "review_evidence_sha256": "d19823d9decaab60d8e422a4614dbc396a8c00ff566afa84f68e40b0c34e7c29"
     },
     {
       "path": "Backend/Core/subjects/sql_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Prior complete 1052-line EOF review and full six-line extension reviewed, now 1058 lines. Declared bare Count alias distinguished from aggregate calls without SQL execution, changed bounds or historical record rewrites; not all SQL dialects or dependency qualification.",
+      "source_sha256": "943aa3c19936efa33de6d4f823961a5f79beccc324437f843b81387f50aad644",
+      "review_evidence": "docs/quality/sql-count-alias-review.md",
+      "review_evidence_sha256": "d62cb65f57e5636fe7a9af60e78010bd55b12b2fe16f95757792ab1e7fead681"
     },
     {
       "path": "Backend/Core/temporary_cleanup.py",
@@ -3233,6 +3245,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/business-strategic-rate-domain-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/cached-mlx-preparation-and-solver-audit-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3779,6 +3797,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/generation-dispatch-eof-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-evidence-presentation-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4247,6 +4271,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/reference-evidence-eof-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/reference-live-fidelity-2026-09-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4320,6 +4350,12 @@
     },
     {
       "path": "docs/quality/source-contract-regressions-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/sql-count-alias-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6200,6 +6236,15 @@
       "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
+      "path": "tests/test_business_strategic_rate_domain.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 92-line EOF review of offline strategic-rate domain refusals, supported/case variants, malformed shape controls and input immutability. Genuine red/green evidence; no model, native or full-project qualification.",
+      "source_sha256": "e00e2e3cba20005560ef2588ff67db6b4fc6a92fe119dd4a31a29aadf1ed8181",
+      "review_evidence": "docs/quality/business-strategic-rate-domain-review.md",
+      "review_evidence_sha256": "d19823d9decaab60d8e422a4614dbc396a8c00ff566afa84f68e40b0c34e7c29"
+    },
+    {
       "path": "tests/test_calibration_helpers.py",
       "classification": "test",
       "status": "pending",
@@ -7762,8 +7807,11 @@
     {
       "path": "tests/test_reference_evidence_validation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 444-line EOF review and 21-test focused pass, including capability, copy and post-validation mutation refusals. Does not establish official-source extraction accuracy, rights or learner calibration.",
+      "source_sha256": "6be17c84d9df7549b81f448d00ac46dbc592028f2370efa7f4662de6abdabb18",
+      "review_evidence": "docs/quality/reference-evidence-eof-review.md",
+      "review_evidence_sha256": "4416890da66204aeb8968a576e827b8df93936a3884d5903ace3c16404873061"
     },
     {
       "path": "tests/test_release_compliance.py",
@@ -7881,6 +7929,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_sql_count_alias.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 95-line EOF review of declared count-alias case/AS forms and function, ambiguity, nullability, order, suffix and bound refusals. Owned parser-only red/green controls; no SQL-engine or live paper qualification.",
+      "source_sha256": "79d644c71ef5107331631ebeb185736f1147fafe7b689bcc995f50f0775e24cd",
+      "review_evidence": "docs/quality/sql-count-alias-review.md",
+      "review_evidence_sha256": "d62cb65f57e5636fe7a9af60e78010bd55b12b2fe16f95757792ab1e7fead681"
     },
     {
       "path": "tests/test_static_type_contracts.py",
