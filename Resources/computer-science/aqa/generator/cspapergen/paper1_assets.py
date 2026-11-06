@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
 from Backend.Core.fonts import register_fonts
@@ -153,6 +154,11 @@ def render_electronic_answer_document(
     blueprint: PaperBlueprint,
     output_path: Path,
 ) -> None:
+    parts = [
+        (question, part, _answer_prompt_pages(part.prompt))
+        for question in blueprint.questions
+        for part in question.parts
+    ]
     pdf = canvas.Canvas(str(output_path), pagesize=A4, pageCompression=0)
     _set_metadata(pdf, blueprint, "Electronic answer document")
     page = 1
@@ -176,46 +182,81 @@ def render_electronic_answer_document(
     _page_footer(pdf, page, blueprint.paper_code)
     pdf.showPage()
 
-    for question in blueprint.questions:
-        for part in question.parts:
+    for question, part, prompt_pages in parts:
+        for index, lines in enumerate(prompt_pages):
             page += 1
             _practice_header(pdf, "ELECTRONIC ANSWER DOCUMENT", blueprint.paper_code)
             pdf.setFont(FONT_BOLD, 14)
-            pdf.drawString(55, 755, f"Question {question.number}.{part.label}")
+            heading = f"Question {question.number}.{part.label}"
+            if index:
+                heading += " continued"
+            pdf.drawString(55, 755, heading)
             pdf.setFont(FONT, 9.5)
             y = 725
-            for line in _wrap(part.prompt, 88):
+            for line in lines:
                 pdf.drawString(55, y, line)
                 y -= 13
-            y -= 8
-            pdf.setFont(FONT_BOLD, 9)
-            pdf.drawRightString(
-                535, y, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]"
-            )
-            y -= 20
-            height = max(280, y - 100)
-            pdf.acroForm.textfield(
-                name=f"question_{question.number}_{part.label}",
-                tooltip=f"Response to question {question.number}.{part.label}",
-                x=55,
-                y=80,
-                width=480,
-                height=height,
-                borderColor=colors.HexColor("#6f6f6f"),
-                fillColor=colors.white,
-                textColor=colors.black,
-                borderWidth=1,
-                borderStyle="solid",
-                fontName="Helvetica",
-                fontSize=10,
-                forceBorder=True,
-                fieldFlags="multiline",
-            )
+            if index == len(prompt_pages) - 1:
+                y -= 8
+                pdf.setFont(FONT_BOLD, 9)
+                pdf.drawRightString(
+                    535, y, f"[{part.marks} mark{'s' if part.marks != 1 else ''}]"
+                )
+                y -= 20
+                height = max(280, y - 100)
+                pdf.acroForm.textfield(
+                    name=f"question_{question.number}_{part.label}",
+                    tooltip=f"Response to question {question.number}.{part.label}",
+                    x=55,
+                    y=80,
+                    width=480,
+                    height=height,
+                    borderColor=colors.HexColor("#6f6f6f"),
+                    fillColor=colors.white,
+                    textColor=colors.black,
+                    borderWidth=1,
+                    borderStyle="solid",
+                    fontName="Helvetica",
+                    fontSize=10,
+                    forceBorder=True,
+                    fieldFlags="multiline",
+                )
             _page_footer(pdf, page, blueprint.paper_code)
             pdf.showPage()
     pdf.save()
     if is_layout_preview():
         validate_preview_pdf(output_path)
+
+
+def _answer_prompt_pages(text: str) -> list[tuple[str, ...]]:
+    lines: list[str] = []
+    current = ""
+    for word in text.split():
+        if pdfmetrics.stringWidth(word, FONT, 9.5) > 480:
+            raise ValueError(
+                "Answer-document prompt contains a word wider than its page"
+            )
+        candidate = f"{current} {word}" if current else word
+        if current and (
+            len(candidate) > 88 or pdfmetrics.stringWidth(candidate, FONT, 9.5) > 480
+        ):
+            lines.append(current)
+            current = word
+        else:
+            current = candidate
+    lines.append(current)
+    # Prompt-only pages end above 80pt. The final page also needs one complete
+    # response field and room between its top edge and the printed mark label.
+    capacity = int((725 - 80) / 13)
+    pages = [
+        tuple(lines[start : start + capacity])
+        for start in range(0, len(lines), capacity)
+    ]
+    mark_y = 725 - 13 * len(pages[-1]) - 8
+    height = max(280, mark_y - 20 - 100)
+    if mark_y - (80 + height) < 20:
+        pages.append(())
+    return pages
 
 
 def _set_metadata(
