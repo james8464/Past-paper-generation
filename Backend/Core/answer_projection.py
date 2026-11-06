@@ -1,4 +1,4 @@
-"""Remove known private answer keys from nested dictionary/list values.
+"""Remove known private answer keys from nested dictionaries, lists and tuples.
 
 This is a key filter, not a whitelist of everything printed for a candidate.
 """
@@ -49,4 +49,6 @@ def without_private_answer_keys(value: Any) -> Any:
         }
     if isinstance(value, list):
         return [without_private_answer_keys(child) for child in value]
+    if isinstance(value, tuple):
+        return tuple(without_private_answer_keys(child) for child in value)
     return value

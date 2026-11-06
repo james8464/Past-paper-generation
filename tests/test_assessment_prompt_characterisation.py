@@ -295,7 +295,9 @@ def test_known_key_filter_is_not_a_printed_candidate_whitelist():
     assert projected["context"]["credit"] == "ordinary source column"
     assert value == before
     preserved_tuple = ("non-JSON tuple",)
-    assert _without_answer_key(preserved_tuple) is preserved_tuple
+    projected_tuple = _without_answer_key(preserved_tuple)
+    assert projected_tuple == preserved_tuple
+    assert isinstance(projected_tuple, tuple)
 
 
 def test_legacy_helper_names_are_aliases_for_the_extracted_implementations():
