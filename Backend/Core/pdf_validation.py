@@ -623,6 +623,61 @@ def _page_has_visible_marks(page: fitz.Page) -> bool:
     return not pixmap.is_unicolor
 
 
+def _validate_answer_field_clearance(
+    page: fitz.Page,
+    *,
+    filename: str,
+    page_index: int,
+) -> None:
+    # Widgets are separate from page annotations and drawing operations. Their
+    # opaque appearances can hide a question even when ordinary text is clear.
+    widgets = list(page.widgets() or ())
+    if not widgets:
+        return
+    # Exclude widget appearances, including a candidate's entered answer. A
+    # display list uses rotated coordinates, unlike ordinary page extraction.
+    display_list = page.get_displaylist(annots=False)
+    printed = fitz.TextPage(display_list.get_textpage()).extractDICT()
+    text_spans = [
+        (
+            str(span.get("text", "")).strip(),
+            fitz.Rect(span["bbox"]) * page.derotation_matrix,
+        )
+        for block in printed.get("blocks", [])
+        for line in block.get("lines", [])
+        for span in line.get("spans", [])
+        if str(span.get("text", "")).strip()
+    ]
+    page_bounds = _unrotated_page_box(page)
+    tolerance_box = fitz.Rect(
+        page_bounds.x0 - 0.01,
+        page_bounds.y0 - 0.01,
+        page_bounds.x1 + 0.01,
+        page_bounds.y1 + 0.01,
+    )
+    for widget in widgets:
+        bounds = widget.rect
+        if (
+            not all(math.isfinite(value) for value in bounds)
+            or bounds.is_empty
+            or bounds.is_infinite
+            or not tolerance_box.contains(bounds)
+        ):
+            raise ValueError(
+                f"{filename} page {page_index} has an answer field outside "
+                "the page box or with invalid geometry"
+            )
+        for text, text_bounds in text_spans:
+            overlap = bounds & text_bounds
+            # Font bounding boxes can just touch the field border. A half-point
+            # allowance avoids treating those numerical edges as covered text.
+            if overlap.width > 0.5 and overlap.height > 0.5:
+                raise ValueError(
+                    f"{filename} page {page_index} has an answer field covering "
+                    f"printed text: {text!r}"
+                )
+
+
 # Fail closed on malformed, substituted, annotated, or low-resolution PDFs.
 def validate_pdf_for_release(
     path: Path,
@@ -704,6 +759,9 @@ def validate_pdf_for_release(
                                     f"{path.name} page {page_index} contains "
                                     "text outside the page box"
                                 )
+            _validate_answer_field_clearance(
+                page, filename=path.name, page_index=page_index
+            )
             image_info = page.get_image_info(hashes=False)
             for image in image_info:
                 bbox = fitz.Rect(image["bbox"])

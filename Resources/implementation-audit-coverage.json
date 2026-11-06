@@ -1544,10 +1544,10 @@
       "path": "Backend/Core/pdf_validation.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Full 975-line baseline EOF and complete geometry repair delta reviewed, with independent extraction, containment, metric and new-test review plus four owned fixture renders. Existing background heuristic remains limited; no full print-safety, paper-quality or whole-project qualification.",
-      "source_sha256": "806e89959831557ff5768120bd54ee8fc134db6204c0ebaf6527c7bcad925e0a",
-      "review_evidence": "docs/quality/pdf-image-geometry-review.md",
-      "review_evidence_sha256": "a47e5a6414550c784a7c805741df712ca03a897f4200907edfd5c6b20cfafcdd"
+      "reason": "Prior full-file baseline and geometry review extended by complete widget-clearance delta, call-site and test review. Independent review, rotation/crop/filled-field controls and actual retained covered-text refusal passed. This is bounded layout admission, not full print safety or paper-quality qualification.",
+      "source_sha256": "01ae5b27da03669c1ef41d11604c3f178d14e0abdc55e2df05ce0f4f9adfe234",
+      "review_evidence": "docs/quality/answer-field-clearance-review.md",
+      "review_evidence_sha256": "328fa48c5bc800695ba936748766ae885d29062b1f825bd7216c4794cd29823c"
     },
     {
       "path": "Backend/Core/preview_presentation.py",
@@ -2074,8 +2074,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full 269-line baseline and complete continuation delta reviewed by root and independent reviewer. Measured wrapping, preplanning, field identity and atomic replacement tested; 160 baseline page rasters unchanged and five new stress pages viewed. Not live question-quality or official-equivalence qualification.",
+      "source_sha256": "c3fa0c867fd848b1bd2c97585a525ebabb638bfae1322c7aae6151024f498dc6",
+      "review_evidence": "docs/quality/cs1-answer-response-flow-review.md",
+      "review_evidence_sha256": "f0b04dbaed30b6132fcb755c4ac8b4c036fa3e5dae491c7ee6fcc88c815a102d"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/question_bank.py",
@@ -3152,6 +3155,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/answer-field-clearance-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/apple-guided-aqa-authoring-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3290,6 +3299,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cs1-answer-response-flow-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/cs1-command-protocol-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3399,6 +3414,12 @@
     },
     {
       "path": "docs/quality/french-graph-label-clearance-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-installed182-live-diagnostic.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3723,6 +3744,12 @@
     },
     {
       "path": "docs/quality/french-v36-pro26-internal-content-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/generation-cancellation-interaction-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5627,6 +5654,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Tests/GenerationCancellationInteractiveTests.swift",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 203-line opt-in fixture reviewed by author, root and independent reviewer. Root performed real Cancel/Create/error-dismiss/retry controls, with stale-callback assertions and unchanged preferences/sentinel/81 user JSON hashes. Fake provider only; not live inference, MLX escalation or full interaction coverage.",
+      "source_sha256": "5ebf70c8525fef26cd1a001a09f3cb9c09da952e11e06b05374052dd02179bb3",
+      "review_evidence": "docs/quality/generation-cancellation-interaction-review.md",
+      "review_evidence_sha256": "2b3a67270ce3ad028120b7d048c824d165fa8750c1cb49882a0a020ee0d7ec1e"
+    },
+    {
       "path": "macOS/Tests/GenerationEstimatorTests.swift",
       "classification": "test",
       "status": "pending",
@@ -6225,6 +6261,15 @@
       "source_sha256": "a8aed20fb9e32c2232801b8e6106ec5ed0accc935c55fa5c5ef1058250c7f5fe",
       "review_evidence": "docs/quality/qualification-boundary-audit-2026-10-29.md",
       "review_evidence_sha256": "69281beaf26320c6eac473664131dd1a96918104246f228c414c7cb7cb64ec1a"
+    },
+    {
+      "path": "tests/test_cs1_answer_response_flow.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 182-line regression suite read by root and independent reviewer; genuine red failures and green continuation, geometry, source-order, field-tree/AP, atomic replacement and width/capacity controls checked. No live educational-quality inference from owned stress fixtures.",
+      "source_sha256": "ec3fef237a89e1dfd02252255959329a4da16f41b56ea59342159e650284c3d9",
+      "review_evidence": "docs/quality/cs1-answer-response-flow-review.md",
+      "review_evidence_sha256": "f0b04dbaed30b6132fcb755c4ac8b4c036fa3e5dae491c7ee6fcc88c815a102d"
     },
     {
       "path": "tests/test_cs_delivery_chrome.py",
@@ -7608,6 +7653,15 @@
       "source_sha256": "d3d57ba2f016ddbb3a2e8b697c7cbbbc59691054bcb78ef1adc3d3d7e97664a6",
       "review_evidence": "docs/quality/pdf-visible-page-review-2026-11-03.md",
       "review_evidence_sha256": "8b5ec3b73e37822f9941734681d6872c1db4af688e6e5f128818a3fc0cbe1f60"
+    },
+    {
+      "path": "tests/test_pdf_widget_clearance.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Entire new test file reviewed by root and independent reviewer. Thirty-five controls cover covered/clear empty and filled widgets, all right-angle rotations, crop offsets, four outside edges and numerical border allowance, preserving fixture bytes. This tests bounded PDF admission, not all form behaviours.",
+      "source_sha256": "b8d97fca27f30b73ef4c0e57ef8372c3b0500d4ebbc3140ce695fcff7fe79eda",
+      "review_evidence": "docs/quality/answer-field-clearance-review.md",
+      "review_evidence_sha256": "328fa48c5bc800695ba936748766ae885d29062b1f825bd7216c4794cd29823c"
     },
     {
       "path": "tests/test_preview_raster_order.py",
