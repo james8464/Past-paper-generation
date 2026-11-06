@@ -1336,8 +1336,11 @@
     {
       "path": "Backend/Core/legacy_migration.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "17e87141bcef2ce6c41adb1718394061a16fced53c14f984d404de7cf0440068",
+      "review_evidence": "docs/quality/preview-raster-order-review.md",
+      "review_evidence_sha256": "dd1d37a5e37e28f4f9a4b9d16cc3f31428f4300af14f0e3135c118e131e850b7"
     },
     {
       "path": "Backend/Core/level_of_response.py",
@@ -1489,8 +1492,11 @@
     {
       "path": "Backend/Core/paths.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "5935a31d7cd1de7abce064ec8aadd806063111a055e4b1a535cecf244329685b",
+      "review_evidence": "docs/quality/preview-raster-order-review.md",
+      "review_evidence_sha256": "dd1d37a5e37e28f4f9a4b9d16cc3f31428f4300af14f0e3135c118e131e850b7"
     },
     {
       "path": "Backend/Core/pdf_accessibility.py",
@@ -1522,8 +1528,11 @@
     {
       "path": "Backend/Core/preview_presentation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "09ff7bdb901422ebf897b077f10084532bf8eb2cf44a46104d1362881eb24dd8",
+      "review_evidence": "docs/quality/preview-raster-order-review.md",
+      "review_evidence_sha256": "dd1d37a5e37e28f4f9a4b9d16cc3f31428f4300af14f0e3135c118e131e850b7"
     },
     {
       "path": "Backend/Core/providers.py",
@@ -2642,6 +2651,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/economics/edexcel-a/generator/tests/test_answer_frame_clearance.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "fc03da7be5dc81f44343a2d775aa4c934d4926af32f7029b5c76c02b0765daed",
+      "review_evidence": "docs/quality/edexcel-answer-frame-clearance-review.md",
+      "review_evidence_sha256": "495ff9a00c0d289d55d2e4b9f37d19eb327a391a20997588238b359869c41ce4"
+    },
+    {
       "path": "Resources/economics/edexcel-a/generator/tests/test_assessment_contracts.py",
       "classification": "test",
       "status": "pending",
@@ -3246,6 +3264,12 @@
     },
     {
       "path": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/edexcel-answer-frame-clearance-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4032,6 +4056,12 @@
     },
     {
       "path": "docs/quality/practice-workspace-test-build-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/preview-raster-order-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7466,6 +7496,15 @@
       "review_evidence_sha256": "8b5ec3b73e37822f9941734681d6872c1db4af688e6e5f128818a3fc0cbe1f60"
     },
     {
+      "path": "tests/test_preview_raster_order.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "15ead3648db05236926f92102754190c7f616e0ce284b0e2df520a9051602110",
+      "review_evidence": "docs/quality/preview-raster-order-review.md",
+      "review_evidence_sha256": "dd1d37a5e37e28f4f9a4b9d16cc3f31428f4300af14f0e3135c118e131e850b7"
+    },
+    {
       "path": "tests/test_print_profiles.py",
       "classification": "test",
       "status": "pending",
@@ -7687,8 +7726,11 @@
     {
       "path": "tests/test_uk_preview_presentation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete-file semantic review at the recorded source and evidence hashes; dependencies and remaining release qualification are limited to the documented scope.",
+      "source_sha256": "d7a5efcd941992dfcf45389701e81d437dcdbaedcd94883d5c6c34fef5e08462",
+      "review_evidence": "docs/quality/preview-raster-order-review.md",
+      "review_evidence_sha256": "dd1d37a5e37e28f4f9a4b9d16cc3f31428f4300af14f0e3135c118e131e850b7"
     },
     {
       "path": "tools/__init__.py",

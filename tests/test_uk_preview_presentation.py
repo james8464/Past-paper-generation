@@ -82,7 +82,7 @@ def test_every_public_preview_pdf_preserves_body_geometry(
             assert path.read_bytes() == plain[role].read_bytes()
             continue
         report = validate_preview_pdf(path)
-        assert report["policy"] == "uk-layout-preview-v1"
+        assert report["policy"] == "uk-layout-preview-v2-raster-order"
         with fitz.open(path) as preview, fitz.open(plain[role]) as default:
             assert len(preview) == len(default)
             first = preview[0]
@@ -297,7 +297,7 @@ def test_public_publication_records_preview_policy_and_final_hashes(
         assert item["sha256"] == hashlib.sha256(path.read_bytes()).hexdigest()
         if path.suffix == ".pdf":
             assert item["pdf_validation"]["presentation"] == {
-                "policy": "uk-layout-preview-v1",
+                "policy": "uk-layout-preview-v2-raster-order",
                 "first_page_notice": True,
             }
 

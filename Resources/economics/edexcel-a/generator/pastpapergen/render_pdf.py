@@ -118,6 +118,9 @@ ANSWER_FRAME_Y = 48
 ANSWER_FRAME_W = 500
 ANSWER_FRAME_H = 760
 ANSWER_PAGE_START_Y = 803.3
+# The existing source-stem inset clears the 12pt font's ascent and frame stroke.
+# Keep this separate from the measured origin of blank response rules.
+ANSWER_CONTENT_START_Y = ANSWER_FRAME_Y + ANSWER_FRAME_H - 21
 RAIL_Y = 50
 RAIL_H = 760
 MARK_SCHEME_MIN_PAGES = {"paper_1": 29, "paper_2": 36, "paper_3": 31}
@@ -144,6 +147,8 @@ MARK_SCHEME_COVER_LAYOUTS = {
     },
 }
 CROSS_BOX_TOKEN = "{box}"
+CROSS_BOX_SIZE_PT = 8
+CROSS_BOX_GAP_PT = 4
 SECTION_A_INSTRUCTION_LINES = [
     "Answer ALL questions. Write your answers in the spaces provided.",
     f"Some questions must be answered with a cross in a box {CROSS_BOX_TOKEN}. If you change your",
@@ -1049,6 +1054,7 @@ def _draw_paper_3_question_summary(
 ) -> None:
     width, _ = A4
     x = 76
+    y = _answer_content_y(y)
     for index, question in enumerate(questions):
         if index == 3:
             pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
@@ -1072,6 +1078,7 @@ def _draw_paper_3_question_summary(
 def _draw_paper_3_choice_header(pdf: canvas.Canvas, questions: list, y: float) -> float:
     width, _ = A4
     x = 76
+    y = _answer_content_y(y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawString(x, y, "EITHER")
     y -= 20
@@ -1089,11 +1096,11 @@ def _draw_paper_3_choice_header(pdf: canvas.Canvas, questions: list, y: float) -
     pdf.drawRightString(width - x, y + BODY_LEADING_PT, f"({questions[1].marks})")
     pdf.setFillColor(colors.black)
     y -= 24
-    instruction_lines = (
-        f"Indicate which question you are answering by marking a cross in the box {CROSS_BOX_TOKEN}. If you change your",
-        f"mind, put a line through the box {CROSS_BOX_TOKEN} and then indicate your new question with a cross {CROSS_BOX_TOKEN}.",
+    instruction = (
+        f"Indicate which question you are answering by marking a cross in the box {CROSS_BOX_TOKEN}. If you change your "
+        f"mind, put a line through the box {CROSS_BOX_TOKEN} and then indicate your new question with a cross {CROSS_BOX_TOKEN}."
     )
-    for line in instruction_lines:
+    for line in _wrap_centred_instruction_lines(pdf, instruction, width - 2 * x):
         _draw_centred_instruction_line(pdf, width / 2, y, line)
         y -= BODY_LEADING_PT
     y -= 12
@@ -1167,6 +1174,7 @@ def _extra_answer_pages(paper_id: str, question) -> int:
 
 
 def _draw_section_b_prompt_page(pdf: canvas.Canvas, questions: list, y: float) -> float:
+    y = _answer_content_y(y)
     width, _ = A4
     section_b = [question for question in questions if question.section == "B"]
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
@@ -1249,6 +1257,7 @@ def _draw_section_b_extract_block(
 ) -> float:
     margin = 76
     width, _ = A4
+    y = _answer_content_y(y, font_size=10)
     if include_question_title:
         first_question = section_b[0].number.split("(")[0] if section_b else "6"
         source_title = (
@@ -1326,6 +1335,7 @@ def _draw_section_c_answer_pages(
     answer_pages = 6
     for index in range(answer_pages):
         if index == 0:
+            y = _answer_content_y(y)
             pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
             instruction = (
                 "Indicate which question you are answering by marking a cross in the box. "
@@ -1370,7 +1380,11 @@ def _draw_continuation_lines(
     if question_number:
         pdf.setFont(FONT_ITALIC, 8)
         pdf.setFillColor(colors.HexColor("#666666"))
-        pdf.drawString(x, y + 6, f"Question {question_number} continued ...")
+        pdf.drawString(
+            x,
+            _answer_content_y(y + 6, font_size=8),
+            f"Question {question_number} continued ...",
+        )
         pdf.setFillColor(colors.black)
         y -= 16
         pdf.setStrokeColor(colors.HexColor("#cccccc"))
@@ -1390,6 +1404,11 @@ def _draw_answer_page_header(
 
 def _draw_watermark(pdf: canvas.Canvas) -> None:
     return
+
+
+def _answer_content_y(y: float, *, font_size: float = BODY_FONT_SIZE_PT) -> float:
+    # Smaller captions can sit higher, without moving their response-rule grid.
+    return min(y, ANSWER_CONTENT_START_Y + BODY_FONT_SIZE_PT - font_size)
 
 
 def _prepare_answer_page(
@@ -1519,6 +1538,33 @@ def _draw_section_intro(
     return y - (18 if is_section_b_prompt else 12)
 
 
+def _instruction_line_width(pdf: canvas.Canvas, line: str) -> float:
+    parts = line.split(CROSS_BOX_TOKEN)
+    text_width = sum(
+        pdf.stringWidth(part, FONT_BOLD, BODY_FONT_SIZE_PT) for part in parts
+    )
+    return text_width + (len(parts) - 1) * (CROSS_BOX_SIZE_PT + CROSS_BOX_GAP_PT)
+
+
+def _wrap_centred_instruction_lines(
+    pdf: canvas.Canvas, text: str, width: float
+) -> list[str]:
+    lines: list[str] = []
+    current = ""
+    for word in text.split():
+        if _instruction_line_width(pdf, word) > width:
+            raise ValueError("Instruction word does not fit inside the answer frame")
+        candidate = f"{current} {word}" if current else word
+        if current and _instruction_line_width(pdf, candidate) > width:
+            lines.append(current)
+            current = word
+        else:
+            current = candidate
+    if current:
+        lines.append(current)
+    return lines
+
+
 def _draw_centred_instruction_line(
     pdf: canvas.Canvas, center_x: float, y: float, line: str
 ) -> None:
@@ -1529,10 +1575,9 @@ def _draw_centred_instruction_line(
     parts = line.split(CROSS_BOX_TOKEN)
     font_name = FONT_BOLD
     font_size = BODY_FONT_SIZE_PT
-    box_size = 8
-    box_gap = 4
-    total_width = sum(pdf.stringWidth(part, font_name, font_size) for part in parts)
-    total_width += (len(parts) - 1) * (box_size + box_gap)
+    box_size = CROSS_BOX_SIZE_PT
+    box_gap = CROSS_BOX_GAP_PT
+    total_width = _instruction_line_width(pdf, line)
     x = center_x - total_width / 2
     for index, part in enumerate(parts):
         pdf.drawString(x, y, part)
@@ -1625,6 +1670,7 @@ def _draw_question(
 def _draw_question_prompt(
     pdf: canvas.Canvas, number: str, prompt: str, x: float, y: float
 ) -> float:
+    y = _answer_content_y(y)
     parsed = _split_subquestion_number(number)
     if not parsed:
         for line in _wrap(f"{number} {prompt}", 68):
@@ -1661,7 +1707,7 @@ def _draw_section_a_question(
     width, _ = A4
     # Source-page stems need clearance from the rounded frame. Do not change
     # the starting point of blank answer pages or their available writing space.
-    y = min(y, 787.0)
+    y = _answer_content_y(y)
     pdf.setFont(FONT_BOLD, BODY_FONT_SIZE_PT)
     pdf.drawString(x, y, question.number)
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
@@ -1999,6 +2045,7 @@ def _draw_blank_answer_axes(
 
 
 def _draw_part_prompt(pdf: canvas.Canvas, part, x: float, y: float) -> float:
+    y = _answer_content_y(y)
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
     lines = _wrap(f"({part.label}) {_part_prompt_text(part)}", 66)
     for line in lines:
@@ -2017,6 +2064,7 @@ def _draw_inline_context(pdf: canvas.Canvas, text: str, x: float, y: float) -> f
 
 def _draw_mcq_part(pdf: canvas.Canvas, part, x: float, y: float) -> float:
     width, _ = A4
+    y = _answer_content_y(y)
     question_text, choices = _mcq_choices(part)
     pdf.setFont(FONT_REGULAR, BODY_FONT_SIZE_PT)
     pdf.setFillColor(colors.black)
