@@ -395,8 +395,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/response_simulation.py": {
-    "mtime": 1793543731.5943127,
-    "ast_hash": "e1cf43915094bcdbf6ce905c23df6c5c",
+    "mtime": 1793966466.1733844,
+    "ast_hash": "b8a535b12fc9ea38f7c1410abfd82f69",
     "semantic_hash": ""
   },
   "Backend/Core/scoped_references.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793958689.6755888,
-    "ast_hash": "2f1ba7970002654115c825a578fd0963",
+    "mtime": 1793963088.187039,
+    "ast_hash": "2003d40dfe3ad57cccbc5cef1aff0c7c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1710,9 +1710,9 @@
     "semantic_hash": ""
   },
   "tests/test_response_simulation.py": {
-    "mtime": 1793543731.7249117,
-    "ast_hash": "22a8a61d136aa0097095229ecaa32801",
-    "semantic_hash": "22a8a61d136aa0097095229ecaa32801"
+    "mtime": 1793966466.1755354,
+    "ast_hash": "8486f9561a1e56d2a48b4046996235b4",
+    "semantic_hash": ""
   },
   "tests/test_science_overlay.py": {
     "mtime": 1793543731.7250762,
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793963067.1849153,
-    "ast_hash": "72b3d5cfffb5cb531fece7659eb9d4fa",
+    "mtime": 1793966515.495089,
+    "ast_hash": "5fb44c6dcff2506a1f87004b281ab572",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4130,8 +4130,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/answer_projection.py": {
-    "mtime": 1793543731.5619967,
-    "ast_hash": "17e0cd49c6bc80dc3f7fd11cfd09ea5f",
+    "mtime": 1793966466.172912,
+    "ast_hash": "35c17092730a2284d66fc4162630f7ae",
     "semantic_hash": ""
   },
   "Backend/Core/assessment_prompts.py": {
@@ -4185,8 +4185,8 @@
     "semantic_hash": ""
   },
   "tests/test_assessment_prompt_characterisation.py": {
-    "mtime": 1793543731.7018294,
-    "ast_hash": "50c4b6494d6d292f8efb3d10117d5499",
+    "mtime": 1793966466.1751037,
+    "ast_hash": "74859fde06416a1ac7f8981aa2479c11",
     "semantic_hash": ""
   },
   "tests/test_calibration_helpers.py": {
@@ -5847,6 +5847,16 @@
   "docs/quality/cs-table-source-fidelity-review.md": {
     "mtime": 1793963066.9826841,
     "ast_hash": "b8afcfa6795cc13d81b700c3387579a8",
+    "semantic_hash": ""
+  },
+  "docs/quality/response-simulation-projection-review.md": {
+    "mtime": 1793966466.1744144,
+    "ast_hash": "dd06f05e22781aea8e651d79fbfb58bf",
+    "semantic_hash": ""
+  },
+  "docs/quality/shared-generation-boundary-audit.md": {
+    "mtime": 1793966515.2179751,
+    "ast_hash": "8105ba1bdb19df4030006374a24a03e8",
     "semantic_hash": ""
   }
 }

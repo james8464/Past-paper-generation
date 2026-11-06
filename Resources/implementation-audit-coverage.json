@@ -170,10 +170,10 @@
       "path": "Backend/Core/answer_projection.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "c929b0c81b1390dba5dd18b5214d2482cc37ebfefca81275ca0434c9a9f5a633",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "83eae23215ca81df4453b44519f6ac70e45aed21da8d88d43e9c8ef95613735b",
+      "review_evidence": "docs/quality/response-simulation-projection-review.md",
+      "review_evidence_sha256": "59ff4d3c284a70249d4beccffdb8d87389e0ade7b313e4f103684b7a627e242a"
     },
     {
       "path": "Backend/Core/apple_intelligence.py",
@@ -832,8 +832,11 @@
     {
       "path": "Backend/Core/france/graph_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "5b6e54d4c947af5bb14fae1552ece967c08053875622ad3658237a3434520e54",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/france/graph_resilience_authoring.py",
@@ -1129,8 +1132,11 @@
     {
       "path": "Backend/Core/france/question_review.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "fd7bcde5a56e51ae8b59f08999305b3dfc9c312dd28e269e2557fc66aab813de",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/france/recovery_evidence.py",
@@ -1180,8 +1186,11 @@
     {
       "path": "Backend/Core/france/source_identity.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "b0696388dafd9e43702a37cadfa7602916c1293f63af0949f1e9003a308a5ead",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/france/sql_sources.py",
@@ -1369,8 +1378,11 @@
     {
       "path": "Backend/Core/mark_scheme_front_matter.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "33126b6f1232ba1d01ef775fb859394d943397c185ee827268fe88c951c80c33",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/mark_scheme_quality.py",
@@ -1438,8 +1450,11 @@
     {
       "path": "Backend/Core/ocr_scheme_content.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "fe9af01297f6cee8ecdbe8e9de343eec6c6acdd8cccd2262af4739e0ad9bc956",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/ollama.py",
@@ -1606,8 +1621,11 @@
     {
       "path": "Backend/Core/response_simulation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "e7795aca2be21e2be3c12d651c0db98db04074e415db741371373ae2ceaa1978",
+      "review_evidence": "docs/quality/response-simulation-projection-review.md",
+      "review_evidence_sha256": "59ff4d3c284a70249d4beccffdb8d87389e0ade7b313e4f103684b7a627e242a"
     },
     {
       "path": "Backend/Core/review_workers.py",
@@ -1654,8 +1672,11 @@
     {
       "path": "Backend/Core/subject_plugins.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "58d5480336582153f8511f87410732a1c26e92d8d7ceb7e226a0eff79e359fde",
+      "review_evidence": "docs/quality/shared-generation-boundary-audit.md",
+      "review_evidence_sha256": "10afd18fa24faad1a480e60634761cb46ebf9d6d32668062f3ef2f4ed8f0426f"
     },
     {
       "path": "Backend/Core/subjects/__init__.py",
@@ -4217,7 +4238,19 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/response-simulation-projection-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/selected-response-dispatch-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/shared-generation-boundary-audit.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7684,8 +7717,11 @@
     {
       "path": "tests/test_response_simulation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level review at the recorded source hash; scope and limits are in the linked note. Not whole-project or live-quality certification.",
+      "source_sha256": "53804ac16ff0b46f5d8877601c367e581c7f9d9fe04812a06b389fc94b2b8502",
+      "review_evidence": "docs/quality/response-simulation-projection-review.md",
+      "review_evidence_sha256": "59ff4d3c284a70249d4beccffdb8d87389e0ade7b313e4f103684b7a627e242a"
     },
     {
       "path": "tests/test_review_workers.py",
