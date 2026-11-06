@@ -143,7 +143,7 @@ def screen_originality(
     return {
         "state": "passed_calibrated_screen",
         "calibration_set": CALIBRATION_SET_ID,
-        "thresholds": THRESHOLDS,
+        "thresholds": dict(THRESHOLDS),
         "maximum_scores": maximums,
         "comparison_counts": {
             "references": len(reference_texts),

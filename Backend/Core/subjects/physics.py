@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from decimal import Decimal, DecimalException, InvalidOperation
+from decimal import Decimal, InvalidOperation
 from typing import Any
 
 from Backend.Core.subject_contracts import SubjectValidation
@@ -32,15 +32,43 @@ def compare_physical_answers(
         or allowed_difference < 0
     ):
         return False
-    try:
-        if abs(candidate_value - expected_value) > allowed_difference:
-            return False
-    except DecimalException:
+    if not _distance_within(candidate_value, expected_value, allowed_difference):
         return False
     return (
         significant_figures is None
         or _significant_figures(candidate) == significant_figures
     )
+
+
+def _distance_within(left: Decimal, right: Decimal, tolerance: Decimal) -> bool:
+    """Compare finite values exactly without expanding gaps between exponents."""
+    high, low = (left, right) if left >= right else (right, left)
+    columns: dict[int, int] = {}
+    # Compute the sign of high - low - tolerance. Only supplied coefficient
+    # digits occupy columns; exponent gaps never allocate strings or integers.
+    for value, direction in ((high, 1), (low, -1), (tolerance, -1)):
+        parts = value.as_tuple()
+        assert isinstance(
+            parts.exponent, int
+        )  # Callers already refused nonfinite values.
+        sign = -direction if parts.sign else direction
+        for offset, digit in enumerate(reversed(parts.digits)):
+            if digit:
+                position = parts.exponent + offset
+                columns[position] = columns.get(position, 0) + sign * digit
+    carry = 0
+    lower_nonzero = False
+    previous: int | None = None
+    for position in sorted(columns):
+        if previous is not None and position > previous + 1 and carry:
+            # A carry is at most 2 (or -3). One empty column consumes a
+            # positive carry; a negative carry becomes -1 across the whole gap.
+            lower_nonzero = True
+            carry = -1 if carry < 0 else 0
+        carry, digit = divmod(columns[position] + carry, 10)
+        lower_nonzero = lower_nonzero or digit != 0
+        previous = position
+    return carry < 0 or (carry == 0 and not lower_nonzero)
 
 
 class PhysicsPlugin:

@@ -396,7 +396,9 @@ AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
 
 
 # Require generation-only fields without changing legacy package readers.
-def authoring_schema(*, machine_field_constraints: bool = False) -> dict:
+def authoring_schema(
+    *, machine_field_constraints: bool = False, positive_points: bool = False
+) -> dict:
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
     schema["properties"]["materials"]["minItems"] = 1
@@ -416,6 +418,16 @@ def authoring_schema(*, machine_field_constraints: bool = False) -> dict:
         schema["$defs"]["Credit"]["properties"]["points"],
     ):
         field.update(pattern=r"^[0-9]{1,6}(\.[0-9]{1,4})?$", minLength=1, maxLength=11)
+        if positive_points:
+            # Portable alternation, without lookahead: retain leading zeros and
+            # every positive value in the existing six/four-digit grammar.
+            field["pattern"] = (
+                r"^(?:(?:[1-9][0-9]{0,5}|0[1-9][0-9]{0,4}|"
+                r"00[1-9][0-9]{0,3}|000[1-9][0-9]{0,2}|"
+                r"0000[1-9][0-9]?|00000[1-9])(?:\.[0-9]{1,4})?|"
+                r"0{1,6}\.(?:[1-9][0-9]{0,3}|0[1-9][0-9]{0,2}|"
+                r"00[1-9][0-9]?|000[1-9]))$"
+            )
     table = schema["$defs"]["NSITableMaterial"]["properties"]
     for cell in (table["columns"]["items"], table["rows"]["items"]["items"]):
         cell.update(minLength=1, maxLength=180, pattern=r"\S")
