@@ -244,3 +244,36 @@ def test_unrelated_subject_keeps_generic_policy():
         question, SimpleNamespace(title="Subject", points=["Point"]), "business"
     )
     assert question.authoring_context["level_policy_id"] == "aqa-standard-4-level"
+
+
+@pytest.mark.parametrize("marker", ["grouped", "explicit_without_group"])
+@pytest.mark.parametrize("boundary", ["export", "replay"])
+def test_forged_grouped_marker_cannot_waive_standalone_contract(
+    papers, tmp_path, monkeypatch, marker, boundary
+):
+    monkeypatch.setattr(packages, "_reference_demand_audit", lambda **kwargs: None)
+    paper = papers["2"]
+    question = next(q for q in questions(paper) if q.marks == 25)
+    if marker == "grouped":
+        question.authoring_context["grouped_level_policy"] = {}
+    else:
+        question.authoring_context["accounting_marking_policy"] = (
+            "aqa-accounting-explicit-credit-v1"
+        )
+    if boundary == "export":
+        with pytest.raises(ValueError, match="grouped level policy"):
+            packages.write_assessment_package(
+                paper,
+                tmp_path / "forged.json",
+                subject="accounting_aqa",
+                paper_number="2",
+                preview=True,
+                provider=None,
+                model=None,
+            )
+    else:
+        raw = question.model_dump(mode="json")
+        raw.update(subject="accounting_aqa", paper="2", id=question.number)
+        raw["assessment_contract"] = packages._assessment_contract(raw)
+        with pytest.raises(ValueError, match="grouped level policy"):
+            packages._validate_response_bands(raw)

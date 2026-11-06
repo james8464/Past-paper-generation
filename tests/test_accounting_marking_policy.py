@@ -208,6 +208,22 @@ def test_two_reason_simulation_checks_each_three_mark_group(paper):
     assert all(group["maximum_mark"] == 3 for group in result["groups"])
 
 
+@pytest.mark.parametrize(
+    "standalone_id", [None, "aqa-standard-4-level", "aqa-accounting-two-reasons-v1"]
+)
+def test_grouped_policy_owns_awards_not_the_unused_standalone_id(paper, standalone_id):
+    from Backend.Core.accounting_levels import validate_accounting_level_contract
+
+    item = grouped_item(paper)
+    contract = item["assessment_contract"]
+    if standalone_id is None:
+        del contract["level_policy_id"]
+    else:
+        contract["level_policy_id"] = standalone_id
+    validate_accounting_level_contract(item, contract)
+    assert _validate_response_bands(item)["marks"] == [2, 4, 6]
+
+
 @pytest.mark.parametrize("subject", ["accounting", "accounting_aqa"])
 def test_two_reason_simulation_retains_supported_subject_aliases(paper, subject):
     item = grouped_item(paper)

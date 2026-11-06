@@ -166,6 +166,20 @@ def test_nonbudget_content_and_all_old_numeric_contracts_are_unchanged() -> None
         for section in raw["sections"]:
             for option in section["options"]:
                 for question in option["questions"]:
+                    # Standalone levels now bind their printed Accounting grid.
+                    # Normalize only that intentional metadata change for this
+                    # pre-existing content/numeric byte-contract comparison.
+                    if (
+                        question["scheme_mode"] == "levels"
+                        and question["rule_id"] != "explain_trade"
+                    ):
+                        assert (
+                            question["authoring_context"]["level_policy_id"]
+                            == f"aqa-accounting-{question['marks']}-mark"
+                        )
+                        question["authoring_context"]["level_policy_id"] = (
+                            "aqa-standard-4-level"
+                        )
                     if question["rule_id"] == "budget":
                         assert question["marks"] == 8
                         question["prompt"] = "BUDGET_PROMPT"

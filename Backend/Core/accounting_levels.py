@@ -29,9 +29,16 @@ def validate_accounting_level_contract(
     if raw.get("scheme_mode") != "levels":
         return
     context = raw.get("authoring_context") or {}
-    # The separately validated two-reason policy has two independent grids.
-    if contract.get("level_policy_id") == "aqa-accounting-two-reasons-v1" and (
-        "grouped_level_policy" in contract or "grouped_level_policy" in context
+    # Grouped awards belong to the existing grouped-policy validator, including
+    # retained contracts whose unused standalone policy ID was generic. Do not
+    # replace its shape/cap/AO errors with a standalone grid error.
+    if (
+        "grouped_level_policy" in contract
+        or "grouped_level_policy" in context
+        or contract.get("accounting_marking_policy")
+        == "aqa-accounting-explicit-credit-v1"
+        or context.get("accounting_marking_policy")
+        == "aqa-accounting-explicit-credit-v1"
     ):
         return
     policy = accounting_level_policy(raw.get("marks"))

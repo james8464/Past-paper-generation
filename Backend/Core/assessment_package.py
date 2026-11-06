@@ -635,7 +635,24 @@ def _extract_items(
                 validate_accounting_level_contract,
             )
 
-            validate_accounting_level_contract(raw, _assessment_contract(raw))
+            accounting_contract = _assessment_contract(raw)
+            validate_accounting_level_contract(raw, accounting_contract)
+            if "grouped_level_policy" in accounting_contract or (
+                raw.get("scheme_mode") == "levels"
+                and accounting_contract.get("accounting_marking_policy")
+                == "aqa-accounting-explicit-credit-v1"
+            ):
+                # Grouped ownership is not a standalone-policy waiver. Apply
+                # the same existing grouped checks before exporting the item.
+                _validate_response_bands(
+                    {
+                        **raw,
+                        "id": item_id,
+                        "subject": subject,
+                        "paper": paper_number,
+                        "assessment_contract": accounting_contract,
+                    }
+                )
         item = {
             "id": f"{item_id}@{path}",
             "subject": subject,
@@ -853,10 +870,6 @@ def _level_policies() -> dict[str, Any]:
 
 def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
     contract = item.get("assessment_contract")
-    if item.get("subject") == "accounting_aqa":
-        from Backend.Core.accounting_levels import validate_accounting_level_contract
-
-        validate_accounting_level_contract(item, contract or {})
     if isinstance(contract, dict) and "grouped_level_policy" in contract:
         return _validate_grouped_reason_bands(item, contract)
     if (
@@ -868,6 +881,10 @@ def _validate_response_bands(item: dict[str, Any]) -> dict[str, Any] | None:
         raise ValueError(
             f"assessment item {item.get('id')} grouped level policy is missing"
         )
+    if item.get("subject") == "accounting_aqa":
+        from Backend.Core.accounting_levels import validate_accounting_level_contract
+
+        validate_accounting_level_contract(item, contract or {})
     if item.get("scheme_mode") != "levels":
         return None
     if not isinstance(contract, dict):
