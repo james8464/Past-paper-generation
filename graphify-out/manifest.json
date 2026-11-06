@@ -70,8 +70,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_authoring.py": {
-    "mtime": 1793963046.0217395,
-    "ast_hash": "bc1f396a4e9016e0c63690a58704aa9c",
+    "mtime": 1793977577.49178,
+    "ast_hash": "97b129bf17b826433fa70f8ab09b5c3e",
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_reference_solutions.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793966561.2697341,
-    "ast_hash": "99d85fd6f84501cbe1c9443321da608f",
+    "mtime": 1793972739.9032056,
+    "ast_hash": "cf18f6ef9aaf61e7e0ab3830123bc2c3",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793966515.495089,
-    "ast_hash": "5fb44c6dcff2506a1f87004b281ab572",
+    "mtime": 1793977616.5840452,
+    "ast_hash": "2056d0ffd55a3d836685340d96efba8e",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5892,6 +5892,31 @@
   "docs/quality/generation-cancellation-interaction-review.md": {
     "mtime": 1793972655.2895453,
     "ast_hash": "52a58943687f1f9588b3caa47636e59b",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/DocumentRecoveryInteractiveTests.swift": {
+    "mtime": 1793977577.49782,
+    "ast_hash": "22dc7b1d07a0bc65fdc86ea966244c4d",
+    "semantic_hash": ""
+  },
+  "tests/test_cs_functional_source_binding.py": {
+    "mtime": 1793977577.4920619,
+    "ast_hash": "00e8ef68901ebb821fedd77e03332f06",
+    "semantic_hash": ""
+  },
+  "docs/quality/accounting-choice-builder-review.md": {
+    "mtime": 1793977577.5016484,
+    "ast_hash": "f1ef7d671c62dd255acc86f7a0dc78b7",
+    "semantic_hash": ""
+  },
+  "docs/quality/cs-functional-source-grammar-review.md": {
+    "mtime": 1793977577.491984,
+    "ast_hash": "591714702e3f2c00b520944b81ce16e9",
+    "semantic_hash": ""
+  },
+  "docs/quality/document-recovery-interaction-review.md": {
+    "mtime": 1793977577.4975555,
+    "ast_hash": "f184c8d73579cb31f082c0bb4057ff41",
     "semantic_hash": ""
   }
 }

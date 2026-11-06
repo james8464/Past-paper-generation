@@ -313,8 +313,11 @@
     {
       "path": "Backend/Core/computer_science_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 300-line EOF review, including the prior 289-line source and complete functional-source admission delta. Shared projection and saved-review/package boundaries checked; supported-language controls are not general Haskell interpretation, live quality qualification or a whole dependency audit.",
+      "source_sha256": "c85da33c357c41db9a725387f7a4f29810217ee564ca232e7adb591a88a843d4",
+      "review_evidence": "docs/quality/cs-functional-source-grammar-review.md",
+      "review_evidence_sha256": "2521a17e64dd40f437c5e26c835e8dbe534f70ca7c703f5258f717b5f595fa4d"
     },
     {
       "path": "Backend/Core/computer_science_reference_solutions.py",
@@ -1858,8 +1861,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/selected_response.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 139-line EOF review of all four bounded source-owned choice branches, input/derive binding, supplied RNG and distractor separation. Scoped existing callers/tests inspected, not executed in this review. Does not close conceptual Q06 semantic uncertainty or certify live paper quality.",
+      "source_sha256": "906e718ec91c91275f9da9bebd132b5530c42c79ebde0e80de4e79584acfa5ad",
+      "review_evidence": "docs/quality/accounting-choice-builder-review.md",
+      "review_evidence_sha256": "485ad3175ad6e4fe6482bb918cdfc437b038825188b09e5f5f2e8bde74aedb6e"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py",
@@ -3113,6 +3119,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/accounting-choice-builder-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/accounting-choice-format-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3293,6 +3305,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cs-functional-source-grammar-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/cs-table-source-fidelity-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3324,6 +3342,12 @@
     },
     {
       "path": "docs/quality/difficulty-calibration-v2-report.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/document-recovery-interaction-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5630,6 +5654,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "macOS/Tests/DocumentRecoveryInteractiveTests.swift",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 228-line opt-in fixture review, including guarded cleanup of only the owned OS picker-folder preference. Real Cancel/wrong/exact picker rerun passed against its captured baseline; first failed isolation trial retained. Isolated controller storage, not full Documents-view or sandbox coverage.",
+      "source_sha256": "59a9ad5fdca5a6e8a29257ea25c853f93fbee6809da9d0051cfceec414fab3c0",
+      "review_evidence": "docs/quality/document-recovery-interaction-review.md",
+      "review_evidence_sha256": "a264bec8f23192237e9c8c07adae5345156238b4fc87c656c63ad6aa1f451c0c"
+    },
+    {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",
       "classification": "test",
       "status": "pending",
@@ -6288,6 +6321,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_cs_functional_source_binding.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 188-line EOF review of complete-program refusal, built-in/saved approval admission, representative canonical and parameter controls, and actual package write/read preservation. Scoped offline tests, not exhaustive seeds, model quality or release-build acceptance.",
+      "source_sha256": "606ef4fb0af162c94cf4f0f5323785100f40684dfdd213b14a1f5222f0c3c1c1",
+      "review_evidence": "docs/quality/cs-functional-source-grammar-review.md",
+      "review_evidence_sha256": "2521a17e64dd40f437c5e26c835e8dbe534f70ca7c703f5258f717b5f595fa4d"
     },
     {
       "path": "tests/test_cs_matrix_scheme.py",
