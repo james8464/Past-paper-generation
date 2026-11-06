@@ -150,7 +150,7 @@ final class KeldinTests: XCTestCase {
     }
 
     @MainActor
-    func testDocumentCommandsFollowSelectionAndMissingFiles() throws {
+    func testDocumentCommandsFollowSelectionAndMissingFiles() async throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
@@ -163,9 +163,12 @@ final class KeldinTests: XCTestCase {
         let actions = DocumentActionController()
         XCTAssertFalse(actions.canAccessDocument)
         actions.update(file: first, provenance: nil)
+        await actions.waitForPendingLoad()
         XCTAssertTrue(actions.canAccessDocument)
+        XCTAssertFalse(actions.canQuickLookDocument, "Quick Look needs a rendered PDF view attached to its window")
         XCTAssertEqual(actions.selectedFile, first)
         actions.update(file: second, provenance: nil)
+        await actions.waitForPendingLoad()
         XCTAssertEqual(actions.selectedFile, second)
         try FileManager.default.removeItem(at: second.url)
         XCTAssertFalse(actions.canAccessDocument)

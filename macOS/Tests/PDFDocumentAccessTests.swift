@@ -1,6 +1,7 @@
 import Foundation
 import PDFKit
 import SwiftUI
+import Synchronization
 import XCTest
 @testable import Keldin
 
@@ -15,18 +16,355 @@ final class PDFDocumentAccessTests: XCTestCase {
     override func tearDownWithError() throws { try FileManager.default.removeItem(at: root) }
 
     @MainActor
+    func testSlowPDFReadDoesNotBlockMainActorHeartbeat() async throws {
+        let url = try makePDF()
+        let bytes = try Data(contentsOf: url)
+        let heartbeat = expectation(description: "Main actor responds while PDF read is pending")
+        let readFinished = expectation(description: "Bounded PDF read finished")
+        let probe = BoundedPDFReadProbe()
+        let access = PDFDocumentAccess(defaults: defaults(), readData: { _ in
+            probe.state.withLock {
+                $0.readerOnMainThread = Thread.isMainThread
+                $0.readStarted = DispatchTime.now().uptimeNanoseconds
+            }
+            // Queue the heartbeat only after the reader starts. An inherited
+            // MainActor Task must not pass by returning before its slow read.
+            DispatchQueue.global(qos: .userInitiated).async {
+                probe.state.withLock { $0.heartbeatRequested = DispatchTime.now().uptimeNanoseconds }
+                DispatchQueue.main.async {
+                    probe.state.withLock { $0.heartbeatRan = DispatchTime.now().uptimeNanoseconds }
+                    heartbeat.fulfill()
+                }
+            }
+            // Deliberately simulate one bounded slow I/O operation, not a wait
+            // for asynchronous state or an attempt to synchronise the test.
+            Thread.sleep(forTimeInterval: 1)
+            probe.state.withLock { $0.readFinished = DispatchTime.now().uptimeNanoseconds }
+            readFinished.fulfill()
+            return bytes
+        }, makeBookmark: { Data($0.path.utf8) })
+        let controller = DocumentActionController(access: access)
+        defer { controller.clear() }
+        controller.update(file: GeneratedFile(role: "question_paper", url: url), provenance: nil)
+        await controller.waitForPendingLoad()
+        await fulfillment(of: [heartbeat, readFinished], timeout: 5)
+        let sample = probe.state.withLock { $0 }
+        guard sample.readStarted > 0, sample.heartbeatRequested >= sample.readStarted,
+              sample.heartbeatRan >= sample.heartbeatRequested, sample.readFinished >= sample.readStarted else {
+            return XCTFail("The bounded reader and heartbeat must produce ordered timestamps")
+        }
+        XCTAssertGreaterThan(sample.heartbeatRequested, sample.readStarted)
+        XCTAssertLessThan(sample.heartbeatRequested, sample.readFinished,
+            "The independent scheduler must request the heartbeat during the slow read")
+        let delay = Double(sample.heartbeatRan - sample.heartbeatRequested) / 1_000_000_000
+        print("PDF_READ_ISOLATION: readerOnMainThread=\(sample.readerOnMainThread), heartbeatDelaySeconds=\(delay), readDurationSeconds=\(Double(sample.readFinished - sample.readStarted) / 1_000_000_000)")
+        XCTAssertFalse(sample.readerOnMainThread, "Blocking PDF byte reads must not run on the main thread")
+        XCTAssertLessThan(delay, 0.25, "PDF loading must leave the main actor responsive during slow I/O")
+    }
+
+    @MainActor
+    func testRapidSelectionRejectsLateErrorsAndKeepsReadLeasesUntilCompletion() async throws {
+        let first = try makePDF()
+        let second = try makePDF(name: "second.pdf", pages: 2)
+        let bytes = try Data(contentsOf: second)
+        let began = expectation(description: "First read entered")
+        let stoppedFirst = expectation(description: "Cancelled first lease released")
+        let reader = GatedPDFReader(started: began, blockedCalls: [1]) { _, call in
+            if call == 1 { throw CocoaError(.fileReadNoPermission) }
+            return bytes
+        }
+        var starts: [URL] = [], stops: [URL] = []
+        let access = PDFDocumentAccess(defaults: defaults(), readData: { try reader.read($0) },
+            startAccess: { starts.append($0); return true }, stopAccess: {
+                stops.append($0)
+                if $0 == first { stoppedFirst.fulfill() }
+            }, makeBookmark: { Data($0.path.utf8) })
+        let controller = DocumentActionController(access: access)
+        controller.update(file: GeneratedFile(role: "question_paper", url: first), provenance: nil)
+        await fulfillment(of: [began], timeout: 3)
+        let target = GeneratedFile(role: "mark_scheme", url: second)
+        controller.update(file: target, provenance: nil)
+        XCTAssertTrue(controller.isLoading)
+        XCTAssertNil(controller.loadedPDF)
+        XCTAssertTrue(stops.isEmpty, "An interrupted read must keep its grant until it returns")
+        reader.gate.signal()
+        await controller.waitForPendingLoad()
+        await fulfillment(of: [stoppedFirst], timeout: 3)
+        XCTAssertEqual(controller.selectedFile, target)
+        XCTAssertEqual(controller.loadedPDF?.document.pageCount, 2)
+        XCTAssertNil(controller.loadFailure)
+        XCTAssertEqual(reader.calls.withLock { $0 }, [first, second])
+        XCTAssertEqual(stops, [first])
+        controller.clear()
+        XCTAssertEqual(starts, [first, second])
+        XCTAssertEqual(stops, [first, second])
+    }
+
+    @MainActor
+    func testClearAndDeallocationKeepPendingReadGrantUntilWorkerFinishes() async throws {
+        for lateError in [false, true] {
+            let url = try makePDF(name: "pending-\(lateError).pdf")
+            let bytes = try Data(contentsOf: url)
+            let began = expectation(description: "Pending read entered")
+            let stopped = expectation(description: "Pending grant released")
+            let reader = GatedPDFReader(started: began, blockedCalls: [1]) { _, _ in
+                if lateError { throw CocoaError(.fileReadNoPermission) }
+                return bytes
+            }
+            let settings = defaults()
+            var stopCount = 0
+            let access = PDFDocumentAccess(defaults: settings, readData: { try reader.read($0) },
+                startAccess: { _ in true }, stopAccess: { _ in stopCount += 1; stopped.fulfill() },
+                makeBookmark: { _ in XCTFail("Cancelled reads must not save bookmarks"); return Data() })
+            var controller: DocumentActionController? = DocumentActionController(access: access)
+            let controllerWasReleased = { [weak controller] in controller == nil }
+            controller?.update(file: GeneratedFile(role: "question_paper", url: url), provenance: nil)
+            await fulfillment(of: [began], timeout: 3)
+            if !lateError { controller?.clear() }
+            controller = nil
+            XCTAssertTrue(controllerWasReleased(), "Pending I/O must not retain its UI controller")
+            XCTAssertEqual(stopCount, 0)
+            reader.gate.signal()
+            await fulfillment(of: [stopped], timeout: 3)
+            XCTAssertEqual(stopCount, 1)
+            XCTAssertNil(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey))
+        }
+    }
+
+    @MainActor
+    func testSameURLNewIdentityCancelsOldResultAndRepeatedUpdatesDoNotReadAgain() async throws {
+        let url = try makePDF()
+        let firstBytes = try Data(contentsOf: url)
+        let replacementBytes = try Data(contentsOf: makePDF(name: "replacement.pdf", pages: 2))
+        let began = expectation(description: "Old identity read entered")
+        let reader = GatedPDFReader(started: began, blockedCalls: [1]) { _, call in
+            call == 1 ? firstBytes : replacementBytes
+        }
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults(),
+            readData: { try reader.read($0) }, makeBookmark: { Data($0.path.utf8) }))
+        let old = GeneratedFile(role: "question_paper", url: url)
+        let replacement = GeneratedFile(role: "mark_scheme", url: url)
+        controller.update(file: old, provenance: nil)
+        await fulfillment(of: [began], timeout: 3)
+        controller.update(file: replacement, provenance: nil)
+        controller.update(file: replacement, provenance: nil)
+        XCTAssertNil(controller.loadedPDF)
+        reader.gate.signal()
+        await controller.waitForPendingLoad()
+        XCTAssertEqual(controller.selectedFile, replacement)
+        XCTAssertEqual(controller.loadedPDF?.bytes, replacementBytes)
+        XCTAssertEqual(reader.calls.withLock { $0.count }, 2)
+        let provenance = GenerationJobRecord(
+            configuration: GenerationConfiguration(boardID: "accounting-aqa", paperID: "1", provider: "fixture", model: "fixture", seed: 1, dryRun: false),
+            provenance: GenerationProvenance(appVersion: "fixture", provider: "fixture", model: "fixture"), state: .completed,
+            artifacts: [replacement], qualification: QualificationSnapshot(engineeringValidated: false, visuallyCalibrated: false, empiricallyCalibrated: false))
+        controller.update(file: replacement, provenance: provenance)
+        await controller.waitForPendingLoad()
+        XCTAssertEqual(controller.provenance, provenance)
+        XCTAssertEqual(reader.calls.withLock { $0.count }, 2)
+        controller.clear()
+    }
+
+    @MainActor
+    func testAllActionsRevalidateOriginalBytesBeforeCallingNativePresenter() async throws {
+        let url = try makePDF()
+        let currentBytes = try Data(contentsOf: makePDF(name: "action-current.pdf", pages: 2))
+        let reads = Mutex(0)
+        var presented: [DocumentActionController.Action] = []
+        let file = GeneratedFile(role: "question_paper", url: url)
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults(), readData: { url in
+            reads.withLock { $0 += 1 }
+            return try Data(contentsOf: url)
+        }), presentAction: { action, selected, pdf in
+            presented.append(action)
+            XCTAssertEqual(selected, file)
+            XCTAssertEqual(pdf.bytes, currentBytes)
+        })
+        controller.update(file: file, provenance: nil)
+        await controller.waitForPendingLoad()
+        try currentBytes.write(to: url)
+        for action in [DocumentActionController.Action.quickLook, .reveal, .print, .export] {
+            invoke(action, on: controller)
+            XCTAssertFalse(controller.canAccessDocument)
+            await controller.waitForPendingLoad()
+        }
+        XCTAssertEqual(presented, [.quickLook, .reveal, .print, .export])
+        XCTAssertEqual(reads.withLock { $0 }, 5)
+        controller.clear()
+    }
+
+    @MainActor
+    func testStaleActionReadsNeverPresentAnyNativeAction() async throws {
+        for action in [DocumentActionController.Action.quickLook, .reveal, .print, .export] {
+            let first = try makePDF(name: "action-first.pdf")
+            let second = try makePDF(name: "action-second.pdf", pages: 2)
+            let bytes = try Data(contentsOf: first)
+            let began = expectation(description: "Action revalidation entered")
+            let reader = GatedPDFReader(started: began, blockedCalls: [2]) { _, _ in bytes }
+            var presented = 0
+            let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults(),
+                readData: { try reader.read($0) }), presentAction: { _, _, _ in presented += 1 })
+            controller.update(file: GeneratedFile(role: "question_paper", url: first), provenance: nil)
+            await controller.waitForPendingLoad()
+            invoke(action, on: controller)
+            await fulfillment(of: [began], timeout: 3)
+            let replacement = GeneratedFile(role: "mark_scheme", url: second)
+            controller.update(file: replacement, provenance: nil)
+            XCTAssertNil(controller.loadedPDF)
+            reader.gate.signal()
+            await controller.waitForPendingLoad()
+            XCTAssertEqual(presented, 0)
+            XCTAssertEqual(controller.selectedFile, replacement)
+            controller.clear()
+        }
+    }
+
+    @MainActor
+    func testAsyncStaleBookmarkRenewsTheRestoredSecurityURLRepresentation() async throws {
+        let expected = try makePDF()
+        let restored = URL(fileURLWithPath: expected.deletingLastPathComponent().path + "/./" + expected.lastPathComponent)
+        XCTAssertNotEqual(restored.absoluteString, expected.absoluteString)
+        let bytes = try Data(contentsOf: expected)
+        let settings = defaults()
+        settings.set([expected.standardizedFileURL.path: Data("stale".utf8)], forKey: PDFDocumentAccess.bookmarkKey)
+        var starts: [URL] = [], bookmarks: [URL] = [], stops: [URL] = []
+        let access = PDFDocumentAccess(defaults: settings, readData: { _ in bytes },
+            startAccess: { starts.append($0); return true }, stopAccess: { stops.append($0) },
+            makeBookmark: { bookmarks.append($0); return Data("renewed".utf8) },
+            resolveBookmark: { _ in (restored, true) })
+        let loaded = try await access.loadAsync(expected)
+        XCTAssertNoThrow(try access.remember(loaded).get())
+        XCTAssertEqual(starts.map(\.absoluteString), [restored.absoluteString])
+        XCTAssertEqual(bookmarks.map(\.absoluteString), [restored.absoluteString])
+        XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey)?[expected.standardizedFileURL.path] as? Data, Data("renewed".utf8))
+        loaded.lease.release()
+        XCTAssertEqual(stops.map(\.absoluteString), [restored.absoluteString])
+    }
+
+    @MainActor
+    func testAsyncRecoveryUsesSelectedURLGrantAndBalancesFailedBookmarkLease() async throws {
+        let expected = try makePDF()
+        let selected = URL(fileURLWithPath: expected.deletingLastPathComponent().path + "/./" + expected.lastPathComponent)
+        XCTAssertNotEqual(selected.absoluteString, expected.absoluteString)
+        XCTAssertEqual(selected.standardizedFileURL, expected.standardizedFileURL)
+        let bytes = try Data(contentsOf: expected)
+        var grants: [URL] = [], bookmarks: [URL] = [], stops: [URL] = []
+        var failBookmark = false
+        let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults(), readData: { _ in bytes },
+            startAccess: { grants.append($0); return true }, stopAccess: { stops.append($0) }, makeBookmark: {
+                bookmarks.append($0)
+                if failBookmark { throw CocoaError(.fileWriteNoPermission) }
+                return Data($0.absoluteString.utf8)
+            }))
+        controller.update(file: GeneratedFile(role: "question_paper", url: expected), provenance: nil)
+        await controller.waitForPendingLoad()
+        let prior = try XCTUnwrap(controller.loadedPDF?.document)
+        grants.removeAll(); bookmarks.removeAll(); stops.removeAll()
+        controller.recoverAccess(selected: nil)
+        controller.recoverAccess(selected: expected.deletingLastPathComponent().appendingPathComponent("wrong.pdf"))
+        XCTAssertTrue(grants.isEmpty)
+        XCTAssertTrue(controller.loadedPDF?.document === prior)
+        controller.recoverAccess(selected: selected)
+        await controller.waitForPendingLoad()
+        XCTAssertEqual(grants.map(\.absoluteString), [selected.absoluteString])
+        XCTAssertEqual(bookmarks.map(\.absoluteString), [selected.absoluteString])
+        failBookmark = true
+        controller.recoverAccess(selected: selected)
+        await controller.waitForPendingLoad()
+        XCTAssertNotNil(controller.exportError)
+        XCTAssertTrue(controller.loadedPDF?.document === prior)
+        XCTAssertEqual(stops.count, 2, "The failed new bookmark must release its lease before completion")
+        controller.clear()
+        XCTAssertEqual(stops.count, 3)
+    }
+
+    @MainActor
+    func testQuickLookResponderHandoffKeepsNewPendingRequestAcrossOldEndAndDetach() throws {
+        let state = QuickLookPresentationState()
+        let old = UUID(), new = UUID()
+        let oldURL = root.appendingPathComponent("old.pdf"), newURL = root.appendingPathComponent("new.pdf")
+        var oldStops = 0, newStops = 0
+        XCTAssertTrue(state.stage(url: oldURL, claimant: old, lease: PDFReadLease { oldStops += 1 }))
+        XCTAssertTrue(state.activate(old))
+        XCTAssertTrue(state.stage(url: newURL, claimant: new, lease: PDFReadLease { newStops += 1 }))
+        state.panelClosed()
+        state.end(old)
+        state.detach(old)
+        XCTAssertEqual(state.pendingClaimant, new)
+        XCTAssertEqual(oldStops, 1)
+        XCTAssertEqual(newStops, 0)
+        XCTAssertFalse(state.activate(old))
+        XCTAssertTrue(state.activate(new))
+        XCTAssertEqual(state.url, newURL)
+        state.end(old)
+        XCTAssertEqual(state.url, newURL)
+        state.close()
+        XCTAssertEqual(newStops, 1)
+    }
+
+    @MainActor
+    func testQuickLookSameResponderReplacementAndMissingClaimantRefusalBalanceLeases() throws {
+        let state = QuickLookPresentationState()
+        let view = UUID()
+        let old = root.appendingPathComponent("first.pdf"), replacement = root.appendingPathComponent("second.pdf")
+        var stops = 0
+        XCTAssertTrue(state.stage(url: old, claimant: view, lease: PDFReadLease { stops += 1 }))
+        XCTAssertTrue(state.activate(view))
+        XCTAssertFalse(state.stage(url: replacement, claimant: nil, lease: PDFReadLease { stops += 1 }))
+        XCTAssertEqual(state.url, old)
+        XCTAssertEqual(stops, 1)
+        XCTAssertTrue(state.stage(url: replacement, claimant: view, lease: PDFReadLease { stops += 1 }))
+        state.panelClosed()
+        state.end(view)
+        XCTAssertEqual(state.pendingClaimant, view)
+        XCTAssertTrue(state.activate(view))
+        XCTAssertEqual(state.url, replacement)
+        XCTAssertTrue(state.activate(view))
+        state.close()
+        state.close()
+        XCTAssertEqual(stops, 3)
+    }
+
+    @MainActor
+    func testRetainedActionLeaseSurvivesSelectionReleaseAndStopsOnceAfterClose() throws {
+        var stops = 0
+        let selection = PDFReadLease { stops += 1 }
+        let firstPreview = try XCTUnwrap(selection.retained())
+        selection.release()
+        XCTAssertEqual(stops, 0)
+        XCTAssertNil(selection.retained())
+        let replacementPreview = try XCTUnwrap(firstPreview.retained())
+        firstPreview.release()
+        firstPreview.release()
+        XCTAssertEqual(stops, 0)
+        replacementPreview.release()
+        replacementPreview.release()
+        XCTAssertEqual(stops, 1)
+    }
+
+    @MainActor
+    private func invoke(_ action: DocumentActionController.Action, on controller: DocumentActionController) {
+        switch action {
+        case .quickLook: controller.quickLookSelected()
+        case .reveal: controller.revealSelected()
+        case .print: controller.printSelected()
+        case .export: controller.exportSelected()
+        }
+    }
+
+    @MainActor
     func testNonFilePDFURLsRefuseBeforeReaderBookmarksOrScopeAccess() throws {
         for url in [URL(string: "https://example.invalid/owned.pdf")!, URL(string: "data:application/pdf,owned")!] {
             let settings = defaults()
             let saved = [url.standardizedFileURL.path: Data("owned-fixture".utf8)]
             settings.set(saved, forKey: PDFDocumentAccess.bookmarkKey)
-            var reads = 0
+            let reads = Mutex(0)
             var resolves = 0
             var bookmarks = 0
             var starts = 0
             var stops = 0
             let access = PDFDocumentAccess(defaults: settings, readData: { _ in
-                reads += 1
+                reads.withLock { $0 += 1 }
                 throw CocoaError(.fileReadNoSuchFile)
             }, startAccess: { _ in starts += 1; return true }, stopAccess: { _ in stops += 1 }, makeBookmark: { _ in
                 bookmarks += 1
@@ -37,7 +375,7 @@ final class PDFDocumentAccessTests: XCTestCase {
             })
             assertFailure(access.load(url), .invalid)
             access.release()
-            XCTAssertEqual(reads, 0)
+            XCTAssertEqual(reads.withLock { $0 }, 0)
             XCTAssertEqual(resolves, 0)
             XCTAssertEqual(bookmarks, 0)
             XCTAssertEqual(starts, 0)
@@ -52,11 +390,11 @@ final class PDFDocumentAccessTests: XCTestCase {
         let settings = defaults()
         let saved = [url.standardizedFileURL.path: Data("owned-fixture".utf8)]
         settings.set(saved, forKey: PDFDocumentAccess.bookmarkKey)
-        var reads = 0
+        let reads = Mutex(0)
         var starts = 0
         var stopped: [URL] = []
         let access = PDFDocumentAccess(defaults: settings, readData: { selected in
-            reads += 1
+            reads.withLock { $0 += 1 }
             guard selected.isFileURL else { throw CocoaError(.fileReadNoSuchFile) }
             return try Data(contentsOf: selected)
         }, startAccess: { _ in starts += 1; return true }, stopAccess: { stopped.append($0) }, resolveBookmark: { _ in (url, false) })
@@ -65,54 +403,57 @@ final class PDFDocumentAccessTests: XCTestCase {
         assertFailure(access.load(URL(string: "https://example.invalid/owned.pdf")!), .invalid)
         access.release()
         access.release()
-        XCTAssertEqual(reads, 1)
+        XCTAssertEqual(reads.withLock { $0 }, 1)
         XCTAssertEqual(stopped, [url])
         XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], saved)
     }
 
     @MainActor
-    func testNonFileSelectionClearsPriorPDFAndDisablesDocumentActions() throws {
+    func testNonFileSelectionClearsPriorPDFAndDisablesDocumentActions() async throws {
         let local = try makePDF()
         let bytes = try Data(contentsOf: local)
-        var reads = 0
+        let reads = Mutex(0)
         let access = PDFDocumentAccess(defaults: defaults(), readData: { _ in
-            reads += 1
+            reads.withLock { $0 += 1 }
             return bytes
         }, makeBookmark: { _ in Data("owned-fixture".utf8) })
         let controller = DocumentActionController(access: access)
         controller.update(file: GeneratedFile(role: "question_paper", url: local), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertNotNil(controller.loadedPDF)
         XCTAssertTrue(controller.canAccessDocument)
         let remote = GeneratedFile(role: "question_paper", url: URL(string: "https://example.invalid/owned.pdf")!)
         controller.update(file: remote, provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertEqual(controller.selectedFile, remote)
         XCTAssertEqual(controller.loadFailure, .invalid)
         XCTAssertNil(controller.loadedPDF)
         XCTAssertFalse(controller.hasFormFields)
         XCTAssertFalse(controller.canAccessDocument)
         controller.refresh()
-        XCTAssertEqual(reads, 1)
+        await controller.waitForPendingLoad()
+        XCTAssertEqual(reads.withLock { $0 }, 1)
         XCTAssertEqual(controller.loadFailure, .invalid)
         controller.clear()
     }
 
     @MainActor
-    func testFirstSuccessfulReadsRememberBothPDFsAfterFolderChangeAndNewController() throws {
+    func testFirstSuccessfulReadsRememberBothPDFsAfterFolderChangeAndNewController() async throws {
         let files = [
             GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 2)),
             GeneratedFile(role: "mark_scheme", url: try makePDF(name: "correction.pdf", pages: 3)),
         ]
         let settings = defaults()
-        var folderGrant = true
-        var granted: Set<URL> = []
+        let folderGrant = Mutex(true)
+        let granted = Mutex(Set<URL>())
         var starts = 0
         var stops = 0
         func service() -> PDFDocumentAccess {
             PDFDocumentAccess(defaults: settings, readData: { url in
-                guard folderGrant || granted.contains(url) else { throw CocoaError(.fileReadNoPermission) }
+                guard folderGrant.withLock({ $0 }) || granted.withLock({ $0.contains(url) }) else { throw CocoaError(.fileReadNoPermission) }
                 return try Data(contentsOf: url)
-            }, startAccess: { url in starts += 1; granted.insert(url); return true }, stopAccess: { url in
-                stops += 1; granted.remove(url)
+            }, startAccess: { url in starts += 1; _ = granted.withLock { $0.insert(url) }; return true }, stopAccess: { url in
+                stops += 1; _ = granted.withLock { $0.remove(url) }
             }, makeBookmark: { Data($0.path.utf8) }, resolveBookmark: { data in
                 (URL(fileURLWithPath: String(decoding: data, as: UTF8.self)), false)
             })
@@ -124,18 +465,19 @@ final class PDFDocumentAccessTests: XCTestCase {
         XCTAssertEqual(starts, 0)
         XCTAssertEqual(stops, 0)
 
-        folderGrant = false
+        folderGrant.withLock { $0 = false }
         settings.set(Data("different-folder".utf8), forKey: AppStorageKey.outputFolderBookmark)
         let restarted = DocumentActionController(access: service())
         for (index, file) in files.enumerated() {
             restarted.update(file: file, provenance: nil)
+            await restarted.waitForPendingLoad()
             XCTAssertEqual(restarted.loadedPDF?.document.pageCount, index + 2)
             XCTAssertTrue(restarted.canAccessDocument)
         }
         restarted.clear()
         XCTAssertEqual(starts, 2)
         XCTAssertEqual(stops, 2)
-        XCTAssertTrue(granted.isEmpty)
+        XCTAssertTrue(granted.withLock { $0.isEmpty })
         XCTAssertEqual(settings.data(forKey: AppStorageKey.outputFolderBookmark), Data("different-folder".utf8))
     }
 
@@ -183,7 +525,7 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
-    func testPublicationRemembersEveryPDFBeforeFolderAccessEndsAndFailureIsNonfatal() throws {
+    func testPublicationRemembersEveryPDFBeforeFolderAccessEndsAndFailureIsNonfatal() async throws {
         let subject = try makePDF(name: "subject.pdf", pages: 2)
         let correction = try makePDF(name: "correction.pdf", pages: 3)
         let privateJSON = root.appendingPathComponent("assessment.json")
@@ -194,19 +536,19 @@ final class PDFDocumentAccessTests: XCTestCase {
             settings.set("en", forKey: "interfaceLanguage")
             let prior = ["/older.pdf": Data("prior".utf8)]
             settings.set(prior, forKey: PDFDocumentAccess.bookmarkKey)
-            var folderGrant = true
-            var fileGrants: Set<URL> = []
+            let folderGrant = Mutex(true)
+            let fileGrants = Mutex(Set<URL>())
             var starts = 0
             var stops = 0
             var remembered: [URL] = []
             func service() -> PDFDocumentAccess {
                 PDFDocumentAccess(defaults: settings, readData: { url in
-                    guard folderGrant || fileGrants.contains(url) else { throw CocoaError(.fileReadNoPermission) }
+                    guard folderGrant.withLock({ $0 }) || fileGrants.withLock({ $0.contains(url) }) else { throw CocoaError(.fileReadNoPermission) }
                     return try Data(contentsOf: url)
-                }, startAccess: { url in starts += 1; fileGrants.insert(url); return true }, stopAccess: { url in
-                    stops += 1; fileGrants.remove(url)
+                }, startAccess: { url in starts += 1; _ = fileGrants.withLock { $0.insert(url) }; return true }, stopAccess: { url in
+                    stops += 1; _ = fileGrants.withLock { $0.remove(url) }
                 }, makeBookmark: { url in
-                    XCTAssertTrue(folderGrant)
+                    XCTAssertTrue(folderGrant.withLock { $0 })
                     remembered.append(url)
                     if failBookmark { throw CocoaError(.fileWriteNoPermission) }
                     return Data(url.path.utf8)
@@ -234,7 +576,7 @@ final class PDFDocumentAccessTests: XCTestCase {
             }
             XCTAssertEqual(try Data(contentsOf: privateJSON), Data("private diagnostic".utf8))
             XCTAssertEqual(application.currentGenerationFiles.first { $0.role == "teacher_review" }?.url, privateJSON)
-            folderGrant = false
+            folderGrant.withLock { $0 = false }
             application.outputFolder = root.appendingPathComponent("another-folder")
             if failBookmark {
                 XCTAssertEqual(settings.dictionary(forKey: PDFDocumentAccess.bookmarkKey) as? [String: Data], prior)
@@ -244,6 +586,7 @@ final class PDFDocumentAccessTests: XCTestCase {
                 let restarted = DocumentActionController(access: service())
                 for file in published {
                     restarted.update(file: file, provenance: nil)
+                    await restarted.waitForPendingLoad()
                     XCTAssertTrue(restarted.canAccessDocument)
                 }
                 restarted.clear()
@@ -254,7 +597,7 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
-    func testPickerSelectionUpdatesTheActionDocumentBeforeDeferredViewChanges() throws {
+    func testPickerSelectionUpdatesTheActionDocumentBeforeDeferredViewChanges() async throws {
         let scheme = GeneratedFile(role: "mark_scheme", url: try makePDF(name: "scheme.pdf", pages: 24))
         let subject = GeneratedFile(role: "question_paper", url: try makePDF(name: "subject.pdf", pages: 36))
         func record(for file: GeneratedFile) -> GenerationJobRecord {
@@ -268,6 +611,7 @@ final class PDFDocumentAccessTests: XCTestCase {
         let records = [record(for: scheme), record(for: subject)]
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
         controller.update(file: scheme, provenance: records[0])
+        await controller.waitForPendingLoad()
         var selectedID: GeneratedFile.ID? = scheme.id
         let binding = controller.selectionBinding(
             selection: Binding(get: { selectedID }, set: { selectedID = $0 }),
@@ -275,9 +619,12 @@ final class PDFDocumentAccessTests: XCTestCase {
         )
 
         binding.wrappedValue = subject.id
-        // An immediate Print/Quick Look action refreshes before opening its
-        // panel. No SwiftUI onChange or run-loop turn has occurred here.
+
+        await controller.waitForPendingLoad()
+        // The binding publishes the target before SwiftUI's deferred onChange;
+        // asynchronous loading must finish before its actions become available.
         controller.refresh()
+        await controller.waitForPendingLoad()
 
         XCTAssertEqual(selectedID, subject.id)
         XCTAssertEqual(controller.selectedFile?.id, subject.id)
@@ -285,16 +632,18 @@ final class PDFDocumentAccessTests: XCTestCase {
         XCTAssertEqual(controller.provenance?.id, records[1].id)
         XCTAssertTrue(controller.canAccessDocument)
         binding.wrappedValue = scheme.id
+        await controller.waitForPendingLoad()
         XCTAssertEqual(controller.loadedPDF?.document.pageCount, 24)
         XCTAssertEqual(controller.provenance?.id, records[0].id)
     }
 
     @MainActor
-    func testPickerSelectionCannotActOnThePriorPDFWhenTheNewFileIsUnreadable() throws {
+    func testPickerSelectionCannotActOnThePriorPDFWhenTheNewFileIsUnreadable() async throws {
         let readable = GeneratedFile(role: "mark_scheme", url: try makePDF())
         let unreadable = GeneratedFile(role: "question_paper", url: root.appendingPathComponent("missing.pdf"))
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
         controller.update(file: readable, provenance: nil)
+        await controller.waitForPendingLoad()
         var selectedID: GeneratedFile.ID? = readable.id
         let binding = controller.selectionBinding(
             selection: Binding(get: { selectedID }, set: { selectedID = $0 }),
@@ -303,16 +652,19 @@ final class PDFDocumentAccessTests: XCTestCase {
 
         binding.wrappedValue = unreadable.id
 
+        await controller.waitForPendingLoad()
+
         XCTAssertEqual(controller.selectedFile?.id, unreadable.id)
         XCTAssertNil(controller.loadedPDF)
         XCTAssertFalse(controller.canAccessDocument)
     }
 
     @MainActor
-    func testExistingButDeniedPDFHasAnHonestFailureAndDisabledActions() throws {
+    func testExistingButDeniedPDFHasAnHonestFailureAndDisabledActions() async throws {
         let url = try makePDF()
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults(), readData: { _ in throw CocoaError(.fileReadNoPermission) }))
         controller.update(file: GeneratedFile(role: "question_paper", url: url), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertTrue(FileManager.default.fileExists(atPath: url.path))
         XCTAssertEqual(controller.loadFailure, .permissionDenied)
         XCTAssertNil(controller.loadedPDF)
@@ -333,28 +685,33 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
-    func testSelectionAndLaterReadFailureNeverLeaveThePreviousPDFReady() throws {
+    func testSelectionAndLaterReadFailureNeverLeaveThePreviousPDFReady() async throws {
         let first = try makePDF()
         let second = try makePDF(name: "second.pdf")
-        var denied = false
+        let denied = Mutex(false)
         let access = PDFDocumentAccess(defaults: defaults(), readData: { url in
-            if denied { throw CocoaError(.fileReadNoPermission) }
+            if denied.withLock({ $0 }) { throw CocoaError(.fileReadNoPermission) }
             return try Data(contentsOf: url)
         })
         let controller = DocumentActionController(access: access)
         controller.update(file: GeneratedFile(role: "question_paper", url: first), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertEqual(controller.loadedPDF?.document.pageCount, 1)
-        denied = true
+        denied.withLock { $0 = true }
         controller.update(file: GeneratedFile(role: "mark_scheme", url: second), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertNil(controller.loadedPDF)
         XCTAssertFalse(controller.canAccessDocument)
-        denied = false
+        denied.withLock { $0 = false }
         controller.refresh()
+        await controller.waitForPendingLoad()
         XCTAssertTrue(controller.canAccessDocument)
-        denied = true
+        denied.withLock { $0 = true }
         controller.refresh()
+        await controller.waitForPendingLoad()
         XCTAssertFalse(controller.canAccessDocument)
         controller.update(file: nil, provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertNil(controller.loadedPDF)
         XCTAssertNil(controller.loadFailure)
     }
@@ -382,14 +739,14 @@ final class PDFDocumentAccessTests: XCTestCase {
         let bytes = try Data(contentsOf: expected)
         let settings = defaults()
         let marker = Data("per-document-grant".utf8)
-        var active = false
+        let active = Mutex(false)
         var starts = 0
         var stops = 0
         func service() -> PDFDocumentAccess {
             PDFDocumentAccess(defaults: settings, readData: { url in
-                guard active else { throw CocoaError(.fileReadNoPermission) }
+                guard active.withLock({ $0 }) else { throw CocoaError(.fileReadNoPermission) }
                 return try Data(contentsOf: url)
-            }, startAccess: { _ in starts += 1; active = true; return true }, stopAccess: { _ in stops += 1; active = false }, makeBookmark: { _ in marker }, resolveBookmark: { data in
+            }, startAccess: { _ in starts += 1; active.withLock { $0 = true }; return true }, stopAccess: { _ in stops += 1; active.withLock { $0 = false } }, makeBookmark: { _ in marker }, resolveBookmark: { data in
                 XCTAssertEqual(data, marker)
                 return (expected, false)
             })
@@ -423,28 +780,31 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
-    func testActionsRecheckReadabilityBeforeOpeningPanelsOrPrinting() throws {
+    func testActionsRecheckReadabilityBeforeOpeningPanelsOrPrinting() async throws {
         let url = try makePDF()
-        var denied = false
+        let denied = Mutex(false)
         let access = PDFDocumentAccess(defaults: defaults(), readData: { source in
-            if denied { throw CocoaError(.fileReadNoPermission) }
+            if denied.withLock({ $0 }) { throw CocoaError(.fileReadNoPermission) }
             return try Data(contentsOf: source)
         })
         let controller = DocumentActionController(access: access)
         controller.update(file: GeneratedFile(role: "question_paper", url: url), provenance: nil)
-        denied = true
+        await controller.waitForPendingLoad()
+        denied.withLock { $0 = true }
         controller.printSelected()
+        await controller.waitForPendingLoad()
         XCTAssertFalse(controller.canAccessDocument)
         XCTAssertEqual(controller.loadFailure, .permissionDenied)
         XCTAssertNotNil(controller.exportError)
         controller.exportError = nil
         controller.exportSelected()
+        await controller.waitForPendingLoad()
         XCTAssertNotNil(controller.exportError)
         XCTAssertNil(controller.loadedPDF)
     }
 
     @MainActor
-    func testPreviewWidgetsAreReadOnlyWithoutChangingValuesLinksOrExportBytes() throws {
+    func testPreviewWidgetsAreReadOnlyWithoutChangingValuesLinksOrExportBytes() async throws {
         let url = root.appendingPathComponent("fillable.pdf")
         let document = PDFDocument()
         let page = PDFPage()
@@ -461,6 +821,7 @@ final class PDFDocumentAccessTests: XCTestCase {
         let originalBytes = try Data(contentsOf: url)
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
         controller.update(file: GeneratedFile(role: "electronic_answer_document", url: url), provenance: nil)
+        await controller.waitForPendingLoad()
 
         let loaded = try XCTUnwrap(controller.loadedPDF)
         let annotations = try XCTUnwrap(loaded.document.page(at: 0)).annotations
@@ -473,6 +834,7 @@ final class PDFDocumentAccessTests: XCTestCase {
         XCTAssertFalse(previewLink.isReadOnly)
         XCTAssertEqual(loaded.bytes, originalBytes)
         controller.refresh()
+        await controller.waitForPendingLoad()
         XCTAssertTrue(controller.loadedPDF?.document === loaded.document)
         XCTAssertTrue(controller.hasFormFields)
         let exported = root.appendingPathComponent("exported.pdf")
@@ -487,26 +849,37 @@ final class PDFDocumentAccessTests: XCTestCase {
         XCTAssertFalse(controller.hasFormFields)
         XCTAssertNil(controller.loadedPDF)
         controller.update(file: GeneratedFile(role: "question_paper", url: try makePDF(name: "plain.pdf")), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertFalse(controller.hasFormFields)
         controller.update(file: GeneratedFile(role: "question_paper", url: root.appendingPathComponent("missing.pdf")), provenance: nil)
+        await controller.waitForPendingLoad()
         XCTAssertFalse(controller.hasFormFields)
     }
 
     @MainActor
     func testReadOnlyPreviewHintIsAvailableInEnglishAndFrench() {
+        let quickLook: LocalizedStringResource = "Quick Look couldn't open this preview. Please try again."
+        XCTAssertEqual(InterfaceText.resolve(quickLook, language: "en"), "Quick Look couldn't open this preview. Please try again.")
+        XCTAssertEqual(InterfaceText.resolve(quickLook, language: "fr"), "Impossible d’ouvrir cet aperçu avec Coup d’œil. Réessayez.")
+        let loading: LocalizedStringResource = "Loading PDF…"
+        XCTAssertEqual(InterfaceText.resolve(loading, language: "en"), "Loading PDF…")
+        XCTAssertEqual(InterfaceText.resolve(loading, language: "fr"), "Chargement du PDF…")
         let key: LocalizedStringResource = "This preview is read-only. Export the PDF to fill it in another app."
         XCTAssertEqual(InterfaceText.resolve(key, language: "en"), "This preview is read-only. Export the PDF to fill it in another app.")
         XCTAssertEqual(InterfaceText.resolve(key, language: "fr"), "Cet aperçu est en lecture seule. Exportez le PDF pour le remplir dans une autre app.")
     }
 
     @MainActor
-    func testUnchangedRefreshPreservesTheReaderDocumentButNewBytesReplaceIt() throws {
+    func testUnchangedRefreshPreservesTheReaderDocumentButNewBytesReplaceIt() async throws {
         let url = try makePDF()
         let controller = DocumentActionController(access: PDFDocumentAccess(defaults: defaults()))
         controller.update(file: GeneratedFile(role: "question_paper", url: url), provenance: nil)
+        await controller.waitForPendingLoad()
         let original = try XCTUnwrap(controller.loadedPDF?.document)
 
         controller.refresh()
+
+        await controller.waitForPendingLoad()
         XCTAssertTrue(controller.loadedPDF?.document === original)
 
         let changed = PDFDocument()
@@ -514,11 +887,13 @@ final class PDFDocumentAccessTests: XCTestCase {
         changed.insert(PDFPage(), at: 1)
         XCTAssertTrue(changed.write(to: url))
         controller.refresh()
+        await controller.waitForPendingLoad()
         XCTAssertFalse(controller.loadedPDF?.document === original)
         XCTAssertEqual(controller.loadedPDF?.document.pageCount, 2)
 
         try Data("now invalid".utf8).write(to: url)
         controller.refresh()
+        await controller.waitForPendingLoad()
         XCTAssertNil(controller.loadedPDF)
         XCTAssertEqual(controller.loadFailure, .invalid)
         XCTAssertFalse(controller.canAccessDocument)
@@ -588,6 +963,42 @@ final class PDFDocumentAccessTests: XCTestCase {
         case .success: XCTFail("Expected unavailable PDF", file: file, line: line)
         case .failure(let actual): XCTAssertEqual(actual, expected, file: file, line: line)
         }
+    }
+}
+
+private final class BoundedPDFReadProbe: Sendable {
+    struct Sample: Sendable {
+        var readerOnMainThread = false
+        var readStarted: UInt64 = 0
+        var heartbeatRequested: UInt64 = 0
+        var heartbeatRan: UInt64 = 0
+        var readFinished: UInt64 = 0
+    }
+
+    let state = Mutex(Sample())
+}
+
+private final class GatedPDFReader: Sendable {
+    let calls = Mutex([URL]())
+    let gate = DispatchSemaphore(value: 0)
+    let started: XCTestExpectation
+    let blockedCalls: Set<Int>
+    let response: @Sendable (URL, Int) throws -> Data
+
+    init(started: XCTestExpectation, blockedCalls: Set<Int>, response: @escaping @Sendable (URL, Int) throws -> Data) {
+        self.started = started
+        self.blockedCalls = blockedCalls
+        self.response = response
+    }
+
+    func read(_ url: URL) throws -> Data {
+        let call = calls.withLock { $0.append(url); return $0.count }
+        if blockedCalls.contains(call) {
+            started.fulfill()
+            // Simulate bounded I/O waiting for its device, never block MainActor.
+            guard gate.wait(timeout: .now() + 5) == .success else { throw CocoaError(.fileReadUnknown) }
+        }
+        return try response(url, call)
     }
 }
 

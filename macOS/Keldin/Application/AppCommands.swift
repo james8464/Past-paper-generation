@@ -116,11 +116,11 @@ struct AppCommands: Commands {
                 .disabled(!canAccessDocument)
 
             Button(localized("Quick Look")) {
-                guard canAccessDocument else { return }
+                guard canAccessDocument, documentActions?.canQuickLookDocument == true else { return }
                 documentActions?.quickLookSelected()
             }
                 .keyboardShortcut("y", modifiers: [.command])
-                .disabled(!canAccessDocument)
+                .disabled(!canAccessDocument || documentActions?.canQuickLookDocument != true)
 
             Button(localized("Reveal in Finder")) {
                 guard canAccessDocument else { return }

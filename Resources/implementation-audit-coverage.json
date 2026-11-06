@@ -3971,6 +3971,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/pdf-loading-isolation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/pdf-visible-page-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4727,10 +4733,10 @@
       "path": "macOS/Keldin/Application/AppCommands.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by quality_status_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "a7bf9ebe5d050f543f034442959ff65fbcc7e49d2ab3cdb2428d0d254755811c",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "reason": "Full source read through EOF with bounded command routing and document-action eligibility review; not whole-app or paper-quality qualification.",
+      "source_sha256": "1e91189f2395200149bdc901b7db2f169c9351e156423b75e27ec01999d6d421",
+      "review_evidence": "docs/quality/pdf-loading-isolation-review.md",
+      "review_evidence_sha256": "87e6bd72457f757eed069d43480bf8f61dfc237f96a5346bc81990207de5a711"
     },
     {
       "path": "macOS/Keldin/Application/AppConfiguration.swift",
@@ -5084,10 +5090,10 @@
       "path": "macOS/Keldin/Features/Documents/DocumentPreviewView.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Full source read through EOF with bounded semantic review and focused evidence; not whole-app or live-paper qualification.",
-      "source_sha256": "c1c2e9b2706bcd82660d8bb328fab30d89bd84513ed2a4c51da88d9b56ed4d09",
-      "review_evidence": "docs/quality/readonly-pdf-preview-review-2026-11-02.md",
-      "review_evidence_sha256": "6dd94e94c0a28b9f47111882e37f827078150d13937f2e66c5e145e235ac685b"
+      "reason": "Full source read through EOF with bounded actor, scoped-access, cancellation and document-action review; not whole-app or paper-quality qualification.",
+      "source_sha256": "2c7d33258a45d8434a468eeee8feb1b1195791c5629e02eacc5c00e7b0ddca64",
+      "review_evidence": "docs/quality/pdf-loading-isolation-review.md",
+      "review_evidence_sha256": "87e6bd72457f757eed069d43480bf8f61dfc237f96a5346bc81990207de5a711"
     },
     {
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
@@ -5254,8 +5260,11 @@
     {
       "path": "macOS/Keldin/Services/PDFDocumentAccess.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full source read through EOF with bounded actor, scoped-access, cancellation and document-action review; not whole-app or paper-quality qualification.",
+      "source_sha256": "e7017fa9b416973d7fa93a4f063aefdb0837b15637a230c33b7b179e68aa2d90",
+      "review_evidence": "docs/quality/pdf-loading-isolation-review.md",
+      "review_evidence_sha256": "87e6bd72457f757eed069d43480bf8f61dfc237f96a5346bc81990207de5a711"
     },
     {
       "path": "macOS/Keldin/Services/SecretStore.swift",
