@@ -1,5 +1,6 @@
 """Opt-in presentation for newly rendered UK offline previews, never model data."""
 
+import math
 from collections.abc import Iterator
 from contextlib import contextmanager
 from contextvars import ContextVar
@@ -11,7 +12,7 @@ import pymupdf as fitz
 
 from Backend.Core.pdf_validation import text_trace_is_occluded
 
-PREVIEW_PRESENTATION = "uk-layout-preview-v1"
+PREVIEW_PRESENTATION = "uk-layout-preview-v2-raster-order"
 PREVIEW_NOTICE = "LAYOUT PREVIEW · Unreviewed sample content · Unofficial"
 _preview: ContextVar[bool] = ContextVar("uk_layout_preview", default=False)
 
@@ -56,6 +57,43 @@ def _notice_is_occluded(span: dict[str, Any], drawings: list[dict[str, Any]]) ->
     )
 
 
+def _notice_raster_order_unverifiable(span: dict[str, Any], artwork: list[Any]) -> bool:
+    try:
+        sequence = span.get("seqno")
+        known_sequence = (
+            type(sequence) is int
+            and 0 <= sequence < len(artwork)
+            and artwork[sequence][0] in {"fill-text", "stroke-text", "ignore-text"}
+        )
+        rasters = [
+            bounds
+            for index, (kind, bounds) in enumerate(artwork)
+            if kind == "fill-image" and (not known_sequence or index > sequence)
+        ]
+        if not rasters:
+            return False
+        text = "".join(chr(char[0]) for char in span["chars"])
+        start = text.index(PREVIEW_NOTICE)
+        glyphs = [
+            fitz.Rect(char[3])
+            for char in span["chars"][start : start + len(PREVIEW_NOTICE)]
+            if not chr(char[0]).isspace()
+        ]
+        images = [fitz.Rect(bounds) for bounds in rasters]
+        if any(
+            rect.is_empty
+            or rect.is_infinite
+            or not all(math.isfinite(value) for value in rect)
+            for rect in (*glyphs, *images)
+        ):
+            return True
+    except (TypeError, ValueError, IndexError, OverflowError):
+        return True
+    # Transparency and masks do not prove the original glyph is still visible.
+    # This is an ordering certificate, not a claim that every image is opaque.
+    return any(image.intersects(glyph) for image in images for glyph in glyphs)
+
+
 def validate_preview_pdf(path: Path) -> dict[str, object]:
     """Require an actually printed, legible first-page notice before publication."""
     with fitz.open(path) as document:
@@ -95,5 +133,13 @@ def validate_preview_pdf(path: Path) -> dict[str, object]:
         ):
             raise ValueError(
                 f"{path.name}: layout-preview notice is not visibly printed"
+            )
+        artwork = page.get_bboxlog()
+        # Bound our analysis, not the work PyMuPDF did to obtain its display list.
+        if len(artwork) > 10_000 or any(
+            _notice_raster_order_unverifiable(span, artwork) for span in spans
+        ):
+            raise ValueError(
+                f"{path.name}: layout-preview notice visibility cannot be verified after raster artwork"
             )
     return {"policy": PREVIEW_PRESENTATION, "first_page_notice": True}
