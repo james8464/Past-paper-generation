@@ -949,8 +949,11 @@
     {
       "path": "Backend/Core/france/inline_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 142-line EOF review attributed to French reviewer, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "3e9ccb844ad0ce5aaf89698d11e189335c1e8d42efb4ff0c6cbf04d299619ccb",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "Backend/Core/france/llm_pdf.py",
@@ -994,8 +997,11 @@
     {
       "path": "Backend/Core/france/network.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 58-line EOF review attributed to French reviewer, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "bb376ccf77fb34ca224580fed098c5f92fd056c898524d0759208eb9094256bd",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "Backend/Core/france/network_authoring.py",
@@ -1108,8 +1114,11 @@
     {
       "path": "Backend/Core/france/originality.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 154-line EOF review attributed to root and independent reviewers, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "81eda6245f73c1b2e2ca8a12b58b3901623349a4ab908f88d074860ac5f0dccc",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "Backend/Core/france/pipeline.py",
@@ -2632,14 +2641,20 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 490-line EOF review attributed to root, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "0156884ec5ed9901a6827049a4659ad33be37c8bf2b46d222217f97fc6425207",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 199-line EOF review attributed to root, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "374059c42734c524682fca2a3f48699b31f8a1f77442fe6775a5ee56927f4a4d",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py",
@@ -4227,6 +4242,12 @@
     },
     {
       "path": "docs/quality/orange-scene-accent-review-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/originality-report-isolation-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7051,8 +7072,11 @@
     {
       "path": "tests/test_french_inline_prose.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 311-line EOF review attributed to French reviewer, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "c4b10b70529f3a1f9cec96b5cf84d25bd676b2ede5fce4a3a52f6858e75d9fd7",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "tests/test_french_interface_copy.py",
@@ -7210,8 +7234,20 @@
     {
       "path": "tests/test_french_originality.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 54-line EOF review attributed to root and independent reviewers, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "458fdea7b6ab3b621fbf66d677d76e1294ecf25e6341d010451b76edbefd2247",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
+    },
+    {
+      "path": "tests/test_french_originality_report_isolation.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 53-line EOF review attributed to root and independent reviewers, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "a791db86a680fc84a77c95606a51100fbecd5a782831c795934b1d07a3fe526d",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "tests/test_french_postfix_exercise.py",
@@ -7228,8 +7264,11 @@
     {
       "path": "tests/test_french_provider.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 243-line EOF review attributed to French reviewer, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
+      "source_sha256": "51513a6e400a6ef911e6186031cb566fbe43ca084166068c2c638dc69dd136dc",
+      "review_evidence": "docs/quality/originality-report-isolation-review.md",
+      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
     },
     {
       "path": "tests/test_french_provider_contract_retry.py",
