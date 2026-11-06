@@ -2,6 +2,7 @@
 
 import AppKit
 import Combine
+import OSLog
 import PDFKit
 @preconcurrency import Quartz
 import SwiftUI
@@ -503,6 +504,7 @@ fileprivate final class QuickLookPDFView: PDFView {
 fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
     QLPreviewPanelDataSource, QLPreviewPanelDelegate
 {
+    private let logger = Logger(subsystem: "com.jamesdurup.Keldin", category: "QuickLook")
     private let state = QuickLookPresentationState()
     private weak var renderedView: QuickLookPDFView?
     private weak var controlledView: QuickLookPDFView?
@@ -525,7 +527,10 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
     }
 
     func acceptsControl(from view: QuickLookPDFView) -> Bool {
-        renderedView === view && view.window != nil && state.accepts(view.claimant)
+        let accepts = renderedView === view && view.window != nil && state.accepts(view.claimant)
+        let context = diagnosticContext(view: view, panel: panel)
+        logger.debug("framework.accepts result=\(accepts, privacy: .public) \(context, privacy: .public)")
+        return accepts
     }
 
     func detach(_ view: QuickLookPDFView) {
@@ -542,33 +547,47 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
 
     func present(_ url: URL, fileID: UUID, lease: PDFReadLease) -> Bool {
         guard let view = renderedView, view.fileID == fileID, let window = view.window else {
+            recordRefusal("missing_attached_view_or_identity", view: renderedView, panel: panel)
             lease.release()
             return false
         }
-        guard state.stage(url: url, claimant: view.claimant, lease: lease) else { return false }
+        guard state.stage(url: url, claimant: view.claimant, lease: lease) else {
+            recordRefusal("stage_refused", view: view, panel: panel)
+            return false
+        }
         guard window.makeFirstResponder(view) else {
+            recordRefusal("make_first_responder_failed", view: view, panel: panel)
             state.cancelPending(view.claimant)
             return false
         }
         window.makeKeyAndOrderFront(nil)
         guard let panel = QLPreviewPanel.shared() else {
+            recordRefusal("panel_unavailable", view: view, panel: nil)
             state.cancelPending(view.claimant)
             return false
         }
         panel.updateController()
         guard panel.currentController as AnyObject? === view else {
+            recordRefusal("current_controller_mismatch", view: view, panel: panel)
             state.cancelPending(view.claimant)
             return false
         }
         // An unchanged controller does not receive another begin callback.
-        guard state.activate(view.claimant) else { return false }
+        guard state.activate(view.claimant) else {
+            recordRefusal("activation_failed", view: view, panel: panel)
+            return false
+        }
         install(panel, from: view)
         panel.reloadData()
         panel.makeKeyAndOrderFront(nil)
+        let context = diagnosticContext(view: view, panel: panel)
+        logger.debug("intent.presented \(context, privacy: .public)")
         return true
     }
 
     func beginControl(_ panel: QLPreviewPanel, from view: QuickLookPDFView) {
+        let context = diagnosticContext(view: view, panel: panel)
+        logger.debug("framework.begin \(context, privacy: .public)")
         guard renderedView === view, view.window != nil, state.activate(view.claimant) else { return }
         install(panel, from: view)
     }
@@ -581,6 +600,8 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
     }
 
     func endControl(_ panel: QLPreviewPanel, from view: QuickLookPDFView) {
+        let context = diagnosticContext(view: view, panel: panel)
+        logger.debug("framework.end \(context, privacy: .public)")
         let owned = state.activeClaimant == view.claimant
         state.end(view.claimant)
         if owned {
@@ -614,6 +635,26 @@ fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
     private func clearRegistration(_ panel: QLPreviewPanel) {
         if panel.dataSource === self { panel.dataSource = nil }
         if panel.delegate === self { panel.delegate = nil }
+    }
+
+    private func recordRefusal(_ reason: String, view: QuickLookPDFView?, panel: QLPreviewPanel?) {
+        let context = diagnosticContext(view: view, panel: panel)
+        logger.error("intent.refused reason=\(reason, privacy: .public) \(context, privacy: .public)")
+    }
+
+    // Log class names and focus flags only, never object descriptions, titles,
+    // identifiers, addresses, URLs, document contents or security-scope tokens.
+    private func diagnosticContext(view: QuickLookPDFView?, panel: QLPreviewPanel?) -> String {
+        func name(_ object: AnyObject?) -> String {
+            guard let object else { return "nil" }
+            let base = String(describing: type(of: object)).split(separator: "<", maxSplits: 1).first ?? "unknown"
+            let short = base.split(separator: ".").last ?? "unknown"
+            return String(short.filter { $0.isASCII && ($0.isLetter || $0.isNumber || $0 == "_") }.prefix(128))
+        }
+        let window = view?.window
+        let keyMatches = window.map { NSApp.keyWindow === $0 } ?? false
+        let mainMatches = window.map { NSApp.mainWindow === $0 } ?? false
+        return "expected=\(name(view)) first=\(name(window?.firstResponder)) actual=\(name(panel?.currentController as AnyObject?)) appActive=\(NSApp.isActive) keyMatchesPDF=\(keyMatches) mainMatchesPDF=\(mainMatches)"
     }
 
     nonisolated func numberOfPreviewItems(in panel: QLPreviewPanel!) -> Int {
