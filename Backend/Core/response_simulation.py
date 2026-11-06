@@ -9,6 +9,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from Backend.Core.answer_projection import without_private_answer_keys
 from Backend.Core.json_client import JSONGenerationClient as SimulationClient
 
 
@@ -34,18 +35,8 @@ class ResponseSimulator:
         bands: Sequence[str] = ("weak", "average", "excellent"),
     ) -> list[CandidateResponse]:
         raw_item = _mapping(item)
-        safe_item = {
-            key: value
-            for key, value in raw_item.items()
-            if key
-            not in {
-                "mark_scheme",
-                "structured_mark_scheme",
-                "marking",
-                "indicative_content",
-            }
-        }
         if self.client is not None:
+            safe_item = without_private_answer_keys(raw_item)
             raw = self.client.generate_json(
                 "Write independent candidate responses at the requested ability "
                 "bands. Do not invent source facts. Return JSON with responses, "
