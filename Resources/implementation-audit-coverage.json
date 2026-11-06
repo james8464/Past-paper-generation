@@ -5258,7 +5258,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "be57f7a153c57538d052a1a0c4e983cdb26b34b162b472c4273222b412fcffc7",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -5355,9 +5355,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
-      "source_sha256": "8245e9ff5dbf9e1f0074d81e354cf2014ade5514f990699e9953df9186ae225d",
+      "source_sha256": "91da341b8f50414b873f1e3f39e34d94fe95afc64f53580ac1af146c9fcecade",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift",
@@ -5546,7 +5546,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "884893b25e1787a80ac014665c7e9a2eb8f14225028b4b4ab1eb286d5191bc33",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5582,7 +5582,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "f1e62bda4a50135cc27a8c2479cd8d2f4064fd16b4169f9544e707c22d0f4d6e",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
@@ -5609,7 +5609,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "6f4a1def0572d19d63e261a38147939f36134da72a82b255fbf280881f74f16c",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Keldin/State/SettingsActionPresentation.swift",
@@ -5711,7 +5711,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "e206bd0272587a1459a222c67c568ecca67d681aed05dd7cb7a16b0b85ca7222",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Tests/FailurePresentationTests.swift",
@@ -5720,7 +5720,7 @@
       "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
       "source_sha256": "da71fa760a772cdc7402c73ba1e8bc86c8e4734c445cdb6b6e2d649463102373",
       "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
     },
     {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",

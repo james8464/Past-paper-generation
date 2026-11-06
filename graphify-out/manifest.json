@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793983396.3958232,
-    "ast_hash": "338689acf5fbca0f824757d8d914235e",
+    "mtime": 1793984448.0901134,
+    "ast_hash": "8df73f89cb31e621a69fef2182de8857",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -3535,8 +3535,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Documents/JobHistoryView.swift": {
-    "mtime": 1793984022.4187672,
-    "ast_hash": "8b9d33944de0ce0659a28cff9e5cf71f",
+    "mtime": 1793985059.5759704,
+    "ast_hash": "eb73e22ad350570d952ae6e7797d40d1",
     "semantic_hash": ""
   },
   "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793983396.3953536,
-    "ast_hash": "1ce3697a1920051b8bf0bcfbf2f30c77",
+    "mtime": 1793984448.0432699,
+    "ast_hash": "0ef25b8a2c9a730d7df06b58669a382f",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5957,6 +5957,11 @@
   "macOS/Tests/FailurePresentationTests.swift": {
     "mtime": 1793984197.1328678,
     "ast_hash": "03a71bfe829c0d2b64311c4646e148c3",
+    "semantic_hash": ""
+  },
+  "docs/quality/generation-failure-history-review.md": {
+    "mtime": 1793985119.6587718,
+    "ast_hash": "d21f570874cf30f800352e98b257d150",
     "semantic_hash": ""
   }
 }

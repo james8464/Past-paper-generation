@@ -37,7 +37,7 @@ translates the existing Generation label; unrelated entries are unchanged.
 | `macOS/Keldin/State/ApplicationCoordinator.swift` | `3f65a459a72747b9dc3eb90c4bce8332eff7d2918a5ed483bfc87b437b5de892` | `884893b25e1787a80ac014665c7e9a2eb8f14225028b4b4ab1eb286d5191bc33` |
 | `macOS/Keldin/State/RecentDocumentStore.swift` | `d6ccf6dda4c103447d8afddccbde4e2f94355052198a9b38e4f38616e808f08e` | `6f4a1def0572d19d63e261a38147939f36134da72a82b255fbf280881f74f16c` |
 | `macOS/Keldin/State/GenerationCoordinator.swift` | `492806bf6cbe338101c9239d0cc197481f58458200a242e69130a989bbf50e58` | `f1e62bda4a50135cc27a8c2479cd8d2f4064fd16b4169f9544e707c22d0f4d6e` |
-| `macOS/Keldin/Features/Documents/JobHistoryView.swift` | `ba591d115099a43d5ec68d9a9561f67774287696d2a5459f5e2d2b64710fd189` | `8245e9ff5dbf9e1f0074d81e354cf2014ade5514f990699e9953df9186ae225d` |
+| `macOS/Keldin/Features/Documents/JobHistoryView.swift` | `ba591d115099a43d5ec68d9a9561f67774287696d2a5459f5e2d2b64710fd189` | `91da341b8f50414b873f1e3f39e34d94fe95afc64f53580ac1af146c9fcecade` |
 
 New tests: `FailureHistoryTests.swift` has SHA-256
 `e206bd0272587a1459a222c67c568ecca67d681aed05dd7cb7a16b0b85ca7222`;
@@ -55,6 +55,13 @@ focused native tests executed with no failures or skips. Tests cover round trips
 legacy decoding, lifecycle clearing, ownership, privacy canaries, backend-to-job
 routing and English/French copy. Source hashes were identical before and after
 that final run.
+
+An actual candidate-app inspection then found that the bottom safe-area inset
+drew failure details over native table rows. That candidate was not published.
+The view now lays the table and details out as separate vertical siblings with a
+divider, reserving space rather than drawing an overlay. This additional layout
+repair requires a fresh native build, test run and on-screen comparison; the
+earlier passing tests do not certify it.
 
 All 100 existing JSON document hashes and all 38 current preference values
 matched before and after the focused run. No preferences were restored. This is

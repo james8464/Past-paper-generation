@@ -9,7 +9,7 @@ struct JobHistoryView: View {
     @State private var selection: GenerationJobRecord.ID?
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading, spacing: 0) {
             if store.records.isEmpty {
                 ContentUnavailableView {
                     Label("No generation history", systemImage: "clock.arrow.circlepath")
@@ -69,31 +69,29 @@ struct JobHistoryView: View {
                     application.openHistoryPDF(from: selected)
                 }
             }
-        }
-        .navigationTitle("History")
-        .safeAreaInset(edge: .bottom) {
-            VStack(alignment: .leading, spacing: 0) {
-                if let record = selectedRecord, let detail = record.failureDetailResource {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Failure details").font(.headline)
-                        if let stage = record.failureKind?.stageResource {
-                            Text(InterfaceText.localizedResource(stage, locale: locale))
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                        }
-                        Text(InterfaceText.localizedResource(detail, locale: locale))
-                            .font(.callout)
+            if let record = selectedRecord, let detail = record.failureDetailResource {
+                Divider()
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Failure details").font(.headline)
+                    if let stage = record.failureKind?.stageResource {
+                        Text(InterfaceText.localizedResource(stage, locale: locale))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                }
-                if !store.retentionFailureIDs.isEmpty {
-                    Label("Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened.", systemImage: "exclamationmark.triangle")
+                    Text(InterfaceText.localizedResource(detail, locale: locale))
                         .font(.callout)
-                        .padding()
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+            }
+            if !store.retentionFailureIDs.isEmpty {
+                Divider()
+                Label("Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened.", systemImage: "exclamationmark.triangle")
+                    .font(.callout)
+                    .padding()
             }
         }
+        .navigationTitle("History")
         .toolbar {
             ToolbarItemGroup {
                 openPDFAction(for: selectedRecord)
