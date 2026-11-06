@@ -968,10 +968,10 @@
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Composite source-bound review: prior complete 2102-line EOF at source8a71984c/evidencef3630b0f plus complete net59-line positive-schema policy delta and scoped callers, current2161lines. Not a fresh current whole-file EOF read. Policy provenance/golden legacy request and round checks preserve strict source identity; live French qualification and dependencies remain separate.",
-      "source_sha256": "8bb39421991695bf18865134e49e6aaf0d334e7dfd5ff8c533084887861babfa",
-      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
-      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
+      "reason": "Preserves prior composite EOF attribution in the positive-credit review. Root and independent reviewer read selected policy/request/recovery/identity paths and complete 14-line graph-policy delta, current 2167 lines; not a fresh whole-file EOF review. Legacy policy/hash reconstruction retains strict implementation identity, not live qualification.",
+      "source_sha256": "c4dea74bacde8b5277dcdcee522f071d4c282a9e45eebd3a874b991053ff1953",
+      "review_evidence": "docs/quality/french-graph-schema-review.md",
+      "review_evidence_sha256": "5e5224b05f89568c8fcc92291875cfa4cf7456bb6571775cda6e8c70b36b09b2"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1103,10 +1103,10 @@
       "path": "Backend/Core/france/nsi.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Root read complete current469-line EOF; independent reviewer read complete schema delta. New versioned generation grammar expresses existing strictly-positive credit invariant without changing runtime validators, legacy default schemas, prompt prose or numeric bounds. Not a full dependency or live-paper qualification.",
-      "source_sha256": "4eafcd9474c35bf02e2a23cdd923f44b5dc72b7e5633c3729e579a5b55f2b4c4",
-      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
-      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
+      "reason": "Composite source-bound review: root previously completed 469-line EOF, then root and independent reviewer read complete 13-line generation-graph schema delta and scoped runtime validator. Current 480 lines, without a fresh full-file reread claim. Historical default schemas and runtime validation remain unchanged.",
+      "source_sha256": "35ac192fe980fb24d697325018b8f703d5a41a8bffa1dc7cda70f81f9f129eff",
+      "review_evidence": "docs/quality/french-graph-schema-review.md",
+      "review_evidence_sha256": "5e5224b05f89568c8fcc92291875cfa4cf7456bb6571775cda6e8c70b36b09b2"
     },
     {
       "path": "Backend/Core/france/occitanie_case_study.py",
@@ -3585,6 +3585,12 @@
     },
     {
       "path": "docs/quality/french-graph-label-clearance-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-graph-schema-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7079,6 +7085,15 @@
       "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
+      "path": "tests/test_french_graph_field_schema.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Author, root and independent reviewer read complete 210-line EOF. Actual RED separates 14 scalar schema/runtime mismatches from one new-policy expectation; focused 318-test group passed. Owned replay/grammar controls do not establish live French quality or cross-source implementation approval.",
+      "source_sha256": "dbd677a830d67e31f2c88e9c0cf5e37caba6994baa51aa63ef1f2b36e23cb512",
+      "review_evidence": "docs/quality/french-graph-schema-review.md",
+      "review_evidence_sha256": "5e5224b05f89568c8fcc92291875cfa4cf7456bb6571775cda6e8c70b36b09b2"
+    },
+    {
       "path": "tests/test_french_graph_label_clearance.py",
       "classification": "test",
       "status": "reviewed",
@@ -7361,10 +7376,10 @@
       "path": "tests/test_french_positive_credit_schema.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Root and independent reviewer read complete242-line EOF. Genuine12zero-field baseline failures distinguished from24not-yet-implemented API failures; focused305tests and actual installed llguidance grammar compilation passed. Historical default/golden request/round and policy provenance controls are not cross-source implementation replay or live inference qualification.",
-      "source_sha256": "9ac5d4d0815f93090164eda979760189ff3cb8b88cf50afa0c6ebfacdc4dfb28",
-      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
-      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
+      "reason": "Prior complete 242-line test review remains documented in positive-credit evidence; root and independent reviewer read the full current file and one-line current-policy migration. Historical machine/positive hashes and policy replay controls passed in focused group; no model, learner or release-qualification claim.",
+      "source_sha256": "77e357006caffedd1d537323d1def3fc0d81441bfd0d183328a93fb808e80b20",
+      "review_evidence": "docs/quality/french-graph-schema-review.md",
+      "review_evidence_sha256": "5e5224b05f89568c8fcc92291875cfa4cf7456bb6571775cda6e8c70b36b09b2"
     },
     {
       "path": "tests/test_french_postfix_exercise.py",

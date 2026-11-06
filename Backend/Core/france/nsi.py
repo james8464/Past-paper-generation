@@ -397,7 +397,10 @@ AUTHORING_REQUIRED_QUESTION_FIELDS = ("material_ids", "verification")
 
 # Require generation-only fields without changing legacy package readers.
 def authoring_schema(
-    *, machine_field_constraints: bool = False, positive_points: bool = False
+    *,
+    machine_field_constraints: bool = False,
+    positive_points: bool = False,
+    bounded_graph_fields: bool = False,
 ) -> dict:
     schema = NSIExercise.model_json_schema()
     schema["required"].append("materials")
@@ -431,6 +434,14 @@ def authoring_schema(
     table = schema["$defs"]["NSITableMaterial"]["properties"]
     for cell in (table["columns"]["items"], table["rows"]["items"]["items"]):
         cell.update(minLength=1, maxLength=180, pattern=r"\S")
+    if bounded_graph_fields:
+        # Describe existing scalar admission rules to every structured provider.
+        # Membership, self-loops and duplicate edges still need runtime checks.
+        graph = schema["$defs"]["NSIWeightedGraphMaterial"]["properties"]
+        endpoints = graph["edges"]["items"]["prefixItems"]
+        for label in (graph["nodes"]["items"], *endpoints[:2]):
+            label.update(minLength=1, maxLength=24, pattern=r"\S")
+        endpoints[2].update(minimum=0, maximum=10**6)
     return schema
 
 

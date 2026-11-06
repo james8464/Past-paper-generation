@@ -17,7 +17,7 @@ from Backend.Core.generation_diagnostics import GenerationEvidenceError
 from tests.test_french_llm_pipeline import Client, generate
 from tests.test_french_reviewed_redraft import ReviewedClient
 
-CURRENT = "fr-nsi-v36-positive-points-v1"
+CURRENT = "fr-nsi-v36-graph-bounds-v1"
 LEGACY = "fr-nsi-v36-machine-fields-v1"
 LEGACY_SCHEMA_SHA = "8b9ee51b2eac59289ce83e43af9232df351512751a76ccbeef1b7edb589f9766"
 

@@ -65,12 +65,14 @@ OFFICIAL_PAPER_REFERENCE_LIMIT = 2
 REFERENCE_LIMIT = PROGRAMME_REFERENCE_LIMIT + OFFICIAL_PAPER_REFERENCE_LIMIT
 SOURCE_POLICY = "fr-nsi-v36-exercise-curriculum-scope-v1"
 LEGACY_AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-machine-fields-v1"
-AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-positive-points-v1"
+POSITIVE_POINTS_AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-positive-points-v1"
+AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-graph-bounds-v1"
 
 
 def _validate_authoring_schema_policy(value: str) -> str:
     if type(value) is not str or value not in {
         LEGACY_AUTHORING_SCHEMA_POLICY,
+        POSITIVE_POINTS_AUTHORING_SCHEMA_POLICY,
         AUTHORING_SCHEMA_POLICY,
     }:
         raise ValueError("Politique de schéma de rédaction NSI invalide")
@@ -82,7 +84,10 @@ def _identity_authoring_schema_policy(identity: dict) -> str:
     if "authoring_schema_policy" not in identity:
         return LEGACY_AUTHORING_SCHEMA_POLICY
     value = identity["authoring_schema_policy"]
-    if type(value) is not str or value != AUTHORING_SCHEMA_POLICY:
+    if type(value) is not str or value not in {
+        POSITIVE_POINTS_AUTHORING_SCHEMA_POLICY,
+        AUTHORING_SCHEMA_POLICY,
+    }:
         raise ValueError("Politique de schéma de rédaction NSI invalide")
     return value
 
@@ -182,7 +187,8 @@ def exercise_request(
     schema_policy = _validate_authoring_schema_policy(authoring_schema_policy)
     schema = authoring_schema(
         machine_field_constraints=True,
-        positive_points=schema_policy == AUTHORING_SCHEMA_POLICY,
+        positive_points=schema_policy != LEGACY_AUTHORING_SCHEMA_POLICY,
+        bounded_graph_fields=schema_policy == AUTHORING_SCHEMA_POLICY,
     )
     schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
@@ -1739,7 +1745,7 @@ def _recovery_identity(
         "assessment": asdict(NSI_2027),
         "implementation_sha256": implementation_identity(),
     }
-    if schema_policy == AUTHORING_SCHEMA_POLICY:
+    if schema_policy != LEGACY_AUTHORING_SCHEMA_POLICY:
         identity["authoring_schema_policy"] = schema_policy
     return identity
 
