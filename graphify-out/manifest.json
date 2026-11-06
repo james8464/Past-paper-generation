@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793932791.2057443,
-    "ast_hash": "d4a1be3313c7cb8052e0806d15deb808",
+    "mtime": 1793958487.8544114,
+    "ast_hash": "2f1ba7970002654115c825a578fd0963",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793932791.205586,
-    "ast_hash": "c493821c9db0459ca2453167941faa9c",
+    "mtime": 1793958487.802112,
+    "ast_hash": "1c11d3e0defe981f28d2d28d1e596548",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4770,8 +4770,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift": {
-    "mtime": 1793543731.6883633,
-    "ast_hash": "b35f1fa5f4da40500f6622fb1a196082",
+    "mtime": 1793958574.987582,
+    "ast_hash": "6b1ab9f88303b65e7f7dc32fe10f5996",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
@@ -4790,8 +4790,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchLLMAssessmentTests.swift": {
-    "mtime": 1793543731.6951404,
-    "ast_hash": "980ff3fb04c641a546dd9922138a5e83",
+    "mtime": 1793958574.9879136,
+    "ast_hash": "92ca28f949263a81b9d6f3d58950ff4a",
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
@@ -5825,13 +5825,13 @@
     "semantic_hash": ""
   },
   "docs/quality/family-document-set-publication-review.md": {
-    "mtime": 1793958328.6325195,
-    "ast_hash": "523108cdd8c7f9a80ac8c373eafade74",
+    "mtime": 1793958462.5564184,
+    "ast_hash": "b28cdff14b7abf5a3e74da8b345e1405",
     "semantic_hash": ""
   },
   "docs/quality/french-graph-label-clearance-review.md": {
-    "mtime": 1793958308.6249723,
-    "ast_hash": "5e86abc85e8f006beaec542c4e048fa4",
+    "mtime": 1793958664.7514358,
+    "ast_hash": "d0206c489e4ecbad0567c57c748bb431",
     "semantic_hash": ""
   },
   "docs/quality/french-pipeline-source-bound-review.md": {

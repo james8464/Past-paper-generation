@@ -60,7 +60,7 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 <div class="container">
 
 <h1>Past Paper Creation — Complete Call Flow &amp; Architecture Documentation</h1>
-<p class="subtitle">Generated from graphify knowledge graph: 13851 nodes, 40558 edges, 597 communities. Commit: 4be5fa1</p>
+<p class="subtitle">Generated from graphify knowledge graph: 13851 nodes, 40558 edges, 597 communities. Commit: 46742dc</p>
 
 <div class="nav">
     <a href="#overview">Architecture Overview</a>
@@ -75,9 +75,9 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
     <a href="#tests-fixtures">Tests &amp; Fixtures</a>
     <a href="#string">String</a>
     <a href="#build-paper">build_paper</a>
+    <a href="#sql-contracts-py">sql_contracts.py</a>
     <a href="#localizedresource">.localizedResource</a>
     <a href="#qualityreviewview">QualityReviewView</a>
-    <a href="#independent-solver-py">independent_solver.py</a>
     <a href="#other">Other</a>
 </div>
 
@@ -90,11 +90,11 @@ hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
 flowchart LR
     EXTRACT_PIPELINE_5F350230("Extraction Pipeline<br/><small>59 nodes</small>")
     class EXTRACT_PIPELINE_5F350230 module;
-    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1476 nodes</small>")
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>1600 nodes</small>")
     class BUILD_GRAPH_321CBB04 module;
-    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>836 nodes</small>")
+    ANALYSIS_CLUSTERING_C79796DA("Analysis &amp; Clustering<br/><small>1036 nodes</small>")
     class ANALYSIS_CLUSTERING_C79796DA module;
-    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>105 nodes</small>")
+    OUTPUTS_DOCS_ED82387C("Outputs &amp; Docs<br/><small>97 nodes</small>")
     class OUTPUTS_DOCS_ED82387C module;
     CLI_SKILLS_9964CBB8("CLI &amp; Skill Installers<br/><small>142 nodes</small>")
     class CLI_SKILLS_9964CBB8 module;
@@ -104,32 +104,32 @@ flowchart LR
     class SERVE_API_35EC8E86 module;
     SECURITY_GLOBAL_5B9C6A04("Security &amp; Global Graph<br/><small>8 nodes</small>")
     class SECURITY_GLOBAL_5B9C6A04 module;
-    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>8836 nodes</small>")
+    TESTS_FIXTURES_B84B1DCC("Tests &amp; Fixtures<br/><small>8476 nodes</small>")
     class TESTS_FIXTURES_B84B1DCC module;
     STRING_ECB25204("String<br/><small>200 nodes</small>")
     class STRING_ECB25204 module;
-    BUILD_PAPER_6A82D103("build_paper<br/><small>179 nodes</small>")
+    BUILD_PAPER_6A82D103("build_paper<br/><small>162 nodes</small>")
     class BUILD_PAPER_6A82D103 module;
+    SQL_CONTRACTS_PY_D75AD132("sql_contracts.py<br/><small>50 nodes</small>")
+    class SQL_CONTRACTS_PY_D75AD132 module;
     LOCALIZEDRESOURCE_8F382607(".localizedResource<br/><small>39 nodes</small>")
     class LOCALIZEDRESOURCE_8F382607 module;
     QUALITYREVIEWVIEW_9E311B53("QualityReviewView<br/><small>32 nodes</small>")
     class QUALITYREVIEWVIEW_9E311B53 module;
-    INDEPENDENT_SOLVER_PY_157AA9CD("independent_solver.py<br/><small>31 nodes</small>")
-    class INDEPENDENT_SOLVER_PY_157AA9CD module;
-    OTHER_D0941E68("Other<br/><small>1485 nodes</small>")
+    OTHER_D0941E68("Other<br/><small>1527 nodes</small>")
     class OTHER_D0941E68 module;
-    TESTS_FIXTURES_B84B1DCC -->|references x479| ANALYSIS_CLUSTERING_C79796DA
-    TESTS_FIXTURES_B84B1DCC -->|imports x354| BUILD_GRAPH_321CBB04
-    BUILD_GRAPH_321CBB04 -->|calls x352| TESTS_FIXTURES_B84B1DCC
-    ANALYSIS_CLUSTERING_C79796DA -->|calls x290| TESTS_FIXTURES_B84B1DCC
+    ANALYSIS_CLUSTERING_C79796DA -->|calls x606| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x590| ANALYSIS_CLUSTERING_C79796DA
+    BUILD_GRAPH_321CBB04 -->|calls x520| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|imports x420| BUILD_GRAPH_321CBB04
     STRING_ECB25204 -->|references x172| TESTS_FIXTURES_B84B1DCC
-    INGEST_CACHE_UPDATE_FF457338 -->|calls x100| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x92| INGEST_CACHE_UPDATE_FF457338
-    INDEPENDENT_SOLVER_PY_157AA9CD -->|imports x79| TESTS_FIXTURES_B84B1DCC
-    TESTS_FIXTURES_B84B1DCC -->|calls x78| BUILD_PAPER_6A82D103
-    TESTS_FIXTURES_B84B1DCC -->|calls x59| CLI_SKILLS_9964CBB8
-    TESTS_FIXTURES_B84B1DCC -->|imports x49| OTHER_D0941E68
-    CLI_SKILLS_9964CBB8 -->|calls x46| TESTS_FIXTURES_B84B1DCC
+    OTHER_D0941E68 -->|imports x117| TESTS_FIXTURES_B84B1DCC
+    INGEST_CACHE_UPDATE_FF457338 -->|calls x97| TESTS_FIXTURES_B84B1DCC
+    TESTS_FIXTURES_B84B1DCC -->|calls x91| INGEST_CACHE_UPDATE_FF457338
+    TESTS_FIXTURES_B84B1DCC -->|calls x81| OTHER_D0941E68
+    TESTS_FIXTURES_B84B1DCC -->|calls x56| CLI_SKILLS_9964CBB8
+    CLI_SKILLS_9964CBB8 -->|calls x41| TESTS_FIXTURES_B84B1DCC
+    BUILD_PAPER_6A82D103 -->|calls x39| TESTS_FIXTURES_B84B1DCC
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -146,7 +146,7 @@ flowchart LR
     <h4>Architecture Layers</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
-      <tr><td>Extraction Pipeline</td><td>59</td><td><code>299, 158, 408, 198, 203, 296, 419, 344, 464</code></td></tr><tr><td>Graph Build</td><td>1476</td><td><code>83, 13, 31, 25, 310, 60, 40, 48, 127, 73, 98, 104, 93, 21, 491, 101, 109, 178, 116, 593, 77, 118, 134, 319, 400, 78, 115, 122, 136, 139, 142, 274, 149, 187, 111, 154, 131, 161, 166, 168, 175, 188, 418, 180, 141, 181, 182, 189, 217, 481, 549, 192, 194, 196, 553, 266, 297, 347, 333, 455, 546, 280, 433, 212, 213, 218, 286, 503, 505, 560, 562, 563, 578, 435, 513</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>836</td><td><code>20, 119, 35, 6, 16, 26, 72, 113, 311, 68, 135, 245, 71, 571, 268, 269, 270, 271, 272, 273, 540, 493</code></td></tr><tr><td>Outputs &amp; Docs</td><td>105</td><td><code>352, 183, 199, 354, 316, 437, 492, 504, 448, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>142</td><td><code>368, 63, 427, 226, 570</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>323</td><td><code>49, 231, 242, 377, 434, 453</code></td></tr><tr><td>Serving API</td><td>100</td><td><code>23, 265, 463, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>8836</td><td><code>0, 157, 65, 7, 3, 1, 12, 34, 36, 61, 204, 5, 216, 10, 14, 162, 27, 146, 106, 282, 28, 298, 529, 88, 90, 132, 11, 52, 4, 44, 103, 156, 37, 184, 30, 43, 159, 64, 133, 19, 67, 9, 137, 82, 18, 263, 22, 120, 123, 150, 482, 517, 96, 155, 29, 171, 364, 81, 110, 38, 519, 56, 153, 337, 349, 46, 393, 41, 440, 581, 2, 24, 281, 42, 509, 54, 80, 59, 543, 91, 33, 50, 167, 86, 228, 32, 496, 66, 76, 89, 126, 174, 114, 124, 45, 125, 62, 15, 100, 138, 8, 383, 301, 401, 85, 129, 148, 201, 348, 367, 53, 95, 99, 185, 535, 57, 79, 87, 97, 143, 507, 94, 260, 219, 251, 357, 51, 556, 163, 39, 160, 17, 330, 384, 412, 92, 208, 279, 369, 331, 340, 69, 74, 105, 117, 169, 346, 394, 288, 289, 130, 177, 278, 351, 363, 409, 466, 151, 293, 366, 102, 176, 329, 360, 375, 468, 473, 144, 378, 402, 469, 489, 515, 58, 179, 292, 558, 327, 359, 514, 516, 112, 476, 500, 170, 485, 488, 309, 325, 471, 533, 356, 458, 550, 467, 561, 565, 582, 75, 291, 410, 422, 173, 191, 388, 416, 456, 459, 495, 147, 426, 526, 525, 370, 487, 544, 564, 545, 568</code></td></tr><tr><td>String</td><td>200</td><td><code>55</code></td></tr><tr><td>build_paper</td><td>179</td><td><code>128</code></td></tr><tr><td>.localizedResource</td><td>39</td><td><code>257</code></td></tr><tr><td>QualityReviewView</td><td>32</td><td><code>70</code></td></tr><tr><td>independent_solver.py</td><td>31</td><td><code>190</code></td></tr><tr><td>Other</td><td>1485</td><td><code>84, 382, 551, 107, 250, 108, 164, 371, 315, 152, 172, 214, 193, 195, 197, 205, 244, 256, 520, 215, 350, 446, 477, 498, 220, 246, 247, 365, 373, 381, 407, 470, 290, 47, 165, 252, 253, 254, 255, 392, 441, 443, 474, 585, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 395, 403, 406, 438, 439, 248, 261, 303, 304, 338, 339, 342, 379, 399, 413, 414, 430, 436, 444, 445, 462, 490, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 335, 353, 362, 380, 404, 411, 415, 420, 421, 450, 451, 452, 480, 486, 494, 499, 518, 547, 548, 552, 555, 567, 572, 575, 576, 596, 186, 206, 267, 302, 305, 314, 322, 323, 341, 355, 376, 385, 396, 423, 424, 431, 432, 478, 501, 502, 522, 523, 527, 528, 530, 536, 539, 554, 559, 566, 569, 574, 586, 591, 594, 595, 597, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 447, 454, 457, 472, 475, 506, 521, 524, 531, 534, 537, 538, 541, 557, 573, 577, 587, 209, 210, 211, 343, 389, 442, 465, 508, 202, 224, 225, 283, 284, 285, 324, 336, 345, 358, 372, 390, 391, 449, 460, 461, 479, 483, 484, 497, 510, 511, 512, 532, 542, 579, 580, 583, 584, 588, 602, 603, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
+      <tr><td>Extraction Pipeline</td><td>59</td><td><code>299, 158, 408, 198, 203, 296, 419, 344, 464</code></td></tr><tr><td>Graph Build</td><td>1600</td><td><code>83, 65, 13, 31, 25, 310, 60, 40, 48, 127, 73, 98, 104, 21, 93, 101, 109, 178, 116, 593, 77, 118, 134, 187, 319, 400, 78, 115, 122, 136, 139, 142, 274, 491, 149, 111, 154, 131, 161, 166, 168, 175, 188, 418, 180, 141, 181, 182, 189, 217, 481, 549, 192, 194, 196, 553, 266, 297, 347, 333, 455, 546, 280, 433, 562, 212, 213, 218, 286, 503, 505, 560, 563, 578, 435, 513</code></td></tr><tr><td>Analysis &amp; Clustering</td><td>1036</td><td><code>20, 119, 157, 35, 529, 6, 16, 26, 68, 72, 113, 311, 135, 245, 71, 571, 268, 269, 270, 271, 272, 273, 540, 493</code></td></tr><tr><td>Outputs &amp; Docs</td><td>97</td><td><code>352, 183, 199, 354, 316, 437, 492, 504, 448, 361</code></td></tr><tr><td>CLI &amp; Skill Installers</td><td>142</td><td><code>368, 63, 427, 226, 570</code></td></tr><tr><td>Ingestion &amp; Updates</td><td>323</td><td><code>49, 231, 242, 377, 434, 453</code></td></tr><tr><td>Serving API</td><td>100</td><td><code>23, 265, 463, 332, 405, 425, 277</code></td></tr><tr><td>Security &amp; Global Graph</td><td>8</td><td><code>258</code></td></tr><tr><td>Tests &amp; Fixtures</td><td>8476</td><td><code>0, 14, 7, 3, 1, 12, 34, 61, 204, 5, 216, 162, 10, 27, 19, 88, 146, 36, 106, 282, 28, 298, 90, 132, 18, 4, 52, 44, 156, 37, 43, 125, 159, 133, 30, 9, 82, 581, 67, 22, 263, 86, 137, 120, 123, 150, 29, 482, 517, 155, 32, 171, 364, 81, 208, 38, 519, 56, 110, 96, 153, 337, 349, 46, 507, 11, 401, 41, 440, 2, 281, 42, 509, 54, 80, 393, 59, 543, 91, 33, 50, 167, 174, 228, 383, 496, 66, 76, 89, 126, 114, 124, 24, 45, 62, 15, 100, 103, 138, 8, 301, 85, 129, 148, 348, 367, 53, 95, 99, 64, 185, 201, 535, 57, 79, 87, 97, 143, 94, 260, 219, 251, 357, 51, 556, 163, 39, 160, 17, 330, 384, 412, 92, 279, 288, 369, 331, 340, 69, 74, 105, 117, 169, 346, 394, 289, 292, 130, 177, 278, 351, 363, 409, 466, 151, 293, 366, 102, 176, 309, 329, 360, 375, 473, 144, 378, 402, 469, 489, 515, 58, 179, 558, 327, 359, 516, 112, 476, 170, 485, 488, 325, 468, 471, 533, 356, 458, 550, 467, 565, 582, 75, 291, 410, 422, 173, 191, 388, 416, 456, 459, 495, 500, 561, 147, 426, 526, 525, 370, 487, 544, 564, 545, 568</code></td></tr><tr><td>String</td><td>200</td><td><code>55</code></td></tr><tr><td>build_paper</td><td>162</td><td><code>128</code></td></tr><tr><td>sql_contracts.py</td><td>50</td><td><code>184</code></td></tr><tr><td>.localizedResource</td><td>39</td><td><code>257</code></td></tr><tr><td>QualityReviewView</td><td>32</td><td><code>70</code></td></tr><tr><td>Other</td><td>1527</td><td><code>190, 551, 84, 382, 107, 250, 108, 164, 371, 315, 152, 172, 214, 193, 195, 197, 205, 244, 256, 520, 215, 350, 446, 477, 498, 220, 246, 247, 365, 373, 381, 407, 470, 290, 47, 165, 252, 253, 254, 255, 392, 441, 443, 474, 585, 140, 200, 249, 259, 262, 294, 295, 300, 313, 328, 334, 395, 403, 406, 438, 439, 514, 248, 261, 303, 304, 338, 339, 342, 379, 399, 413, 414, 430, 436, 444, 445, 462, 490, 121, 145, 264, 275, 287, 306, 307, 312, 317, 318, 320, 321, 326, 335, 353, 362, 380, 404, 411, 415, 420, 421, 450, 451, 452, 480, 486, 494, 499, 518, 547, 548, 552, 555, 567, 572, 575, 576, 596, 186, 206, 267, 302, 305, 314, 322, 323, 341, 355, 376, 385, 396, 423, 424, 431, 432, 478, 501, 502, 522, 523, 527, 528, 530, 536, 539, 554, 559, 566, 569, 574, 586, 591, 594, 595, 597, 207, 276, 374, 386, 387, 397, 398, 417, 428, 429, 447, 454, 457, 472, 475, 506, 521, 524, 531, 534, 537, 538, 541, 557, 573, 577, 587, 209, 210, 211, 343, 389, 442, 465, 508, 202, 224, 225, 283, 284, 285, 324, 336, 345, 358, 372, 390, 391, 449, 460, 461, 479, 483, 484, 497, 510, 511, 512, 532, 542, 579, 580, 583, 584, 588, 602, 603, 221, 222, 223, 227, 229, 230, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 243, 308</code></td></tr>
     </table>
   </div>
   <div class="card">
@@ -158,7 +158,7 @@ flowchart LR
   <div class="card">
     <h4>Graph Report Highlights</h4>
     <ul>
-      <li>13851 nodes · 40558 edges · 597 communities (534 shown, 63 thin omitted)</li>
+      <li>13851 nodes · 40558 edges · 597 communities (533 shown, 64 thin omitted)</li>
       <li>Extraction: 94% EXTRACTED · 6% INFERRED · 0% AMBIGUOUS · INFERRED: 2516 edges (avg confidence: 0.69)</li>
       <li>Token cost: 0 input · 0 output</li>
       <li>1. `NSIExercise` - 302 edges</li>
@@ -519,77 +519,65 @@ flowchart LR
 
 <!-- ====== 3. Graph Build ====== -->
 <h2 id="build-graph">3. Graph Build</h2>
-<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1476 nodes and 2646 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Graph Build groups implementation around resources, demand, reference, profileschemajson, mostly in Resources/reference-demand-profile.schema.json, Resources/empirical-calibration.schema.json, Resources/generator-capability.schema.json. This section covers 1600 nodes and 3027 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Graph Build (1476 nodes, 2646 edges)
-    subgraph build_graph_Core_france_graph_resilience_authori_5166d6aa["Core/france/graph_resilience_authoring.py"]
-        backend_core_france_graph_resilience_authoring_a_b8578979("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_r_1b497a24("graph resilience selection()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_i_e66be7ba("_identity()<br/><small>Core/france/graph_resilience_authoring.py</small>")
-        backend_core_france_graph_resilience_authoring_g_5820d0e7("resilience selection prompt()<br/><small>Core/france/graph_resilience_authoring.py</small>")
+    %% Section: Graph Build (1600 nodes, 3027 edges)
+    subgraph build_graph_Backend_Core_education_context_py_8aba844e["Backend/Core/education_context.py"]
+        backend_core_education_context_educationcontext_11fa9e93("EducationContext<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_educationcontext_12478567("__post_init__()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_educationcontext_0f59185b("to_dict()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_points_cfad02d8("points()<br/><small>Backend/Core/education_context.py</small>")
+        backend_core_education_context_assessmentdefinit_1c097995("validate_credit()<br/><small>Backend/Core/education_context.py</small>")
     end
-    subgraph build_graph_Core_france_graph_resilience_prose_p_6a09beb3["Core/france/graph_resilience_prose.py"]
-        backend_core_france_graph_resilience_prose_graph_0322b989("resilience catalogue digest()<br/><small>Core/france/graph_resilience_prose.py</small>")
-        backend_core_france_graph_resilience_prose_graph_b8cb6153("resilience selection schema()<br/><small>Core/france/graph_resilience_prose.py</small>")
+    subgraph build_graph_Core_france_nsi_py_cf5a5e23["Core/france/nsi.py"]
+        backend_core_france_nsi_nsiexercise_credit_57b719f3("credit()<br/><small>Core/france/nsi.py</small>")
+        backend_core_france_nsi_nsiexercise_valid_target_a224c7d2("valid_target_points()<br/><small>Core/france/nsi.py</small>")
+        backend_core_france_nsi_nsiexercise_validate_str_29c28265("validate_structure()<br/><small>Core/france/nsi.py</small>")
+        backend_core_france_nsi_nsiquestion_credit_match_79dfe94a("credit_matches()<br/><small>Core/france/nsi.py</small>")
     end
-    subgraph build_graph_Core_france_graph_route_trace_author_4702e85c["Core/france/graph_route_trace_authoring.py"]
-        backend_core_france_graph_route_trace_authoring_46538981("route trace selection()<br/><small>Core/france/graph_route_trace_authoring.py</small>")
-        backend_core_france_graph_route_trace_authoring_d12647e4("route trace selection()<br/><small>Core/france/graph_route_trace_authoring.py</small>")
+    subgraph build_graph_Core_france_pipeline_py_7d0e119e["Core/france/pipeline.py"]
+        backend_core_france_pipeline_tasks_for_seed_19161918("_tasks_for_seed()<br/><small>Core/france/pipeline.py</small>")
+        backend_core_france_pipeline_assemble_planned_qu_22f42354("assemble_planned_question()<br/><small>Core/france/pipeline.py</small>")
+        backend_core_france_pipeline_check_exercise_plan_8a18b336("_check_exercise_plan()<br/><small>Core/france/pipeline.py</small>")
+        backend_core_france_pipeline_invalid_marking_all_ceccd416("invalid marking allocation()<br/><small>Core/france/pipeline.py</small>")
     end
-    subgraph build_graph_Core_france_graph_two_outage_authori_8bc4c9c4["Core/france/graph_two_outage_authoring.py"]
-        backend_core_france_graph_two_outage_authoring_a_6d008a85("two outage selection()<br/><small>Core/france/graph_two_outage_authoring.py</small>")
-        backend_core_france_graph_two_outage_authoring_r_d8b579ef("two outage selection()<br/><small>Core/france/graph_two_outage_authoring.py</small>")
-    end
-    backend_core_france_database_depth_authoring_val_42bf8eb4("_validate_failures()<br/><small>Core/france/database_depth_authoring.py</small>")
     backend_core_france_graph_resilience_contract_bu_0e61cd63("graph resilience contract()<br/><small>Core/france/graph_resilience_contract.py</small>")
     backend_core_france_graph_route_trace_contract_b_71465e0d("route trace contract()<br/><small>Core/france/graph_route_trace_contract.py</small>")
-    backend_core_france_graph_tree_authoring_1c52f444("graph_tree_authoring.py")
     backend_core_france_graph_tree_binding_canonical_3269e732("canonical_answer()<br/><small>Core/france/graph_tree_binding.py</small>")
     backend_core_france_graph_tree_contract_build_gr_d5a539f0("build_graph_tree_contract()<br/><small>Core/france/graph_tree_contract.py</small>")
-    tests_test_french_graph_resilience_authoring_tes_b1927ac5("every selection fact()<br/><small>tests/test_french_graph_resilience_authoring.py</small>")
     tests_test_french_graph_tree_authoring_partclien_696a5744("PartClient<br/><small>tests/test_french_graph_tree_authoring.py</small>")
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_route_trace_authoring_46538981
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_route_trace_authoring_d12647e4
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_two_outage_authoring_a_6d008a85
-    backend_core_france_database_depth_authoring_val_42bf8eb4 -->|calls| backend_core_france_graph_two_outage_authoring_r_d8b579ef
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_prose_graph_0322b989
-    backend_core_france_graph_resilience_authoring_i_e66be7ba -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_prose_graph_b8cb6153
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| backend_core_france_graph_resilience_authoring_r_1b497a24
-    backend_core_france_graph_resilience_authoring_g_5820d0e7 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| backend_core_france_graph_resilience_authoring_a_b8578979
-    backend_core_france_graph_resilience_authoring_r_1b497a24 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_authoring_a_b8578979 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_contract_bu_0e61cd63 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_resilience_prose_graph_b8cb6153 -->|calls| tests_test_french_graph_resilience_authoring_tes_b1927ac5
-    backend_core_france_graph_route_trace_authoring_d12647e4 -->|calls| backend_core_france_graph_route_trace_authoring_46538981
-    backend_core_france_graph_two_outage_authoring_r_d8b579ef -->|calls| backend_core_france_graph_two_outage_authoring_a_6d008a85
-    backend_core_france_graph_tree_authoring_1c52f444 -->|imports| backend_core_france_graph_tree_binding_canonical_3269e732
-    %% Omitted for readability: 1458 nodes, 0 edges
-    class backend_core_france_graph_resilience_authoring_a_b8578979 function;
-    class backend_core_france_graph_resilience_authoring_r_1b497a24 function;
-    class backend_core_france_graph_resilience_authoring_i_e66be7ba function;
-    class backend_core_france_graph_resilience_authoring_g_5820d0e7 function;
-    class backend_core_france_graph_resilience_prose_graph_0322b989 function;
-    class backend_core_france_graph_resilience_prose_graph_b8cb6153 function;
-    class backend_core_france_graph_route_trace_authoring_46538981 api;
-    class backend_core_france_graph_route_trace_authoring_d12647e4 api;
-    class backend_core_france_graph_two_outage_authoring_a_6d008a85 function;
-    class backend_core_france_graph_two_outage_authoring_r_d8b579ef function;
-    class backend_core_france_database_depth_authoring_val_42bf8eb4 function;
+    backend_core_education_context_educationcontext_11fa9e93 -->|method| backend_core_education_context_educationcontext_12478567
+    backend_core_education_context_educationcontext_11fa9e93 -->|method| backend_core_education_context_educationcontext_0f59185b
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_education_context_assessmentdefinit_1c097995
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_nsi_nsiexercise_credit_57b719f3
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_nsi_nsiexercise_valid_target_a224c7d2
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_nsi_nsiexercise_validate_str_29c28265
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_nsi_nsiquestion_credit_match_79dfe94a
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_assemble_planned_qu_22f42354
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_check_exercise_plan_8a18b336
+    backend_core_education_context_points_cfad02d8 -->|calls| backend_core_france_pipeline_invalid_marking_all_ceccd416
+    backend_core_france_pipeline_invalid_marking_all_ceccd416 -->|calls| backend_core_france_pipeline_assemble_planned_qu_22f42354
+    %% Omitted for readability: 1582 nodes, 0 edges
+    class backend_core_education_context_educationcontext_11fa9e93 klass;
+    class backend_core_education_context_educationcontext_12478567 function;
+    class backend_core_education_context_educationcontext_0f59185b function;
+    class backend_core_education_context_points_cfad02d8 function;
+    class backend_core_education_context_assessmentdefinit_1c097995 function;
+    class backend_core_france_nsi_nsiexercise_credit_57b719f3 function;
+    class backend_core_france_nsi_nsiexercise_valid_target_a224c7d2 function;
+    class backend_core_france_nsi_nsiexercise_validate_str_29c28265 function;
+    class backend_core_france_nsi_nsiquestion_credit_match_79dfe94a function;
+    class backend_core_france_pipeline_tasks_for_seed_19161918 function;
+    class backend_core_france_pipeline_assemble_planned_qu_22f42354 async;
+    class backend_core_france_pipeline_check_exercise_plan_8a18b336 function;
+    class backend_core_france_pipeline_invalid_marking_all_ceccd416 function;
     class backend_core_france_graph_resilience_contract_bu_0e61cd63 function;
     class backend_core_france_graph_route_trace_contract_b_71465e0d api;
-    class backend_core_france_graph_tree_authoring_1c52f444 module;
     class backend_core_france_graph_tree_binding_canonical_3269e732 function;
     class backend_core_france_graph_tree_contract_build_gr_d5a539f0 function;
-    class tests_test_french_graph_resilience_authoring_tes_b1927ac5 test;
     class tests_test_french_graph_tree_authoring_partclien_696a5744 test;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
@@ -866,76 +854,85 @@ flowchart LR
 <tr><td><code>Resources/backend-protocol.schema.json</code></td><td>68 nodes</td></tr>
 <tr><td><code>Core/france/graph_tree_authoring.py</code></td><td>26 nodes</td></tr>
 <tr><td><code>tests/test_french_graph_tree_authoring.py</code></td><td>26 nodes</td></tr>
-<tr><td><code>Core/france/pipeline.py</code></td><td>18 nodes</td></tr>
+<tr><td><code>Core/france/pipeline.py</code></td><td>25 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1097, calls x671, extends x285, imports x236. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1176, calls x844, imports x302, extends x285. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 4. Analysis & Clustering ====== -->
 <h2 id="analysis-clustering">4. Analysis &amp; Clustering</h2>
-<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 836 nodes and 2680 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Analysis &amp; Clustering groups implementation around generator, resources, render, pdfpy, mostly in generator/pastpapergen/render_pdf.py, generator/cspapergen/render_pdf.py, generator/pastpapergen/generator.py. This section covers 1036 nodes and 3376 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Analysis &amp; Clustering (836 nodes, 2680 edges)
-    subgraph analysis_clustering_Backend_Core_benchmark_py_ad20c69e["Backend/Core/benchmark.py"]
-        backend_core_benchmark_handle_benchmark_303eb156("handle_benchmark()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_cpu_load_percent_a21569b0("cpu_load_percent()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_disk_probe_fbc55c85("disk_probe()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_emit_final_metrics_71d94fa7("emit_final_metrics()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_emit_static_metrics_c43bbe70("emit_static_metrics()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_memory_snapshot_028e5cae("memory_snapshot()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_network_probe_1449a5c0("network_probe()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_ollama_latency_ms_a87e19e0("ollama_latency_ms()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_pdf_probe_873c5756("pdf_probe()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_thermal_speed_limit_perce_0dc698c9("speed limit percent()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_apple_cpu_core_split_fcd9b541("apple_cpu_core_split()<br/><small>Backend/Core/benchmark.py</small>")
-        backend_core_benchmark_cpu_brand_ee3083b4("cpu_brand()<br/><small>Backend/Core/benchmark.py</small>")
+    %% Section: Analysis &amp; Clustering (1036 nodes, 3376 edges)
+    subgraph analysis_clustering_Backend_Core_exam_blueprints_8e589429["Backend/Core/exam_blueprints.py"]
+        backend_core_exam_blueprints_validate_generated_223baf80("validate_generated_paper()<br/><small>Backend/Core/exam_blueprints.py</small>")
+        backend_core_exam_blueprints_validate_rule_bfde2ed6("validate_rule()<br/><small>Backend/Core/exam_blueprints.py</small>")
+    end
+    subgraph analysis_clustering_generator_aqaaccountgen_rend_b64724ca["generator/aqaaccountgen/render_pdf.py"]
+        resources_accounting_aqa_generator_aqaaccountgen_6fa0a5d1("_indicative_objective()<br/><small>generator/aqaaccountgen/render_pdf.py</small>")
+        resources_accounting_aqa_generator_aqaaccountgen_f52ccec2("render_mark_scheme()<br/><small>generator/aqaaccountgen/render_pdf.py</small>")
+    end
+    subgraph analysis_clustering_generator_cspapergen_ollama_f99ac6e8["generator/cspapergen/ollama_client.py"]
+        resources_computer_science_aqa_generator_cspaper_0e18fcd6("_prompt()<br/><small>generator/cspapergen/ollama_client.py</small>")
+        resources_computer_science_aqa_generator_cspaper_c811b98c("_merge_question()<br/><small>generator/cspapergen/ollama_client.py</small>")
     end
     subgraph analysis_clustering_generator_cspapergen_questio_313ef9d8["generator/cspapergen/question_bank.py"]
         resources_computer_science_aqa_generator_cspaper_e7e771a6("_parts()<br/><small>generator/cspapergen/question_bank.py</small>")
         resources_computer_science_aqa_generator_cspaper_e712bfa9("_fit_parts()<br/><small>generator/cspapergen/question_bank.py</small>")
     end
+    subgraph analysis_clustering_tools_reference_demand_profi_dd5af1a4["tools/reference_demand_profiles.py"]
+        tools_reference_demand_profiles_extract_referenc_c5c110d6("extract_reference_features()<br/><small>tools/reference_demand_profiles.py</small>")
+        tools_reference_demand_profiles_extract_referenc_da578e4a("extract_reference_items()<br/><small>tools/reference_demand_profiles.py</small>")
+    end
+    backend_core_assessment_objectives_objective_pol_462b748d("objective_policy_for()<br/><small>Backend/Core/assessment_objectives.py</small>")
+    backend_core_assessment_quality_numeric_tokens_611a1f92("numeric_tokens()<br/><small>Backend/Core/assessment_quality.py</small>")
+    backend_core_computer_science_authoring_authorin_0660463e("authoring_route()<br/><small>Backend/Core/computer_science_authoring.py</small>")
     backend_core_exam_pages_exampage_870c5583("ExamPage<br/><small>Backend/Core/exam_pages.py</small>")
-    backend_core_reportlab_theme_aqaanswerlines_b3f46684("AQAAnswerLines<br/><small>Backend/Core/reportlab_theme.py</small>")
-    resources_accounting_aqa_generator_aqaaccountgen_a29172b2("mark scheme pages()<br/><small>generator/aqaaccountgen/render_pdf.py</small>")
+    backend_core_model_review_assert_materially_new_27bf02e6("assert_materially_new()<br/><small>Backend/Core/model_review.py</small>")
     resources_computer_science_aqa_generator_cspaper_93d2977e("Stimulus<br/><small>generator/cspapergen/models.py</small>")
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_cpu_load_percent_a21569b0
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_disk_probe_fbc55c85
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_emit_final_metrics_71d94fa7
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_emit_static_metrics_c43bbe70
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_memory_snapshot_028e5cae
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_network_probe_1449a5c0
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_ollama_latency_ms_a87e19e0
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_pdf_probe_873c5756
-    backend_core_benchmark_handle_benchmark_303eb156 -->|calls| backend_core_benchmark_thermal_speed_limit_perce_0dc698c9
-    backend_core_benchmark_emit_static_metrics_c43bbe70 -->|calls| backend_core_benchmark_apple_cpu_core_split_fcd9b541
-    backend_core_benchmark_emit_static_metrics_c43bbe70 -->|calls| backend_core_benchmark_cpu_brand_ee3083b4
-    %% Omitted for readability: 818 nodes, 0 edges
-    class backend_core_benchmark_handle_benchmark_303eb156 function;
-    class backend_core_benchmark_cpu_load_percent_a21569b0 function;
-    class backend_core_benchmark_disk_probe_fbc55c85 function;
-    class backend_core_benchmark_emit_final_metrics_71d94fa7 function;
-    class backend_core_benchmark_emit_static_metrics_c43bbe70 function;
-    class backend_core_benchmark_memory_snapshot_028e5cae function;
-    class backend_core_benchmark_network_probe_1449a5c0 function;
-    class backend_core_benchmark_ollama_latency_ms_a87e19e0 function;
-    class backend_core_benchmark_pdf_probe_873c5756 function;
-    class backend_core_benchmark_thermal_speed_limit_perce_0dc698c9 function;
-    class backend_core_benchmark_apple_cpu_core_split_fcd9b541 function;
-    class backend_core_benchmark_cpu_brand_ee3083b4 function;
+    resources_computer_science_aqa_generator_cspaper_622dfe12("calibrate_blueprint()<br/><small>generator/cspapergen/objective_calibration.py</small>")
+    resources_computer_science_aqa_generator_cspaper_91c08517("validate_blueprint()<br/><small>generator/cspapergen/validation.py</small>")
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| backend_core_exam_blueprints_validate_generated_223baf80
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| backend_core_exam_blueprints_validate_rule_bfde2ed6
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| resources_accounting_aqa_generator_aqaaccountgen_6fa0a5d1
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| resources_accounting_aqa_generator_aqaaccountgen_f52ccec2
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| resources_computer_science_aqa_generator_cspaper_622dfe12
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| resources_computer_science_aqa_generator_cspaper_0e18fcd6
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| resources_computer_science_aqa_generator_cspaper_91c08517
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| tools_reference_demand_profiles_extract_referenc_c5c110d6
+    backend_core_assessment_objectives_objective_pol_462b748d -->|calls| tools_reference_demand_profiles_extract_referenc_da578e4a
+    backend_core_assessment_quality_numeric_tokens_611a1f92 -->|calls| backend_core_computer_science_authoring_authorin_0660463e
+    backend_core_assessment_quality_numeric_tokens_611a1f92 -->|calls| backend_core_model_review_assert_materially_new_27bf02e6
+    backend_core_assessment_quality_numeric_tokens_611a1f92 -->|calls| resources_computer_science_aqa_generator_cspaper_c811b98c
+    backend_core_assessment_quality_numeric_tokens_611a1f92 -->|calls| resources_computer_science_aqa_generator_cspaper_0e18fcd6
+    backend_core_exam_blueprints_validate_rule_bfde2ed6 -->|calls| backend_core_exam_blueprints_validate_generated_223baf80
+    %% Omitted for readability: 1018 nodes, 0 edges
+    class backend_core_exam_blueprints_validate_generated_223baf80 function;
+    class backend_core_exam_blueprints_validate_rule_bfde2ed6 function;
+    class resources_accounting_aqa_generator_aqaaccountgen_6fa0a5d1 function;
+    class resources_accounting_aqa_generator_aqaaccountgen_f52ccec2 function;
+    class resources_computer_science_aqa_generator_cspaper_0e18fcd6 function;
+    class resources_computer_science_aqa_generator_cspaper_c811b98c function;
     class resources_computer_science_aqa_generator_cspaper_e7e771a6 function;
     class resources_computer_science_aqa_generator_cspaper_e712bfa9 function;
+    class tools_reference_demand_profiles_extract_referenc_c5c110d6 function;
+    class tools_reference_demand_profiles_extract_referenc_da578e4a function;
+    class backend_core_assessment_objectives_objective_pol_462b748d function;
+    class backend_core_assessment_quality_numeric_tokens_611a1f92 function;
+    class backend_core_computer_science_authoring_authorin_0660463e api;
     class backend_core_exam_pages_exampage_870c5583 klass;
-    class backend_core_reportlab_theme_aqaanswerlines_b3f46684 klass;
-    class resources_accounting_aqa_generator_aqaaccountgen_a29172b2 function;
+    class backend_core_model_review_assert_materially_new_27bf02e6 async;
     class resources_computer_science_aqa_generator_cspaper_93d2977e klass;
+    class resources_computer_science_aqa_generator_cspaper_622dfe12 function;
+    class resources_computer_science_aqa_generator_cspaper_91c08517 function;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -1074,7 +1071,7 @@ flowchart LR
   <td><code>AQAQuestionHeaderFactory</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>question_reference()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>question_table()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br>+2 more</td>
+  <td><code>question_reference()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>question_table()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br>+2 more</td>
   <td>AQAQuestionHeaderFactory node in Core/document_dsl/reportlab_flowables.py.</td>
 </tr>
 <tr>
@@ -1114,7 +1111,7 @@ flowchart LR
   <td><code>SingleCellPanelFactory</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>panel()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br>+3 more</td>
+  <td><code>panel()</code><br><small style="color:var(--muted)">Core/document_dsl/reportlab_flowables.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br>+3 more</td>
   <td>SingleCellPanelFactory node in Core/document_dsl/reportlab_flowables.py.</td>
 </tr>
 <tr>
@@ -1130,7 +1127,7 @@ flowchart LR
   <td><code>GeneratedPaper</code><br><small style="color:var(--muted)">Backend/Core/exam_blueprints.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_CreditTable</code><br><small style="color:var(--muted)">generator/ocregen/render_pdf.py</small><br><code>_MultipleChoiceInstructions</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br><code>_SchemeOverflow</code><br><small style="color:var(--muted)">generator/ocrcsgen/render_pdf.py</small><br>+6 more</td>
+  <td><code>_AppliedSource</code><br><small style="color:var(--muted)">generator/aqaecongen/generator.py</small><br><code>_CreditTable</code><br><small style="color:var(--muted)">generator/ocregen/render_pdf.py</small><br><code>_MultipleChoiceInstructions</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br>+17 more</td>
   <td>GeneratedPaper node in Backend/Core/exam_blueprints.py.</td>
 </tr>
 <tr>
@@ -1138,7 +1135,7 @@ flowchart LR
   <td><code>KeepTogether</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/ocregen/render_pdf.py</small><br><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/aqabizgen/render_pdf.py</small><br>+2 more</td>
+  <td><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/aqaaccountgen/render_pdf.py</small><br><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/ocregen/render_pdf.py</small><br><code>_mcq_block()</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br>+2 more</td>
   <td>KeepTogether node in project.</td>
 </tr>
 <tr>
@@ -1170,7 +1167,7 @@ flowchart LR
   <td><code>preview_paragraph()</code><br><small style="color:var(--muted)">Backend/Core/preview_presentation.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqabizgen/render_pdf.py</small><br><code>render_source_booklet()</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br>+1 more</td>
+  <td><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqaecongen/render_pdf.py</small><br><code>render_pdf.py</code><br><small style="color:var(--muted)">generator/aqabizgen/render_pdf.py</small><br><code>render_source_booklet()</code><br><small style="color:var(--muted)">generator/aqabizgen/render_pdf.py</small><br>+1 more</td>
   <td>Builds dependency relationships and graph data.</td>
 </tr>
 <tr>
@@ -1208,7 +1205,7 @@ flowchart LR
 <tr><td><code>generator/cspapergen/render_pdf.py</code></td><td>71 nodes</td></tr>
 <tr><td><code>generator/pastpapergen/generator.py</code></td><td>59 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/render_pdf.py</code></td><td>58 nodes</td></tr>
-<tr><td><code>generator/cspapergen/question_bank.py</code></td><td>56 nodes</td></tr>
+<tr><td><code>generator/cspapergen/question_bank.py</code></td><td>57 nodes</td></tr>
 <tr><td><code>generator/ocregen/render_pdf.py</code></td><td>51 nodes</td></tr>
 <tr><td><code>generator/aqabizgen/render_pdf.py</code></td><td>35 nodes</td></tr>
 <tr><td><code>generator/aqaecongen/render_pdf.py</code></td><td>33 nodes</td></tr>
@@ -1216,19 +1213,19 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x969, contains x664, references x644, imports x84. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x1132, contains x790, references x765, imports x189. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
 <!-- ====== 5. Outputs & Docs ====== -->
 <h2 id="outputs-docs">5. Outputs &amp; Docs</h2>
-<p>Outputs &amp; Docs groups implementation around docs, quality, 2026, macos, mostly in Features/Documents/DocumentPreviewView.swift, docs/quality/difficulty-calibration-v2-report.md, docs/quality/teacher-feedback-review-2026-09-27.md. This section covers 105 nodes and 127 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Outputs &amp; Docs groups implementation around docs, quality, 2026, review, mostly in Features/Documents/DocumentPreviewView.swift, docs/quality/difficulty-calibration-v2-report.md, docs/quality/teacher-feedback-review-2026-09-27.md. This section covers 97 nodes and 118 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Outputs &amp; Docs (105 nodes, 127 edges)
+    %% Section: Outputs &amp; Docs (97 nodes, 118 edges)
     subgraph outputs_docs_Features_Documents_DocumentPreviewV_1eaa723b["Features/Documents/DocumentPreviewView.swift"]
         macos_keldin_features_documents_documentpreviewv_c1f93865("DocumentPreviewView<br/><small>Features/Documents/DocumentPreviewView.swift</small>")
         macos_keldin_features_documents_documentpreviewv_d01037b6("PDFDocumentActions<br/><small>Features/Documents/DocumentPreviewView.swift</small>")
@@ -1270,7 +1267,7 @@ flowchart LR
     macos_keldin_features_documents_documentpreviewv_c1f93865 -->|method| macos_keldin_features_documents_documentpreviewv_3d732c02
     macos_keldin_features_documents_documentpreviewv_c1f93865 -->|method| macos_keldin_features_documents_documentpreviewv_60862316
     macos_keldin_features_documents_documentpreviewv_63a112f2 -->|calls| macos_keldin_features_documents_documentpreviewv_6a00efb1
-    %% Omitted for readability: 87 nodes, 0 edges
+    %% Omitted for readability: 79 nodes, 0 edges
     class macos_keldin_features_documents_documentpreviewv_c1f93865 klass;
     class macos_keldin_features_documents_documentpreviewv_d01037b6 klass;
     class macos_keldin_features_documents_documentpreviewv_9e0e394a function;
@@ -1392,78 +1389,6 @@ flowchart LR
 </tr>
 <tr>
   <td>11</td>
-  <td><code>Task</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>deinit()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>init()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td>Task node in project.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>Void</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Void node in project.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Action</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Action node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>quickLook</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>quickLook node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>reveal</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>reveal node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>print</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>print node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>export</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Exports documentation data to a target format.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>MainActor</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>MainActor node in project.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>.init()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Task</code></td>
-  <td>No direct outbound edge</td>
-  <td>.init() node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>20</td>
   <td><code>.perform()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1471,7 +1396,7 @@ flowchart LR
   <td>.perform() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>12</td>
   <td><code>.export()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -1479,7 +1404,7 @@ flowchart LR
   <td>Exports documentation data to a target format.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>13</td>
   <td><code>Data</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1487,23 +1412,31 @@ flowchart LR
   <td>Data node in project.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>14</td>
+  <td><code>.choosePDFForAccess()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>matches()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>recoverAccess()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td>.choosePDFForAccess() node in Features/Documents/DocumentPreviewView.swift.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>.recoverAccess()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>choosePDFForAccess()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>.recoverAccess() node in Features/Documents/DocumentPreviewView.swift.</td>
+</tr>
+<tr>
+  <td>16</td>
   <td><code>.matches()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>export()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><code>choosePDFForAccess()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>export()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td>No direct outbound edge</td>
   <td>.matches() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>24</td>
-  <td><code>.deinit()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>Task</code></td>
-  <td>No direct outbound edge</td>
-  <td>.deinit() node in Features/Documents/DocumentPreviewView.swift.</td>
-</tr>
-<tr>
-  <td>25</td>
+  <td>17</td>
   <td><code>PDFDocumentActions</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1511,7 +1444,7 @@ flowchart LR
   <td>PDFDocumentActions node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>26</td>
+  <td>18</td>
   <td><code>.prepareReadOnlyPreview()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PDFDocumentActions</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -1519,7 +1452,7 @@ flowchart LR
   <td>.prepareReadOnlyPreview() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>27</td>
+  <td>19</td>
   <td><code>PDFDocument</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -1527,7 +1460,7 @@ flowchart LR
   <td>PDFDocument node in project.</td>
 </tr>
 <tr>
-  <td>28</td>
+  <td>20</td>
   <td><code>.provenanceRecord()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>.provenanceRecord</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>PDFDocumentActions</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -1535,7 +1468,7 @@ flowchart LR
   <td>.provenanceRecord() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>29</td>
+  <td>21</td>
   <td><code>.printOperation()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>PDFDocument</code><br><code>PDFDocumentActions</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>perform()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
@@ -1543,12 +1476,76 @@ flowchart LR
   <td>.printOperation() node in Features/Documents/DocumentPreviewView.swift.</td>
 </tr>
 <tr>
-  <td>30</td>
+  <td>22</td>
   <td><code>NSPrintOperation</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
   <td>No direct outbound edge</td>
   <td>NSPrintOperation node in project.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>.export()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PDFDocumentActions</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small><br><code>perform()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td><code>testPDFExportToItsOwnPathPreservesTheSource()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>.testPDFExportToItsOwnPathPreservesTheSource()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>export()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>.testPDFPrintOperationIncludesEveryPage()</code><br><small style="color:var(--muted)">macOS/Tests/AppTests.swift</small></td>
+  <td><span class="tag tag-func">Test</span></td>
+  <td><code>printOperation()</code><br><small style="color:var(--muted)">Features/Documents/DocumentPreviewView.swift</small></td>
+  <td>No direct outbound edge</td>
+  <td>Organizes documentation pages, navigation, or content lookup.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>Difficulty Calibration v2 Qualification Report</code><br><small style="color:var(--muted)">docs/quality/difficulty-calibration-v2-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Difficulty Calibration v2 Qualification Report.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Outcome</code><br><small style="color:var(--muted)">docs/quality/difficulty-calibration-v2-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Outcome.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>Implemented evidence</code><br><small style="color:var(--muted)">docs/quality/difficulty-calibration-v2-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Implemented evidence.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Initial 30 August verification</code><br><small style="color:var(--muted)">docs/quality/difficulty-calibration-v2-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Initial 30 August verification.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Reproduction and local evidence</code><br><small style="color:var(--muted)">docs/quality/difficulty-calibration-v2-report.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Reproduction and local evidence.</td>
 </tr>
 </table>
 
@@ -1557,7 +1554,7 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Features/Documents/DocumentPreviewView.swift</code></td><td>22 nodes</td></tr>
+      <tr><td><code>Features/Documents/DocumentPreviewView.swift</code></td><td>17 nodes</td></tr>
 <tr><td><code>docs/quality/difficulty-calibration-v2-report.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>docs/quality/teacher-feedback-review-2026-09-27.md</code></td><td>12 nodes</td></tr>
 <tr><td><code>docs/project-analysis/IMPLEMENTATION_AND_FIDELITY_REPORT.md</code></td><td>8 nodes</td></tr>
@@ -1569,7 +1566,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x59, references x26, calls x22, method x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x59, calls x22, references x21, method x10. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -2369,7 +2366,7 @@ flowchart LR
   <td><code>accounting_selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/accounting_selected_response.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>Decimal</code><br><code>selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/selected_response.py</small><br><code>selected_response.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/selected_response.py</small></td>
+  <td><code>Decimal</code><br><code>selected_response.py</code><br><small style="color:var(--muted)">generator/aqaaccountgen/selected_response.py</small><br><code>selected_response.py</code><br><small style="color:var(--muted)">Core/subjects/selected_response.py</small></td>
   <td>Module file in Core/subjects/accounting_selected_response.py.</td>
 </tr>
 <tr>
@@ -2763,12 +2760,12 @@ flowchart LR
 
 <!-- ====== 10. Tests & Fixtures ====== -->
 <h2 id="tests-fixtures">10. Tests &amp; Fixtures</h2>
-<p>Tests &amp; Fixtures groups implementation around test, tests, backend, french, mostly in tests/test_nsi_pipeline.py, macOS/Tests/RunIsolationTests.swift, Keldin/Domain/AppModels.swift. This section covers 8836 nodes and 28425 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>Tests &amp; Fixtures groups implementation around test, tests, backend, french, mostly in tests/test_nsi_pipeline.py, macOS/Tests/RunIsolationTests.swift, Keldin/Domain/AppModels.swift. This section covers 8476 nodes and 26455 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: Tests &amp; Fixtures (8836 nodes, 28425 edges)
+    %% Section: Tests &amp; Fixtures (8476 nodes, 26455 edges)
     subgraph tests_fixtures_Backend_Core_accounting_scheme_co_dec83d5b["Backend/Core/accounting_scheme_content.py"]
         backend_core_accounting_scheme_content_compact_a121d0c5("_compact()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
         backend_core_accounting_scheme_content_verify_ac_987e3bc5("paper two scheme()<br/><small>Backend/Core/accounting_scheme_content.py</small>")
@@ -2811,7 +2808,7 @@ flowchart LR
     backend_core_accounting_scheme_content_verify_ac_987e3bc5 -->|calls| backend_core_layout_master_layoutconformanceerro_412f2f66
     backend_core_accounting_scheme_content_verify_ac_987e3bc5 -->|calls| backend_core_layout_conformance_conform_generate_0ef03e33
     backend_core_layout_conformance_conform_generate_0ef03e33 -->|calls| backend_core_layout_master_layoutconformanceerro_412f2f66
-    %% Omitted for readability: 8818 nodes, 0 edges
+    %% Omitted for readability: 8458 nodes, 0 edges
     class backend_core_accounting_scheme_content_compact_a121d0c5 function;
     class backend_core_accounting_scheme_content_verify_ac_987e3bc5 function;
     class backend_core_accounting_scheme_content_verify_ac_24f00372 function;
@@ -2856,11 +2853,43 @@ flowchart LR
   <td><code>_tasks_for_seed_v17()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_tasks_for_seed_v16()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_prose.py</small><br><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+4 more</td>
+  <td><code>_specs()</code><br><small style="color:var(--muted)">tests/test_french_graph_two_outage_prose.py</small><br><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+5 more</td>
   <td>_tasks_for_seed_v17() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
   <td>2</td>
+  <td><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tasks_for_seed_v17()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>_tasks_for_seed_v19()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>bind all evidence()</code><br><small style="color:var(--muted)">tests/test_french_database_reasoning_authoring.py</small><br><code>exact technical allocation()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+6 more</td>
+  <td>_tasks_for_seed_v18() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>_tasks_for_seed_v19()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>_tasks_for_seed_v20()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>exact paper credit()</code><br><small style="color:var(--muted)">tests/test_french_graph_resilience_authoring.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+3 more</td>
+  <td>_tasks_for_seed_v19() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>_tasks_for_seed_v20()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tasks_for_seed_v19()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>_tasks_for_seed_v21()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_audit_authoring.py</small><br><code>exact paper credit()</code><br><small style="color:var(--muted)">tests/test_french_graph_resilience_authoring.py</small><br>+4 more</td>
+  <td>_tasks_for_seed_v20() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>_tasks_for_seed_v21()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_tasks_for_seed_v20()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><code>_tasks_for_seed_v22()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_audit_authoring.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+4 more</td>
+  <td>_tasks_for_seed_v21() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>6</td>
   <td><code>_tasks_for_seed_v28()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>construction_blueprint()</code><br><small style="color:var(--muted)">Core/france/database_construction_authoring.py</small></td>
@@ -2868,7 +2897,7 @@ flowchart LR
   <td>_tasks_for_seed_v28() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>3</td>
+  <td>7</td>
   <td><code>_named_figure_ids()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td>External entry / no inbound edge</td>
@@ -2876,63 +2905,63 @@ flowchart LR
   <td>_named_figure_ids() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>4</td>
+  <td>8</td>
   <td><code>bind_explicit_material_ids()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_named_figure_ids()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><code>exact declared identifiers()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>from omitted links()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>identifier is rejected()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+4 more</td>
+  <td><code>exact declared identifiers()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>from omitted links()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>identifier is rejected()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+5 more</td>
   <td>bind_explicit_material_ids() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>5</td>
-  <td><code>require_declared_relations()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>clause is valid()</code><br><small style="color:var(--muted)">tests/test_nsi_assessment.py</small><br><code>from supplied materials()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>semantic material integrity()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+2 more</td>
-  <td>require_declared_relations() node in Core/france/pipeline.py.</td>
+  <td>9</td>
+  <td><code>ValueError</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>_tasks_for_seed_v16()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v17()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v18()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+4 more</td>
+  <td><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>consistent tree premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+5 more</td>
+  <td>ValueError node in project.</td>
 </tr>
 <tr>
-  <td>6</td>
+  <td>10</td>
+  <td><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>ValueError</code></td>
+  <td><code>changing the question()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>test_nsi_pipeline.py</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
+  <td>_replay_targeted_repairs() node in Core/france/pipeline.py.</td>
+</tr>
+<tr>
+  <td>11</td>
   <td><code>require_consistent_tree_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
   <td><code>compared to root()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>premise is rejected()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>semantic material integrity()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
   <td>require_consistent_tree_premises() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>7</td>
+  <td>12</td>
   <td><code>require_algorithm_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
   <td><code>breadth first search()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>question to refute()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>search stop early()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+3 more</td>
   <td>require_algorithm_premises() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>8</td>
+  <td>13</td>
   <td><code>require_tree_constructor_context()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
   <td><code>candidate facing material()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>define its api()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>semantic material integrity()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
   <td>require_tree_constructor_context() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>9</td>
+  <td>14</td>
   <td><code>require_tree_complexity_premise()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
   <td><code>a logarithmic premise()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>earlier unbalanced case()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>license logarithmic claim()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+4 more</td>
   <td>require_tree_complexity_premise() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>10</td>
-  <td><code>require_semantic_material_integrity()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td><code>consistent tree premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>require_algorithm_premises()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>require_declared_relations()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+2 more</td>
-  <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
-  <td>require_semantic_material_integrity() node in Core/france/pipeline.py.</td>
-</tr>
-<tr>
-  <td>11</td>
+  <td>15</td>
   <td><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>authoring_schema()</code><br><small style="color:var(--muted)">Core/france/nsi.py</small></td>
@@ -2940,31 +2969,31 @@ flowchart LR
   <td>Builds structured prompts for model calls.</td>
 </tr>
 <tr>
-  <td>12</td>
+  <td>16</td>
   <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+43 more</td>
-  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and never accepts()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+102 more</td>
+  <td><code>_prompt()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v15()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v16()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+35 more</td>
+  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and never accepts()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+100 more</td>
   <td>generate_assessment() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>13</td>
+  <td>17</td>
   <td><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_check_exercise_plan()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_originality()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+47 more</td>
-  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+69 more</td>
+  <td><code>_legacy_tasks_for_seed()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_replay_targeted_repairs()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>_tasks_for_seed_v15()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+39 more</td>
+  <td><code>and binds catalogue()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and package replay()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>and preserves v18()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br>+67 more</td>
   <td>validate_package() node in Core/france/pipeline.py.</td>
 </tr>
 <tr>
-  <td>14</td>
+  <td>18</td>
   <td><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small></td>
   <td><span class="tag tag-async">Async</span></td>
   <td><code>_QuestionGroup</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br><code>code_layout()</code><br><small style="color:var(--muted)">Core/france/code_layout.py</small><br><code>correction_prompt()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+8 more</td>
-  <td><code>and credit readable()</code><br><small style="color:var(--muted)">tests/test_french_system_case_prose.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and exact roles()</code><br><small style="color:var(--muted)">tests/test_french_network_incident_pdf.py</small><br>+65 more</td>
+  <td><code>and credit readable()</code><br><small style="color:var(--muted)">tests/test_french_system_case_prose.py</small><br><code>and exact credit()</code><br><small style="color:var(--muted)">tests/test_french_database_reconciliation_pdf.py</small><br><code>and exact roles()</code><br><small style="color:var(--muted)">tests/test_french_network_incident_pdf.py</small><br>+61 more</td>
   <td>render_assessment() node in Core/france/rendering.py.</td>
 </tr>
 <tr>
-  <td>15</td>
+  <td>19</td>
   <td><code>Path</code><br><small style="color:var(--muted)"></small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
@@ -2972,7 +3001,23 @@ flowchart LR
   <td>Path node in project.</td>
 </tr>
 <tr>
-  <td>16</td>
+  <td>20</td>
+  <td><code>network_pdf_contract_version()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+6 more</td>
+  <td>network_pdf_contract_version() node in Core/france/runtime.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>database_pdf_contract_version()</code><br><small style="color:var(--muted)">Core/france/runtime.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>an older validator()</code><br><small style="color:var(--muted)">tests/test_french_expanded_pipeline.py</small><br><code>downgrading other exercises()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br><code>facts and roles()</code><br><small style="color:var(--muted)">tests/test_french_runtime.py</small><br>+8 more</td>
+  <td>database_pdf_contract_version() node in Core/france/runtime.py.</td>
+</tr>
+<tr>
+  <td>22</td>
   <td><code>catalogue_digest()</code><br><small style="color:var(--muted)">Core/france/system_case_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>cli.py</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
@@ -2980,7 +3025,7 @@ flowchart LR
   <td>catalogue_digest() node in Core/france/system_case_authoring.py.</td>
 </tr>
 <tr>
-  <td>17</td>
+  <td>23</td>
   <td><code>catalogue_digest()</code><br><small style="color:var(--muted)">Core/france/tree_case_authoring.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>_hash()</code><br><small style="color:var(--muted)">Core/france/database_depth_authoring.py</small><br><code>cli.py</code><br><small style="color:var(--muted)">Backend/Core/cli.py</small><br><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br>+1 more</td>
@@ -2988,23 +3033,23 @@ flowchart LR
   <td>catalogue_digest() node in Core/france/tree_case_authoring.py.</td>
 </tr>
 <tr>
-  <td>18</td>
+  <td>24</td>
   <td><code>SourceDocument</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>EducationContext</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br><code>ingest()</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br>+1 more</td>
-  <td><code>__post_init__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>and curriculum filters()</code><br><small style="color:var(--muted)">tests/test_french_llm_pipeline.py</small><br><code>and obsolete sources()</code><br><small style="color:var(--muted)">tests/test_french_curricular_scoping.py</small><br>+25 more</td>
+  <td><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>ingest()</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>OfficialRedirects</code><br><small style="color:var(--muted)">Core/france/corpus.py</small></td>
+  <td><code>and curriculum filters()</code><br><small style="color:var(--muted)">tests/test_french_llm_pipeline.py</small><br><code>and obsolete sources()</code><br><small style="color:var(--muted)">tests/test_french_curricular_scoping.py</small><br><code>BlindNoteClient</code><br><small style="color:var(--muted)">tests/test_french_llm_pipeline.py</small><br>+24 more</td>
   <td>SourceDocument node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>19</td>
+  <td>25</td>
   <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-class">Class</span></td>
-  <td><code>_retrieve_references()</code><br><small style="color:var(--muted)">Core/france/llm_pipeline.py</small><br><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>EducationContext</code><br><small style="color:var(--muted)">Backend/Core/education_context.py</small><br>+13 more</td>
-  <td><code>__enter__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>__exit__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>__init__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br>+46 more</td>
+  <td><code>_retrieve_references()</code><br><small style="color:var(--muted)">Core/france/llm_pipeline.py</small><br><code>corpus.py</code><br><small style="color:var(--muted)">Core/france/corpus.py</small><br><code>FamilyCatalogueExhausted</code><br><small style="color:var(--muted)">Core/france/extended_pipeline.py</small><br>+6 more</td>
+  <td><code>__enter__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>__exit__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br>+44 more</td>
   <td>ReferenceIndex node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>20</td>
+  <td>26</td>
   <td><code>.__enter__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
@@ -3012,7 +3057,7 @@ flowchart LR
   <td>.__enter__() node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>21</td>
+  <td>27</td>
   <td><code>.__exit__()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
@@ -3020,76 +3065,28 @@ flowchart LR
   <td>.__exit__() node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>22</td>
+  <td>28</td>
   <td><code>._json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
   <td><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
-  <td><code>add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>retrieve()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
+  <td><code>add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td>._json() node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>23</td>
+  <td>29</td>
   <td><code>.add()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><span class="tag tag-func">Function</span></td>
-  <td><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ValueError</code></td>
+  <td><code>_json()</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td>No direct outbound edge</td>
   <td>.add() node in Backend/Core/scoped_references.py.</td>
 </tr>
 <tr>
-  <td>24</td>
+  <td>30</td>
   <td><code>test_french_curricular_scoping.py</code><br><small style="color:var(--muted)">tests/test_french_curricular_scoping.py</small></td>
   <td><span class="tag tag-func">Test</span></td>
-  <td><code>llm_pipeline.py</code><br><small style="color:var(--muted)">Core/france/llm_pipeline.py</small><br><code>ReferenceHit</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br>+1 more</td>
+  <td><code>llm_pipeline.py</code><br><small style="color:var(--muted)">Core/france/llm_pipeline.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>SourceDocument</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
   <td><code>Client</code><br><small style="color:var(--muted)">tests/test_french_llm_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>test_french_llm_pipeline.py</code><br><small style="color:var(--muted)">tests/test_french_llm_pipeline.py</small><br>+1 more</td>
   <td>Module file in tests/test_french_curricular_scoping.py.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>test_scoped_retrieval_excludes_foreign_holdout_and_obsolete_sources()</code><br><small style="color:var(--muted)">tests/test_french_curricular_scoping.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>_retrieve_references()</code><br><small style="color:var(--muted)">Core/france/llm_pipeline.py</small><br><code>ReferenceIndex</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small><br><code>SourceDocument</code><br><small style="color:var(--muted)">Backend/Core/scoped_references.py</small></td>
-  <td><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>Curriculum scoping limits context, never supplies questions or answers.</code><br><small style="color:var(--muted)">tests/test_french_curricular_scoping.py</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Design note for Curriculum scoping limits context, never supplies questions or answers..</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>test_french_database_construction.py</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>NSIExercise</code><br><small style="color:var(--muted)">Core/france/nsi.py</small><br><code>render_assessment()</code><br><small style="color:var(--muted)">Core/france/rendering.py</small><br>+2 more</td>
-  <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
-  <td>Module file in tests/test_french_database_construction.py.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>test_construction_solution_matches_independent_counts()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Verifies imports, entry points, or version behavior.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>parametrize</code><br><small style="color:var(--muted)"></small></td>
-  <td><span class="tag tag-func">Function</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>parametrize node in project.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>test_v28_package_has_construction_credit_and_replays()</code><br><small style="color:var(--muted)">tests/test_french_database_construction.py</small></td>
-  <td><span class="tag tag-func">Test</span></td>
-  <td><code>generate_assessment()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>validate_package()</code><br><small style="color:var(--muted)">Core/france/pipeline.py</small><br><code>verify_contract()</code><br><small style="color:var(--muted)">Core/france/verification.py</small></td>
-  <td><code>ControlledTwoOutageFrenchClient</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small><br><code>make_index()</code><br><small style="color:var(--muted)">tests/test_nsi_pipeline.py</small></td>
-  <td>Verifies imports, entry points, or version behavior.</td>
 </tr>
 </table>
 
@@ -3110,7 +3107,7 @@ flowchart LR
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x11278, contains x5442, references x3749, imports x2918. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x10659, contains x5177, references x3514, imports x2575. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -3456,12 +3453,12 @@ flowchart LR
 
 <!-- ====== 12. build_paper ====== -->
 <h2 id="build-paper">12. build_paper</h2>
-<p>build_paper groups implementation around aqa, accounting, generator, resources, mostly in generator/aqaaccountgen/case_data.py, generator/tests/test_aqa_accounting.py, tests/test_accounting_case_projection.py. This section covers 179 nodes and 359 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<p>build_paper groups implementation around aqa, accounting, generator, resources, mostly in generator/aqaaccountgen/case_data.py, generator/tests/test_aqa_accounting.py, generator/aqaaccountgen/generator.py. This section covers 162 nodes and 322 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: build_paper (179 nodes, 359 edges)
+    %% Section: build_paper (162 nodes, 322 edges)
     subgraph build_paper_generator_aqaaccountgen_case_data_py_094535d3["generator/aqaaccountgen/case_data.py"]
         resources_accounting_aqa_generator_aqaaccountgen_896ea772("ShareholderCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
         resources_accounting_aqa_generator_aqaaccountgen_1305a8f2("IncomeStatementCase<br/><small>generator/aqaaccountgen/case_data.py</small>")
@@ -3496,7 +3493,7 @@ flowchart LR
     resources_accounting_aqa_generator_aqaaccountgen_17b55db2 -->|method| resources_accounting_aqa_generator_aqaaccountgen_55872662
     resources_accounting_aqa_generator_aqaaccountgen_17b55db2 -->|method| resources_accounting_aqa_generator_aqaaccountgen_765d8c0c
     resources_accounting_aqa_generator_aqaaccountgen_7a9897d8 -->|method| resources_accounting_aqa_generator_aqaaccountgen_13942643
-    %% Omitted for readability: 161 nodes, 0 edges
+    %% Omitted for readability: 144 nodes, 0 edges
     class resources_accounting_aqa_generator_aqaaccountgen_896ea772 klass;
     class resources_accounting_aqa_generator_aqaaccountgen_1305a8f2 klass;
     class resources_accounting_aqa_generator_aqaaccountgen_7a9897d8 async;
@@ -3785,23 +3782,364 @@ flowchart LR
       <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>generator/aqaaccountgen/case_data.py</code></td><td>89 nodes</td></tr>
 <tr><td><code>generator/tests/test_aqa_accounting.py</code></td><td>40 nodes</td></tr>
-<tr><td><code>tests/test_accounting_case_projection.py</code></td><td>12 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/generator.py</code></td><td>11 nodes</td></tr>
 <tr><td><code>generator/tests/test_component_scope.py</code></td><td>8 nodes</td></tr>
-<tr><td><code>tests/test_accounting_paper_two_flow.py</code></td><td>2 nodes</td></tr>
 <tr><td><code>tests/test_accounting_solver.py</code></td><td>2 nodes</td></tr>
 <tr><td><code>generator/aqaaccountgen/__init__.py</code></td><td>1 nodes</td></tr>
+<tr><td><code>generator/aqaaccountgen/cli.py</code></td><td>1 nodes</td></tr>
+<tr><td><code>tests/test_accounting_paper_two_flow.py</code></td><td>1 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: calls x138, contains x76, method x69, references x47. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x120, method x69, contains x66, references x42. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
 
-<!-- ====== 13. .localizedResource ====== -->
-<h2 id="localizedresource">13. .localizedResource</h2>
+<!-- ====== 13. sql_contracts.py ====== -->
+<h2 id="sql-contracts-py">13. sql_contracts.py</h2>
+<p>sql_contracts.py groups implementation around sql, contractspy, backend, subjects, mostly in Core/subjects/sql_contracts.py. This section covers 50 nodes and 154 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: sql_contracts.py (50 nodes, 154 edges)
+    subgraph sql_contracts_py_Core_subjects_sql_contracts_py_ccdcb0be["Core/subjects/sql_contracts.py"]
+        backend_core_subjects_sql_contracts_sqlproblem_550d5cb0("_SQLProblem<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_tokenstream_9fa6719c("_TokenStream<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_tokenstream_84414784("accept()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_validate_one_141c4fab("_validate_one()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_tokenstream_bb2e75dd("pop()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlsourcecon_e471d074("coherent_schema_and_intents()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlcolumncon_c9df7f03("SQLColumnContract<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_fitness_cent_24c88ed1("centre sql contract()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqltablecont_32efa76b("SQLTableContract<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqltablecont_b7a577e8("coherent_columns()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqljoincontr_c0e0f58e("SQLJoinContract<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlselectint_2ccb62a2("SQLSelectIntent<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlliteralco_c83a9410("SQLLiteralContract<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlliteralco_d07bc6a6("matching_value_type()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlinsertint_1fc0a473("SQLInsertIntent<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_sqlsampletab_2e5e2ce9("rectangular_rows()<br/><small>Core/subjects/sql_contracts.py</small>")
+        backend_core_subjects_sql_contracts_contract_col_2aa0596d("_contract_column()<br/><small>Core/subjects/sql_contracts.py</small>")
+    end
+    backend_core_subjects_sql_contracts_py_valueerro_7cd90908("ValueError")
+    backend_core_subjects_sql_contracts_sqlcolumncon_c9df7f03 -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqltablecont_32efa76b -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqltablecont_b7a577e8 -->|calls| backend_core_subjects_sql_contracts_py_valueerro_7cd90908
+    backend_core_subjects_sql_contracts_sqljoincontr_c0e0f58e -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqlselectint_2ccb62a2 -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqlliteralco_c83a9410 -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqlliteralco_d07bc6a6 -->|calls| backend_core_subjects_sql_contracts_py_valueerro_7cd90908
+    backend_core_subjects_sql_contracts_sqlinsertint_1fc0a473 -->|calls| backend_core_subjects_sql_contracts_fitness_cent_24c88ed1
+    backend_core_subjects_sql_contracts_sqlsampletab_2e5e2ce9 -->|calls| backend_core_subjects_sql_contracts_py_valueerro_7cd90908
+    backend_core_subjects_sql_contracts_sqlsourcecon_e471d074 -->|calls| backend_core_subjects_sql_contracts_contract_col_2aa0596d
+    backend_core_subjects_sql_contracts_sqlsourcecon_e471d074 -->|calls| backend_core_subjects_sql_contracts_py_valueerro_7cd90908
+    backend_core_subjects_sql_contracts_validate_one_141c4fab -->|calls| backend_core_subjects_sql_contracts_tokenstream_9fa6719c
+    backend_core_subjects_sql_contracts_sqlproblem_550d5cb0 -->|calls| backend_core_subjects_sql_contracts_tokenstream_bb2e75dd
+    backend_core_subjects_sql_contracts_py_valueerro_7cd90908 -->|calls| backend_core_subjects_sql_contracts_contract_col_2aa0596d
+    backend_core_subjects_sql_contracts_tokenstream_9fa6719c -->|method| backend_core_subjects_sql_contracts_tokenstream_84414784
+    backend_core_subjects_sql_contracts_tokenstream_9fa6719c -->|method| backend_core_subjects_sql_contracts_tokenstream_bb2e75dd
+    %% Omitted for readability: 32 nodes, 0 edges
+    class backend_core_subjects_sql_contracts_sqlproblem_550d5cb0 function;
+    class backend_core_subjects_sql_contracts_tokenstream_9fa6719c async;
+    class backend_core_subjects_sql_contracts_tokenstream_84414784 function;
+    class backend_core_subjects_sql_contracts_validate_one_141c4fab function;
+    class backend_core_subjects_sql_contracts_tokenstream_bb2e75dd function;
+    class backend_core_subjects_sql_contracts_sqlsourcecon_e471d074 function;
+    class backend_core_subjects_sql_contracts_sqlcolumncon_c9df7f03 klass;
+    class backend_core_subjects_sql_contracts_fitness_cent_24c88ed1 function;
+    class backend_core_subjects_sql_contracts_sqltablecont_32efa76b klass;
+    class backend_core_subjects_sql_contracts_sqltablecont_b7a577e8 function;
+    class backend_core_subjects_sql_contracts_sqljoincontr_c0e0f58e klass;
+    class backend_core_subjects_sql_contracts_sqlselectint_2ccb62a2 klass;
+    class backend_core_subjects_sql_contracts_sqlliteralco_c83a9410 klass;
+    class backend_core_subjects_sql_contracts_sqlliteralco_d07bc6a6 function;
+    class backend_core_subjects_sql_contracts_sqlinsertint_1fc0a473 klass;
+    class backend_core_subjects_sql_contracts_sqlsampletab_2e5e2ce9 function;
+    class backend_core_subjects_sql_contracts_contract_col_2aa0596d function;
+    class backend_core_subjects_sql_contracts_py_valueerro_7cd90908 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>sql_contracts.py</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>_Frozen</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_Frozen node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>BaseModel</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>BaseModel node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>SQLColumnContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLColumnContract node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>SQLTableContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLTableContract node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>model_validator</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>model_validator node in project.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>.coherent_columns()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
+  <td>.coherent_columns() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>SQLJoinContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLJoinContract node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>SQLSelectIntent</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLSelectIntent node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>SQLLiteralContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLLiteralContract node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>.matching_value_type()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
+  <td>.matching_value_type() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>SQLInsertIntent</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>centre sql contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>SQLInsertIntent node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>.rectangular_rows()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
+  <td>.rectangular_rows() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>.coherent_schema_and_intents()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_contract_column()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>supported select intent()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>ValueError</code></td>
+  <td>.coherent_schema_and_intents() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>SQLValidationFinding</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>SQLValidationFinding node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>_validate_supported_select_intent()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>coherent_schema_and_intents()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><code>_contract_column()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>ValueError</code></td>
+  <td>_validate_supported_select_intent() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>fitness_centre_sql_contract()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>SQLColumnContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>SQLInsertIntent</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>SQLJoinContract</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+3 more</td>
+  <td>No direct outbound edge</td>
+  <td>fitness_centre_sql_contract() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>render_sql_intent_prompt()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>ValueError</code></td>
+  <td>Builds structured prompts for model calls.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>_result()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>_result() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>_finding()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_validate_one()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>_finding() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>_validate_one()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_finding()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><code>_parse_insert()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_parse_select()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_TokenStream</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+2 more</td>
+  <td>_validate_one() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>_purported_statement()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>_has_sql_statement_shape()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>_purported_statement() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>_has_sql_statement_shape()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_purported_statement()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>No direct outbound edge</td>
+  <td>_has_sql_statement_shape() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>_Token</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>_Token node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>_SQLProblem</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_Count</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+12 more</td>
+  <td>_SQLProblem node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>ValueError</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>coherent_columns()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>coherent_schema_and_intents()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>matching_value_type()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+3 more</td>
+  <td><code>_contract_column()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>ValueError node in project.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>.__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_SQLProblem</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>.__init__() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>_TokenStream</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-async">Async</span></td>
+  <td><code>_validate_one()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>accept()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>identifier()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+5 more</td>
+  <td>_TokenStream node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>.__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>__init__()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_SQLProblem</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_Token</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>.__init__() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>.peek()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>_TokenStream</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td><code>_parse_select()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>_Table</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small><br><code>accept()</code><br><small style="color:var(--muted)">Core/subjects/sql_contracts.py</small></td>
+  <td>.peek() node in Core/subjects/sql_contracts.py.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>Core/subjects/sql_contracts.py</code></td><td>47 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: calls x67, references x36, contains x33, inherits x9. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 14. .localizedResource ====== -->
+<h2 id="localizedresource">14. .localizedResource</h2>
 <p>.localizedResource groups implementation around macos, keldin, features, onboarding, mostly in Features/Onboarding/WelcomeHelpViews.swift, Keldin/Domain/InterfaceText.swift, Keldin/Navigation/ContentView.swift. This section covers 39 nodes and 63 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -3990,7 +4328,7 @@ flowchart LR
   <td><code>HelpSheet</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
   <td><span class="tag tag-class">Class</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Keldin/Navigation/ContentView.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small></td>
+  <td><code>.body</code><br><small style="color:var(--muted)">Features/Onboarding/WelcomeHelpViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Keldin/Navigation/ContentView.swift</small></td>
   <td>HelpSheet node in Features/Onboarding/WelcomeHelpViews.swift.</td>
 </tr>
 <tr>
@@ -4149,8 +4487,8 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 14. QualityReviewView ====== -->
-<h2 id="qualityreviewview">14. QualityReviewView</h2>
+<!-- ====== 15. QualityReviewView ====== -->
+<h2 id="qualityreviewview">15. QualityReviewView</h2>
 <p>QualityReviewView groups implementation around generatorworkspaceviewswift, macos, keldin, features, mostly in Features/Generation/GeneratorWorkspaceView.swift. This section covers 32 nodes and 58 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
@@ -4492,70 +4830,69 @@ flowchart LR
 </div>
 <hr>
 
-<!-- ====== 15. independent_solver.py ====== -->
-<h2 id="independent-solver-py">15. independent_solver.py</h2>
-<p>independent_solver.py groups implementation around backend, independent, solverpy, credit, mostly in Backend/Core/independent_solver.py, Backend/Core/credit_policy.py. This section covers 31 nodes and 68 internal edges; the diagram shows only representative relationships to stay readable.</p>
+<!-- ====== 16. Other ====== -->
+<h2 id="other">16. Other</h2>
+<p>Other groups implementation around docs, 2026, quality, review, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md, superpowers/specs/2026-08-26-keldin-excellence-programme-design.md. This section covers 1527 nodes and 1458 internal edges; the diagram shows only representative relationships to stay readable.</p>
 
 <div class="mermaid">
 %%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
 flowchart LR
-    %% Section: independent_solver.py (31 nodes, 68 edges)
-    subgraph independent_solver_py_Backend_Core_independent_s_d0bdc00b["Backend/Core/independent_solver.py"]
+    %% Section: Other (1527 nodes, 1458 edges)
+    subgraph other_Backend_Core_assessment_objectives_py_a04dd05e["Backend/Core/assessment_objectives.py"]
+        backend_core_assessment_objectives_objectivepoli_0a06578f("ObjectivePolicy<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_f7ee7e42("fingerprint()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_09765bf0("guidance()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_369fbe2e("operations()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_fe91c1d1("response_mode()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_c6da37d7("task_operation()<br/><small>Backend/Core/assessment_objectives.py</small>")
+        backend_core_assessment_objectives_objectivepoli_742f1231("validate()<br/><small>Backend/Core/assessment_objectives.py</small>")
+    end
+    subgraph other_Backend_Core_independent_solver_py_c06198ac["Backend/Core/independent_solver.py"]
         backend_core_independent_solver_independentsolve_f534d564("solve()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_requirement_pres_21907df8("_requirement_present()<br/><small>Backend/Core/independent_solver.py</small>")
         backend_core_independent_solver_as_mapping_839fdcb8("_as_mapping()<br/><small>Backend/Core/independent_solver.py</small>")
         backend_core_independent_solver_closed_slot_equa_d5b740f2("_closed_slot_equal()<br/><small>Backend/Core/independent_solver.py</small>")
         backend_core_independent_solver_deterministic_su_85adf7b5("deterministic subject solution()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_generate_solver_20be6b81("_generate_solver_response()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_normalise_choice_0e90ba7c("_normalise_choice_answer()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_requires_numeric_180d0c17("_requires_numeric_contract()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_safe_calculate_890691fd("_safe_calculate()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_string_list_2af93960("_string_list()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_numbers_49f38157("_numbers()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_route_vertices_281bd226("_route_vertices()<br/><small>Backend/Core/independent_solver.py</small>")
-        backend_core_independent_solver_closed_normalise_76ee9c0c("_closed_normalise()<br/><small>Backend/Core/independent_solver.py</small>")
     end
-    subgraph independent_solver_py_Backend_Core_credit_policy_478fdb08["Backend/Core/credit_policy.py"]
+    subgraph other_Backend_Core_credit_policy_py_031cd362["Backend/Core/credit_policy.py"]
         backend_core_credit_policy_credit_rule_62ce1b3e("credit_rule()<br/><small>Backend/Core/credit_policy.py</small>")
         backend_core_credit_policy_collect_credit_rules_534a03a4("collect_credit_rules()<br/><small>Backend/Core/credit_policy.py</small>")
-        backend_core_credit_policy_ce8e4022("credit_policy.py")
-        backend_core_credit_policy_creditrule_e1c51493("CreditRule<br/><small>Backend/Core/credit_policy.py</small>")
         backend_core_credit_policy_declared_rule_metadat_b1fc85f1("rule metadata present()<br/><small>Backend/Core/credit_policy.py</small>")
     end
+    backend_core_subjects_computer_science_booleanpa_bf1a3b15("_BooleanParser<br/><small>Core/subjects/computer_science.py</small>")
+    text_372ea08c("Text")
+    macos_keldin_features_documents_jobhistoryview_j_22929145("JobHistoryView<br/><small>Features/Documents/JobHistoryView.swift</small>")
+    macos_keldin_application_appcommands_appcommands_e1ebace7("AppCommands<br/><small>Keldin/Application/AppCommands.swift</small>")
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_f7ee7e42
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_09765bf0
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_369fbe2e
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_fe91c1d1
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_c6da37d7
+    backend_core_assessment_objectives_objectivepoli_0a06578f -->|method| backend_core_assessment_objectives_objectivepoli_742f1231
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_collect_credit_rules_534a03a4
     backend_core_credit_policy_credit_rule_62ce1b3e -->|calls| backend_core_credit_policy_declared_rule_metadat_b1fc85f1
     backend_core_credit_policy_collect_credit_rules_534a03a4 -->|calls| backend_core_independent_solver_independentsolve_f534d564
     backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_as_mapping_839fdcb8
     backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_closed_slot_equa_d5b740f2
     backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_deterministic_su_85adf7b5
-    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_generate_solver_20be6b81
-    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_normalise_choice_0e90ba7c
-    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_requires_numeric_180d0c17
-    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_safe_calculate_890691fd
-    backend_core_independent_solver_independentsolve_f534d564 -->|calls| backend_core_independent_solver_string_list_2af93960
-    backend_core_independent_solver_generate_solver_20be6b81 -->|calls| backend_core_independent_solver_numbers_49f38157
-    backend_core_independent_solver_route_vertices_281bd226 -->|calls| backend_core_independent_solver_closed_slot_equa_d5b740f2
-    backend_core_independent_solver_closed_slot_equa_d5b740f2 -->|calls| backend_core_independent_solver_closed_normalise_76ee9c0c
-    backend_core_independent_solver_closed_normalise_76ee9c0c -->|calls| backend_core_independent_solver_normalise_choice_0e90ba7c
-    %% Omitted for readability: 13 nodes, 0 edges
+    %% Omitted for readability: 1509 nodes, 0 edges
+    class backend_core_assessment_objectives_objectivepoli_0a06578f klass;
+    class backend_core_assessment_objectives_objectivepoli_f7ee7e42 function;
+    class backend_core_assessment_objectives_objectivepoli_09765bf0 function;
+    class backend_core_assessment_objectives_objectivepoli_369fbe2e function;
+    class backend_core_assessment_objectives_objectivepoli_fe91c1d1 function;
+    class backend_core_assessment_objectives_objectivepoli_c6da37d7 function;
+    class backend_core_assessment_objectives_objectivepoli_742f1231 function;
     class backend_core_independent_solver_independentsolve_f534d564 function;
-    class backend_core_independent_solver_requirement_pres_21907df8 function;
     class backend_core_independent_solver_as_mapping_839fdcb8 function;
     class backend_core_independent_solver_closed_slot_equa_d5b740f2 function;
     class backend_core_independent_solver_deterministic_su_85adf7b5 function;
-    class backend_core_independent_solver_generate_solver_20be6b81 function;
-    class backend_core_independent_solver_normalise_choice_0e90ba7c function;
-    class backend_core_independent_solver_requires_numeric_180d0c17 function;
-    class backend_core_independent_solver_safe_calculate_890691fd function;
-    class backend_core_independent_solver_string_list_2af93960 function;
-    class backend_core_independent_solver_numbers_49f38157 function;
-    class backend_core_independent_solver_route_vertices_281bd226 api;
-    class backend_core_independent_solver_closed_normalise_76ee9c0c function;
     class backend_core_credit_policy_credit_rule_62ce1b3e function;
     class backend_core_credit_policy_collect_credit_rules_534a03a4 function;
-    class backend_core_credit_policy_ce8e4022 module;
-    class backend_core_credit_policy_creditrule_e1c51493 klass;
     class backend_core_credit_policy_declared_rule_metadat_b1fc85f1 function;
+    class backend_core_subjects_computer_science_booleanpa_bf1a3b15 function;
+    class text_372ea08c klass;
+    class macos_keldin_features_documents_jobhistoryview_j_22929145 klass;
+    class macos_keldin_application_appcommands_appcommands_e1ebace7 entry;
     classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
     classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
     classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
@@ -4582,7 +4919,7 @@ flowchart LR
   <td><code>credit_policy.py</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td>External entry / no inbound edge</td>
-  <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
+  <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small><br><code>open_credit.py</code><br><small style="color:var(--muted)">Backend/Core/open_credit.py</small></td>
   <td>Module file in Backend/Core/credit_policy.py.</td>
 </tr>
 <tr>
@@ -4630,7 +4967,7 @@ flowchart LR
   <td><code>independent_solver.py</code><br><small style="color:var(--muted)">Backend/Core/independent_solver.py</small></td>
   <td><span class="tag tag-class">Module</span></td>
   <td><code>collect_credit_rules()</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>credit_policy.py</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br><code>CreditRule</code><br><small style="color:var(--muted)">Backend/Core/credit_policy.py</small><br>+1 more</td>
-  <td><code>Decimal</code></td>
+  <td><code>Decimal</code><br><code>open credit review()</code><br><small style="color:var(--muted)">Backend/Core/open_credit.py</small><br><code>open_credit.py</code><br><small style="color:var(--muted)">Backend/Core/open_credit.py</small></td>
   <td>Module file in Backend/Core/independent_solver.py.</td>
 </tr>
 <tr>
@@ -4824,358 +5161,19 @@ flowchart LR
     <h4>Key Files</h4>
     <table style="width:100%;font-size:0.85rem;">
       <tr><th>File</th><th>Coverage</th></tr>
-      <tr><td><code>Backend/Core/independent_solver.py</code></td><td>22 nodes</td></tr>
-<tr><td><code>Backend/Core/credit_policy.py</code></td><td>5 nodes</td></tr>
-    </table>
-  </div>
-  <div class="card">
-    <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x24, calls x20, references x17, imports x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
-  </div>
-</div>
-<hr>
-
-<!-- ====== 16. Other ====== -->
-<h2 id="other">16. Other</h2>
-<p>Other groups implementation around docs, 2026, quality, review, mostly in docs/project-analysis/PROJECT_ANALYSIS.md, superpowers/plans/2026-08-26-keldin-excellence-programme.md, superpowers/specs/2026-08-26-keldin-excellence-programme-design.md. This section covers 1485 nodes and 1376 internal edges; the diagram shows only representative relationships to stay readable.</p>
-
-<div class="mermaid">
-%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
-flowchart LR
-    %% Section: Other (1485 nodes, 1376 edges)
-    subgraph other_Backend_Core_open_credit_py_6d620545["Backend/Core/open_credit.py"]
-        backend_core_open_credit_relation_is_qualified_4b66f569("_relation_is_qualified()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_cpu_credit_contract_16ed91db("cpu_credit_contract()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_cpu_credit_allocations_e5875766("cpu_credit_allocations()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_validate_open_credit_co_4c024891("open credit contract()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_printed_credit_points_f0cd82bb("printed_credit_points()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_validate_judgement_bd2e08b9("_validate_judgement()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_semantic_response_envel_cb218c06("semantic response envelope()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_credit_item_projection_9a1055c3("credit_item_projection()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_credit_identity_ed31e94a("credit_identity()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_validate_open_credit_re_e430fc3f("open credit review()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_normalise_cpu_clauses_f9412fe0("_normalise_cpu_clauses()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_cpu_quote_supports_crit_6141c613("quote supports criterion()<br/><small>Backend/Core/open_credit.py</small>")
-        backend_core_open_credit_serial_clause_evidence_8172a6d2("_serial_clause_evidence()<br/><small>Backend/Core/open_credit.py</small>")
-    end
-    backend_core_subjects_computer_science_booleanpa_bf1a3b15("_BooleanParser<br/><small>Core/subjects/computer_science.py</small>")
-    text_372ea08c("Text")
-    macos_keldin_features_documents_jobhistoryview_j_22929145("JobHistoryView<br/><small>Features/Documents/JobHistoryView.swift</small>")
-    macos_keldin_features_onboarding_keldincreationt_61cd7910("KeldinCreationTips<br/><small>Features/Onboarding/KeldinCreationTips.swift</small>")
-    macos_keldin_application_appcommands_appcommands_e1ebace7("AppCommands<br/><small>Keldin/Application/AppCommands.swift</small>")
-    backend_core_open_credit_cpu_credit_contract_16ed91db -->|calls| backend_core_open_credit_cpu_credit_allocations_e5875766
-    backend_core_open_credit_cpu_credit_contract_16ed91db -->|calls| backend_core_open_credit_validate_open_credit_co_4c024891
-    backend_core_open_credit_cpu_credit_allocations_e5875766 -->|calls| backend_core_open_credit_validate_open_credit_co_4c024891
-    backend_core_open_credit_printed_credit_points_f0cd82bb -->|calls| backend_core_open_credit_validate_judgement_bd2e08b9
-    backend_core_open_credit_validate_open_credit_co_4c024891 -->|calls| backend_core_open_credit_semantic_response_envel_cb218c06
-    backend_core_open_credit_validate_open_credit_co_4c024891 -->|calls| backend_core_open_credit_validate_judgement_bd2e08b9
-    backend_core_open_credit_credit_item_projection_9a1055c3 -->|calls| backend_core_open_credit_credit_identity_ed31e94a
-    backend_core_open_credit_credit_identity_ed31e94a -->|calls| backend_core_open_credit_validate_open_credit_re_e430fc3f
-    backend_core_open_credit_normalise_cpu_clauses_f9412fe0 -->|calls| backend_core_open_credit_cpu_quote_supports_crit_6141c613
-    backend_core_open_credit_relation_is_qualified_4b66f569 -->|calls| backend_core_open_credit_serial_clause_evidence_8172a6d2
-    backend_core_open_credit_serial_clause_evidence_8172a6d2 -->|calls| backend_core_open_credit_cpu_quote_supports_crit_6141c613
-    backend_core_open_credit_cpu_quote_supports_crit_6141c613 -->|calls| backend_core_open_credit_validate_judgement_bd2e08b9
-    backend_core_open_credit_validate_judgement_bd2e08b9 -->|calls| backend_core_open_credit_validate_open_credit_re_e430fc3f
-    %% Omitted for readability: 1467 nodes, 0 edges
-    class backend_core_open_credit_relation_is_qualified_4b66f569 function;
-    class backend_core_open_credit_cpu_credit_contract_16ed91db function;
-    class backend_core_open_credit_cpu_credit_allocations_e5875766 function;
-    class backend_core_open_credit_validate_open_credit_co_4c024891 function;
-    class backend_core_open_credit_printed_credit_points_f0cd82bb function;
-    class backend_core_open_credit_validate_judgement_bd2e08b9 function;
-    class backend_core_open_credit_semantic_response_envel_cb218c06 function;
-    class backend_core_open_credit_credit_item_projection_9a1055c3 function;
-    class backend_core_open_credit_credit_identity_ed31e94a function;
-    class backend_core_open_credit_validate_open_credit_re_e430fc3f function;
-    class backend_core_open_credit_normalise_cpu_clauses_f9412fe0 function;
-    class backend_core_open_credit_cpu_quote_supports_crit_6141c613 function;
-    class backend_core_open_credit_serial_clause_evidence_8172a6d2 function;
-    class backend_core_subjects_computer_science_booleanpa_bf1a3b15 function;
-    class text_372ea08c klass;
-    class macos_keldin_features_documents_jobhistoryview_j_22929145 klass;
-    class macos_keldin_features_onboarding_keldincreationt_61cd7910 klass;
-    class macos_keldin_application_appcommands_appcommands_e1ebace7 entry;
-    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
-    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
-    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
-    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
-    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
-    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
-    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
-    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
-    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
-</div>
-
-<h3>Call Details</h3>
-<table class="call-table">
-<tr>
-  <th style="width:5%">#</th>
-  <th style="width:28%">Node</th>
-  <th style="width:10%">Type</th>
-  <th style="width:17%">Caller</th>
-  <th style="width:20%">Callees</th>
-  <th style="width:20%">Description</th>
-</tr>
-<tr>
-  <td>1</td>
-  <td><code>2026-08-26-keldin-excellence-programme.md</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 2026-08-26-keldin-excellence-programme.md.</td>
-</tr>
-<tr>
-  <td>2</td>
-  <td><code>Keldin Excellence Programme Implementation Plan</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Keldin Excellence Programme Implementation Plan.</td>
-</tr>
-<tr>
-  <td>3</td>
-  <td><code>Global Constraints</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Global Constraints.</td>
-</tr>
-<tr>
-  <td>4</td>
-  <td><code>Programme Dependencies and Execution Order</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Programme Dependencies and Execution Order.</td>
-</tr>
-<tr>
-  <td>5</td>
-  <td><code>Approved-Improvement Traceability</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Approved-Improvement Traceability.</td>
-</tr>
-<tr>
-  <td>6</td>
-  <td><code>Task 0: Freeze the Baseline and Create the Evidence Ledger</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 0: Freeze the Baseline and Create the Evidence Ledger.</td>
-</tr>
-<tr>
-  <td>7</td>
-  <td><code>Task 1: Replace Boolean Readiness with Three Truthful Levels</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 1: Replace Boolean Readiness with Three Truthful Levels.</td>
-</tr>
-<tr>
-  <td>8</td>
-  <td><code>Task 2: Upgrade Fidelity Auditing to Print-Resolution, Role-Matched Evidence</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 2: Upgrade Fidelity Auditing to Print-Resolution, Role-Matched Evidence.</td>
-</tr>
-<tr>
-  <td>9</td>
-  <td><code>Task 3: Complete Question and Mark-Scheme Validity</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 3: Complete Question and Mark-Scheme Validity.</td>
-</tr>
-<tr>
-  <td>10</td>
-  <td><code>Task 4: Introduce the Shared Board Rendering DSL</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 4: Introduce the Shared Board Rendering DSL.</td>
-</tr>
-<tr>
-  <td>11</td>
-  <td><code>Task 5: Split AppViewModel into Focused Coordinators</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 5: Split AppViewModel into Focused Coordinators.</td>
-</tr>
-<tr>
-  <td>12</td>
-  <td><code>Task 6: Deliver the Native macOS Workflow and Accessibility Pass</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 6: Deliver the Native macOS Workflow and Accessibility Pass.</td>
-</tr>
-<tr>
-  <td>13</td>
-  <td><code>Task 7: Close Every Current 18-Paper Quality Gap</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 7: Close Every Current 18-Paper Quality Gap.</td>
-</tr>
-<tr>
-  <td>14</td>
-  <td><code>31 August qualification corrections</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing 31 August qualification corrections.</td>
-</tr>
-<tr>
-  <td>15</td>
-  <td><code>Task 8: Make Subject and Board Onboarding Declarative</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 8: Make Subject and Board Onboarding Declarative.</td>
-</tr>
-<tr>
-  <td>16</td>
-  <td><code>Task 9: Add Cambridge Economics and Computer Science</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 9: Add Cambridge Economics and Computer Science.</td>
-</tr>
-<tr>
-  <td>17</td>
-  <td><code>Task 10: Add AQA Mathematics</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 10: Add AQA Mathematics.</td>
-</tr>
-<tr>
-  <td>18</td>
-  <td><code>Task 11: Add AQA Biology, Chemistry, and Physics</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 11: Add AQA Biology, Chemistry, and Physics.</td>
-</tr>
-<tr>
-  <td>19</td>
-  <td><code>Task 12: Add Pearson Edexcel and OCR Mathematics and Sciences</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 12: Add Pearson Edexcel and OCR Mathematics and Sciences.</td>
-</tr>
-<tr>
-  <td>20</td>
-  <td><code>Task 13: Add Further Mathematics and Essay-Heavy Subjects</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 13: Add Further Mathematics and Essay-Heavy Subjects.</td>
-</tr>
-<tr>
-  <td>21</td>
-  <td><code>Task 14: Run the External Assessment Calibration Programme</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 14: Run the External Assessment Calibration Programme.</td>
-</tr>
-<tr>
-  <td>22</td>
-  <td><code>Task 15: Repository Cleanup, Failure Testing, and Final Release Qualification</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Task 15: Repository Cleanup, Failure Testing, and Final Release Qualification.</td>
-</tr>
-<tr>
-  <td>23</td>
-  <td><code>Phase Completion Gates</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Phase Completion Gates.</td>
-</tr>
-<tr>
-  <td>24</td>
-  <td><code>Foundation Gate</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Foundation Gate.</td>
-</tr>
-<tr>
-  <td>25</td>
-  <td><code>Current-Paper Gate</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Current-Paper Gate.</td>
-</tr>
-<tr>
-  <td>26</td>
-  <td><code>Expansion Gate</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Expansion Gate.</td>
-</tr>
-<tr>
-  <td>27</td>
-  <td><code>Release Gate</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Release Gate.</td>
-</tr>
-<tr>
-  <td>28</td>
-  <td><code>Plan Verification Checklist</code><br><small style="color:var(--muted)">superpowers/plans/2026-08-26-keldin-excellence-programme.md</small></td>
-  <td><span class="tag tag-func">Concept</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>Documentation node describing Plan Verification Checklist.</td>
-</tr>
-<tr>
-  <td>29</td>
-  <td><code>SharedViews.swift</code><br><small style="color:var(--muted)">Keldin/Components/SharedViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td>No direct outbound edge</td>
-  <td>SharedViews.swift node in Keldin/Components/SharedViews.swift.</td>
-</tr>
-<tr>
-  <td>30</td>
-  <td><code>GeneratedFilesTable</code><br><small style="color:var(--muted)">Keldin/Components/SharedViews.swift</small></td>
-  <td><span class="tag tag-class">Class</span></td>
-  <td>External entry / no inbound edge</td>
-  <td><code>.body</code><br><small style="color:var(--muted)">Keldin/Components/SharedViews.swift</small><br><code>.body</code><br><small style="color:var(--muted)">Features/Generation/GeneratorWorkspaceView.swift</small></td>
-  <td>GeneratedFilesTable node in Keldin/Components/SharedViews.swift.</td>
-</tr>
-</table>
-
-<div class="grid">
-  <div class="card">
-    <h4>Key Files</h4>
-    <table style="width:100%;font-size:0.85rem;">
-      <tr><th>File</th><th>Coverage</th></tr>
       <tr><td><code>docs/project-analysis/PROJECT_ANALYSIS.md</code></td><td>29 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-26-keldin-excellence-programme.md</code></td><td>28 nodes</td></tr>
 <tr><td><code>superpowers/specs/2026-08-26-keldin-excellence-programme-design.md</code></td><td>24 nodes</td></tr>
 <tr><td><code>Backend/Core/open_credit.py</code></td><td>23 nodes</td></tr>
+<tr><td><code>Backend/Core/independent_solver.py</code></td><td>22 nodes</td></tr>
 <tr><td><code>docs/quality/keldin-user-acceptance-2026-10-27.md</code></td><td>19 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-08-30-difficulty-calibration-v2.md</code></td><td>15 nodes</td></tr>
 <tr><td><code>superpowers/plans/2026-10-28-implementation-quality-audit.md</code></td><td>15 nodes</td></tr>
-<tr><td><code>docs/ASSESSMENT_QUALITY.md</code></td><td>14 nodes</td></tr>
     </table>
   </div>
   <div class="card">
     <h4>Design Notes</h4>
-    <p>This section comes from graphify community clustering. Relationship summary: contains x1140, references x79, calls x70, method x46. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x1160, references x102, calls x93, method x50. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
   </div>
 </div>
 <hr>
@@ -5205,7 +5203,7 @@ flowchart LR
 
 <div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
   <p>Past Paper Creation — Architecture Documentation</p>
-  <p>Generated: 2026-11-06 09:47 UTC · graphify callflow-html</p>
+  <p>Generated: 2026-11-06 09:51 UTC · graphify callflow-html</p>
 </div>
 
 </div><!-- .container -->

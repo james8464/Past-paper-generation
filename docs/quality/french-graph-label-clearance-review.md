@@ -18,6 +18,11 @@ original geometry. V3 retains its inline prose and fenced-code treatment through
 an explicit policy set; the renderer and PDF validator choose the same geometry
 option. Current packages cannot claim the previous print policy.
 
+The native request's expected policy also moves to v4. Its complete 126-line
+file was reviewed, and its negative publication fixture now rejects v3. The
+existing cross-language parity test reproduced the temporary mismatch before
+this update and passed afterward; it was caught before release, not shipped.
+
 ## Evidence
 
 - The graph author read the original 201-line module and final 311-line module
