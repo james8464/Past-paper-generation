@@ -110,6 +110,39 @@ def aqa_cs_difficulty_candidate(
     )
 
 
+# Recognise the complete source language supported by the scoped list solver.
+def _functional_list_contract(
+    question: dict[str, Any], part: dict[str, Any], stimulus: dict[str, Any]
+) -> dict[str, Any] | None:
+    if question.get("style_id") != "functional_programming" or set(
+        part.get("response_slots", [])
+    ) != {"filtered-values", "mapped-values", "total-values", "total-mapped"}:
+        return None
+    code = stimulus.get("code")
+    if not isinstance(code, str):
+        raise ValueError("functional list task has no candidate-visible code")
+    # Only blank lines and line endings are presentation-neutral here. Never
+    # strip indentation, comments or extra expressions into a supported program.
+    lines = code.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    program = "\n".join(line for line in lines if line.strip())
+    match = re.fullmatch(
+        r"values = \[ *([0-9]+(?: *, *[0-9]+)*) *\]\n"
+        r"double n = (-?[0-9]+) \* n\n"
+        r"filtered xs = filter \(>(-?[0-9]+)\) xs\n"
+        r"mapped xs = map double xs\n"
+        r"total xs = fold \(\+\) 0 xs",
+        program,
+    )
+    if match is None:
+        raise ValueError("functional list task uses unsupported source code")
+    return {
+        "kind": "functional-list-operations",
+        "values": [int(value) for value in match.group(1).split(",")],
+        "filter_greater_than": int(match.group(3)),
+        "map_multiplier": int(match.group(2)),
+    }
+
+
 # One adapter/reuse projection; caller supplies candidate-visible figure data.
 #
 # The scoped CPU contract has no figure. Its saved review is rebuilt from the
@@ -124,36 +157,9 @@ def aqa_cs_solver_item(
         if part["prompt"].split(maxsplit=1)[0].casefold() in {"calculate", "determine"}
         else "constructed_response",
     }
-    if question.get("style_id") == "functional_programming" and set(
-        part.get("response_slots", [])
-    ) == {
-        "filtered-values",
-        "mapped-values",
-        "total-values",
-        "total-mapped",
-    }:
-        code = stimulus.get("code")
-        if not isinstance(code, str):
-            raise ValueError("functional list task has no candidate-visible code")
-        values_match = re.search(r"^values = \[([\d, ]+)\]$", code, re.MULTILINE)
-        multiplier_match = re.search(r"^double n = (-?\d+) \* n$", code, re.MULTILINE)
-        threshold_match = re.search(
-            r"^filtered xs = filter \(>(-?\d+)\) xs$", code, re.MULTILINE
-        )
-        if (
-            values_match is None
-            or multiplier_match is None
-            or threshold_match is None
-            or "mapped xs = map double xs" not in code
-            or "total xs = fold (+) 0 xs" not in code
-        ):
-            raise ValueError("functional list task uses unsupported source code")
-        authoring_context["cs_input_contract"] = {
-            "kind": "functional-list-operations",
-            "values": [int(value) for value in values_match.group(1).split(",")],
-            "filter_greater_than": int(threshold_match.group(1)),
-            "map_multiplier": int(multiplier_match.group(1)),
-        }
+    functional = _functional_list_contract(question, part, stimulus)
+    if functional is not None:
+        authoring_context["cs_input_contract"] = functional
     intent_id = str(part.get("sql_intent_id", ""))
     if intent_id:
         raw_contract = stimulus.get("sql_contract")
@@ -221,6 +227,11 @@ def validate_question_review(
     *,
     required: bool = False,
 ) -> None:
+    # Source admission is current policy, not inherited from a saved approval.
+    # Canonical historical programs keep their hashes; unsupported programs must
+    # not reuse an old review whose extracted contract omitted visible code.
+    for part in question["parts"]:
+        _functional_list_contract(question, part, question.get("stimulus") or {})
     provenance = question.get("provenance", "built-in")
     if provenance == "built-in" and not required:
         if any(question.get(field) for field in REVIEW_FIELDS - {"provenance"}):
