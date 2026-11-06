@@ -460,8 +460,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/physics.py": {
-    "mtime": 1793543731.5966039,
-    "ast_hash": "9b9e12a0800716659e8a37ad46084bad",
+    "mtime": 1793991391.183568,
+    "ast_hash": "c440a184458881d2344d8e809f6a1b64",
     "semantic_hash": ""
   },
   "Backend/Core/subjects/selected_response.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793990813.8917437,
-    "ast_hash": "3b50fd9bfdfe5e55a9ae887fef27d359",
+    "mtime": 1793991142.8736978,
+    "ast_hash": "bec7e7b009638dcddb1b28d117e8d111",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1793991030.0312872,
-    "ast_hash": "81935228749720d19710f494500abd42",
+    "mtime": 1793991569.294949,
+    "ast_hash": "845d163afdc8cc96fbd8e37f23fd12ea",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -5992,6 +5992,16 @@
   "docs/quality/originality-report-isolation-review.md": {
     "mtime": 1793991039.7385306,
     "ast_hash": "7a8671e6b807b2a5d5750a87540b1eeb",
+    "semantic_hash": ""
+  },
+  "tests/test_physics_decimal_distance.py": {
+    "mtime": 1793991391.1835172,
+    "ast_hash": "d0368f792cf43c166d1ebfc5e5f13340",
+    "semantic_hash": ""
+  },
+  "docs/quality/physics-decimal-distance-review.md": {
+    "mtime": 1793991569.0222237,
+    "ast_hash": "6fa10d634417e67b6fe76859a9c1fe55",
     "semantic_hash": ""
   }
 }

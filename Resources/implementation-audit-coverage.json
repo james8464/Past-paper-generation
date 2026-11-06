@@ -1786,8 +1786,11 @@
     {
       "path": "Backend/Core/subjects/physics.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 143-line EOF and exact sparse-digit distance proof reviewed by root and independent reviewer. Root confirmed underflow/overflow boundary defects, focused tests and 5000 separate Fraction comparisons. No historical rewrite or advertised live Physics failure claim; imported subject dependencies and release acceptance remain separate.",
+      "source_sha256": "44d691dc9e817f82b817b83817b25c0eaf71bce50786315b80275b2aa95281bc",
+      "review_evidence": "docs/quality/physics-decimal-distance-review.md",
+      "review_evidence_sha256": "1956c61dc20b561d57704a52c337079e6cf855aacb21d53607d8e7402c89e5f1"
     },
     {
       "path": "Backend/Core/subjects/selected_response.py",
@@ -4290,6 +4293,12 @@
     },
     {
       "path": "docs/quality/pdf-visible-page-review-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/physics-decimal-distance-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7904,6 +7913,15 @@
       "review_evidence_sha256": "328fa48c5bc800695ba936748766ae885d29062b1f825bd7216c4794cd29823c"
     },
     {
+      "path": "tests/test_physics_decimal_distance.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 109-line EOF review of exact distance, extreme exponents, context/trap/flag isolation, unit/significant-figure preservation and 250 moderate Fraction-oracle comparisons. Separate 5000-comparison root probe is not counted as pytest tests; no model or live paper qualification.",
+      "source_sha256": "354d9c2e60bd465f703da59dcf1e1fed898615a3124ce03e0a1ca0423448bb92",
+      "review_evidence": "docs/quality/physics-decimal-distance-review.md",
+      "review_evidence_sha256": "1956c61dc20b561d57704a52c337079e6cf855aacb21d53607d8e7402c89e5f1"
+    },
+    {
       "path": "tests/test_preview_raster_order.py",
       "classification": "test",
       "status": "reviewed",
@@ -8035,8 +8053,11 @@
     {
       "path": "tests/test_science_subjects.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged 133-line test EOF review by root, included in focused validation. This does not attest complete Biology, Chemistry or other implementation dependencies or advertised paper quality.",
+      "source_sha256": "558a6858b93ab7895a78f5129147e73106e213680cabc53d9114b1711cbea68a",
+      "review_evidence": "docs/quality/physics-decimal-distance-review.md",
+      "review_evidence_sha256": "1956c61dc20b561d57704a52c337079e6cf855aacb21d53607d8e7402c89e5f1"
     },
     {
       "path": "tests/test_scoped_references.py",
