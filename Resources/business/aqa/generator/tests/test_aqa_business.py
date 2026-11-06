@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import random
 import re
 from copy import deepcopy
+from itertools import pairwise
 from pathlib import Path
 
 import pymupdf as fitz
@@ -9,8 +11,13 @@ import pytest
 from aqabizgen.cli import generate_package
 from aqabizgen.configs import RULES
 from aqabizgen.financials import FinancialPosition, format_number
-from aqabizgen.generator import build_paper, validate_paper
-from aqabizgen.render_pdf import _cover_profile
+from aqabizgen.generator import _written_question, build_paper, validate_paper
+from aqabizgen.render_pdf import (
+    _chart,
+    _cover_profile,
+    _paper_two_grouped_bar_chart,
+    render_mark_scheme,
+)
 from aqabizgen.syllabus import load_syllabus
 from pypdf import PdfReader
 
@@ -20,7 +27,7 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
     validate_rule,
 )
-from Backend.Core.independent_solver import IndependentSolver
+from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
 from Backend.Core.subjects.selected_response import solve_selected_response
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -356,6 +363,186 @@ def test_paper_two_calculations_name_the_displayed_sales_series() -> None:
     assert all("2021 to 2025" in question.prompt for question in calculations)
 
 
+def test_paper_two_seed_twenty_percentage_change_reconciles() -> None:
+    paper = build_paper(RULES["paper_2"], SYLLABUS, 20)
+    option = paper.sections[0].options[0]
+    question = option.questions[0]
+    assert option.chart_values == [80.0, 81.6, 87.3, 96.0, 101.8]
+    solution = IndependentSolver().solve(question, [])
+
+    assert solution.answer_slots == {"percentage_change": "27.3%"}
+    result = reconcile_solution(solution, question)
+    assert result.passed, result.issues
+
+
+def test_business_typed_calculations_keep_only_item_specific_numeric_guidance() -> None:
+    for paper_id in ("paper_1", "paper_2"):
+        paper = build_paper(RULES[paper_id], SYLLABUS, 20)
+        for section in paper.sections:
+            for option in section.options:
+                for question in option.questions:
+                    scheme = " ".join(question.mark_scheme)
+                    if question.kind != "calculation":
+                        if question.kind != "multiple_choice":
+                            assert "AO1:" in scheme
+                        continue
+                    assert (
+                        question.authoring_context.get("item_specific_mark_scheme")
+                        is True
+                    )
+                    assert "AO1:" not in scheme
+                    assert "workforce" not in scheme.casefold()
+                    assert "motivation" not in scheme.casefold()
+                    assert "Marker check: reward a valid alternative route" in scheme
+                    assert reconcile_solution(
+                        IndependentSolver().solve(question, []), question
+                    ).passed
+                    if question.rule_id == "calculate":
+                        assert "Method:" in scheme
+                        assert "Award method credit" in scheme
+                        if question.number == "01.1":
+                            assert "Answer: 27.3%." in scheme
+                    else:
+                        assert "Substitution" in scheme
+                        assert "Do not award the same developed point twice" in scheme
+
+
+@pytest.mark.parametrize(
+    ("start", "end", "expected"),
+    [
+        (80, 81, "1.3%"),
+        (80, 85.8, "7.3%"),
+        (80, 74.2, "−7.3%"),
+        (80, 85.7, "7.1%"),
+        (80, 85.9, "7.4%"),
+        (80, 88, "10.0%"),
+        (80, 80, "0.0%"),
+        (10000, 9999, "0.0%"),
+    ],
+)
+def test_business_growth_display_uses_the_same_rounding_as_numeric_contract(
+    start: float, end: float, expected: str
+) -> None:
+    values = [start, start, start, start, end]
+    calculation = _written_question(
+        RULES["paper_2"].sections[0].questions[0],
+        "01.1",
+        SYLLABUS.topics[0],
+        "Audit Cycles",
+        1234,
+        values,
+        random.Random(0),
+    )
+    essay = _written_question(
+        RULES["paper_1"].sections[2].questions[0],
+        "21",
+        SYLLABUS.topics[0],
+        "Audit Cycles",
+        1234,
+        values,
+        random.Random(0),
+    )
+    solution = IndependentSolver().solve(calculation, [])
+
+    assert solution.answer_slots == {"percentage_change": expected}
+    assert reconcile_solution(solution, calculation).passed
+    assert essay.authoring_context["task_context"]["revenue_growth"] == expected
+    assert expected in essay.prompt
+    assert any(expected in point for point in essay.mark_scheme)
+
+
+def test_paper_two_bar_chart_prints_exact_sales_operands() -> None:
+    option = build_paper(RULES["paper_2"], SYLLABUS, 20).sections[0].options[0]
+    drawing = _paper_two_grouped_bar_chart(option)
+    texts = [shape.text for shape in drawing.contents if hasattr(shape, "text")]
+
+    for value in option.chart_values:
+        assert f"{value:.1f}" in texts
+
+
+def test_paper_two_later_chart_names_the_question_sales_series() -> None:
+    option = build_paper(RULES["paper_2"], SYLLABUS, 20).sections[1].options[0]
+    drawing = _chart(option)
+    texts = [shape.text for shape in drawing.contents if hasattr(shape, "text")]
+
+    assert f"Business sales index for {option.title}" in texts
+
+
+@pytest.mark.parametrize(
+    "values",
+    [
+        [80, 90, 100, 110, 120],
+        [120, 110, 100, 90, 80],
+        [120, 100, 80, 100, 120],
+        [100, 100, 100, 100, 100],
+        None,
+    ],
+    ids=["ascending", "descending", "valley", "flat", "builtin-seed20"],
+)
+@pytest.mark.parametrize("offset", [0, 6], ids=["plain", "source-booklet"])
+def test_business_line_chart_value_labels_clear_curve_axis_and_title(
+    values: list[float] | None,
+    offset: int,
+) -> None:
+    from reportlab.graphics.shapes import PolyLine, String
+    from reportlab.pdfbase.pdfmetrics import getAscentDescent, stringWidth
+
+    option = build_paper(RULES["paper_2"], SYLLABUS, 20).sections[1].options[0]
+    if values is not None:
+        option.chart_values = values
+    drawing = _chart(option, offset=offset)
+    curve = next(shape for shape in drawing.contents if isinstance(shape, PolyLine))
+    points = list(zip(curve.points[::2], curve.points[1::2], strict=True))
+    title = next(
+        shape
+        for shape in drawing.contents
+        if isinstance(shape, String) and shape.text == option.chart_title
+    )
+    title_bottom = title.y + getAscentDescent(title.fontName, title.fontSize)[1]
+    displayed_values = (
+        [round(value * (1 + (offset - 1) * 0.03), 1) for value in option.chart_values]
+        if offset
+        else option.chart_values
+    )
+    value_texts = {f"{value:.1f}" for value in displayed_values}
+    labels = [
+        shape
+        for shape in drawing.contents
+        if isinstance(shape, String) and shape.text in value_texts
+    ]
+    assert len(labels) == len(points)
+    for index, label in enumerate(labels):
+        width = stringWidth(label.text, label.fontName, label.fontSize)
+        anchor = label.textAnchor
+        left = label.x - (
+            width if anchor == "end" else width / 2 if anchor == "middle" else 0
+        )
+        right = left + width
+        ascent, descent = getAscentDescent(label.fontName, label.fontSize)
+        bottom, top = label.y + descent, label.y + ascent
+        assert 0 <= left < right <= drawing.width
+        assert top < title_bottom
+        if index == 0:
+            assert anchor == "start"
+            assert left > points[0][0]
+        elif index == len(labels) - 1:
+            assert anchor == "end"
+            assert right < points[-1][0]
+        else:
+            assert anchor == "middle"
+            assert label.x == points[index][0]
+        # Check intersections against the actual vector geometry, not a label
+        # placement helper: each straight segment reaches its extrema at the
+        # clipped horizontal endpoints of the label rectangle.
+        for (x1, y1), (x2, y2) in pairwise(points):
+            lo, hi = max(left, x1), min(right, x2)
+            if lo <= hi:
+                curve_heights = [
+                    y1 + (x - x1) / (x2 - x1) * (y2 - y1) for x in (lo, hi)
+                ]
+                assert bottom >= max(curve_heights) + label.fontSize / 2 - 1e-9
+
+
 def test_multi_seed_validity_and_uniqueness() -> None:
     for rule in RULES.values():
         first = build_paper(rule, SYLLABUS, 123)
@@ -630,8 +817,42 @@ def test_generated_validation_rejects_normalized_duplicate_mcq_choices() -> None
         validate_generated_paper(paper, RULES["paper_1"], SYLLABUS.topic_ids)
 
 
+@pytest.mark.parametrize("seed", [20, 123, 83])
+def test_paper_two_mark_scheme_breaks_do_not_create_empty_body_pages(
+    tmp_path: Path,
+    seed: int,
+) -> None:
+    from reportlab.lib.units import mm
+
+    paper = build_paper(RULES["paper_2"], SYLLABUS, seed)
+    path = tmp_path / "paper-two-scheme.pdf"
+    render_mark_scheme(paper, path)
+    with fitz.open(path) as document:
+        for index, page in enumerate(document):
+            if index == 0:  # The cover is not a marking-content page.
+                continue
+            body = page.get_text(
+                clip=fitz.Rect(0, 25 * mm, page.rect.width, page.rect.height - 18 * mm)
+            )
+            assert body.strip(), f"Header/footer-only physical page {index + 1}"
+        text = "\n".join(page.get_text() for page in document)
+        positions = []
+        for section in paper.sections:
+            for option in section.options:
+                for question in option.questions:
+                    # Every actual marking table still contains its public task
+                    # and all authored credit, in section/question order.
+                    normalised = re.sub(r"\s+", " ", text)
+                    task = re.sub(r"\s+", " ", f"{question.number} {question.prompt}")
+                    positions.append(normalised.index(task))
+                    for point in question.mark_scheme:
+                        assert re.sub(r"\s+", " ", point) in normalised
+        assert positions == sorted(positions)
+
+
 def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
-    expected_scheme_pages = {"1": 23, "2": 20, "3": 14}
+    # Paper 2 no longer spends a physical page on a trailing section spacer.
+    expected_scheme_pages = {"1": 23, "2": 19, "3": 14}
     for paper, expected_pages in (("1", 32), ("2", 24), ("3", 28)):
         paths = generate_package(
             paper=paper,
@@ -647,6 +868,16 @@ def test_packages_render_current_page_geometry(tmp_path: Path) -> None:
         expected_roles.add("assessment_package")
         assert paths.keys() == expected_roles
         assert len(PdfReader(paths["question_paper"]).pages) == expected_pages
+        if paper == "2":
+            first_case = (
+                build_paper(RULES["paper_2"], SYLLABUS, 123).sections[0].options[0]
+            )
+            chart_page = (
+                PdfReader(paths["question_paper"]).pages[2].extract_text() or ""
+            )
+            assert "01.1" in chart_page
+            for value in first_case.chart_values:
+                assert f"{value:.1f}" in chart_page
         scheme_pages = PdfReader(paths["mark_scheme"]).pages
         assert len(scheme_pages) == expected_scheme_pages[paper]
         scheme_text = [page.extract_text() or "" for page in scheme_pages]
