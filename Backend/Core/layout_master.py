@@ -7,6 +7,7 @@ import math
 import os
 from collections.abc import Iterable
 from dataclasses import dataclass
+from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
@@ -86,8 +87,13 @@ class TextSlot:
     minimum_font_size: float | None = None
 
     def __post_init__(self) -> None:
-        if self.font_size <= 0 or self.leading <= 0:
-            raise ValueError("font size and leading must be positive")
+        sizes = (self.font_size, self.leading)
+        if self.minimum_font_size is not None:
+            sizes += (self.minimum_font_size,)
+        if any(not math.isfinite(size) or size <= 0 for size in sizes):
+            raise ValueError(
+                "font size, leading and minimum must be finite and positive"
+            )
         if self.align not in {"left", "centre", "right"}:
             raise ValueError(f"unsupported alignment: {self.align}")
 
@@ -169,6 +175,8 @@ def wrap_text(text: str, font_name: str, font_size: float, width: float) -> list
             lines.append("")
             continue
         current = words.pop(0)
+        if pdfmetrics.stringWidth(current, font_name, font_size) > width:
+            raise LayoutConformanceError(f"word does not fit fixed slot: {current!r}")
         for word in words:
             candidate = f"{current} {word}"
             if pdfmetrics.stringWidth(candidate, font_name, font_size) <= width:
@@ -191,17 +199,57 @@ def draw_text_slot(pdf: Any, page_height: float, slot: TextSlot, text: str) -> f
 
     minimum = slot.minimum_font_size or slot.font_size
     size = slot.font_size
-    while size + 1e-6 >= minimum:
-        leading = slot.leading * (size / slot.font_size)
-        lines = wrap_text(text, slot.font_name, size, slot.rect.width)
-        if len(lines) * leading <= slot.rect.height + 1e-6:
-            break
-        size = round(size - 0.25, 2)
-    else:
+
+    def fitting_lines(candidate: float) -> list[str] | None:
+        try:
+            candidate_lines = wrap_text(
+                text, slot.font_name, candidate, slot.rect.width
+            )
+        except LayoutConformanceError:
+            return None
+        leading = slot.leading * (candidate / slot.font_size)
+        return (
+            candidate_lines
+            if len(candidate_lines) * leading <= slot.rect.height + 1e-6
+            else None
+        )
+
+    lines = fitting_lines(size) if size >= minimum else None
+    if lines is None and size > minimum:
+        first_step = round(size - 0.25, 2)
+        if first_step >= size:
+            raise LayoutConformanceError("font reduction cannot make progress")
+        # Width and wrapped height only decrease as the font shrinks. Search the
+        # same quarter-point grid lazily, with the exact minimum as its endpoint.
+        first_exact = Fraction(first_step)
+        last = max(0, math.ceil((first_exact - Fraction(minimum)) * 4))
+
+        def candidate_at(index: int) -> float:
+            return (
+                minimum
+                if index == last
+                else round(float(first_exact - Fraction(index, 4)), 2)
+            )
+
+        lines = fitting_lines(minimum)
+        if lines is not None:
+            low, high = 0, last
+            size = minimum
+            while low < high:
+                middle = (low + high) // 2
+                candidate = candidate_at(middle)
+                candidate_lines = fitting_lines(candidate)
+                if candidate_lines is None:
+                    low = middle + 1
+                else:
+                    high = middle
+                    size, lines = candidate, candidate_lines
+    if lines is None:
         raise LayoutConformanceError(
             f"text overflows fixed slot {slot.rect}; minimum font size is {minimum}"
         )
 
+    leading = slot.leading * (size / slot.font_size)
     pdf.saveState()
     pdf.setFont(slot.font_name, size)
     baseline = page_height - slot.rect.y0 - size

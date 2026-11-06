@@ -72,6 +72,8 @@ class ReferenceDemandProfile(BaseModel):
             for key, amount in value.items()
         ):
             raise ValueError("reference distributions must contain non-negative values")
+        if len({key.casefold() for key in value}) != len(value):
+            raise ValueError("reference distributions require distinct normalized keys")
         total = sum(value.values())
         if abs(total - 1.0) > 0.002:
             raise ValueError("reference distributions must total 1")

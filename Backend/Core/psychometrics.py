@@ -318,6 +318,8 @@ def validate_calibration(
         "independent_manual_review",
     }:
         raise ValueError("response-calibration evidence has invalid checks")
+    if checks["policy_approved"] is not policy.approved:
+        raise ValueError("response-calibration policy approval contradicts its policy")
     verified = all(value is True for value in checks.values())
     if payload.get("difficulty_independently_verified") is not verified:
         raise ValueError("response-calibration conclusion contradicts its checks")

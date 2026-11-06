@@ -6,7 +6,7 @@ import ast
 import math
 import re
 from dataclasses import dataclass
-from decimal import Decimal, localcontext
+from decimal import Decimal, InvalidOperation, localcontext
 from typing import Any
 
 import sympy
@@ -78,6 +78,15 @@ def compare_mathematical_answers(
     candidate: MathematicalAnswer,
     expected: MathematicalAnswer,
 ) -> AnswerComparison:
+    try:
+        tolerances = (
+            Decimal(str(candidate.tolerance)),
+            Decimal(str(expected.tolerance)),
+        )
+    except (InvalidOperation, TypeError, ValueError):
+        return AnswerComparison(False, ("tolerance must be finite and nonnegative",))
+    if any(not value.is_finite() or value < 0 for value in tolerances):
+        return AnswerComparison(False, ("tolerance must be finite and nonnegative",))
     candidate_unit = _normalise_unit(candidate.unit)
     expected_unit = _normalise_unit(expected.unit)
     if candidate_unit != expected_unit:
@@ -117,8 +126,13 @@ def compare_mathematical_answers(
         if left.has(sympy.Float) or right.has(sympy.Float)
         else Decimal(0)
     )
-    tolerance = max(candidate.tolerance, expected.tolerance, implicit_float_tolerance)
-    numeric_difference = abs(Decimal(str(sympy.N(difference, 30))))
+    tolerance = max(*tolerances, implicit_float_tolerance)
+    try:
+        numeric_difference = Decimal(str(sympy.N(sympy.Abs(difference), 30)))
+    except (InvalidOperation, TypeError, ValueError):
+        return AnswerComparison(False, ("numeric difference is not finite",))
+    if not numeric_difference.is_finite():
+        return AnswerComparison(False, ("numeric difference is not finite",))
     if numeric_difference <= tolerance:
         return AnswerComparison(True)
     return AnswerComparison(
@@ -128,15 +142,21 @@ def compare_mathematical_answers(
 
 
 def round_to_significant_figures(value: Decimal, figures: int) -> Decimal:
-    if figures <= 0:
+    if type(figures) is not int or figures <= 0:
         raise ValueError("significant figures must be positive")
+    if not isinstance(value, Decimal) or not value.is_finite():
+        raise ValueError("value must be a finite Decimal")
     if value == 0:
         return Decimal(0)
     with localcontext() as context:
-        context.prec = max(figures, 1)
+        # One spare coefficient digit admits a carry such as 9.99 -> 10.0.
+        context.prec = figures + 1
         exponent = value.copy_abs().adjusted() - figures + 1
-        quantum = Decimal(1).scaleb(exponent)
-        return value.quantize(quantum)
+        rounded = value.quantize(Decimal((0, (1,), exponent)))
+        # A carry moves the significant-digit boundary: 10 rather than 10.0,
+        # or 1.0E+3 rather than 1.00E+3. This second step only removes that zero.
+        exponent = rounded.copy_abs().adjusted() - figures + 1
+        return rounded.quantize(Decimal((0, (1,), exponent)))
 
 
 class MathematicsPlugin:
