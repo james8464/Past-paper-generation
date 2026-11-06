@@ -26,6 +26,7 @@ final class GenerationCoordinator {
     func begin(_ job: GenerationJobRecord) throws {
         var running = job
         running.state = .running
+        running.failureKind = nil
         running.updatedAt = clock.now
         // Keep the current session until the new history record has been saved.
         try history.save(running)
@@ -85,6 +86,7 @@ final class GenerationCoordinator {
             )
         }
         job.state = .completed
+        job.failureKind = nil
         job.artifacts = generatedFiles
         job.updatedAt = clock.now
         try history.save(job)
@@ -95,6 +97,7 @@ final class GenerationCoordinator {
     func cancel(expectedJobID: UUID) throws {
         guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         job.state = .cancelled
+        job.failureKind = nil
         job.updatedAt = clock.now
         try history.save(job)
         activeJob = nil
@@ -102,9 +105,10 @@ final class GenerationCoordinator {
         status = "Cancelled"
     }
 
-    func fail(message: String, expectedJobID: UUID) throws {
+    func fail(message: String, failureKind: GenerationFailureKind = .generationFailed, expectedJobID: UUID) throws {
         guard var job = activeJob, job.id == expectedJobID else { throw GenerationOwnershipError.jobChanged }
         job.state = .failed
+        job.failureKind = failureKind
         job.updatedAt = clock.now
         try history.save(job)
         activeJob = nil

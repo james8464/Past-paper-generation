@@ -45,6 +45,40 @@ struct QualificationSnapshot: Codable, Equatable {
     let empiricallyCalibrated: Bool
 }
 
+// Saved failure details contain only app-owned categories, never backend text.
+enum GenerationFailureKind: String, Codable, CaseIterable, Hashable {
+    case generationFailed = "generation-failed"
+    case frenchPaperFailed = "french-paper-failed"
+    case qualityChecksFailed = "quality-checks-failed"
+    case modelSetupRequired = "model-setup-required"
+    case publicationFailed = "publication-failed"
+
+    var stageResource: LocalizedStringResource {
+        switch self {
+        case .generationFailed: "Generation"
+        case .frenchPaperFailed: "French assessment"
+        case .qualityChecksFailed: "Paper checks"
+        case .modelSetupRequired: "Model setup"
+        case .publicationFailed: "Saving the paper"
+        }
+    }
+
+    var detailResource: LocalizedStringResource {
+        switch self {
+        case .generationFailed:
+            "The paper could not be completed."
+        case .frenchPaperFailed:
+            "The French paper could not be completed. No successful French paper was recorded for this run."
+        case .qualityChecksFailed:
+            "The model's draft did not pass the paper checks. Try a stronger model before creating a new paper."
+        case .modelSetupRequired:
+            "The selected local model needs setup before it can create a paper."
+        case .publicationFailed:
+            "The paper could not be saved or its history could not be verified. Check storage and folder access before trying again."
+        }
+    }
+}
+
 struct GenerationJobRecord: Codable, Equatable, Identifiable {
     static let currentSchemaVersion = 1
 
@@ -57,6 +91,7 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
     let qualification: QualificationSnapshot
     let createdAt: Date
     var updatedAt: Date
+    var failureKind: GenerationFailureKind?
 
     init(
         schemaVersion: Int = currentSchemaVersion,
@@ -67,7 +102,8 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
         artifacts: [GeneratedFile],
         qualification: QualificationSnapshot,
         createdAt: Date = Date(),
-        updatedAt: Date = Date()
+        updatedAt: Date = Date(),
+        failureKind: GenerationFailureKind? = nil
     ) {
         self.schemaVersion = schemaVersion
         self.id = id
@@ -78,6 +114,7 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
         self.qualification = qualification
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.failureKind = failureKind
     }
 
     private enum CodingKeys: String, CodingKey {
@@ -90,6 +127,7 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
         case qualification
         case createdAt
         case updatedAt
+        case failureKind
     }
 
     init(from decoder: Decoder) throws {
@@ -103,6 +141,12 @@ struct GenerationJobRecord: Codable, Equatable, Identifiable {
         qualification = try values.decode(QualificationSnapshot.self, forKey: .qualification)
         createdAt = try values.decode(Date.self, forKey: .createdAt)
         updatedAt = try values.decode(Date.self, forKey: .updatedAt)
+        failureKind = try values.decodeIfPresent(GenerationFailureKind.self, forKey: .failureKind)
+    }
+
+    var failureDetailResource: LocalizedStringResource? {
+        guard state == .failed else { return nil }
+        return failureKind?.detailResource ?? "Failure details were not recorded for this run."
     }
 
     var missingArtifactCount: Int {
@@ -218,7 +262,8 @@ final class RecentDocumentStore {
                     artifacts: record.artifacts,
                     qualification: record.qualification,
                     createdAt: record.createdAt,
-                    updatedAt: record.updatedAt
+                    updatedAt: record.updatedAt,
+                    failureKind: record.failureKind
                 )
                 needsWrite = true
             }

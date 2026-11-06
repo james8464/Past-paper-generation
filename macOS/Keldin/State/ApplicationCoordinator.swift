@@ -1744,6 +1744,7 @@ final class ApplicationCoordinator: ObservableObject {
         case let .error(message, code):
             guard activeRun?.phase != .cancelling else { return }
             activeRun?.backendErrorMessage = message
+            activeRun?.failureKind = GenerationPresentation.failureKind(for: message, code: code)
             if activeRun?.intent == .mlxDownloadInfo {
                 progressEntries.append(ProgressEntry(stage: "mlx_download_info", message: message))
                 setError(InterfaceText.resolve("Keldin couldn't check this model's download size. Check your connection and model ID, then try again. No model download has started.", language: presentationLanguage))
@@ -1905,7 +1906,7 @@ final class ApplicationCoordinator: ObservableObject {
                     let message = "The paper was created, but it could not be saved to the selected folder: \(error.localizedDescription)"
                     setError(message)
                     notifyFailure(for: operation, message: message)
-                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
+                    try? generationCoordinator.fail(message: message, failureKind: .publicationFailed, expectedJobID: jobID)
                     pendingGenerationSeed = nil
                     return
                 }
@@ -1922,7 +1923,7 @@ final class ApplicationCoordinator: ObservableObject {
                     let message = String(localized: "The paper was created, but its history could not be saved or verified.")
                     setError(message)
                     notifyFailure(for: operation, message: message)
-                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
+                    try? generationCoordinator.fail(message: message, failureKind: .publicationFailed, expectedJobID: jobID)
                     pendingGenerationSeed = nil
                     return
                 }
@@ -1942,7 +1943,7 @@ final class ApplicationCoordinator: ObservableObject {
                     notifyFailure(for: operation, message: message)
                 }
                 if let jobID = run.ownedJobID {
-                    try? generationCoordinator.fail(message: message, expectedJobID: jobID)
+                    try? generationCoordinator.fail(message: message, failureKind: run.failureKind, expectedJobID: jobID)
                 }
                 pendingGenerationSeed = nil
             }
@@ -2323,6 +2324,7 @@ private struct BackendRun {
     var process: Process?
     var phase = BackendRunPhase.running
     var backendErrorMessage: String?
+    var failureKind: GenerationFailureKind = .generationFailed
     var mlxDownloadInfo: MLXDownloadInfo?
     var receivedArtifactRoles = Set<String>()
 }
