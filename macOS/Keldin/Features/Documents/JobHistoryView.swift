@@ -72,10 +72,26 @@ struct JobHistoryView: View {
         }
         .navigationTitle("History")
         .safeAreaInset(edge: .bottom) {
-            if !store.retentionFailureIDs.isEmpty {
-                Label("Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened.", systemImage: "exclamationmark.triangle")
-                    .font(.callout)
+            VStack(alignment: .leading, spacing: 0) {
+                if let record = selectedRecord, let detail = record.failureDetailResource {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Failure details").font(.headline)
+                        if let stage = record.failureKind?.stageResource {
+                            Text(InterfaceText.localizedResource(stage, locale: locale))
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+                        Text(InterfaceText.localizedResource(detail, locale: locale))
+                            .font(.callout)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
+                }
+                if !store.retentionFailureIDs.isEmpty {
+                    Label("Some older history items couldn't be removed. They remain listed. Keldin will retry when history is saved or Keldin is reopened.", systemImage: "exclamationmark.triangle")
+                        .font(.callout)
+                        .padding()
+                }
             }
         }
         .toolbar {

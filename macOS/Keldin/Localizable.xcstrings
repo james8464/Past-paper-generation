@@ -1,6 +1,17 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Failure details": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Détails de l’échec"}}}},
+    "French assessment": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Sujet français"}}}},
+    "Paper checks": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Vérification du sujet"}}}},
+    "Model setup": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Configuration du modèle"}}}},
+    "Saving the paper": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Enregistrement du sujet"}}}},
+    "The paper could not be completed.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La création du sujet n’a pas pu être terminée."}}}},
+    "The French paper could not be completed. No successful French paper was recorded for this run.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La création du sujet français n’a pas pu être terminée. Aucun sujet français réussi n’a été enregistré pour cette tentative."}}}},
+    "The model's draft did not pass the paper checks. Try a stronger model before creating a new paper.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le brouillon du modèle ne passe pas les contrôles du sujet. Essayez un modèle plus performant avant de créer un nouveau sujet."}}}},
+    "The selected local model needs setup before it can create a paper.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le modèle local sélectionné doit être configuré avant de pouvoir créer un sujet."}}}},
+    "The paper could not be saved or its history could not be verified. Check storage and folder access before trying again.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Le sujet n’a pas pu être enregistré ou son historique n’a pas pu être vérifié. Vérifiez l’espace de stockage et l’accès au dossier avant de réessayer."}}}},
+    "Failure details were not recorded for this run.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Les détails de l’échec n’ont pas été enregistrés pour cette tentative."}}}},
     "Quick Look couldn't open this preview. Please try again.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Impossible d’ouvrir cet aperçu avec Coup d’œil. Réessayez."}}}},
     "Loading PDF…": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Chargement du PDF…"}}}},
     "Direct Download": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Téléchargement direct"}}}},
@@ -2306,7 +2317,7 @@
         }
       }
     },
-    "Generation": {},
+    "Generation": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Création"}}}},
     "Generation Error": {
       "extractionState": "stale",
       "localizations": {

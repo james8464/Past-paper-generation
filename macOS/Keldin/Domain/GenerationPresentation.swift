@@ -131,6 +131,16 @@ enum GenerationPresentation {
         return localized("The model's work did not pass the paper quality checks. Try again or choose a stronger model in Settings. You can copy diagnostics from Tools.", language: language)
     }
 
+    /// Persist only an app-owned category, never provider text or model drafts.
+    static func failureKind(for message: String, code: String?) -> GenerationFailureKind {
+        if isGenerationQualityFailure(message, code: code) { return .qualityChecksFailed }
+        switch code {
+        case "mlx_setup_required": return .modelSetupRequired
+        case "french_generation_failed": return .frenchPaperFailed
+        default: return .generationFailed
+        }
+    }
+
     private static func isGenerationQualityFailure(_ message: String, code: String?) -> Bool {
         // Only the actual failure line classifies the error, never a path or
         // diagnostic body that happens to mention an assessment check.

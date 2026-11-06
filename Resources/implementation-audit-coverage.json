@@ -3809,6 +3809,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/generation-failure-history-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-navigation-and-performance-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5249,10 +5255,10 @@
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Independent complete-file EOF review of reference and quality status presentation, saved/current evidence separation and diagnostic retention, with scoped callers and tests. No interface, whole-app or HIG certification.",
-      "source_sha256": "b44d8386b5263d0d3c3a7a2a7b2715895805538985c4aa969d2ce75aea501a83",
-      "review_evidence": "docs/quality/generation-evidence-presentation-review.md",
-      "review_evidence_sha256": "53db38227e89ad9ebf152eadb80c1b7751a5494fcf6630c7acb459e6080c1dc1"
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "be57f7a153c57538d052a1a0c4e983cdb26b34b162b472c4273222b412fcffc7",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -5348,10 +5354,10 @@
       "path": "macOS/Keldin/Features/Documents/JobHistoryView.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Full baseline EOF and complete final guard delta reviewed; history removal and repeat generation respect the import lease. Broader interaction coverage remains separate.",
-      "source_sha256": "ba591d115099a43d5ec68d9a9561f67774287696d2a5459f5e2d2b64710fd189",
-      "review_evidence": "docs/quality/native-import-responsiveness-review-2026-11-02.md",
-      "review_evidence_sha256": "8bbbe21f64ffd4c5b4cec001f3c28d4e2cd2bd7218f74f460945f5273629fba1"
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "8245e9ff5dbf9e1f0074d81e354cf2014ade5514f990699e9953df9186ae225d",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Keldin/Features/Generation/FrenchAssessmentWorkspace.swift",
@@ -5537,10 +5543,10 @@
       "path": "macOS/Keldin/State/ApplicationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior complete-file attestations retained plus independent one-line cancellation dispatch and surrounding ownership-path review; no fresh full-file reread claimed.",
-      "source_sha256": "3f65a459a72747b9dc3eb90c4bce8332eff7d2918a5ed483bfc87b437b5de892",
-      "review_evidence": "docs/quality/owned-helper-cancellation-review.md",
-      "review_evidence_sha256": "52f259dd6ffadbd34a0557bd7cd7cc5af7b3234dda3117649ad6bf97089a5c34"
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "884893b25e1787a80ac014665c7e9a2eb8f14225028b4b4ab1eb286d5191bc33",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Keldin/State/BenchmarkCoordinator.swift",
@@ -5573,10 +5579,10 @@
       "path": "macOS/Keldin/State/GenerationCoordinator.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal review of captured generation and history transitions; live provider and full interaction acceptance remain separate.",
-      "source_sha256": "492806bf6cbe338101c9239d0cc197481f58458200a242e69130a989bbf50e58",
-      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
-      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "f1e62bda4a50135cc27a8c2479cd8d2f4064fd16b4169f9544e707c22d0f4d6e",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Keldin/State/ModelCoordinator.swift",
@@ -5600,10 +5606,10 @@
       "path": "macOS/Keldin/State/RecentDocumentStore.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file internal persistence, migration and retention review; exact-byte evidence does not establish all observed user scenarios.",
-      "source_sha256": "d6ccf6dda4c103447d8afddccbde4e2f94355052198a9b38e4f38616e808f08e",
-      "review_evidence": "docs/quality/native-generation-file-review-2026-11-02.md",
-      "review_evidence_sha256": "9ed61043fae6f0898ffc41c33ad72b0cc1dd877caf28add0eec7481d4a62833c"
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "6f4a1def0572d19d63e261a38147939f36134da72a82b255fbf280881f74f16c",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Keldin/State/SettingsActionPresentation.swift",
@@ -5697,6 +5703,24 @@
       "source_sha256": "59a9ad5fdca5a6e8a29257ea25c853f93fbee6809da9d0051cfceec414fab3c0",
       "review_evidence": "docs/quality/document-recovery-interaction-review.md",
       "review_evidence_sha256": "a264bec8f23192237e9c8c07adae5345156238b4fc87c656c63ad6aa1f451c0c"
+    },
+    {
+      "path": "macOS/Tests/FailureHistoryTests.swift",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "e206bd0272587a1459a222c67c568ecca67d681aed05dd7cb7a16b0b85ca7222",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
+    },
+    {
+      "path": "macOS/Tests/FailurePresentationTests.swift",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
+      "source_sha256": "da71fa760a772cdc7402c73ba1e8bc86c8e4734c445cdb6b6e2d649463102373",
+      "review_evidence": "docs/quality/generation-failure-history-review.md",
+      "review_evidence_sha256": "a49402aee93d8580752f916c4bde9ecb3849cb3749abc2c51b14566d35ee78f2"
     },
     {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",
