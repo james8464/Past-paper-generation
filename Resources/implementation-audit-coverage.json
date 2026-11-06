@@ -425,6 +425,15 @@
       "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
     },
     {
+      "path": "Backend/Core/document_publication.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "86f0b7b0acf705a9ef66cd85f627eef9b7d31aecb7f3cc15d0e8e54f1c39155b",
+      "review_evidence": "docs/quality/family-document-set-publication-review.md",
+      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
+    },
+    {
       "path": "Backend/Core/education_context.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -473,10 +482,10 @@
       "path": "Backend/Core/family_adapter.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete EOF review of preview/live, checkpoint identity and rendering contracts; selective dependencies and release limits remain explicit.",
-      "source_sha256": "21bf28c5e4a9eb3e98fccfa9cc137184f3ce2b984157576791c6b3914dda13ed",
-      "review_evidence": "docs/quality/publication-cleanup-cancellation-review-2026-11-03.md",
-      "review_evidence_sha256": "aeb3ad1eb96869614b3f0f398f99d55952f6d59498185768d35ba513ba51e539"
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "5b8dc3a0e835040211a2998aedbfa3ee3c6fa6471a9382d6ac11f9a1d3de41c7",
+      "review_evidence": "docs/quality/family-document-set-publication-review.md",
+      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
     },
     {
       "path": "Backend/Core/family_contracts.py",
@@ -817,8 +826,11 @@
     {
       "path": "Backend/Core/france/graph_layout.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "634b620b3bb1cd8ad8ddf50e57df585efc83bcc7edec9de4f589a9daf7858a84",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
       "path": "Backend/Core/france/graph_pdf.py",
@@ -932,16 +944,19 @@
       "path": "Backend/Core/france/llm_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
-      "source_sha256": "963e53ae87a8fd1ac2ec0932eab83ee8dabfeff31cb80f75fe0c534963c7055b",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "edf7422259d7850b88cf3a48a3ebed24e9a9147b5b7abc70315b34e68067c58c",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "8a71984c16628be3301d07fb25b39964cc573c50acb1a1ed5fd19cf2b03d7e50",
+      "review_evidence": "docs/quality/french-pipeline-source-bound-review.md",
+      "review_evidence_sha256": "f3630b0f6550e76e217c54adfa4ff8ca5d290e5041eb3f2050ea6750597236f6"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1100,10 +1115,10 @@
       "path": "Backend/Core/france/print_policy.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "85dc61e3321f0e9b3ca97cae651250f673da5739a8b4095ef5d23ab419079ffa",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "286adb79fc2b847de338faaa264dacd547edaa74dc9942fca7b76db43a989099",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
       "path": "Backend/Core/france/provider.py",
@@ -1258,11 +1273,8 @@
     {
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Full baseline EOF plus complete publication-lease delta reviewed, with independent lease/transaction/lock-order and new-test review. Dependencies were inspected in scope; no immutable-reader, whole-project or paper-quality qualification.",
-      "source_sha256": "a78c6b7e29292bf521bc3cfeef0561e3d707065f9b2d47cdc4a534c35a67119f",
-      "review_evidence": "docs/quality/cli-publication-lease-review.md",
-      "review_evidence_sha256": "cf5c40971e304b0da2e295d188a8f8523281fb4afc0317835f8baa22f0fdb40c"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -2141,6 +2153,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/computer-science/aqa/generator/tests/test_paper1_command_contract.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "9c0fa06b571ef2d50d9ff7b39aa17c799d5acb910e8260df1c84a9669316dc12",
+      "review_evidence": "docs/quality/cs1-command-protocol-review.md",
+      "review_evidence_sha256": "f170efb1bb28509ebf0d84ca79f2664c1f1ea9fdc4483bfd284a4857f1acc47a"
+    },
+    {
       "path": "Resources/computer-science/aqa/generator/tests/test_render_content.py",
       "classification": "test",
       "status": "pending",
@@ -2516,10 +2537,10 @@
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/_cli_runtime.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
       "source_sha256": "5757563fc12b27c690b1a18572351468678428fdfb68b72b81b2217adf58aa85",
-      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
-      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+      "review_evidence": "docs/quality/family-document-set-publication-review.md",
+      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/assessment_contracts.py",
@@ -2530,8 +2551,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "83d8228cfb7a10ecd42c0c5b025d0025b0ece99b52fb07b07d04033b0006a00b",
+      "review_evidence": "docs/quality/family-document-set-publication-review.md",
+      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py",
@@ -3245,6 +3269,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cs1-command-protocol-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/deepseek-french-draft-validation-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3311,6 +3341,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/family-document-set-publication-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/final-native-presentation-notification-review-2026-10-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3336,6 +3372,12 @@
     },
     {
       "path": "docs/quality/french-generation-error-presentation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-graph-label-clearance-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -3582,6 +3624,12 @@
     },
     {
       "path": "docs/quality/french-ollama-context-capacity-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-pipeline-source-bound-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5054,10 +5102,10 @@
       "path": "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file EOF implementation review by french_run23_review within the documented scope; exact source identity checked after integration. Dependencies, runtime acceptance and whole-project completion remain separate.",
-      "source_sha256": "7168f87ab1743f9adc5bfaf25c48bba7ba22c9da42ee16c8d879ad6b83e1a6ba",
-      "review_evidence": "docs/quality/native-interface-file-reviews-2026-11-02.md",
-      "review_evidence_sha256": "4665323a90eb980561527f316487a28a58b13867782b9f9d50847d66b6c390fd"
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "eb947e112f115985e2223f5b46993e1c70cd437ee13575be8250429078f8b4f8",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchReviewRequest.swift",
@@ -6308,6 +6356,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_family_publication.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "42fefaa4c62b537981f628bd0b786c4262f127a219d94f2c571d999d68ecd775",
+      "review_evidence": "docs/quality/family-document-set-publication-review.md",
+      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
+    },
+    {
       "path": "tests/test_fonts.py",
       "classification": "test",
       "status": "reviewed",
@@ -6597,6 +6654,24 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_graph_clearance_policy.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "7dce7dd722519f92631318ee5daa03a8313da477ffa1d561b4bd24bbc46e871a",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
+    },
+    {
+      "path": "tests/test_french_graph_label_clearance.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
+      "source_sha256": "6b2ca78c5211c407aa27ed9f219e5a33ec55e011fd6adf8be8ef14495382e49b",
+      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
+      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
     },
     {
       "path": "tests/test_french_graph_resilience_authoring.py",

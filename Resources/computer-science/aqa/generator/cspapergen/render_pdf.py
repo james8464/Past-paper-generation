@@ -564,7 +564,9 @@ def _draw_skeleton_program_support_page(
     stimulus = Stimulus(kind="table", title="", headers=rows[0], rows=rows[1:])
     state.y = _draw_table(pdf, stimulus, 82, y - 14)
     pdf.setFont(FONT_MONO, 9)
-    pdf.drawString(82, state.y - 16, "Input format: COMMAND,param1,param2,param3")
+    pdf.drawString(
+        82, state.y - 16, "At the Command: prompt, enter ADD, REPORT, BEST or QUIT."
+    )
 
 
 def _draw_paper1_support_page(

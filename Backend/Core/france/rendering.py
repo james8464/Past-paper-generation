@@ -47,6 +47,7 @@ from Backend.Core.france.print_policy import (
     V34_CREDIT_NOTICE,
     V34_FOOTER,
     V34_REVIEW_NOTICE,
+    V36_INLINE_PRINT_POLICIES,
     V36_PRINT_POLICY,
     V36_READABLE_PRINT_POLICIES,
 )
@@ -111,6 +112,7 @@ def structured_material(
     show_id: bool = True,
     balance_columns: bool = False,
     modern_graph: bool = False,
+    avoid_foreign_graph_edges: bool = False,
     large_print: bool = False,
 ):
     heading = (
@@ -189,7 +191,12 @@ def structured_material(
         )
 
     if modern_graph:
-        geometry = graph_layout(material, large_print, available_width)
+        geometry = graph_layout(
+            material,
+            large_print,
+            available_width,
+            avoid_foreign_edges=avoid_foreign_graph_edges,
+        )
         drawing = Drawing(geometry.width, geometry.height)
         for route in geometry.routes:
             drawing.add(Line(*route.start, *route.end, strokeWidth=1.2))
@@ -407,7 +414,7 @@ class _QuestionGroup(KeepTogether):
 
 
 def _content_parts(text: str, print_policy: str | None):
-    if print_policy == V36_PRINT_POLICY:
+    if print_policy in V36_INLINE_PRINT_POLICIES:
         # Preformatted splits on LF; retain logical CRLF source lines without
         # painting a carriage-return glyph. Stored source remains untouched.
         return [
@@ -663,7 +670,7 @@ def render_assessment(
 
     def paragraph(text, style=body, *, inline=None):
         if inline is None:
-            inline = print_policy == V36_PRINT_POLICY
+            inline = print_policy in V36_INLINE_PRINT_POLICIES
         story.append(
             Paragraph(
                 french_prose_markup(text, inline=inline),
@@ -680,7 +687,7 @@ def render_assessment(
                 story.append(
                     code_listing(
                         part.strip("\r\n")
-                        if print_policy == V36_PRINT_POLICY
+                        if print_policy in V36_INLINE_PRINT_POLICIES
                         else part.strip("\n"),
                         code,
                         layout.content_width,
@@ -692,7 +699,7 @@ def render_assessment(
                     paragraph_style if first_paragraph else body,
                     # Current parser alternates prose/fence/prose, preserving
                     # empty segments. Unsupported fences stay literal prose.
-                    inline=print_policy == V36_PRINT_POLICY and index % 2 == 0,
+                    inline=print_policy in V36_INLINE_PRINT_POLICIES and index % 2 == 0,
                 )
                 first_paragraph = False
 
@@ -719,7 +726,7 @@ def render_assessment(
             if is_code:
                 source = (
                     part.strip("\r\n")
-                    if print_policy == V36_PRINT_POLICY
+                    if print_policy in V36_INLINE_PRINT_POLICIES
                     else part.strip("\n")
                 )
                 if first_paragraph and print_policy in V36_READABLE_PRINT_POLICIES:
@@ -738,7 +745,7 @@ def render_assessment(
             else:
                 value = french_prose_markup(
                     part.strip(),
-                    inline=print_policy == V36_PRINT_POLICY and index % 2 == 0,
+                    inline=print_policy in V36_INLINE_PRINT_POLICIES and index % 2 == 0,
                 )
                 story.append(
                     Paragraph(
@@ -873,6 +880,7 @@ def render_assessment(
                 and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
                 modern_graph=print_policy in V36_READABLE_PRINT_POLICIES,
+                avoid_foreign_graph_edges=print_policy == V36_PRINT_POLICY,
                 large_print=large_print,
             )
             if flatten:
@@ -1038,7 +1046,7 @@ def render_assessment(
                         Paragraph(
                             (
                                 inline_markup
-                                if print_policy == V36_PRINT_POLICY
+                                if print_policy in V36_INLINE_PRINT_POLICIES
                                 else escape
                             )(
                                 printable_database_criterion(item.criterion)
@@ -1107,7 +1115,7 @@ def render_assessment(
                     # Keep the complete construction, justification and credit
                     # together when they fit, without dragging the prompt along.
                     story[answer_start:] = [KeepTogether(story[answer_start:])]
-                if print_policy == V36_PRINT_POLICY:
+                if print_policy in V36_INLINE_PRINT_POLICIES:
                     story[question_start:] = [
                         _QuestionGroup(
                             story[question_start:],
@@ -1172,7 +1180,7 @@ def render_assessment(
                     )
                 ):
                     story[question_start:] = [KeepTogether(story[question_start:])]
-                if print_policy != V36_PRINT_POLICY and (
+                if print_policy not in V36_INLINE_PRINT_POLICIES and (
                     question_index < len(exercise.questions) - 1
                     or (exercise_index < len(exercises) - 1 and not compact_correction)
                 ):

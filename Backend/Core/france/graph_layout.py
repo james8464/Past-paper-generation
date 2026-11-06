@@ -35,6 +35,14 @@ class GraphLayout:
     routes: tuple[GraphRoute, ...]
 
 
+@dataclass(frozen=True)
+class _EdgeGeometry:
+    start: Point
+    end: Point
+    normal: Point
+    arrow: tuple[Point, ...]
+
+
 class _CongestedGraph(CodeLayoutError):
     """The current bounded figure size cannot separate every weight."""
 
@@ -59,15 +67,100 @@ def _segment_distance(point: Point, start: Point, end: Point) -> float:
     )
 
 
+def _segment_hits_box(start: Point, end: Point, box: Box, gap: float = 2.6) -> bool:
+    # Two points of clearance plus half the renderer's 1.2pt edge stroke.
+    lower, upper = 0.0, 1.0
+    for origin, finish, minimum, maximum in (
+        (start[0], end[0], box[0] - gap, box[2] + gap),
+        (start[1], end[1], box[1] - gap, box[3] + gap),
+    ):
+        direction = finish - origin
+        if direction == 0:
+            if origin < minimum or origin > maximum:
+                return False
+            continue
+        first, last = (minimum - origin) / direction, (maximum - origin) / direction
+        lower = max(lower, min(first, last))
+        upper = min(upper, max(first, last))
+        if lower > upper:
+            return False
+    return True
+
+
+def _arrow_hits_box(arrow: tuple[Point, ...], box: Box, gap: float = 2.6) -> bool:
+    if not arrow:
+        return False
+    corners = (
+        (box[0] - gap, box[1] - gap),
+        (box[2] + gap, box[1] - gap),
+        (box[2] + gap, box[3] + gap),
+        (box[0] - gap, box[3] + gap),
+    )
+    # Separating axes handle a corner or a complete box inside the triangle,
+    # without treating the triangle's entire bounding rectangle as opaque.
+    axes = [(1.0, 0.0), (0.0, 1.0)]
+    axes.extend(
+        (second[1] - first[1], first[0] - second[0])
+        for first, second in zip(arrow, (*arrow[1:], arrow[0]), strict=True)
+    )
+    for axis in axes:
+        triangle = [point[0] * axis[0] + point[1] * axis[1] for point in arrow]
+        rectangle = [point[0] * axis[0] + point[1] * axis[1] for point in corners]
+        if max(triangle) < min(rectangle) or max(rectangle) < min(triangle):
+            return False
+    return True
+
+
+def _edge_geometry(
+    positions: dict[str, Point],
+    start: str,
+    end: str,
+    radius: float,
+    reciprocal: bool,
+    directed: bool,
+) -> _EdgeGeometry:
+    x1, y1 = positions[start]
+    x2, y2 = positions[end]
+    distance = hypot(x2 - x1, y2 - y1)
+    ux, uy = (x2 - x1) / distance, (y2 - y1) / distance
+    nx, ny = -uy, ux
+    offset = radius / 2 if reciprocal else 0
+    line_start = (x1 + nx * offset, y1 + ny * offset)
+    line_end = (x2 + nx * offset, y2 + ny * offset)
+    arrow: tuple[Point, ...] = ()
+    if directed:
+        boundary = sqrt(radius * radius - offset * offset)
+        tip = (line_end[0] - ux * boundary, line_end[1] - uy * boundary)
+        angle = atan2(uy, ux)
+        arrow = (
+            tip,
+            *[
+                (tip[0] - 7 * cos(angle + turn), tip[1] - 7 * sin(angle + turn))
+                for turn in (-0.45, 0.45)
+            ],
+        )
+    return _EdgeGeometry(line_start, line_end, (nx, ny), arrow)
+
+
 def graph_layout(
     material: NSIWeightedGraphMaterial,
     large_print: bool,
     available_width: float | None = None,
+    *,
+    avoid_foreign_edges: bool = False,
 ) -> GraphLayout:
+    if type(avoid_foreign_edges) is not bool:
+        raise ValueError("La politique de placement des poids doit être booléenne")
     last_error = None
     for floor in (0, 340, 420, 460):
         try:
-            return _fit_graph(material, large_print, available_width, floor)
+            return _fit_graph(
+                material,
+                large_print,
+                available_width,
+                floor,
+                avoid_foreign_edges=avoid_foreign_edges,
+            )
         except _CongestedGraph as error:
             last_error = error
     raise CodeLayoutError(str(last_error)) from last_error
@@ -78,6 +171,8 @@ def _fit_graph(
     large_print: bool,
     available_width: float | None,
     height_floor: float,
+    *,
+    avoid_foreign_edges: bool = False,
 ) -> GraphLayout:
     page = code_layout(large_print)
     width = min(
@@ -119,18 +214,36 @@ def _fit_graph(
         (x - radius, y - radius, x + radius, y + radius) for x, y in positions.values()
     ]
     pairs = {(start, end) for start, end, _ in material.edges}
+    # New policy places labels against the complete edge stream, including edges
+    # drawn later. Legacy policies retain their original placement decisions.
+    paths = (
+        [
+            _edge_geometry(
+                positions,
+                start,
+                end,
+                radius,
+                material.directed and (end, start) in pairs,
+                material.directed,
+            )
+            for start, end, _ in material.edges
+        ]
+        if avoid_foreign_edges
+        else []
+    )
     routes: list[GraphRoute] = []
     label_boxes: list[Box] = []
-    for start, end, weight in material.edges:
-        x1, y1 = positions[start]
-        x2, y2 = positions[end]
-        distance = hypot(x2 - x1, y2 - y1)
-        ux, uy = (x2 - x1) / distance, (y2 - y1) / distance
-        nx, ny = -uy, ux
+    for index, (start, end, weight) in enumerate(material.edges):
         reciprocal = material.directed and (end, start) in pairs
-        offset = radius / 2 if reciprocal else 0
-        line_start = (x1 + nx * offset, y1 + ny * offset)
-        line_end = (x2 + nx * offset, y2 + ny * offset)
+        path = (
+            paths[index]
+            if avoid_foreign_edges
+            else _edge_geometry(
+                positions, start, end, radius, reciprocal, material.directed
+            )
+        )
+        line_start, line_end = path.start, path.end
+        nx, ny = path.normal
         # Four points also clear the arrowhead's ~3pt half-width plus stroke.
         if any(
             _segment_distance(point, line_start, line_end) < radius + 4
@@ -139,18 +252,6 @@ def _fit_graph(
         ):
             raise _CongestedGraph(
                 "Un arc traverse un autre sommet dans ce format : rédiger un graphe lisible avec des noms plus courts."
-            )
-        arrow: tuple[Point, ...] = ()
-        if material.directed:
-            boundary = sqrt(radius * radius - offset * offset)
-            tip = (line_end[0] - ux * boundary, line_end[1] - uy * boundary)
-            angle = atan2(uy, ux)
-            arrow = (
-                tip,
-                *[
-                    (tip[0] - 7 * cos(angle + turn), tip[1] - 7 * sin(angle + turn))
-                    for turn in (-0.45, 0.45)
-                ],
             )
         label = str(weight)
         text_width = stringWidth(label, regular, size)
@@ -183,6 +284,15 @@ def _fit_graph(
                     or box[3] > height
                     or any(_intersects(box, node) for node in node_boxes)
                     or any(_intersects(box, previous) for previous in label_boxes)
+                    or (
+                        avoid_foreign_edges
+                        and any(
+                            _segment_hits_box(foreign.start, foreign.end, box)
+                            or _arrow_hits_box(foreign.arrow, box)
+                            for other, foreign in enumerate(paths)
+                            if other != index
+                        )
+                    )
                 ):
                     continue
                 placement = (box, (cx - text_width / 2, cy - (ascent + descent) / 2))
@@ -195,7 +305,7 @@ def _fit_graph(
             )
         box, origin = placement
         label_boxes.append(box)
-        routes.append(GraphRoute(line_start, line_end, arrow, label, origin, box))
+        routes.append(GraphRoute(line_start, line_end, path.arrow, label, origin, box))
     return GraphLayout(
         width, height, radius, size, regular, bold, positions, tuple(routes)
     )

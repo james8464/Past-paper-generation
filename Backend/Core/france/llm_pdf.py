@@ -18,6 +18,7 @@ from Backend.Core.france.nsi import (
 )
 from Backend.Core.france.print_policy import (
     V34_FOOTER,
+    V36_INLINE_PRINT_POLICIES,
     V36_PRINT_POLICIES,
     V36_PRINT_POLICY,
     V36_READABLE_PRINT_POLICIES,
@@ -34,7 +35,7 @@ from Backend.Core.france.whole_case_pdf import (
 def _expected_exercise(
     exercise: NSIExercise, correction: bool, *, print_policy=PRINT_POLICY
 ) -> str:
-    prose = printed_prose if print_policy == V36_PRINT_POLICY else _prose
+    prose = printed_prose if print_policy in V36_INLINE_PRINT_POLICIES else _prose
     title = exercise.title.strip().rstrip(".")
     scope = (
         f"{title}."
@@ -43,7 +44,7 @@ def _expected_exercise(
     )
     parts = [
         _heading(exercise),
-        inline_text(scope) if print_policy == V36_PRINT_POLICY else scope,
+        inline_text(scope) if print_policy in V36_INLINE_PRINT_POLICIES else scope,
         prose(exercise.context),
     ]
     # Generic exercises print every material before the first question. Unlike
@@ -88,7 +89,7 @@ def _expected_exercise(
                     [
                         f"{credit.points.replace('.', ',')} {suffix}",
                         inline_text(credit.criterion)
-                        if print_policy == V36_PRINT_POLICY
+                        if print_policy in V36_INLINE_PRINT_POLICIES
                         else credit.criterion,
                     ]
                 )
@@ -119,7 +120,11 @@ def _check_graphs(
             if isinstance(material, NSIWeightedGraphMaterial)
         ]
         geometries = [
-            graph_layout(graph, large_print)
+            graph_layout(
+                graph,
+                large_print,
+                avoid_foreign_edges=print_policy == V36_PRINT_POLICY,
+            )
             if print_policy in V36_READABLE_PRINT_POLICIES
             else None
             for graph in graphs
@@ -184,7 +189,7 @@ def _check_code_lines(
         for text in texts:
             blocks = (
                 code_blocks(text)
-                if print_policy == V36_PRINT_POLICY
+                if print_policy in V36_INLINE_PRINT_POLICIES
                 else re.split(r"```(?:python|sql)?[ \t]*(?:\r?\n)?", text)[1::2]
             )
             for code in blocks:

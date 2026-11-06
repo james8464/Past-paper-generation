@@ -110,12 +110,14 @@ def test_adapter_passes_the_same_minimal_client_without_requiring_metadata(
         ),
         client_factory=factory,
     )
-    monkeypatch.setattr(
-        family_adapter,
-        "write_assessment_package",
-        lambda *args, **kwargs: packages.append(kwargs),
-    )
-    run_family_adapter(
+
+    def write_owned_package(_assessment, path, **kwargs):
+        packages.append(kwargs)
+        # Isolate client metadata while satisfying the writer's file contract.
+        path.write_text("{}", encoding="utf-8")
+
+    monkeypatch.setattr(family_adapter, "write_assessment_package", write_owned_package)
+    published = run_family_adapter(
         adapter,
         paper="1",
         syllabus_path=tmp_path / "syllabus.json",
@@ -133,6 +135,8 @@ def test_adapter_passes_the_same_minimal_client_without_requiring_metadata(
     assert packages[0]["provider"] == "ollama"
     assert packages[0]["model"] == "fixture-model"
     assert client.prompts == []
+    assert published["assessment_package"] == tmp_path / "out/fixture-assessment.json"
+    assert published["assessment_package"].read_text(encoding="utf-8") == "{}"
 
     def forbidden(*_args):
         pytest.fail("preview attempted AI work")
