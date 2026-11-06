@@ -73,6 +73,21 @@ def publication(tmp_path, monkeypatch):
     return llm_runtime, args, events
 
 
+def test_local_memory_refusal_has_a_distinct_terminal_code(publication, monkeypatch):
+    from Backend.Core.ollama_admission import ResourceAdmissionError
+
+    subject, args, events = publication
+
+    def refuse(*args, **kwargs):
+        raise ResourceAdmissionError("Local memory preflight refused the request.")
+
+    monkeypatch.setattr(subject.llm_pipeline, "generate", refuse)
+    assert subject.handle_generate_llm_assessment(args) == 1
+    assert events[-1]["type"] == "error"
+    assert events[-1]["code"] == "local_memory_unavailable"
+    assert not any(event["type"] in {"done", "file"} for event in events)
+
+
 @pytest.mark.parametrize("large_print", [False, True])
 def test_real_pdf_publication_keeps_model_identity_and_private_evidence(
     publication, large_print

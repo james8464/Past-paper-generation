@@ -225,6 +225,12 @@ def test_successful_provider_retry_keeps_rejected_raw_response(tmp_path):
 def test_real_french_provider_retry_is_checkpointed_after_success(
     tmp_path, monkeypatch
 ):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     from Backend.Core.france.graph_tree_authoring import author_closed_prose_parts
     from Backend.Core.france.provider import FrenchOllamaClient
 

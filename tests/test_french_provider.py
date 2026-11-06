@@ -7,6 +7,16 @@ import pytest
 from Backend.Core.france.pipeline import _prompt
 
 
+@pytest.fixture(autouse=True)
+def isolate_transport_from_host_resources(monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
+
+
 def test_french_transport_retains_each_rejected_raw_response(monkeypatch):
     from Backend.Core.france.graph_tree_authoring import part_selection_prompt
     from Backend.Core.france.graph_tree_contract import build_graph_tree_contract

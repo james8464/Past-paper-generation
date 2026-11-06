@@ -24,6 +24,13 @@ def api():
 
 
 def capture_ollama(monkeypatch, responses=None):
+    # Isolate prompt/transport contracts from host capacity and installed models.
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     payloads = []
     replies = iter(responses or ['{"ok":true}'])
 

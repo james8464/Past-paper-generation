@@ -29,6 +29,7 @@ from Backend.Core.mlx_batching import (
 )
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
+from Backend.Core.ollama_admission import require_local_ollama_capacity
 from Backend.Core.ollama_thinking import structured_thinking_policy
 
 
@@ -288,6 +289,7 @@ class HostedLLMClient:
         temperature: float | None = None,
         french_nsi: bool = False,
     ) -> dict[str, object]:
+        require_local_ollama_capacity(self.base_url, self.model)
         schema = _ollama_json_schema(prompt) if schema is None else schema
         budget = (
             _ollama_output_budget(schema) if output_budget is None else output_budget

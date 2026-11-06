@@ -47,6 +47,7 @@ from Backend.Core.layout_conformance import conform_generated_documents
 from Backend.Core.legacy_migration import environment_value, output_directory
 from Backend.Core.mlx_setup import MLXModelSetupRequired
 from Backend.Core.numeric_integrity import NUMERIC_INTEGRITY_VERSION
+from Backend.Core.ollama_admission import ResourceAdmissionError
 from Backend.Core.paths import REPO_ROOT, absolute_user_path
 from Backend.Core.pdf_validation import validate_pdf_for_release
 from Backend.Core.preview_presentation import validate_preview_pdf
@@ -141,6 +142,9 @@ def handle_generate(args: argparse.Namespace) -> int:
         return 130
     except MLXModelSetupRequired as error:
         emit("error", message=str(error), code="mlx_setup_required")
+        return 1
+    except ResourceAdmissionError as error:
+        emit("error", message=str(error), code=error.code)
         return 1
     except Exception as error:
         diagnostic_path = save_failure_diagnostic(

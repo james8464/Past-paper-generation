@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Local generation couldn't start within the memory checks. Choose a smaller model, close memory-heavy apps, or use a remote provider.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"La création locale n’a pas pu démarrer après les vérifications de mémoire. Choisissez un modèle plus petit, fermez les apps gourmandes en mémoire ou utilisez un moteur distant."}}}},
     "Failure details": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Détails de l’échec"}}}},
     "French assessment": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Sujet français"}}}},
     "Paper checks": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Vérification du sujet"}}}},

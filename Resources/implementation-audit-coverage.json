@@ -977,10 +977,10 @@
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
-      "source_sha256": "93b23741a9b738eecb797140b2e118a48ab962f37a19a8f9cf8fcdb901528057",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "f91c4282ccd09475c056f7cd0c0cbe1ebf37246ad83816960a0fffd8d66a9631",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1304,10 +1304,10 @@
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior complete 536-line EOF review at 0d4fd099 plus the complete Economics-only namespace delta; current 547 lines. Scoped bridge/direct checkpoint controls pass; dependencies and final release gates remain separate.",
-      "source_sha256": "afd4dcc8c2217f9c53ac7bed9e8a12d71fb72bf926852016aa51745ebb5ccea8",
-      "review_evidence": "docs/quality/economics-source-binding-review.md",
-      "review_evidence_sha256": "0821e1420f8755120d25289cb89b0a08697ed45cc0e5b77f94c88d9e0da122db"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "ad732c24e1b69ac8b51ebc4b88889a37d33fc9fc8f79cb8e23156f6869758d0e",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -1499,6 +1499,15 @@
       "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
     },
     {
+      "path": "Backend/Core/ollama_admission.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete new admission module/test file independently reviewed, with policy, transport, cancellation and bounded verification limits recorded. No live model or runtime-memory safety guarantee.",
+      "source_sha256": "482c3f7ed568a6ba215a9558fbdc0ef849bb8a9338fd78ae2b151c0721ea1308",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+    },
+    {
       "path": "Backend/Core/ollama_thinking.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -1601,10 +1610,10 @@
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete 1941-line baseline read plus both complete cancellation deltas; scoped transport/cache/budget/schema review and independently reviewed repair, not provider or paper qualification.",
-      "source_sha256": "30d54c477e3436c5a0fb0594a4a06ba545ccb91c0dfaa9f04ce781c85d914e35",
-      "review_evidence": "docs/quality/ollama-metadata-cancellation-review.md",
-      "review_evidence_sha256": "1aa704e3c1925cf579ffb04e42fcbc7195913e9df39e90858ed81124829713a5"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "3a151668353ab9b8bbde5f68ed7be6e8be6a18ff70e6193fc6211789cefede04",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -4034,6 +4043,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/local-model-memory-admission-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/local-parallel-reviews-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -5420,10 +5435,10 @@
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
-      "source_sha256": "be57f7a153c57538d052a1a0c4e983cdb26b34b162b472c4273222b412fcffc7",
-      "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "5d7104be75c1e3b1018fd52ad4af3c322c76165b47b9b5b7da3e9ef03e86462b",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -5897,10 +5912,10 @@
       "path": "macOS/Tests/FailurePresentationTests.swift",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Existing source-bound complete baseline plus entire reviewed delta for production files; new tests read in full. Bounded scope and release limits are in the linked evidence.",
-      "source_sha256": "da71fa760a772cdc7402c73ba1e8bc86c8e4734c445cdb6b6e2d649463102373",
-      "review_evidence": "docs/quality/generation-failure-history-review.md",
-      "review_evidence_sha256": "32ed19810dedb46a67f49217135746afdde3af8f8151efa9ce4f79e2563e4d6d"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "aca3a18c8f79acc84757f00648b9dc18d0d0750c91e58132e0db0eac428a726c",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",
@@ -7397,10 +7412,10 @@
       "path": "tests/test_french_provider.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete 243-line EOF review attributed to French reviewer, within the linked bounded scope and exact source hash. Originality report-isolation red/green controls are separate from unchanged network, inline, provider tests and Economics factory/CLI reads. No whole dependency, live model-quality, rights or release-acceptance claim.",
-      "source_sha256": "51513a6e400a6ef911e6186031cb566fbe43ca084166068c2c638dc69dd136dc",
-      "review_evidence": "docs/quality/originality-report-isolation-review.md",
-      "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
+      "source_sha256": "8c316a01ef8859c74f0118d4e97f05faf4f167501a31b5e3eb64dcd5fe7b11ea",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "tests/test_french_provider_contract_retry.py",
@@ -7986,6 +8001,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ollama_resource_admission.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new admission module/test file independently reviewed, with policy, transport, cancellation and bounded verification limits recorded. No live model or runtime-memory safety guarantee.",
+      "source_sha256": "8b55944bdf2f8ae3817f64f77e1c09d47b1b52eb9001015d4f0088b2c742afe7",
+      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
+      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
     },
     {
       "path": "tests/test_ollama_status.py",

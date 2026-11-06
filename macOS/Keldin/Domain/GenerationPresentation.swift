@@ -119,6 +119,9 @@ enum GenerationPresentation {
     }
 
     static func error(_ message: String, code: String? = nil, language: String = "system") -> String {
+        if code == "local_memory_unavailable" {
+            return localized("Local generation couldn't start within the memory checks. Choose a smaller model, close memory-heavy apps, or use a remote provider.", language: language)
+        }
         if message.hasPrefix("Les cinq familles disponibles sont trop proches des sujets précédents.") {
             return localized("None of the five paper families is sufficiently different from your saved papers. No new paper was created.", language: language)
         }
