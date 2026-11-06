@@ -39,7 +39,11 @@ class EssaySubjectPlugin:
 
         if not str(item.get("answer", "")).strip():
             diagnostics.append("indicative content is required")
-        if marks and marks >= 12 and not str(item.get("level_policy_id", "")).strip():
+        if (
+            type(marks) is int
+            and marks >= 12
+            and not str(item.get("level_policy_id", "")).strip()
+        ):
             diagnostics.append("extended responses require a level policy ID")
         if (
             self.id == "english-literature"
