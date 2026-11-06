@@ -42,6 +42,14 @@ emit `local_memory_unavailable`; the app presents a short English or French
 explanation. History retains its app-owned failure category rather than raw
 resource details. Existing cancellation exceptions remain cancellations.
 
+Ordinary request validation runs first. An initial full regression run found
+that the new probe masked the existing invalid French output-budget error. That
+run had 7,948 passing tests and one failure; it is not acceptance evidence. The
+probe now follows budget validation but still precedes metadata and inference
+for every valid request. A new forbidden-probe test reproduced the ordering
+error before the repair; the admission and DeepSeek groups then passed 115
+tests. This does not authorize a paid request or change any output ceiling.
+
 ## Verification and review scope
 
 Tests use fake model metadata, sensors and transports. They cover memory-policy

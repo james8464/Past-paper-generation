@@ -152,6 +152,15 @@
       "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
+      "path": "Backend/Core/accounting_levels.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete new helper/test file independently reviewed; bounded synthetic public-export, grouped-route and stale-cache controls remain separate from full-paper qualification.",
+      "source_sha256": "7a4bd8cceef7bfa2e674cf64f4b2d939e7081510130ba95058b0b95429cef8f5",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+    },
+    {
       "path": "Backend/Core/accounting_scheme_content.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -200,10 +209,10 @@
       "path": "Backend/Core/assessment_contracts.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "29b9102a463b7bdf8887e57cf6abfe42d0a41c1c17991341c3953837ff9d5a8e",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "a6928454a42d64f017b44e78cda72f172c0e1a64f1db2030c33435e1b7268b7f",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Backend/Core/assessment_objectives.py",
@@ -218,10 +227,10 @@
       "path": "Backend/Core/assessment_package.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file review within the documented French formatting and saved-data scope; remaining release and semantic-question checks are separate.",
-      "source_sha256": "52b14aa7074c25589ece964f82b91e219831cd29b4f565726351a7d932f6b48b",
-      "review_evidence": "docs/quality/french-format-and-data-review-2026-10-30.md",
-      "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "4f766d17fd054ce947afeab7c4ce5610ab801cc4f1fd0e8330a7844b60f88a3a",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Backend/Core/assessment_prompts.py",
@@ -980,7 +989,7 @@
       "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
       "source_sha256": "f91c4282ccd09475c056f7cd0c0cbe1ebf37246ad83816960a0fffd8d66a9631",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1307,7 +1316,7 @@
       "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
       "source_sha256": "ad732c24e1b69ac8b51ebc4b88889a37d33fc9fc8f79cb8e23156f6869758d0e",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -1505,7 +1514,7 @@
       "reason": "Complete new admission module/test file independently reviewed, with policy, transport, cancellation and bounded verification limits recorded. No live model or runtime-memory safety guarantee.",
       "source_sha256": "482c3f7ed568a6ba215a9558fbdc0ef849bb8a9338fd78ae2b151c0721ea1308",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "Backend/Core/ollama_thinking.py",
@@ -1610,10 +1619,10 @@
       "path": "Backend/Core/providers.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
-      "source_sha256": "3a151668353ab9b8bbde5f68ed7be6e8be6a18ff70e6193fc6211789cefede04",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "34a10a61899d0bcd2f3f51c2e695fbcdc9992642158177f4273987b50051ec93",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "Backend/Core/psychometrics.py",
@@ -1922,10 +1931,10 @@
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/cli.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Independent complete-file EOF review of dispatch, deferred rendering, checkpoint/client forwarding and failure propagation. Dependencies were read only in scope; not paper or whole-project qualification.",
-      "source_sha256": "3cdb7b55f64f6dde4a7b44b756c77bbbd75b5ffd9425acf0d27fab5420c12135",
-      "review_evidence": "docs/quality/cli-dispatch-boundary-review.md",
-      "review_evidence_sha256": "49b70a3ee627724b19a1f396acc4aa4c73fd04571b07297e4d164fc0bee3f27f"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "36d0ed945d342558cf29032129f643ef899e767828f2721ce12e5aa2bedeb778",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/configs.py",
@@ -1936,14 +1945,20 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "9358bba7b03f4d4b9b122bc484c2082a6716845018379d6f308d21fd854636f8",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/marking_policy.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
+      "source_sha256": "4205246b5d9aeca1b04f593087d6213fdb94a568ccc299aaf74615dd2e03c077",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py",
@@ -1954,8 +1969,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/scheme_policy.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
+      "source_sha256": "d66b307ab2903bee91ff5105d409c391803512bbfbfd19c4b824e64b877cd74b",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/selected_response.py",
@@ -2068,20 +2086,29 @@
     {
       "path": "Resources/business/aqa/generator/aqabizgen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "43b9b0000ea2f0e014d6b0668e6442712742f267554351e79e9d6f0660c6747f",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "c044cb98e90a9e4b4fd78e9ba45cb88fbb291a13e29e60230bbbd05b88056c1f",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
+      "source_sha256": "af6e1c541cfeecb7f078626394b9675903e08ebc1a7ab0db82ee6f33640f548b",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
     },
     {
       "path": "Resources/business/aqa/generator/data/difficulty-calibration.json",
@@ -3269,6 +3296,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/accounting-level-contract-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/accounting-paper-two-public-choice-binding-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3366,6 +3399,12 @@
     },
     {
       "path": "docs/quality/business-rounding-and-benchmark-completion-2026-11-03.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/business-source-and-marking-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5438,7 +5477,7 @@
       "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
       "source_sha256": "5d7104be75c1e3b1018fd52ad4af3c322c76165b47b9b5b7da3e9ef03e86462b",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -5915,7 +5954,7 @@
       "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
       "source_sha256": "aca3a18c8f79acc84757f00648b9dc18d0d0750c91e58132e0db0eac428a726c",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "macOS/Tests/FinalInterfaceGuardTests.swift",
@@ -6234,6 +6273,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_accounting_level_contracts.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new helper/test file independently reviewed; bounded synthetic public-export, grouped-route and stale-cache controls remain separate from full-paper qualification.",
+      "source_sha256": "bb83ee2dbed5cb9fe2b22620dd23fd60f37f52993a141a11c9ce53502322ab32",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "tests/test_accounting_marking_policy.py",
@@ -7415,7 +7463,7 @@
       "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
       "source_sha256": "8c316a01ef8859c74f0118d4e97f05faf4f167501a31b5e3eb64dcd5fe7b11ea",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "tests/test_french_provider_contract_retry.py",
@@ -7769,10 +7817,10 @@
       "path": "tests/test_level_of_response.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented boundary scope. Patch-only larger files and final release acceptance remain separate; no whole-project clearance.",
-      "source_sha256": "6c67a0af0d8ba2f57ba35f040b297e650aef099d31feee7feb60a0245f3bc5db",
-      "review_evidence": "docs/quality/core-policy-boundaries-review-2026-10-29.md",
-      "review_evidence_sha256": "c472b24feceb968224a9a24e3d19c1aa0187ed66cee254f050567baa498e57e7"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "b2792b951e4ace464fb2e9f3cc8f696e8ed1281e2c02564f0325574fc8bfbfef",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
     },
     {
       "path": "tests/test_live_generation_matrix.py",
@@ -8006,10 +8054,10 @@
       "path": "tests/test_ollama_resource_admission.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete new admission module/test file independently reviewed, with policy, transport, cancellation and bounded verification limits recorded. No live model or runtime-memory safety guarantee.",
-      "source_sha256": "8b55944bdf2f8ae3817f64f77e1c09d47b1b52eb9001015d4f0088b2c742afe7",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "b869b25cd0931c5ec51621b67ff5eeaf60a79c964e4ce2101eaa677890eb8c2a",
       "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "a7a2106edecd8d05e8768ce5960d28e428ab3a2e6aa2ab83b973ec7c1ae912f8"
+      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
     },
     {
       "path": "tests/test_ollama_status.py",
