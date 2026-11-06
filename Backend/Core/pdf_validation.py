@@ -234,6 +234,12 @@ def _font_embedding(
     return False, None
 
 
+def _unrotated_page_box(page: fitz.Page) -> fitz.Rect:
+    # PyMuPDF extraction coordinates are relative to the unrotated CropBox;
+    # only page.rect reflects /Rotate. CropBox offsets are already accounted for.
+    return page.rect * page.derotation_matrix
+
+
 def _page_print_evidence(
     page: fitz.Page,
     *,
@@ -241,6 +247,7 @@ def _page_print_evidence(
     margin_points: float,
     maximum_glyphs: int,
 ) -> dict[str, Any]:
+    page_bounds = _unrotated_page_box(page)
     raw = page.get_text("rawdict")
     drawings = page.get_drawings()
     glyphs: list[GlyphMetric] = []
@@ -256,7 +263,7 @@ def _page_print_evidence(
         if block.get("type") != 0:
             if "bbox" in block:
                 bounds = fitz.Rect(block["bbox"])
-                if not _is_decorative_bleed(bounds, page.rect):
+                if not _is_decorative_bleed(bounds, page_bounds):
                     content_rects.append(bounds)
             continue
         for line in block.get("lines", []):
@@ -271,13 +278,13 @@ def _page_print_evidence(
                 span_bbox = fitz.Rect(span.get("bbox", (0, 0, 0, 0)))
                 chars = span.get("chars", [])
                 span_text = "".join(str(char.get("c", "")) for char in chars)
-                if not _is_margin_furniture(span_text, span_bbox, page.rect):
+                if not _is_margin_furniture(span_text, span_bbox, page_bounds):
                     content_rects.append(span_bbox)
                 if LINE_MARK.search(span_text.strip()):
                     mark_positions.append(
                         (
-                            round(span_bbox.x1 / page.rect.width, 4),
-                            round(span_bbox.y0 / page.rect.height, 4),
+                            round(span_bbox.x1 / page_bounds.width, 4),
+                            round(span_bbox.y0 / page_bounds.height, 4),
                         )
                     )
                 for char_index, char in enumerate(chars):
@@ -325,7 +332,7 @@ def _page_print_evidence(
         rule["start"][1]
         for rule in rules
         if abs(rule["start"][1] - rule["end"][1]) < 0.5
-        and rule["length"] >= page.rect.width * 0.45
+        and rule["length"] >= page_bounds.width * 0.45
     )
     answer_spacing = [
         round(right - left, 3)
@@ -342,14 +349,14 @@ def _page_print_evidence(
         for image in page.get_image_info(hashes=False)
     ]
     safe_box = fitz.Rect(
-        page.rect.x0 + margin_points,
-        page.rect.y0 + margin_points,
-        page.rect.x1 - margin_points,
-        page.rect.y1 - margin_points,
+        page_bounds.x0 + margin_points,
+        page_bounds.y0 + margin_points,
+        page_bounds.x1 - margin_points,
+        page_bounds.y1 - margin_points,
     )
     return {
         "page": page.number + 1,
-        "page_box": tuple(round(float(value), 3) for value in page.rect),
+        "page_box": tuple(round(float(value), 3) for value in page_bounds),
         "content_box": (
             tuple(round(float(value), 3) for value in content_rect)
             if content_rect is not None
@@ -484,12 +491,13 @@ def _page_text_contrasts(
     drawings: list[dict[str, Any]],
 ) -> list[float]:
     contrasts: list[float] = []
+    page_bounds = _unrotated_page_box(page)
     for trace in page.get_texttrace():
         if trace.get("type") != 0:
             continue
         bounds = fitz.Rect(trace.get("bbox", (0, 0, 0, 0)))
         text = "".join(chr(int(char[0])) for char in trace.get("chars", []))
-        if not text.strip() or _is_margin_furniture(text, bounds, page.rect):
+        if not text.strip() or _is_margin_furniture(text, bounds, page_bounds):
             continue
         sequence = int(trace.get("seqno", -1))
         if text_trace_is_occluded(trace, drawings):
@@ -654,6 +662,7 @@ def validate_pdf_for_release(
                 raise ValueError(
                     f"{path.name} page {page_index} has an invalid page box"
                 )
+            page_bounds = _unrotated_page_box(page)
             if page.first_annot is not None:
                 raise ValueError(
                     f"{path.name} page {page_index} contains an annotation"
@@ -686,10 +695,10 @@ def validate_pdf_for_release(
                             bbox = fitz.Rect(span.get("bbox", (0, 0, 0, 0)))
                             text_spans.append((text.strip(), bbox))
                             if (
-                                bbox.x0 < page.rect.x0 - 2
-                                or bbox.y0 < page.rect.y0 - 2
-                                or bbox.x1 > page.rect.x1 + 2
-                                or bbox.y1 > page.rect.y1 + 2
+                                bbox.x0 < page_bounds.x0 - 2
+                                or bbox.y0 < page_bounds.y0 - 2
+                                or bbox.x1 > page_bounds.x1 + 2
+                                or bbox.y1 > page_bounds.y1 + 2
                             ):
                                 raise ValueError(
                                     f"{path.name} page {page_index} contains "
@@ -698,8 +707,35 @@ def validate_pdf_for_release(
             image_info = page.get_image_info(hashes=False)
             for image in image_info:
                 bbox = fitz.Rect(image["bbox"])
-                if bbox.width <= 0 or bbox.height <= 0:
-                    continue
+                if (
+                    not all(
+                        math.isfinite(value)
+                        for value in (bbox.x0, bbox.y0, bbox.x1, bbox.y1)
+                    )
+                    or bbox.is_empty
+                    or bbox.is_infinite
+                    or any(
+                        type(image[key]) is not int or image[key] <= 0
+                        for key in ("width", "height")
+                    )
+                ):
+                    raise ValueError(
+                        f"{path.name} page {page_index} has invalid image geometry"
+                    )
+                # Preserve the existing full-page background heuristic. It does
+                # not establish that an image is decorative or semantically complete.
+                tolerance_box = fitz.Rect(
+                    page_bounds.x0 - 0.01,
+                    page_bounds.y0 - 0.01,
+                    page_bounds.x1 + 0.01,
+                    page_bounds.y1 + 0.01,
+                )
+                if not _is_decorative_bleed(
+                    bbox, page_bounds
+                ) and not tolerance_box.contains(bbox):
+                    raise ValueError(
+                        f"{path.name} page {page_index} contains an image outside the page box"
+                    )
                 horizontal = image["width"] / (bbox.width / 72)
                 vertical = image["height"] / (bbox.height / 72)
                 image_dpi.append(min(horizontal, vertical))
@@ -739,7 +775,9 @@ def validate_pdf_for_release(
                 {
                     "page": page_index,
                     "characters": page_characters,
-                    "text_occupancy": round(_text_occupancy(text_spans, page.rect), 4),
+                    "text_occupancy": round(
+                        _text_occupancy(text_spans, page_bounds), 4
+                    ),
                     "vector_objects": vector_objects,
                     "images": len(image_info),
                     "intentional_blank": intentional_blank,
@@ -771,9 +809,9 @@ def validate_pdf_for_release(
                 )
                 and not any(
                     drawing["rect"].x1 > 50
-                    and drawing["rect"].x0 < page.rect.width - 50
+                    and drawing["rect"].x0 < _unrotated_page_box(page).width - 50
                     and drawing["rect"].y1 > 56
-                    and drawing["rect"].y0 < page.rect.height - 56
+                    and drawing["rect"].y0 < _unrotated_page_box(page).height - 56
                     for drawing in page.get_drawings()
                 )
             ]

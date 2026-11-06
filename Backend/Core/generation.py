@@ -13,9 +13,11 @@ import signal
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import traceback
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import ExitStack, contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -487,7 +489,41 @@ def _atomic_publish(source: Path, destination: Path) -> Path:
     return destination
 
 
+@contextmanager
+def _publication_lease(
+    output_dir: Path, *, timeout_seconds: float = 30
+) -> Iterator[None]:
+    # Different generation identities can still replace the same filenames.
+    # Keep one persistent, hidden lock inode for the whole output directory.
+    lock_path = (
+        output_directory(output_dir.resolve(), ".keldin-checkpoints") / "publication"
+    )
+    deadline = time.monotonic() + timeout_seconds
+    with ExitStack() as stack:
+        while True:
+            try:
+                stack.enter_context(checkpoint_job_lease(lock_path))
+                break
+            except CheckpointBusy as error:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise CheckpointBusy(
+                        "Another paper is being saved to this folder. Try again or choose another output folder."
+                    ) from error
+                # Unlike a blocking flock, bounded waits preserve cancellation
+                # and do not wait indefinitely for a stalled publisher.
+                time.sleep(min(0.05, remaining))
+        yield
+
+
 def _publish_document_set(paths: dict[str, Path], output_dir: Path) -> dict[str, Path]:
+    with _publication_lease(output_dir):
+        return _publish_document_set_locked(paths, output_dir)
+
+
+def _publish_document_set_locked(
+    paths: dict[str, Path], output_dir: Path
+) -> dict[str, Path]:
     destinations = {role: output_dir / source.name for role, source in paths.items()}
     if len(set(destinations.values())) != len(destinations):
         raise OSError("Generated document filenames must be distinct")

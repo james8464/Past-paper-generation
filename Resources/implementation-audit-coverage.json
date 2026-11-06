@@ -1258,8 +1258,11 @@
     {
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full baseline EOF plus complete publication-lease delta reviewed, with independent lease/transaction/lock-order and new-test review. Dependencies were inspected in scope; no immutable-reader, whole-project or paper-quality qualification.",
+      "source_sha256": "a78c6b7e29292bf521bc3cfeef0561e3d707065f9b2d47cdc4a534c35a67119f",
+      "review_evidence": "docs/quality/cli-publication-lease-review.md",
+      "review_evidence_sha256": "cf5c40971e304b0da2e295d188a8f8523281fb4afc0317835f8baa22f0fdb40c"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -1414,8 +1417,11 @@
     {
       "path": "Backend/Core/numeric_integrity.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Author and independent reviewer read the repaired 310-line file through EOF, with scoped caller and test review. Full-suite and packaged release acceptance remain separate; no whole-project or generated-answer correctness claim.",
+      "source_sha256": "5196aa7c1531b1589c838f7a5350651f3218982f470cb0b2d4275b81deaca9fc",
+      "review_evidence": "docs/quality/numeric-variance-currency-boundary-review.md",
+      "review_evidence_sha256": "9337ccba5e660f32659a715f379558757aab6df977972a4dea5030204cdcc32d"
     },
     {
       "path": "Backend/Core/ocr_scheme_content.py",
@@ -1435,8 +1441,11 @@
     {
       "path": "Backend/Core/ollama_thinking.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete-file EOF review of advertised capability types, bounds, defaults and missing/malformed metadata behavior, with scoped callers and tests. No model-quality or whole-project qualification.",
+      "source_sha256": "cbb1f984829e30de72783542c6814f64970bfe05057ec1d7a73b04b62ada1a62",
+      "review_evidence": "docs/quality/generation-evidence-presentation-review.md",
+      "review_evidence_sha256": "53db38227e89ad9ebf152eadb80c1b7751a5494fcf6630c7acb459e6080c1dc1"
     },
     {
       "path": "Backend/Core/open_credit.py",
@@ -1504,8 +1513,11 @@
     {
       "path": "Backend/Core/pdf_validation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Full 975-line baseline EOF and complete geometry repair delta reviewed, with independent extraction, containment, metric and new-test review plus four owned fixture renders. Existing background heuristic remains limited; no full print-safety, paper-quality or whole-project qualification.",
+      "source_sha256": "806e89959831557ff5768120bd54ee8fc134db6204c0ebaf6527c7bcad925e0a",
+      "review_evidence": "docs/quality/pdf-image-geometry-review.md",
+      "review_evidence_sha256": "a47e5a6414550c784a7c805741df712ca03a897f4200907edfd5c6b20cfafcdd"
     },
     {
       "path": "Backend/Core/preview_presentation.py",
@@ -1768,8 +1780,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete-file EOF review of dispatch, deferred rendering, checkpoint/client forwarding and failure propagation. Dependencies were read only in scope; not paper or whole-project qualification.",
+      "source_sha256": "3cdb7b55f64f6dde4a7b44b756c77bbbd75b5ffd9425acf0d27fab5420c12135",
+      "review_evidence": "docs/quality/cli-dispatch-boundary-review.md",
+      "review_evidence_sha256": "49b70a3ee627724b19a1f396acc4aa4c73fd04571b07297e4d164fc0bee3f27f"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/configs.py",
@@ -2212,8 +2227,11 @@
     {
       "path": "Resources/configured-generators/generator/configuredgen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete-file EOF review of dispatch, configured-role admission, deferred rendering and failure propagation. Dependencies were read only in scope; not paper or whole-project qualification.",
+      "source_sha256": "9a02e63d6e3307392c5764be11c25523f9dddbaee4a641ad6d5b0107966da0e4",
+      "review_evidence": "docs/quality/cli-dispatch-boundary-review.md",
+      "review_evidence_sha256": "49b70a3ee627724b19a1f396acc4aa4c73fd04571b07297e4d164fc0bee3f27f"
     },
     {
       "path": "Resources/configured-generators/generator/configuredgen/generator.py",
@@ -3161,6 +3179,18 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cli-dispatch-boundary-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/cli-publication-lease-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/compact-navigation-review-2026-11-02.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3605,6 +3635,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/generation-evidence-presentation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/generation-navigation-and-performance-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3887,6 +3923,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/numeric-variance-currency-boundary-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/occitanie-case-study-review-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3966,6 +4008,12 @@
     },
     {
       "path": "docs/quality/pdf-document-access-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/pdf-image-geometry-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5002,8 +5050,11 @@
     {
       "path": "macOS/Keldin/Domain/GenerationPresentation.swift",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete-file EOF review of reference and quality status presentation, saved/current evidence separation and diagnostic retention, with scoped callers and tests. No interface, whole-app or HIG certification.",
+      "source_sha256": "b44d8386b5263d0d3c3a7a2a7b2715895805538985c4aa969d2ce75aea501a83",
+      "review_evidence": "docs/quality/generation-evidence-presentation-review.md",
+      "review_evidence_sha256": "53db38227e89ad9ebf152eadb80c1b7751a5494fcf6630c7acb459e6080c1dc1"
     },
     {
       "path": "macOS/Keldin/Domain/HostedModelCandidate.swift",
@@ -7295,6 +7346,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_numeric_variance_validation.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_occitanie_case_study.py",
       "classification": "test",
       "status": "pending",
@@ -7385,6 +7442,12 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_pdf_image_geometry.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
       "path": "tests/test_pdf_process.py",
       "classification": "test",
       "status": "reviewed",
@@ -7416,6 +7479,12 @@
     },
     {
       "path": "tests/test_psychometrics.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_publication_concurrency.py",
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
