@@ -64,6 +64,27 @@ PROGRAMME_REFERENCE_LIMIT = 10
 OFFICIAL_PAPER_REFERENCE_LIMIT = 2
 REFERENCE_LIMIT = PROGRAMME_REFERENCE_LIMIT + OFFICIAL_PAPER_REFERENCE_LIMIT
 SOURCE_POLICY = "fr-nsi-v36-exercise-curriculum-scope-v1"
+LEGACY_AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-machine-fields-v1"
+AUTHORING_SCHEMA_POLICY = "fr-nsi-v36-positive-points-v1"
+
+
+def _validate_authoring_schema_policy(value: str) -> str:
+    if type(value) is not str or value not in {
+        LEGACY_AUTHORING_SCHEMA_POLICY,
+        AUTHORING_SCHEMA_POLICY,
+    }:
+        raise ValueError("Politique de schéma de rédaction NSI invalide")
+    return value
+
+
+def _identity_authoring_schema_policy(identity: dict) -> str:
+    # Retained V36 identities predate this field; do not relabel their evidence.
+    if "authoring_schema_policy" not in identity:
+        return LEGACY_AUTHORING_SCHEMA_POLICY
+    value = identity["authoring_schema_policy"]
+    if type(value) is not str or value != AUTHORING_SCHEMA_POLICY:
+        raise ValueError("Politique de schéma de rédaction NSI invalide")
+    return value
 
 
 def curriculum_plan(seed: int) -> list[str]:
@@ -151,13 +172,18 @@ def exercise_request(
     large_print: bool = False,
     sql_source_binding: bool = True,
     primary_topic: str | None = None,
+    authoring_schema_policy: str = AUTHORING_SCHEMA_POLICY,
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
     layout = code_layout(large_print)
     if primary_topic is not None and primary_topic not in TOPICS:
         raise ValueError("Domaine principal NSI invalide")
-    schema = authoring_schema(machine_field_constraints=True)
+    schema_policy = _validate_authoring_schema_policy(authoring_schema_policy)
+    schema = authoring_schema(
+        machine_field_constraints=True,
+        positive_points=schema_policy == AUTHORING_SCHEMA_POLICY,
+    )
     schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
     schema["properties"]["minutes"] = {"type": "integer", "const": 70}
@@ -547,12 +573,17 @@ def validate_authored_exercise(
     *,
     large_print: bool | None = None,
     sql_source_binding: bool = True,
+    authoring_schema_policy: str = AUTHORING_SCHEMA_POLICY,
 ) -> NSIExercise:
     if not isinstance(raw, dict) or len(json.dumps(raw, ensure_ascii=False)) > 160000:
         raise ValueError("Exercice NSI absent ou trop volumineux")
     Draft202012Validator(
         exercise_request(
-            exercise_id, 0, [], sql_source_binding=sql_source_binding
+            exercise_id,
+            0,
+            [],
+            sql_source_binding=sql_source_binding,
+            authoring_schema_policy=authoring_schema_policy,
         ).schema
     ).validate(raw)
     require_authoring_fields(raw, allow_empty_materials=True)
@@ -1465,7 +1496,16 @@ def _signed_phase_seed(value: int) -> int:
 
 
 def _round_request(
-    client, scope, seed, identifier, number, topics, large_print, refusal
+    client,
+    scope,
+    seed,
+    identifier,
+    number,
+    topics,
+    large_print,
+    refusal,
+    *,
+    authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
 ):
     round_seed = _signed_phase_seed(
         seed + int(identifier) + (1_000_003 if number == 2 else 0)
@@ -1478,6 +1518,7 @@ def _round_request(
         output_budget=_phase_output_budget(client, "author"),
         large_print=large_print,
         primary_topic=scope["primary_topic"],
+        authoring_schema_policy=authoring_schema_policy,
     )
     if refusal is not None:
         prefix, marker, schema = request.prompt.rpartition("\nOUTPUT_SCHEMA=")
@@ -1559,6 +1600,7 @@ def _round_record(number, request_identity, authoring, captured, refusal):
 
 def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=False):
     identity = package["identity"]
+    schema_policy = _identity_authoring_schema_policy(identity)
     histories = package.get("exercise_attempts")
     if (
         not isinstance(histories, list)
@@ -1624,6 +1666,7 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
                 topics,
                 identity["large_print"],
                 refusal,
+                authoring_schema_policy=schema_policy,
             )
             if (
                 not isinstance(record["request"], dict)
@@ -1639,6 +1682,7 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
                 identifier,
                 large_print=identity["large_print"],
                 sql_source_binding=True,
+                authoring_schema_policy=schema_policy,
             )
             _require_primary_topic(candidate, scope["primary_topic"])
             _validate_authoring_record(
@@ -1672,8 +1716,16 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
             topics.update(exercise.topics)
 
 
-def _recovery_identity(provider, model, seed, large_print):
-    return {
+def _recovery_identity(
+    provider,
+    model,
+    seed,
+    large_print,
+    *,
+    authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
+):
+    schema_policy = _validate_authoring_schema_policy(authoring_schema_policy)
+    identity = {
         "provider": provider,
         "model": model,
         "seed": seed,
@@ -1687,6 +1739,9 @@ def _recovery_identity(provider, model, seed, large_print):
         "assessment": asdict(NSI_2027),
         "implementation_sha256": implementation_identity(),
     }
+    if schema_policy == AUTHORING_SCHEMA_POLICY:
+        identity["authoring_schema_policy"] = schema_policy
+    return identity
 
 
 def validate_rejected_rounds(details: dict) -> None:
@@ -1709,6 +1764,7 @@ def validate_rejected_rounds(details: dict) -> None:
             identity["model"],
             identity["seed"],
             identity["large_print"],
+            authoring_schema_policy=_identity_authoring_schema_policy(identity),
         )
         or details.get("review_recovery_policy") != REVIEW_RECOVERY_POLICY
     ):
@@ -1754,6 +1810,7 @@ def validate_rejected_rounds(details: dict) -> None:
             str(index),
             large_print=identity["large_print"],
             sql_source_binding=True,
+            authoring_schema_policy=_identity_authoring_schema_policy(identity),
         )
         exercises.append(exercise)
         reviews.append(
@@ -2007,6 +2064,7 @@ def validate_package(package: dict) -> list[NSIExercise]:
     if not isinstance(package, dict) or not isinstance(package.get("identity"), dict):
         raise ValueError("Paquet V36 absent")
     identity = package["identity"]
+    schema_policy = _identity_authoring_schema_policy(identity)
     if identity.get("review_recovery_policy") != REVIEW_RECOVERY_POLICY:
         raise ValueError("Politique de nouvelle rédaction V36 invalide")
     if identity.get("sql_source_policy") != SQL_SOURCE_POLICY:
@@ -2061,6 +2119,7 @@ def validate_package(package: dict) -> list[NSIExercise]:
             str(i),
             large_print=identity["large_print"] if has_layout else None,
             sql_source_binding=True,
+            authoring_schema_policy=schema_policy,
         )
         for i, value in enumerate(raw, 1)
     ]

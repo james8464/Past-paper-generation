@@ -968,10 +968,10 @@
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "8a71984c16628be3301d07fb25b39964cc573c50acb1a1ed5fd19cf2b03d7e50",
-      "review_evidence": "docs/quality/french-pipeline-source-bound-review.md",
-      "review_evidence_sha256": "f3630b0f6550e76e217c54adfa4ff8ca5d290e5041eb3f2050ea6750597236f6"
+      "reason": "Composite source-bound review: prior complete 2102-line EOF at source8a71984c/evidencef3630b0f plus complete net59-line positive-schema policy delta and scoped callers, current2161lines. Not a fresh current whole-file EOF read. Policy provenance/golden legacy request and round checks preserve strict source identity; live French qualification and dependencies remain separate.",
+      "source_sha256": "8bb39421991695bf18865134e49e6aaf0d334e7dfd5ff8c533084887861babfa",
+      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
+      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1102,8 +1102,11 @@
     {
       "path": "Backend/Core/france/nsi.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root read complete current469-line EOF; independent reviewer read complete schema delta. New versioned generation grammar expresses existing strictly-positive credit invariant without changing runtime validators, legacy default schemas, prompt prose or numeric bounds. Not a full dependency or live-paper qualification.",
+      "source_sha256": "4eafcd9474c35bf02e2a23cdd923f44b5dc72b7e5633c3729e579a5b55f2b4c4",
+      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
+      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
     },
     {
       "path": "Backend/Core/france/occitanie_case_study.py",
@@ -3801,6 +3804,12 @@
     },
     {
       "path": "docs/quality/french-pipeline-source-bound-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-positive-credit-schema-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7257,6 +7266,15 @@
       "source_sha256": "a791db86a680fc84a77c95606a51100fbecd5a782831c795934b1d07a3fe526d",
       "review_evidence": "docs/quality/originality-report-isolation-review.md",
       "review_evidence_sha256": "2754c42b9e93f321c67c024556c0509f37891059c88609fa3fd5f7cd53518165"
+    },
+    {
+      "path": "tests/test_french_positive_credit_schema.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Root and independent reviewer read complete242-line EOF. Genuine12zero-field baseline failures distinguished from24not-yet-implemented API failures; focused305tests and actual installed llguidance grammar compilation passed. Historical default/golden request/round and policy provenance controls are not cross-source implementation replay or live inference qualification.",
+      "source_sha256": "9ac5d4d0815f93090164eda979760189ff3cb8b88cf50afa0c6ebfacdc4dfb28",
+      "review_evidence": "docs/quality/french-positive-credit-schema-review.md",
+      "review_evidence_sha256": "6e53430442f00a41306ee8aa3c46e2f69a35e931d6b599840a19de813ececd83"
     },
     {
       "path": "tests/test_french_postfix_exercise.py",
