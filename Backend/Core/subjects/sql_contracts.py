@@ -824,7 +824,13 @@ def _parse_select(stream: _TokenStream) -> _Select:
     threshold = stream.integer()
     stream.keyword("ORDER")
     stream.keyword("BY")
-    if stream.peek("COUNT"):
+    # COUNT is also a valid output alias. Only its parenthesised form is the
+    # aggregate; a bare name still has to match the declared count alias below.
+    if (
+        stream.peek("COUNT")
+        and stream.index + 1 < len(stream.tokens)
+        and stream.tokens[stream.index + 1].value == "("
+    ):
         order: _Count | str = _count(stream)
     else:
         order = stream.identifier()
