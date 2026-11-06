@@ -156,9 +156,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Complete new helper/test file independently reviewed; bounded synthetic public-export, grouped-route and stale-cache controls remain separate from full-paper qualification.",
-      "source_sha256": "7a4bd8cceef7bfa2e674cf64f4b2d939e7081510130ba95058b0b95429cef8f5",
+      "source_sha256": "309bd575ba3827cc8b6bf6d38416fe371645414d35e6d6157db14b0077248984",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Backend/Core/accounting_scheme_content.py",
@@ -212,7 +212,7 @@
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
       "source_sha256": "a6928454a42d64f017b44e78cda72f172c0e1a64f1db2030c33435e1b7268b7f",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Backend/Core/assessment_objectives.py",
@@ -228,9 +228,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "4f766d17fd054ce947afeab7c4ce5610ab801cc4f1fd0e8330a7844b60f88a3a",
+      "source_sha256": "54c10cce862565fe30eb01f3bd55d6e48f58660ffdca52a3c62e2121c27a1d3b",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Backend/Core/assessment_prompts.py",
@@ -1934,7 +1934,7 @@
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
       "source_sha256": "36d0ed945d342558cf29032129f643ef899e767828f2721ce12e5aa2bedeb778",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/configs.py",
@@ -1949,7 +1949,7 @@
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
       "source_sha256": "9358bba7b03f4d4b9b122bc484c2082a6716845018379d6f308d21fd854636f8",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/marking_policy.py",
@@ -1958,7 +1958,7 @@
       "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
       "source_sha256": "4205246b5d9aeca1b04f593087d6213fdb94a568ccc299aaf74615dd2e03c077",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py",
@@ -1973,7 +1973,7 @@
       "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
       "source_sha256": "d66b307ab2903bee91ff5105d409c391803512bbfbfd19c4b824e64b877cd74b",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/selected_response.py",
@@ -6259,8 +6259,11 @@
     {
       "path": "tests/test_accounting_budget_assumptions.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "d89037354a27eeffa94fd07c227dff535789c4a07146e6b6dff6c8e1b68980bd",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "tests/test_accounting_case_projection.py",
@@ -6279,15 +6282,18 @@
       "classification": "test",
       "status": "reviewed",
       "reason": "Complete new helper/test file independently reviewed; bounded synthetic public-export, grouped-route and stale-cache controls remain separate from full-paper qualification.",
-      "source_sha256": "bb83ee2dbed5cb9fe2b22620dd23fd60f37f52993a141a11c9ce53502322ab32",
+      "source_sha256": "a943df801aae7207a2ae194eb122c5a64693bae5e486f93253b30efe96eaa5a1",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "tests/test_accounting_marking_policy.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "5d3e20150854dea28e5db5f4b1e27eb91873a4762fcccff71030354724156649",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "tests/test_accounting_objectives.py",
@@ -6310,8 +6316,11 @@
     {
       "path": "tests/test_accounting_private_credit.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "dcb935efe098bc8eac915978e152e3c27ad257c7077b3254dfefe308e7ecea6c",
+      "review_evidence": "docs/quality/accounting-level-contract-review.md",
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "tests/test_accounting_scheme_pagination.py",
@@ -7820,7 +7829,7 @@
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
       "source_sha256": "b2792b951e4ace464fb2e9f3cc8f696e8ed1281e2c02564f0325574fc8bfbfef",
       "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "41263f799225306e0015079b4527a710bfc5c41ce22a574d6e6c605fb3ab79bc"
+      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
     },
     {
       "path": "tests/test_live_generation_matrix.py",
