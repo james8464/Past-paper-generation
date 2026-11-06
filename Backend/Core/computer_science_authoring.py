@@ -36,6 +36,7 @@ REVIEW_FIELDS = {
     "reviewed_content_sha256",
     "reviewed_blueprint_sha256",
 }
+AQA_CS_VISIBLE_SOURCE_POLICY = "aqa-cs-visible-source-v2-whole-table"
 
 
 def authoring_route(question: dict[str, Any]) -> str:
@@ -71,6 +72,7 @@ def question_content_sha256(question: dict[str, Any]) -> str:
             {
                 "credit_policy": CREDIT_POLICY_VERSION,
                 "sql_validation": sql_version,
+                "visible_source_policy": AQA_CS_VISIBLE_SOURCE_POLICY,
                 "content": content,
             },
             sort_keys=True,

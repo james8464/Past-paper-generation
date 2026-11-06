@@ -1230,16 +1230,19 @@ def candidate_stimulus_data(stimulus: Stimulus | None) -> dict[str, object]:
         )
     elif stimulus.kind == "optical":
         data["visible_labels"] = ["laser", "spiral track", "pits and lands"]
-    if stimulus.kind in {"table", "bitgrid", "packet", "truth_table", "fsm"}:
-        data["headers"] = [cell[:34] for cell in stimulus.headers]
-        data["rows"] = [[cell[:34] for cell in row] for row in stimulus.rows]
     return data
 
 
 def _render_stimulus(
     pdf: canvas.Canvas, stimulus: Stimulus, state: _QuestionRenderState
 ) -> _QuestionRenderState:
-    state = _ensure_space(pdf, state, 110)
+    needed = 110
+    if stimulus.kind in {"table", "bitgrid", "packet", "truth_table", "fsm"}:
+        _, heights, _ = _table_layout(stimulus)
+        needed = 18 + sum(heights) + 8 + (104 if stimulus.kind == "fsm" else 0)
+        if needed > 724 - BOTTOM:
+            raise ValueError("Table stimulus does not fit inside one question page")
+    state = _ensure_space(pdf, state, needed)
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y, stimulus.title)
     state.y -= 18
@@ -1271,23 +1274,69 @@ def _render_stimulus(
     return state
 
 
+def _table_cell_lines(value: str, font: str, width: float) -> tuple[str, ...]:
+    if pdfmetrics.stringWidth(value, font, 8) <= width:
+        return (value,)
+    # Do not change significant spacing to make a cell fit. Existing short cells
+    # retain their literal text; longer prose may break only between its words.
+    if value != " ".join(value.split()):
+        raise ValueError("Table cell cannot wrap without changing its spacing")
+    lines: list[str] = []
+    current = ""
+    for word in value.split(" "):
+        if pdfmetrics.stringWidth(word, font, 8) > width:
+            raise ValueError("Table cell contains a word wider than its column")
+        candidate = f"{current} {word}" if current else word
+        if current and pdfmetrics.stringWidth(candidate, font, 8) > width:
+            lines.append(current)
+            current = word
+        else:
+            current = candidate
+    if current:
+        lines.append(current)
+    return tuple(lines)
+
+
+def _table_layout(
+    stimulus: Stimulus,
+) -> tuple[list[list[tuple[str, ...]]], list[int], float]:
+    cols = len(stimulus.headers)
+    if not cols or any(len(row) > cols for row in stimulus.rows):
+        raise ValueError("Table cells must have corresponding column headers")
+    col_w = 390 / cols
+    if col_w <= 8:
+        raise ValueError("Table columns are too narrow for their text padding")
+    rows: list[list[tuple[str, ...]]] = []
+    heights: list[int] = []
+    for index, values in enumerate([stimulus.headers, *stimulus.rows]):
+        font = FONT_BOLD if index == 0 else FONT
+        lines = [
+            _table_cell_lines(
+                values[column] if column < len(values) else "", font, col_w - 8
+            )
+            for column in range(cols)
+        ]
+        rows.append(lines)
+        heights.append(20 + 10 * (max(map(len, lines)) - 1))
+    return rows, heights, col_w
+
+
 def _draw_table(pdf: canvas.Canvas, stimulus: Stimulus, x: float, y: float) -> float:
-    width = 390
-    cols = max(1, len(stimulus.headers))
-    col_w = width / cols
-    row_h = 20
-    rows = [stimulus.headers, *stimulus.rows]
+    rows, heights, col_w = _table_layout(stimulus)
+    if y - sum(heights) - 8 < BOTTOM:
+        raise ValueError("Table does not fit above the question-page footer")
     pdf.setFillColor(colors.HexColor("#f4f4f4"))
-    pdf.rect(x, y - row_h, width, row_h, stroke=0, fill=1)
+    pdf.rect(x, y - heights[0], 390, heights[0], stroke=0, fill=1)
     pdf.setFillColor(colors.black)
     for r_index, row in enumerate(rows):
-        y0 = y - r_index * row_h
-        for c_index in range(cols):
-            pdf.rect(x + c_index * col_w, y0 - row_h, col_w, row_h, stroke=1, fill=0)
-            value = row[c_index] if c_index < len(row) else ""
+        row_h = heights[r_index]
+        for c_index, lines in enumerate(row):
+            pdf.rect(x + c_index * col_w, y - row_h, col_w, row_h, stroke=1, fill=0)
             pdf.setFont(FONT_BOLD if r_index == 0 else FONT, 8)
-            pdf.drawString(x + c_index * col_w + 4, y0 - 14, value[:34])
-    return y - len(rows) * row_h - 8
+            for line_index, line in enumerate(lines):
+                pdf.drawString(x + c_index * col_w + 4, y - 14 - line_index * 10, line)
+        y -= row_h
+    return y - 8
 
 
 def _draw_fsm_stimulus(
