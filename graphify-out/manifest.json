@@ -350,8 +350,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/pdf_validation.py": {
-    "mtime": 1793929502.7168293,
-    "ast_hash": "f54df6933fc3c1069ad40aa27f7a3dbe",
+    "mtime": 1793971738.1390343,
+    "ast_hash": "49f66dbc4655255d13424cc2b3953bbb",
     "semantic_hash": ""
   },
   "Backend/Core/providers.py": {
@@ -675,8 +675,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/paper1_assets.py": {
-    "mtime": 1793638839.7071323,
-    "ast_hash": "b0ee667642da35d21f58d698fa62cbb3",
+    "mtime": 1793972082.9463942,
+    "ast_hash": "9e52d6ad9586f4bee08be9ab1b78454e",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/question_bank.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1793963088.187039,
-    "ast_hash": "2003d40dfe3ad57cccbc5cef1aff0c7c",
+    "mtime": 1793966561.2697341,
+    "ast_hash": "99d85fd6f84501cbe1c9443321da608f",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -5857,6 +5857,41 @@
   "docs/quality/shared-generation-boundary-audit.md": {
     "mtime": 1793966515.2179751,
     "ast_hash": "8105ba1bdb19df4030006374a24a03e8",
+    "semantic_hash": ""
+  },
+  "macOS/Tests/GenerationCancellationInteractiveTests.swift": {
+    "mtime": 1793972189.9765222,
+    "ast_hash": "7ab7803361a8acbdbc013d176d342298",
+    "semantic_hash": ""
+  },
+  "tests/test_cs1_answer_response_flow.py": {
+    "mtime": 1793972082.9466183,
+    "ast_hash": "0cb8ed893e41c1cd2b8bf5c76985bc47",
+    "semantic_hash": ""
+  },
+  "tests/test_pdf_widget_clearance.py": {
+    "mtime": 1793971685.767613,
+    "ast_hash": "afa837f248adf338c89b796a65e3afa6",
+    "semantic_hash": ""
+  },
+  "docs/quality/answer-field-clearance-review.md": {
+    "mtime": 1793971738.1393754,
+    "ast_hash": "b03e8905512fe9f88deb58c5656a2575",
+    "semantic_hash": ""
+  },
+  "docs/quality/cs1-answer-response-flow-review.md": {
+    "mtime": 1793972082.9465032,
+    "ast_hash": "5d895c18dc5f9992f690b2966fdb57d9",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-installed182-live-diagnostic.md": {
+    "mtime": 1793971780.4369352,
+    "ast_hash": "d1e6516766b020d2aa93b90ee974ad36",
+    "semantic_hash": ""
+  },
+  "docs/quality/generation-cancellation-interaction-review.md": {
+    "mtime": 1793972655.2895453,
+    "ast_hash": "52a58943687f1f9588b3caa47636e59b",
     "semantic_hash": ""
   }
 }
