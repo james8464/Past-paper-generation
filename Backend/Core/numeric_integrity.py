@@ -8,7 +8,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-NUMERIC_INTEGRITY_VERSION = "closed-numeric-v3-exact-floating"
+NUMERIC_INTEGRITY_VERSION = "closed-numeric-v4-variance-signs"
 NUMBER = r"[−+\-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?"
 MONEY = rf"(?P<value>[−+\-]?£{NUMBER})"
 
@@ -91,6 +91,25 @@ def numeric_result(
     }
 
 
+def _quantity_value(token: str) -> Decimal | None:
+    """Keep supported sign positions, but refuse combined currency signs."""
+    normalised = token.replace("£", "").replace("−", "-")
+    if re.fullmatch(NUMBER, normalised) is None:
+        return None
+    return Decimal(normalised.replace(",", ""))
+
+
+def _variance_value(amount: Decimal, direction: str) -> Decimal | None:
+    """The displayed magnitude is zero exactly when its direction is nil."""
+    if (
+        amount < 0
+        or direction not in {"adverse", "favourable", "nil"}
+        or (amount == 0) != (direction == "nil")
+    ):
+        return None
+    return -amount if direction == "adverse" else amount
+
+
 # Accept only the contract's unit and the current templates' result endings.
 #
 # A regex-selected numeric prefix is not a complete quantity: ``27.90e6`` and
@@ -168,22 +187,20 @@ def check_published_outputs(
                 errors.append(
                     f"published scheme has unsupported unit or scale at {check.role}"
                 )
-            token = (
-                match.group("value").replace("£", "").replace(",", "").replace("−", "-")
-            )
-            actual = Decimal(token)
+            actual = _quantity_value(match.group("value"))
+            if actual is None:
+                errors.append(
+                    f"published scheme has malformed numeric value at {check.role}"
+                )
+                continue
             if check.sign == "variance":
                 direction = match.groupdict().get("direction", "").casefold()
-                if actual < 0 or direction not in {"adverse", "favourable", "nil"}:
+                actual = _variance_value(actual, direction)
+                if actual is None:
                     errors.append(
                         f"published scheme has invalid variance direction at {check.role}"
                     )
                     continue
-                actual *= -1 if direction == "adverse" else 1
-                if direction == "nil" and actual != 0:
-                    errors.append(
-                        f"published scheme has invalid nil variance at {check.role}"
-                    )
             if actual != expected:
                 errors.append(
                     f"published scheme disagrees at numeric role {check.role}"
@@ -243,8 +260,9 @@ def _equivalent_quantity(
         if not match:
             return False
         major = match.group("major")
-        token = major.replace("£", "") if major else match.group("minor")
-        actual = Decimal(token.replace(",", "").replace("−", "-"))
+        actual = _quantity_value(major if major else match.group("minor"))
+        if actual is None:
+            return False
         actual *= (
             Decimal(1_000_000)
             if match.group("million")
@@ -255,11 +273,9 @@ def _equivalent_quantity(
         if check.unit == "GBPm":
             expected *= 1_000_000
         if check.sign == "variance":
-            if actual < 0:
-                return False
             sign = match.group("direction").casefold()
-            actual *= -1 if sign == "adverse" else 1
-            if sign == "nil" and actual != 0:
+            actual = _variance_value(actual, sign)
+            if actual is None:
                 return False
     else:
         unit = (
@@ -272,7 +288,9 @@ def _equivalent_quantity(
         match = re.fullmatch(rf"(?P<value>{NUMBER}){unit}[.]?", quantity, re.IGNORECASE)
         if not match:
             return False
-        actual = Decimal(match.group("value").replace(",", "").replace("−", "-"))
+        actual = _quantity_value(match.group("value"))
+        if actual is None:
+            return False
     return actual == expected
 
 

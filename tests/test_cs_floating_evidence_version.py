@@ -44,7 +44,7 @@ def test_prior_v2_canonical_solution_cannot_replay_exact_floating_acceptance():
     assert reconcile_solution(current, source).passed
     old = current.model_copy(update={"integrity_version": "closed-numeric-v2"})
     assert not reconcile_solution(old, source).passed
-    assert NUMERIC_INTEGRITY_VERSION == "closed-numeric-v3-exact-floating"
+    assert NUMERIC_INTEGRITY_VERSION == "closed-numeric-v4-variance-signs"
 
 
 def test_prior_v2_saved_review_is_refused_for_the_same_candidate():
