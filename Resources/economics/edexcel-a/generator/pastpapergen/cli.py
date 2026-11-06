@@ -19,6 +19,7 @@ from Backend.Core.family_adapter import (
 )
 from Backend.Core.json_client import JSONGenerationClient
 from Backend.Core.model_recommendations import default_ollama_model
+from Backend.Core.subjects.economics_contracts import economics_checkpoint_path
 from pastpapergen.generator import build_paper_blueprint
 from pastpapergen.ollama_client import (
     OllamaClient,
@@ -136,7 +137,9 @@ def generate_package(
         dry_run=dry_run,
         progress=progress,
         client=client,
-        checkpoint_path=checkpoint_path,
+        checkpoint_path=economics_checkpoint_path(checkpoint_path)
+        if checkpoint_path is not None
+        else None,
     )
 
 
