@@ -1375,8 +1375,11 @@
     {
       "path": "Backend/Core/layout_master.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Layout reviewer read original 492 lines through EOF; author, root and independent reviewers reviewed complete repair deltas (net 48 lines) and final tests. Current 540-line source uses bounded exact-grid search under ordinary monotonic font metrics. No current default-native renderer defect claim.",
+      "source_sha256": "206f00003ea5a1011133269722d7129fae5640d9a1f8e024924fb3878ba512fb",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "Backend/Core/legacy_migration.py",
@@ -1399,8 +1402,11 @@
     {
       "path": "Backend/Core/mark_scheme_enrichment.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Native-layout reviewer completed all 450 lines through EOF and selectively inspected five generator callers. No new concrete reachable defect established; no complete dependency, official marking-grid equivalence or arbitrary model-content correctness claim.",
+      "source_sha256": "7dfe05ef68c9fb89aeeed8d932ae34859f1f389b36cbf85925dd74f9be201719",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "Backend/Core/mark_scheme_front_matter.py",
@@ -1504,8 +1510,11 @@
     {
       "path": "Backend/Core/open_credit.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "French-release reviewer completed all 568 lines through EOF with selectively traced typed solver/reconciliation/export callers. Declared two-criterion model-semantic review only, not general essay entailment, cryptographic authenticity or live paper qualification.",
+      "source_sha256": "6d588bd5548f9bc89939f7ce638088e837590924f2d3ed9c4b8fd3e895a9ebfe",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "Backend/Core/overlay/__init__.py",
@@ -1627,8 +1636,11 @@
     {
       "path": "Backend/Core/reference_demand.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reference-demand reviewer read original 867 lines through EOF; author, root and independent reviewer reviewed the exact two-line collision check and complete new tests. Composite review pinned to current 869 lines; root did not read the complete original module. No live paper-quality guarantee.",
+      "source_sha256": "3066ce169e5c8b254d4ac265be499d8a3e68e5dfe81df24e6698113c5f3ac95c",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "Backend/Core/reference_evidence.py",
@@ -4412,6 +4424,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/reference-and-slot-boundary-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/reference-evidence-eof-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -6752,6 +6770,15 @@
       "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
     },
     {
+      "path": "tests/test_fixed_slot_width_guards.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Author, root and independent reviewers read this complete 232-line new test file through EOF. Genuine RED/control stages and final focused results are recorded separately in the note, including superseded layout evidence; no full-suite or native paper-quality claim.",
+      "source_sha256": "597b3fccbb4502282c8d43e08b807988e96777a83066d65fc11f6082d73682d5",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
+    },
+    {
       "path": "tests/test_fonts.py",
       "classification": "test",
       "status": "reviewed",
@@ -7702,8 +7729,11 @@
     {
       "path": "tests/test_layout_master.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Native-layout reviewer read this complete unchanged 430-line test file through EOF; later helper repairs have separate current source and test evidence. No whole renderer or live paper qualification claim.",
+      "source_sha256": "2d60006de9f0de5bb84994ff6fbba99c537bb4ed8040eb635ca40b17d4b1de0f",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "tests/test_level_of_response.py",
@@ -7741,8 +7771,11 @@
     {
       "path": "tests/test_mark_scheme_enrichment.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Native-layout reviewer completed all 159 lines through EOF and selectively inspected five generator callers. No new concrete reachable defect established; no complete dependency, official marking-grid equivalence or arbitrary model-content correctness claim.",
+      "source_sha256": "dcd8d924b8460bb2d487afdd30daacba223a90a7f7ddee67b74bd248e769cfca",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "tests/test_mark_scheme_front_matter.py",
@@ -7954,8 +7987,11 @@
     {
       "path": "tests/test_open_credit_reconciliation.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "French-release reviewer completed all 967 lines through EOF with selectively traced typed solver/reconciliation/export callers. Declared two-criterion model-semantic review only, not general essay entailment, cryptographic authenticity or live paper qualification.",
+      "source_sha256": "3db195b54167e9d080d36c41e9698c7d673a6febe7f839acc51d9d1ad8e6af22",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "tests/test_paper_fidelity_audit.py",
@@ -8059,8 +8095,20 @@
     {
       "path": "tests/test_reference_demand.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Reference-demand reviewer completed all 816 lines through original 1-170 reads and a later 171-816 EOF supplement. Earlier selective-review receipt is not relabelled. Owned/stub evidence does not establish model correctness or observed learner timing.",
+      "source_sha256": "30bec137b8cfe3e3b03018c41538de47504f4445d3886dda5a4a17ec42a4fc86",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
+    },
+    {
+      "path": "tests/test_reference_distribution_keys.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Author, root and independent reviewers read this complete 82-line new test file through EOF. Genuine RED/control stages and final focused results are recorded separately in the note, including superseded layout evidence; no full-suite or native paper-quality claim.",
+      "source_sha256": "1b1452fac4c583b64973c05d222a6d4ddf6ea24c6696ac2941fea05d1a9438bb",
+      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
+      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
     },
     {
       "path": "tests/test_reference_evidence_validation.py",
