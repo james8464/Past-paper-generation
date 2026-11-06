@@ -38,10 +38,16 @@ These checks used a retained layout-preview PDF, not a newly qualified generated
 
 ## Source review
 
+### Older SDK compatibility
+
+GitHub's Xcode 16.4 build rejected the three responder overrides because that SDK imports the callbacks without main-actor isolation. The newer local SDK accepted the same source. The callbacks now declare `nonisolated` and enter `MainActor.assumeIsolated` synchronously before reading UI state. This checks AppKit's main-thread callback invariant without delaying acceptance or lease handoff in a task. [Apple documents the executor check](https://developer.apple.com/documentation/swift/mainactor/assumeisolated(_:file:line:)). The final protected build must still verify the older SDK.
+
+The full Python run on `cbf89513` found one stale menu-source assertion: it expected four identical document guards, although Quick Look now also requires an attached preview responder. The test now checks the three ordinary guards and Quick Look's combined guard and disabled state separately. Its 14-test file passes. This corrects the assertion without removing the modal-window protection. The earlier run recorded 6,994 passes, one failure and two skips; it is not final acceptance.
+
 The service, document-preview implementation and menu commands were read through EOF, with the subsequent logging and initial-show deltas reviewed separately. The review covered actor ownership, scoped-access lifetimes, cancellation, stale results, modal action targets and Quick Look cleanup. The test review covered new cases and the necessary asynchronous migrations, not the entire test file.
 
 - `macOS/Keldin/Services/PDFDocumentAccess.swift`: `e7017fa9b416973d7fa93a4f063aefdb0837b15637a230c33b7b179e68aa2d90`.
-- `macOS/Keldin/Features/Documents/DocumentPreviewView.swift`: `ad0ad87870b3d8836ceb4f7201f01323f2aaf4275827bd9fec7601bd1e7eb511`.
+- `macOS/Keldin/Features/Documents/DocumentPreviewView.swift`: `2c7d33258a45d8434a468eeee8feb1b1195791c5629e02eacc5c00e7b0ddca64`.
 - `macOS/Keldin/Application/AppCommands.swift`: `1e91189f2395200149bdc901b7db2f169c9351e156423b75e27ec01999d6d421`.
 
 Apple documents the shared preview panel and its window-delegate inheritance in [QLPreviewPanel](https://developer.apple.com/documentation/quicklookui/qlpreviewpanel) and [QLPreviewPanelDelegate](https://developer.apple.com/documentation/quicklookui/qlpreviewpaneldelegate).

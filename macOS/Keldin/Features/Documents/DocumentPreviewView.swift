@@ -487,16 +487,19 @@ fileprivate final class QuickLookPDFView: PDFView {
         else if let fileID { quickLook?.register(self, fileID: fileID) }
     }
 
-    override func acceptsPreviewPanelControl(_ panel: QLPreviewPanel!) -> Bool {
-        quickLook?.acceptsControl(from: self) == true
+    // Older SDKs import these AppKit callbacks without actor annotations.
+    // AppKit calls them synchronously on the main thread; preserve that ordering
+    // and check the executor before accessing UI-owned state.
+    nonisolated override func acceptsPreviewPanelControl(_ panel: QLPreviewPanel!) -> Bool {
+        MainActor.assumeIsolated { quickLook?.acceptsControl(from: self) == true }
     }
 
-    override func beginPreviewPanelControl(_ panel: QLPreviewPanel!) {
-        quickLook?.beginControl(panel, from: self)
+    nonisolated override func beginPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        MainActor.assumeIsolated { quickLook?.beginControl(panel, from: self) }
     }
 
-    override func endPreviewPanelControl(_ panel: QLPreviewPanel!) {
-        quickLook?.endControl(panel, from: self)
+    nonisolated override func endPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        MainActor.assumeIsolated { quickLook?.endControl(panel, from: self) }
     }
 }
 

@@ -74,8 +74,19 @@ def test_document_commands_do_not_target_the_document_behind_a_guide():
     )[0]
     assert "canNavigate" in access
     assert "documentActions?.canAccessDocument == true" in access
-    assert source.count(".disabled(!canAccessDocument)") == 4
-    assert source.count("guard canAccessDocument else { return }") == 4
+    assert source.count(".disabled(!canAccessDocument)") == 3
+    assert source.count("guard canAccessDocument else { return }") == 3
+    quick_look = source.split('Button(localized("Quick Look"))', 1)[1].split(
+        'Button(localized("Reveal in Finder"))', 1
+    )[0]
+    assert (
+        "guard canAccessDocument, documentActions?.canQuickLookDocument == true"
+        in quick_look
+    )
+    assert (
+        ".disabled(!canAccessDocument || documentActions?.canQuickLookDocument != true)"
+        in quick_look
+    )
     provenance = source.split("private var canCopyProvenance: Bool", 1)[1].split(
         "private", 1
     )[0]
