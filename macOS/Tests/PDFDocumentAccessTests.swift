@@ -279,22 +279,65 @@ final class PDFDocumentAccessTests: XCTestCase {
     }
 
     @MainActor
+    func testQuickLookResponderHandoffKeepsNewPendingRequestAcrossOldEndAndDetach() throws {
+        let state = QuickLookPresentationState()
+        let old = UUID(), new = UUID()
+        let oldURL = root.appendingPathComponent("old.pdf"), newURL = root.appendingPathComponent("new.pdf")
+        var oldStops = 0, newStops = 0
+        XCTAssertTrue(state.stage(url: oldURL, claimant: old, lease: PDFReadLease { oldStops += 1 }))
+        XCTAssertTrue(state.activate(old))
+        XCTAssertTrue(state.stage(url: newURL, claimant: new, lease: PDFReadLease { newStops += 1 }))
+        state.panelClosed()
+        state.end(old)
+        state.detach(old)
+        XCTAssertEqual(state.pendingClaimant, new)
+        XCTAssertEqual(oldStops, 1)
+        XCTAssertEqual(newStops, 0)
+        XCTAssertFalse(state.activate(old))
+        XCTAssertTrue(state.activate(new))
+        XCTAssertEqual(state.url, newURL)
+        state.end(old)
+        XCTAssertEqual(state.url, newURL)
+        state.close()
+        XCTAssertEqual(newStops, 1)
+    }
+
+    @MainActor
+    func testQuickLookSameResponderReplacementAndMissingClaimantRefusalBalanceLeases() throws {
+        let state = QuickLookPresentationState()
+        let view = UUID()
+        let old = root.appendingPathComponent("first.pdf"), replacement = root.appendingPathComponent("second.pdf")
+        var stops = 0
+        XCTAssertTrue(state.stage(url: old, claimant: view, lease: PDFReadLease { stops += 1 }))
+        XCTAssertTrue(state.activate(view))
+        XCTAssertFalse(state.stage(url: replacement, claimant: nil, lease: PDFReadLease { stops += 1 }))
+        XCTAssertEqual(state.url, old)
+        XCTAssertEqual(stops, 1)
+        XCTAssertTrue(state.stage(url: replacement, claimant: view, lease: PDFReadLease { stops += 1 }))
+        state.panelClosed()
+        state.end(view)
+        XCTAssertEqual(state.pendingClaimant, view)
+        XCTAssertTrue(state.activate(view))
+        XCTAssertEqual(state.url, replacement)
+        XCTAssertTrue(state.activate(view))
+        state.close()
+        state.close()
+        XCTAssertEqual(stops, 3)
+    }
+
+    @MainActor
     func testRetainedActionLeaseSurvivesSelectionReleaseAndStopsOnceAfterClose() throws {
         var stops = 0
         let selection = PDFReadLease { stops += 1 }
         let firstPreview = try XCTUnwrap(selection.retained())
-        let owner = QuickLookLeaseOwner()
-        owner.replace(with: firstPreview)
-        owner.replace(with: firstPreview)
         selection.release()
         XCTAssertEqual(stops, 0)
         XCTAssertNil(selection.retained())
         let replacementPreview = try XCTUnwrap(firstPreview.retained())
-        owner.replace(with: replacementPreview)
+        firstPreview.release()
         firstPreview.release()
         XCTAssertEqual(stops, 0)
-        owner.clear()
-        owner.clear()
+        replacementPreview.release()
         replacementPreview.release()
         XCTAssertEqual(stops, 1)
     }
@@ -815,6 +858,9 @@ final class PDFDocumentAccessTests: XCTestCase {
 
     @MainActor
     func testReadOnlyPreviewHintIsAvailableInEnglishAndFrench() {
+        let quickLook: LocalizedStringResource = "Quick Look couldn't open this preview. Please try again."
+        XCTAssertEqual(InterfaceText.resolve(quickLook, language: "en"), "Quick Look couldn't open this preview. Please try again.")
+        XCTAssertEqual(InterfaceText.resolve(quickLook, language: "fr"), "Impossible d’ouvrir cet aperçu avec Coup d’œil. Réessayez.")
         let loading: LocalizedStringResource = "Loading PDF…"
         XCTAssertEqual(InterfaceText.resolve(loading, language: "en"), "Loading PDF…")
         XCTAssertEqual(InterfaceText.resolve(loading, language: "fr"), "Chargement du PDF…")

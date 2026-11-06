@@ -1,6 +1,7 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Quick Look couldn't open this preview. Please try again.": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Impossible d’ouvrir cet aperçu avec Coup d’œil. Réessayez."}}}},
     "Loading PDF…": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Chargement du PDF…"}}}},
     "Direct Download": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Téléchargement direct"}}}},
     "Not required": {"localizations":{"fr":{"stringUnit":{"state":"translated","value":"Non requis"}}}},

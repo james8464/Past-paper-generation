@@ -45,7 +45,7 @@ struct DocumentPreviewView: View {
                     Divider()
 
                     if let file = selectedFile, let pdf = documentActions.loadedPDF {
-                        PDFDocumentView(document: pdf.document)
+                        PDFDocumentView(document: pdf.document, fileID: file.id, quickLook: documentActions.quickLook)
                             .id(file.id)
                             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
                             .accessibilityLabel("Preview of \(file.title)")
@@ -86,7 +86,7 @@ struct DocumentPreviewView: View {
         .toolbar {
             ToolbarItemGroup {
                 Button("Quick Look", systemImage: "eye", action: documentActions.quickLookSelected)
-                    .disabled(!documentActions.canAccessDocument)
+                    .disabled(!documentActions.canQuickLookDocument)
 
                 Button("Print…", systemImage: "printer", action: documentActions.printSelected)
                     .disabled(!documentActions.canAccessDocument)
@@ -139,7 +139,7 @@ final class DocumentActionController: ObservableObject {
     @Published private(set) var loadFailure: PDFLoadFailure?
     @Published private(set) var isLoading = false
     private let access: PDFDocumentAccess
-    private let quickLook = QuickLookCoordinator()
+    fileprivate let quickLook = QuickLookCoordinator()
     private var loadTask: Task<Void, Never>?
     private var revision = UUID()
     private var selectionLease: PDFReadLease?
@@ -147,10 +147,16 @@ final class DocumentActionController: ObservableObject {
     private let presentAction: (@MainActor (Action, GeneratedFile, LoadedPDF) -> Void)?
 
     var canAccessDocument: Bool { !isLoading && loadedPDF != nil && selectedFile?.exists == true }
+    var canQuickLookDocument: Bool {
+        canAccessDocument && selectedFile.map { quickLook.canPresent(fileID: $0.id) } == true
+    }
 
     init(access: PDFDocumentAccess, presentAction: (@MainActor (Action, GeneratedFile, LoadedPDF) -> Void)? = nil) {
         self.access = access
         self.presentAction = presentAction
+        quickLook.availabilityDidChange = { [weak self] in
+            Task { @MainActor [weak self] in self?.objectWillChange.send() }
+        }
     }
 
     convenience init() { self.init(access: PDFDocumentAccess()) }
@@ -219,7 +225,9 @@ final class DocumentActionController: ObservableObject {
         switch action {
         case .quickLook:
             guard let lease = selectionLease?.retained() else { return }
-            quickLook.present(file.url, lease: lease)
+            if !quickLook.present(file.url, fileID: file.id, lease: lease) {
+                exportError = InterfaceText.resolve("Quick Look couldn't open this preview. Please try again.", language: language)
+            }
         case .reveal: NSWorkspace.shared.activateFileViewerSelecting([file.url])
         case .print:
             pdf.document.printOperation(for: NSPrintInfo.shared, scalingMode: .pageScaleToFit, autoRotate: true)?.run()
@@ -387,90 +395,232 @@ enum PDFDocumentActions {
 
 private struct PDFDocumentView: NSViewRepresentable {
     let document: PDFDocument
+    let fileID: UUID
+    let quickLook: QuickLookCoordinator
 
-    func makeNSView(context: Context) -> PDFView {
-        let view = PDFView()
+    func makeNSView(context: Context) -> QuickLookPDFView {
+        let view = QuickLookPDFView()
         view.autoScales = true
         view.displayMode = .singlePageContinuous
         view.displaysPageBreaks = true
         view.backgroundColor = .windowBackgroundColor
+        quickLook.register(view, fileID: fileID)
         return view
     }
 
-    func updateNSView(_ view: PDFView, context: Context) {
-        if view.document !== document {
-            view.document = document
-        }
+    func updateNSView(_ view: QuickLookPDFView, context: Context) {
+        quickLook.register(view, fileID: fileID)
+        if view.document !== document { view.document = document }
+    }
+
+    static func dismantleNSView(_ view: QuickLookPDFView, coordinator: ()) {
+        view.quickLook?.detach(view)
+        view.quickLook = nil
+    }
+}
+
+// State transitions are independent of AppKit callbacks, so an old responder's
+// end/detach cannot discard a newer request during updateController().
+@MainActor
+final class QuickLookPresentationState {
+    private struct Request {
+        let url: URL
+        let claimant: UUID
+        let lease: PDFReadLease
+    }
+    private var pending: Request?
+    private var active: Request?
+    var url: URL? { active?.url }
+    var activeClaimant: UUID? { active?.claimant }
+    var pendingClaimant: UUID? { pending?.claimant }
+
+    func stage(url: URL, claimant: UUID?, lease: PDFReadLease) -> Bool {
+        guard let claimant else { lease.release(); return false }
+        pending?.lease.release()
+        pending = Request(url: url, claimant: claimant, lease: lease)
+        return true
+    }
+
+    func accepts(_ claimant: UUID) -> Bool {
+        pending?.claimant == claimant || active?.claimant == claimant
+    }
+
+    @discardableResult
+    func activate(_ claimant: UUID) -> Bool {
+        guard let pending, pending.claimant == claimant else { return active?.claimant == claimant }
+        active?.lease.release()
+        active = pending
+        self.pending = nil
+        return true
+    }
+
+    func end(_ claimant: UUID) {
+        if active?.claimant == claimant { active?.lease.release(); active = nil }
+    }
+
+    func cancelPending(_ claimant: UUID) {
+        if pending?.claimant == claimant { pending?.lease.release(); pending = nil }
+    }
+
+    func detach(_ claimant: UUID) { end(claimant); cancelPending(claimant) }
+    func panelClosed() {
+        if let claimant = active?.claimant { end(claimant) }
+    }
+    func close() {
+        pending?.lease.release()
+        active?.lease.release()
+        pending = nil
+        active = nil
     }
 }
 
 @MainActor
-final class QuickLookLeaseOwner {
-    private var lease: PDFReadLease?
+fileprivate final class QuickLookPDFView: PDFView {
+    let claimant = UUID()
+    var fileID: UUID?
+    weak var quickLook: QuickLookCoordinator?
 
-    func replace(with lease: PDFReadLease?) {
-        guard self.lease !== lease else { return }
-        self.lease?.release()
-        self.lease = lease
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        if window == nil { quickLook?.detach(self) }
+        else if let fileID { quickLook?.register(self, fileID: fileID) }
     }
 
-    func clear() { replace(with: nil) }
+    override func acceptsPreviewPanelControl(_ panel: QLPreviewPanel!) -> Bool {
+        quickLook?.acceptsControl(from: self) == true
+    }
+
+    override func beginPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        quickLook?.beginControl(panel, from: self)
+    }
+
+    override func endPreviewPanelControl(_ panel: QLPreviewPanel!) {
+        quickLook?.endControl(panel, from: self)
+    }
 }
 
 @MainActor
-private final class QuickLookCoordinator: NSObject, ObservableObject,
+fileprivate final class QuickLookCoordinator: NSObject, ObservableObject,
     QLPreviewPanelDataSource, QLPreviewPanelDelegate
 {
-    private var url: URL?
-    private let leaseOwner = QuickLookLeaseOwner()
+    private let state = QuickLookPresentationState()
+    private weak var renderedView: QuickLookPDFView?
+    private weak var controlledView: QuickLookPDFView?
     private weak var panel: QLPreviewPanel?
+    private var attached = false
+    var availabilityDidChange: (() -> Void)?
 
-    func present(_ url: URL, lease: PDFReadLease) {
-        guard let panel = QLPreviewPanel.shared() else {
-            lease.release()
-            return
-        }
-        if let previous = panel.dataSource as? QuickLookCoordinator, previous !== self {
-            previous.finishPreview(close: false)
-        }
-        if let previous = panel.delegate as? QuickLookCoordinator, previous !== self {
-            previous.finishPreview(close: false)
-        }
-        finishPreview(close: false)
-        self.panel = panel
-        leaseOwner.replace(with: lease)
-        self.url = url
-        panel.dataSource = self
-        panel.delegate = self
-        panel.reloadData()
-        panel.makeKeyAndOrderFront(nil)
+    func register(_ view: QuickLookPDFView, fileID: UUID) {
+        let ready = view.window != nil
+        let changed = renderedView !== view || view.fileID != fileID || attached != ready
+        view.fileID = fileID
+        view.quickLook = self
+        renderedView = view
+        attached = ready
+        if changed { availabilityDidChange?() }
     }
 
-    func closeOwnedPreview() { finishPreview(close: true) }
+    func canPresent(fileID: UUID) -> Bool {
+        renderedView?.fileID == fileID && renderedView?.window != nil
+    }
 
-    func windowWillClose(_ notification: Notification) { finishPreview(close: false) }
+    func acceptsControl(from view: QuickLookPDFView) -> Bool {
+        renderedView === view && view.window != nil && state.accepts(view.claimant)
+    }
 
-    private func finishPreview(close: Bool) {
-        let panel = panel
-        self.panel = nil
-        leaseOwner.clear()
-        url = nil
-        if let panel {
-            let ownsPanel = panel.dataSource === self && panel.delegate === self
-            if panel.dataSource === self { panel.dataSource = nil }
-            if panel.delegate === self { panel.delegate = nil }
-            if close && ownsPanel { panel.close() }
+    func detach(_ view: QuickLookPDFView) {
+        if renderedView === view { renderedView = nil; attached = false; availabilityDidChange?() }
+        let owned = state.activeClaimant == view.claimant
+        state.detach(view.claimant)
+        if owned, let panel, panel.currentController as AnyObject? === view {
+            clearRegistration(panel)
+            controlledView = nil
+            self.panel = nil
+            if state.pendingClaimant == nil { panel.close() }
         }
+    }
+
+    func present(_ url: URL, fileID: UUID, lease: PDFReadLease) -> Bool {
+        guard let view = renderedView, view.fileID == fileID, let window = view.window else {
+            lease.release()
+            return false
+        }
+        guard state.stage(url: url, claimant: view.claimant, lease: lease) else { return false }
+        guard window.makeFirstResponder(view) else {
+            state.cancelPending(view.claimant)
+            return false
+        }
+        window.makeKeyAndOrderFront(nil)
+        guard let panel = QLPreviewPanel.shared() else {
+            state.cancelPending(view.claimant)
+            return false
+        }
+        panel.updateController()
+        guard panel.currentController as AnyObject? === view else {
+            state.cancelPending(view.claimant)
+            return false
+        }
+        // An unchanged controller does not receive another begin callback.
+        guard state.activate(view.claimant) else { return false }
+        install(panel, from: view)
+        panel.reloadData()
+        panel.makeKeyAndOrderFront(nil)
+        return true
+    }
+
+    func beginControl(_ panel: QLPreviewPanel, from view: QuickLookPDFView) {
+        guard renderedView === view, view.window != nil, state.activate(view.claimant) else { return }
+        install(panel, from: view)
+    }
+
+    private func install(_ panel: QLPreviewPanel, from view: QuickLookPDFView) {
+        self.panel = panel
+        controlledView = view
+        panel.dataSource = self
+        panel.delegate = self
+    }
+
+    func endControl(_ panel: QLPreviewPanel, from view: QuickLookPDFView) {
+        let owned = state.activeClaimant == view.claimant
+        state.end(view.claimant)
+        if owned {
+            clearRegistration(panel)
+            if controlledView === view { controlledView = nil; self.panel = nil }
+        }
+    }
+
+    func closeOwnedPreview() {
+        let panel = panel
+        let controlledView = controlledView
+        self.panel = nil
+        self.controlledView = nil
+        state.close()
+        if let panel, let controlledView,
+           panel.currentController as AnyObject? === controlledView,
+           panel.dataSource === self, panel.delegate === self {
+            panel.close()
+            clearRegistration(panel)
+        }
+    }
+
+    func windowWillClose(_ notification: Notification) {
+        guard let closing = notification.object as? QLPreviewPanel, closing === panel else { return }
+        state.panelClosed()
+        clearRegistration(closing)
+        panel = nil
+        controlledView = nil
+    }
+
+    private func clearRegistration(_ panel: QLPreviewPanel) {
+        if panel.dataSource === self { panel.dataSource = nil }
+        if panel.delegate === self { panel.delegate = nil }
     }
 
     nonisolated func numberOfPreviewItems(in panel: QLPreviewPanel!) -> Int {
-        MainActor.assumeIsolated { url == nil ? 0 : 1 }
+        MainActor.assumeIsolated { state.url == nil ? 0 : 1 }
     }
 
-    nonisolated func previewPanel(
-        _ panel: QLPreviewPanel!,
-        previewItemAt index: Int
-    ) -> QLPreviewItem! {
-        MainActor.assumeIsolated { url as NSURL? }
+    nonisolated func previewPanel(_ panel: QLPreviewPanel!, previewItemAt index: Int) -> QLPreviewItem! {
+        MainActor.assumeIsolated { state.url as NSURL? }
     }
 }

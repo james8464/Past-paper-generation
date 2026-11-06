@@ -165,6 +165,7 @@ final class KeldinTests: XCTestCase {
         actions.update(file: first, provenance: nil)
         await actions.waitForPendingLoad()
         XCTAssertTrue(actions.canAccessDocument)
+        XCTAssertFalse(actions.canQuickLookDocument, "Quick Look needs a rendered PDF view attached to its window")
         XCTAssertEqual(actions.selectedFile, first)
         actions.update(file: second, provenance: nil)
         await actions.waitForPendingLoad()
