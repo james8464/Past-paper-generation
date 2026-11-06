@@ -313,11 +313,8 @@
     {
       "path": "Backend/Core/computer_science_authoring.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "quality_status_review: complete-file EOF; selective dependencies and qualification limits documented.",
-      "source_sha256": "ef45d9cf779cef3a27f17d813681c3115fa9be91b427714abd5b5a3670523f00",
-      "review_evidence": "docs/quality/reference-readmission-and-runtime-audit-2026-11-03.md",
-      "review_evidence_sha256": "f15b829e2e5718086b47e04b7f6c8df0ae974dbda426290c80fd2728f036b5b9"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Backend/Core/computer_science_reference_solutions.py",
@@ -2011,11 +2008,8 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/cli.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "b8f6e209d8c0fed7e83c2a8cdea308681c1d11c378f5ebcafc8a064e729ef09e",
-      "review_evidence": "docs/quality/release-safety-tooling-review-2026-10-29.md",
-      "review_evidence_sha256": "749f4a81589a0670a4310ea244f7052d0cfe012c1860b159aced7dc2bc3e6896"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/exam_dates.py",
@@ -3264,6 +3258,12 @@
     },
     {
       "path": "docs/quality/cs-floating-exactness-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/cs-table-source-fidelity-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5988,6 +5988,12 @@
       "source_sha256": "07ef680f865deb8cea345d63cd67205d921aefd1473b86d9449e4a4cf7af0613",
       "review_evidence": "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md",
       "review_evidence_sha256": "bdf39c0bbe51920026a1499ccb06fcdc1c0e336596c8147b254e6d082080939a"
+    },
+    {
+      "path": "tests/test_aqa_cs_table_source_fidelity.py",
+      "classification": "test",
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tests/test_assessment_checkpoint_admission.py",
