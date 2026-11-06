@@ -8,6 +8,7 @@ from decimal import Decimal
 
 from Backend.Core.subjects.economics_contracts import (
     ECONOMICS_CONTRACT_VERSION,
+    ECONOMICS_SOURCE_BINDING_VERSION,
     EconomicsSource,
     SourceCell,
     calculation,
@@ -29,6 +30,7 @@ from pastpapergen.stimulus_data import LINE_CHART_SERIES, TABLE_ROWS, line_chart
 def source_instance(question, seed: int) -> EconomicsSource:
     kind = question.stimulus_kind
     source = EconomicsSource(
+        version=ECONOMICS_SOURCE_BINDING_VERSION,
         source_id=f"{seed}-{question.section}-{question.number}",
         kind=kind,
         context=question.source_text,

@@ -263,13 +263,24 @@ def checkpoint_path_for_job(
         "provider": args.provider,
         "model": args.model,
     }
+    if args.subject == "economics":
+        from Backend.Core.subjects.economics_contracts import (
+            ECONOMICS_SOURCE_BINDING_VERSION,
+        )
+
+        identity["economics_source_binding_version"] = ECONOMICS_SOURCE_BINDING_VERSION
     digest = hashlib.sha256(
         json.dumps(identity, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()[:20]
-    return (
+    path = (
         output_directory(output_dir, ".keldin-checkpoints")
         / f"{args.subject}-paper-{args.paper}-{digest}.json"
     )
+    if args.subject == "economics":
+        from Backend.Core.subjects.economics_contracts import economics_checkpoint_path
+
+        return economics_checkpoint_path(path)
+    return path
 
 
 def _load_entry_point(value: str) -> Callable[..., dict[str, Path]]:

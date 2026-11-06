@@ -145,8 +145,11 @@
     {
       "path": "Backend/Core/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 1-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "f865996c971f87973326c52c8b9fd49654d3baf29c20dcb0bfb2b79625f28f82",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/accounting_scheme_content.py",
@@ -340,8 +343,11 @@
     {
       "path": "Backend/Core/document_dsl/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 133-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "2bae224653f136438f936d6fc5411a4aa26d8828fc57a4caf92ed8ca29b8b73c",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/document_dsl/components.py",
@@ -592,8 +598,11 @@
     {
       "path": "Backend/Core/france/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 1-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "72e45158cb1c74550921257b53c255e7e12509ca1fc0e501073ac95c8f9d4536",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/france/allocation_case.py",
@@ -1283,10 +1292,10 @@
       "path": "Backend/Core/generation.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete 536-line EOF dispatch/publication/cancellation review with scoped dependencies and existing tests inspected, not newly run. No new actionable defect; not a complete dependency audit or live generation qualification.",
-      "source_sha256": "0d4fd0998c5283783e093739f9f03cc74d4add95f28d5f939a884403bd92c3f6",
-      "review_evidence": "docs/quality/generation-dispatch-eof-review.md",
-      "review_evidence_sha256": "2834fc9ec402785f046b37442b830e3dd1e30d13cefec50b31eb1ca2246083c9"
+      "reason": "Prior complete 536-line EOF review at 0d4fd099 plus the complete Economics-only namespace delta; current 547 lines. Scoped bridge/direct checkpoint controls pass; dependencies and final release gates remain separate.",
+      "source_sha256": "afd4dcc8c2217f9c53ac7bed9e8a12d71fb72bf926852016aa51745ebb5ccea8",
+      "review_evidence": "docs/quality/economics-source-binding-review.md",
+      "review_evidence_sha256": "0821e1420f8755120d25289cb89b0a08697ed45cc0e5b77f94c88d9e0da122db"
     },
     {
       "path": "Backend/Core/generation_date.py",
@@ -1489,8 +1498,11 @@
     {
       "path": "Backend/Core/overlay/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 0-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/overlay/graphs.py",
@@ -1582,8 +1594,11 @@
     {
       "path": "Backend/Core/qualification/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 23-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "9d27a6e312fce54e5c86b2d409f416a53587f8cff5e93f1674f091040120b868",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/qualification/manifest.py",
@@ -1690,8 +1705,11 @@
     {
       "path": "Backend/Core/subjects/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 1-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "00f1a67ade3456584dcee3f67671629a0a1edea7add55606d799d8830f6aa6a1",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/subjects/accounting.py",
@@ -1738,8 +1756,11 @@
     {
       "path": "Backend/Core/subjects/economics_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 486-line baseline EOF review plus complete versioned source-binding and checkpoint-routing delta; current 510 lines. Owned public admission fault and compatibility controls recorded; no live model or full subject-quality claim.",
+      "source_sha256": "5844548ed8e374ee3bf82d6cd318692db1e09207d76e3ec16617794a33d78741",
+      "review_evidence": "docs/quality/economics-source-binding-review.md",
+      "review_evidence_sha256": "0821e1420f8755120d25289cb89b0a08697ed45cc0e5b77f94c88d9e0da122db"
     },
     {
       "path": "Backend/Core/subjects/essay.py",
@@ -1789,8 +1810,11 @@
     {
       "path": "Backend/Core/topic_reference_evidence.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete 761-line EOF review of inventory/contract/matching/sufficiency and final eligibility handling; scoped callers only. Source anchors were not rechecked against official PDFs; no new tests, empirical or live-quality claim.",
+      "source_sha256": "76d54c63464d8711a8dfffdd94ad4b6c78ac4e3977a773fad8a10257cdb52b45",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Backend/Core/topic_task_contract.py",
@@ -1804,8 +1828,11 @@
     {
       "path": "Backend/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 0-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Design/AppIcon/Keldin-AppIcon-Master.png",
@@ -1822,8 +1849,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 2-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "291787870172179658dfa9e4402bb00a5ec09dc1c0eb42635b9a71590550a745",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py",
@@ -1948,8 +1978,11 @@
     {
       "path": "Resources/business/aqa/generator/aqabizgen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 2-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "040232ecbfffca05f0967fb7a085928e936540ce53e0506a6a60008efe24a815",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/cli.py",
@@ -2026,8 +2059,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 5-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "937c0d5f78193c4ce9bbae9870cd6ecb84d5a6c7c5b8ba04d2ec2205ab79c553",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/__main__.py",
@@ -2230,8 +2266,11 @@
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 2-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "68a3337da3381a9d7bee52f75473c7a6ca63b6f86bc7a88738f13b854b670a86",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/cli.py",
@@ -2287,8 +2326,11 @@
     {
       "path": "Resources/configured-generators/generator/configuredgen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 1-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "42d97b28cacb93a75763ab4db0384ad166977f19e3696e74eb28499aa4c9a433",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/configured-generators/generator/configuredgen/cli.py",
@@ -2332,8 +2374,11 @@
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 2-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "6bdf0d93ed9f458d5f3201e779e22a959df17fddb3feaae77577cd68ec8c5b83",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/cli.py",
@@ -2542,8 +2587,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/keldin_edexcel/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 5-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "eccdeb03800864d2762ed52c76e382e84f83cc5e14010968cb7672b6c0530d44",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/keldin_edexcel/__main__.py",
@@ -2560,8 +2608,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 5-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "f70cecd8cb85746fc57bc4b7e367ccc108779445a208dd8d0599d9ed34a44574",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/__main__.py",
@@ -2587,11 +2638,8 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/cli.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "83d8228cfb7a10ecd42c0c5b025d0025b0ece99b52fb07b07d04033b0006a00b",
-      "review_evidence": "docs/quality/family-document-set-publication-review.md",
-      "review_evidence_sha256": "c47e21abafa4f7e2cbe3f76ae7fc2c388c72ec2502027f380f4446872b625b66"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/credit_contracts.py",
@@ -2839,8 +2887,11 @@
     {
       "path": "Resources/economics/ocr/generator/ocregen/__init__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 2-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "aeb2b3c34db0a55044ed38cae10c41935c5007f63c8f67d2d58a22143487c90a",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/cli.py",
@@ -3001,14 +3052,20 @@
     {
       "path": "bridge.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 11-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "b30ee99bf335f09656677ce2ae3f78a0517bb79d03b556fcc1e6ba16d963f23b",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "conftest.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 57-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "2c2248cc98dfc663d3f3e4ff9d1ce32f5613cf2e79f705abd22dad30d6476b6b",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "docs/ARCHITECTURE.md",
@@ -3371,6 +3428,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/economics-source-binding-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/economics-stimulus-figures-review-2026-11-03.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3402,6 +3465,12 @@
     },
     {
       "path": "docs/quality/edexcel-source-booklet-padding-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/entrypoint-topic-evidence-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5971,8 +6040,11 @@
     {
       "path": "pytest.ini",
       "classification": "configuration-or-runtime-data",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Root complete 20-line EOF review and bounded import/export or test-discovery review; exact bytes rechecked in integration worktree. Imported dependency implementations, model quality and final release gates remain separate.",
+      "source_sha256": "b15224b7fbca53313c819b34b0e3e3c6e1a2e349d18ae1dafadaa54ab185de35",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "requirements-build.txt",
@@ -6468,6 +6540,24 @@
       "source_sha256": "e209ded5d13c97c830ffb08e4ea32359ef9c94a8b685d15eab4f2bf35fb1d8a5",
       "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
       "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
+    },
+    {
+      "path": "tests/test_economics_checkpoint_namespace.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 224-line new test file reviewed by author and independently. Owned old/new recovery isolation, other-subject byte-identical paths, bridge ownership-path agreement and both package entry points; no models or GUI.",
+      "source_sha256": "78860803378cdf179cdcb99db3bcfc5a173fa84b36c0985880bbf56fa28c7b63",
+      "review_evidence": "docs/quality/economics-source-binding-review.md",
+      "review_evidence_sha256": "0821e1420f8755120d25289cb89b0a08697ed45cc0e5b77f94c88d9e0da122db"
+    },
+    {
+      "path": "tests/test_economics_source_binding.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 237-line new test file reviewed by author and independently. Valid v2 control, descriptor mutations, v1 replay and serialization, immutable inputs and unchanged canonical answers; no live quality qualification.",
+      "source_sha256": "7938f8847264c8c8f3f1cde103e326780d8ac733a52cedc17e4ece15b82b986d",
+      "review_evidence": "docs/quality/economics-source-binding-review.md",
+      "review_evidence_sha256": "0821e1420f8755120d25289cb89b0a08697ed45cc0e5b77f94c88d9e0da122db"
     },
     {
       "path": "tests/test_edexcel_branding_facade.py",
@@ -7999,8 +8089,11 @@
     {
       "path": "tests/test_topic_reference_evidence.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Independent complete 409-line EOF test-source review, not a new test run. Bounded inventory/context/mutation and mixed-source controls; no full dependency or live-quality claim.",
+      "source_sha256": "108a4a67082d6e76ba987f0745e03ce2f7977b6fb5ece58be1a1f56d3a2f67c3",
+      "review_evidence": "docs/quality/entrypoint-topic-evidence-review.md",
+      "review_evidence_sha256": "dff7a5c51d4b12804c7ac1a1c0803fc26b0fd494344c4fe888a6bcdf41bd23f8"
     },
     {
       "path": "tests/test_topic_task_contract.py",

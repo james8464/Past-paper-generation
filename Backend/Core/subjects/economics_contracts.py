@@ -6,6 +6,7 @@ import hashlib
 import json
 import re
 from decimal import Decimal
+from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -13,6 +14,13 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from Backend.Core.numeric_integrity import NUMBER, NumericOutput, numeric_result
 
 ECONOMICS_CONTRACT_VERSION = "edexcel-instance-v1"
+ECONOMICS_SOURCE_BINDING_VERSION = "edexcel-instance-v2"
+
+
+def economics_checkpoint_path(path: Path) -> Path:
+    # This routes new work; normal checkpoint payload revalidation still applies.
+    prefix = f"{ECONOMICS_SOURCE_BINDING_VERSION}."
+    return path if path.name.startswith(prefix) else path.with_name(prefix + path.name)
 
 
 class SourceCell(BaseModel):
@@ -42,7 +50,9 @@ class SourceCell(BaseModel):
 
 class EconomicsSource(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
-    version: Literal["edexcel-instance-v1"] = ECONOMICS_CONTRACT_VERSION
+    version: Literal["edexcel-instance-v1", "edexcel-instance-v2"] = (
+        ECONOMICS_CONTRACT_VERSION
+    )
     source_id: str
     kind: str
     context: str = ""
@@ -470,8 +480,22 @@ def solve_economics_contract(item: dict) -> dict | None:
     ):
         raise ValueError("Edexcel numeric request changed")
     stimulus = item.get("stimulus", {})
+    descriptors = {
+        "kind": source.kind,
+        "source_id": source.source_id,
+        "source_fingerprint": source.fingerprint(),
+        "provenance": source.provenance,
+        "x_label": source.x_label,
+        "y_label": source.y_label,
+    }
+    # Retained v1 packets may omit these fields; v2 requires the complete set.
     if (
-        stimulus.get("values") != [float(v) for v in source.values]
+        any(
+            stimulus.get(name) != value
+            for name, value in descriptors.items()
+            if source.version == ECONOMICS_SOURCE_BINDING_VERSION or name in stimulus
+        )
+        or stimulus.get("values") != [float(v) for v in source.values]
         or stimulus.get("point_labels") != source.labels
         or stimulus.get("rows")
         != [[cell.printed() for cell in row] for row in source.rows]
