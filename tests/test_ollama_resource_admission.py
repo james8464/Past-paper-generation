@@ -15,6 +15,24 @@ from Backend.Core.generation_requests import GenerationRequest
 GIB = 1 << 30
 
 
+def test_invalid_french_budget_is_rejected_before_resource_or_transport_checks(
+    monkeypatch,
+):
+    def forbidden(*args, **kwargs):
+        pytest.fail("Invalid input must not inspect memory or contact Ollama")
+
+    monkeypatch.setattr(providers, "require_local_ollama_capacity", forbidden)
+    monkeypatch.setattr(providers.HostedLLMClient, "_ollama_thinking_policy", forbidden)
+    client = providers.OllamaClient("http://localhost:11434", "fixture")
+    with pytest.raises(ValueError, match="budget"):
+        client._ollama(
+            "Return JSON.",
+            schema={"type": "object"},
+            output_budget=32768,
+            french_nsi=True,
+        )
+
+
 @pytest.fixture(autouse=True)
 def no_real_resources(monkeypatch):
     def forbidden(*args, **kwargs):

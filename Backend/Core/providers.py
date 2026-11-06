@@ -289,13 +289,13 @@ class HostedLLMClient:
         temperature: float | None = None,
         french_nsi: bool = False,
     ) -> dict[str, object]:
-        require_local_ollama_capacity(self.base_url, self.model)
         schema = _ollama_json_schema(prompt) if schema is None else schema
         budget = (
             _ollama_output_budget(schema) if output_budget is None else output_budget
         )
         if french_nsi and (type(budget) is not int or not 1 <= budget <= 16384):
             raise ValueError("French NSI output budget must be from 1 to 16384.")
+        require_local_ollama_capacity(self.base_url, self.model)
         thinking_policy = self._ollama_thinking_policy(request_function)
         payload = json.dumps(
             {
