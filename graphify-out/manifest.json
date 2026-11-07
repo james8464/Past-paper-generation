@@ -145,8 +145,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/exam_cover.py": {
-    "mtime": 1793666909.5840223,
-    "ast_hash": "0d89ee32bc615001b963c45609319ec6",
+    "mtime": 1794010497.6936636,
+    "ast_hash": "91ef2ed7f9361a484b63ac181cdbf059",
     "semantic_hash": ""
   },
   "Backend/Core/exam_pages.py": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
-    "mtime": 1793666909.5875134,
-    "ast_hash": "bb79136c44cd67f4ecca5c2903610955",
+    "mtime": 1794010182.90141,
+    "ast_hash": "a20aef31552bcdbd212036dcc3ca19ed",
     "semantic_hash": ""
   },
   "Backend/Core/layout_master.py": {
@@ -500,8 +500,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/cli.py": {
-    "mtime": 1794007269.1102798,
-    "ast_hash": "5bbfcc18e142f2e2bf8488f14b831c36",
+    "mtime": 1794011018.2007194,
+    "ast_hash": "0bedfc07fea3510bd8b001ff3e7fabbc",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/configs.py": {
@@ -510,8 +510,8 @@
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/generator.py": {
-    "mtime": 1794007269.1106975,
-    "ast_hash": "937e252efd8e9275e8eee70af7ccf928",
+    "mtime": 1794011018.2010028,
+    "ast_hash": "f2096af2d36d5b591490ef48b4afc1ea",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py": {
@@ -590,13 +590,13 @@
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/generator.py": {
-    "mtime": 1794007911.782434,
-    "ast_hash": "683c308c1cd0a1f2c423ea8dc2de73b0",
+    "mtime": 1794010524.5993345,
+    "ast_hash": "c9608b31d0aa7acf63fe6d58e94456c3",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/render_pdf.py": {
-    "mtime": 1794007911.7828252,
-    "ast_hash": "2f64b725c807aef9ae853b89d1c68d02",
+    "mtime": 1794010497.6944504,
+    "ast_hash": "8366ed301952399fd83a873de84983d1",
     "semantic_hash": ""
   },
   "Resources/business/aqa/generator/aqabizgen/syllabus.py": {
@@ -1195,8 +1195,8 @@
     "semantic_hash": ""
   },
   "Resources/layout-master-runtime.json": {
-    "mtime": 1793666909.6251888,
-    "ast_hash": "91be3e927913d2a758a5d8b70c379658",
+    "mtime": 1794010064.3888779,
+    "ast_hash": "7fe65b20399f8ab3d916633a01f383bd",
     "semantic_hash": ""
   },
   "Resources/layout-profiles.json": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794008961.075125,
-    "ast_hash": "10502523958834724ef96950790f32c3",
+    "mtime": 1794011037.103063,
+    "ast_hash": "deccae784d7ba290617822bd7272ad94",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1470,8 +1470,8 @@
     "semantic_hash": ""
   },
   "tests/test_exam_cover.py": {
-    "mtime": 1793225633.1351838,
-    "ast_hash": "15e6a24893eedcb9cd91c0734afd732b",
+    "mtime": 1794010591.412515,
+    "ast_hash": "04833e33929a7a7cfaba0f362d096490",
     "semantic_hash": ""
   },
   "tests/test_exam_pages.py": {
@@ -3900,8 +3900,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/subjects/accounting_selected_response.py": {
-    "mtime": 1793772030.4383597,
-    "ast_hash": "ee247949fb7ed224403d4f35054c6bcb",
+    "mtime": 1794011018.2005455,
+    "ast_hash": "628a19cd9a7b9a3a922ad1726c0b72f0",
     "semantic_hash": ""
   },
   "Resources/accounting/aqa/generator/aqaaccountgen/marking_policy.py": {
@@ -3925,8 +3925,8 @@
     "semantic_hash": ""
   },
   "tests/test_accounting_private_credit.py": {
-    "mtime": 1794008760.0382273,
-    "ast_hash": "71e718c71ee45f8bf6eaed2af4b5854d",
+    "mtime": 1794011018.2017274,
+    "ast_hash": "5e597eabf5d64f7b4c979b7f8b7c0319",
     "semantic_hash": ""
   },
   "tests/test_accounting_selected_response.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794008961.0604994,
-    "ast_hash": "96bee79ca9b3a9187416ed7dc71ee871",
+    "mtime": 1794011037.088918,
+    "ast_hash": "b8220a22eb0371b1576ae49752d66725",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4665,8 +4665,8 @@
     "semantic_hash": ""
   },
   "tests/test_accounting_paper_two_source_choices.py": {
-    "mtime": 1793666909.7570832,
-    "ast_hash": "18fd99599d7ce23936ff041ac5821d54",
+    "mtime": 1794011018.201516,
+    "ast_hash": "53eb3b35cc0e6141ffbd3fc5a146e136",
     "semantic_hash": ""
   },
   "tests/test_mlx_download_info.py": {
@@ -5350,8 +5350,8 @@
     "semantic_hash": ""
   },
   "tests/test_accounting_budget_assumptions.py": {
-    "mtime": 1794008797.3893442,
-    "ast_hash": "987550a03626c7058f2932d3f79a597b",
+    "mtime": 1794011018.201339,
+    "ast_hash": "4f1f8b02c9ef7547191881b485f0a9da",
     "semantic_hash": ""
   },
   "tests/test_ocr_preview_uniqueness.py": {
@@ -6085,8 +6085,28 @@
     "semantic_hash": ""
   },
   "docs/quality/business-source-and-marking-review.md": {
-    "mtime": 1794008065.6883087,
-    "ast_hash": "59fa6099762a88de06c173ac0409dacb",
+    "mtime": 1794010805.0408075,
+    "ast_hash": "8d729b62c37e514b20e34820a4c2bb75",
+    "semantic_hash": ""
+  },
+  "Backend/Core/business_scheme_content.py": {
+    "mtime": 1794010684.1938522,
+    "ast_hash": "4a38a260cefad8eef7193270d72346bb",
+    "semantic_hash": ""
+  },
+  "tests/test_accounting_variance_contract.py": {
+    "mtime": 1794011018.2018542,
+    "ast_hash": "5148e68ca5350941f6afdad0e273f713",
+    "semantic_hash": ""
+  },
+  "tests/test_business_scheme_pagination.py": {
+    "mtime": 1794010684.0756123,
+    "ast_hash": "4d522c6a8d15a7f15c299f3f10193356",
+    "semantic_hash": ""
+  },
+  "docs/quality/accounting-variance-public-contract-review.md": {
+    "mtime": 1794011018.201154,
+    "ast_hash": "5a011632609b2ca1504bd7378a465dab",
     "semantic_hash": ""
   }
 }

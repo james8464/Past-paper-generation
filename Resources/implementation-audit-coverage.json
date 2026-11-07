@@ -278,6 +278,15 @@
       "review_evidence_sha256": "af676cdb6e47d3d6e61361f2722f7b605c0ef7b3db9afeefcfd5562776c7787d"
     },
     {
+      "path": "Backend/Core/business_scheme_content.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete new helper/test file independently read to EOF; versioned printed-credit, body order, owned-date and historical-layout controls. No live-model or official-equivalence claim.",
+      "source_sha256": "81cd6bc655d17a2323b14281ebc8b7dcabd82a926e40e8d1b9f40ff6f6914559",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
+    },
+    {
       "path": "Backend/Core/calibration_store.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -479,10 +488,10 @@
       "path": "Backend/Core/exam_cover.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "quality_status_review: complete-file EOF of covers/notices; runtime and pedagogic qualification remain separate.",
-      "source_sha256": "af262069558928777e832fe4f021da131e0d170dfb0b3392af0c57a1d3789a2f",
-      "review_evidence": "docs/quality/reference-readmission-and-runtime-audit-2026-11-03.md",
-      "review_evidence_sha256": "f15b829e2e5718086b47e04b7f6c8df0ae974dbda426290c80fd2728f036b5b9"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "4ea5dbc5a125afc660cbbc72cc7f42f6fb52d6545dc1d5ec1100552c3515badf",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "Backend/Core/exam_pages.py",
@@ -1376,10 +1385,10 @@
       "path": "Backend/Core/layout_conformance.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete baseline file and entire duplicate-page repair reviewed; copied-artifact tests do not establish generated-paper semantic quality.",
-      "source_sha256": "287f96a5f07f79f886569924fdc9a148269ecd196067dcfee481a19179f666c2",
-      "review_evidence": "docs/quality/paper-conformance-file-review-2026-11-02.md",
-      "review_evidence_sha256": "5501a7e1c162767e464cdef4cffd7706adadb060b3a7188eb28fa36ea13cf0e3"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "69618b58de3b2df1da2fcaed673c99810c79efbd56c2a93b5f5f79c33e67e881",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "Backend/Core/layout_master.py",
@@ -1769,10 +1778,10 @@
       "path": "Backend/Core/subjects/accounting_selected_response.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete 322-line review of typed public inputs, arithmetic routes, option checks and formatter boundary; 213 focused tests passed. Retained Q06 semantic false acceptance remains open.",
-      "source_sha256": "794766f3eb77720beb2e752cec8dc388bba4d6d7d113fe4214f0be474efd1ce1",
-      "review_evidence": "docs/quality/accounting-choice-format-review.md",
-      "review_evidence_sha256": "ccd835ff55d50007eef196a126f2b8090e36e16bcb6950b0874adc18b820c402"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "5772fc11bbd28cd13683704b098d3005a62dd892fab02501d948a825920771be",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "Backend/Core/subjects/biology.py",
@@ -1932,9 +1941,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "36d0ed945d342558cf29032129f643ef899e767828f2721ce12e5aa2bedeb778",
-      "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
+      "source_sha256": "2585708c9e3ffd04d375ca7dc32fd0b5fb94d69dd551cc7013b4ad8c6dc6d8c9",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/configs.py",
@@ -1947,9 +1956,9 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "9358bba7b03f4d4b9b122bc484c2082a6716845018379d6f308d21fd854636f8",
-      "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
+      "source_sha256": "e34cbd887c22c7d0315d8d61980e27539512f9e554bf5df4d9fc6fa60c202944",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/marking_policy.py",
@@ -2088,18 +2097,18 @@
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "43b9b0000ea2f0e014d6b0668e6442712742f267554351e79e9d6f0660c6747f",
+      "source_sha256": "9d1416235cdc448c1f7ef1fe60b7457e3b61f1532ed29b8d3ad6168bf659c587",
       "review_evidence": "docs/quality/business-source-and-marking-review.md",
-      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/render_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "c044cb98e90a9e4b4fd78e9ba45cb88fbb291a13e29e60230bbbd05b88056c1f",
+      "source_sha256": "7944546f27c039a6ce01886dec4cbe61e21fa8564c79dfa6ae8ff5078a2a473e",
       "review_evidence": "docs/quality/business-source-and-marking-review.md",
-      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/syllabus.py",
@@ -2108,7 +2117,7 @@
       "reason": "Complete unchanged file EOF read by the assigned source auditor, with scoped dependency and qualification limits recorded in the linked evidence.",
       "source_sha256": "af6e1c541cfeecb7f078626394b9675903e08ebc1a7ab0db82ee6f33640f548b",
       "review_evidence": "docs/quality/business-source-and-marking-review.md",
-      "review_evidence_sha256": "4f26de860b63990c1bce670fe1a6b68bc11a8c69fb5796c9b13c2ce4fadbb9f5"
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "Resources/business/aqa/generator/data/difficulty-calibration.json",
@@ -3327,6 +3336,12 @@
     },
     {
       "path": "docs/quality/accounting-v11-public-credit-review-2026-10-28.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/accounting-variance-public-contract-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6261,9 +6276,9 @@
       "classification": "test",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "d89037354a27eeffa94fd07c227dff535789c4a07146e6b6dff6c8e1b68980bd",
-      "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
+      "source_sha256": "30a7ee092022bd14968acaa598fa9fe9471b68819992947833674ec4e2dd0ec5",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "tests/test_accounting_case_projection.py",
@@ -6310,17 +6325,20 @@
     {
       "path": "tests/test_accounting_paper_two_source_choices.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "4212c72f1dbb81f07dee9fe4da8e45f8e7995c2e536961edca119ebb9fc17a99",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "tests/test_accounting_private_credit.py",
       "classification": "test",
       "status": "reviewed",
       "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "dcb935efe098bc8eac915978e152e3c27ad257c7077b3254dfefe308e7ecea6c",
-      "review_evidence": "docs/quality/accounting-level-contract-review.md",
-      "review_evidence_sha256": "56b2f63ac1b9e58b84238ea248129e627acf3d2a74bf8c0bec249eb7c874db22"
+      "source_sha256": "884164375a5bf267d758711fec9884fe63b46402591bedd4f7ee58f091015d9a",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "tests/test_accounting_scheme_pagination.py",
@@ -6348,6 +6366,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_accounting_variance_contract.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new offline variance test file independently read; public-fact classification, immutable wording, unique choices and unchanged checkpoint-byte controls. No general natural-language solver claim.",
+      "source_sha256": "66f8c12f8f0c7dec1ee4b4e6e578725e854514c112893f81c33e7bc05c56000c",
+      "review_evidence": "docs/quality/accounting-variance-public-contract-review.md",
+      "review_evidence_sha256": "3f17b2c9ee65c62973222d9a19746c19b4c7d9d5caf6614e2ceaa5c28a8b06dd"
     },
     {
       "path": "tests/test_ai_assessment.py",
@@ -6513,6 +6540,15 @@
       "source_sha256": "eac3696555bb0cbbbc2f54232cecbc235920354bfcb4251b335f30c68737a6a0",
       "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
       "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+    },
+    {
+      "path": "tests/test_business_scheme_pagination.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new helper/test file independently read to EOF; versioned printed-credit, body order, owned-date and historical-layout controls. No live-model or official-equivalence claim.",
+      "source_sha256": "f3c86cd21fc274a3d19c4b87c427910f746b7ebf0684efcd5401f656b86d08d0",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "tests/test_business_strategic_rate_domain.py",
@@ -6823,8 +6859,11 @@
     {
       "path": "tests/test_exam_cover.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
+      "source_sha256": "8cdde181c53a645419fcb6dadf7db77acf2336c7c86d6437c5822363d82b24c5",
+      "review_evidence": "docs/quality/business-source-and-marking-review.md",
+      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
     },
     {
       "path": "tests/test_exam_pages.py",
