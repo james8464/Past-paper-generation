@@ -43,7 +43,11 @@ def test_probe_transport_changes_only_thinking_and_explicit_output_budget(
         "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
     )
     monkeypatch.setattr(
-        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+        "Backend.Core.ollama_admission._installed_model_state",
+        lambda *args: (4 << 30, False),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._headroom_snapshot", lambda physical: 12 << 30
     )
     request, expected = probe.logic_request(270100)
     seen = []
@@ -84,7 +88,11 @@ def test_truncated_completion_is_preserved_and_not_repaired(monkeypatch):
         "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
     )
     monkeypatch.setattr(
-        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+        "Backend.Core.ollama_admission._installed_model_state",
+        lambda *args: (4 << 30, False),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._headroom_snapshot", lambda physical: 12 << 30
     )
     calls = []
 

@@ -204,7 +204,11 @@ def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
         "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
     )
     monkeypatch.setattr(
-        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+        "Backend.Core.ollama_admission._installed_model_state",
+        lambda *args: (4 << 30, False),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._headroom_snapshot", lambda physical: 12 << 30
     )
     from io import BytesIO
 
