@@ -479,59 +479,46 @@ def externality_diagram(
     params: dict[str, object] | None = None,
 ) -> str:
     kind = _gp_str(params, "kind", kind)
+    if kind in {"externality", "externality_diagram"}:
+        kind = "negative"
+    if kind not in {"negative", "positive"}:
+        raise ValueError("Expected a negative or positive externality kind")
+    benefit_intercept, benefit_slope = 100, 0.6
+    cost_intercept, cost_slope = 12, 0.48
+    benefit_gap, cost_gap = (0, 20) if kind == "negative" else (22, 0)
+    q_private = (benefit_intercept - cost_intercept) / (benefit_slope + cost_slope)
+    q_social = (benefit_intercept + benefit_gap - cost_intercept - cost_gap) / (
+        benefit_slope + cost_slope
+    )
+    p_private = benefit_intercept - benefit_slope * q_private
+    p_social = benefit_intercept + benefit_gap - benefit_slope * q_social
     ax = _ax()
-    xs = np.linspace(0, 120, 200)
+    xs = np.unique(np.append(np.linspace(0, 120, 200), [q_private, q_social]))
     y_max = 115
-    mpb = 100 - xs * 0.6
-    mpc = 12 + xs * 0.48
-
-    if kind == "negative":
-        msb, msc = mpb.copy(), mpc + 20
-        gap_label = "MSC"
-    else:
-        msb, msc = mpb + 22, mpc.copy()
-        gap_label = "MSB"
+    mpb = benefit_intercept - xs * benefit_slope
+    mpc = cost_intercept + xs * cost_slope
+    msb, msc = mpb + benefit_gap, mpc + cost_gap
 
     ax.plot(xs, mpb, "k-", label="MPB")
     ax.plot(xs, mpc, "k--", label="MPC", linewidth=1.2)
-    ax.plot(xs, msc, "k-", label=gap_label)
-    if kind == "negative":
-        ax.plot(xs, msb, "k--", label="MSB", linewidth=1.0, alpha=0.6)
-
-    eq_private_idx = np.argmin(np.abs(mpb - mpc))
-    eq_social_idx = np.argmin(np.abs(msb - msc))
-    q_private, p_private = xs[eq_private_idx], mpb[eq_private_idx]
-    q_social, p_social = xs[eq_social_idx], msb[eq_social_idx]
+    ax.plot(xs, msc, "k-", label="MSC")
+    ax.plot(xs, msb, "k--", label="MSB", linewidth=1.0, alpha=0.6)
 
     ax.plot(q_private, p_private, "ko", markersize=3, zorder=5)
     ax.plot(q_social, p_social, "ko", markersize=3, zorder=5)
 
-    if kind == "negative":
-        msc_at_private = msc[eq_private_idx]
-        dwl_x = [q_social, q_social, q_private]
-        dwl_y = [msb[eq_social_idx], msc[eq_social_idx], msc_at_private]
-        ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
-        ax.axvline(
-            x=q_social,
-            ymin=0,
-            ymax=p_social / y_max,
-            linestyle=":",
-            color="gray",
-            linewidth=0.7,
-        )
-    else:
-        mpb_at_private = mpb[eq_private_idx]
-        dwl_x = [q_social, q_private, q_social]
-        dwl_y = [mpb[eq_social_idx], mpb_at_private, msb[eq_social_idx]]
-        ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
-        ax.axvline(
-            x=q_social,
-            ymin=0,
-            ymax=p_social / y_max,
-            linestyle=":",
-            color="gray",
-            linewidth=0.7,
-        )
+    # Welfare loss spans MSB and MSC at private output, meeting at social output.
+    dwl_x = [q_social, q_private, q_private]
+    dwl_y = [p_social, p_private + benefit_gap, p_private + cost_gap]
+    ax.fill(dwl_x, dwl_y, alpha=0.1, color="gray", label="DWL")
+    ax.axvline(
+        x=q_social,
+        ymin=0,
+        ymax=p_social / y_max,
+        linestyle=":",
+        color="gray",
+        linewidth=0.7,
+    )
 
     ax.axvline(
         x=q_private,
@@ -546,7 +533,7 @@ def externality_diagram(
     ax.set_xlabel("Quantity")
     ax.set_ylabel("Cost / Benefit")
     _arrow_axes(ax, 105, y_max)
-    ax.legend(loc="upper right")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.08), ncol=5)
     return _save()
 
 
@@ -796,24 +783,35 @@ def consumer_producer_surplus(
     quantity: float = 70,
     params: dict[str, object] | None = None,
 ) -> str:
-    price = _gp(params, "price", price)
-    quantity = _gp(params, "quantity", quantity)
+    values = dict(params or {})
+    for canonical, legacy in (("eq_price", "price"), ("eq_quantity", "quantity")):
+        if legacy in values:
+            legacy_value = _positive_scale(values[legacy], legacy)
+            if (
+                canonical in values
+                and _positive_scale(values[canonical], canonical) != legacy_value
+            ):
+                raise ValueError(f"Conflicting {canonical} and {legacy}")
+            values[canonical] = legacy_value
+    price, quantity = _market_scales(values, price, quantity)
     ax = _ax()
-    q_max = 130
-    y_max = 120
-    xs = np.linspace(0, q_max, 200)
+    q_max = 1.8 * quantity
+    y_max = 2.1 * price
+    xs = np.unique(np.append(np.linspace(0, q_max, 200), quantity))
 
-    demand = 115 - xs * 0.58
-    supply = 8 + xs * 0.58
+    demand = price * (2 - xs / quantity)
+    supply = price * (xs / quantity)
 
-    q_idx = int(quantity)
-    cs_top = demand[:q_idx]
-    ps_bottom = supply[:q_idx]
+    traded = xs <= quantity
 
     ax.plot(xs, demand, "k-", label="D")
     ax.plot(xs, supply, "k-", label="S")
-    ax.fill_between(xs[:q_idx], price, cs_top, alpha=0.1, color="gray", label="CS")
-    ax.fill_between(xs[:q_idx], ps_bottom, price, alpha=0.06, color="gray", label="PS")
+    ax.fill_between(
+        xs[traded], price, demand[traded], alpha=0.1, color="gray", label="CS"
+    )
+    ax.fill_between(
+        xs[traded], supply[traded], price, alpha=0.06, color="gray", label="PS"
+    )
     ax.axhline(
         y=price,
         xmin=0,
@@ -823,14 +821,16 @@ def consumer_producer_surplus(
         linewidth=0.8,
     )
     ax.plot(quantity, price, "ko", markersize=3.5, zorder=5)
-    _label(ax, "P\u2091", quantity + 7, price - 2, fontsize=8)
-    _label(ax, "Q\u2091", quantity, -3, fontsize=8)
+    ax.annotate("Pe", (0, price), xytext=(8, 8), textcoords="offset points", fontsize=8)
+    ax.annotate(
+        "Qe", (quantity, 0), xytext=(8, 8), textcoords="offset points", fontsize=8
+    )
     ax.set_xlim(0, q_max)
     ax.set_ylim(0, y_max)
     ax.set_xlabel("Quantity")
     ax.set_ylabel("Price")
     _arrow_axes(ax, q_max, y_max)
-    ax.legend(loc="upper right")
+    ax.legend(loc="lower center", bbox_to_anchor=(0.5, 1.08), ncol=4)
     return _save()
 
 
