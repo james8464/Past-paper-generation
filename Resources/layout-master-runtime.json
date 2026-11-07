@@ -12346,9 +12346,7 @@
       "question-paper": {
         "page_count": 24,
         "page_count_policy": {
-          "kind": "exact",
-          "minimum": 24,
-          "maximum": 24
+          "kind": "generated-aqa-cs-paper1-question-content-v1"
         },
         "page_boxes": [
           {

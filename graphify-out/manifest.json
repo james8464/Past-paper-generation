@@ -195,13 +195,13 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/rendering.py": {
-    "mtime": 1794006419.0053892,
-    "ast_hash": "2c70bc850751e1fb8d625751d6143dcd",
+    "mtime": 1794036059.542306,
+    "ast_hash": "cc7612b00db55d766ca9a5abc11cffed",
     "semantic_hash": ""
   },
   "Backend/Core/france/runtime.py": {
-    "mtime": 1793553958.7915556,
-    "ast_hash": "bd168ab750345104d3f3c9441c42f92c",
+    "mtime": 1794036059.5427597,
+    "ast_hash": "7a2f202ed07f36bd90cb8d76a0537127",
     "semantic_hash": ""
   },
   "Backend/Core/france/source_identity.py": {
@@ -245,8 +245,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/layout_conformance.py": {
-    "mtime": 1794011771.2613108,
-    "ast_hash": "a20aef31552bcdbd212036dcc3ca19ed",
+    "mtime": 1794036554.7431817,
+    "ast_hash": "c05f750c0a1ed17061ae640384377e0f",
     "semantic_hash": ""
   },
   "Backend/Core/layout_master.py": {
@@ -685,8 +685,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py": {
-    "mtime": 1794006419.013072,
-    "ast_hash": "60b4052c9c0bfe280efb685c68db3ec2",
+    "mtime": 1794036554.7434368,
+    "ast_hash": "71170ab5927e552c2ba8e818c9e24869",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/syllabus.py": {
@@ -750,8 +750,8 @@
     "semantic_hash": "1518856efbb5563e45c146cb64f20cd8"
   },
   "Resources/computer-science/aqa/generator/tests/test_paper1.py": {
-    "mtime": 1793638596.752487,
-    "ast_hash": "1a5a398e4693e0c293fe2c184199938e",
+    "mtime": 1794036554.7437,
+    "ast_hash": "c3136539f625b73434858fb0feb69a54",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_render_content.py": {
@@ -1195,8 +1195,8 @@
     "semantic_hash": ""
   },
   "Resources/layout-master-runtime.json": {
-    "mtime": 1794011771.2630477,
-    "ast_hash": "7fe65b20399f8ab3d916633a01f383bd",
+    "mtime": 1794036554.744455,
+    "ast_hash": "1f56e2880dd57be6220c4d744b1b79ef",
     "semantic_hash": ""
   },
   "Resources/layout-profiles.json": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794031083.9689717,
-    "ast_hash": "59602e6171c0c440f0aaa3eca433f598",
+    "mtime": 1794036696.0478153,
+    "ast_hash": "93cee72356e3edb78157b13461449412",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -1545,8 +1545,8 @@
     "semantic_hash": ""
   },
   "tests/test_layout_master.py": {
-    "mtime": 1793543563.4761765,
-    "ast_hash": "cacf2f8647be48d0776b350555aff36f",
+    "mtime": 1794036554.7449298,
+    "ast_hash": "95d46228eb5b159425ce2c0991564235",
     "semantic_hash": ""
   },
   "tests/test_level_of_response.py": {
@@ -1775,8 +1775,8 @@
     "semantic_hash": ""
   },
   "tools/build_supported_layout_masters.py": {
-    "mtime": 1793543563.484809,
-    "ast_hash": "36c38cf6edb4c77a2d187496d2b797e0",
+    "mtime": 1794036554.7451835,
+    "ast_hash": "805e3a5c069d1811460631c55b109f39",
     "semantic_hash": ""
   },
   "tools/calibrate_student_responses.py": {
@@ -3400,8 +3400,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/print_policy.py": {
-    "mtime": 1794006419.0051334,
-    "ast_hash": "c7e001597d2e8e23d0c78623197a15ab",
+    "mtime": 1794036059.5421329,
+    "ast_hash": "a61752b8b053f64dc976afc75ce852a8",
     "semantic_hash": ""
   },
   "docs/quality/french-nsi-v34-public-flow-acceptance-2026-10-28.md": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794031083.9688165,
-    "ast_hash": "f5f4cf088d163959c9c5ee33989cd8aa",
+    "mtime": 1794036684.1873212,
+    "ast_hash": "cf3e3badadfba7c981d3b6f6b3262a80",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4375,8 +4375,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/temporary_cleanup.py": {
-    "mtime": 1793543563.304043,
-    "ast_hash": "047954efe60b53e5cab0d82a2dc05a2e",
+    "mtime": 1794036059.5429406,
+    "ast_hash": "43d947663af864d474bfee3fa0a4dc1d",
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/cspapergen/_cli_runtime.py": {
@@ -4750,8 +4750,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pdf.py": {
-    "mtime": 1794006419.0027227,
-    "ast_hash": "fe62f70d1d8b9576c1fc9124920a3fb7",
+    "mtime": 1794036059.5417824,
+    "ast_hash": "02617bd138dba35def5d2442d2bea4ff",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
@@ -4760,8 +4760,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
-    "mtime": 1794006419.0038438,
-    "ast_hash": "98d69187624826032a22f505916d9362",
+    "mtime": 1794036059.5419157,
+    "ast_hash": "a514ec90fe0d5e224caa91890bfa34f0",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchDraftQualityReport.swift": {
@@ -4770,8 +4770,8 @@
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift": {
-    "mtime": 1794006419.052665,
-    "ast_hash": "6b1ab9f88303b65e7f7dc32fe10f5996",
+    "mtime": 1794036059.5433826,
+    "ast_hash": "3b4f8bf6e94be77587e099a60f59f988",
     "semantic_hash": ""
   },
   "macOS/Keldin/Domain/PaperQualityGuidance.swift": {
@@ -4790,8 +4790,8 @@
     "semantic_hash": ""
   },
   "macOS/Tests/FrenchLLMAssessmentTests.swift": {
-    "mtime": 1794006419.0603743,
-    "ast_hash": "92ca28f949263a81b9d6f3d58950ff4a",
+    "mtime": 1794036059.5436091,
+    "ast_hash": "615a7d143ed65214028d282dedd7ddf7",
     "semantic_hash": ""
   },
   "macOS/Tests/ModelQualityGuidanceTests.swift": {
@@ -5215,8 +5215,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_fence_boundaries.py": {
-    "mtime": 1794006419.0648065,
-    "ast_hash": "dd3b9a4787ffe0b2a6298ee1f1ab1629",
+    "mtime": 1794036059.5438545,
+    "ast_hash": "db72a03a8f2a13922a6a7bd1551293e2",
     "semantic_hash": ""
   },
   "docs/quality/french-format-and-data-review-2026-10-30.md": {
@@ -5800,8 +5800,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/aqa/generator/tests/test_paper1_command_contract.py": {
-    "mtime": 1794006419.0132697,
-    "ast_hash": "52838aead7b0bf9da73acbfcb8fe0de6",
+    "mtime": 1794036554.743912,
+    "ast_hash": "44e0edecd25ecfa0a271f5028ed6d95c",
     "semantic_hash": ""
   },
   "tests/test_family_publication.py": {
@@ -5810,8 +5810,8 @@
     "semantic_hash": ""
   },
   "tests/test_french_graph_clearance_policy.py": {
-    "mtime": 1794006419.06488,
-    "ast_hash": "fe0c31272bf1e2c0ad4b938b2d6ab5f5",
+    "mtime": 1794036059.544089,
+    "ast_hash": "bd4b1adbf57d1e8d7e24399b51dd34d1",
     "semantic_hash": ""
   },
   "tests/test_french_graph_label_clearance.py": {
@@ -6212,6 +6212,46 @@
   "docs/quality/cs-notes-cache-integrity-review-2026-11-07.md": {
     "mtime": 1794030822.4597018,
     "ast_hash": "a0e9049b56c3e104805e9bc1cad0c804",
+    "semantic_hash": ""
+  },
+  "Backend/Core/computer_science_question_content.py": {
+    "mtime": 1794038479.2553346,
+    "ast_hash": "0301df1a77a44289802810d53089324d",
+    "semantic_hash": ""
+  },
+  "tests/test_cs_paper1_on_screen_flow.py": {
+    "mtime": 1794036554.7446861,
+    "ast_hash": "ade39462f7ba2a3590a7dae0d5371afb",
+    "semantic_hash": ""
+  },
+  "tests/test_cs_paper1_question_policy.py": {
+    "mtime": 1794038479.183315,
+    "ast_hash": "33b62bf2fdf0133a9188552fe5105f90",
+    "semantic_hash": ""
+  },
+  "tests/test_french_generic_table_policy.py": {
+    "mtime": 1794036059.5439575,
+    "ast_hash": "e76a3fb79d59b5495b5cae054b62c110",
+    "semantic_hash": ""
+  },
+  "tests/test_french_postrename_cleanup.py": {
+    "mtime": 1794036059.5441873,
+    "ast_hash": "b157ded3579b476116e3092c581cc5e3",
+    "semantic_hash": ""
+  },
+  "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md": {
+    "mtime": 1794038512.1308558,
+    "ast_hash": "c5866cde934e8d5b2d8c14cfbef94c11",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-generic-table-policy-review.md": {
+    "mtime": 1794036059.5430515,
+    "ast_hash": "5bbbdb06f6182c129cd7d121f20fd3f7",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-publication-cleanup-review.md": {
+    "mtime": 1794036059.5431569,
+    "ast_hash": "ba0b67dfa821efe6da4bca92c1ec8c27",
     "semantic_hash": ""
   }
 }

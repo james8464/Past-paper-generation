@@ -341,6 +341,15 @@
       "review_evidence_sha256": "2521a17e64dd40f437c5e26c835e8dbe534f70ca7c703f5258f717b5f595fa4d"
     },
     {
+      "path": "Backend/Core/computer_science_question_content.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Prior complete374-line verifier EOF review plus complete independently reviewed five-line production delta (canonical CS_ROOT import and explicit syllabus path), current377 lines; not a fresh current whole-file EOF read. Complete new 374-line verifier EOF independently reviewed. Owner-bound declared source/prompts/marks/material, bounded resources, A4 and nonempty checks; no production rerender. FSM text/table/node counts only, not exact arrows/state-label graphical equivalence. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "e0306b7b6334d32a8c85ca8ae1691c152d75dae91f3c0e1b3e48d5ace7e546f6",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
+    },
+    {
       "path": "Backend/Core/computer_science_reference_solutions.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -1094,10 +1103,10 @@
       "path": "Backend/Core/france/llm_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "edf7422259d7850b88cf3a48a3ebed24e9a9147b5b7abc70315b34e68067c58c",
-      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
-      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
+      "reason": "Preserves existing complete source-bound review plus complete independently reviewed explicit v4/v5 policy-membership delta and graph-validator callers. Not a fresh current whole-file EOF read. Prior evidence docs/quality/french-graph-label-clearance-review.md at 09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380; prior source edf7422259d7850b88cf3a48a3ebed24e9a9147b5b7abc70315b34e68067c58c.",
+      "source_sha256": "e4a75c8bcf5cdee7c58f51caa8a26489c3349b770e6fad3736f9cfaf17e723c4",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
     },
     {
       "path": "Backend/Core/france/llm_pipeline.py",
@@ -1112,10 +1121,10 @@
       "path": "Backend/Core/france/llm_runtime.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
-      "source_sha256": "f91c4282ccd09475c056f7cd0c0cbe1ebf37246ad83816960a0fffd8d66a9631",
-      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
+      "reason": "Preserves prior source-bound composite review plus complete independently reviewed import/final-cleanup delta and scoped publication/error callers. No new complete-file V36-runtime read or terminal-delivery guarantee. Prior evidence docs/quality/local-model-memory-admission-review.md at cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d; prior source f91c4282ccd09475c056f7cd0c0cbe1ebf37246ad83816960a0fffd8d66a9631.",
+      "source_sha256": "2bb19b2567a84e82c00dc34a994c745bf5b247e3ffd741c7ec58504a3131dfbe",
+      "review_evidence": "docs/quality/french-publication-cleanup-review.md",
+      "review_evidence_sha256": "0c05290fe6b24bba59e95b15a8343915c22b50c3277820f6bed25f94773a8637"
     },
     {
       "path": "Backend/Core/france/loan_case.py",
@@ -1289,10 +1298,10 @@
       "path": "Backend/Core/france/print_policy.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "286adb79fc2b847de338faaa264dacd547edaa74dc9942fca7b76db43a989099",
-      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
-      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
+      "reason": "Complete current 30-line module EOF independently reviewed; explicit v5 generic-table selection and historical policy membership. Not model quality or release approval. Prior evidence docs/quality/french-graph-label-clearance-review.md at 09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380; prior source 286adb79fc2b847de338faaa264dacd547edaa74dc9942fca7b76db43a989099.",
+      "source_sha256": "2a2c0133bb2e4bb2705a4b35a70c2c68f7ac6992a26d8a170ec267be6eb857be",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
     },
     {
       "path": "Backend/Core/france/provider.py",
@@ -1324,8 +1333,11 @@
     {
       "path": "Backend/Core/france/rendering.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Composite review: prior complete 1210-line EOF baseline SHAbcca2bbebac1444f2435c4fd4e258c73532451aac062ca3e4765ba2f4b1f2be9 plus complete independently reviewed generic-table policy delta and scoped material/graph callers. Not a fresh current whole-file EOF read or universal PDF fit proof.",
+      "source_sha256": "a1f993e6e7e6478b62df10296321b81736de9ca23fdffd2bb9b0ca63d248289b",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
     },
     {
       "path": "Backend/Core/france/round_robin_case.py",
@@ -1357,8 +1369,11 @@
     {
       "path": "Backend/Core/france/runtime.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Composite review: prior complete 2756-line EOF baseline SHA2a7906a035785c135a0060dc67d3bdc4bf6b85d3beebc347d7bb57f30f7771a7 plus complete independently reviewed import/final-cleanup delta and scoped publication/cancellation callers. Not a fresh current whole-file EOF read.",
+      "source_sha256": "b5a9353b5b3d4de38fdebf260fad2b571181005d0d8a1ecd4ef5ca31f05e838b",
+      "review_evidence": "docs/quality/french-publication-cleanup-review.md",
+      "review_evidence_sha256": "0c05290fe6b24bba59e95b15a8343915c22b50c3277820f6bed25f94773a8637"
     },
     {
       "path": "Backend/Core/france/source_identity.py",
@@ -1523,10 +1538,10 @@
       "path": "Backend/Core/layout_conformance.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "69618b58de3b2df1da2fcaed673c99810c79efbd56c2a93b5f5f79c33e67e881",
-      "review_evidence": "docs/quality/business-source-and-marking-review.md",
-      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
+      "reason": "Preserves existing source-bound composite baseline review plus complete independently reviewed scoped CS1 question-content dispatch/unknown-policy delta and callers. Current685 lines, not a fresh whole-file read; measured reference24 retained and other roles remain scoped. Prior evidence docs/quality/business-source-and-marking-review.md at 06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8; prior source 69618b58de3b2df1da2fcaed673c99810c79efbd56c2a93b5f5f79c33e67e881. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "0afa0d930ddba8de8352b2f9aa6cf0e7c3c4a1efa43fefd2d7fe20d38aa3f545",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Backend/Core/layout_master.py",
@@ -2027,10 +2042,10 @@
       "path": "Backend/Core/temporary_cleanup.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete-file semantic review within the documented scope, with exact-byte evidence; remaining release gates and broader project audit are separate.",
-      "source_sha256": "2b5a020106471d1c547b3330dcba0573e8bce2d055adbb009791767b27a92a48",
-      "review_evidence": "docs/quality/release-safety-python-review-2026-10-29.md",
-      "review_evidence_sha256": "b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809"
+      "reason": "Complete current 24-line helper EOF independently reviewed, including absent-root versus missing-descendant handling. No concurrent-writer or atomic-delivery guarantee. Prior evidence docs/quality/release-safety-python-review-2026-10-29.md at b997baa2bc32df2ea3571e6453175065c54bad7174c67d459bb54cfb53af9809; prior source 2b5a020106471d1c547b3330dcba0573e8bce2d055adbb009791767b27a92a48.",
+      "source_sha256": "90221f5c7e99bac14b5d0605d0003a8786cef0001e0020a81dece04b57817eea",
+      "review_evidence": "docs/quality/french-publication-cleanup-review.md",
+      "review_evidence_sha256": "0c05290fe6b24bba59e95b15a8343915c22b50c3277820f6bed25f94773a8637"
     },
     {
       "path": "Backend/Core/topic_reference_evidence.py",
@@ -2432,10 +2447,10 @@
       "path": "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
-      "source_sha256": "cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb",
-      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
+      "reason": "Composite review: prior complete 2266-line EOF baseline SHAcbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb plus complete independently reviewed flow/helper-removal delta and final on-screen owner reservation. Current2045 lines; not a fresh full-current-file read. Reduced pages do not establish difficulty/duration/official equivalence. Prior evidence docs/quality/renderer-eof-audit-and-release-follow-ups.md at bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6; prior source cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "a0b6b80d246537c5ffeb4ac2a73408c20658066159cb25f0687f093fa508bbe6",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/syllabus.py",
@@ -2525,10 +2540,10 @@
       "path": "Resources/computer-science/aqa/generator/tests/test_paper1_command_contract.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "9c0fa06b571ef2d50d9ff7b39aa17c799d5acb910e8260df1c84a9669316dc12",
-      "review_evidence": "docs/quality/cs1-command-protocol-review.md",
-      "review_evidence_sha256": "f170efb1bb28509ebf0d84ca79f2664c1f1ea9fdc4483bfd284a4857f1acc47a"
+      "reason": "Preserves prior complete74-line source-bound test review plus complete independently reviewed removal of invented fixed-page/support assertions. Current75 lines; protocol/program contracts retained; not a fresh whole-file read. Prior evidence docs/quality/cs1-command-protocol-review.md at f170efb1bb28509ebf0d84ca79f2664c1f1ea9fdc4483bfd284a4857f1acc47a; prior source 9c0fa06b571ef2d50d9ff7b39aa17c799d5acb910e8260df1c84a9669316dc12. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "78ea45c4a7464f44be449fa0667d892f8f4ac734effb06dbaebd7c4e2aea6b2e",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Resources/computer-science/aqa/generator/tests/test_render_content.py",
@@ -3866,6 +3881,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/deepseek-french-draft-validation-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3981,6 +4002,12 @@
     },
     {
       "path": "docs/quality/french-generation-error-presentation-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-generic-table-policy-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4269,6 +4296,12 @@
     },
     {
       "path": "docs/quality/french-provider-contract-regeneration-2026-10-30.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/french-publication-cleanup-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -5837,10 +5870,10 @@
       "path": "macOS/Keldin/Domain/FrenchLLMAssessmentRequest.swift",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "eb947e112f115985e2223f5b46993e1c70cd437ee13575be8250429078f8b4f8",
-      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
-      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
+      "reason": "Complete current 126-line native publication request module EOF independently reviewed; not the distinct 77-line form adapter. Native tests were not executed in this review. Prior evidence docs/quality/french-graph-label-clearance-review.md at 09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380; prior source eb947e112f115985e2223f5b46993e1c70cd437ee13575be8250429078f8b4f8.",
+      "source_sha256": "b40c1fdfb0a83d8a7b9fc0cba47d7a457d3530472f762a1a7fcb99b9c299cbee",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
     },
     {
       "path": "macOS/Keldin/Domain/FrenchReviewRequest.swift",
@@ -7100,6 +7133,24 @@
       "review_evidence_sha256": "507e482695053b66aed875a0ca1b320dcf1ce9d9cdf95241dff1937dec094974"
     },
     {
+      "path": "tests/test_cs_paper1_on_screen_flow.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new 188-line test EOF independently reviewed, including final three-seed owner/first-prompt regression. Content/order/scaffold/bounds checks have no fixed new page-count golden. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "768aeb1126c018f7c7f80938268fff86466189f57ca735d763d96637cbb89060",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
+    },
+    {
+      "path": "tests/test_cs_paper1_question_policy.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Prior complete267-line test EOF review plus complete independently reviewed28-line appended canonical-resource regression delta, current295 lines; not a fresh current whole-file EOF read. Complete new 267-line test EOF independently reviewed. Public conformance package/content mutations, wrong/unknown policy routing and existing-policy controls; not live model or frozen public acceptance. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "81ce7850be0dae029bba71e8c6d91f58d67ac879dd049bd700ecc7c2f0f647a7",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
+    },
+    {
       "path": "tests/test_cs_reference_solutions.py",
       "classification": "test",
       "status": "pending",
@@ -7655,13 +7706,22 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_generic_table_policy.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete current 165-line test EOF independently reviewed. Synthetic shape, policy, replay and print controls are not universal table-fit or model qualification.",
+      "source_sha256": "cc4bd4466efeac0b727276ea594349451c4af79f8125cda11b252ba875189c4b",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
+    },
+    {
       "path": "tests/test_french_graph_clearance_policy.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete file-level source review recorded in the linked scope note; no whole-project, model-quality or distribution approval claim.",
-      "source_sha256": "7dce7dd722519f92631318ee5daa03a8313da477ffa1d561b4bd24bbc46e871a",
-      "review_evidence": "docs/quality/french-graph-label-clearance-review.md",
-      "review_evidence_sha256": "09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380"
+      "reason": "Preserves existing complete source-bound test review plus complete independently reviewed v5/old-v4 control delta. Not a fresh current whole-file EOF read or universal graph correctness proof. Prior evidence docs/quality/french-graph-label-clearance-review.md at 09820e237db145c7842f187fde270b7eb3736a1d70f062bba5778be4a332a380; prior source 7dce7dd722519f92631318ee5daa03a8313da477ffa1d561b4bd24bbc46e871a.",
+      "source_sha256": "72c6d02aecad31fbb7c237811318bf26b05e91e5145350e7e2cf38bcd6663f86",
+      "review_evidence": "docs/quality/french-generic-table-policy-review.md",
+      "review_evidence_sha256": "954b235c85ed5cac715c21d49672e42bc05ccfb690e82e90d595e7cbe8a3a831"
     },
     {
       "path": "tests/test_french_graph_field_schema.py",
@@ -7986,6 +8046,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_french_postrename_cleanup.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete current 311-line test EOF independently reviewed, including the retained 254-line prefix and appended direct helper controls. Fake publication lifecycle checks are not live model/native acceptance.",
+      "source_sha256": "ad264c35e1ca8a47502b827f6bfe1750ce3bdaf634717630db304e47e3ce28b2",
+      "review_evidence": "docs/quality/french-publication-cleanup-review.md",
+      "review_evidence_sha256": "0c05290fe6b24bba59e95b15a8343915c22b50c3277820f6bed25f94773a8637"
     },
     {
       "path": "tests/test_french_preauthoring_marks.py",
@@ -8363,10 +8432,10 @@
       "path": "tests/test_layout_master.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Native-layout reviewer read this complete unchanged 430-line test file through EOF; later helper repairs have separate current source and test evidence. No whole renderer or live paper qualification claim.",
-      "source_sha256": "2d60006de9f0de5bb84994ff6fbba99c537bb4ed8040eb635ca40b17d4b1de0f",
-      "review_evidence": "docs/quality/reference-and-slot-boundary-review.md",
-      "review_evidence_sha256": "ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b"
+      "reason": "Preserves prior complete430-line EOF test review plus complete independently reviewed narrow CS1-policy assertion delta. Current435 lines; all other policy dispatch controls retained, not a fresh whole-file read. Prior evidence docs/quality/reference-and-slot-boundary-review.md at ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b; prior source 2d60006de9f0de5bb84994ff6fbba99c537bb4ed8040eb635ca40b17d4b1de0f. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "cbdae7025ea867b0fb3376d45ceb224cc66bf55c8f0a7dbe075e3c4233b23935",
+      "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "tests/test_level_of_response.py",
@@ -9064,11 +9133,8 @@
     {
       "path": "tools/build_supported_layout_masters.py",
       "classification": "maintained-source",
-      "status": "reviewed",
-      "reason": "Complete EOF static review recorded; dependencies and runtime/model/qualification limits remain explicit.",
-      "source_sha256": "6d441146e4cc3a42f765f350021f9cdf65b42e8ae6333b17d4b967309e11764e",
-      "review_evidence": "docs/quality/model-download-and-packaging-input-review-2026-11-02.md",
-      "review_evidence_sha256": "9f13e6fbd83877c17dbad7659d266ce11619458437938f95242ecd585565908e"
+      "status": "pending",
+      "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
       "path": "tools/calibrate_student_responses.py",

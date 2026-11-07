@@ -11,10 +11,15 @@ from tests.test_french_llm_pdf import exercises
 
 
 @pytest.mark.parametrize(
-    "policy", ["fr-nsi-v36-model-review-v3", "fr-nsi-v36-model-review-v4"]
+    "policy",
+    [
+        "fr-nsi-v36-model-review-v3",
+        "fr-nsi-v36-model-review-v4",
+        "fr-nsi-v36-model-review-v5",
+    ],
 )
 def test_inline_prose_survives_both_current_and_retained_policy(tmp_path, policy):
-    assert PRINT_POLICY == "fr-nsi-v36-model-review-v4"
+    assert PRINT_POLICY == "fr-nsi-v36-model-review-v5"
     assert policy in V36_PRINT_POLICIES
     source = exercises()
     source[0] = source[0].model_copy(update={"context": "Une <u>clé</u> et `valeur`."})
@@ -45,6 +50,7 @@ def test_inline_prose_survives_both_current_and_retained_policy(tmp_path, policy
         ("fr-nsi-v36-model-review-v2", False),
         ("fr-nsi-v36-model-review-v3", False),
         ("fr-nsi-v36-model-review-v4", True),
+        ("fr-nsi-v36-model-review-v5", True),
     ],
 )
 def test_renderer_and_validator_select_the_same_geometry_policy(

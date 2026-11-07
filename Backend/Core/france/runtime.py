@@ -3,7 +3,6 @@
 import json
 import os
 import re
-import shutil
 import signal
 import tempfile
 from decimal import Decimal
@@ -130,6 +129,7 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.generator_registry import assessment_framework
 from Backend.Core.legacy_migration import LEGACY_PUBLISHER, output_directory
 from Backend.Core.render_transaction import render_pdf_atomically
+from Backend.Core.temporary_cleanup import remove_owned_staging
 
 REPEAT_PRACTICE_POLICY = "repeat-practice-v1"
 
@@ -2753,4 +2753,4 @@ def handle_generate_assessment(args) -> int:
         if previous_handler is not None:
             signal.signal(signal.SIGTERM, previous_handler)
         if staging is not None:
-            shutil.rmtree(staging)
+            remove_owned_staging(staging)

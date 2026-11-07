@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import fnmatch
 import os
-import shutil
 import signal
 import tempfile
 from hashlib import sha256
@@ -26,6 +25,7 @@ from Backend.Core.generator_registry import assessment_framework
 from Backend.Core.ollama_admission import ResourceAdmissionError
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.render_transaction import render_pdf_atomically
+from Backend.Core.temporary_cleanup import remove_owned_staging
 
 
 def _file_hash(path: Path) -> str:
@@ -281,4 +281,4 @@ def handle_generate_llm_assessment(args) -> int:
         if previous_handler is not None:
             signal.signal(signal.SIGTERM, previous_handler)
         if staging is not None:
-            shutil.rmtree(staging)
+            remove_owned_staging(staging)
