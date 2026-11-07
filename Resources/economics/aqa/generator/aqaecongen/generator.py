@@ -26,7 +26,11 @@ from Backend.Core.exam_blueprints import (
     validate_generated_paper,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
-from Backend.Core.numeric_integrity import percentage_change_context
+from Backend.Core.numeric_integrity import (
+    NumericOutput,
+    display,
+    percentage_change_context,
+)
 from Backend.Core.subjects.selected_response import (
     selected_response_contract,
     solve_selected_response,
@@ -510,7 +514,7 @@ def _written_question(
     task_profile: WrittenTaskProfile,
 ) -> GeneratedQuestion:
     point = task_profile.focus_terms[0]
-    change = ((values[-1] - values[0]) / values[0]) * 100
+    change = _percentage_change_display(values[0], values[-1])
     context = (
         (
             f"the evidence in the source insert about {context_name}"
@@ -530,7 +534,7 @@ def _written_question(
         )
         scheme = [
             f"Correct method: (({values[-1]} − {values[0]}) ÷ {values[0]}) × 100.",
-            f"Correct answer: {change:.1f}%.",
+            f"Correct answer: {change}.",
             f"Award up to {rule.marks} marks for a valid method and correct answer.",
         ]
     elif rule.kind == "data_interpretation":
@@ -733,6 +737,15 @@ def _item_specific_scheme(
     return points
 
 
+def _percentage_change_display(start: float, end: float) -> str:
+    # Match the solver's public-input decimals and declared output rounding.
+    output = NumericOutput.model_validate(
+        percentage_change_context(start, end)["calculation_output"]
+    )
+    initial, final = Decimal(str(start)), Decimal(str(end))
+    return display((final - initial) / initial * 100, output)
+
+
 def _paper_three_indicative_content(
     topic: Topic,
     context_name: str,
@@ -743,14 +756,14 @@ def _paper_three_indicative_content(
     include_evaluation: bool,
 ) -> list[str]:
     start, end = values[0], values[-1]
-    change = ((end - start) / start) * 100
+    change = _percentage_change_display(start, end)
     peak = max(values)
     trough = min(values)
     first, second, *remaining = topic.points
     third = remaining[0] if remaining else first
     analysis = [
         f"Use the change in the activity index from {start:.1f} to {end:.1f}, "
-        f"equivalent to {change:.1f}%, and state whether it supports the proposition.",
+        f"equivalent to {change}, and state whether it supports the proposition.",
         f"Compare the peak of {peak:.1f} with the trough of {trough:.1f}; the path "
         "matters because a start-to-end comparison can conceal volatility.",
         "The index shows relative change from a base year, not the absolute level of "

@@ -1191,6 +1191,23 @@ def _line_chart(title: str, labels: list[str], values: list[float]) -> Drawing:
     return drawing
 
 
+def _line_intersection(first: list[float], second: list[float]) -> tuple[float, float]:
+    """Intersect the two drawn line segments, not separately tuned guides."""
+    x, y, end_x, end_y = first
+    other_x, other_y, other_end_x, other_end_y = second
+    dx, dy = end_x - x, end_y - y
+    other_dx, other_dy = other_end_x - other_x, other_end_y - other_y
+    determinant = dx * other_dy - dy * other_dx
+    if determinant == 0:
+        raise ValueError("economic diagram curves have no unique intersection")
+    gap_x, gap_y = other_x - x, other_y - y
+    along = (gap_x * other_dy - gap_y * other_dx) / determinant
+    other_along = (gap_x * dy - gap_y * dx) / determinant
+    if not (0 <= along <= 1 and 0 <= other_along <= 1):
+        raise ValueError("economic diagram curves intersect outside drawn segments")
+    return x + along * dx, y + along * dy
+
+
 def _economic_diagram(
     topic_id: str,
     number: str,
@@ -1310,13 +1327,14 @@ def _economic_diagram(
         drawing.add(String(x0 + 283, y0 + 12, "MSB", fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 283, y0 + 91, "MPC", fontName=FONT, fontSize=8))
         drawing.add(String(x0 + 283, y0 + 112, "MSC", fontName=FONT_BOLD, fontSize=8))
-        social_x, market_x = x0 + 145, x0 + 183
+        social_x, social_y = _line_intersection(msb, msc)
+        market_x, market_y = _line_intersection(msb, mpc)
         drawing.add(
             Line(
                 social_x,
                 y0,
                 social_x,
-                y0 + 66,
+                social_y,
                 strokeColor=MID_GREY,
                 strokeWidth=0.7,
                 strokeDashArray=[3, 3],
@@ -1327,7 +1345,7 @@ def _economic_diagram(
                 market_x,
                 y0,
                 market_x,
-                y0 + 62,
+                market_y,
                 strokeColor=MID_GREY,
                 strokeWidth=0.7,
                 strokeDashArray=[3, 3],
