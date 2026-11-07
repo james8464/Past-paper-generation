@@ -512,7 +512,6 @@ def _question(
         if extract_number is not None
         else f"the extracts about {context}"
     )
-    change = (question_values[-1] - question_values[0]) / question_values[0] * 100
     authoring_context: dict[str, object] = {}
     source_references: list[str] = []
     if figure is not None:
@@ -549,11 +548,20 @@ def _question(
             "preserve_mark_scheme": True,
         }
     if rule.kind == "calculation":
-        from Backend.Core.numeric_integrity import percentage_change_context
-
-        authoring_context.update(
-            percentage_change_context(question_values[0], question_values[-1])
+        from Backend.Core.numeric_integrity import (
+            NumericOutput,
+            display,
+            percentage_change_context,
         )
+
+        start = Decimal(str(question_values[0]))
+        end = Decimal(str(question_values[-1]))
+        calculation_context = percentage_change_context(
+            question_values[0], question_values[-1]
+        )
+        output = NumericOutput.model_validate(calculation_context["calculation_output"])
+        change = display((end - start) / start * Decimal(100), output)
+        authoring_context.update(calculation_context)
         authoring_context.update(
             {
                 "preserve_prompt": True,
@@ -579,9 +587,9 @@ def _question(
             (
                 f"Calculation: (({question_values[-1]} - {question_values[0]}) / "
                 f"{question_values[0]}) "
-                f"x 100 = {change:.1f}%."
+                f"x 100 = {change}."
             ),
-            f"Correct answer: {change:.1f}%.",
+            f"Correct answer: {change}.",
             f"Maximum {rule.marks} {mark_label}.",
         ]
     elif rule.kind == "short_answer" and rule.command_word == "Identify":
@@ -841,7 +849,7 @@ def _theme_figure(
         series.append({"label": comparison_label, "values": series_values()})
     return {
         "number": f"{index}.1",
-        "title": f"Indices for {context.title()} (2019 = 100)",
+        "title": f"Indices for {context.title()} (index points)",
         "labels": labels,
         "series": series,
         "units": "index points",

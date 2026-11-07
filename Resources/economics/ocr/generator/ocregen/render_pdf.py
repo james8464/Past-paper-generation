@@ -131,6 +131,10 @@ def render_mark_scheme(
         for option in section.options:
             for question in option.questions:
                 story.extend(_scheme_block(question))
+    # A trailing spacer must not overflow onto an otherwise empty page before
+    # the forced appendix break. All assessed tables remain in the story.
+    if story and isinstance(story[-1], Spacer):
+        story.pop()
     questions = [q for s in paper.sections for o in s.options for q in o.questions]
     diagram_focuses: set[str] = set()
     for question in questions:
@@ -1126,6 +1130,13 @@ def _assessment_grid_groups(
                 update={
                     "number": f"{multiple_choice[0].number}\u2013{multiple_choice[-1].number}",
                     "marks": sum(question.marks for question in multiple_choice),
+                    "assessment_objectives": {
+                        objective: sum(
+                            _assessment_allocation(question)[index]
+                            for question in multiple_choice
+                        )
+                        for index, objective in enumerate(("AO1", "AO2", "AO3", "AO4"))
+                    },
                 }
             )
             grouped.append((combined.number, combined))
@@ -1152,25 +1163,17 @@ def _assessment_grid_groups(
 
 
 def _assessment_allocation(question: GeneratedQuestion) -> tuple[int, int, int, int]:
-    if question.kind == "multiple_choice":
-        ao1 = (question.marks + 1) // 2
-        return ao1, question.marks - ao1, 0, 0
-    fixed = {
-        25: (6, 6, 6, 7),
-        15: (3, 3, 4, 5),
-        12: (1, 1, 5, 5),
-        8: (1, 1, 3, 3),
-        4: (2, 2, 0, 0),
-        3: (1, 2, 0, 0),
-    }
-    if question.marks in fixed:
-        return fixed[question.marks]
-    if question.kind in {"calculation", "data"} or question.command_word.casefold() in {
-        "calculate",
-        "compare",
-    }:
-        return 0, question.marks, 0, 0
-    return question.marks, 0, 0, 0
+    objectives = ("AO1", "AO2", "AO3", "AO4")
+    allocation = tuple(question.assessment_objectives.get(ao, 0) for ao in objectives)
+    if (
+        set(question.assessment_objectives) - set(objectives)
+        or any(type(value) is not int or value < 0 for value in allocation)
+        or sum(allocation) != question.marks
+    ):
+        raise ValueError(
+            f"Question {question.number} needs its validated AO allocation"
+        )
+    return allocation[0], allocation[1], allocation[2], allocation[3]
 
 
 def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
@@ -1809,27 +1812,8 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     for answer, note in zip_longest(answers, guidance, fillvalue=""):
         rows.append([cell(question.number), cell(answer), cell(""), cell(note)])
     descriptor_spans: list[tuple] = []
-    if question.scheme_mode == "levels":
-        bands = _level_bands(question.marks)
-        for level, mark_range in bands:
-            descriptor = _level_descriptor_text(question, level, len(bands))
-            descriptor_spans.append(("SPAN", (1, len(rows)), (3, len(rows))))
-            rows.append(
-                [
-                    cell(question.number),
-                    cell(f"Level {level} ({mark_range} marks): {descriptor}"),
-                    cell(""),
-                    cell(""),
-                ]
-            )
-        rows.append(
-            [
-                cell(question.number),
-                cell("0 marks: Response is not worthy of credit."),
-                cell(""),
-                cell(""),
-            ]
-        )
+    # The question's authored/structured level statements above are authoritative;
+    # do not append a second tariff-derived grading scale.
     for row in rows[2:]:
         row[0] = cell("")
     table = _CreditTable(
@@ -1934,6 +1918,12 @@ def _chart(option: GeneratedOption) -> Drawing:
 
 
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    selection_instructions = (
+        "Answer all questions."
+        if paper.sections
+        and all(s.answer_options == len(s.options) for s in paper.sections)
+        else "Answer all questions in Section A and one question in Sections B and C."
+    )
     return CoverProfile(
         board="ocr",
         subject="Economics",
@@ -1944,7 +1934,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         materials=("You may use an appropriate calculator.",),
         instructions=(
             "Use black ink. You can use an HB pencil for diagrams.",
-            "Answer all questions in Section A and one question in Sections B and C.",
+            selection_instructions,
             "Write your answers in the spaces provided.",
         ),
         information=(
