@@ -1417,6 +1417,17 @@ def _source_values(option: GeneratedOption, index: int) -> list[float]:
 
 
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    selection_instructions = (
+        ("Answer all questions.",)
+        if paper.sections
+        and all(
+            section.answer_options == len(section.options) for section in paper.sections
+        )
+        else (
+            "Answer all questions in Sections A and B.",
+            "Answer one question from each optional section where instructed.",
+        )
+    )
     return CoverProfile(
         board="aqa",
         subject="Business",
@@ -1430,8 +1441,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         instructions=(
             "Use black ink or black ball-point pen.",
             "Fill in the boxes at the top of this page.",
-            "Answer all questions in Sections A and B.",
-            "Answer one question from each optional section where instructed.",
+            *selection_instructions,
             "Answer in the spaces provided. Do not write outside the box around each page or on blank pages.",
             "Cross through any rough work you do not want to be marked.",
         ),
