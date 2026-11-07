@@ -315,8 +315,8 @@
     "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
   },
   "Backend/Core/overlay/graphs.py": {
-    "mtime": 1794006419.0078528,
-    "ast_hash": "0a60dee5723fe8ea6c2d8b88bff3b0a6",
+    "mtime": 1794023121.230538,
+    "ast_hash": "12baffb14e89bb996759730ff74c5f75",
     "semantic_hash": ""
   },
   "Backend/Core/overlay/humanities.py": {
@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794018323.6439123,
-    "ast_hash": "3401937a94363ffef72d213b32315782",
+    "mtime": 1794023279.0905342,
+    "ast_hash": "ca6aa3280bf9d89ad0270e9ad6a4d10c",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794018323.6278048,
-    "ast_hash": "282199ef7888a17188238cd29aa642ed",
+    "mtime": 1794023279.090383,
+    "ast_hash": "d9149e28dce6f4f79851be3d94d1e063",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -4755,8 +4755,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_pipeline.py": {
-    "mtime": 1794006419.0034652,
-    "ast_hash": "f678fdbdf142500f5261bfcc4ac57190",
+    "mtime": 1794022772.7044005,
+    "ast_hash": "7bea80b65df7ede87dfbd4fdfac89476",
     "semantic_hash": ""
   },
   "Backend/Core/france/llm_runtime.py": {
@@ -6152,6 +6152,41 @@
   "docs/quality/ocr-economics-source-authority-review.md": {
     "mtime": 1794015557.0395963,
     "ast_hash": "1a98fdc8638e8e51e38a15bb94be76be",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/content_authoring.py": {
+    "mtime": 1794022829.1428466,
+    "ast_hash": "249306ee0ced9fcf4fb8f01cec0eb361",
+    "semantic_hash": ""
+  },
+  "Backend/Core/france/mark_plan.py": {
+    "mtime": 1794022829.1426165,
+    "ast_hash": "ae57794a536772ba42831277e57c8253",
+    "semantic_hash": ""
+  },
+  "tests/test_externality_graph_geometry.py": {
+    "mtime": 1794023121.2307968,
+    "ast_hash": "364e6548e9326c1c972b84bbdd00329a",
+    "semantic_hash": ""
+  },
+  "tests/test_french_preauthoring_marks.py": {
+    "mtime": 1794022806.268424,
+    "ast_hash": "21a5654d6c1fb3f9358bc9ad595ba45c",
+    "semantic_hash": ""
+  },
+  "tests/test_surplus_graph_geometry.py": {
+    "mtime": 1794023121.2309175,
+    "ast_hash": "1425bae412c9968894e634fc592ac656",
+    "semantic_hash": ""
+  },
+  "docs/quality/french-preauthoring-mark-plan-review.md": {
+    "mtime": 1794023012.062463,
+    "ast_hash": "a706aab4d6ad4d5755932154a5d39cb5",
+    "semantic_hash": ""
+  },
+  "docs/quality/overlay-market-geometry-review.md": {
+    "mtime": 1794023121.230664,
+    "ast_hash": "6bade5c363cf098d5c1bcb84120b533c",
     "semantic_hash": ""
   }
 }

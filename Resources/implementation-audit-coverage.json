@@ -671,6 +671,15 @@
       "review_evidence_sha256": "96f39d5350cfc64500e7e273096925535fca6e62d8858c866db9f69e89f2889b"
     },
     {
+      "path": "Backend/Core/france/content_authoring.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete 128-line author and independent EOF review: allocation-free strict content DTO, compact shared schema, exact host question/criterion ownership checks and canonical assembly before existing semantic/source validation. Numeric source/timing metadata remains authored; no live provider grammar or PDF qualification.",
+      "source_sha256": "cc433e24d56113f334d4b6ca0be9fea6dc9221cc70c172148262f1dbb21d59b6",
+      "review_evidence": "docs/quality/french-preauthoring-mark-plan-review.md",
+      "review_evidence_sha256": "c4202863bce42e86b1f41256befae901a90e60357a05cc569dab0f49ed0f92eb"
+    },
+    {
       "path": "Backend/Core/france/corpus.py",
       "classification": "maintained-source",
       "status": "reviewed",
@@ -986,10 +995,10 @@
       "path": "Backend/Core/france/llm_pipeline.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Preserves prior composite EOF attribution in the positive-credit review. Root and independent reviewer read selected policy/request/recovery/identity paths and complete 14-line graph-policy delta, current 2167 lines; not a fresh whole-file EOF review. Legacy policy/hash reconstruction retains strict implementation identity, not live qualification.",
-      "source_sha256": "c4dea74bacde8b5277dcdcee522f071d4c282a9e45eebd3a874b991053ff1953",
-      "review_evidence": "docs/quality/french-graph-schema-review.md",
-      "review_evidence_sha256": "5e5224b05f89568c8fcc92291875cfa4cf7456bb6571775cda6e8c70b36b09b2"
+      "reason": "Preserves prior composite EOF attribution from the linked prior source/policy reviews, plus complete independently reviewed pre-authoring mark-plan delta and scoped request/author/recovery/replay callers at 2369 current lines; not a fresh whole-file EOF read. Explicit backend opt-in only; exact old request fingerprints/default route and strict implementation identity retained. Offline checks do not establish live French content quality.",
+      "source_sha256": "36ffff5557941b645191749e437afe5bdd66eb16dc03f68261817a94bf58dd34",
+      "review_evidence": "docs/quality/french-preauthoring-mark-plan-review.md",
+      "review_evidence_sha256": "c4202863bce42e86b1f41256befae901a90e60357a05cc569dab0f49ed0f92eb"
     },
     {
       "path": "Backend/Core/france/llm_runtime.py",
@@ -1011,6 +1020,15 @@
       "classification": "maintained-source",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Backend/Core/france/mark_plan.py",
+      "classification": "maintained-source",
+      "status": "reviewed",
+      "reason": "Complete 165-line author and independent EOF review: immutable positive Decimal product profiles, IDs/partitions, deterministic base-seed binding and canonical plan/hash validation. Product numerical topologies are not official tariffs or question/answer catalogues; no model capability or whole-project qualification.",
+      "source_sha256": "d97f6540a40f42cec1eabf344dcd21321a0dac6daadd47998e22b15c320727e5",
+      "review_evidence": "docs/quality/french-preauthoring-mark-plan-review.md",
+      "review_evidence_sha256": "c4202863bce42e86b1f41256befae901a90e60357a05cc569dab0f49ed0f92eb"
     },
     {
       "path": "Backend/Core/france/network.py",
@@ -1555,14 +1573,20 @@
     {
       "path": "Backend/Core/overlay/graphs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior 894-line EOF source baseline plus complete independently reviewed externality/surplus geometry repair and scoped active Edexcel drawing dispatcher. Current exact source pin includes source-bound intersections, fills and aliases. Bounded synthetic PDF/draw controls, not whole-paper, all-input or official-equivalence proof.",
+      "source_sha256": "7c13bc0d8f54aa545636d1dad9cd6391cce9a6699f1b797fab202571a27ec29e",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "Backend/Core/overlay/humanities.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 134-line EOF review with scoped repository caller search; no confirmed advertised-runtime release defect established. No production caller found in that search, not proof of universal absence or arbitrary input/layout correctness.",
+      "source_sha256": "8be8449666ad0c45d4b49904fae3ce5d03706db2a3ee83f14536419f441e307c",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "Backend/Core/overlay/layouts.py",
@@ -1576,8 +1600,11 @@
     {
       "path": "Backend/Core/overlay/science.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 253-line EOF review with scoped repository caller search. Known unadvertised ray-diagram fixed-image-height limitation remains; no active production caller was found. This reviewed status records the limitation, not bug-free geometry, active-route qualification or whole-project proof.",
+      "source_sha256": "a9dc20359ae2e30e57547505f683b50be6820a912394de13b584253a9d4b2c8d",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "Backend/Core/paths.py",
@@ -1735,8 +1762,11 @@
     {
       "path": "Backend/Core/solver_prompts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 120-line EOF review plus explicitly scoped independent-solver/answer-projection callers and selected tests. No concrete model-independent defect established in that boundary; blindness/output checks remain caller-owned. No full dependency EOF, solver capability or prompt quality proof.",
+      "source_sha256": "3a8cda0a0664fb4361ac91f94df63eae2a5f8418e9ee71eed4c437f938f63289",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "Backend/Core/subject_contracts.py",
@@ -4037,6 +4067,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/french-preauthoring-mark-plan-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/french-provider-contract-regeneration-2026-10-30.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4506,6 +4542,12 @@
     },
     {
       "path": "docs/quality/output-integrity-and-paper-two-flow-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/overlay-market-geometry-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7004,6 +7046,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_externality_graph_geometry.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 115-line initial test EOF/delta review plus complete independently reviewed origin-binding extension to 135 current lines. Public dispatcher draw captures cover source-bound externality curves/intersections/areas and alias/refusal controls. Archive/frozen origin branches require actual execution separately; no whole graph-module proof from these tests.",
+      "source_sha256": "76d94bd05bf19abd786b2c29c55836c5e204373ad04e213df8e0670a0372d579",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
+    },
+    {
       "path": "tests/test_family_adapter_typing.py",
       "classification": "test",
       "status": "pending",
@@ -7631,6 +7682,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_french_preauthoring_marks.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 632-line author and independent EOF review of fake-client generation/retry/refusal/replay, initial plan persistence, legacy fingerprints/default control, source mismatch, tamper, quota and cancellation cases. The 494-pass focused group includes existing tests; no model/content quality or public activation proof.",
+      "source_sha256": "692d15c658ad099ada433addab6cd608b51845d04ff8f1208898c7c5e5cd9543",
+      "review_evidence": "docs/quality/french-preauthoring-mark-plan-review.md",
+      "review_evidence_sha256": "c4202863bce42e86b1f41256befae901a90e60357a05cc569dab0f49ed0f92eb"
+    },
+    {
       "path": "tests/test_french_prompt_compaction.py",
       "classification": "test",
       "status": "pending",
@@ -7954,8 +8014,11 @@
     {
       "path": "tests/test_humanities_overlay.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 59-line EOF read at exact unchanged source hash in the bounded overlay/solver review. Review is limited to these test assertions and scoped caller context, not all dependencies, runtime capability or bug-free source proof.",
+      "source_sha256": "3ad40f8eeba1ce5852a4c5718b740393efb6ae30ae6897aeb1f88dca4eb300b0",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "tests/test_independent_solver.py",
@@ -8023,8 +8086,11 @@
     {
       "path": "tests/test_macro_graph_geometry.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 198-line EOF read at exact unchanged source hash in the bounded overlay/solver review. Review is limited to these test assertions and scoped caller context, not all dependencies, runtime capability or bug-free source proof.",
+      "source_sha256": "0eb5bfc243d95699117fba6bdd0928a46b7d6184e9ad576fb89efa8eef053d79",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "tests/test_mark_scheme_enrichment.py",
@@ -8458,8 +8524,11 @@
     {
       "path": "tests/test_science_overlay.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 95-line EOF read at exact unchanged source hash in the bounded overlay/solver review. Review is limited to these test assertions and scoped caller context, not all dependencies, runtime capability or bug-free source proof.",
+      "source_sha256": "1b04d7b3107fed0c6b849e86e60c8bef865ef6d1a826c1f7d73d4ab6080388dd",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "tests/test_science_subjects.py",
@@ -8500,8 +8569,11 @@
     {
       "path": "tests/test_solver_choice_validity.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete 196-line EOF read at exact unchanged source hash in the bounded overlay/solver review. Review is limited to these test assertions and scoped caller context, not all dependencies, runtime capability or bug-free source proof.",
+      "source_sha256": "77d08238a333939c734423126dd4b53f464e616a1a4660443899533218d30251",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "tests/test_solver_reasoning_budget.py",
@@ -8547,6 +8619,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_surplus_graph_geometry.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete 139-line initial test EOF/delta review plus complete independently reviewed origin-binding extension to 159 current lines. Draw captures independently check equilibrium/fill endpoints, source aliases, bounds and origin checks. Archive/frozen branches are not claimed executed by source review.",
+      "source_sha256": "8d29cac740fa0d112d0d2d2222e321e92fd52cf384ffe9778d389a26d7467bb1",
+      "review_evidence": "docs/quality/overlay-market-geometry-review.md",
+      "review_evidence_sha256": "78a70a2bbbc9f2c9da6406f6c6c4c9ec4d23392ff8260fae2e939b05a0a81eaf"
     },
     {
       "path": "tests/test_task_source_demand.py",
