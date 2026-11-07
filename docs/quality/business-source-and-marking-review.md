@@ -69,3 +69,58 @@ context, so affected old checkpoints cannot silently inherit the new contract.
 Saved documents are unchanged. Final combined source, signed-build, packaged
 and native gates remain separate. No official-paper equivalence, teacher review
 or observed learner timing is claimed.
+
+## Public conformance integration follow-up
+
+The subsequent combined Python gate exposed an integration omission: 7,993
+tests passed, two skipped, and the public Business preview test failed because
+the corrected 19-page Paper 2 scheme was still required to match the measured
+20-page reference. The source-only 72-test gate had not exercised this public
+conformance boundary. A fresh targeted run reproduced that exact refusal.
+
+New Paper 2 blueprints explicitly select
+`generated-aqa-business-paper2-mark-scheme-content-v1`. The registry retains
+the measured reference count of 20 and all measured boxes; only the policy kind
+changes. Unmarked historical blueprints still render their original spacer
+behavior and must satisfy the exact 20-page rule. Removing only the marker
+from the same fixture preserves byte-identical nonempty assessed body rasters,
+with the historical extra empty page retained rather than silently migrated.
+
+The marked policy requires matching blueprint/items, supported question
+ownership and complete source-bound chart/stimulus/numeric contracts. It does
+not replace published non-numeric credit with seeded answers. An independent
+table reader checks every printed mark and published marking/level statement
+in its owning question and in order; repeated prompts, other questions and
+appendices cannot supply missing credit. A private bounded rerender then binds
+every body page, including the cover and appendices, to the published blueprint.
+Only the renderer's header/footer margins are excluded. Shared-renderer
+omission, wrong-owner and duplicate-credit controls fail independently of the
+rerender comparison. Blank, missing, repeated, forged or reordered content is
+not accepted as a page-count exception, and renderer failures propagate with
+temporary files cleaned up.
+
+Every marked question also records the same actual generation-date ISO value.
+The Business cover derives its month/year from that field, so later-month
+revalidation does not change a retained cover. A single optional AQA cover
+profile field supplies that owned series; all default callers and unmarked
+historical covers keep their previous behavior. No global date environment is
+changed. Tests reject missing, malformed, inconsistent and noncanonical dates
+and compare complete seeded blueprints after normalizing only the asserted
+date field. All other prose, credit and random values remain identical. The
+new metadata participates in the existing complete-blueprint checkpoint hash.
+
+The final related-policy gate passed 371 tests in 73.19 seconds: all nine test
+files found by the requested runtime-policy/conformance search, the actual
+public Business preview test, the Business test file and the cover tests. A
+preceding 162-test group also covered generator configuration parity. Checks
+include normal/preview cover mode, retained future-month verification and a
+bounded enlarged-table-font layout fixture; the latter is not a claim of a new
+public Business large-print feature. Ruff and diff checks passed. Independent
+review read the complete new verifier and new policy tests plus the existing
+file deltas, not the entire shared layout registry or every shared module.
+
+These are targeted integration checks. The final combined full-suite, signed
+build, packaged and native gates remain root-owned and have not been replaced
+by this gate. No model/provider run, official-paper equivalence or general
+semantic qualification follows from canonical rendering or printed-credit
+completeness.

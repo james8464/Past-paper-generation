@@ -6643,9 +6643,7 @@
       "mark-scheme": {
         "page_count": 20,
         "page_count_policy": {
-          "kind": "exact",
-          "minimum": 20,
-          "maximum": 20
+          "kind": "generated-aqa-business-paper2-mark-scheme-content-v1"
         },
         "page_boxes": [
           {

@@ -16,6 +16,10 @@ from Backend.Core.accounting_scheme_content import (
     verify_accounting_paper_two_scheme,
     verify_accounting_scheme,
 )
+from Backend.Core.business_scheme_content import (
+    BUSINESS_SCHEME_PAGINATION,
+    verify_business_paper_two_scheme,
+)
 from Backend.Core.computer_science_reference_solutions import paper1_reference_code
 from Backend.Core.layout_master import (
     LayoutConformanceError,
@@ -43,6 +47,8 @@ def runtime_page_count_policy(
         return {"kind": ACCOUNTING_SCHEME_PAGINATION}
     if family == "aqa-accounting" and role == "mark-scheme" and paper == "2":
         return {"kind": ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION}
+    if family == "aqa-business" and role == "mark-scheme" and paper == "2":
+        return {"kind": BUSINESS_SCHEME_PAGINATION}
     if family == "edexcel-economics" and role == "mark-scheme":
         return {"kind": EDEXCEL_SCHEME_PAGINATION}
     if family == "ocr-economics" and role == "mark-scheme":
@@ -448,6 +454,30 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if policy_payload and policy_payload.get("kind") == BUSINESS_SCHEME_PAGINATION:
+            if (
+                subject != "business_aqa"
+                or record.get("family") != "aqa-business"
+                or paper != "2"
+                or generated_role != "mark_scheme"
+            ):
+                raise LayoutConformanceError(
+                    "Business Paper 2 policy cannot apply to this document"
+                )
+            content_report = verify_business_paper_two_scheme(
+                generated_path,
+                paths.get("assessment_package"),
+                int(master["page_count"]),
+            )
+            conform_pdf_to_box_template(
+                generated_path,
+                master.get("page_boxes") or master["boxes"],
+                expected_page_count=master["page_count"],
+                strict_page_count=content_report is None,
+            )
+            if content_report:
+                results[generated_role] = content_report
+            continue
         if (
             policy_payload
             and policy_payload.get("kind") == ACCOUNTING_PAPER_TWO_SCHEME_PAGINATION

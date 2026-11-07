@@ -8,6 +8,11 @@ from decimal import Decimal
 
 from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.syllabus import Syllabus, Topic
+from Backend.Core.business_scheme_content import (
+    BUSINESS_SCHEME_DATE,
+    BUSINESS_SCHEME_MARKER,
+    BUSINESS_SCHEME_PAGINATION,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -19,6 +24,7 @@ from Backend.Core.exam_blueprints import (
     resolve_question_rules,
     validate_generated_paper,
 )
+from Backend.Core.generation_date import generation_date
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 from Backend.Core.numeric_integrity import (
     NumericOutput,
@@ -126,6 +132,7 @@ def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
     run_seed = seed if seed is not None else secrets.randbits(64)
+    scheme_date = generation_date().isoformat() if rule.id == "paper_2" else None
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
     rng.shuffle(topics)
@@ -160,6 +167,11 @@ def build_paper(
                         values,
                         rng,
                     )
+                if rule.id == "paper_2":
+                    question.authoring_context[BUSINESS_SCHEME_MARKER] = (
+                        BUSINESS_SCHEME_PAGINATION
+                    )
+                    question.authoring_context[BUSINESS_SCHEME_DATE] = scheme_date
                 questions.append(question)
             stimulus_count = _stimulus_count(rule.id, section_rule.id)
             has_shared_chart = not (rule.id == "paper_1" and section_rule.id == "A")

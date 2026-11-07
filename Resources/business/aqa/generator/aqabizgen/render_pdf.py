@@ -26,6 +26,10 @@ from reportlab.platypus import (
 )
 
 from aqabizgen.financials import FinancialPosition
+from Backend.Core.business_scheme_content import (
+    business_scheme_generation_series,
+    uses_business_scheme_policy,
+)
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
@@ -170,7 +174,7 @@ def render_mark_scheme(
                 for question in option.questions:
                     story.extend(_scheme_block(question))
             # A trailing spacer can spill alone onto a page before this break.
-            if isinstance(story[-1], Spacer):
+            if isinstance(story[-1], Spacer) and uses_business_scheme_policy(paper):
                 story.pop()
             story.append(PageBreak())
         story.pop()
@@ -1421,6 +1425,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
         duration="2 hours",
         total_marks=paper.total_marks,
+        mark_scheme_series=business_scheme_generation_series(paper),
         materials=("For this paper you must have a calculator.",),
         instructions=(
             "Use black ink or black ball-point pen.",
