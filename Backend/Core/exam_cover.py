@@ -35,6 +35,7 @@ class CoverProfile:
     mark_rows: tuple[tuple[str, int], ...] = ()
     subject_label: str | None = None
     title_font_size: float = 27.0
+    mark_scheme_series: str | None = None
 
     def __post_init__(self) -> None:
         if self.mark_rows and (
@@ -459,7 +460,7 @@ def _draw_aqa_mark_scheme_cover(
         (profile.paper_title, "ExamCover-Medium", 16),
         ("Mark scheme", "ExamCover-SemiBold", 14),
         (
-            formatted_generation_series(),
+            profile.mark_scheme_series or formatted_generation_series(),
             "ExamCover-SemiBold"
             if profile.subject.lower() == "computer science"
             else "ExamCover-Medium",

@@ -144,10 +144,29 @@ class AssessmentContract(BaseModel):
 def contract_for_question(question: Any) -> AssessmentContract:
 
     explicit = getattr(question, "contract", None)
+    context = getattr(question, "authoring_context", {})
+    if isinstance(context, dict) and (
+        "accounting_source_content" in context or "accounting_marking_policy" in context
+    ):
+        from Backend.Core.accounting_levels import validate_accounting_level_contract
+
+        raw_contract = (
+            explicit.model_dump(mode="json")
+            if isinstance(explicit, AssessmentContract)
+            else context.get("assessment_contract", context)
+        )
+        validate_accounting_level_contract(
+            {
+                "marks": getattr(question, "marks", None),
+                "scheme_mode": getattr(question, "scheme_mode", "points"),
+                "mark_scheme": getattr(question, "mark_scheme", []),
+                "authoring_context": context,
+            },
+            raw_contract if isinstance(raw_contract, dict) else {},
+        )
     if isinstance(explicit, AssessmentContract):
         return explicit
 
-    context = getattr(question, "authoring_context", {})
     raw_contract = (
         context.get("assessment_contract") if isinstance(context, dict) else None
     )

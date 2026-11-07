@@ -13,6 +13,32 @@ from Backend.Core.independent_solver import (
 )
 
 
+def test_local_memory_refusal_has_a_distinct_terminal_code(
+    tmp_path, monkeypatch, capsys
+):
+    from Backend.Core.ollama_admission import ResourceAdmissionError
+
+    def refuse(*args, **kwargs):
+        raise ResourceAdmissionError("Local memory preflight refused the request.")
+
+    monkeypatch.setattr("Backend.Core.generation._invoke_plugin", refuse)
+    request = Namespace(
+        output=str(tmp_path),
+        api_key="",
+        model="fixture",
+        subject="economics",
+        paper="1",
+        provider="ollama",
+        dry_run=False,
+        seed=7,
+    )
+    assert handle_generate(request) == 1
+    events = [json.loads(line) for line in capsys.readouterr().out.splitlines()]
+    assert events[-1]["type"] == "error"
+    assert events[-1]["code"] == "local_memory_unavailable"
+    assert not any(event["type"] in {"done", "file"} for event in events)
+
+
 def rejected_solution():
     solution = CanonicalSolution(
         item_id="graph-2",

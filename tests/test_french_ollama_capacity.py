@@ -13,6 +13,12 @@ from Backend.Core.providers import HostedLLMClient, urllib_request
 
 @pytest.fixture(autouse=True)
 def chat_transport_only(monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     # These tests isolate inference transport/count bounds. Metadata transport
     # and capability selection have their own provider integration controls.
     monkeypatch.setattr(

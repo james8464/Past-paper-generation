@@ -166,6 +166,35 @@ def test_nonbudget_content_and_all_old_numeric_contracts_are_unchanged() -> None
         for section in raw["sections"]:
             for option in section["options"]:
                 for question in option["questions"]:
+                    if component == "2" and question["number"] == "06":
+                        # The new variance binding changes only public contract
+                        # ownership; preserve this earlier content/numeric hash.
+                        context = question["authoring_context"]
+                        assert (
+                            context["selected_response_contract"]["operation"]
+                            == "material_variance_classification"
+                        )
+                        for field in (
+                            "preserve_prompt",
+                            "preserve_mark_scheme",
+                            "selected_response_contract",
+                            "source_data",
+                        ):
+                            context.pop(field)
+                    # Standalone levels now bind their printed Accounting grid.
+                    # Normalize only that intentional metadata change for this
+                    # pre-existing content/numeric byte-contract comparison.
+                    if (
+                        question["scheme_mode"] == "levels"
+                        and question["rule_id"] != "explain_trade"
+                    ):
+                        assert (
+                            question["authoring_context"]["level_policy_id"]
+                            == f"aqa-accounting-{question['marks']}-mark"
+                        )
+                        question["authoring_context"]["level_policy_id"] = (
+                            "aqa-standard-4-level"
+                        )
                     if question["rule_id"] == "budget":
                         assert question["marks"] == 8
                         question["prompt"] = "BUDGET_PROMPT"

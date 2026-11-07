@@ -29,6 +29,7 @@ from Backend.Core.mlx_batching import (
 )
 from Backend.Core.mlx_setup import resolve_local_mlx_model
 from Backend.Core.model_review import CANONICAL_COGNITIVE_OPERATIONS
+from Backend.Core.ollama_admission import require_local_ollama_capacity
 from Backend.Core.ollama_thinking import structured_thinking_policy
 
 
@@ -294,6 +295,7 @@ class HostedLLMClient:
         )
         if french_nsi and (type(budget) is not int or not 1 <= budget <= 16384):
             raise ValueError("French NSI output budget must be from 1 to 16384.")
+        require_local_ollama_capacity(self.base_url, self.model)
         thinking_policy = self._ollama_thinking_policy(request_function)
         payload = json.dumps(
             {

@@ -54,6 +54,28 @@ def test_current_cover_uses_public_brand_without_official_approval_claim(
         assert "unofficial" in text.casefold()
 
 
+@pytest.mark.parametrize("owned_series", [None, "February 2040"])
+def test_aqa_cover_owned_series_is_optional_and_default_keeps_existing_date(
+    tmp_path, monkeypatch, owned_series
+):
+    monkeypatch.setenv("KELDIN_GENERATED_ON", "2035-06-01")
+    profile = CoverProfile(
+        "aqa",
+        "Business",
+        "7132/2",
+        "Business 2",
+        "2 hours",
+        100,
+        mark_scheme_series=owned_series,
+    )
+    path = tmp_path / "series-cover.pdf"
+    SimpleDocTemplate(str(path), pagesize=A4).build(
+        [MarkSchemeCover(profile, font=FONT, bold_font=FONT_BOLD)]
+    )
+    with fitz.open(path) as document:
+        assert (owned_series or "June 2035") in document[0].get_text()
+
+
 @pytest.mark.parametrize(
     "rows",
     [

@@ -4,9 +4,15 @@ from __future__ import annotations
 
 import random
 import secrets
+from decimal import Decimal
 
 from aqabizgen.financials import FinancialPosition, format_number
 from aqabizgen.syllabus import Syllabus, Topic
+from Backend.Core.business_scheme_content import (
+    BUSINESS_SCHEME_DATE,
+    BUSINESS_SCHEME_MARKER,
+    BUSINESS_SCHEME_PAGINATION,
+)
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -18,7 +24,13 @@ from Backend.Core.exam_blueprints import (
     resolve_question_rules,
     validate_generated_paper,
 )
+from Backend.Core.generation_date import generation_date
 from Backend.Core.mark_scheme_enrichment import enrich_paper
+from Backend.Core.numeric_integrity import (
+    NumericOutput,
+    display,
+    percentage_change_context,
+)
 
 BUSINESSES = [
     "Aster Cycles",
@@ -120,6 +132,7 @@ def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
     run_seed = seed if seed is not None else secrets.randbits(64)
+    scheme_date = generation_date().isoformat() if rule.id == "paper_2" else None
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
     rng.shuffle(topics)
@@ -154,12 +167,22 @@ def build_paper(
                         values,
                         rng,
                     )
+                if rule.id == "paper_2":
+                    question.authoring_context[BUSINESS_SCHEME_MARKER] = (
+                        BUSINESS_SCHEME_PAGINATION
+                    )
+                    question.authoring_context[BUSINESS_SCHEME_DATE] = scheme_date
                 questions.append(question)
             stimulus_count = _stimulus_count(rule.id, section_rule.id)
             has_shared_chart = not (rule.id == "paper_1" and section_rule.id == "A")
-            chart_title = (
-                f"Performance index for {business}" if has_shared_chart else ""
-            )
+            chart_title = ""
+            if has_shared_chart:
+                metric = (
+                    "Business sales index"
+                    if rule.id == "paper_2"
+                    else "Performance index"
+                )
+                chart_title = f"{metric} for {business}"
             chart_labels = (
                 ["2021", "2022", "2023", "2024", "2025"] if has_shared_chart else []
             )
@@ -483,7 +506,12 @@ def _written_question(
 ) -> GeneratedQuestion:
     point = rng.choice(topic.points)
     context = f"the extracts about {business}"
-    change = (values[-1] - values[0]) / values[0] * 100
+    growth_context = percentage_change_context(values[0], values[-1])
+    start, end = Decimal(str(values[0])), Decimal(str(values[-1]))
+    change = (end - start) / start * 100
+    visible_growth = display(
+        change, NumericOutput.model_validate(growth_context["calculation_output"])
+    )
     structured_scheme: list[MarkSchemePoint] = []
     authoring_context: dict[str, object] = {}
     financials = FinancialPosition.from_chart_values(values)
@@ -607,9 +635,7 @@ def _written_question(
             "Credit a developed counter-effect or dependency.",
         ]
     elif rule.kind == "calculation":
-        from Backend.Core.numeric_integrity import percentage_change_context
-
-        authoring_context.update(percentage_change_context(values[0], values[-1]))
+        authoring_context.update(growth_context)
         if "." in number:
             prompt = (
                 f"Using the business sales data for {business}, calculate the "
@@ -623,9 +649,10 @@ def _written_question(
             )
         scheme = [
             f"Method: ({values[-1]} − {values[0]}) ÷ {values[0]} × 100.",
-            f"Answer: {change:.1f}%.",
+            f"Answer: {visible_growth}.",
             "Award method credit for a correct substitution.",
         ]
+        authoring_context["item_specific_mark_scheme"] = True
     elif rule.kind == "analysis":
         prompt = (
             f"{rule.command_word} how {point} may affect {business}. Use the information "
@@ -652,7 +679,6 @@ def _written_question(
         )
         horizon = rng.randint(3, 6)
         investment_budget = rng.randint(2, 15)
-        visible_growth = f"{change:.1f}%"
         prompt = (
             f"A business operating in {market} recorded revenue growth of "
             f"{visible_growth} last year and has an investment budget of "
@@ -725,7 +751,7 @@ def _written_question(
         )
         scheme = _levels(rule.marks, topic, point, case_id)
     if rule.id in {"current_ratio", "roce_calculation"}:
-        from Backend.Core.numeric_integrity import MONEY, NUMBER, NumericOutput
+        from Backend.Core.numeric_integrity import MONEY, NUMBER
 
         source = authoring_context["source_data"]
         is_ratio = rule.id == "current_ratio"
@@ -782,6 +808,7 @@ def _written_question(
                 },
                 "calculation_expressions": expressions,
                 "calculation_outputs": [output.model_dump() for output in outputs],
+                "item_specific_mark_scheme": True,
             }
         )
     return GeneratedQuestion(

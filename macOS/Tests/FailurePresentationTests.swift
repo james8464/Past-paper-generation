@@ -3,6 +3,16 @@ import XCTest
 @testable import Keldin
 
 final class FailurePresentationTests: XCTestCase {
+    func testLocalMemoryRefusalUsesSelectedLanguageNotProviderDetails() {
+        let raw = "PRIVATE_RESOURCE_DETAILS"
+        let english = "Local generation couldn't start within the memory checks. Choose a smaller model, close memory-heavy apps, or use a remote provider."
+        let french = "La création locale n’a pas pu démarrer après les vérifications de mémoire. Choisissez un modèle plus petit, fermez les apps gourmandes en mémoire ou utilisez un moteur distant."
+        XCTAssertEqual(GenerationPresentation.error(raw, code: "local_memory_unavailable", language: "en"), english)
+        XCTAssertEqual(GenerationPresentation.error(raw, code: "local_memory_unavailable", language: "fr"), french)
+        XCTAssertEqual(GenerationPresentation.error(raw, code: "generation_failed", language: "en"), raw)
+        XCTAssertEqual(GenerationPresentation.failureKind(for: raw, code: "local_memory_unavailable"), .generationFailed)
+    }
+
     func testSavedFailureDetailsFollowTheInterfaceLanguage() {
         for kind in GenerationFailureKind.allCases {
             for resource in [kind.stageResource, kind.detailResource] {

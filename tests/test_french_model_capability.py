@@ -39,6 +39,12 @@ def test_known_answers_are_computed_and_schema_does_not_force_them():
 def test_probe_transport_changes_only_thinking_and_explicit_output_budget(
     monkeypatch, thinking
 ):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     request, expected = probe.logic_request(270100)
     seen = []
 
@@ -74,6 +80,12 @@ def test_probe_transport_changes_only_thinking_and_explicit_output_budget(
 
 
 def test_truncated_completion_is_preserved_and_not_repaired(monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     calls = []
 
     def transport(*args, **kwargs):

@@ -17,6 +17,7 @@ from aqaaccountgen.case_data import (
 from aqaaccountgen.marking_policy import apply_marking_policy, finalise_marking_policy
 from aqaaccountgen.selected_response import build_accounting_choice
 from aqaaccountgen.syllabus import Syllabus, Topic
+from Backend.Core.accounting_levels import accounting_level_policy
 from Backend.Core.exam_blueprints import (
     GeneratedOption,
     GeneratedPaper,
@@ -39,6 +40,8 @@ from Backend.Core.subjects.accounting import (
 )
 from Backend.Core.subjects.accounting_selected_response import (
     accounting_selected_response_contract,
+    derive_accounting_choice,
+    material_variance_prompt,
 )
 
 BUSINESSES = [
@@ -348,6 +351,9 @@ def build_paper(
                 }
             if len(question.assessment_objectives) > 1:
                 question.scheme_mode = "levels"
+                question.authoring_context["level_policy_id"] = accounting_level_policy(
+                    question.marks
+                ).id
                 if question.marks == 6:
                     question.mark_scheme.append(
                         "Levels-based marking: assess application and developed reasoning together; "
@@ -564,6 +570,18 @@ def _mcq(
                 "allocated_fixed_cost": str(fixed),
             },
         )
+    if (paper_id, index) == ("paper_2", 5):
+        public_contract = accounting_selected_response_contract(
+            "material_variance_classification",
+            {
+                "variance": "price",
+                "quantity_basis": "purchased",
+                "quantity": "positive",
+                "comparison": "below",
+            },
+        )
+        stem = material_variance_prompt(public_contract)
+        correct = derive_accounting_choice(public_contract).answer
     choices = [correct, *distractors]
     rng.shuffle(choices)
     answer = choices.index(correct)

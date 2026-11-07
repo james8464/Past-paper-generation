@@ -200,6 +200,12 @@ def test_specialist_mcq_uses_the_shared_closed_slot_contract():
 
 
 def test_production_hosted_chat_preserves_closed_answer_objects(monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
     from io import BytesIO
 
     from Backend.Core.providers import HostedLLMClient

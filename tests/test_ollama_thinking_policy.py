@@ -9,6 +9,16 @@ from Backend.Core.ollama_thinking import structured_thinking_policy
 from Backend.Core.providers import HostedLLMClient, urllib_request
 
 
+@pytest.fixture(autouse=True)
+def isolate_thinking_metadata(monkeypatch):
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
+
+
 @pytest.mark.parametrize(
     "metadata, expected, status",
     [

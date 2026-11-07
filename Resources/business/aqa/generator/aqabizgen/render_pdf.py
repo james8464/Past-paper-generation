@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import partial
+from itertools import pairwise
 from pathlib import Path
 
 from reportlab.graphics.shapes import Drawing, Line, PolyLine, Rect, String
@@ -10,6 +11,7 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase.pdfmetrics import getAscentDescent, stringWidth
 from reportlab.platypus import (
     BaseDocTemplate,
     Flowable,
@@ -24,6 +26,10 @@ from reportlab.platypus import (
 )
 
 from aqabizgen.financials import FinancialPosition
+from Backend.Core.business_scheme_content import (
+    business_scheme_generation_series,
+    uses_business_scheme_policy,
+)
 from Backend.Core.document_dsl import (
     AQAQuestionHeaderFactory,
     DocumentRole,
@@ -167,6 +173,9 @@ def render_mark_scheme(
             for option in section.options:
                 for question in option.questions:
                     story.extend(_scheme_block(question))
+            # A trailing spacer can spill alone onto a page before this break.
+            if isinstance(story[-1], Spacer) and uses_business_scheme_policy(paper):
+                story.pop()
             story.append(PageBreak())
         story.pop()
         continuation_count = {"paper_2": 5, "paper_3": 3}[paper.paper_id]
@@ -1225,6 +1234,18 @@ def _source_table(option: GeneratedOption, index: int) -> Table:
     return table
 
 
+def _polyline_max_y(
+    points: list[tuple[float, float]], left: float, right: float
+) -> float:
+    """Highest curve point beneath a label's measured horizontal span."""
+    heights: list[float] = []
+    for (x1, y1), (x2, y2) in pairwise(points):
+        lo, hi = max(left, x1), min(right, x2)
+        if lo <= hi:
+            heights.extend(y1 + (x - x1) / (x2 - x1) * (y2 - y1) for x in (lo, hi))
+    return max(heights)
+
+
 def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
     drawing = Drawing(165 * mm, 45 * mm)
     x0, y0, width, height = 30, 22, 420, 78
@@ -1234,19 +1255,53 @@ def _chart(option: GeneratedOption, offset: int = 0) -> Drawing:
     values = _source_values(option, offset) if offset else list(option.chart_values)
     low, high = min(values), max(values)
     span = max(1.0, high - low)
-    points: list[float] = []
-    for index, value in enumerate(values):
-        x = x0 + index * width / 4
-        y = y0 + 7 + (value - low) / span * (height - 14)
-        points.extend([x, y])
+    points = [
+        (x0 + index * width / 4, y0 + 7 + (value - low) / span * (height - 14))
+        for index, value in enumerate(values)
+    ]
+    font_size = 7
+    clearance = font_size / 2
+    _, descent = getAscentDescent(FONT, font_size)
+    for index, (value, (x, y)) in enumerate(zip(values, points, strict=True)):
         drawing.add(Rect(x - 2, y - 2, 4, 4, fillColor=INK))
         drawing.add(
             String(
                 x - 8, y0 - 13, option.chart_labels[index], fontName=FONT, fontSize=7
             )
         )
-        drawing.add(String(x + 4, y + 2, f"{value:.1f}", fontName=FONT, fontSize=7))
-    drawing.add(PolyLine(points, strokeColor=INK, strokeWidth=1.2))
+        text = f"{value:.1f}"
+        label_width = stringWidth(text, FONT, font_size)
+        if index == 0:
+            label_x, anchor = x + clearance, "start"
+            label_left = label_x
+        elif index == len(points) - 1:
+            label_x, anchor = x - clearance, "end"
+            label_left = label_x - label_width
+        else:
+            label_x, anchor = x, "middle"
+            label_left = label_x - label_width / 2
+        baseline = (
+            _polyline_max_y(points, label_left, label_left + label_width)
+            + clearance
+            - descent
+        )
+        drawing.add(
+            String(
+                label_x,
+                baseline,
+                text,
+                fontName=FONT,
+                fontSize=font_size,
+                textAnchor=anchor,
+            )
+        )
+    drawing.add(
+        PolyLine(
+            [coordinate for point in points for coordinate in point],
+            strokeColor=INK,
+            strokeWidth=1.2,
+        )
+    )
     return drawing
 
 
@@ -1315,6 +1370,17 @@ def _paper_two_grouped_bar_chart(option: GeneratedOption) -> Drawing:
                 strokeWidth=0.35,
             )
         )
+        # The calculation requires exact sales operands, not estimates from bars.
+        drawing.add(
+            String(
+                centre + bar_width / 2 + 4,
+                y0 + business_height + 5,
+                f"{business_value:.1f}",
+                fontName=FONT,
+                fontSize=6.5,
+                textAnchor="middle",
+            )
+        )
         drawing.add(
             String(
                 centre - 11,
@@ -1359,6 +1425,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         paper_title=f"Paper {paper.paper_id[-1]}  {paper.title}",
         duration="2 hours",
         total_marks=paper.total_marks,
+        mark_scheme_series=business_scheme_generation_series(paper),
         materials=("For this paper you must have a calculator.",),
         instructions=(
             "Use black ink or black ball-point pen.",

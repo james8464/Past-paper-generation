@@ -23,6 +23,7 @@ from Backend.Core.france.source_identity import implementation_identity
 from Backend.Core.france.sql_sources import SQL_SOURCE_POLICY
 from Backend.Core.generation_diagnostics import save_failure_diagnostic
 from Backend.Core.generator_registry import assessment_framework
+from Backend.Core.ollama_admission import ResourceAdmissionError
 from Backend.Core.providers import HostedLLMClient
 from Backend.Core.render_transaction import render_pdf_atomically
 
@@ -259,6 +260,9 @@ def handle_generate_llm_assessment(args) -> int:
     except InterruptedError as error:
         emit("error", message=str(error), code="cancelled")
         return 130
+    except ResourceAdmissionError as error:
+        emit("error", message=str(error), code=error.code)
+        return 1
     except Exception as error:
         save_failure_diagnostic(
             output,

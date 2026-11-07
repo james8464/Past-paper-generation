@@ -221,7 +221,7 @@ def test_contribution_excludes_allocated_fixed_cost_and_no_private_override_exis
         solve_selected_response(malformed)
 
 
-def test_conceptual_mcqs_are_not_implicitly_frozen():
+def test_only_explicit_public_fact_mcqs_are_frozen():
     questions = [
         task.question
         for task in accounting_tasks("paper_2", 270101)
@@ -231,7 +231,7 @@ def test_conceptual_mcqs_are_not_implicitly_frozen():
         question.number
         for question in questions
         if "selected_response_contract" in question.authoring_context
-    ] == ["04", "05"]
+    ] == ["04", "05", "06"]
 
 
 @pytest.mark.parametrize("number", ["04", "05"])

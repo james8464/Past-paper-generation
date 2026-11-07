@@ -23,6 +23,12 @@ from Backend.Core.providers import (
 @pytest.fixture(autouse=True)
 def isolate_inference_transport(monkeypatch):
     monkeypatch.setattr(
+        "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+    )
+    monkeypatch.setattr(
         HostedLLMClient,
         "_ollama_thinking_policy",
         lambda self, request_function: structured_thinking_policy({}),
