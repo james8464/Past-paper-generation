@@ -13,6 +13,7 @@ from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import (
     BaseDocTemplate,
     Flowable,
@@ -131,6 +132,10 @@ def render_mark_scheme(
         for option in section.options:
             for question in option.questions:
                 story.extend(_scheme_block(question))
+    # A trailing spacer must not overflow onto an otherwise empty page before
+    # the forced appendix break. All assessed tables remain in the story.
+    if story and isinstance(story[-1], Spacer):
+        story.pop()
     questions = [q for s in paper.sections for o in s.options for q in o.questions]
     diagram_focuses: set[str] = set()
     for question in questions:
@@ -371,7 +376,11 @@ def _diagrams_and_calculations_page() -> list[Flowable]:
 
 def _annotation_conventions_page() -> list[Flowable]:
     rows = [
-        ("✓", "Creditworthy point", "A distinct valid point earns the available mark."),
+        (
+            "Tick",
+            "Creditworthy point",
+            "A distinct valid point earns the available mark.",
+        ),
         (
             "DEV",
             "Developed analysis",
@@ -569,60 +578,6 @@ def _guidance_table(
     return table
 
 
-def _level_bands(marks: int) -> list[tuple[int, str]]:
-    if marks >= 20:
-        return [
-            (5, "21\u201325"),
-            (4, "16\u201320"),
-            (3, "11\u201315"),
-            (2, "6\u201310"),
-            (1, "1\u20135"),
-        ]
-    if marks >= 12:
-        return [(3, "9\u201312"), (2, "5\u20138"), (1, "1\u20134")]
-    return [(3, "6\u20138"), (2, "3\u20135"), (1, "1\u20132")]
-
-
-def _level_descriptor_text(
-    question: GeneratedQuestion,
-    level: int,
-    level_count: int,
-) -> str:
-    strength = level / level_count
-    topic = _question_focus(question)
-    if strength >= 0.8:
-        return (
-            f"Knowledge of {topic} is precise, wide-ranging and expressed with secure economic "
-            "terminology. Application is focused on the scope of the question and makes effective "
-            "use of relevant figures, examples or institutional detail. Analysis contains "
-            "consistently developed chains of reasoning; any relevant diagram is accurate, fully "
-            "labelled and integrated into the argument. Evaluation tests assumptions, magnitude, "
-            "time and distribution, weighs material alternatives and supports a clear judgement."
-        )
-    if strength >= 0.55:
-        return (
-            f"Knowledge of {topic} is mainly accurate and shows sound understanding of the "
-            "relevant concepts. Application uses the context and some appropriate evidence, "
-            "although it may not be sustained. Analysis develops causes and consequences beyond "
-            "simple links and any diagram is broadly accurate. Evaluation considers a relevant "
-            "alternative, limitation or condition, and the conclusion has reasonable support."
-        )
-    if strength >= 0.3:
-        return (
-            f"Some accurate knowledge of {topic} is demonstrated, though coverage or precision "
-            "is uneven. There is some application to the context, but examples or data may be "
-            "generic or only partly used. Analytical links are relevant but incomplete, and a "
-            "diagram may contain omissions. Evaluation is relevant but limited; the judgement "
-            "is asserted or only partly supported by the preceding reasoning."
-        )
-    return (
-        f"Knowledge of {topic} is limited and may contain imprecision. Application is generic, "
-        "partial or absent. Reasoning consists mainly of isolated statements of cause or "
-        "consequence, with no sustained chain and no effective use of a diagram. Counterarguments "
-        "are undeveloped and any conclusion is asserted rather than supported."
-    )
-
-
 def _question_focus(question: GeneratedQuestion) -> str:
     topic_focuses = {
         "micro-1": "resource allocation and opportunity cost",
@@ -802,8 +757,12 @@ def _add_economics_diagram(
         String(x0 + width - 15, y0 - 9, x_label, fontName=FONT, fontSize=label_size)
     )
 
-    drawing.add(Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset))
-    drawing.add(Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset))
+    curves = [
+        Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset),
+        Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset),
+    ]
+    for curve in curves:
+        drawing.add(curve)
     drawing.add(
         String(
             x0 + width - inset + 1,
@@ -813,10 +772,22 @@ def _add_economics_diagram(
             fontSize=label_size,
         )
     )
+    supply_label_x = x0 + width - inset + 1
+    supply_label_y = y0 + height - inset - 2
+    if shifted:
+        ascent, descent = pdfmetrics.getAscentDescent(FONT, label_size)
+        label_padding = max(2.0, label_size / 2)
+        supply_label_x = min(
+            x0 + width - inset + label_padding,
+            drawing.width
+            - pdfmetrics.stringWidth(up_label, FONT, label_size)
+            - label_padding,
+        )
+        supply_label_y = y0 + height - inset + label_padding - descent
     drawing.add(
         String(
-            x0 + width - inset + 1,
-            y0 + height - inset - 2,
+            supply_label_x,
+            supply_label_y,
             up_label,
             fontName=FONT,
             fontSize=label_size,
@@ -828,26 +799,33 @@ def _add_economics_diagram(
     equilibrium_label = "E"
     if shifted:
         shift = 14 if compact else 28
-        drawing.add(
-            Line(
-                x0 + inset + shift,
-                y0 + inset,
-                x0 + width - inset + shift,
-                y0 + height - inset,
-            )
+        shifted_curve = Line(
+            x0 + inset + shift,
+            y0 + inset,
+            x0 + width - inset + shift,
+            y0 + height - inset,
         )
+        curves.append(shifted_curve)
+        drawing.add(shifted_curve)
         shifted_supply_label = "MSC" if up_label == "MPC" else f"{up_label}1"
         drawing.add(
             String(
-                x0 + width - inset + shift,
-                y0 + height - inset - 2,
+                min(
+                    x0 + width - inset + shift + label_padding,
+                    drawing.width
+                    - pdfmetrics.stringWidth(shifted_supply_label, FONT, label_size)
+                    - label_padding,
+                ),
+                y0 + height - inset - label_padding - ascent,
                 shifted_supply_label,
                 fontName=FONT,
                 fontSize=label_size,
             )
         )
         equilibrium_x += shift / 2
-        equilibrium_y -= shift * height / (2 * width)
+        curve_width = width - 2 * inset
+        curve_height = height - 2 * inset
+        equilibrium_y -= shift * curve_height / (2 * curve_width)
         equilibrium_label = "E1"
 
     dash = [2, 2] if compact else [3, 2]
@@ -857,10 +835,26 @@ def _add_economics_diagram(
     drawing.add(
         Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=dash)
     )
+    equilibrium_label_x = equilibrium_x + 3
+    equilibrium_label_y = equilibrium_y + 3
+    if shifted:
+        text_width = pdfmetrics.stringWidth(equilibrium_label, FONT_BOLD, label_size)
+        _, text_descent = pdfmetrics.getAscentDescent(FONT_BOLD, label_size)
+        local_curve_heights = []
+        for curve in curves:
+            left = max(equilibrium_label_x, curve.x1)
+            right = min(equilibrium_label_x + text_width, curve.x2)
+            if left <= right:
+                local_curve_heights.extend(
+                    curve.y1
+                    + (x - curve.x1) * (curve.y2 - curve.y1) / (curve.x2 - curve.x1)
+                    for x in (left, right)
+                )
+        equilibrium_label_y = max(local_curve_heights) + label_padding - text_descent
     drawing.add(
         String(
-            equilibrium_x + 3,
-            equilibrium_y + 3,
+            equilibrium_label_x,
+            equilibrium_label_y,
             equilibrium_label,
             fontName=FONT_BOLD,
             fontSize=label_size,
@@ -1126,6 +1120,13 @@ def _assessment_grid_groups(
                 update={
                     "number": f"{multiple_choice[0].number}\u2013{multiple_choice[-1].number}",
                     "marks": sum(question.marks for question in multiple_choice),
+                    "assessment_objectives": {
+                        objective: sum(
+                            _assessment_allocation(question)[index]
+                            for question in multiple_choice
+                        )
+                        for index, objective in enumerate(("AO1", "AO2", "AO3", "AO4"))
+                    },
                 }
             )
             grouped.append((combined.number, combined))
@@ -1152,25 +1153,17 @@ def _assessment_grid_groups(
 
 
 def _assessment_allocation(question: GeneratedQuestion) -> tuple[int, int, int, int]:
-    if question.kind == "multiple_choice":
-        ao1 = (question.marks + 1) // 2
-        return ao1, question.marks - ao1, 0, 0
-    fixed = {
-        25: (6, 6, 6, 7),
-        15: (3, 3, 4, 5),
-        12: (1, 1, 5, 5),
-        8: (1, 1, 3, 3),
-        4: (2, 2, 0, 0),
-        3: (1, 2, 0, 0),
-    }
-    if question.marks in fixed:
-        return fixed[question.marks]
-    if question.kind in {"calculation", "data"} or question.command_word.casefold() in {
-        "calculate",
-        "compare",
-    }:
-        return 0, question.marks, 0, 0
-    return question.marks, 0, 0, 0
+    objectives = ("AO1", "AO2", "AO3", "AO4")
+    allocation = tuple(question.assessment_objectives.get(ao, 0) for ao in objectives)
+    if (
+        set(question.assessment_objectives) - set(objectives)
+        or any(type(value) is not int or value < 0 for value in allocation)
+        or sum(allocation) != question.marks
+    ):
+        raise ValueError(
+            f"Question {question.number} needs its validated AO allocation"
+        )
+    return allocation[0], allocation[1], allocation[2], allocation[3]
 
 
 def _paper_one_two_pages(paper: GeneratedPaper) -> list[Flowable]:
@@ -1809,27 +1802,8 @@ def _scheme_block(question: GeneratedQuestion) -> list[Flowable]:
     for answer, note in zip_longest(answers, guidance, fillvalue=""):
         rows.append([cell(question.number), cell(answer), cell(""), cell(note)])
     descriptor_spans: list[tuple] = []
-    if question.scheme_mode == "levels":
-        bands = _level_bands(question.marks)
-        for level, mark_range in bands:
-            descriptor = _level_descriptor_text(question, level, len(bands))
-            descriptor_spans.append(("SPAN", (1, len(rows)), (3, len(rows))))
-            rows.append(
-                [
-                    cell(question.number),
-                    cell(f"Level {level} ({mark_range} marks): {descriptor}"),
-                    cell(""),
-                    cell(""),
-                ]
-            )
-        rows.append(
-            [
-                cell(question.number),
-                cell("0 marks: Response is not worthy of credit."),
-                cell(""),
-                cell(""),
-            ]
-        )
+    # The question's authored/structured level statements above are authoritative;
+    # do not append a second tariff-derived grading scale.
     for row in rows[2:]:
         row[0] = cell("")
     table = _CreditTable(
@@ -1934,6 +1908,12 @@ def _chart(option: GeneratedOption) -> Drawing:
 
 
 def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
+    selection_instructions = (
+        "Answer all questions."
+        if paper.sections
+        and all(s.answer_options == len(s.options) for s in paper.sections)
+        else "Answer all questions in Section A and one question in Sections B and C."
+    )
     return CoverProfile(
         board="ocr",
         subject="Economics",
@@ -1944,7 +1924,7 @@ def _cover_profile(paper: GeneratedPaper) -> CoverProfile:
         materials=("You may use an appropriate calculator.",),
         instructions=(
             "Use black ink. You can use an HB pencil for diagrams.",
-            "Answer all questions in Section A and one question in Sections B and C.",
+            selection_instructions,
             "Write your answers in the spaces provided.",
         ),
         information=(

@@ -1933,8 +1933,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/case_data.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "c6cbb3353e57806e65ccff7e1dca183924053b8c5fd90dd014d4c96bbb1126a6",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/cli.py",
@@ -1948,8 +1951,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "d5f89d2652be7058de0e97bb9e188610bbf0647927fea38158dd23ddc8b74c47",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/generator.py",
@@ -1972,8 +1978,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "bf4f99c975ac9ddf0a358ef7dee2e28caf03bd2af0344af4699afb2b5e9481f3",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/scheme_policy.py",
@@ -1996,8 +2005,11 @@
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "f8c331fa4abaaed9c196b139d6a7f675c4fd868303daa8fa1c47d8c01eb8c501",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/accounting/aqa/generator/data/difficulty-calibration.json",
@@ -2105,10 +2117,10 @@
       "path": "Resources/business/aqa/generator/aqabizgen/render_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "7944546f27c039a6ce01886dec4cbe61e21fa8564c79dfa6ae8ff5078a2a473e",
-      "review_evidence": "docs/quality/business-source-and-marking-review.md",
-      "review_evidence_sha256": "06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8"
+      "reason": "Previously recorded review plus complete independently reviewed cover/source repair delta; no new whole-file audit claimed.",
+      "source_sha256": "d71ee8eaa5aa6958d357e4e09752992e9db3fe02aa7a030293f3d946307382d4",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/syllabus.py",
@@ -2142,6 +2154,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/business/aqa/generator/tests/test_cover_selection.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
+      "source_sha256": "6d718fd138afaebcf712c8d10897d84a3318232c5c191332ce3b7f51b309e39d",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/catalog.json",
@@ -2188,14 +2209,20 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "ff87cf798a8fe066fe085c47ff15d690acdca166401d51138f66935e29e2c391",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/models.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "283a2dce00b69c6cc4a9b534bb38c88a565d15f68cd0760d1f929a2477875557",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/notes.py",
@@ -2230,14 +2257,20 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/question_bank.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "a06a8cea95160c2130aa2aaba32425e23dadb0cd91384e486a3e811348e60236",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/syllabus.py",
@@ -2389,8 +2422,11 @@
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta. Follow-up: complete independently reviewed Tick annotation, actual-curve intersection and font-metric label-clearance repair/test delta at new exact pins. Original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Prior8139 full and588-per-mode archived checks apply only to earlier e3e source; 145 focused passes do not replace fresh final release gates.",
+      "source_sha256": "f88cc398723bad8472fb2243f2ea60774d44a9327cbdb2333b12d0c4554661cd",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py",
@@ -2476,44 +2512,65 @@
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "14938b43eba1c642b67ad31942d4dbbe607e12b5ddcd51504814b4f6eb750f5b",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "67b31b70028558f6004da9435b750c6a5969ba849dd54b2bfd8559859023b56c",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
+      "source_sha256": "5fa2cf3afb1cff42e38c0fa32b173e1e50a79d4eff13ef6199a1f85d646a848d",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/level_policy.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "392e188d2c60039d269cfbdfb4392b15edc5dfa41c7ea45fc32873dcc4eadc06",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
+      "source_sha256": "636ef8f86931815ca5c6103e63ae5e890ff43cd644ecb73bc56d9f525202aac9",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "f2087ef9a48d00ab6cdadd778854a53f09e0a049749fae984751f3fd3bf50a95",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/written_tasks.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "5bfabc72dc4a42f19ec40f606f66df9f8c8cec853e5fd6e0483575ad202a0f08",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/aqa/generator/data/difficulty-calibration.json",
@@ -2538,6 +2595,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/economics/aqa/generator/tests/test_source_authority.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
+      "source_sha256": "5d9b0f202cda96d3ba83f4b3df5be7acc70f2cdc58d96c022fd8f67ab00144df",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/cambridge-international/generator/data/syllabus.json",
@@ -2767,8 +2833,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/models.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "8fbab0cae50eec5c7f50a6ff7f667bd08931c1e5d870ed1caa09be43b94844a8",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/notes.py",
@@ -2788,14 +2857,20 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/paper_configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "01e750be8576317b7e96c924d36255edde2f2127f79dc28299b2cf34f754479d",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
+      "source_sha256": "5f24e4c8d286af15347179b7dcbca7ae05b7e5e4e74409367f79e5d6c3922388",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/selection_contracts.py",
@@ -2948,6 +3023,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "Resources/economics/edexcel-a/generator/tests/test_source_booklet_binding.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
+      "source_sha256": "0e3272896e791e4fb2c35f17954da4356b6426334826997268dae145ebb44318",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
+    },
+    {
       "path": "Resources/economics/edexcel-a/generator/tests/test_source_credit_integrity.py",
       "classification": "test",
       "status": "pending",
@@ -2995,32 +3079,47 @@
     {
       "path": "Resources/economics/ocr/generator/ocregen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "2dd32384a45650d14ba446bf7dcf08beff5a8e624104571000573afee2206c61",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "48b728e28f819879521480ed725c9a437d01780f739e821b720ee36e5e30060b",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/generator.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate.",
+      "source_sha256": "bbe367a9c32724d81aa06be46344dcb67c59de1e634afabfdf5bc61a555e539e",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/render_pdf.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate. Follow-up: complete independently reviewed Tick annotation, actual-curve intersection and font-metric label-clearance repair/test delta at new exact pins. Original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Prior8139 full and588-per-mode archived checks apply only to earlier e3e source; 145 focused passes do not replace fresh final release gates.",
+      "source_sha256": "711cea0931ec22a2ae3971aebfa97e5fac4f4a5ccdf22421048b379c0a3dde9a",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
+      "source_sha256": "6ba4af1af81b19a29e313513d5a46d1d25ebdc66c82965baecef324eb5d8eee6",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/economics/ocr/generator/pyproject.toml",
@@ -3033,6 +3132,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "Resources/economics/ocr/generator/tests/test_source_authority.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate. Follow-up: complete independently reviewed Tick annotation, actual-curve intersection and font-metric label-clearance repair/test delta at new exact pins. Original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Prior8139 full and588-per-mode archived checks apply only to earlier e3e source; 145 focused passes do not replace fresh final release gates.",
+      "source_sha256": "1935e08250a205d2320c436e6bb03b21f1249f91eb4ef9c3f9c982994c55b9e3",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "Resources/empirical-calibration-policy.json",
@@ -3372,6 +3480,12 @@
     },
     {
       "path": "docs/quality/aqa-cs-checkpoint-admission-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/aqa-economics-source-authority-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -4343,6 +4457,18 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/ocr-cs-render-source-identity-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/ocr-economics-source-authority-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/ocr-question-chrome-2026-09-28.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -4548,6 +4674,12 @@
     },
     {
       "path": "docs/quality/remaining-native-backend-boundaries-review-2026-11-02.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -8055,6 +8187,15 @@
       "classification": "test",
       "status": "pending",
       "reason": "No file-level semantic implementation review recorded in this ledger."
+    },
+    {
+      "path": "tests/test_ocr_cs_render_immutability.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification. Follow-up: complete independently reviewed Tick annotation, actual-curve intersection and font-metric label-clearance repair/test delta at new exact pins. Original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Prior8139 full and588-per-mode archived checks apply only to earlier e3e source; 145 focused passes do not replace fresh final release gates.",
+      "source_sha256": "c01258a52bbfd8dfa24709d3098535ba1bae3c563cae25ca226c5feef2bd0e42",
+      "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
+      "review_evidence_sha256": "bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6"
     },
     {
       "path": "tests/test_ocr_economics_calibration.py",

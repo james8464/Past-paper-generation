@@ -2773,6 +2773,18 @@ def render_source_booklet(
         section_questions = [
             question for question in blueprint.questions if question.section == section
         ]
+        if blueprint.paper_id == "paper_3":
+            # Share the question paper's complete source owners, merged extracts
+            # and figures rather than relabelling a subset of its questions.
+            for source_page in range(3):
+                if not first_content_page:
+                    pdf.showPage()
+                first_content_page = False
+                _draw_crop_marks(pdf)
+                _draw_paper_3_source_page(
+                    pdf, section_questions, section, source_page, ANSWER_PAGE_START_Y
+                )
+            continue
         extracts = _extract_source_questions(section_questions)
         for start in range(0, len(extracts), 2):
             if not first_content_page:

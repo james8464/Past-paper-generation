@@ -76,3 +76,47 @@ not the entire Edexcel renderer. Root independently reviewed the production
 diff and test file. No full suite, app build, GUI journey, model generation,
 teacher review or learner study was performed for this change. Integration,
 combined versioning and frozen release checks remain separate work.
+
+## 7 November 2026: Paper 3 source-reference binding
+
+A subsequent EOF source audit at `eae9c151` read the complete Edexcel renderer
+(4,200 lines), models (154 lines) and paper configurations (294 lines). Scoped
+call-path inspection confirmed that the public adapter publishes the auxiliary
+Paper 3 source booklet. That booklet selected questions 0, 1, 3 and 4, then
+relabeled them A–D in each section. This did not match the actual question
+references: Section A owns Extracts A–C and Section B owns Extracts D–F.
+The primary question paper already contained the correctly owned sources.
+
+The bounded repair reuses that existing Paper 3 source-page renderer in the
+auxiliary booklet: three source pages per section, with the same merged source
+prose and Figures 1–3. It does not duplicate source facts or change the primary
+question-paper rendering, blueprint, questions, answers, marks or ordering.
+The booklet remains eight pages: cover, six source pages and one labeled blank
+padding page. Papers 1 and 2 retain their original four-page rendering paths.
+
+The owned-checkout RED run produced 15 failures and one pass for seeds 42, 123
+and 26083051 before the renderer repair. Tests bind the imported renderer to
+the edited checkout and independently extract section/extract ownership from
+the actual published PDFs; explicit controls cover references B, D, E and F,
+all six extracts, every question's source prose and all three figure headings.
+A public Paper 3 dry-run also compares the entire published blueprint with the
+input blueprint and checks each source against both inline and booklet views.
+The extractor excludes only the narrow printed line-number column, not source
+numbers. Earlier exploratory invocations used an editable checkout or nested
+pytest root; those were corrected and are not relied upon as RED/GREEN evidence.
+
+The final owned-checkout focused gate passed 130 tests (four deselected) in
+37.82 seconds, with five existing SWIG deprecation warnings. It covered the new
+binding tests, existing booklet/render/source-credit tests, source-padding
+controls and applicable app-backend previews, using explicit checkout
+`PYTHONPATH` and root `pytest.ini`. Scoped Ruff, formatting and whitespace checks
+also passed. The renderer SHA256 is
+`5f24e4c8d286af15347179b7dcbca7ae05b7e5e4e74409367f79e5d6c3922388`;
+the new binding-test SHA256 is
+`0e3272896e791e4fb2c35f17954da4356b6426334826997268dae145ebb44318`.
+
+This is source-binding and deterministic rendering evidence, not an every-page
+visual review, full-suite, model-generation, GUI, build, teacher-review or
+official-equivalence claim. Independent review and final scoped gate results
+are recorded separately with the final file pins; integration metadata and
+release gates remain the parent task's responsibility.

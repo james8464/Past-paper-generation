@@ -73,8 +73,8 @@ def test_source_booklet_for_paper_3_uses_both_sections(tmp_path):
     render_source_booklet(blueprint, syllabus, output)
     pdf_bytes = output.read_bytes()
 
-    assert b"Sources for use with SECTION A" in pdf_bytes
-    assert b"Sources for use with SECTION B" in pdf_bytes
+    assert b"SECTION A" in pdf_bytes
+    assert b"SECTION B" in pdf_bytes
     assert _pdf_page_count(output) == 8
 
 

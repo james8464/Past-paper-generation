@@ -15,6 +15,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     resolve_question_rules,
     validate_generated_paper,
+    validate_rule,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 from ocregen.syllabus import Syllabus, Topic
@@ -327,6 +328,10 @@ _OCR_ANALYTICAL_TOPICS = {
 def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
+    # Resolve optional timing/demand before enrichment without warming the
+    # caller's reusable rule or making output depend on previous builds.
+    rule = rule.model_copy(deep=True)
+    validate_rule(rule, syllabus.topic_ids)
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]
@@ -512,7 +517,6 @@ def _question(
         if extract_number is not None
         else f"the extracts about {context}"
     )
-    change = (question_values[-1] - question_values[0]) / question_values[0] * 100
     authoring_context: dict[str, object] = {}
     source_references: list[str] = []
     if figure is not None:
@@ -549,11 +553,20 @@ def _question(
             "preserve_mark_scheme": True,
         }
     if rule.kind == "calculation":
-        from Backend.Core.numeric_integrity import percentage_change_context
-
-        authoring_context.update(
-            percentage_change_context(question_values[0], question_values[-1])
+        from Backend.Core.numeric_integrity import (
+            NumericOutput,
+            display,
+            percentage_change_context,
         )
+
+        start = Decimal(str(question_values[0]))
+        end = Decimal(str(question_values[-1]))
+        calculation_context = percentage_change_context(
+            question_values[0], question_values[-1]
+        )
+        output = NumericOutput.model_validate(calculation_context["calculation_output"])
+        change = display((end - start) / start * Decimal(100), output)
+        authoring_context.update(calculation_context)
         authoring_context.update(
             {
                 "preserve_prompt": True,
@@ -579,9 +592,9 @@ def _question(
             (
                 f"Calculation: (({question_values[-1]} - {question_values[0]}) / "
                 f"{question_values[0]}) "
-                f"x 100 = {change:.1f}%."
+                f"x 100 = {change}."
             ),
-            f"Correct answer: {change:.1f}%.",
+            f"Correct answer: {change}.",
             f"Maximum {rule.marks} {mark_label}.",
         ]
     elif rule.kind == "short_answer" and rule.command_word == "Identify":
@@ -841,7 +854,7 @@ def _theme_figure(
         series.append({"label": comparison_label, "values": series_values()})
     return {
         "number": f"{index}.1",
-        "title": f"Indices for {context.title()} (2019 = 100)",
+        "title": f"Indices for {context.title()} (index points)",
         "labels": labels,
         "series": series,
         "units": "index points",
