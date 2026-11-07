@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 import subprocess
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -41,11 +43,22 @@ def cache_notes(
     text_count = 0
     for pdf in pdfs:
         copied = raw_dir / pdf.name
-        if not copied.exists() or copied.stat().st_size != pdf.stat().st_size:
-            shutil.copy2(pdf, copied)
+        changed = not copied.exists() or _content_hash(pdf) != _content_hash(copied)
         text_path = text_dir / f"{pdf.stem}.txt"
-        if not text_path.exists() or text_path.stat().st_mtime < copied.stat().st_mtime:
-            _extract_text(copied, text_path)
+        if (
+            changed
+            or not text_path.exists()
+            or text_path.stat().st_mtime < copied.stat().st_mtime
+        ):
+            # Propagated extraction failures/cancellation preserve the old pair.
+            # Publish text first: if the raw replace fails, its old hash forces retry.
+            with tempfile.TemporaryDirectory(prefix=".note-", dir=cache_dir) as staging:
+                staged_pdf = Path(staging) / "source.pdf"
+                staged_text = Path(staging) / "text.txt"
+                shutil.copy2(pdf, staged_pdf)
+                _extract_text(staged_pdf, staged_text)
+                staged_text.replace(text_path)
+                staged_pdf.replace(copied)
         if text_path.exists() and text_path.stat().st_size > 0:
             text_count += 1
 
@@ -55,6 +68,14 @@ def cache_notes(
         pdf_count=len(pdfs),
         text_count=text_count,
     )
+
+
+def _content_hash(path: Path) -> bytes:
+    digest = hashlib.sha256()
+    with path.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.digest()
 
 
 def note_context_for_topic(
@@ -105,6 +126,8 @@ def _extract_text(pdf: Path, text_path: Path) -> None:
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+    except InterruptedError:
+        raise
     except (OSError, subprocess.CalledProcessError):
         text_path.write_text("", encoding="utf-8")
 
