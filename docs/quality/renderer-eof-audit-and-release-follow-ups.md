@@ -171,3 +171,47 @@ not claim fresh whole-file rereads after every delta or a second passing full
 suite/build. Complete blueprint identity intentionally includes the corrected
 metadata. Existing saved artifacts are not changed, and later combined release
 gates must bind the new source hashes rather than inherit the failed run.
+
+## Follow-up: visual inspection after passing local gates
+
+The `e3e1184e` source completed its full local gate with 8,139 passes and two
+skips. Signed Direct and Store-preflight builds each passed 588 selected
+archived-code checks. Those results remain valid for that exact earlier source;
+they do not certify later repairs. The Direct bundle was reused after a
+QA-collection-only helper correction, not rebuilt, and the original failed
+checker log remains retained alongside the successful results.
+
+Actual signed Direct dry-run output across seven deterministic cases compared
+332 frozen PDF pages with their source-rendered counterparts. Blueprint and
+body-raster parity passed, but fresh visual inspection still placed publication
+on hold. The first annotation label was blank in both OCR families. OCR
+Economics' compact shifted-curve labels were crowded against drawn strokes;
+inspection and geometry checks also found shifted-guide and E1-label placement
+issues. Source/frozen parity reproduced these defects; it did not rule them out.
+
+The grouped repair replaces only the unsupported annotation label with readable
+plain text, “Tick”, in both legends. OCR Economics now separates shifted rising
+curve labels using actual font metrics and clearance within the drawing. The
+guide uses the actual inset-adjusted curve rise/run and intersection. E1 sits
+above the highest actual curve position over its measured text span. These are
+source-derived drawing coordinates, not hand-tuned answers or changed economic
+directions. Unshifted diagrams, source blueprints, assessed content, mark
+allocations and validation tolerances are unchanged.
+
+Owned reproductions produced four failing tick PDF controls, four failing
+guide/curve-label geometry controls and two further failing E1-clearance
+controls before their respective repairs. The final focused group passed 145
+tests in 19.98 seconds with five existing SWIG warnings. It includes public
+previews, renderer contracts, source immutability, exact guide intersections,
+font-metric clearance and unchanged legend-row controls.
+
+The tick-only 58-page comparison changed only annotation page 6 in each family;
+the other 56 pages were raster-identical. The final Economics geometry
+comparison, measured separately against that tick-only intermediate, changed
+only pages 12, 25, 27 and 28; its other 27 pages were raster-identical. The author
+visually inspected those four final changed pages. These bounded pixel and
+source checks do not claim all-seed or live-model quality. Prior complete EOF
+reads plus the complete independently reviewed follow-up deltas remain distinct
+from fresh whole-file rereads. A new exact-source combined release gate is
+required after the final freeze; neither the earlier full/build results nor
+the parity run is silently promoted to acceptance of the changed source.

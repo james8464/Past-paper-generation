@@ -800,8 +800,8 @@
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/render_pdf.py": {
-    "mtime": 1794012705.0308027,
-    "ast_hash": "491775657df6d2f28b4217337fb4b6c3",
+    "mtime": 1794017670.4972856,
+    "ast_hash": "8b133cc6ac836537da6e265ce404485e",
     "semantic_hash": ""
   },
   "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py": {
@@ -1145,8 +1145,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/render_pdf.py": {
-    "mtime": 1794015447.97122,
-    "ast_hash": "09616b2181d225f9e896392d3d56760a",
+    "mtime": 1794018024.0720448,
+    "ast_hash": "22f87df746e2ec499eac933919070677",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/syllabus.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794015765.7896833,
+    "mtime": 1794018323.6439123,
     "ast_hash": "3401937a94363ffef72d213b32315782",
     "semantic_hash": ""
   },
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794015765.7758083,
-    "ast_hash": "434a54baff716644c242c8f5bf165fac",
+    "mtime": 1794018323.6278048,
+    "ast_hash": "282199ef7888a17188238cd29aa642ed",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -6120,8 +6120,8 @@
     "semantic_hash": ""
   },
   "tests/test_ocr_cs_render_immutability.py": {
-    "mtime": 1794012705.0310447,
-    "ast_hash": "70e02b571c75b318e5b381cc44005a6a",
+    "mtime": 1794017670.6506042,
+    "ast_hash": "212326663478c977961ae8e511864926",
     "semantic_hash": ""
   },
   "docs/quality/ocr-cs-render-source-identity-review.md": {
@@ -6130,8 +6130,8 @@
     "semantic_hash": ""
   },
   "docs/quality/renderer-eof-audit-and-release-follow-ups.md": {
-    "mtime": 1794015689.1876152,
-    "ast_hash": "f8271bd11affe9b137fdbf067f973612",
+    "mtime": 1794018244.3980057,
+    "ast_hash": "4cff96eb5cc0c138223729c70080d53d",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/tests/test_source_authority.py": {
@@ -6140,8 +6140,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/tests/test_source_authority.py": {
-    "mtime": 1794015535.3594103,
-    "ast_hash": "a627e9dfb9779792c235a2abe142ac41",
+    "mtime": 1794018024.0711265,
+    "ast_hash": "62048aff6174f8b8f252a15d8e421104",
     "semantic_hash": ""
   },
   "docs/quality/aqa-economics-source-authority-review.md": {
