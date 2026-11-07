@@ -72,3 +72,47 @@ equivalence claim. No grading tolerance, marking budget, official reference
 page count, source facts or core pagination policy has been changed. The one
 confirmed incorrect rounded answer is repaired, not hardcoded. Integration
 metadata and release gates remain separate work.
+
+## Follow-up: failed frozen full gate at 961c9cf6
+
+The parent-owned full gate finished with 8,130 passes, two skips and four
+failures. One repository contract rejected the now-unused `_level_bands` and
+`_level_descriptor_text` helpers; both are removed. `_question_focus` remains
+used by diagram guidance and is retained.
+
+The other three failures exposed an existing reproducibility fault, not a
+reason to replace the golden hashes. A fresh-process double build reproduced
+all three failing full-suite hashes exactly. Recursive whole-model comparison
+found only 10/10/8 written-item differences: the authoring-context
+`completion_time_minutes` changed from `None` to the resolved per-question
+timing. The first build enriched content before final validation hydrated the
+shared caller's rules. Subsequent builds then enriched against warmed rules.
+Collecting all modules but running only the three golden checks passed,
+excluding import-time side effects. Running ordinary rule validation before
+the checks reproduced all three failures in a small ordered test group.
+
+OCR `build_paper` now deep-copies its input rule and applies the existing
+`validate_rule` before generating or enriching content. The final generated
+paper validation remains. Cold, prevalidated and repeated calls must produce
+identical complete models and leave both input rules unchanged. This adds one
+bounded copy/validation over the existing paper slots, not model work, retries
+or a new cache. It changes no schema, random draws, source facts or assessed
+credit. The previously missing completion-time context is now populated
+consistently, so complete blueprint identity intentionally reflects that
+metadata correction.
+
+The original baseline hashes are retained. Before normalising only the
+diagnosed timing field back to its former cold-build `None`, tests require its
+actual value to equal both the question's expected minutes and the existing
+duration/marks-derived timing. Figure-title normalisation is unchanged; all
+remaining blueprint fields are still covered by the same hashes. Three new
+cold/warm/repeat tests failed before the production fix. No fixture-only
+isolation, broad field omission or generator-default hardcoding is used.
+
+The final focused gate passed 121 tests in 13.28 seconds, with five existing
+SWIG deprecation warnings. This included the normal preceding rule-validation
+tests, cold/warm regressions, all renderer contracts, core blueprint controls,
+existing OCR credit/content/chrome checks and all-three-paper public previews.
+Additional controls preserve explicit nondefault timing/demand and refuse an
+invalid rule without mutating its defaults. Scoped Ruff, formatting and
+whitespace checks passed. No second full suite or build was run for this repair.

@@ -13,6 +13,7 @@ from ocregen.configs import RULES
 from ocregen.generator import build_paper
 from ocregen.syllabus import load_syllabus
 
+from Backend.Core.exam_blueprints import validate_rule
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -168,9 +169,27 @@ def test_chart_title_does_not_invent_a_base_year(paper_and_pdfs):
         assert "index points" in figure["title"]
 
 
-def test_entire_blueprint_unchanged_except_owned_figure_titles(paper_and_pdfs):
+def test_entire_blueprint_unchanged_except_owned_figure_titles_and_resolved_timing(
+    paper_and_pdfs,
+):
     paper, _, _ = paper_and_pdfs
     data = paper.model_dump(mode="json")
+    for section in data["sections"]:
+        for option in section["options"]:
+            for question in option["questions"]:
+                if question["kind"] != "multiple_choice":
+                    expected = round(
+                        paper.duration_minutes * question["marks"] / paper.total_marks,
+                        2,
+                    )
+                    assert (
+                        question["authoring_context"]["completion_time_minutes"]
+                        == question["expected_minutes"]
+                        == expected
+                    )
+                    # The pre-repair cold build enriched before rule validation;
+                    # only this diagnosed timing field was incorrectly None.
+                    question["authoring_context"]["completion_time_minutes"] = None
     if paper.paper_id == "paper_3":
         for section in data["sections"]:
             for option in section["options"]:
@@ -187,6 +206,49 @@ def test_entire_blueprint_unchanged_except_owned_figure_titles(paper_and_pdfs):
                         )
     digest = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
     assert digest == BASELINE[paper.paper_id]
+
+
+@pytest.mark.parametrize("paper_id", list(RULES))
+def test_cold_warm_and_repeated_builds_match_without_mutating_rule(paper_id):
+    cold = RULES[paper_id].model_copy(deep=True)
+    for section in cold.sections:
+        for rules in [section.questions, *section.question_overrides.values()]:
+            for question in rules:
+                # These are the declared optional defaults in the built-in rules.
+                question.expected_minutes = None
+                question.intended_demand = None
+    warm = cold.model_copy(deep=True)
+    validate_rule(warm, SYLLABUS.topic_ids)
+    cold_snapshot = cold.model_dump(mode="json")
+    warm_snapshot = warm.model_dump(mode="json")
+    first = build_paper(cold, SYLLABUS, 123).model_dump(mode="json")
+    repeated = build_paper(cold, SYLLABUS, 123).model_dump(mode="json")
+    prevalidated = build_paper(warm, SYLLABUS, 123).model_dump(mode="json")
+    assert first == repeated == prevalidated
+    assert cold.model_dump(mode="json") == cold_snapshot
+    assert warm.model_dump(mode="json") == warm_snapshot
+
+
+def test_nondefault_rule_timing_and_demand_are_preserved():
+    rule = RULES["paper_1"].model_copy(deep=True)
+    rule.sections[0].questions[0].expected_minutes = 7.25
+    rule.sections[0].questions[0].intended_demand = "high"
+    snapshot = rule.model_dump(mode="json")
+    paper = build_paper(rule, SYLLABUS, 123)
+    question = _questions(paper)[0]
+    assert question.expected_minutes == 7.25
+    assert question.authoring_context["completion_time_minutes"] == 7.25
+    assert question.intended_demand == "high"
+    assert rule.model_dump(mode="json") == snapshot
+
+
+def test_invalid_rule_is_rejected_without_mutating_its_defaults():
+    rule = RULES["paper_1"].model_copy(deep=True)
+    rule.total_marks += 1
+    snapshot = rule.model_dump(mode="json")
+    with pytest.raises(ValueError, match="candidate marks total"):
+        build_paper(rule, SYLLABUS, 123)
+    assert rule.model_dump(mode="json") == snapshot
 
 
 def test_actual_seed_fifteen_half_tie_matches_typed_answer_and_print(tmp_path):

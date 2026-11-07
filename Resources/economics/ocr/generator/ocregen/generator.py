@@ -15,6 +15,7 @@ from Backend.Core.exam_blueprints import (
     QuestionRule,
     resolve_question_rules,
     validate_generated_paper,
+    validate_rule,
 )
 from Backend.Core.mark_scheme_enrichment import enrich_paper
 from ocregen.syllabus import Syllabus, Topic
@@ -327,6 +328,10 @@ _OCR_ANALYTICAL_TOPICS = {
 def build_paper(
     rule: PaperRule, syllabus: Syllabus, seed: int | None = None
 ) -> GeneratedPaper:
+    # Resolve optional timing/demand before enrichment without warming the
+    # caller's reusable rule or making output depend on previous builds.
+    rule = rule.model_copy(deep=True)
+    validate_rule(rule, syllabus.topic_ids)
     run_seed = seed if seed is not None else secrets.randbits(64)
     rng = random.Random(run_seed)
     topics = [topic for topic in syllabus.topics if topic.id in rule.allowed_topic_ids]

@@ -573,60 +573,6 @@ def _guidance_table(
     return table
 
 
-def _level_bands(marks: int) -> list[tuple[int, str]]:
-    if marks >= 20:
-        return [
-            (5, "21\u201325"),
-            (4, "16\u201320"),
-            (3, "11\u201315"),
-            (2, "6\u201310"),
-            (1, "1\u20135"),
-        ]
-    if marks >= 12:
-        return [(3, "9\u201312"), (2, "5\u20138"), (1, "1\u20134")]
-    return [(3, "6\u20138"), (2, "3\u20135"), (1, "1\u20132")]
-
-
-def _level_descriptor_text(
-    question: GeneratedQuestion,
-    level: int,
-    level_count: int,
-) -> str:
-    strength = level / level_count
-    topic = _question_focus(question)
-    if strength >= 0.8:
-        return (
-            f"Knowledge of {topic} is precise, wide-ranging and expressed with secure economic "
-            "terminology. Application is focused on the scope of the question and makes effective "
-            "use of relevant figures, examples or institutional detail. Analysis contains "
-            "consistently developed chains of reasoning; any relevant diagram is accurate, fully "
-            "labelled and integrated into the argument. Evaluation tests assumptions, magnitude, "
-            "time and distribution, weighs material alternatives and supports a clear judgement."
-        )
-    if strength >= 0.55:
-        return (
-            f"Knowledge of {topic} is mainly accurate and shows sound understanding of the "
-            "relevant concepts. Application uses the context and some appropriate evidence, "
-            "although it may not be sustained. Analysis develops causes and consequences beyond "
-            "simple links and any diagram is broadly accurate. Evaluation considers a relevant "
-            "alternative, limitation or condition, and the conclusion has reasonable support."
-        )
-    if strength >= 0.3:
-        return (
-            f"Some accurate knowledge of {topic} is demonstrated, though coverage or precision "
-            "is uneven. There is some application to the context, but examples or data may be "
-            "generic or only partly used. Analytical links are relevant but incomplete, and a "
-            "diagram may contain omissions. Evaluation is relevant but limited; the judgement "
-            "is asserted or only partly supported by the preceding reasoning."
-        )
-    return (
-        f"Knowledge of {topic} is limited and may contain imprecision. Application is generic, "
-        "partial or absent. Reasoning consists mainly of isolated statements of cause or "
-        "consequence, with no sustained chain and no effective use of a diagram. Counterarguments "
-        "are undeveloped and any conclusion is asserted rather than supported."
-    )
-
-
 def _question_focus(question: GeneratedQuestion) -> str:
     topic_focuses = {
         "micro-1": "resource allocation and opportunity cost",
