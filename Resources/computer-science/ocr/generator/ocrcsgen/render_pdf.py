@@ -175,9 +175,12 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
             ]
         )
     for section_index, section in enumerate(paper.sections):
-        if paper.paper_id == "paper_2" and section_index == 0:
-            section.options[0].title = "Section A · Question 1"
-        elif paper.paper_id == "paper_2" and section_index == 8:
+        display_title = (
+            "Section A · Question 1"
+            if paper.paper_id == "paper_2" and section_index == 0
+            else section.options[0].title
+        )
+        if paper.paper_id == "paper_2" and section_index == 8:
             story.extend(
                 [
                     PageBreak(),
@@ -202,6 +205,7 @@ def render_question_paper(paper: GeneratedPaper, path: Path) -> None:
                 include_section_page=not (
                     paper.paper_id == "paper_2" and section_index == 8
                 ),
+                display_title=display_title,
             )
         )
     if paper.paper_id == "paper_1":
@@ -702,7 +706,9 @@ def _question_group_pages(
     option: GeneratedOption,
     *,
     include_section_page: bool,
+    display_title: str | None = None,
 ) -> list[Flowable]:
+    title = option.title if display_title is None else display_title
     chunk_sizes = QUESTION_PAGE_CHUNKS[paper_id][option.id.removeprefix("Q")]
     chunks: list[list[GeneratedQuestion]] = []
     cursor = 0
@@ -742,7 +748,7 @@ def _question_group_pages(
                 result.extend(
                     [
                         Paragraph(
-                            f"{option.title} answer continued",
+                            f"{title} answer continued",
                             STYLES["centre_bold"],
                         ),
                         Spacer(1, 4 * mm),
@@ -761,7 +767,7 @@ def _question_group_pages(
                     )
             continue
         if chunk_index == 0:
-            result.extend([_banner(option.title), Spacer(1, 3 * mm)])
+            result.extend([_banner(title), Spacer(1, 3 * mm)])
             if include_section_page:
                 result.extend(
                     [
@@ -792,7 +798,7 @@ def _question_group_pages(
         else:
             result.extend(
                 [
-                    Paragraph(f"{option.title} continued", STYLES["centre_bold"]),
+                    Paragraph(f"{title} continued", STYLES["centre_bold"]),
                     Spacer(1, 4 * mm),
                 ]
             )
