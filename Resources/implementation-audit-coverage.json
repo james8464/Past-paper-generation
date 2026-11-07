@@ -625,32 +625,47 @@
     {
       "path": "Backend/Core/france/allocation_case.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 74-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/0; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "55cafddf51720faf9cd49cbaf71cc2aace02d69f36a459339fc7ba3b27739f88",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/allocation_exercise.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 126-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/0; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "2aaf41cf0b0e3b8627562e5f2fad9a3de5190daa01064d53f641ffe0aeb4303a",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/archetypes.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 248-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/0; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "ab07d50e072bfcc8a3e2f90dd58fe0049815977a3a97d0bbdec6c7ed2b16b5fa",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/channel_case.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 68-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/1; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "f557de4f9432de077487d94e92f389389699004769522d288dda04f813b7e0bc",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/channel_exercise.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 142-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/1; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0c4766a2222f10b88b01b2e58adf62a802e1a6a6921898d8ffd5796c907ce1b0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/code_fences.py",
@@ -691,56 +706,83 @@
     {
       "path": "Backend/Core/france/database_audit_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 157-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/2; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "bad76bed175d3fa5e8c9fbde75267b9eef2afea7bcd11343953af2281546ebd6",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_audit_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 220-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/3; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "5dfe67cca156f075fc5249214ca74c32661693a25e9299532e52121520127b15",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_audit_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 347-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/0; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c0efb403b19fa775c9b122158bc2a4649abc1240064472ddbb9176939dbf317e",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 197-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/4; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "731c85ba4fb667ce60ffb4f309a97275c2589f0f7070ca502313531003bc8b56",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_binding.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 74-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/2; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "883bf6f2d22c7fd5196e3acbdbe16527a6b47f81be2251047e2cdf8c633987b4",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_case_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 76-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/3; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "65c5ae44547e0df9554a819425b3941c39a69953e2a013f5620f8227f333722c",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_case_families.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 438-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/1; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1ccf39018b1d3f21b0e3e09202988864bdcd59e3e94fd8a0c447b47ff7d530ac",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_case_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 540-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/2; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "015122b7859f79ff13ec650a9c18e34a6e4622d4ed053dfd9092f0b8cc806250",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_construction_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 182-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/5; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "be31eb820467d0747761cd44446c29025241fc5e5d4106ecc7b4fc34a6cd9feb",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_contract.py",
@@ -751,26 +793,38 @@
     {
       "path": "Backend/Core/france/database_curriculum_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 97-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/4; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "38a392592d910b6bda3c757b5aa3ebd7bf972962625b1f84f4f6f185dae09398",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_depth_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 207-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/6; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "9a0c3fdda0b1f1a03a7eedc683b66badc2f4281170aa7f45dd01a0b7a54599c8",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_depth_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 250-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/1; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "9572553c328328c36c3696df97c550ab78f0f12be39a828a3c11f8120c3246c0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_depth_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 300-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/2; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "fd08a424761d9070c07033eafc8df1ee312c3cac8e8126823cfeec555f15c330",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_prose.py",
@@ -781,68 +835,101 @@
     {
       "path": "Backend/Core/france/database_reasoning_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 157-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/7; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "3d1da4ec6e1519057e06b5b49e28d4c137dd37686c88e7ee485915b41e3ef206",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_reasoning_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 341-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/3; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "aabae91a6d1de77235562131955b67e9d04b0ce0fe849184e2a8eceb4f28cf31",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_reconciliation_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 181-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/8; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "599ae16237bfbae373ff9e27f780b91ba7496ab48d31494e15911d581ee703d8",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_reconciliation_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 260-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/3; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "848f5af9af331cddf0d9f34132072bf7284999fc086f339a54434cdd6266e604",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/database_reconciliation_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 372-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/4; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "55bf5d092ce119376eda72258febf8fd5867923159d2f6426179dc17a8cfb409",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/directory_case.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 77-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/5; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1c86cc07bad41cdaf3d6e6ce941da1cbd70f5ff02368f380a6ca55bad8191915",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/directory_exercise.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 145-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/source_eof/9; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a69a371d25f8afac8feac22cb6bc36960e5d43656ce9344599e9a60cc3c9a941",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/expanded_pipeline.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 309-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_source_eof/5; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "f8859f0189e6726e4c3d5ffe026a90bd4875eff222b325ee308fa1e8b2612742",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/expression_exercise.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 257-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/4; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "98c4701101aebafc2aa075f9287a26c819a9dca794d7bea7e3543598003013d3",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/expression_stack.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 86-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/6; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "03a85c4eca16d9064bd67fd125f1f4cb9235decceebb37190d17269f58e7c2aa",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/expression_synthesis.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 136-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/5; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "483ef1415d08b59d9b18d0d0e7a7a8f4ac3b0db69b1f0c9d941b6994568d3388",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/extended_pipeline.py",
@@ -880,14 +967,20 @@
     {
       "path": "Backend/Core/france/graph_resilience_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 157-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/6; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "b4e8cbae0666ebf566edf0b3bdaf5f96415db73efc97efa6a03d145716adcaeb",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_resilience_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 102-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/7; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "4cba6c3120779174771ef0abaf520280264aec58317bebe4b830983d83c91dd8",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_resilience_prose.py",
@@ -898,20 +991,29 @@
     {
       "path": "Backend/Core/france/graph_route_trace_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 161-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/8; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "eab4c0059106526b1c40f3d5f1c5e20d98e00694564ce92fb2d1dcfe7cc2edfd",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_route_trace_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 114-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/9; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "5417e572682b45732e1c495042ac4002c9d9077711aedc55248d7698a1e7f864",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_route_trace_prose.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 226-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/10; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0f341b0111e3e6aa4e77984d0e6d0f41ffa5cf58b0f89ff14b0d68c2d78f6977",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_tree_authoring.py",
@@ -922,8 +1024,11 @@
     {
       "path": "Backend/Core/france/graph_tree_binding.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 249-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/sources/11; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "cba1ba6a63a8792a78a7b5fa831395385604006c9d0882092580c1e489b5384f",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_tree_contract.py",
@@ -964,8 +1069,11 @@
     {
       "path": "Backend/Core/france/graph_two_outage_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 79-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/7; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "e7cfb2bdcb94614b4d10e72e3c9f58c651cd9b2f8ad04ef2831c5b4e759b2db9",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/graph_two_outage_prose.py",
@@ -1048,8 +1156,11 @@
     {
       "path": "Backend/Core/france/network_binding.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 73-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/8; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "b0fdfff462dd62364d3b1cfedb7871b7b2ae3fc5194a7b30e134cb761fe41d52",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/network_contract.py",
@@ -1102,8 +1213,11 @@
     {
       "path": "Backend/Core/france/network_incident_timeline_contract.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 76-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/9; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "cb339782a75cbfe14496c0c3855913c88f856aed9e0a784974a1da48c39f38e4",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/network_incident_timeline_prose.py",
@@ -1216,8 +1330,11 @@
     {
       "path": "Backend/Core/france/round_robin_case.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 79-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/10; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "778c5a73926e145ec7073a210d84ab19a2df5951e2e21e7317b093260ad667e4",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/round_robin_exercise.py",
@@ -1276,8 +1393,11 @@
     {
       "path": "Backend/Core/france/system_case_authoring.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 72-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/sources/11; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0a23803da75193a59951436f2e9bec7cdb617264342c8a5a66ca0529f0267220",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Backend/Core/france/system_case_families.py",
@@ -2113,8 +2233,11 @@
     {
       "path": "Resources/business/aqa/generator/aqabizgen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 92-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/0; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0df49e3d1b36160b43a4977feef86fcebefc51dae5d9f78f25c797d2f4f79dd2",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/configs.py",
@@ -2212,8 +2335,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/__main__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 7-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/1; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "79aa6f72a41646c490c844e25c4b654dfc470cad0afe8eb43f9182305c3f9c07",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/_cli_runtime.py",
@@ -2233,8 +2359,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/exam_dates.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 29-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/2; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "ba10fa492a08ee357ab9db6db5cd971dbcfaf69b81b7a12a484f821d3f3bb58e",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/generator.py",
@@ -2257,14 +2386,20 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/notes.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Current 138-line optional-notes repair reviewed: complete initial module/test EOF plus final narrow InterruptedError cancellation delta and exact pins independently checked; composite review attribution, not an invented fresh final-file EOF. Earlier interruption miss/HOLD remains explicit in note. Offline fake/tempfile 11-pass/2-optional-data-skip checks are execution evidence, not the source-review basis. No normal-native failure, model/PDF quality, cross-file atomicity or concurrent-writer guarantee.",
+      "source_sha256": "09d5b7817df75f320aab81f2f9678d3e68985bb023428bfd4a353bae78b59dff",
+      "review_evidence": "docs/quality/cs-notes-cache-integrity-review-2026-11-07.md",
+      "review_evidence_sha256": "507e482695053b66aed875a0ca1b320dcf1ce9d9cdf95241dff1937dec094974"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/objective_calibration.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 178-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/1; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0a1caa8775649d83d991bf90410f6c09680c9fe8c91b71fe44a4e003f119dfe6",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/ollama_client.py",
@@ -2305,8 +2440,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 17-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/3; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "6e1eb15a211d811f4a93a80da755b27a14bb87d293df39407bc6f49793cbeb26",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/topic_bank.py",
@@ -2317,8 +2455,11 @@
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/validation.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 208-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/2; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "895af20afb237bcd6daf2617cbb9b1880a06acf7a12b77e2a4ac35828443e08e",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/aqa/generator/data/syllabus_seed.json",
@@ -2431,14 +2572,20 @@
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 79-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/4; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "3b3b7921f0e14e03a316c16d39e77d9fa5d8459a36022a35628d294c40f21a40",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/configs.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 272-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/3; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "7009fa424625b1ceeddcaaa84751369751a0ee1b7c642e3545e3bcdd82123add",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/generator.py",
@@ -2461,14 +2608,20 @@
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 35-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/5; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1e1d568e05b482e8b8de59b41d03f357693147a10d6cfb459d83fa5c6ed8c89b",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/task_calibration.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 338-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/4; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "6482091750bebfb39eaafaecc0930abba4bd400d58448e4a05a243b0fbb6066c",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/computer-science/ocr/generator/pyproject.toml",
@@ -2509,8 +2662,11 @@
     {
       "path": "Resources/configured-generators/generator/configuredgen/models.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 87-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/6; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "2ab369fce8f42ddb439fea48460a847f276f90ead1dc970f6e256654b1b13e54",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/configured-generators/generator/configuredgen/render_pdf.py",
@@ -2785,14 +2941,20 @@
     {
       "path": "Resources/economics/edexcel-a/generator/keldin_edexcel/__main__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 4-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/7; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0fe3d271d438f7d02aa15a386ba2d8cc936cde4feddbe377f6d3df98e28462f0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/keldin_edexcel/cli.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 5-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/8; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c2728de673c8b70292f24674e9a9eab798c273a36dc99a065e127593685fb553",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/__init__.py",
@@ -2806,8 +2968,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/__main__.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 5-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/9; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "bf22d34cdcbc8ee456ab69233d66eac5abe9bec9e4a7561a7c5750f065180d6f",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/_cli_runtime.py",
@@ -2845,8 +3010,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/exam_dates.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 34-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/10; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "8f80bdb8e2ee4a39fc720e49408bdf905a35a3f03a02620021c850c083ac7a54",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/extended_scenarios.py",
@@ -2872,8 +3040,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/notes.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 216-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/6; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "9dda4594eabbd445b7d675c4dc855099578a2970d89e073f4ec80a615a12b1ed",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/ollama_client.py",
@@ -2905,8 +3076,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/selection_contracts.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 171-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/7; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c71596f2f491eb9134d3d3acd93f15241018020f5e4f12dde00b960459f323c5",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/source_cases.py",
@@ -2917,14 +3091,20 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/source_credit.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 202-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/8; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "06fcabdd4817a5deb13e24f6e7faa04dcd4ac206f4017bdf81e85bb7a66b08d9",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/stimulus_data.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 142-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/9; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "d4a112d5c1b0d2acfbd094bf60a531ef7b4913f88d30ce9eff837a645ea87fb3",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/stimulus_diagrams.py",
@@ -2938,8 +3118,11 @@
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/syllabus.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 13-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit.json/files/11; exact provenance/ranges and limitations in tracked note. Complete selected entrypoint/model/date/syllabus leaf only. Active wrapper/standalone roles are distinguished in the cited row; no downstream runtime, official-date or syllabus-semantic certification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "ada6fa2e89d7083667f1734848b250434a7b29747be6ce92a2850970af6b0bb1",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/validation.py",
@@ -3545,6 +3728,12 @@
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
     },
     {
+      "path": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
       "path": "docs/quality/backend-event-concurrency-2026-10-29.md",
       "classification": "historical-evidence",
       "status": "excluded",
@@ -3648,6 +3837,12 @@
     },
     {
       "path": "docs/quality/cs-functional-source-grammar-review.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/cs-notes-cache-integrity-review-2026-11-07.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -6358,8 +6553,11 @@
     {
       "path": "macOS/scripts/export_app_icon.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 100-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/10; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "eb6c733e8af6826d4d9ad4fe622879545e50efe746eb57a6de851e8565ff38dc",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "macOS/scripts/move_to_trash.sh",
@@ -6893,6 +7091,15 @@
       "review_evidence_sha256": "97e8cd949c71fe95684e0f9c960e0eae3ad23a191ad227e7c820505244702e46"
     },
     {
+      "path": "tests/test_cs_notes_cache_integrity.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Current 189-line optional-notes repair reviewed: complete initial module/test EOF plus final narrow InterruptedError cancellation delta and exact pins independently checked; composite review attribution, not an invented fresh final-file EOF. Earlier interruption miss/HOLD remains explicit in note. Offline fake/tempfile 11-pass/2-optional-data-skip checks are execution evidence, not the source-review basis. No normal-native failure, model/PDF quality, cross-file atomicity or concurrent-writer guarantee.",
+      "source_sha256": "3d8b3b9eca6dcc0d2453a1bf6a914f8ff65293d96536c4f62eaa849708cc1370",
+      "review_evidence": "docs/quality/cs-notes-cache-integrity-review-2026-11-07.md",
+      "review_evidence_sha256": "507e482695053b66aed875a0ca1b320dcf1ce9d9cdf95241dff1937dec094974"
+    },
+    {
       "path": "tests/test_cs_reference_solutions.py",
       "classification": "test",
       "status": "pending",
@@ -7108,14 +7315,20 @@
     {
       "path": "tests/test_french_allocation_case.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 94-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/0; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "711999cca876033d9ba5118d3a1a9eee0b5fd2582c5825dc613f8e310ee25787",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_allocation_exercise.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 32-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/0; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a8c34a95755b3f334324d53af2a52b63de1fad876530571305d4010d1739da23",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_authoring_field_schema.py",
@@ -7138,14 +7351,20 @@
     {
       "path": "tests/test_french_channel_case.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 126-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/1; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "9949ce44f8213273ab6b89e57b4d4510e31a3fd881420b957a3238b5e918b862",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_channel_exercise.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 19-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/1; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c35bfb5d7484a93ed04c672165474b8104e1f6e56110e533f433498c7fbd31fb",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_closed_prose_authoring.py",
@@ -7186,32 +7405,47 @@
     {
       "path": "tests/test_french_database_audit_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 139-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/3; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "3937637484e4b0d186ff6921d52e38a8080b99e438bcec5d3f2e1836309e7ea0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_audit_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 119-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/4; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c182c25517761fd3000c1bee192f82f599ee948b59282f874e4104b382faf360",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_audit_prose.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 151-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_test_eof_read_not_run/0; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1f63ced56a58e4e811e155b5f778d8f057454bf96673e856861fb59f6319898d",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 157-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/5; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "e33c558299734ef961e77ee2365dab6ded01dc22e44da25561e5a75b665b01f5",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_case_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 140-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/8; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "9d22ec2c7df8d09d00d73dc4f3dc00389ab23fb493d9b66f20c526251cedd1fd",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_case_families.py",
@@ -7228,8 +7462,11 @@
     {
       "path": "tests/test_french_database_construction.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 147-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/8; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "24b4e00593400c2b0b9b5d288264c3a0080f18a3aa378f7b25de7cf9f4500ac5",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_contract.py",
@@ -7240,8 +7477,11 @@
     {
       "path": "tests/test_french_database_curriculum.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 50-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/2; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "c4cc416ac71caa28b29b59abb214c2a546cd847b6becc2836353649cb5c02e72",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_depth_authoring.py",
@@ -7252,8 +7492,11 @@
     {
       "path": "tests/test_french_database_depth_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 110-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/0; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "683f9d3bf1acf73bc40acebb59b49af78e0c1e71778f18cce57d4eda0fb88161",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_prose.py",
@@ -7264,26 +7507,38 @@
     {
       "path": "tests/test_french_database_reasoning_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 85-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/6; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "7fbee424d4aa26b10b900d4694b89143d89c617d6fd567c136de3add611b7cf0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_reasoning_prose.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 119-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_test_eof_read_not_run/1; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "0d6231363aa528f43319529b15371f25814a5f1b4d90671505c369b709946809",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_reconciliation_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 101-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/7; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "3e592298fb7a3bbb01762735232c34e94f0af1154003d5124fbfdd258821368b",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_reconciliation_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 92-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/1; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a6dfb0a2c936e0f9a968b4cd6edb669dad8faf67490f3b0397a17ae8a6475e5a",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_database_reconciliation_pdf.py",
@@ -7294,20 +7549,29 @@
     {
       "path": "tests/test_french_database_reconciliation_prose.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 159-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_test_eof_read_not_run/2; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "169dab6cfb38f2ba5892b2e188d61e770ccd2e33b78e50a70bf04230af1a8060",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_directory_case.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 134-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/3; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a193e783e58214de0226a6710109614863f9789024b0cf3e7da9664b422f207c",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_directory_exercise.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 47-line source SHA and count match the explicit positive item nov7-french-medium-boundary-eof-audit.json/complete_test_eof_read_not_executed/2; exact provenance/ranges and limitations in tracked note. Complete selected French source/test under retained owned-domain profiles; scoped caller checks are not whole runtime/replay/validator review or current model-quality proof. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "facd22e8cebeb8dda675dc31ba96eb5d96be6ab906458cad5f36f06aa04d07a6",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_display_python_scope.py",
@@ -7318,8 +7582,11 @@
     {
       "path": "tests/test_french_expanded_family.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 56-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_test_eof_read_not_run/3; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "877cb3aff45b4e603b905147df6a1b4ac29934a153eb8a01faca792ce62615a0",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_expanded_pdf.py",
@@ -7330,26 +7597,38 @@
     {
       "path": "tests/test_french_expanded_pipeline.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 209-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-medium2.json/complete_test_eof_read_not_run/4; exact provenance/ranges and limitations in tracked note. Complete selected French medium source/test; owned historical database paths are reviewed, not arbitrary NSI/transitive contracts, learner history, model/PDF/official-equivalence qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "5a861322659d1ae11996c52c15c48ba956957b1e469c35bbc91c171e97380882",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_expression_exercise.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 187-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/3; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1d77f0fff0d5e9637bbf3120c4a437fe0f7f614e4644850c5fc6c388b4742afa",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_expression_stack.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 90-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/4; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "f46a6a2c4c8fa0ac17cd3a8f0228a3873c7d4187727d45afac6c241d9f829452",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_expression_synthesis.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 106-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/2; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "537aa529ea782408ff494c7dbe1713b377c028b3cf8ef31d9c0e71b7ef120833",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_extended_pipeline.py",
@@ -7405,14 +7684,20 @@
     {
       "path": "tests/test_french_graph_resilience_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 141-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/5; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "4634b945e9f6c880f2acb92c70f7ea3280f3056a3c81ae1025e0bc5cdaab71ec",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_resilience_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 77-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/4; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a90ec67656527e8a546a1d1bbbae5d31dc7601db72932f59beec36aaae17d6db",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_resilience_prose.py",
@@ -7423,20 +7708,29 @@
     {
       "path": "tests/test_french_graph_route_trace_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 114-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/7; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "d6b720e84558f915612bb128fcd50cfd9da15b01dcbba58d886c964d27503445",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_route_trace_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 123-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/6; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "fffa5c0f1dbf515647f29872931768eb75109847ea48767a06b7997b6fc83f37",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_route_trace_prose.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 153-line source SHA and count match the explicit positive item nov7-french-boundary-eof-audit-batch2.json/tests/8; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test. Historical blueprint/catalogue and typed material contracts are distinguished from default V36 authoring; dependencies and scoped tests remain partial. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "a4508fc7a0dea45ca7666ed72680920d3f515750abf0087f489e0932575447d7",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_tree_authoring.py",
@@ -7477,8 +7771,11 @@
     {
       "path": "tests/test_french_graph_two_outage_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 113-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/6; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "b193f40421b2b8e39508b0ab3f104eca21de3975d8fff19f4b392472ab698a89",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_graph_two_outage_pdf.py",
@@ -7615,8 +7912,11 @@
     {
       "path": "tests/test_french_network_incident_timeline_contract.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 89-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/7; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "067e469202b951c067942041795a18476b239d6730461a14e7115bab5bf1cc4c",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_network_incident_timeline_pdf.py",
@@ -7756,8 +8056,11 @@
     {
       "path": "tests/test_french_round_robin_case.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 130-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/5; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "5f1bd449057c410e27cba69943748a9f48cf129a23d44bf0d86041f53774632f",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_route_selection.py",
@@ -7810,8 +8113,11 @@
     {
       "path": "tests/test_french_system_case_authoring.py",
       "classification": "test",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 54-line source SHA and count match the explicit positive item nov7-french-small-boundary-eof-audit.json/tests/9; exact provenance/ranges and limitations in tracked note. Complete selected French boundary source/test; historical owned finite families and form boundaries are not evidence of novel current V36 content capability or live qualification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "1aad660d6dcc4e90d86fc40eb54a93a2cf97e9e2abf30da7a4f439c5deaa3af3",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tests/test_french_system_case_families.py",
@@ -8707,8 +9013,11 @@
     {
       "path": "tools/aqa_accounting_calibration.py",
       "classification": "maintained-source",
-      "status": "pending",
-      "reason": "No file-level semantic implementation review recorded in this ledger."
+      "status": "reviewed",
+      "reason": "Attributed prior complete-file EOF semantic review, not a fresh full read. Current 239-line source SHA and count match the explicit positive item nov7-entrypoint-eof-audit-batch2.json/complete_source_eof/11; exact provenance/ranges and limitations in tracked note. Complete selected module only with scoped callers/tests; no dynamic rendering/model execution, transitive dependency or output-quality audit. Follow the row's reachability classification. No execution, broad dependency, official-equivalence or whole-project-quality claim.",
+      "source_sha256": "09533c86df1e4de8a19b8f3f83d177844e3683c21f9533d77596fd000f266433",
+      "review_evidence": "docs/quality/attributed-eof-backfill-review-2026-11-07.md",
+      "review_evidence_sha256": "92d4635ed7b71056840a08929f060b7e4f7fa4a1476142c950761a291aff42a0"
     },
     {
       "path": "tools/aqa_business_calibration.py",
