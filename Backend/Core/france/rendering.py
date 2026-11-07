@@ -47,8 +47,9 @@ from Backend.Core.france.print_policy import (
     V34_CREDIT_NOTICE,
     V34_FOOTER,
     V34_REVIEW_NOTICE,
+    V36_FOREIGN_EDGE_PRINT_POLICIES,
+    V36_GENERIC_TABLE_PRINT_POLICIES,
     V36_INLINE_PRINT_POLICIES,
-    V36_PRINT_POLICY,
     V36_READABLE_PRINT_POLICIES,
 )
 
@@ -114,6 +115,7 @@ def structured_material(
     modern_graph: bool = False,
     avoid_foreign_graph_edges: bool = False,
     large_print: bool = False,
+    generic_tables: bool = False,
 ):
     heading = (
         f"{material.title} — {material.id}"
@@ -129,8 +131,13 @@ def structured_material(
                 for row in material.rows
             ],
         ]
-        route_trace_table = material.id in ("trace_initial", "trace_fermeture")
-        two_outage_table = material.id == "route_double_fermeture"
+        route_trace_table = not generic_tables and material.id in (
+            "trace_initial",
+            "trace_fermeture",
+        )
+        two_outage_table = (
+            not generic_tables and material.id == "route_double_fermeture"
+        )
         column_widths = (
             [available_width * 0.3, *([available_width * 0.7 / 6] * 6)]
             if route_trace_table
@@ -880,8 +887,10 @@ def render_assessment(
                 and not (deduplicate_title and material.title == material.id)
                 and not (coherent_material_flow and material.id.startswith("recon_")),
                 modern_graph=print_policy in V36_READABLE_PRINT_POLICIES,
-                avoid_foreign_graph_edges=print_policy == V36_PRINT_POLICY,
+                avoid_foreign_graph_edges=print_policy
+                in V36_FOREIGN_EDGE_PRINT_POLICIES,
                 large_print=large_print,
+                generic_tables=print_policy in V36_GENERIC_TABLE_PRINT_POLICIES,
             )
             if flatten:
                 # Avoid nested KeepTogether blocks: the outer question group owns

@@ -18,9 +18,9 @@ from Backend.Core.france.nsi import (
 )
 from Backend.Core.france.print_policy import (
     V34_FOOTER,
+    V36_FOREIGN_EDGE_PRINT_POLICIES,
     V36_INLINE_PRINT_POLICIES,
     V36_PRINT_POLICIES,
-    V36_PRINT_POLICY,
     V36_READABLE_PRINT_POLICIES,
 )
 from Backend.Core.france.sql_sources import sql_caption
@@ -123,7 +123,7 @@ def _check_graphs(
             graph_layout(
                 graph,
                 large_print,
-                avoid_foreign_edges=print_policy == V36_PRINT_POLICY,
+                avoid_foreign_edges=print_policy in V36_FOREIGN_EDGE_PRINT_POLICIES,
             )
             if print_policy in V36_READABLE_PRINT_POLICIES
             else None

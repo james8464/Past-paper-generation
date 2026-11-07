@@ -260,13 +260,14 @@ def test_retained_v36_render_does_not_use_new_fence_tokenizer(
 
 def test_current_package_requires_its_versioned_fence_print_policy(tmp_path):
     package = generate(tmp_path, PackageClient())
-    assert package["identity"]["print_policy"] == "fr-nsi-v36-model-review-v4"
+    assert package["identity"]["print_policy"] == "fr-nsi-v36-model-review-v5"
     for value in [
         None,
         True,
         V36_LEGACY_PRINT_POLICY,
         V36_READABLE_PRINT_POLICY,
         "fr-nsi-v36-model-review-v3",
+        "fr-nsi-v36-model-review-v4",
         "unknown",
     ]:
         changed = deepcopy(package)
