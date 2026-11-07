@@ -13,6 +13,7 @@ from Backend.Core.france.provider import FrenchOllamaClient
 from Backend.Core.generation_requests import GenerationRequest
 
 GIB = 1 << 30
+DIGEST = "a" * 64
 
 
 def test_invalid_french_budget_is_rejected_before_resource_or_transport_checks(
@@ -39,13 +40,21 @@ def no_real_resources(monkeypatch):
         raise AssertionError("Tests must not inspect this host or contact Ollama")
 
     monkeypatch.setattr(admission, "_memory_snapshot", forbidden)
+    monkeypatch.setattr(admission, "_headroom_snapshot", forbidden)
     monkeypatch.setattr(admission, "open_ollama_request", forbidden)
     monkeypatch.setattr(admission.platform, "system", lambda: "Darwin")
 
 
 def resources(monkeypatch, *, ram=18 * GIB, pressure=1, size=8 * GIB):
     monkeypatch.setattr(admission, "_memory_snapshot", lambda: (ram, pressure))
-    monkeypatch.setattr(admission, "_installed_model_size", lambda *args: size)
+    monkeypatch.setattr(
+        admission, "_installed_model_state", lambda *args: (size, False)
+    )
+    monkeypatch.setattr(
+        admission,
+        "_headroom_snapshot",
+        lambda physical: 12 * GIB if physical >= 16 * GIB else physical // 2,
+    )
 
 
 @pytest.mark.parametrize("host", ["localhost", "127.0.0.1", "[::1]", "127.0.0.2"])
@@ -98,12 +107,23 @@ def test_resource_refusal_has_stable_presentation_code():
 def test_metadata_resolves_namespaced_and_explicit_tags(monkeypatch, name):
     installed = name if ":" in name else f"{name}:latest"
     content = json.dumps(
-        {"models": [{"name": installed, "model": installed, "size": 123}]}
+        {
+            "models": [
+                {"name": installed, "model": installed, "size": 123, "digest": DIGEST}
+            ]
+        }
     ).encode()
     monkeypatch.setattr(
-        admission, "open_ollama_request", lambda *args, **kwargs: io.BytesIO(content)
+        admission,
+        "open_ollama_request",
+        lambda request, **kwargs: io.BytesIO(
+            content if request.full_url.endswith("/tags") else b'{"models":[]}'
+        ),
     )
-    assert admission._installed_model_size("http://localhost:11434", name) == 123
+    assert admission._installed_model_state("http://localhost:11434", name) == (
+        123,
+        False,
+    )
 
 
 @pytest.mark.parametrize("size", [0, -1, None, True, "123", 1.5])
@@ -233,7 +253,7 @@ def test_metadata_missing_malformed_or_ambiguous(monkeypatch, payload):
         lambda *args, **kwargs: io.BytesIO(json.dumps(payload).encode()),
     )
     with pytest.raises(admission.ResourceAdmissionError):
-        admission._installed_model_size("http://localhost:11434", "fixture")
+        admission._installed_model_state("http://localhost:11434", "fixture")
 
 
 def test_metadata_uses_bounded_direct_get(monkeypatch):
@@ -241,11 +261,23 @@ def test_metadata_uses_bounded_direct_get(monkeypatch):
 
     def open_request(request, *, timeout):
         captured.append((request.full_url, request.get_method(), timeout))
-        return io.BytesIO(b'{"models":[{"name":"fixture:latest","size":123}]}')
+        return io.BytesIO(
+            json.dumps(
+                {"models": [{"name": "fixture:latest", "size": 123, "digest": DIGEST}]}
+                if request.full_url.endswith("/tags")
+                else {"models": []}
+            ).encode()
+        )
 
     monkeypatch.setattr(admission, "open_ollama_request", open_request)
-    assert admission._installed_model_size("http://localhost:11434", "fixture") == 123
-    assert captured == [("http://localhost:11434/api/tags", "GET", 5)]
+    assert admission._installed_model_state("http://localhost:11434", "fixture") == (
+        123,
+        False,
+    )
+    assert captured == [
+        ("http://localhost:11434/api/tags", "GET", 5),
+        ("http://localhost:11434/api/ps", "GET", 5),
+    ]
 
 
 @pytest.mark.parametrize(
@@ -256,7 +288,7 @@ def test_metadata_invalid_or_oversized(monkeypatch, content):
         admission, "open_ollama_request", lambda *args, **kwargs: io.BytesIO(content)
     )
     with pytest.raises(admission.ResourceAdmissionError):
-        admission._installed_model_size("http://localhost:11434", "fixture")
+        admission._installed_model_state("http://localhost:11434", "fixture")
 
 
 def test_metadata_transport_failure_is_resource_refusal(monkeypatch):
@@ -264,8 +296,8 @@ def test_metadata_transport_failure_is_resource_refusal(monkeypatch):
         raise OSError("offline")
 
     monkeypatch.setattr(admission, "open_ollama_request", fail)
-    with pytest.raises(admission.ResourceAdmissionError, match="model size"):
-        admission._installed_model_size("http://localhost:11434", "fixture")
+    with pytest.raises(admission.ResourceAdmissionError, match="model metadata"):
+        admission._installed_model_state("http://localhost:11434", "fixture")
 
 
 def test_native_sensor_commands_bounded_and_numeric(monkeypatch):
@@ -301,12 +333,26 @@ def test_sensor_timeout_refuses_without_guess(monkeypatch):
 def test_linux_uses_kernel_physical_memory_without_invented_pressure(monkeypatch):
     monkeypatch.setattr(admission.platform, "system", lambda: "Linux")
     monkeypatch.setattr(
-        admission.Path,
-        "read_text",
-        lambda *args, **kwargs: "MemTotal:       18874368 kB\nMemAvailable: 10 kB\n",
+        admission.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(
+            stdout="MemTotal:       18874368 kB\nMemAvailable: 10 kB\n"
+        ),
     )
     assert admission._read_memory_snapshot() == (18 * GIB, None)
     resources(monkeypatch, pressure=None)
+    monkeypatch.setattr(
+        admission, "_headroom_snapshot", admission._read_headroom_snapshot
+    )
+    with pytest.raises(admission.ResourceAdmissionError, match="headroom"):
+        admission.require_local_ollama_capacity("http://localhost:11434", "fixture")
+    monkeypatch.setattr(
+        admission.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(
+            stdout="MemTotal: 18874368 kB\nMemAvailable: 12582912 kB\n"
+        ),
+    )
     admission.require_local_ollama_capacity("http://localhost:11434", "fixture")
     resources(monkeypatch, pressure=None, size=14 * GIB)
     with pytest.raises(admission.ResourceAdmissionError, match="headroom"):
@@ -318,7 +364,11 @@ def test_linux_uses_kernel_physical_memory_without_invented_pressure(monkeypatch
 )
 def test_linux_unknown_physical_memory_refuses(monkeypatch, content):
     monkeypatch.setattr(admission.platform, "system", lambda: "Linux")
-    monkeypatch.setattr(admission.Path, "read_text", lambda *args, **kwargs: content)
+    monkeypatch.setattr(
+        admission.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(stdout=content),
+    )
     monkeypatch.setattr(admission, "_memory_snapshot", admission._read_memory_snapshot)
     with pytest.raises(admission.ResourceAdmissionError, match="memory"):
         admission.require_local_ollama_capacity("http://localhost:11434", "fixture")
@@ -359,5 +409,5 @@ def test_metadata_cancellation_remains_interruption(monkeypatch, wrapped):
 
     monkeypatch.setattr(admission, "open_ollama_request", fail)
     with pytest.raises(InterruptedError) as caught:
-        admission._installed_model_size("http://localhost:11434", "fixture")
+        admission._installed_model_state("http://localhost:11434", "fixture")
     assert caught.value is interruption

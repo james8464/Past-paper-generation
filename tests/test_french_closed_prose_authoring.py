@@ -229,7 +229,11 @@ def test_real_french_provider_retry_is_checkpointed_after_success(
         "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
     )
     monkeypatch.setattr(
-        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+        "Backend.Core.ollama_admission._installed_model_state",
+        lambda *args: (4 << 30, False),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._headroom_snapshot", lambda physical: 12 << 30
     )
     from Backend.Core.france.graph_tree_authoring import author_closed_prose_parts
     from Backend.Core.france.provider import FrenchOllamaClient

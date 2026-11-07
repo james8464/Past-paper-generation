@@ -1538,10 +1538,10 @@
       "path": "Backend/Core/ollama_admission.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete new admission module/test file independently reviewed, with policy, transport, cancellation and bounded verification limits recorded. No live model or runtime-memory safety guarantee.",
-      "source_sha256": "482c3f7ed568a6ba215a9558fbdc0ef849bb8a9338fd78ae2b151c0721ea1308",
-      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
+      "reason": "Root complete current 259-line source EOF read plus independent complete initial 255-line EOF and all final source/annotation deltas. Current-headroom and exact-residency admission remain approximate, with snapshot/parallel-start/peak limitations explicit; no live model, native-incident fix or runtime safety guarantee. Prior physical-reserve/pressure review remains historical and unchanged.",
+      "source_sha256": "d6f62485633e80f575695fafa748164f9d0d386dcde96f988cd820fcb3d93e0e",
+      "review_evidence": "docs/quality/local-model-current-headroom-review.md",
+      "review_evidence_sha256": "56278db735289cf84ee185b23467621507581b8fc53a14b3e443ac598fe788ec"
     },
     {
       "path": "Backend/Core/ollama_thinking.py",
@@ -4242,6 +4242,12 @@
     },
     {
       "path": "docs/quality/local-generation-batching-acceptance-2026-10-29.md",
+      "classification": "historical-evidence",
+      "status": "excluded",
+      "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
+    },
+    {
+      "path": "docs/quality/local-model-current-headroom-review.md",
       "classification": "historical-evidence",
       "status": "excluded",
       "reason": "Retained diagnostic/review evidence, not maintained executable implementation; exclusion does not certify its claims."
@@ -7700,10 +7706,10 @@
       "path": "tests/test_french_provider.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim.",
-      "source_sha256": "8c316a01ef8859c74f0118d4e97f05faf4f167501a31b5e3eb64dcd5fe7b11ea",
-      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
+      "reason": "Prior source-bound baseline review plus complete local-memory admission or fake-capacity fixture delta and relevant call-path review. No fresh whole-file, whole-project or model-quality claim. Prior evidence retained at docs/quality/local-model-memory-admission-review.md SHA256 cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d. Current fixture-only diff injects installed state/headroom inputs while retaining real admission and unchanged transport assertions. Complete diff reviewed, not a fresh whole-file EOF or live-provider pass.",
+      "source_sha256": "b48f47efc903eebb555ea029e280e841f24ca14db0b60840f126362f20608059",
+      "review_evidence": "docs/quality/local-model-current-headroom-review.md",
+      "review_evidence_sha256": "56278db735289cf84ee185b23467621507581b8fc53a14b3e443ac598fe788ec"
     },
     {
       "path": "tests/test_french_provider_contract_retry.py",
@@ -8300,6 +8306,15 @@
       "reason": "No file-level semantic implementation review recorded in this ledger."
     },
     {
+      "path": "tests/test_ollama_headroom.py",
+      "classification": "test",
+      "status": "reviewed",
+      "reason": "Root complete current 318-line EOF read plus independent initial 265-line EOF and every subsequent fixture/cancellation/metadata-bound delta. Offline guarded 386-pass focused evidence covers real admission policy using injected inputs, not live sensors/network/inference; no runtime peak-fit or model-quality qualification.",
+      "source_sha256": "e550fc5a6dae7bc4bc1a28ef66a885fb5d038b2ae914ee07b6dc122ec1c7c534",
+      "review_evidence": "docs/quality/local-model-current-headroom-review.md",
+      "review_evidence_sha256": "56278db735289cf84ee185b23467621507581b8fc53a14b3e443ac598fe788ec"
+    },
+    {
       "path": "tests/test_ollama_parallel_jobs.py",
       "classification": "test",
       "status": "pending",
@@ -8309,10 +8324,10 @@
       "path": "tests/test_ollama_resource_admission.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit.",
-      "source_sha256": "b869b25cd0931c5ec51621b67ff5eeaf60a79c964e4ce2101eaa677890eb8c2a",
-      "review_evidence": "docs/quality/local-model-memory-admission-review.md",
-      "review_evidence_sha256": "cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d"
+      "reason": "Recorded complete baseline plus complete independently reviewed repair delta and relevant call paths; not a fresh whole-file or whole-repository read. Targeted tests and source-only render limits remain explicit. Prior evidence retained at docs/quality/local-model-memory-admission-review.md SHA256 cf69a54da1b965e288139aea670bd2e5ad124e0d8353cb885c3188c51992263d. Current headroom repair adds independently reviewed changed hunks and relevant cancellation/transport/Linux contexts at the new exact pin, not a fresh complete 413-line EOF attestation.",
+      "source_sha256": "e2178c97a2240b5e11adc79817da9c5d554c1df88c3e290515aaf74041bc2b0f",
+      "review_evidence": "docs/quality/local-model-current-headroom-review.md",
+      "review_evidence_sha256": "56278db735289cf84ee185b23467621507581b8fc53a14b3e443ac598fe788ec"
     },
     {
       "path": "tests/test_ollama_status.py",

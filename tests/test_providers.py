@@ -26,7 +26,11 @@ def isolate_inference_transport(monkeypatch):
         "Backend.Core.ollama_admission._memory_snapshot", lambda: (16 << 30, 1)
     )
     monkeypatch.setattr(
-        "Backend.Core.ollama_admission._installed_model_size", lambda *args: 4 << 30
+        "Backend.Core.ollama_admission._installed_model_state",
+        lambda *args: (4 << 30, False),
+    )
+    monkeypatch.setattr(
+        "Backend.Core.ollama_admission._headroom_snapshot", lambda physical: 12 << 30
     )
     monkeypatch.setattr(
         HostedLLMClient,
