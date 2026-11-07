@@ -265,3 +265,31 @@ def test_existing_resource_caps_precede_pdf_or_package_parse(paths, monkeypatch,
         content.verify_cs_paper1_questions(
             paths["question_paper"], paths["assessment_package"], 24
         )
+
+
+def test_public_policy_uses_canonical_pack_syllabus_not_module_default(
+    paths, monkeypatch, tmp_path
+):
+    from cspapergen import syllabus
+
+    missing = tmp_path / "_internal" / "data" / "syllabus_seed.json"
+    monkeypatch.setattr(syllabus, "DEFAULT_SYLLABUS_PATH", missing)
+    report = layout_conformance.conform_generated_documents(
+        "computer_science", "1", paths
+    )
+    assert report["question_paper"]["checked_questions"] == 12
+    assert report["question_paper"]["checked_marks"] == 100
+
+
+def test_public_policy_refuses_missing_canonical_pack_syllabus(
+    paths, monkeypatch, tmp_path
+):
+    from cspapergen import syllabus
+
+    from Backend.Core import computer_science_question_content as content
+
+    # The ordinary source module default remains valid: it must not be a fallback.
+    assert syllabus.DEFAULT_SYLLABUS_PATH.is_file()
+    monkeypatch.setattr(content, "CS_ROOT", tmp_path / "missing-pack", raising=False)
+    with pytest.raises(LayoutConformanceError, match=r"syllabus_seed\.json"):
+        layout_conformance.conform_generated_documents("computer_science", "1", paths)

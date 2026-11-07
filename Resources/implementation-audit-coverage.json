@@ -344,10 +344,10 @@
       "path": "Backend/Core/computer_science_question_content.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete new 374-line verifier EOF independently reviewed. Owner-bound declared source/prompts/marks/material, bounded resources, A4 and nonempty checks; no production rerender. FSM text/table/node counts only, not exact arrows/state-label graphical equivalence.",
-      "source_sha256": "a4f5316a3a9c3db4a18c0ba692963515f9f311f7498c974f91c34e619ced99d9",
+      "reason": "Prior complete374-line verifier EOF review plus complete independently reviewed five-line production delta (canonical CS_ROOT import and explicit syllabus path), current377 lines; not a fresh current whole-file EOF read. Complete new 374-line verifier EOF independently reviewed. Owner-bound declared source/prompts/marks/material, bounded resources, A4 and nonempty checks; no production rerender. FSM text/table/node counts only, not exact arrows/state-label graphical equivalence. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "e0306b7b6334d32a8c85ca8ae1691c152d75dae91f3c0e1b3e48d5ace7e546f6",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Backend/Core/computer_science_reference_solutions.py",
@@ -1538,10 +1538,10 @@
       "path": "Backend/Core/layout_conformance.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Preserves existing source-bound composite baseline review plus complete independently reviewed scoped CS1 question-content dispatch/unknown-policy delta and callers. Current685 lines, not a fresh whole-file read; measured reference24 retained and other roles remain scoped. Prior evidence docs/quality/business-source-and-marking-review.md at 06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8; prior source 69618b58de3b2df1da2fcaed673c99810c79efbd56c2a93b5f5f79c33e67e881.",
+      "reason": "Preserves existing source-bound composite baseline review plus complete independently reviewed scoped CS1 question-content dispatch/unknown-policy delta and callers. Current685 lines, not a fresh whole-file read; measured reference24 retained and other roles remain scoped. Prior evidence docs/quality/business-source-and-marking-review.md at 06e603c846a5c676e1b045434cf45573610b3a986ee084130e7d3839dea41af8; prior source 69618b58de3b2df1da2fcaed673c99810c79efbd56c2a93b5f5f79c33e67e881. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
       "source_sha256": "0afa0d930ddba8de8352b2f9aa6cf0e7c3c4a1efa43fefd2d7fe20d38aa3f545",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Backend/Core/layout_master.py",
@@ -2447,10 +2447,10 @@
       "path": "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Composite review: prior complete 2266-line EOF baseline SHAcbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb plus complete independently reviewed flow/helper-removal delta and final on-screen owner reservation. Current2045 lines; not a fresh full-current-file read. Reduced pages do not establish difficulty/duration/official equivalence. Prior evidence docs/quality/renderer-eof-audit-and-release-follow-ups.md at bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6; prior source cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb.",
+      "reason": "Composite review: prior complete 2266-line EOF baseline SHAcbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb plus complete independently reviewed flow/helper-removal delta and final on-screen owner reservation. Current2045 lines; not a fresh full-current-file read. Reduced pages do not establish difficulty/duration/official equivalence. Prior evidence docs/quality/renderer-eof-audit-and-release-follow-ups.md at bb98a3b38c4795e8b83ad544940570d72884305e0cb6edbe836c7081490fe8f6; prior source cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
       "source_sha256": "a0b6b80d246537c5ffeb4ac2a73408c20658066159cb25f0687f093fa508bbe6",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/syllabus.py",
@@ -2540,10 +2540,10 @@
       "path": "Resources/computer-science/aqa/generator/tests/test_paper1_command_contract.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Preserves prior complete74-line source-bound test review plus complete independently reviewed removal of invented fixed-page/support assertions. Current75 lines; protocol/program contracts retained; not a fresh whole-file read. Prior evidence docs/quality/cs1-command-protocol-review.md at f170efb1bb28509ebf0d84ca79f2664c1f1ea9fdc4483bfd284a4857f1acc47a; prior source 9c0fa06b571ef2d50d9ff7b39aa17c799d5acb910e8260df1c84a9669316dc12.",
+      "reason": "Preserves prior complete74-line source-bound test review plus complete independently reviewed removal of invented fixed-page/support assertions. Current75 lines; protocol/program contracts retained; not a fresh whole-file read. Prior evidence docs/quality/cs1-command-protocol-review.md at f170efb1bb28509ebf0d84ca79f2664c1f1ea9fdc4483bfd284a4857f1acc47a; prior source 9c0fa06b571ef2d50d9ff7b39aa17c799d5acb910e8260df1c84a9669316dc12. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
       "source_sha256": "78ea45c4a7464f44be449fa0667d892f8f4ac734effb06dbaebd7c4e2aea6b2e",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "Resources/computer-science/aqa/generator/tests/test_render_content.py",
@@ -7136,19 +7136,19 @@
       "path": "tests/test_cs_paper1_on_screen_flow.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete new 188-line test EOF independently reviewed, including final three-seed owner/first-prompt regression. Content/order/scaffold/bounds checks have no fixed new page-count golden.",
+      "reason": "Complete new 188-line test EOF independently reviewed, including final three-seed owner/first-prompt regression. Content/order/scaffold/bounds checks have no fixed new page-count golden. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
       "source_sha256": "768aeb1126c018f7c7f80938268fff86466189f57ca735d763d96637cbb89060",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "tests/test_cs_paper1_question_policy.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete new 267-line test EOF independently reviewed. Public conformance package/content mutations, wrong/unknown policy routing and existing-policy controls; not live model or frozen public acceptance.",
-      "source_sha256": "ab2b3380a595dae6b4306c88e3515c8109bef7304161b14acb7481ed7fdddcd8",
+      "reason": "Prior complete267-line test EOF review plus complete independently reviewed28-line appended canonical-resource regression delta, current295 lines; not a fresh current whole-file EOF read. Complete new 267-line test EOF independently reviewed. Public conformance package/content mutations, wrong/unknown policy routing and existing-policy controls; not live model or frozen public acceptance. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
+      "source_sha256": "81ce7850be0dae029bba71e8c6d91f58d67ac879dd049bd700ecc7c2f0f647a7",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "tests/test_cs_reference_solutions.py",
@@ -8432,10 +8432,10 @@
       "path": "tests/test_layout_master.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Preserves prior complete430-line EOF test review plus complete independently reviewed narrow CS1-policy assertion delta. Current435 lines; all other policy dispatch controls retained, not a fresh whole-file read. Prior evidence docs/quality/reference-and-slot-boundary-review.md at ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b; prior source 2d60006de9f0de5bb84994ff6fbba99c537bb4ed8040eb635ca40b17d4b1de0f.",
+      "reason": "Preserves prior complete430-line EOF test review plus complete independently reviewed narrow CS1-policy assertion delta. Current435 lines; all other policy dispatch controls retained, not a fresh whole-file read. Prior evidence docs/quality/reference-and-slot-boundary-review.md at ff98e4bb5e3ec2be7218c3f16bc6ecef8cc83426408de1a1a202fb7228c0ec6b; prior source 2d60006de9f0de5bb84994ff6fbba99c537bb4ed8040eb635ca40b17d4b1de0f. Evidence-note amendment records actual old-head frozen public HOLD and narrow resource follow-up; original scope/limits remain. Host regression is not repaired frozen-path qualification.",
       "source_sha256": "cbdae7025ea867b0fb3376d45ceb224cc66bf55c8f0a7dbe075e3c4233b23935",
       "review_evidence": "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md",
-      "review_evidence_sha256": "6d26ecea6324a86d4fef7bc19573325f044bce6e3a351ce1b8451dcfa70891f3"
+      "review_evidence_sha256": "f94a21c18976dbf3d0de8485886413e405512a674d6ffd21c3109e3a265a5636"
     },
     {
       "path": "tests/test_level_of_response.py",

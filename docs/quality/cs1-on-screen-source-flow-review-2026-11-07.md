@@ -71,3 +71,26 @@ invented blank or duplicate scaffold was observed. The PDF SHA-256 is
 `3d3e3fc5f0eccc75e248e3a609516f4b9775c8e08f919488197f577bccff3b0d`.
 This is source-diagnostic visual acceptance, not frozen/public/live-model acceptance.
 Integrated full, packaged, native and protected-release gates remain separate.
+
+## Actual frozen resource-path refusal and follow-up
+
+The subsequent real public source/frozen packet at `e1910971` did **not** pass:
+source exited 0 and the signed frozen child exited 1. The new verifier's implicit
+`load_syllabus()` resolved `_internal/data/syllabus_seed.json`, whereas the shipped
+resource is under `_internal/Resources/computer-science/aqa/generator/data/`.
+The raw public result remains HOLD; its two children, partial diagnostic artifacts
+and earlier successful full/build/archive receipts are retained as old-head evidence,
+not promoted to acceptance of this repair. Personal data, preferences and cache
+were unchanged in that failed packet.
+
+The verifier now passes `CS_ROOT / "data" / "syllabus_seed.json"` explicitly, using
+the existing canonical backend resource root. It does not change defaults, search
+the working directory, add a fallback, or alter source/questions/rendering limits.
+Two genuine RED public-conformance tests reproduced dependence on the module default
+and acceptance despite a missing canonical resource. Both are now green: a missing
+simulated frozen module default is harmless, but a missing canonical resource is
+refused even while the ordinary module default remains valid. The final focused
+policy/backend group passed **33 tests in 5.73 seconds**; Ruff check/format and
+strict verifier typing passed. This is a five-line production delta plus appended
+tests, not a new full-module EOF review or actual repaired frozen-path qualification.
+Fresh integrated full/build/public evidence is still required for the new source.

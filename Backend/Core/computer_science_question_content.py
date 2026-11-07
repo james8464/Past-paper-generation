@@ -13,6 +13,7 @@ from typing import cast
 import pymupdf
 
 from Backend.Core.layout_master import LayoutConformanceError
+from Backend.Core.paths import CS_ROOT
 
 AQA_CS_PAPER1_QUESTION_PAGINATION = "generated-aqa-cs-paper1-question-content-v1"
 # Same resource ceilings as the existing bounded Business content verifier.
@@ -76,7 +77,9 @@ def verify_cs_paper1_questions(
         if not items or items != package.get("items"):
             raise ValueError("CS1 requires complete matching assessed items")
         blueprint = PaperBlueprint.model_validate(raw)
-        validate_blueprint(blueprint, load_syllabus())
+        validate_blueprint(
+            blueprint, load_syllabus(CS_ROOT / "data" / "syllabus_seed.json")
+        )
         if (
             blueprint.paper_number != "1"
             or blueprint.paper_code != "7517/1"

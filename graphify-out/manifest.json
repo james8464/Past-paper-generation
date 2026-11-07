@@ -1245,8 +1245,8 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794031083.9689717,
-    "ast_hash": "59602e6171c0c440f0aaa3eca433f598",
+    "mtime": 1794036696.0478153,
+    "ast_hash": "93cee72356e3edb78157b13461449412",
     "semantic_hash": ""
   },
   "bridge.py": {
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794031083.9688165,
-    "ast_hash": "f5f4cf088d163959c9c5ee33989cd8aa",
+    "mtime": 1794036684.1873212,
+    "ast_hash": "cf3e3badadfba7c981d3b6f6b3262a80",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -6215,8 +6215,8 @@
     "semantic_hash": ""
   },
   "Backend/Core/computer_science_question_content.py": {
-    "mtime": 1794036554.7430224,
-    "ast_hash": "dc5a4d17add996018c6ba812a85aa791",
+    "mtime": 1794038479.2553346,
+    "ast_hash": "0301df1a77a44289802810d53089324d",
     "semantic_hash": ""
   },
   "tests/test_cs_paper1_on_screen_flow.py": {
@@ -6225,8 +6225,8 @@
     "semantic_hash": ""
   },
   "tests/test_cs_paper1_question_policy.py": {
-    "mtime": 1794036554.7447848,
-    "ast_hash": "4f56578d39b6509a1a8dc287f24bd568",
+    "mtime": 1794038479.183315,
+    "ast_hash": "33b62bf2fdf0133a9188552fe5105f90",
     "semantic_hash": ""
   },
   "tests/test_french_generic_table_policy.py": {
@@ -6240,8 +6240,8 @@
     "semantic_hash": ""
   },
   "docs/quality/cs1-on-screen-source-flow-review-2026-11-07.md": {
-    "mtime": 1794036554.7445793,
-    "ast_hash": "e831248fada4b436f4901f4891f892cf",
+    "mtime": 1794038512.1308558,
+    "ast_hash": "c5866cde934e8d5b2d8c14cfbef94c11",
     "semantic_hash": ""
   },
   "docs/quality/french-generic-table-policy-review.md": {
