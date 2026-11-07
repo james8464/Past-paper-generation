@@ -18,8 +18,9 @@ AccountingOperation = Literal[
     "net_share_premium",
     "cash_budget_balance",
     "contribution_per_unit",
+    "material_variance_classification",
 ]
-AccountingUnit = Literal["GBP", "entry_pair"]
+AccountingUnit = Literal["GBP", "entry_pair", "classification"]
 _DECIMAL = re.compile(r"[0-9]{1,12}(?:\.[0-9]{1,4})?\Z")
 _WHOLE_POUNDS = re.compile(r"(?:£0|-?£[1-9][0-9]{0,2}(?:,[0-9]{3})*)\Z")
 
@@ -34,12 +35,24 @@ class AccountingSelectedResponseContract(BaseModel):
     unit: AccountingUnit
 
 
+class MaterialVarianceFacts(BaseModel):
+    """Qualitative public comparisons; purchases are not consumption evidence."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
+
+    variance: Literal["price", "usage"]
+    quantity_basis: Literal["purchased", "consumed"]
+    quantity: Literal["positive"]
+    comparison: Literal["below", "equal", "above"]
+
+
 @dataclass(frozen=True)
 class AccountingChoiceWorking:
     answer: str
     steps: tuple[str, ...]
     numeric_results: dict[str, float]
     journal_choices: tuple[str, ...] = ()
+    classification_choices: tuple[str, ...] = ()
 
 
 def pounds(value: Decimal) -> str:
@@ -231,6 +244,65 @@ def _unit_contribution(
     )
 
 
+def _variance_facts(
+    contract: AccountingSelectedResponseContract,
+) -> MaterialVarianceFacts:
+    facts = MaterialVarianceFacts.model_validate(contract.inputs)
+    if facts.variance == "usage" and facts.quantity_basis != "consumed":
+        raise ValueError(
+            "Material usage variance requires actual consumption, not purchases"
+        )
+    return facts
+
+
+def material_variance_prompt(raw: dict[str, Any]) -> str:
+    """Render the exact public premise from the same facts used for derivation."""
+    contract = AccountingSelectedResponseContract.model_validate(raw)
+    if contract.operation != "material_variance_classification":
+        raise ValueError("Material variance wording requires its own public contract")
+    facts = _variance_facts(contract)
+    if facts.variance == "price":
+        verb = "buys" if facts.quantity_basis == "purchased" else "uses"
+        comparison = "at" if facts.comparison == "equal" else facts.comparison
+        return (
+            f"A business {verb} a positive quantity of material {comparison} the standard price. "
+            "What is the material price variance?"
+        )
+    comparison = "equal to" if facts.comparison == "equal" else facts.comparison
+    return (
+        f"A business uses a positive quantity of material {comparison} the standard "
+        "quantity allowed for actual production. What is the material usage variance?"
+    )
+
+
+def _material_variance(
+    contract: AccountingSelectedResponseContract,
+) -> AccountingChoiceWorking:
+    facts = _variance_facts(contract)
+    answer = {"below": "Favourable", "equal": "Zero", "above": "Adverse"}[
+        facts.comparison
+    ]
+    basis = (
+        "actual price with standard price"
+        if facts.variance == "price"
+        else "actual consumption with the standard allowance for actual production"
+    )
+    return AccountingChoiceWorking(
+        answer,
+        (
+            f"The requested material {facts.variance} variance compares {basis}.",
+            f"The actual value is {facts.comparison} its standard comparator for a positive quantity, giving a {answer.lower()} variance.",
+        ),
+        {},
+        classification_choices=(
+            "Favourable",
+            "Adverse",
+            "Zero",
+            "Not measurable without the selling price",
+        ),
+    )
+
+
 _OPERATIONS: dict[
     str,
     tuple[
@@ -244,6 +316,7 @@ _OPERATIONS: dict[
     "net_share_premium": ("GBP", _share_premium),
     "cash_budget_balance": ("GBP", _cash_budget),
     "contribution_per_unit": ("GBP", _unit_contribution),
+    "material_variance_classification": ("classification", _material_variance),
 }
 
 
@@ -289,6 +362,14 @@ def solve_accounting_selected_response(item: dict[str, Any]) -> dict[str, Any]:
         )
     raw = context.get("selected_response_contract")
     working = derive_accounting_choice(raw)
+    if (
+        isinstance(raw, dict)
+        and raw.get("operation") == "material_variance_classification"
+        and item.get("prompt") != material_variance_prompt(raw)
+    ):
+        raise ValueError(
+            "Material variance visible wording differs from its public facts"
+        )
     choices = item.get("choices")
     if (
         not isinstance(choices, list)
@@ -303,6 +384,11 @@ def solve_accounting_selected_response(item: dict[str, Any]) -> dict[str, Any]:
         if set(choices) != set(working.journal_choices):
             raise ValueError(
                 "Accounting correction choices differ from the public journal case"
+            )
+    elif working.classification_choices:
+        if set(choices) != set(working.classification_choices):
+            raise ValueError(
+                "Accounting variance choices differ from the public classification domain"
             )
     # The distractors only need a format check. Parsing them as decimals could
     # expand a short exponent into a very large string during currency formatting.

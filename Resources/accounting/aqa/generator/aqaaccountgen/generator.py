@@ -40,6 +40,8 @@ from Backend.Core.subjects.accounting import (
 )
 from Backend.Core.subjects.accounting_selected_response import (
     accounting_selected_response_contract,
+    derive_accounting_choice,
+    material_variance_prompt,
 )
 
 BUSINESSES = [
@@ -568,6 +570,18 @@ def _mcq(
                 "allocated_fixed_cost": str(fixed),
             },
         )
+    if (paper_id, index) == ("paper_2", 5):
+        public_contract = accounting_selected_response_contract(
+            "material_variance_classification",
+            {
+                "variance": "price",
+                "quantity_basis": "purchased",
+                "quantity": "positive",
+                "comparison": "below",
+            },
+        )
+        stem = material_variance_prompt(public_contract)
+        correct = derive_accounting_choice(public_contract).answer
     choices = [correct, *distractors]
     rng.shuffle(choices)
     answer = choices.index(correct)
