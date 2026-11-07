@@ -22,6 +22,15 @@ lines. Review of the Business cover fix combines its previously recorded
 renderer baseline and repairs with the complete new cover-selection delta;
 it is not a fresh full read of the 1,665-line current Business renderer.
 
+A further complete AQA Economics read covered its generator, renderer,
+configuration, level policy, written tasks, syllabus loader and CLI: 4,043
+baseline lines. The OCR Economics read covered its generator, renderer,
+configuration, syllabus loader and CLI: 3,766 baseline lines. AQA Computer
+Science generation, question-bank and model files added 4,989 complete lines;
+no demonstrated current-path release defect was found in that latter scope.
+The Economics repairs below received complete-delta and independent review.
+Those reviews do not claim a second whole-file read after each repair.
+
 ## Findings and repairs
 
 ### Keep rendering separate from reviewed source data
@@ -66,6 +75,46 @@ and raster, and the entire Paper 1 cover. This is a presentation repair, not a
 change to selection, marks, source material or difficulty.
 
 ## Implementation guidance
+
+### Use source facts in numeric answers, diagrams and marking tables
+
+The Economics reads found further renderer and source discrepancies:
+
+- AQA seed 72 Paper 1 printed 26.2% for public endpoints 88 and 111.1, where
+  the existing half-up contract requires 26.3%. OCR seed 15 Paper 1 printed
+  -1.2% for 88.0 and 86.9, where that contract requires -1.3%. Both generators
+  now calculate from decimal representations of the public endpoints and use
+  the existing numeric-output display policy. Acceptance tolerances and source
+  series are unchanged. The OCR witness came from a bounded scan of 384 owned
+  papers, not a model run.
+- AQA negative-production-externality quantity guides missed the intersections
+  of the actual drawn curves. The guides now derive their positions from those
+  line segments rather than separate hand-tuned coordinates.
+- OCR appended a generic grading scale to already-authored levels, including
+  a second scale that stopped at 12 on a 15-mark question. The renderer now
+  retains the question's authoritative statements without adding another scale.
+- OCR's printed AO grid guessed allocations from tariffs. It now uses each
+  question's validated assessment-objective allocation, including the sum of
+  actual allocations in grouped multiple-choice rows. Missing or invalid
+  allocations are refused, not replaced with guesses.
+- OCR Paper 3 cover instructions implied optional answers and a nonexistent
+  Section C. They now follow the actual all-required selection topology.
+- OCR's Paper 3 figure claimed “2019 = 100” despite raw initial readings that
+  were not 100. The unsupported base-year claim was removed; source readings,
+  questions and answers were not renormalized.
+
+Removing the duplicate OCR bands exposed a spacer-only physical page before
+the appendix. Only that final spacer is removed before the forced break. No
+assessed table is dropped and no finished PDF page is deleted or padded.
+
+The AQA repair's focused group passed 390 tests. OCR's final public/source group
+passed 97. Both had genuine failing owned reproductions before their repairs
+and independent source/test review afterward. These results are distinct from
+the final combined release suite. A preliminary combined renderer run was
+stopped after 3,924 passing tests to include these completed audit findings;
+its interrupted result is not acceptance evidence.
+
+### Maintenance rules
 
 These repairs follow three rules that apply beyond the affected papers:
 
