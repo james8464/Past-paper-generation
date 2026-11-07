@@ -139,3 +139,35 @@ does not establish official-paper equivalence or the quality of an arbitrary
 model's answers. French and provider live-paper qualification remain separate.
 Final combined regression, signed builds, actual frozen previews, native
 acceptance and protected checks are separate release gates.
+
+## Follow-up: cold and warmed rule metadata
+
+The frozen combined gate at `961c9cf6` finished unsuccessfully: 4 failures,
+8,130 passes and 2 skips in 694.78 seconds. Its original log and exit-1 receipt
+remain retained; that run is not release acceptance. One failure identified the
+two now-unused OCR Economics `_level_bands` and `_level_descriptor_text` helpers.
+They are removed; the actively used question-focus helper remains.
+
+The other three failures exposed different completion-time context in cold and
+warmed builds. Generation enriched the initial content before final validation
+resolved defaults on the shared caller rule. Later builds used that mutated,
+warmed rule. Whole-model comparison isolated 10/10/8 written-item differences
+to `completion_time_minutes`, not changed source facts or assessed content.
+
+OCR generation now deep-copies its input rule and runs the existing rule
+validation before generation and enrichment. Final generated-paper validation
+is retained. Cold, prevalidated and repeated complete models must agree, and
+neither caller rule may change. Explicit nondefault timing/demand and invalid
+rule controls preserve the existing contracts. Original golden hashes remain;
+tests first assert the corrected timing against the declared duration/marks
+calculation before normalising only the diagnosed former cold-build field for
+the unchanged historical comparison. No other field is omitted or check relaxed.
+
+Three new cold/warm regressions failed before this repair. The final focused
+group passed 121 tests in 13.28 seconds with five existing SWIG warnings. The
+complete follow-up delta, tests and note received independent review at their
+new exact hashes. The prior complete EOF reads remain the baseline; this does
+not claim fresh whole-file rereads after every delta or a second passing full
+suite/build. Complete blueprint identity intentionally includes the corrected
+metadata. Existing saved artifacts are not changed, and later combined release
+gates must bind the new source hashes rather than inherit the failed run.

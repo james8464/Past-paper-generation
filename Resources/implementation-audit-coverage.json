@@ -1937,7 +1937,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "c6cbb3353e57806e65ccff7e1dca183924053b8c5fd90dd014d4c96bbb1126a6",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/cli.py",
@@ -1955,7 +1955,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "d5f89d2652be7058de0e97bb9e188610bbf0647927fea38158dd23ddc8b74c47",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/generator.py",
@@ -1982,7 +1982,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "bf4f99c975ac9ddf0a358ef7dee2e28caf03bd2af0344af4699afb2b5e9481f3",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/accounting/aqa/generator/aqaaccountgen/scheme_policy.py",
@@ -2009,7 +2009,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "f8c331fa4abaaed9c196b139d6a7f675c4fd868303daa8fa1c47d8c01eb8c501",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/accounting/aqa/generator/data/difficulty-calibration.json",
@@ -2120,7 +2120,7 @@
       "reason": "Previously recorded review plus complete independently reviewed cover/source repair delta; no new whole-file audit claimed.",
       "source_sha256": "d71ee8eaa5aa6958d357e4e09752992e9db3fe02aa7a030293f3d946307382d4",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/business/aqa/generator/aqabizgen/syllabus.py",
@@ -2162,7 +2162,7 @@
       "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
       "source_sha256": "6d718fd138afaebcf712c8d10897d84a3318232c5c191332ce3b7f51b309e39d",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/catalog.json",
@@ -2213,7 +2213,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "ff87cf798a8fe066fe085c47ff15d690acdca166401d51138f66935e29e2c391",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/models.py",
@@ -2222,7 +2222,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "283a2dce00b69c6cc4a9b534bb38c88a565d15f68cd0760d1f929a2477875557",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/notes.py",
@@ -2261,7 +2261,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "a06a8cea95160c2130aa2aaba32425e23dadb0cd91384e486a3e811348e60236",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/render_pdf.py",
@@ -2270,7 +2270,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "cbcf23e8b35458822dded5f6999812fa94af0a5d7fa2814884d0c7618be1a1eb",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/computer-science/aqa/generator/cspapergen/syllabus.py",
@@ -2426,7 +2426,7 @@
       "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
       "source_sha256": "141a26424862bd020e8bddba351ba691a8c6ef9193e2d9c86dfaf407aab497df",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/computer-science/ocr/generator/ocrcsgen/syllabus.py",
@@ -2516,7 +2516,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "14938b43eba1c642b67ad31942d4dbbe607e12b5ddcd51504814b4f6eb750f5b",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/configs.py",
@@ -2525,7 +2525,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "67b31b70028558f6004da9435b750c6a5969ba849dd54b2bfd8559859023b56c",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/generator.py",
@@ -2534,7 +2534,7 @@
       "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
       "source_sha256": "5fa2cf3afb1cff42e38c0fa32b173e1e50a79d4eff13ef6199a1f85d646a848d",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/level_policy.py",
@@ -2543,7 +2543,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "392e188d2c60039d269cfbdfb4392b15edc5dfa41c7ea45fc32873dcc4eadc06",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/render_pdf.py",
@@ -2552,7 +2552,7 @@
       "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
       "source_sha256": "636ef8f86931815ca5c6103e63ae5e890ff43cd644ecb73bc56d9f525202aac9",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/syllabus.py",
@@ -2561,7 +2561,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "f2087ef9a48d00ab6cdadd778854a53f09e0a049749fae984751f3fd3bf50a95",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/aqaecongen/written_tasks.py",
@@ -2570,7 +2570,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "5bfabc72dc4a42f19ec40f606f66df9f8c8cec853e5fd6e0483575ad202a0f08",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/aqa/generator/data/difficulty-calibration.json",
@@ -2603,7 +2603,7 @@
       "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
       "source_sha256": "5d9b0f202cda96d3ba83f4b3df5be7acc70f2cdc58d96c022fd8f67ab00144df",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/cambridge-international/generator/data/syllabus.json",
@@ -2837,7 +2837,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "8fbab0cae50eec5c7f50a6ff7f667bd08931c1e5d870ed1caa09be43b94844a8",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/notes.py",
@@ -2861,7 +2861,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "01e750be8576317b7e96c924d36255edde2f2127f79dc28299b2cf34f754479d",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/render_pdf.py",
@@ -2870,7 +2870,7 @@
       "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
       "source_sha256": "5f24e4c8d286af15347179b7dcbca7ae05b7e5e4e74409367f79e5d6c3922388",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/pastpapergen/selection_contracts.py",
@@ -3029,7 +3029,7 @@
       "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
       "source_sha256": "0e3272896e791e4fb2c35f17954da4356b6426334826997268dae145ebb44318",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/edexcel-a/generator/tests/test_source_credit_integrity.py",
@@ -3083,7 +3083,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "2dd32384a45650d14ba446bf7dcf08beff5a8e624104571000573afee2206c61",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/configs.py",
@@ -3092,25 +3092,25 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "48b728e28f819879521480ed725c9a437d01780f739e821b720ee36e5e30060b",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/generator.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
-      "source_sha256": "b2d5761d069875fe61b75791270579d503811e63ad5e6f24658978fb1c96dc81",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate.",
+      "source_sha256": "bbe367a9c32724d81aa06be46344dcb67c59de1e634afabfdf5bc61a555e539e",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/render_pdf.py",
       "classification": "maintained-source",
       "status": "reviewed",
-      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta.",
-      "source_sha256": "70ee3bfd921ab8df0f8f13a5428de9632570de4d49e0b02c94afb7e87c2e7dc5",
+      "reason": "Complete prior EOF read plus complete independently reviewed rendering repair and relevant identity/source callers; not a new whole-file read after the delta. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate.",
+      "source_sha256": "d9d88c2981bb188c017aa450c0e55291302be69099cef294450ab3c33fea3ee4",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/ocr/generator/ocregen/syllabus.py",
@@ -3119,7 +3119,7 @@
       "reason": "Complete unchanged file read through EOF with exact source pin. Bounded static review, not executed model/paper qualification.",
       "source_sha256": "6ba4af1af81b19a29e313513d5a46d1d25ebdc66c82965baecef324eb5d8eee6",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/economics/ocr/generator/pyproject.toml",
@@ -3137,10 +3137,10 @@
       "path": "Resources/economics/ocr/generator/tests/test_source_authority.py",
       "classification": "test",
       "status": "reviewed",
-      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
-      "source_sha256": "d082a5bceabdd452c80630ec77aaf7136a960bc229c57a5150a7e0f10ba71995",
+      "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification. Follow-up: complete independently reviewed cold/warm source-default repair and regression-test delta at new exact pins; original EOF baseline plus reviewed deltas, not a fresh whole-file audit. Failed961 full gate remains failed;121 focused passes do not certify a new complete release gate.",
+      "source_sha256": "c208e0b465818a3cf8b499527b557b83cf316585e8c61b75bcc5a09027ffbc3c",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "Resources/empirical-calibration-policy.json",
@@ -8195,7 +8195,7 @@
       "reason": "Complete new regression test independently reviewed; owned source, public artifact, blueprint and raster controls remain separate from release/live-model qualification.",
       "source_sha256": "b3c542591b74754f20d92de4f5f1c7b7034be369a1f6f9d4d0aad421393f589d",
       "review_evidence": "docs/quality/renderer-eof-audit-and-release-follow-ups.md",
-      "review_evidence_sha256": "151cb14d8f5fd79d71e1ec08efa4fde0aa28b2bc2110dc5f906e32be090dac0f"
+      "review_evidence_sha256": "ead31d956998bd9cc9843922f8e048667f80c8ce09cfbe5b999563997b28c5f8"
     },
     {
       "path": "tests/test_ocr_economics_calibration.py",

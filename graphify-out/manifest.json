@@ -1140,13 +1140,13 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/generator.py": {
-    "mtime": 1794014016.7481678,
-    "ast_hash": "0fded9494dc3f4ad8bf0398743d5c1df",
+    "mtime": 1794015426.006456,
+    "ast_hash": "d13951761627a092c2e27d87c4f1eea7",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/render_pdf.py": {
-    "mtime": 1794014016.7484205,
-    "ast_hash": "025347bd2bd371631191b6d831006b47",
+    "mtime": 1794015447.97122,
+    "ast_hash": "09616b2181d225f9e896392d3d56760a",
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/ocregen/syllabus.py": {
@@ -1245,7 +1245,7 @@
     "semantic_hash": "9089fa356046b0e497da7729dfba8605"
   },
   "Resources/repository-inventory.json": {
-    "mtime": 1794014398.714391,
+    "mtime": 1794015765.7896833,
     "ast_hash": "3401937a94363ffef72d213b32315782",
     "semantic_hash": ""
   },
@@ -4020,8 +4020,8 @@
     "semantic_hash": ""
   },
   "Resources/implementation-audit-coverage.json": {
-    "mtime": 1794014398.700527,
-    "ast_hash": "7911c3060b08564e198fdc79abd04a45",
+    "mtime": 1794015765.7758083,
+    "ast_hash": "434a54baff716644c242c8f5bf165fac",
     "semantic_hash": ""
   },
   "macOS/Keldin/Services/PDFDocumentAccess.swift": {
@@ -6130,8 +6130,8 @@
     "semantic_hash": ""
   },
   "docs/quality/renderer-eof-audit-and-release-follow-ups.md": {
-    "mtime": 1794014160.8360505,
-    "ast_hash": "f2251c28085d36d325ac68895bd83292",
+    "mtime": 1794015689.1876152,
+    "ast_hash": "f8271bd11affe9b137fdbf067f973612",
     "semantic_hash": ""
   },
   "Resources/economics/aqa/generator/tests/test_source_authority.py": {
@@ -6140,8 +6140,8 @@
     "semantic_hash": ""
   },
   "Resources/economics/ocr/generator/tests/test_source_authority.py": {
-    "mtime": 1794014016.7485456,
-    "ast_hash": "6a5dac4a80cfdc452f9cd667134454cc",
+    "mtime": 1794015535.3594103,
+    "ast_hash": "a627e9dfb9779792c235a2abe142ac41",
     "semantic_hash": ""
   },
   "docs/quality/aqa-economics-source-authority-review.md": {
@@ -6150,8 +6150,8 @@
     "semantic_hash": ""
   },
   "docs/quality/ocr-economics-source-authority-review.md": {
-    "mtime": 1794014016.7486718,
-    "ast_hash": "8174dbc0fd841f5eb3e9864cdecb1b8d",
+    "mtime": 1794015557.0395963,
+    "ast_hash": "1a98fdc8638e8e51e38a15bb94be76be",
     "semantic_hash": ""
   }
 }
