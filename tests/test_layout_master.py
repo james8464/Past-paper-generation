@@ -371,14 +371,19 @@ def test_runtime_registry_covers_every_supported_paper() -> None:
     assert registry["copyrighted_text_included"] is False
     assert all(
         record["question-paper"]["page_count"] > 0
-        and record["question-paper"]["page_count_policy"]["kind"] == "exact"
+        and record["question-paper"]["page_count_policy"]["kind"]
+        == (
+            "generated-aqa-cs-paper1-question-content-v1"
+            if key == "computer_science:1"
+            else "exact"
+        )
         and len(record["question-paper"]["page_boxes"])
         == record["question-paper"]["page_count"]
         and all(
             set(boxes) == {"media", "crop", "trim", "bleed", "art"}
             for boxes in record["question-paper"]["page_boxes"]
         )
-        for record in registry["papers"].values()
+        for key, record in registry["papers"].items()
     )
 
 

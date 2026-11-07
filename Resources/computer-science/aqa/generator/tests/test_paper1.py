@@ -111,13 +111,10 @@ def test_paper1_rendered_documents_use_correct_identity(tmp_path) -> None:
     assert formatted_generation_date() in answer_document_text
 
     reader = PdfReader(paths["question_paper"])
-    assert len(reader.pages) == 24
-    assert "Section A" in (reader.pages[1].extract_text() or "")
-    assert "trace table" in (reader.pages[6].extract_text() or "").casefold()
-    assert "Section B" in (reader.pages[7].extract_text() or "")
-    assert "Section C" in (reader.pages[10].extract_text() or "")
-    assert "Section D" in (reader.pages[15].extract_text() or "")
-    assert "END OF QUESTIONS" in (reader.pages[19].extract_text() or "")
+    sections = [question_text.index(f"Section {label}") for label in "ABCD"]
+    assert sections == sorted(sections)
+    assert "END OF QUESTIONS" in (reader.pages[-1].extract_text() or "")
+    assert "There are no questions printed on this page" not in question_text
 
 
 def test_paper1_finite_state_question_includes_diagram_and_table(tmp_path) -> None:
@@ -126,7 +123,9 @@ def test_paper1_finite_state_question_includes_diagram_and_table(tmp_path) -> No
     paths = generate_package(output_dir=tmp_path, paper="1", seed=42, dry_run=True)
     document = fitz.open(paths["question_paper"])
     try:
-        page = document[12]
+        pages = [page for page in document if "Current state" in page.get_text()]
+        assert len(pages) == 1
+        page = pages[0]
         text = page.get_text()
         assert "Figure 6" in text
         assert "Current state" in text

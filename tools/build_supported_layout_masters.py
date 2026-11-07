@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 
 from Backend.Core.layout_conformance import runtime_page_count_policy
@@ -105,7 +106,27 @@ REFERENCES = {
 }
 
 
+def refresh_question_policies() -> None:
+    """Refresh only policy metadata; preserve measured counts, boxes and assets."""
+    registry = json.loads(RUNTIME_OUTPUT.read_text(encoding="utf-8"))
+    for key, record in registry["papers"].items():
+        question = record.get("question-paper")
+        if question is not None:
+            question["page_count_policy"] = runtime_page_count_policy(
+                record["family"],
+                "question-paper",
+                question["page_count"],
+                paper=key.rsplit(":", 1)[1],
+            )
+    RUNTIME_OUTPUT.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--refresh-question-policies", action="store_true")
+    if parser.parse_args().refresh_question_policies:
+        refresh_question_policies()
+        return 0
     registry: dict[str, object] = {
         "schema_version": 1,
         "derived_reference_data_only": True,
@@ -138,11 +159,12 @@ def main() -> int:
             "family": family,
             "question-paper": {
                 "page_count": len(question_payload["pages"]),
-                "page_count_policy": {
-                    "kind": "exact",
-                    "minimum": len(question_payload["pages"]),
-                    "maximum": len(question_payload["pages"]),
-                },
+                "page_count_policy": runtime_page_count_policy(
+                    family,
+                    "question-paper",
+                    len(question_payload["pages"]),
+                    paper=paper,
+                ),
                 "page_boxes": [page["boxes"] for page in question_payload["pages"]],
             },
             "mark-scheme": {

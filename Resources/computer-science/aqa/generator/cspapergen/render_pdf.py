@@ -91,9 +91,6 @@ PAPER1_SECTIONS = {
     5: ("Section C", "You are advised to spend about 20 minutes on this section."),
     7: ("Section D", "You are advised to spend about 70 minutes on this section."),
 }
-PAPER1_INTERSTITIAL_AFTER = {3: "support", 4: "blank", 6: "blank"}
-PAPER1_SHARE_PAGE_WITH_PREVIOUS = {8, 10}
-PAPER1_TRAILING_BLANK_PAGES = 5
 
 _rf(FONT, FONT_BOLD, FONT_MONO, default_fallback="Times-Roman")
 
@@ -312,134 +309,21 @@ def _render_paper1_question_pages(
 ) -> _QuestionRenderState:
     if [question.number for question in blueprint.questions] != list(range(1, 13)):
         raise ValueError("Paper 1 question paper requires Questions 1 to 12")
-    questions = {question.number: question for question in blueprint.questions}
-
-    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[1])
-    state = _render_question(
-        pdf,
-        questions[1],
-        state,
-        show_answer_space=False,
-        allow_current_page=True,
-    )
-
-    state = _new_question_page(pdf, state)
-    state = _render_question(
-        pdf,
-        questions[2],
-        state,
-        show_answer_space=False,
-        allow_current_page=True,
-    )
-    state = _render_paper1_partial_question(
-        pdf,
-        questions[3],
-        questions[3].parts[:2],
-        state,
-        allow_current_page=True,
-    )
-
-    state = _new_question_page(pdf, state)
-    state = _render_paper1_partial_question(
-        pdf,
-        questions[3],
-        questions[3].parts[2:4],
-        state,
-    )
-
-    state = _new_question_page(pdf, state)
-    state = _render_paper1_partial_question(
-        pdf,
-        questions[3],
-        questions[3].parts[4:],
-        state,
-    )
-    _draw_trace_response_grid(pdf, state, rows=8)
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_support_page(pdf, state, questions[3])
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_trace_support_page(pdf, state, questions[3])
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[4])
-    state = _render_question(
-        pdf,
-        questions[4],
-        state,
-        show_answer_space=False,
-        allow_current_page=True,
-    )
-
-    state = _new_question_page(pdf, state)
-    _draw_complexity_support_page(pdf, state, questions[4])
-
-    state = _new_question_page(pdf, state)
-    _draw_intentionally_blank_page(pdf, state)
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[5])
-    state = _render_question(
-        pdf,
-        questions[5],
-        state,
-        show_answer_space=False,
-        allow_current_page=True,
-    )
-
-    state = _new_question_page(pdf, state)
-    state = _render_paper1_partial_question(
-        pdf,
-        questions[6],
-        questions[6].parts[:4],
-        state,
-    )
-
-    state = _new_question_page(pdf, state)
-    state = _render_paper1_partial_question(
-        pdf,
-        questions[6],
-        questions[6].parts[4:],
-        state,
-    )
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_support_page(pdf, state, questions[6])
-
-    state = _new_question_page(pdf, state)
-    _draw_intentionally_blank_page(pdf, state)
-
-    state = _new_question_page(pdf, state)
-    _draw_paper1_compact_section_heading(pdf, state, *PAPER1_SECTIONS[7])
-    for number in (7, 8, 9):
+    for question in blueprint.questions:
+        if question.number in PAPER1_SECTIONS:
+            if question.number != 1:
+                state = _new_question_page(pdf, state)
+            _draw_paper1_compact_section_heading(
+                pdf, state, *PAPER1_SECTIONS[question.number]
+            )
         state = _render_question(
-            pdf,
-            questions[number],
-            state,
-            show_answer_space=False,
-            allow_current_page=True,
+            pdf, question, state, show_answer_space=False, allow_current_page=True
         )
 
-    state = _new_question_page(pdf, state)
-    _draw_skeleton_program_support_page(pdf, state, questions[9])
-
-    for number in (10, 11, 12):
-        state = _new_question_page(pdf, state)
-        state = _render_question(
-            pdf,
-            questions[number],
-            state,
-            show_answer_space=False,
-            allow_current_page=True,
-        )
-
-    state = _ensure_space(pdf, state, 72)
+    # Reserve the actual end-label baseline/descent, not an extra response page.
+    state = _ensure_space(pdf, state, 18 - pdfmetrics.getDescent(FONT_BOLD, 10))
     pdf.setFont(FONT_BOLD, 10)
     pdf.drawCentredString(282, state.y - 18, "END OF QUESTIONS")
-    for _index in range(4):
-        state = _new_question_page(pdf, state)
-        _draw_intentionally_blank_page(pdf, state)
     return state
 
 
@@ -459,138 +343,6 @@ def _draw_paper1_compact_section_heading(
         "Enter your answers in the supplied Electronic Answer Document.",
     )
     state.y = 650
-
-
-def _render_paper1_partial_question(
-    pdf: canvas.Canvas,
-    question: Question,
-    parts: list[QuestionPart],
-    state: _QuestionRenderState,
-    *,
-    allow_current_page: bool = False,
-) -> _QuestionRenderState:
-    partial = question.model_copy(update={"parts": parts})
-    return _render_question(
-        pdf,
-        partial,
-        state,
-        show_answer_space=False,
-        allow_current_page=allow_current_page,
-    )
-
-
-def _draw_trace_response_grid(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    *,
-    rows: int,
-) -> None:
-    state.y -= 10
-    values = [
-        ["Step", "Current vertex", "Visited", "Recursive call / result"],
-        *[[str(index), "", "", ""] for index in range(1, rows + 1)],
-    ]
-    stimulus = Stimulus(
-        kind="table",
-        title="Trace table",
-        headers=values[0],
-        rows=values[1:],
-    )
-    state.y = _draw_table(pdf, stimulus, 92, state.y)
-
-
-def _draw_paper1_trace_support_page(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    question: Question,
-) -> None:
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(289, 710, f"Question {question.number} trace table")
-    state.y = 680
-    if question.stimulus:
-        state = _render_stimulus(pdf, question.stimulus, state)
-    state.y -= 12
-    _draw_trace_response_grid(pdf, state, rows=14)
-
-
-def _draw_complexity_support_page(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    question: Question,
-) -> None:
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(289, 710, f"Information for Question {question.number}")
-    pdf.setFont(FONT, 10)
-    pdf.drawString(
-        82,
-        676,
-        "Record timing results for both algorithms before reaching a conclusion.",
-    )
-    rows = [
-        ["Input size", "Algorithm X time", "Algorithm Y time", "Selected algorithm"],
-        ["100", "", "", ""],
-        ["1 000", "", "", ""],
-        ["10 000", "", "", ""],
-        ["100 000", "", "", ""],
-    ]
-    stimulus = Stimulus(kind="table", title="", headers=rows[0], rows=rows[1:])
-    state.y = _draw_table(pdf, stimulus, 82, 650)
-    pdf.setFont(FONT, 9)
-    pdf.drawString(
-        82,
-        state.y - 12,
-        "Use repeated trials and explain any anomalous result in the Electronic Answer Document.",
-    )
-
-
-def _draw_skeleton_program_support_page(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    question: Question,
-) -> None:
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(289, 710, "Skeleton Program information")
-    pdf.setFont(FONT, 10)
-    y = 678
-    for line in _wrap(question.stem, 82):
-        pdf.drawString(82, y, line)
-        y -= 14
-    rows = [
-        ["Command", "Required validation", "Expected action"],
-        ["ADD", "Unused identifier; valid category; value 0–100", "Append one record"],
-        ["REPORT", "At least one valid record", "Print category totals"],
-        ["QUIT", "No parameters", "End without changing data"],
-    ]
-    stimulus = Stimulus(kind="table", title="", headers=rows[0], rows=rows[1:])
-    state.y = _draw_table(pdf, stimulus, 82, y - 14)
-    pdf.setFont(FONT_MONO, 9)
-    pdf.drawString(
-        82, state.y - 16, "At the Command: prompt, enter ADD, REPORT, BEST or QUIT."
-    )
-
-
-def _draw_paper1_support_page(
-    pdf: canvas.Canvas,
-    state: _QuestionRenderState,
-    question: Question,
-) -> None:
-    pdf.setFont(FONT_BOLD, 11)
-    pdf.drawCentredString(289, 708, f"Information for Question {question.number}")
-    state.y = 676
-    pdf.setFont(FONT, 9.5)
-    for line in _wrap(question.stem, 82):
-        pdf.drawString(82, state.y, line)
-        state.y -= 14
-    if question.stimulus:
-        state.y -= 8
-        state = _render_stimulus(pdf, question.stimulus, state)
-    pdf.setFont(FONT, 9)
-    state.y -= 12
-    pdf.drawString(
-        82,
-        state.y,
-        "This information is repeated so that it remains visible while you complete the task.",
-    )
 
 
 def _draw_intentionally_blank_page(
@@ -1095,7 +847,34 @@ def _render_question(
 ) -> _QuestionRenderState:
     if state.y < 520 and not allow_current_page:
         state = _new_question_page(pdf, state)
-    state = _ensure_space(pdf, state, 80)
+    start_height = 80
+    if state.blueprint.delivery_mode == "on-screen":
+        # Keep the owner with its initial source and first response prompt.
+        # Match the existing emitters' actual advances; written slots stay unchanged.
+        start_height = 14 * len(_wrap(question.stem, 78)) + 8
+        if question.stimulus:
+            stimulus = question.stimulus
+            if stimulus.kind == "code":
+                start_height += 54 + 14 * len(
+                    stimulus.code.splitlines() or [stimulus.code]
+                )
+            elif stimulus.kind in {"table", "bitgrid", "packet", "truth_table", "fsm"}:
+                _width, heights, _columns = _table_layout(stimulus)
+                start_height += (
+                    34 + sum(heights) + (104 if stimulus.kind == "fsm" else 0)
+                )
+            else:
+                start_height += 118
+        first = question.parts[0]
+        prompt = first.prompt.replace("{q}", f"{question.number:02d}")
+        first_height = 14 * len(_wrap(prompt, 58 if len(question.parts) != 1 else 70))
+        first_height += 18 + 20 * len(first.options) if first.options else 30
+        start_height += max(92, first_height)
+        if start_height > 724 - BOTTOM:
+            raise ValueError(
+                "On-screen initial question source/prompt exceeds one page"
+            )
+    state = _ensure_space(pdf, state, start_height)
     _draw_question_ref(pdf, 52, state.y + 1, question.number)
     pdf.setFont(FONT, 11)
     for line in _wrap(question.stem, 78):

@@ -22,7 +22,7 @@ OLD_GUIDANCE = "Input format: COMMAND,param1,param2,param3"
         (5, "Renewable Energy Monitor"),
     ],
 )
-def test_printed_command_protocol_matches_every_supplied_scenario(
+def test_supplied_protocol_and_content_only_questions_match_every_scenario(
     tmp_path, seed, scenario
 ):
     assert (
@@ -51,8 +51,9 @@ def test_printed_command_protocol_matches_every_supplied_scenario(
     render_pdf.render_question_paper(blueprint, destination)
     with pymupdf.open(destination) as document:
         text = "\n".join(page.get_text() for page in document)
-        assert len(document) == 24
-        assert text.count(COMMAND_GUIDANCE) == 1
+        # The supplied program is authoritative; the QP no longer adds a
+        # separate, renderer-invented command-information page.
+        assert COMMAND_GUIDANCE not in text
         assert OLD_GUIDANCE not in text
         assert "Input format: COMMAND," not in text
     assert (blueprint.model_dump_json(), context.model_dump_json()) == before

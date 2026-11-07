@@ -20,6 +20,10 @@ from Backend.Core.business_scheme_content import (
     BUSINESS_SCHEME_PAGINATION,
     verify_business_paper_two_scheme,
 )
+from Backend.Core.computer_science_question_content import (
+    AQA_CS_PAPER1_QUESTION_PAGINATION,
+    verify_cs_paper1_questions,
+)
 from Backend.Core.computer_science_reference_solutions import paper1_reference_code
 from Backend.Core.layout_master import (
     LayoutConformanceError,
@@ -43,6 +47,8 @@ AQA_CS_PAPER1_SCHEME_PAGINATION = "generated-aqa-cs-paper1-mark-scheme-content-v
 def runtime_page_count_policy(
     family: str, role: str, reference_count: int, *, paper: str | None = None
 ) -> dict:
+    if family == "aqa-computer-science" and role == "question-paper" and paper == "1":
+        return {"kind": AQA_CS_PAPER1_QUESTION_PAGINATION}
     if family == "aqa-accounting" and role == "mark-scheme" and paper == "1":
         return {"kind": ACCOUNTING_SCHEME_PAGINATION}
     if family == "aqa-accounting" and role == "mark-scheme" and paper == "2":
@@ -454,6 +460,31 @@ def conform_generated_documents(
         if not generated_path or not master:
             continue
         policy_payload = master.get("page_count_policy")
+        if (
+            policy_payload
+            and policy_payload.get("kind") == AQA_CS_PAPER1_QUESTION_PAGINATION
+        ):
+            if (
+                subject != "computer_science"
+                or record.get("family") != "aqa-computer-science"
+                or paper != "1"
+                or generated_role != "question_paper"
+            ):
+                raise LayoutConformanceError(
+                    "CS1 question content policy cannot apply here"
+                )
+            results[generated_role] = verify_cs_paper1_questions(
+                generated_path,
+                paths.get("assessment_package"),
+                int(master["page_count"]),
+            )
+            conform_pdf_to_box_template(
+                generated_path,
+                master.get("page_boxes") or master["boxes"],
+                expected_page_count=master["page_count"],
+                strict_page_count=False,
+            )
+            continue
         if policy_payload and policy_payload.get("kind") == BUSINESS_SCHEME_PAGINATION:
             if (
                 subject != "business_aqa"
@@ -623,6 +654,8 @@ def conform_generated_documents(
                 int(master["page_count"]),
             )
             continue
+        if policy_payload and policy_payload.get("kind") not in {"exact", "range"}:
+            raise LayoutConformanceError("Unknown generated-document page-count policy")
         policy = (
             PageCountPolicy(
                 int(policy_payload["minimum"]),
