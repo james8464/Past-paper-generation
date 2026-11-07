@@ -29,9 +29,24 @@ from Backend.Core.france.code_layout import (
     code_layout,
     require_code_width,
 )
+from Backend.Core.france.content_authoring import (
+    ContentContractError,
+    content_schema,
+    validate_content_response,
+)
 from Backend.Core.france.corpus import HOSTS
 from Backend.Core.france.generation_budget import FrenchGenerationBudget
 from Backend.Core.france.graph_layout import graph_layout
+from Backend.Core.france.mark_plan import (
+    CONTENT_ASSEMBLY_POLICY,
+    MARK_PLAN_AUTHORING_POLICY,
+    MARK_PLAN_POLICY,
+    ExerciseMarkPlan,
+    build_mark_plans,
+    mark_plans_digest,
+    plan_payload,
+    validate_mark_plans,
+)
 from Backend.Core.france.nsi import (
     CURRICULUM_OBJECTIVES,
     LANGUAGE_RUBRIC_2027,
@@ -74,6 +89,7 @@ def _validate_authoring_schema_policy(value: str) -> str:
         LEGACY_AUTHORING_SCHEMA_POLICY,
         POSITIVE_POINTS_AUTHORING_SCHEMA_POLICY,
         AUTHORING_SCHEMA_POLICY,
+        MARK_PLAN_AUTHORING_POLICY,
     }:
         raise ValueError("Politique de schéma de rédaction NSI invalide")
     return value
@@ -87,6 +103,7 @@ def _identity_authoring_schema_policy(identity: dict) -> str:
     if type(value) is not str or value not in {
         POSITIVE_POINTS_AUTHORING_SCHEMA_POLICY,
         AUTHORING_SCHEMA_POLICY,
+        MARK_PLAN_AUTHORING_POLICY,
     }:
         raise ValueError("Politique de schéma de rédaction NSI invalide")
     return value
@@ -178,6 +195,7 @@ def exercise_request(
     sql_source_binding: bool = True,
     primary_topic: str | None = None,
     authoring_schema_policy: str = AUTHORING_SCHEMA_POLICY,
+    mark_plan: ExerciseMarkPlan | None = None,
 ) -> GenerationRequest:
     if exercise_id not in {"1", "2", "3"} or type(seed) is not int:
         raise ValueError("Identité de génération NSI invalide")
@@ -185,10 +203,18 @@ def exercise_request(
     if primary_topic is not None and primary_topic not in TOPICS:
         raise ValueError("Domaine principal NSI invalide")
     schema_policy = _validate_authoring_schema_policy(authoring_schema_policy)
+    planned = schema_policy == MARK_PLAN_AUTHORING_POLICY
+    if planned != (mark_plan is not None):
+        raise ValueError(
+            "Plan requis uniquement pour la rédaction de contenu planifiée"
+        )
+    if planned and mark_plan.exercise_id != exercise_id:
+        raise ValueError("Plan d'un autre exercice")
     schema = authoring_schema(
         machine_field_constraints=True,
         positive_points=schema_policy != LEGACY_AUTHORING_SCHEMA_POLICY,
-        bounded_graph_fields=schema_policy == AUTHORING_SCHEMA_POLICY,
+        bounded_graph_fields=schema_policy
+        in {AUTHORING_SCHEMA_POLICY, MARK_PLAN_AUTHORING_POLICY},
     )
     schema["properties"]["materials"]["minItems"] = 0
     schema["properties"]["id"] = {"type": "string", "const": exercise_id}
@@ -306,10 +332,24 @@ def exercise_request(
             }
         )
     question["verification"] = {"oneOf": contracts}
+    if planned:
+        schema = content_schema(mark_plan, schema)
+    criterion_instruction = (
+        "détaillées et le texte de chaque critère du barème, sans montant. "
+        if planned
+        else "détaillées et chaque critère du barème. "
+    )
+    allocation_instruction = (
+        "Le plan numérique fourni est fixé par l'application. Remplis exactement les objets questions et marking avec les identifiants prévus. Ne renvoie aucun champ points, montant, minutes ou target_points et ne modifie pas le plan. L'application seule assemble les montants du barème. "
+        if planned
+        else "La somme des points des questions doit valoir 6 et chaque barème doit totaliser "
+        "les points de sa question. "
+    )
     prompt = (
         "Rédige entièrement un exercice ORIGINAL de NSI, Terminale générale, en français. "
         "Invente le contexte, les données, les documents, les questions, leurs réponses "
-        "détaillées et chaque critère du barème. Ne sélectionne pas une famille connue "
+        + criterion_instruction
+        + "Ne sélectionne pas une famille connue "
         "et ne reformule pas un sujet de référence. Trois exercices indépendants sont "
         "prévus. Celui-ci doit être autonome, sur 6 points techniques et 70 minutes "
         "indicatives, sans prérequis provenant des autres exercices. Les 2 points "
@@ -335,8 +375,8 @@ def exercise_request(
         "Accorde le crédit à toute solution correcte respectant les contraintes explicites de la question. "
         "Respecte les capacités du programme et les bornes du schéma. "
         "Dans topics, utilise les noms des domaines, pas les codes des capacités. "
-        "La somme des points des questions doit valoir 6 et chaque barème doit totaliser "
-        "les points de sa question. La somme estimated_minutes doit valoir 70. Prévois "
+        + allocation_instruction
+        + "La somme estimated_minutes doit valoir 70. Prévois "
         "au moins trois opérations différentes, dont deux parmi analyse, design, debug, "
         "justify; au plus une question recall et au moins une difficulté 4. Donne les données "
         "nécessaires; fournis des tableaux ou graphes structurés lorsqu'ils sont utiles, "
@@ -379,6 +419,7 @@ def exercise_request(
                 **({"primary_topic": primary_topic} if primary_topic else {}),
                 "curriculum": CURRICULUM_OBJECTIVES,
                 "references": references,
+                **({"mark_plan": mark_plan.model_dump(mode="json")} if planned else {}),
             },
             ensure_ascii=False,
             separators=(",", ":"),
@@ -1297,7 +1338,46 @@ def _structural_feedback(error: Exception, schema: dict) -> str:
     )[:320]
 
 
-def _author(client, request, exercise_id, *, large_print: bool = False, capture=None):
+def _read_author_response(
+    raw, exercise_id, *, large_print, schema_policy, mark_plan=None, wire_schema=None
+):
+    if schema_policy == MARK_PLAN_AUTHORING_POLICY:
+        if mark_plan is None:
+            raise ValueError("Plan du contenu absent")
+        if (
+            not isinstance(raw, dict)
+            or len(json.dumps(raw, ensure_ascii=False)) > 160000
+        ):
+            raise ValueError("Exercice NSI absent ou trop volumineux")
+        schema = (
+            wire_schema
+            if wire_schema is not None
+            else exercise_request(
+                exercise_id,
+                0,
+                [],
+                large_print=large_print,
+                authoring_schema_policy=schema_policy,
+                mark_plan=mark_plan,
+            ).schema
+        )
+        raw = validate_content_response(raw, mark_plan, schema).model_dump(mode="json")
+        schema_policy = AUTHORING_SCHEMA_POLICY
+    return validate_authored_exercise(
+        raw, exercise_id, large_print=large_print, authoring_schema_policy=schema_policy
+    )
+
+
+def _author(
+    client,
+    request,
+    exercise_id,
+    *,
+    large_print: bool = False,
+    capture=None,
+    authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
+    mark_plan=None,
+):
     """Regenerate one malformed structure; never patch its answer or rubric."""
     rejected = []
     for attempt in (1, 2):
@@ -1309,10 +1389,16 @@ def _author(client, request, exercise_id, *, large_print: bool = False, capture=
                 capture.setdefault("author_returns", []).append(deepcopy(raw))
             if isinstance(client, FrenchGenerationBudget):
                 client.check()
-            exercise = validate_authored_exercise(
-                raw, exercise_id, large_print=large_print
+            exercise = _read_author_response(
+                raw,
+                exercise_id,
+                large_print=large_print,
+                schema_policy=authoring_schema_policy,
+                mark_plan=mark_plan,
+                wire_schema=request.schema,
             )
         except (
+            ContentContractError,
             SchemaValidationError,
             ModelValidationError,
             PythonCodeFormatError,
@@ -1512,6 +1598,7 @@ def _round_request(
     refusal,
     *,
     authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
+    mark_plan=None,
 ):
     round_seed = _signed_phase_seed(
         seed + int(identifier) + (1_000_003 if number == 2 else 0)
@@ -1525,6 +1612,7 @@ def _round_request(
         large_print=large_print,
         primary_topic=scope["primary_topic"],
         authoring_schema_policy=authoring_schema_policy,
+        mark_plan=mark_plan,
     )
     if refusal is not None:
         prefix, marker, schema = request.prompt.rpartition("\nOUTPUT_SCHEMA=")
@@ -1556,6 +1644,8 @@ def _round_request(
         "output_budget": request.output_budget,
         "review_seed": _signed_phase_seed(round_seed + 100),
     }
+    if authoring_schema_policy == MARK_PLAN_AUTHORING_POLICY:
+        identity["mark_plan_sha256"] = _digest(mark_plan.model_dump(mode="json"))
     return request, identity
 
 
@@ -1607,6 +1697,7 @@ def _round_record(number, request_identity, authoring, captured, refusal):
 def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=False):
     identity = package["identity"]
     schema_policy = _identity_authoring_schema_policy(identity)
+    mark_plans = _identity_mark_plans(identity)
     histories = package.get("exercise_attempts")
     if (
         not isinstance(histories, list)
@@ -1673,6 +1764,7 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
                 identity["large_print"],
                 refusal,
                 authoring_schema_policy=schema_policy,
+                mark_plan=mark_plans[index] if mark_plans else None,
             )
             if (
                 not isinstance(record["request"], dict)
@@ -1683,12 +1775,12 @@ def _validate_rounds(package, exercises, plan, reviews, attempts, *, terminal=Fa
                 )
             ):
                 raise ValueError("Identité de la nouvelle rédaction modifiée")
-            candidate = validate_authored_exercise(
+            candidate = _read_author_response(
                 record["author_response"],
                 identifier,
                 large_print=identity["large_print"],
-                sql_source_binding=True,
-                authoring_schema_policy=schema_policy,
+                schema_policy=schema_policy,
+                mark_plan=mark_plans[index] if mark_plans else None,
             )
             _require_primary_topic(candidate, scope["primary_topic"])
             _validate_authoring_record(
@@ -1729,6 +1821,7 @@ def _recovery_identity(
     large_print,
     *,
     authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
+    mark_plans=None,
 ):
     schema_policy = _validate_authoring_schema_policy(authoring_schema_policy)
     identity = {
@@ -1747,7 +1840,34 @@ def _recovery_identity(
     }
     if schema_policy != LEGACY_AUTHORING_SCHEMA_POLICY:
         identity["authoring_schema_policy"] = schema_policy
+    if schema_policy == MARK_PLAN_AUTHORING_POLICY:
+        if mark_plans is None:
+            raise ValueError("Plans de barème absents avant rédaction")
+        identity.update(
+            mark_plan_policy=MARK_PLAN_POLICY,
+            assembly_policy=CONTENT_ASSEMBLY_POLICY,
+            mark_plans=plan_payload(mark_plans),
+            mark_plans_sha256=mark_plans_digest(mark_plans),
+        )
+        _identity_mark_plans(identity)
     return identity
+
+
+def _identity_mark_plans(identity):
+    fields = {"mark_plan_policy", "assembly_policy", "mark_plans", "mark_plans_sha256"}
+    if _identity_authoring_schema_policy(identity) != MARK_PLAN_AUTHORING_POLICY:
+        if fields & identity.keys():
+            raise ValueError("Plan numérique ajouté à une identité historique")
+        return None
+    if (
+        identity.get("mark_plan_policy") != MARK_PLAN_POLICY
+        or identity.get("assembly_policy") != CONTENT_ASSEMBLY_POLICY
+    ):
+        raise ValueError("Politique de plan ou d'assemblage inconnue")
+    plans = validate_mark_plans(identity.get("mark_plans"), identity.get("seed"))
+    if identity.get("mark_plans_sha256") != mark_plans_digest(plans):
+        raise ValueError("Empreinte du plan numérique modifiée")
+    return plans
 
 
 def validate_rejected_rounds(details: dict) -> None:
@@ -1755,6 +1875,7 @@ def validate_rejected_rounds(details: dict) -> None:
     if not isinstance(details, dict):
         raise ValueError("Preuve du refus absente")
     identity = details.get("recovery_identity")
+    mark_plans = _identity_mark_plans(identity) if isinstance(identity, dict) else None
     if (
         not isinstance(identity, dict)
         or not isinstance(identity.get("provider"), str)
@@ -1771,6 +1892,7 @@ def validate_rejected_rounds(details: dict) -> None:
             identity["seed"],
             identity["large_print"],
             authoring_schema_policy=_identity_authoring_schema_policy(identity),
+            mark_plans=mark_plans,
         )
         or details.get("review_recovery_policy") != REVIEW_RECOVERY_POLICY
     ):
@@ -1811,12 +1933,12 @@ def validate_rejected_rounds(details: dict) -> None:
             <= record.keys()
         ):
             raise ValueError("Cycle du refus incomplet")
-        exercise = validate_authored_exercise(
+        exercise = _read_author_response(
             record["author_response"],
             str(index),
             large_print=identity["large_print"],
-            sql_source_binding=True,
-            authoring_schema_policy=_identity_authoring_schema_policy(identity),
+            schema_policy=_identity_authoring_schema_policy(identity),
+            mark_plan=mark_plans[index - 1] if mark_plans else None,
         )
         exercises.append(exercise)
         reviews.append(
@@ -1849,13 +1971,22 @@ def _record_recovery_round(
     histories,
     state,
     partial=None,
+    authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
+    mark_plans=None,
 ):
     if recorder is None:
         return
     snapshot = {
         "state": state,
         "review_recovery_policy": REVIEW_RECOVERY_POLICY,
-        "recovery_identity": _recovery_identity(provider, model, seed, large_print),
+        "recovery_identity": _recovery_identity(
+            provider,
+            model,
+            seed,
+            large_print,
+            authoring_schema_policy=authoring_schema_policy,
+            mark_plans=mark_plans,
+        ),
         "curriculum_plan": plan,
         "exercise_attempts": histories,
         "teacher_review": "not_run",
@@ -1885,10 +2016,17 @@ def generate(
     progress=None,
     large_print: bool = False,
     record_round=None,
+    authoring_schema_policy=AUTHORING_SCHEMA_POLICY,
 ) -> dict:
     if type(seed) is not int:
         raise ValueError("Graine entière requise")
     code_layout(large_print)
+    _validate_authoring_schema_policy(authoring_schema_policy)
+    mark_plans = (
+        build_mark_plans(seed)
+        if authoring_schema_policy == MARK_PLAN_AUTHORING_POLICY
+        else None
+    )
     if not isinstance(client, FrenchGenerationBudget):
         client = FrenchGenerationBudget(client)
     provider, model = getattr(client, "provider", None), getattr(client, "model", None)
@@ -1916,12 +2054,39 @@ def generate(
         for i, topic in enumerate(curriculum_plan(seed), 1)
     ]
     references = _reference_union(plan)
+    # Bind the owned plan before dispatch, also for callers without disk recording.
+    bound_identity = (
+        _recovery_identity(
+            provider,
+            model,
+            seed,
+            large_print,
+            authoring_schema_policy=authoring_schema_policy,
+            mark_plans=mark_plans,
+        )
+        if mark_plans
+        else None
+    )
     exercises, reviews, attempts, exercise_attempts = [], [], [], []
     topics: set[str] = set()
     for identifier in ("1", "2", "3"):
         scope = plan[int(identifier) - 1]
         history = {"exercise_id": identifier, "accepted_round": None, "rounds": []}
         exercise_attempts.append(history)
+        mark_plan = mark_plans[int(identifier) - 1] if mark_plans else None
+        if mark_plans and identifier == "1":
+            _record_recovery_round(
+                record_round,
+                provider=provider,
+                model=model,
+                seed=seed,
+                large_print=large_print,
+                plan=plan,
+                histories=exercise_attempts,
+                state="authoring_in_progress",
+                authoring_schema_policy=authoring_schema_policy,
+                mark_plans=mark_plans,
+            )
         refusal = None
         for number in (1, 2):
             if progress:
@@ -1930,7 +2095,16 @@ def generate(
                     f"(tentative {number}/2)"
                 )
             request, request_identity = _round_request(
-                client, scope, seed, identifier, number, topics, large_print, refusal
+                client,
+                scope,
+                seed,
+                identifier,
+                number,
+                topics,
+                large_print,
+                refusal,
+                authoring_schema_policy=authoring_schema_policy,
+                mark_plan=mark_plan,
             )
             captured = {}
             phase = "author"
@@ -1941,6 +2115,8 @@ def generate(
                     identifier,
                     large_print=large_print,
                     capture=captured,
+                    authoring_schema_policy=authoring_schema_policy,
+                    mark_plan=mark_plan,
                 )
                 _require_primary_topic(exercise, scope["primary_topic"])
                 if progress:
@@ -1973,13 +2149,20 @@ def generate(
                     plan=plan,
                     histories=exercise_attempts,
                     state="refused" if number == 2 else "review_in_progress",
+                    authoring_schema_policy=authoring_schema_policy,
+                    mark_plans=mark_plans,
                 )
                 if number == 2:
                     error.details = {
                         **error.details,
                         "review_recovery_policy": REVIEW_RECOVERY_POLICY,
                         "recovery_identity": _recovery_identity(
-                            provider, model, seed, large_print
+                            provider,
+                            model,
+                            seed,
+                            large_print,
+                            authoring_schema_policy=authoring_schema_policy,
+                            mark_plans=mark_plans,
                         ),
                         "curriculum_plan": deepcopy(plan),
                         "exercise_attempts": deepcopy(exercise_attempts),
@@ -2001,6 +2184,8 @@ def generate(
                         plan=plan,
                         histories=exercise_attempts,
                         state="stopped",
+                        authoring_schema_policy=authoring_schema_policy,
+                        mark_plans=mark_plans,
                         partial={
                             "exercise_id": identifier,
                             "round": number,
@@ -2028,6 +2213,8 @@ def generate(
                 plan=plan,
                 histories=exercise_attempts,
                 state="review_complete" if identifier == "3" else "review_in_progress",
+                authoring_schema_policy=authoring_schema_policy,
+                mark_plans=mark_plans,
             )
             attempts.append(authoring)
             topics.update(exercise.topics)
@@ -2058,7 +2245,17 @@ def generate(
         "empirical_calibration": "not_run",
     }
     identity = {
-        **_recovery_identity(provider, model, seed, large_print),
+        **(
+            bound_identity
+            or _recovery_identity(
+                provider,
+                model,
+                seed,
+                large_print,
+                authoring_schema_policy=authoring_schema_policy,
+                mark_plans=mark_plans,
+            )
+        ),
         "content_sha256": _digest(body),
     }
     package = {"identity": identity, **body}
@@ -2071,6 +2268,7 @@ def validate_package(package: dict) -> list[NSIExercise]:
         raise ValueError("Paquet V36 absent")
     identity = package["identity"]
     schema_policy = _identity_authoring_schema_policy(identity)
+    _identity_mark_plans(identity)
     if identity.get("review_recovery_policy") != REVIEW_RECOVERY_POLICY:
         raise ValueError("Politique de nouvelle rédaction V36 invalide")
     if identity.get("sql_source_policy") != SQL_SOURCE_POLICY:
@@ -2125,7 +2323,11 @@ def validate_package(package: dict) -> list[NSIExercise]:
             str(i),
             large_print=identity["large_print"] if has_layout else None,
             sql_source_binding=True,
-            authoring_schema_policy=schema_policy,
+            authoring_schema_policy=(
+                AUTHORING_SCHEMA_POLICY
+                if schema_policy == MARK_PLAN_AUTHORING_POLICY
+                else schema_policy
+            ),
         )
         for i, value in enumerate(raw, 1)
     ]
