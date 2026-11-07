@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pymupdf as fitz
 import pytest
+from ocrcsgen import render_pdf as renderer
 from ocrcsgen.configs import load_rule
 from ocrcsgen.generator import build_paper
 from ocrcsgen.render_pdf import render_question_paper
@@ -96,3 +97,30 @@ def test_display_heading_is_preserved_without_becoming_source_metadata(rendered)
     assert before["sections"][0]["options"][0]["title"] == "Question 1"
     with fitz.open(path) as document:
         assert any("Section A · Question 1" in page.get_text() for page in document)
+
+
+def test_annotation_tick_label_is_legible_without_mutating_source(rendered, tmp_path):
+    paper, before, _, _, _, _ = rendered
+    path = tmp_path / "mark-scheme.pdf"
+    renderer.render_mark_scheme(paper, path)
+    assert paper.model_dump(mode="json") == before
+    with fitz.open(path) as document:
+        page = next(page for page in document if "11. ANNOTATIONS" in page.get_text())
+        labels = page.search_for("Tick")
+        meaning = min(page.search_for("Correct response"), key=lambda rect: rect.y0)
+        assert len(labels) == 1
+        assert labels[0].x1 < meaning.x0
+        assert labels[0].y0 == pytest.approx(meaning.y0, abs=1)
+    table = renderer._annotation_conventions_page()[-1]
+    assert [row[0].getPlainText() for row in table._cellvalues[1:]] == [
+        "Tick",
+        "×",
+        "BOD",
+        "NBOD",
+        "ECF",
+        "REP",
+        "CON",
+        "L1",
+        "L2",
+        "L3",
+    ]

@@ -12,6 +12,7 @@ from ocregen import render_pdf as renderer
 from ocregen.configs import RULES
 from ocregen.generator import build_paper
 from ocregen.syllabus import load_syllabus
+from reportlab.pdfbase import pdfmetrics
 
 from Backend.Core.exam_blueprints import validate_rule
 from Backend.Core.independent_solver import IndependentSolver, reconcile_solution
@@ -98,6 +99,34 @@ def test_actual_cover_matches_compulsory_and_optional_sections(paper_and_pdfs):
     assert expected in cover
     if compulsory:
         assert "Sections B and C" not in cover
+
+
+def test_annotation_credit_label_is_legible_text_in_actual_pdf(paper_and_pdfs):
+    _, _, path = paper_and_pdfs
+    with fitz.open(path) as document:
+        page = next(
+            page for page in document if "ANNOTATION CONVENTIONS" in page.get_text()
+        )
+        labels = page.search_for("Tick")
+        meaning = page.search_for("Creditworthy point")
+        assert len(labels) == len(meaning) == 1
+        assert labels[0].x1 < meaning[0].x0
+        assert labels[0].y0 == pytest.approx(meaning[0].y0, abs=1)
+    table = renderer._annotation_conventions_page()[-1]
+    assert _plain([row[0] for row in table._cellvalues[1:]]) == [
+        "Tick",
+        "DEV",
+        "APP",
+        "EVAL",
+        "J",
+        "BOD",
+        "ECF",
+        "REP",
+        "CON",
+        "MAX",
+        "0",
+        "NR",
+    ]
 
 
 def test_assessed_scheme_has_no_spacer_only_page_before_appendices(paper_and_pdfs):
@@ -288,3 +317,91 @@ def test_first_128_legal_seeds_use_exact_half_up_calculation():
                 assert f"Correct answer: {expected:.1f}%." in printed
                 assert any(point.endswith(f"= {expected:.1f}%.") for point in printed)
     assert checked == 384
+
+
+@pytest.fixture(params=[True, False])
+def shifted_diagram(request):
+    compact = request.param
+    paper = build_paper(RULES["paper_1"], SYLLABUS, 15)
+    question = next(q for q in _questions(paper) if q.kind == "diagram_analysis")
+    assert question.topic_id == "micro-6"
+    drawing = renderer.Drawing(
+        98 * renderer.mm if compact else 245 * renderer.mm,
+        70 * renderer.mm if compact else 76 * renderer.mm,
+    )
+    geometry = dict(
+        x0=18 if compact else 388,
+        y0=18 if compact else 38,
+        width=235 if compact else 250,
+        height=63 if compact else 145,
+        compact=compact,
+    )
+    renderer._add_economics_diagram(drawing, question, shifted=True, **geometry)
+    return drawing, question, geometry
+
+
+def test_shifted_guide_ends_at_actual_drawn_curve_intersection(shifted_diagram):
+    drawing, _, geometry = shifted_diagram
+    lines = [part for part in drawing.contents if isinstance(part, renderer.Line)]
+    demand = next(line for line in lines if line.x2 > line.x1 and line.y2 < line.y1)
+    supplies = [line for line in lines if line.x2 > line.x1 and line.y2 > line.y1]
+    shifted_supply = max(supplies, key=lambda line: line.x1)
+    guide = next(
+        line for line in lines if line.x1 == line.x2 and line.x1 != geometry["x0"]
+    )
+    for curve in (demand, shifted_supply):
+        y = curve.y1 + (guide.x1 - curve.x1) * (curve.y2 - curve.y1) / (
+            curve.x2 - curve.x1
+        )
+        assert guide.y2 == pytest.approx(y, abs=1e-8)
+
+
+def test_shifted_labels_clear_curves_and_each_other(shifted_diagram):
+    drawing, question, geometry = shifted_diagram
+    labels = [
+        part
+        for part in drawing.contents
+        if isinstance(part, renderer.String) and part.text in {"MPC", "MSC", "E1"}
+    ]
+    assert len(labels) == 3
+    bounds = []
+    for label in labels:
+        ascent, descent = pdfmetrics.getAscentDescent(label.fontName, label.fontSize)
+        box = fitz.Rect(
+            label.x,
+            label.y + descent,
+            label.x
+            + pdfmetrics.stringWidth(label.text, label.fontName, label.fontSize),
+            label.y + ascent,
+        )
+        assert fitz.Rect(0, 0, drawing.width, drawing.height).contains(box)
+        for part in drawing.contents:
+            if not isinstance(part, renderer.Line) or part.x2 <= part.x1:
+                continue
+            left, right = max(box.x0, part.x1), min(box.x1, part.x2)
+            if left > right:
+                continue
+            ys = [
+                part.y1 + (x - part.x1) * (part.y2 - part.y1) / (part.x2 - part.x1)
+                for x in (left, right)
+            ]
+            half_stroke = part.strokeWidth / 2
+            assert max(ys) + half_stroke < box.y0 or min(ys) - half_stroke > box.y1, (
+                label.text
+            )
+        bounds.append(box)
+    for index, box in enumerate(bounds):
+        assert not any(box.intersects(other) for other in bounds[index + 1 :])
+    # The unshifted diagram's established label position must remain unchanged.
+    unshifted = renderer.Drawing(drawing.width, drawing.height)
+    renderer._add_economics_diagram(unshifted, question, shifted=False, **geometry)
+    label = next(
+        part
+        for part in unshifted.contents
+        if isinstance(part, renderer.String) and part.text == "MPC"
+    )
+    inset = 10 if geometry["compact"] else 18
+    assert (label.x, label.y) == (
+        geometry["x0"] + geometry["width"] - inset + 1,
+        geometry["y0"] + geometry["height"] - inset - 2,
+    )

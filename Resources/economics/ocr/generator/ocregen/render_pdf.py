@@ -13,6 +13,7 @@ from reportlab.lib.enums import TA_CENTER, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import mm
+from reportlab.pdfbase import pdfmetrics
 from reportlab.platypus import (
     BaseDocTemplate,
     Flowable,
@@ -375,7 +376,11 @@ def _diagrams_and_calculations_page() -> list[Flowable]:
 
 def _annotation_conventions_page() -> list[Flowable]:
     rows = [
-        ("✓", "Creditworthy point", "A distinct valid point earns the available mark."),
+        (
+            "Tick",
+            "Creditworthy point",
+            "A distinct valid point earns the available mark.",
+        ),
         (
             "DEV",
             "Developed analysis",
@@ -752,8 +757,12 @@ def _add_economics_diagram(
         String(x0 + width - 15, y0 - 9, x_label, fontName=FONT, fontSize=label_size)
     )
 
-    drawing.add(Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset))
-    drawing.add(Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset))
+    curves = [
+        Line(x0 + inset, y0 + height - inset, x0 + width - inset, y0 + inset),
+        Line(x0 + inset, y0 + inset, x0 + width - inset, y0 + height - inset),
+    ]
+    for curve in curves:
+        drawing.add(curve)
     drawing.add(
         String(
             x0 + width - inset + 1,
@@ -763,10 +772,22 @@ def _add_economics_diagram(
             fontSize=label_size,
         )
     )
+    supply_label_x = x0 + width - inset + 1
+    supply_label_y = y0 + height - inset - 2
+    if shifted:
+        ascent, descent = pdfmetrics.getAscentDescent(FONT, label_size)
+        label_padding = max(2.0, label_size / 2)
+        supply_label_x = min(
+            x0 + width - inset + label_padding,
+            drawing.width
+            - pdfmetrics.stringWidth(up_label, FONT, label_size)
+            - label_padding,
+        )
+        supply_label_y = y0 + height - inset + label_padding - descent
     drawing.add(
         String(
-            x0 + width - inset + 1,
-            y0 + height - inset - 2,
+            supply_label_x,
+            supply_label_y,
             up_label,
             fontName=FONT,
             fontSize=label_size,
@@ -778,26 +799,33 @@ def _add_economics_diagram(
     equilibrium_label = "E"
     if shifted:
         shift = 14 if compact else 28
-        drawing.add(
-            Line(
-                x0 + inset + shift,
-                y0 + inset,
-                x0 + width - inset + shift,
-                y0 + height - inset,
-            )
+        shifted_curve = Line(
+            x0 + inset + shift,
+            y0 + inset,
+            x0 + width - inset + shift,
+            y0 + height - inset,
         )
+        curves.append(shifted_curve)
+        drawing.add(shifted_curve)
         shifted_supply_label = "MSC" if up_label == "MPC" else f"{up_label}1"
         drawing.add(
             String(
-                x0 + width - inset + shift,
-                y0 + height - inset - 2,
+                min(
+                    x0 + width - inset + shift + label_padding,
+                    drawing.width
+                    - pdfmetrics.stringWidth(shifted_supply_label, FONT, label_size)
+                    - label_padding,
+                ),
+                y0 + height - inset - label_padding - ascent,
                 shifted_supply_label,
                 fontName=FONT,
                 fontSize=label_size,
             )
         )
         equilibrium_x += shift / 2
-        equilibrium_y -= shift * height / (2 * width)
+        curve_width = width - 2 * inset
+        curve_height = height - 2 * inset
+        equilibrium_y -= shift * curve_height / (2 * curve_width)
         equilibrium_label = "E1"
 
     dash = [2, 2] if compact else [3, 2]
@@ -807,10 +835,26 @@ def _add_economics_diagram(
     drawing.add(
         Line(x0, equilibrium_y, equilibrium_x, equilibrium_y, strokeDashArray=dash)
     )
+    equilibrium_label_x = equilibrium_x + 3
+    equilibrium_label_y = equilibrium_y + 3
+    if shifted:
+        text_width = pdfmetrics.stringWidth(equilibrium_label, FONT_BOLD, label_size)
+        _, text_descent = pdfmetrics.getAscentDescent(FONT_BOLD, label_size)
+        local_curve_heights = []
+        for curve in curves:
+            left = max(equilibrium_label_x, curve.x1)
+            right = min(equilibrium_label_x + text_width, curve.x2)
+            if left <= right:
+                local_curve_heights.extend(
+                    curve.y1
+                    + (x - curve.x1) * (curve.y2 - curve.y1) / (curve.x2 - curve.x1)
+                    for x in (left, right)
+                )
+        equilibrium_label_y = max(local_curve_heights) + label_padding - text_descent
     drawing.add(
         String(
-            equilibrium_x + 3,
-            equilibrium_y + 3,
+            equilibrium_label_x,
+            equilibrium_label_y,
             equilibrium_label,
             fontName=FONT_BOLD,
             fontSize=label_size,

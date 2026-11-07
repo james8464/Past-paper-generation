@@ -649,7 +649,7 @@ def _supplementary_marking_pages(count: int) -> list[Flowable]:
 
 def _annotation_conventions_page() -> list[Flowable]:
     entries = [
-        ("✓", "Correct response", "A distinct technically correct point."),
+        ("Tick", "Correct response", "A distinct technically correct point."),
         ("×", "Incorrect response", "A response that cannot be credited."),
         ("BOD", "Benefit of doubt", "Meaning is clear despite minor imprecision."),
         ("NBOD", "No benefit of doubt", "The response remains ambiguous."),
